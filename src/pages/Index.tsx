@@ -2,8 +2,6 @@ import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Hero from "@/components/Hero";
 import IndustrySection from "@/components/IndustrySection";
-import Services from "@/components/Services";
-import ChartFinder from "@/components/ChartFinder";
 import Industries from "@/components/Industries";
 import Technology from "@/components/Technology";
 import Contact from "@/components/Contact";
@@ -20,8 +18,6 @@ const Index = () => {
       />
       <Hero />
       <IndustrySection />
-      <Services />
-      <ChartFinder />
       <Industries />
       <Technology />
       <Contact />
