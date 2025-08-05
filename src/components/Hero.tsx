@@ -7,9 +7,9 @@ const Hero = () => {
     <section className="min-h-screen bg-scandi-white font-inter relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/10 to-accent-soft-blue/10 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/8 to-soft-blue/8 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/30 to-accent-soft-blue/30 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/25 to-accent-soft-blue/25 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/20 to-soft-blue/20 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
       </div>
 
       {/* Hero Background Image with Ken Burns Effect */}
@@ -19,7 +19,7 @@ const Hero = () => {
           alt="Precision Engineering Process"
           className="w-full h-full object-cover animate-ken-burns opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-scandi-white/80 via-scandi-white/60 to-scandi-white/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-scandi-white/70 via-scandi-white/50 to-scandi-white/30"></div>
       </div>
       
       {/* Navigation Spacer */}
@@ -47,7 +47,8 @@ const Hero = () => {
             <div className="pt-4">
               <Button 
                 size="lg"
-                className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                style={{ backgroundColor: '#7a933b' }}
               >
                 Testlösungen entdecken
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
