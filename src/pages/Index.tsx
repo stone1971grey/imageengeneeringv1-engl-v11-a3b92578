@@ -13,8 +13,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AnnouncementBanner 
-        message="Visit us at IBC 2025"
-        ctaText="Learn more"
+        message="Besuchen Sie uns auf der IBC 2025"
+        ctaText="Mehr erfahren"
         ctaLink="#"
         icon="calendar"
       />

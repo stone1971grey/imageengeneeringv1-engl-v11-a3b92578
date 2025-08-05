@@ -38,41 +38,41 @@ const Navigation = () => {
 
   // Industry data mapping
   const industryData = {
-    "Photography": {
+    "Fotografie": {
       image: industryPhotography,
-      description: "Digital cameras for professional and amateur applications"
+      description: "Digitalkameras für professionelle und Amateur-Anwendungen"
     },
-    "Mobile Phones": {
+    "Mobiltelefone": {
       image: industryMobile,
-      description: "Image quality testing according to VCX standards"
+      description: "Bildqualitätstests nach VCX-Standards"
     },
     "Automotive & ADAS": {
       image: industryAutomotive,
-      description: "Camera systems in vehicles, driver assistance and autonomous driving"
+      description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren"
     },
     "Broadcast & HDTV": {
       image: industryBroadcast,
-      description: "Video transmission, TV cameras, color-accurate reproduction"
+      description: "Videoübertragung, TV-Kameras, farbgetreue Wiedergabe"
     },
-    "Security / Surveillance": {
+    "Sicherheit / Überwachung": {
       image: industrySecurity,
-      description: "CCTV systems, video surveillance"
+      description: "CCTV-Systeme, Videoüberwachung"
     },
     "Machine Vision": {
       image: industryMachineVision,
-      description: "Camera systems for inspection, robotics, quality control"
+      description: "Kamerasysteme für Inspektion, Robotik, Qualitätskontrolle"
     },
-    "Medical / Endoscopy": {
+    "Medizin / Endoskopie": {
       image: industryMedical,
-      description: "Image quality in medical imaging and diagnostic systems"
+      description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen"
     },
-    "Scanning & Archiving": {
+    "Scannen & Archivierung": {
       image: industryScanning,
-      description: "Quality assurance in digitization of documents, books, photos"
+      description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos"
     },
     "iQ‑Lab Testing": {
       image: industryLabTesting,
-      description: "Independent laboratory services for numerous industries (e.g. Mobile, Automotive)"
+      description: "Unabhängige Labordienstleistungen für zahlreiche Branchen (z.B. Mobile, Automotive)"
     }
   };
 
@@ -80,31 +80,31 @@ const Navigation = () => {
   const productData = {
     "Charts": {
       image: customChart,
-      description: "High-precision test patterns and color charts for comprehensive image quality analysis"
+      description: "Hochpräzise Testmuster und Farbcharts für umfassende Bildqualitätsanalyse"
     },
-    "Equipment": {
+    "Geräte": {
       image: arcturusMainProduct,
-      description: "Professional testing equipment including LED lighting systems and measurement devices"
+      description: "Professionelle Testausrüstung einschließlich LED-Beleuchtungssystemen und Messgeräten"
     },
     "Software": {
       image: iqAnalyzerIntro,
-      description: "Advanced software solutions for image analysis, calibration, and quality control"
+      description: "Fortschrittliche Softwarelösungen für Bildanalyse, Kalibrierung und Qualitätskontrolle"
     },
-    "Product Bundles": {
+    "Produktbündel": {
       image: productBundleIeee,
-      description: "Complete testing solutions combining hardware, software, and accessories"
+      description: "Komplette Testlösungen mit Hardware, Software und Zubehör"
     },
-    "Solutions": {
+    "Lösungen": {
       image: iqLedIllumination,
-      description: "Complete lighting and illumination solutions for professional testing environments"
+      description: "Komplette Beleuchtungs- und Illuminationslösungen für professionelle Testumgebungen"
     },
-    "Accessories": {
+    "Zubehör": {
       image: chartCase,
-      description: "Professional accessories including chart cases, mounts, and calibration tools"
+      description: "Professionelles Zubehör einschließlich Chart-Koffer, Halterungen und Kalibrierungstools"
     },
-    "Technology": {
+    "Technologie": {
       image: technology2025,
-      description: "Latest innovations and cutting-edge technology in image quality measurement"
+      description: "Neueste Innovationen und modernste Technologie in der Bildqualitätsmessung"
     }
   };
 
@@ -173,7 +173,7 @@ const Navigation = () => {
             <NavigationMenu>
               <NavigationMenuList className="gap-x-8">
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Find your solution</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ihre Lösung finden</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
@@ -182,7 +182,7 @@ const Navigation = () => {
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Target className="h-6 w-6" />
-                            Typical Applications
+                            Typische Anwendungen
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -233,7 +233,7 @@ const Navigation = () => {
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Package className="h-6 w-6" />
-                            Pre-configured Solution Packages
+                            Vorkonfigurierte Lösungspakete
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -275,7 +275,7 @@ const Navigation = () => {
                         <div className="bg-blue-600 hover:bg-blue-700 p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                           <div className="flex items-center gap-3 text-white">
                             <Search className="h-5 w-5" />
-                            <span className="text-lg font-medium">Need help choosing? → Start Solution Finder</span>
+                            <span className="text-lg font-medium">Hilfe bei der Auswahl? → Lösungsfinder starten</span>
                           </div>
                         </div>
                       </div>
@@ -303,7 +303,7 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <Link to="/industries">
-                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Industries</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Branchen</NavigationMenuTrigger>
                   </Link>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">

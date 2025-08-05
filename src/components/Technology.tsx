@@ -5,28 +5,28 @@ import { Cpu, Database, Cloud, GitBranch } from "lucide-react";
 const Technology = () => {
   const techStack = [
     {
-      category: "AI/ML Frameworks",
+      category: "KI/ML Frameworks",
       technologies: ["TensorFlow", "PyTorch", "OpenCV", "CUDA"],
       icon: Cpu,
-      description: "State-of-the-art deep learning and computer vision frameworks"
+      description: "Modernste Deep Learning und Computer Vision Frameworks"
     },
     {
-      category: "Cloud Infrastructure",
+      category: "Cloud-Infrastruktur",
       technologies: ["AWS", "Docker", "Kubernetes", "Redis"],
       icon: Cloud,
-      description: "Scalable, enterprise-grade cloud deployment solutions"
+      description: "Skalierbare, Enterprise-taugliche Cloud-Deployment-Lösungen"
     },
     {
-      category: "Data Processing",
+      category: "Datenverarbeitung",
       technologies: ["Apache Spark", "PostgreSQL", "MongoDB", "Kafka"],
       icon: Database,
-      description: "High-performance data pipelines and storage systems"
+      description: "Hochleistungs-Daten-Pipelines und Speichersysteme"
     },
     {
-      category: "Development",
+      category: "Entwicklung",
       technologies: ["Python", "C++", "TypeScript", "Go"],
       icon: GitBranch,
-      description: "Modern development stack for optimal performance"
+      description: "Moderner Entwicklungsstack für optimale Leistung"
     }
   ];
 
@@ -35,12 +35,12 @@ const Technology = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Built on
-            <span className="bg-gradient-primary bg-clip-text text-transparent"> Cutting-Edge Tech</span>
+            Aufgebaut auf
+            <span className="bg-gradient-primary bg-clip-text text-transparent"> modernster Technologie</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our technology stack combines the latest advances in AI, cloud computing, 
-            and software engineering to deliver unparalleled performance.
+            Unser Technologie-Stack kombiniert die neuesten Fortschritte in KI, Cloud Computing 
+            und Software-Engineering für unvergleichliche Leistung.
           </p>
         </div>
 
@@ -82,19 +82,19 @@ const Technology = () => {
         <div className="mt-20 grid md:grid-cols-4 gap-6">
           <div className="text-center p-6 bg-card/30 rounded-lg border border-border/30">
             <div className="text-3xl font-bold text-primary mb-2">10TB+</div>
-            <div className="text-muted-foreground">Data Processed Daily</div>
+            <div className="text-muted-foreground">Täglich verarbeitete Daten</div>
           </div>
           <div className="text-center p-6 bg-card/30 rounded-lg border border-border/30">
             <div className="text-3xl font-bold text-primary mb-2">99.99%</div>
-            <div className="text-muted-foreground">Uptime Guarantee</div>
+            <div className="text-muted-foreground">Verfügbarkeitsgarantie</div>
           </div>
           <div className="text-center p-6 bg-card/30 rounded-lg border border-border/30">
             <div className="text-3xl font-bold text-primary mb-2">1M+</div>
-            <div className="text-muted-foreground">Images per Hour</div>
+            <div className="text-muted-foreground">Bilder pro Stunde</div>
           </div>
           <div className="text-center p-6 bg-card/30 rounded-lg border border-border/30">
             <div className="text-3xl font-bold text-primary mb-2">24/7</div>
-            <div className="text-muted-foreground">Expert Support</div>
+            <div className="text-muted-foreground">Expertenunterstützung</div>
           </div>
         </div>
       </div>

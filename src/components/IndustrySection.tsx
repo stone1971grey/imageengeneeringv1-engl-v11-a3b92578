@@ -6,23 +6,23 @@ const IndustrySection = () => {
     {
       icon: Car,
       title: "Automotive & ADAS",
-      description: "Camera systems in vehicles, driver assistance and autonomous driving",
+      description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren",
       link: "/automotive#automotive-hero"
     },
     {
       icon: Stethoscope,
-      title: "Medical / Endoscopy",
-      description: "Image quality in medical imaging and diagnostic systems"
+      title: "Medizin / Endoskopie",
+      description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen"
     },
     {
       icon: Smartphone,
-      title: "Mobile Phones",
-      description: "Image quality testing according to VCX standards"
+      title: "Mobiltelefone",
+      description: "Bildqualitätstests nach VCX-Standards"
     },
     {
       icon: Shield,
-      title: "Security / Surveillance",
-      description: "CCTV systems, video surveillance"
+      title: "Sicherheit / Überwachung",
+      description: "CCTV-Systeme, Videoüberwachung"
     }
   ];
 
@@ -41,14 +41,14 @@ const IndustrySection = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            We serve your{" "}
+            Wir bedienen Ihre{" "}
             <span className="text-[#7a933b] relative">
-              industry
+              Branche
               <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-[#7a933b] to-[#7a933b]/60 rounded-full"></div>
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Leading organizations across diverse industries trust our precision solutions
+            Führende Organisationen aus verschiedenen Branchen vertrauen unseren Präzisionslösungen
           </p>
         </div>
 
@@ -105,7 +105,7 @@ const IndustrySection = () => {
         {/* Call to action */}
         <div className="text-center mt-16">
           <div className="inline-flex items-center gap-2 bg-[#7a933b] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#7a933b]/90 transition-colors duration-300 cursor-pointer group">
-            <span>Explore all industries</span>
+            <span>Alle Branchen erkunden</span>
             <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
               <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>

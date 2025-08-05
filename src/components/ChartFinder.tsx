@@ -10,16 +10,16 @@ const ChartFinder = () => {
   const [selectedKPI, setSelectedKPI] = useState<string>("all");
 
   const industries = [
-    { value: "all", label: "All Industries" },
+    { value: "all", label: "Alle Branchen" },
     { value: "automotive", label: "Automotive" },
-    { value: "medical", label: "Medical" },
-    { value: "consumer", label: "Consumer Electronics" },
-    { value: "industrial", label: "Industrial" },
-    { value: "aerospace", label: "Aerospace" }
+    { value: "medical", label: "Medizin" },
+    { value: "consumer", label: "Konsumerelektronik" },
+    { value: "industrial", label: "Industrie" },
+    { value: "aerospace", label: "Luft- und Raumfahrt" }
   ];
 
   const standards = [
-    { value: "all", label: "All Standards" },
+    { value: "all", label: "Alle Standards" },
     { value: "ieee-p2020", label: "IEEE-P2020" },
     { value: "iso-12233", label: "ISO 12233" },
     { value: "iso-15739", label: "ISO 15739" },
@@ -28,13 +28,13 @@ const ChartFinder = () => {
   ];
 
   const kpis = [
-    { value: "all", label: "All KPIs" },
-    { value: "cta", label: "CTA (Color Texture Accuracy)" },
-    { value: "snr", label: "SNR (Signal-to-Noise)" },
-    { value: "resolution", label: "Resolution" },
-    { value: "low-light", label: "Low-Light Performance" },
-    { value: "dynamic-range", label: "Dynamic Range" },
-    { value: "color-accuracy", label: "Color Accuracy" }
+    { value: "all", label: "Alle KPIs" },
+    { value: "cta", label: "CTA (Farbtextur-Genauigkeit)" },
+    { value: "snr", label: "SNR (Signal-Rausch-Verhältnis)" },
+    { value: "resolution", label: "Auflösung" },
+    { value: "low-light", label: "Schwachlicht-Leistung" },
+    { value: "dynamic-range", label: "Dynamikbereich" },
+    { value: "color-accuracy", label: "Farbgenauigkeit" }
   ];
 
   const charts = [
@@ -113,8 +113,8 @@ const ChartFinder = () => {
             <span className="font-medium text-blue-600"> Finder</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light">
-            Find the perfect test chart for your specific application. 
-            Filter by industry, standard, and key performance indicators.
+            Finden Sie das perfekte Testchart für Ihre spezifische Anwendung. 
+            Filtern Sie nach Branche, Standard und Leistungskennzahlen.
           </p>
         </div>
 
@@ -124,10 +124,10 @@ const ChartFinder = () => {
             
             {/* Industry Filter */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 block">Industry</label>
+              <label className="text-sm font-medium text-gray-700 block">Branche</label>
               <Select value={selectedIndustry} onValueChange={setSelectedIndustry}>
                 <SelectTrigger className="w-full bg-gray-50 border-gray-200 text-gray-900 h-12">
-                  <SelectValue placeholder="Select Industry" />
+                  <SelectValue placeholder="Branche auswählen" />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200 z-50">
                   {industries.map((industry) => (
@@ -180,7 +180,7 @@ const ChartFinder = () => {
           <div className="flex items-center space-x-3">
             <Search className="w-5 h-5 text-gray-400" />
             <span className="text-lg text-gray-600">
-              {filteredCharts.length} {filteredCharts.length === 1 ? 'chart' : 'charts'} found
+              {filteredCharts.length} {filteredCharts.length === 1 ? 'Chart' : 'Charts'} gefunden
             </span>
           </div>
         </div>
@@ -225,7 +225,7 @@ const ChartFinder = () => {
                     <Button 
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0"
                     >
-                      View Product
+                      Produkt ansehen
                     </Button>
                   </div>
                 </CardContent>
@@ -237,8 +237,8 @@ const ChartFinder = () => {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <TestTube className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No charts found</h3>
-            <p className="text-gray-600">Try adjusting your filters to see more results.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Charts gefunden</h3>
+            <p className="text-gray-600">Versuchen Sie, Ihre Filter anzupassen, um mehr Ergebnisse zu sehen.</p>
           </div>
         )}
       </div>
