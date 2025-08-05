@@ -5,6 +5,7 @@ import { ArrowRight, Camera, TestTube, Monitor, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
+import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
@@ -211,43 +212,8 @@ const Automotive = () => {
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-12 mb-12">
-                {/* Manufacturers Section */}
-                <div className="bg-gray-50 rounded-2xl p-8">
-                  <div className="mb-6">
-                    <img 
-                      src={manufacturersImage}
-                      alt="Manufacturers workflow diagram"
-                      className="w-full h-auto rounded-lg"
-                    />
-                  </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-6">Hersteller</h4>
-                  <p className="text-gray-700 leading-relaxed mb-6">
-                    Der Hersteller in dieser Situation profitiert von der Expertise und maßgeschneiderten Tests, die Image Engineering als dritte Partei anbietet. Die objektiven Tests können dem Hersteller dabei helfen, den am besten geeigneten Sensor (aus einer breiten Palette verfügbarer Sensoren) für ihre Anforderungen zu finden.
-                  </p>
-                  <p className="text-gray-700 leading-relaxed">
-                    Wir arbeiten mit ihnen zusammen, um einen maßgeschneiderten camPAS-Test basierend auf ihren Spezifikationen zu erstellen und durchzuführen. Unsere Ingenieure liefern dann objektive Ergebnisse, damit der Hersteller eine fundierte Entscheidung treffen kann.
-                  </p>
-                </div>
-
-                {/* Suppliers Section */}
-                <div className="bg-gray-50 rounded-2xl p-8">
-                  <div className="mb-6">
-                    <img 
-                      src={suppliersImage}
-                      alt="Suppliers workflow diagram"
-                      className="w-full h-auto rounded-lg"
-                    />
-                  </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-6">Zulieferer</h4>
-                  <p className="text-gray-700 leading-relaxed mb-6">
-                    Der Zulieferer in diesem Szenario kann ebenfalls davon profitieren, Image Engineering als neutrale Drittpartei-Beratung zu nutzen. Bevor der Zulieferer seine Geräte an den Endverbraucher-Hersteller liefert, kann er sie zur Validierung mittels camPAS-Test an Image Engineering senden.
-                  </p>
-                  <p className="text-gray-700 leading-relaxed">
-                    Nach Abschluss eines camPAS-Tests weisen unsere Ingenieure auf potenzielle Bildqualitätsverbesserungen hin. Wir können oft auch Bugs, Fehler und andere Probleme erkennen, die der Zulieferer verbessern kann, bevor er seine Geräte an den Hersteller liefert.
-                  </p>
-                </div>
-              </div>
+              {/* Interactive Manufacturer/Supplier Showcase */}
+              <ManufacturerSupplierShowcase />
 
               {/* What tests are included */}
               <div className="bg-blue-50 rounded-2xl p-8">
