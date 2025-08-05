@@ -24,22 +24,22 @@ const ProductArcturus = () => {
     {
       src: arcturusMain,
       title: "Arcturus LED System",
-      description: "Professional high-power LED illumination system"
+      description: "Professionelles Hochleistungs-LED-Beleuchtungssystem"
     },
     {
       src: arcturusController,
-      title: "Controller Unit",
-      description: "Precision control interface for light output management"
+      title: "Controller-Einheit",
+      description: "Präzisions-Steuerungsschnittstelle für Lichtleistungsmanagement"
     },
     {
       src: arcturusSetup,
-      title: "Laboratory Setup",
-      description: "Complete testing environment with Vega software integration"
+      title: "Laboraufbau",
+      description: "Komplette Testumgebung mit Vega-Software-Integration"
     },
     {
       src: arcturusCharts,
-      title: "Test Charts & Analysis",
-      description: "Vega software displaying comprehensive image quality metrics"
+      title: "Testtafeln & Analyse",
+      description: "Vega-Software zeigt umfassende Bildqualitätsmetriken"
     }
   ];
 
@@ -62,13 +62,13 @@ const ProductArcturus = () => {
             <ol className="flex gap-2 text-base text-muted-foreground">
               <li>
                 <Link to="/" className="hover:text-foreground transition-colors">
-                  Home
+                  Startseite
                 </Link>
               </li>
               <li>/</li>
               <li>
                 <span className="hover:text-foreground transition-colors cursor-pointer">
-                  Products
+                  Produkte
                 </span>
               </li>
               <li>/</li>
@@ -80,7 +80,7 @@ const ProductArcturus = () => {
               <li>/</li>
               <li>
                 <span className="text-muted-foreground underline">
-                  Arcturus LED Product
+                  Arcturus LED Produkt
                 </span>
               </li>
             </ol>
@@ -92,32 +92,32 @@ const ProductArcturus = () => {
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
-                <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
+                 <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Overview</a>
-                <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   }}>Übersicht</a>
+                 <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Benefits</a>
-                <a href="#specifications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   }}>Vorteile</a>
+                 <a href="#specifications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('specifications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Specifications</a>
-                <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   }}>Spezifikationen</a>
+                 <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Applications</a>
-                <a href="#gallery" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   }}>Anwendungen</a>
+                 <a href="#gallery" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Gallery</a>
-                <a href="#downloads" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   }}>Galerie</a>
+                 <a href="#downloads" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -149,7 +149,7 @@ const ProductArcturus = () => {
                   </h1>
                   
                   <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                    Today's image sensors and high dynamic range configurations make testing at or close to sensor saturation challenging. With Arcturus, we can generate more than enough intensity to challenge these sensors with a much higher sensitivity than currently possible.
+                    Heutige Bildsensoren und High Dynamic Range-Konfigurationen machen Tests bei oder nahe der Sensorsättigung herausfordernd. Mit Arcturus können wir mehr als genug Intensität erzeugen, um diese Sensoren mit viel höherer Empfindlichkeit als derzeit möglich herauszufordern.
                   </p>
                 </div>
                 
@@ -158,7 +158,7 @@ const ProductArcturus = () => {
                     size="lg"
                     className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
                   >
-                    Learn More
+                    Mehr erfahren
                     <ArrowLeft className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
@@ -186,7 +186,7 @@ const ProductArcturus = () => {
                 {/* Floating feature highlight */}
                 <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
                   <div className="text-sm text-scandi-grey font-light mb-1">IEEE P2020</div>
-                  <div className="text-2xl font-medium text-light-foreground">Compatible</div>
+                  <div className="text-2xl font-medium text-light-foreground">Kompatibel</div>
                 </div>
               </div>
             </div>
@@ -195,15 +195,15 @@ const ProductArcturus = () => {
           {/* Main Benefits */}
           <div id="benefits" className="bg-gray-100 py-16 scroll-mt-[260px]">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Main Benefits of Arcturus</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Hauptvorteile von Arcturus</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Zap className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximum Illuminance</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximale Beleuchtungsstärke</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Up to 1 Mcd/m² - more than enough intensity to challenge even the most sensitive image sensors.
+                    Bis zu 1 Mcd/m² - mehr als genug Intensität, um selbst die empfindlichsten Bildsensoren herauszufordern.
                   </p>
                 </div>
                 
@@ -211,9 +211,9 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Shield className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flicker-Free</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flimmerfrei</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    DC-driven LED technology ensures flicker-free operation for consistent, reliable testing results.
+                    DC-betriebene LED-Technologie sorgt für flimmerfreien Betrieb für konsistente, zuverlässige Testergebnisse.
                   </p>
                 </div>
                 
@@ -221,9 +221,9 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Eye className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">High Stability</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Hohe Stabilität</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Extremely high stability and consistency for reproducible test conditions and accurate measurements.
+                    Extrem hohe Stabilität und Konsistenz für reproduzierbare Testbedingungen und genaue Messungen.
                   </p>
                 </div>
                 
@@ -231,9 +231,9 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <BarChart3 className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Real HDR Scenes</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Echte HDR-Szenen</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Create real HDR scenes when combining with other Vega devices for comprehensive testing scenarios.
+                    Erstellen Sie echte HDR-Szenen in Kombination mit anderen Vega-Geräten für umfassende Testszenarien.
                   </p>
                 </div>
                 
@@ -241,9 +241,9 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <ArrowLeft className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Vast Dynamic Range</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Weiter Dynamikbereich</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Change intensity over a vast dynamic range while maintaining constant spectrum characteristics.
+                    Ändern Sie die Intensität über einen weiten Dynamikbereich bei konstanten Spektrumeigenschaften.
                   </p>
                 </div>
                 
@@ -251,9 +251,9 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Smartphone className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flexible Control</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flexible Steuerung</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Control via UI software, API, and Python scripts for Windows and Linux systems.
+                    Steuerung über UI-Software, API und Python-Skripte für Windows- und Linux-Systeme.
                   </p>
                 </div>
               </div>
@@ -264,7 +264,7 @@ const ProductArcturus = () => {
         {/* Product Video */}
         <section className="container mx-auto px-4 pb-20">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
-            <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6 text-center">Arcturus in Action</h2>
+            <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6 text-center">Arcturus in Aktion</h2>
             <div className="flex justify-center">
               <div className="w-full max-w-4xl">
                 <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg">
@@ -278,7 +278,7 @@ const ProductArcturus = () => {
                   ></iframe>
                 </div>
                 <p className="text-center text-[#555] mt-4 text-sm">
-                  Watch how Arcturus delivers maximum illuminance for challenging image sensor testing scenarios
+                  Sehen Sie, wie Arcturus maximale Beleuchtungsstärke für herausfordernde Bildsensor-Testszenarien liefert
                 </p>
               </div>
             </div>
@@ -288,12 +288,12 @@ const ProductArcturus = () => {
       {/* Use Case: Simulate Bright Sunlight */}
       <section className="container mx-auto px-4 pb-20">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
-          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Simulate Bright Sunlight - Use Case</h2>
+          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Helles Sonnenlicht simulieren - Anwendungsfall</h2>
           <p className="text-[#555] mb-6 leading-relaxed">
-            Automotive-grade camera systems must be tested in numerous light environments, particularly those following the newly established <strong>IEEE-P2020</strong> standard. One of the more challenging scenarios to test for is how the camera system will perform in direct, bright sunlight, as this level of intensity is often difficult to generate in a test lab.
+            Automotive-Kamerasysteme müssen in zahlreichen Lichtumgebungen getestet werden, insbesondere solche, die dem neu etablierten <strong>IEEE-P2020</strong> Standard folgen. Eines der herausforderndsten zu testenden Szenarien ist, wie das Kamerasystem bei direktem, hellem Sonnenlicht funktioniert, da diese Intensitätsstufe oft schwer in einem Testlabor zu erzeugen ist.
           </p>
           <p className="text-[#555] leading-relaxed">
-            Arcturus can simulate the intensity of bright sunlight illumination with very high stability compared to other light sources. This ability allows camera systems to be evaluated in a test lab more efficiently.
+            Arcturus kann die Intensität heller Sonnenlichtbeleuchtung mit sehr hoher Stabilität im Vergleich zu anderen Lichtquellen simulieren. Diese Fähigkeit ermöglicht es, Kamerasysteme effizienter in einem Testlabor zu bewerten.
           </p>
         </div>
       </section>
@@ -301,43 +301,43 @@ const ProductArcturus = () => {
       {/* Detailed Specifications */}
       <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[240px]">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
-          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Detailed Specifications</h2>
+          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Detaillierte Spezifikationen</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Specification</th>
+                  <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Spezifikation</th>
                   <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Arcturus</th>
                 </tr>
               </thead>
               <tbody>
                 <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Principle</td>
-                  <td className="py-3 px-4 text-[#555]">High-stability light source with a large field of view and based on iQ-LED technology</td>
+                  <td className="py-3 px-4 text-[#555]">Prinzip</td>
+                  <td className="py-3 px-4 text-[#555]">Hochstabile Lichtquelle mit großem Sichtfeld basierend auf iQ-LED-Technologie</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Light source</td>
-                  <td className="py-3 px-4 text-[#555]">36 temperature-controlled LEDs based on DC (direct current) technology</td>
+                  <td className="py-3 px-4 text-[#555]">Lichtquelle</td>
+                  <td className="py-3 px-4 text-[#555]">36 temperaturkontrollierte LEDs basierend auf DC (Gleichstrom) Technologie</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Correlated color temperature (CCT)</td>
-                  <td className="py-3 px-4 text-[#555]">Approx. 4900 K (± 200 K)</td>
+                  <td className="py-3 px-4 text-[#555]">Korrelierte Farbtemperatur (CCT)</td>
+                  <td className="py-3 px-4 text-[#555]">Ca. 4900 K (± 200 K)</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Color rendering index (CRI)</td>
+                  <td className="py-3 px-4 text-[#555]">Farbwiedergabeindex (CRI)</td>
                   <td className="py-3 px-4 text-[#555]">≥ 95</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Maximum luminance</td>
+                  <td className="py-3 px-4 text-[#555]">Maximale Leuchtdichte</td>
                   <td className="py-3 px-4 text-[#555]">≥ 1Mcd/m²</td>
                 </tr>
                 <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Dim function</td>
-                  <td className="py-3 px-4 text-[#555]">Software based / 10⁶ - 10 steps</td>
+                  <td className="py-3 px-4 text-[#555]">Dimmfunktion</td>
+                  <td className="py-3 px-4 text-[#555]">Softwarebasiert / 10⁶ - 10 Stufen</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 text-[#555]">Flicker frequency range</td>
-                  <td className="py-3 px-4 text-[#555]">1 – 1000 Hz (Square), 10 – 1000 Hz (Sine / Triangle)</td>
+                  <td className="py-3 px-4 text-[#555]">Flimmerfrequenzbereich</td>
+                  <td className="py-3 px-4 text-[#555]">1 – 1000 Hz (Rechteck), 10 – 1000 Hz (Sinus / Dreieck)</td>
                 </tr>
               </tbody>
             </table>
@@ -351,20 +351,20 @@ const ProductArcturus = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
             <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">Arcturus Software</h3>
             <p className="text-[#555] mb-4 leading-relaxed">
-              Arcturus uses the same control software as our Vega light source. This software allows you to control up to seven devices (Arcturus + Vega) at one time.
+              Arcturus verwendet dieselbe Steuerungssoftware wie unsere Vega-Lichtquelle. Diese Software ermöglicht es Ihnen, bis zu sieben Geräte (Arcturus + Vega) gleichzeitig zu steuern.
             </p>
             <p className="text-[#555] leading-relaxed">
-              APIs are also available (sold separately) for smooth integration into individual designs. We offer a C, C++, and Python API.
+              APIs sind ebenfalls verfügbar (separat verkauft) für eine reibungslose Integration in individuelle Designs. Wir bieten C-, C++- und Python-APIs an.
             </p>
           </div>
           
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">Evaluation Software</h3>
+            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">Evaluierungssoftware</h3>
             <p className="text-[#555] mb-4 leading-relaxed">
-              Similar to Vega, Arcturus uses the VLS-Evaluation software to analyze the camera's performance based on standards (IEEE-P2020) and KPIs.
+              Ähnlich wie Vega verwendet Arcturus die VLS-Evaluierungssoftware zur Analyse der Kameraleistung basierend auf Standards (IEEE-P2020) und KPIs.
             </p>
             <p className="text-[#555] leading-relaxed">
-              Includes analysis for CTA, MMP/Flicker, and CSNR measurements for comprehensive image quality assessment.
+              Beinhaltet Analysen für CTA-, MMP/Flimmer- und CSNR-Messungen für umfassende Bildqualitätsbewertung.
             </p>
           </div>
         </div>
@@ -372,7 +372,7 @@ const ProductArcturus = () => {
 
       {/* Typical Applications */}
       <section id="applications" className="container mx-auto px-4 pb-20 scroll-mt-[320px]">
-        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Typical Applications</h2>
+        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Typische Anwendungen</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center pb-4">
@@ -383,7 +383,7 @@ const ProductArcturus = () => {
             </CardHeader>
             <CardContent>
               <CardDescription className="text-[#555] text-center">
-                IEEE-P2020 compliant testing for automotive camera systems, including bright sunlight simulation scenarios
+                IEEE-P2020-konforme Tests für automotive Kamerasysteme, einschließlich Simulation von hellem Sonnenlicht
               </CardDescription>
             </CardContent>
           </Card>
@@ -393,11 +393,11 @@ const ProductArcturus = () => {
               <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Smartphone className="text-[#3D7BA2]" size={32} />
               </div>
-              <CardTitle className="text-[#2D2D2D]">High-End Sensors</CardTitle>
+              <CardTitle className="text-[#2D2D2D]">High-End-Sensoren</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-[#555] text-center">
-                Testing at or close to sensor saturation with high dynamic range configurations and maximum intensity
+                Tests bei oder nahe der Sensorsättigung mit High Dynamic Range-Konfigurationen und maximaler Intensität
               </CardDescription>
             </CardContent>
           </Card>
@@ -407,11 +407,11 @@ const ProductArcturus = () => {
               <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="text-[#3D7BA2]" size={32} />
               </div>
-              <CardTitle className="text-[#2D2D2D]">HDR Scene Creation</CardTitle>
+              <CardTitle className="text-[#2D2D2D]">HDR-Szenenerstellung</CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-[#555] text-center">
-                Create real HDR scenes when combining with other Vega devices for comprehensive testing scenarios
+                Erstellen Sie echte HDR-Szenen in Kombination mit anderen Vega-Geräten für umfassende Testszenarien
               </CardDescription>
             </CardContent>
           </Card>
@@ -420,7 +420,7 @@ const ProductArcturus = () => {
 
       {/* Product Image Gallery */}
       <section id="gallery" className="container mx-auto px-4 pb-20 scroll-mt-[310px]">
-        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-12 text-center">Product Gallery</h2>
+        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-12 text-center">Produktgalerie</h2>
         
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
@@ -433,28 +433,28 @@ const ProductArcturus = () => {
                 
                 <div className="space-y-4 text-[#555] leading-relaxed">
                   <p>
-                    The core of Arcturus technology is the high-power LED module, which generates 
-                    more than enough intensity to challenge today's most sensitive image sensors. 
-                    The system is driven by a high-stability, continuous-wave DC power supply 
-                    within a temperature-controlled housing.
+                    Der Kern der Arcturus-Technologie ist das Hochleistungs-LED-Modul, das 
+                    mehr als genug Intensität erzeugt, um die empfindlichsten Bildsensoren von heute herauszufordern. 
+                    Das System wird von einem hochstabilen, kontinuierlichen DC-Netzteil 
+                    in einem temperaturkontrollierten Gehäuse angetrieben.
                   </p>
                   
                   <p>
-                    The Arcturus LED System is designed to maximize illumination efficiency 
-                    within a large field of view, ensuring the highest possible stability 
-                    for automotive camera testing. It operates with flicker-free DC technology, 
-                    allowing users to precisely control intensity over a vast dynamic range.
+                    Das Arcturus LED-System ist darauf ausgelegt, die Beleuchtungseffizienz 
+                    in einem großen Sichtfeld zu maximieren und dabei höchste Stabilität 
+                    für automotive Kameratests zu gewährleisten. Es arbeitet mit flimmerfreier DC-Technologie 
+                    und ermöglicht Benutzern, die Intensität über einen weiten Dynamikbereich präzise zu steuern.
                   </p>
                   
                   <p>
-                    Arcturus is best suited for testing high-end sensors that require 
-                    maximum illuminance levels. It is particularly effective for measuring 
-                    automotive camera systems according to IEEE-P2020 standards, while 
-                    rapidly varying signals can be captured with precision timing control.
+                    Arcturus eignet sich am besten zum Testen von High-End-Sensoren, die 
+                    maximale Beleuchtungsstärken erfordern. Es ist besonders effektiv für die Messung 
+                    von automotive Kamerasystemen nach IEEE-P2020-Standards, während 
+                    sich schnell ändernde Signale mit präziser Zeitsteuerung erfasst werden können.
                   </p>
                   
                   <p className="font-medium text-[#2D2D2D]">
-                    The illumination efficiency is typically up to 1 Mcd/m².
+                    Die Beleuchtungseffizienz beträgt typischerweise bis zu 1 Mcd/m².
                   </p>
                 </div>
               </div>
@@ -586,9 +586,9 @@ const ProductArcturus = () => {
             />
           </div>
           <div className="p-6">
-            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-3">Professional Laboratory Installation</h3>
+            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-3">Professionelle Laborinstallation</h3>
             <p className="text-[#555] leading-relaxed">
-              Typical Arcturus installation in automotive camera testing laboratory, showing uniform illumination pattern across the test chart area with precise color reproduction capabilities. The setup demonstrates how Arcturus integrates seamlessly into existing test environments for IEEE-P2020 compliant automotive camera testing.
+              Typische Arcturus-Installation in einem automotive Kameratest-Labor, die ein gleichmäßiges Beleuchtungsmuster über den Testtafelbereich mit präzisen Farbwiedergabefähigkeiten zeigt. Der Aufbau demonstriert, wie sich Arcturus nahtlos in bestehende Testumgebungen für IEEE-P2020-konforme automotive Kameratests integriert.
             </p>
           </div>
         </div>
@@ -596,7 +596,7 @@ const ProductArcturus = () => {
 
       {/* Related Downloads */}
       <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[260px]">
-        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Related Downloads</h2>
+        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Verwandte Downloads</h2>
         <div className="grid md:grid-cols-4 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
@@ -615,7 +615,7 @@ const ProductArcturus = () => {
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Arcturus_Lightsource-Datenblatt.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download PDF
+                PDF Download
               </Button>
             </CardContent>
           </Card>
@@ -629,7 +629,7 @@ const ProductArcturus = () => {
             </CardHeader>
             <CardContent className="text-center">
               <CardDescription className="text-[#555] mb-4">
-                Complete English datasheet with technical specifications
+                Vollständiges englisches Datenblatt mit technischen Spezifikationen
               </CardDescription>
               <Button 
                 variant="outline" 
@@ -637,7 +637,7 @@ const ProductArcturus = () => {
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Arcturus_Lightsource-Datasheet.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download PDF
+                PDF Download
               </Button>
             </CardContent>
           </Card>
@@ -659,7 +659,7 @@ const ProductArcturus = () => {
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Lightcube-Controller-Datenblatt.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download PDF
+                PDF Download
               </Button>
             </CardContent>
           </Card>
@@ -673,7 +673,7 @@ const ProductArcturus = () => {
             </CardHeader>
             <CardContent className="text-center">
               <CardDescription className="text-[#555] mb-4">
-                English datasheet for Lightcube Controller specifications
+                Englisches Datenblatt für Lightcube Controller Spezifikationen
               </CardDescription>
               <Button 
                 variant="outline" 
@@ -681,7 +681,7 @@ const ProductArcturus = () => {
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Lightcube-Controller-Datasheet.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download PDF
+                PDF Download
               </Button>
             </CardContent>
           </Card>
@@ -691,12 +691,12 @@ const ProductArcturus = () => {
       {/* CTA Section */}
       <section className="container mx-auto px-4 pb-20">
         <div className="bg-[#3D7BA2] rounded-xl text-white text-center p-12">
-          <h2 className="text-3xl font-bold mb-4">Talk to Our Lighting Specialists</h2>
+          <h2 className="text-3xl font-bold mb-4">Sprechen Sie mit unseren Beleuchtungsspezialisten</h2>
           <p className="text-xl mb-8 opacity-90">
-            Get expert advice on configuring the Arcturus for your specific testing requirements.
+            Erhalten Sie Expertenberatung zur Konfiguration von Arcturus für Ihre spezifischen Testanforderungen.
           </p>
           <Button className="bg-white text-[#3D7BA2] hover:bg-gray-50 px-8 py-3 text-lg font-semibold">
-            Schedule Consultation
+            Beratung vereinbaren
           </Button>
         </div>
       </section>
