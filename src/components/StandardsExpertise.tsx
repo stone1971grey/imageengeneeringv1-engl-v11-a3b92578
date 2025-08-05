@@ -90,22 +90,28 @@ const StandardsExpertise = () => {
           </p>
         </div>
 
-        {/* Organizations Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {organizations.map((org, index) => (
-            <Card key={index} className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-xl font-bold text-blue-600">{org.name}</span>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{org.name}</h3>
-                <p className="text-sm text-gray-600 mb-3">{org.fullName}</p>
-                <Badge variant="outline" className="text-xs">
-                  {org.role}
-                </Badge>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Organizations Grid with Connecting Arrows */}
+        <div className="relative mb-16">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {organizations.map((org, index) => (
+              <Card key={index} className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 relative">
+                <CardContent className="p-6 text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-xl font-bold text-blue-600">{org.name}</span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{org.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{org.fullName}</p>
+                </CardContent>
+                
+                {/* Connecting Arrows */}
+                {index < organizations.length - 1 && (
+                  <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
+                    <ArrowRight className="w-6 h-6 text-teal-500" />
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* Standards List */}
