@@ -12,7 +12,11 @@ const RegularNavigation = () => {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-            <img src={logoIE} alt="Image Engineering" className="h-16 brightness-0 invert" />
+            <img 
+              src={logoIE} 
+              alt="Image Engineering" 
+              className="h-12 md:h-16 w-auto object-contain brightness-0 invert" 
+            />
           </Link>
           
           {/* Desktop Navigation */}
