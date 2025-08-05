@@ -471,7 +471,7 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <Link to="/products">
-                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Products</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Produkte</NavigationMenuTrigger>
                   </Link>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
@@ -568,7 +568,7 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Resources</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ressourcen</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
                     <div className="bg-[#f3f3f3] p-6 w-[400px]">
                       <div className="flex gap-8 h-[200px]">
@@ -600,7 +600,7 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">About</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Über uns</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
                     <div className="bg-[#f3f3f3] p-6 w-[300px]">
                       <div className="flex gap-8 h-[200px]">
@@ -621,7 +621,7 @@ const Navigation = () => {
             </NavigationMenu>
             
             <Button variant="default" className="bg-gradient-primary hover:bg-white hover:text-black transition-all duration-300 ml-4 text-lg">
-              Contact
+              Kontakt
             </Button>
           </div>
 
