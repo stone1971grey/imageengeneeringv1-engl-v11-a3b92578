@@ -1,9 +1,8 @@
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
-import { Camera, Monitor, Zap, Cpu, Target, Settings, ArrowRight, Calendar, MapPin, Download, ExternalLink, Package, Lightbulb, Puzzle } from "lucide-react";
+import { Camera, Monitor, Zap, Cpu, Target, Settings, ArrowRight, Calendar, MapPin, Download, Package, Lightbulb, Puzzle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Link } from "react-router-dom";
 import arcturusHero from "@/assets/arcturus-hero-professional.jpg";
 import ibcBanner from "@/assets/ibc.png";
 import customChart from "@/assets/custom-chart.png";
@@ -67,29 +66,6 @@ const Products = () => {
     }
   ];
 
-  const featuredProducts = [
-    {
-      name: "Arcturus LED System",
-      description: "Revolutionary LED lighting system with unmatched uniformity and color accuracy",
-      features: ["99.5% Uniformity", "Full Spectrum", "Motorized Control", "HDR Support"],
-      image: arcturusHero,
-      link: "/product-arcturus"
-    },
-    {
-      name: "iQ-Analyzer Pro",
-      description: "Comprehensive image quality analysis software for professional applications",
-      features: ["Automated Analysis", "Custom Reports", "Batch Processing", "API Integration"],
-      image: arcturusHero,
-      link: "#"
-    },
-    {
-      name: "Vega Lightbox",
-      description: "Compact yet powerful lighting solution for laboratory environments",
-      features: ["Compact Design", "Precise Control", "Multi-Wavelength", "Lab Integration"],
-      image: arcturusHero,
-      link: "#"
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -274,69 +250,6 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-32 bg-gradient-to-b from-white to-blue-50/30">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
-              Ausgewählte Produkte
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-              Unsere Flaggschiff-Lösungen, die neue Standards in der Branche setzen.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {featuredProducts.map((product, index) => (
-              <Card 
-                key={index}
-                className="overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-blue-100"
-                style={{ 
-                  animationDelay: `${index * 200}ms`,
-                  animation: 'fade-in 0.8s ease-out both'
-                }}
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img 
-                    src={product.image} 
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/60 to-transparent"></div>
-                </div>
-                
-                <div className="p-8">
-                  <h3 className="font-bold text-xl text-foreground mb-3">
-                    {product.name}
-                  </h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    {product.description}
-                  </p>
-                  
-                  <div className="grid grid-cols-2 gap-2 mb-6">
-                    {product.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center text-sm text-muted-foreground">
-                        <Settings className="w-3 h-3 mr-2 text-blue-500" />
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    asChild
-                  >
-                    <Link to={product.link}>
-                      Mehr erfahren
-                      <ExternalLink className="ml-2 w-4 h-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-r from-blue-600 to-blue-800">
