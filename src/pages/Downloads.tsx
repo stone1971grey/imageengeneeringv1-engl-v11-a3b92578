@@ -13,24 +13,24 @@ const Downloads = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
 
   const documentTypes = [
-    { id: "pdf", label: "PDF Documents" },
-    { id: "video", label: "Video Tutorials" },
-    { id: "code", label: "Code Samples" },
-    { id: "image", label: "Technical Diagrams" }
+    { id: "pdf", label: "PDF-Dokumente" },
+    { id: "video", label: "Video-Tutorials" },
+    { id: "code", label: "Code-Beispiele" },
+    { id: "image", label: "Technische Diagramme" }
   ];
 
   const products = [
-    { value: "all", label: "All Products" },
+    { value: "all", label: "Alle Produkte" },
     { value: "adas", label: "ADAS Test Suite" },
-    { value: "analytics", label: "Image Analytics" },
-    { value: "calibration", label: "Calibration Tools" }
+    { value: "analytics", label: "Bildanalytik" },
+    { value: "calibration", label: "Kalibrierungs-Tools" }
   ];
 
   const languages = [
-    { value: "all", label: "All Languages" },
-    { value: "en", label: "English" },
-    { value: "de", label: "German" },
-    { value: "fr", label: "French" }
+    { value: "all", label: "Alle Sprachen" },
+    { value: "en", label: "Englisch" },
+    { value: "de", label: "Deutsch" },
+    { value: "fr", label: "Französisch" }
   ];
 
   const files = [
@@ -151,10 +151,10 @@ const Downloads = () => {
             <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-downloads-text leading-[0.9] tracking-tight mb-6">
               Downloads &
               <br />
-              <span className="font-medium">Resources</span>
+              <span className="font-medium">Ressourcen</span>
             </h1>
             <p className="text-lg text-scandi-grey font-light">
-              Access technical documentation, tutorials, and development resources for our image processing solutions.
+              Zugriff auf technische Dokumentationen, Tutorials und Entwicklungsressourcen für unsere Bildverarbeitungslösungen.
             </p>
           </div>
         </div>
@@ -167,7 +167,7 @@ const Downloads = () => {
             
             {/* Document Types */}
             <div className="flex-1">
-              <label className="block text-sm font-medium text-downloads-text mb-3">Document Type</label>
+              <label className="block text-sm font-medium text-downloads-text mb-3">Dokumenttyp</label>
               <div className="flex flex-wrap gap-4">
                 {documentTypes.map((type) => (
                   <div key={type.id} className="flex items-center space-x-2">
@@ -187,7 +187,7 @@ const Downloads = () => {
 
             {/* Product Filter */}
             <div className="w-full lg:w-48">
-              <label className="block text-sm font-medium text-downloads-text mb-3">Product</label>
+              <label className="block text-sm font-medium text-downloads-text mb-3">Produkt</label>
               <Select value={selectedProduct} onValueChange={setSelectedProduct}>
                 <SelectTrigger className="bg-scandi-white border-downloads-border text-downloads-text">
                   <SelectValue />
@@ -204,7 +204,7 @@ const Downloads = () => {
 
             {/* Language Filter */}
             <div className="w-full lg:w-48">
-              <label className="block text-sm font-medium text-downloads-text mb-3">Language</label>
+              <label className="block text-sm font-medium text-downloads-text mb-3">Sprache</label>
               <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
                 <SelectTrigger className="bg-scandi-white border-downloads-border text-downloads-text">
                   <SelectValue />
@@ -226,7 +226,7 @@ const Downloads = () => {
       <div className="container mx-auto px-6 py-12">
         <div className="mb-6">
           <p className="text-sm text-scandi-grey">
-            {filteredFiles.length} {filteredFiles.length === 1 ? 'file' : 'files'} found
+            {filteredFiles.length} {filteredFiles.length === 1 ? 'Datei' : 'Dateien'} gefunden
           </p>
         </div>
 
@@ -267,7 +267,7 @@ const Downloads = () => {
                         size="sm"
                         className="border-soft-blue text-soft-blue hover:bg-soft-blue hover:text-white"
                       >
-                        Request Access
+                        Zugriff anfordern
                       </Button>
                     ) : (
                       <Button
@@ -275,7 +275,7 @@ const Downloads = () => {
                         className="bg-soft-blue hover:bg-soft-blue/90 text-white group/btn"
                       >
                         <Download className="h-4 w-4 mr-2 group-hover/btn:translate-y-0.5 transition-transform" />
-                        Download
+                        Herunterladen
                       </Button>
                     )}
                   </div>
@@ -288,8 +288,8 @@ const Downloads = () => {
         {filteredFiles.length === 0 && (
           <div className="text-center py-12">
             <File className="h-12 w-12 text-scandi-grey mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-downloads-text mb-2">No files found</h3>
-            <p className="text-scandi-grey">Try adjusting your filters to see more results.</p>
+            <h3 className="text-lg font-medium text-downloads-text mb-2">Keine Dateien gefunden</h3>
+            <p className="text-scandi-grey">Versuchen Sie, Ihre Filter anzupassen, um mehr Ergebnisse zu sehen.</p>
           </div>
         )}
       </div>

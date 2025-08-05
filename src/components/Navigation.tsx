@@ -110,53 +110,53 @@ const Navigation = () => {
 
   // Solution data mapping  
   const solutionData = {
-    "Camera Quality Validation": {
+    "Kamera-Qualitätsvalidierung": {
       image: industryPhotography,
-      description: "For camera manufacturers who need precise lighting systems and test charts.",
-      subline: "Suitable for: Consumer & Professional Cameras"
+      description: "Für Kamerahersteller, die präzise Beleuchtungssysteme und Testcharts benötigen.",
+      subline: "Geeignet für: Consumer & Professional Kameras"
     },
     "ADAS Testing / Automotive Vision": {
       image: industryAutomotive,
-      description: "For developers of driver assistance systems who need stable lighting conditions.",
-      subline: "Suitable for: Automotive Labs, IEEE P2020"
+      description: "Für Entwickler von Fahrerassistenzsystemen, die stabile Beleuchtungsbedingungen benötigen.",
+      subline: "Geeignet für: Automotive Labs, IEEE P2020"
     },
-    "Test Environments for Smartphones & Displays": {
+    "Testumgebungen für Smartphones & Displays": {
       image: industryMobile,
-      description: "For OEMs and research testing color reproduction and sharpness.",
-      subline: "Suitable for: Mobile Industry, VCX Testing"
+      description: "Für OEMs und Forschung bei Tests der Farbwiedergabe und Schärfe.",
+      subline: "Geeignet für: Mobile Industry, VCX Testing"
     },
-    "Microscopy & Medical Imaging": {
+    "Mikroskopie & Medizinische Bildgebung": {
       image: industryMedical,
-      description: "For medical technology & life sciences.",
-      subline: "Suitable for: Medical Devices, Endoscopy"
+      description: "Für Medizintechnik & Life Sciences.",
+      subline: "Geeignet für: Medizinische Geräte, Endoskopie"
     },
-    "ISO and IEEE Compliant Test Setups": {
+    "ISO und IEEE konforme Test-Setups": {
       image: industryLabTesting,
-      description: "For companies requiring standards-compliant environments.",
-      subline: "Suitable for: Standards Compliance, Labs"
+      description: "Für Unternehmen, die standards-konforme Umgebungen benötigen.",
+      subline: "Geeignet für: Standards Compliance, Labs"
     }
   };
 
   const solutionPackages = {
     "Arcturus LED + Vega Software + Test Charts": {
       image: arcturusMainProduct,
-      description: "Complete solution for lighting tests",
+      description: "Komplettlösung für Beleuchtungstests",
       subline: "Hardware + Software + Charts Bundle"
     },
-    "Camera Calibration Package": {
+    "Kamera-Kalibrierungs-Paket": {
       image: customChart,
-      description: "Lighting system, charts, software – specially for calibrated testing",
-      subline: "Calibration Complete Solution"
+      description: "Beleuchtungssystem, Charts, Software – speziell für kalibrierte Tests",
+      subline: "Kalibrierungs-Komplettlösung"
     },
-    "Lab Complete Solution": {
+    "Labor-Komplettlösung": {
       image: industryLabTesting,
-      description: "For research institutions with hardware + analysis",
-      subline: "Research Lab Complete Setup"
+      description: "Für Forschungseinrichtungen mit Hardware + Analyse",
+      subline: "Forschungslabor Komplett-Setup"
     },
-    "Spectral Measurement & Analysis Set": {
+    "Spektrale Mess- & Analyse-Set": {
       image: iqAnalyzerIntro,
-      description: "Light source + evaluation + export functions",
-      subline: "Spectral Analysis Complete Kit"
+      description: "Lichtquelle + Auswertung + Export-Funktionen",
+      subline: "Spektralanalyse Komplett-Kit"
     }
   };
 
@@ -186,11 +186,11 @@ const Navigation = () => {
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
+                            onMouseEnter={() => setHoveredSolution("Kamera-Qualitätsvalidierung")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-5 w-5" />
-                            <span>Camera Quality Validation</span>
+                            <span>Kamera-Qualitätsvalidierung</span>
                           </div>
                           <Link 
                             to="/automotive"
@@ -203,27 +203,27 @@ const Navigation = () => {
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
+                            onMouseEnter={() => setHoveredSolution("Testumgebungen für Smartphones & Displays")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-6 w-6" />
-                            <span>Test Environments for Smartphones & Displays</span>
+                            <span>Testumgebungen für Smartphones & Displays</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
+                            onMouseEnter={() => setHoveredSolution("Mikroskopie & Medizinische Bildgebung")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-5 w-5" />
-                            <span>Microscopy & Medical Imaging</span>
+                            <span>Mikroskopie & Medizinische Bildgebung</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
+                            onMouseEnter={() => setHoveredSolution("ISO und IEEE konforme Test-Setups")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-5 w-5" />
-                            <span>ISO and IEEE Compliant Test Setups</span>
+                            <span>ISO und IEEE konforme Test-Setups</span>
                           </div>
                         </div>
                         
@@ -245,27 +245,27 @@ const Navigation = () => {
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Camera Calibration Package")}
+                            onMouseEnter={() => setHoveredSolution("Kamera-Kalibrierungs-Paket")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Settings className="h-5 w-5" />
-                            <span>Camera Calibration Package</span>
+                            <span>Kamera-Kalibrierungs-Paket</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Lab Complete Solution")}
+                            onMouseEnter={() => setHoveredSolution("Labor-Komplettlösung")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Microscope className="h-5 w-5" />
-                            <span>Lab Complete Solution</span>
+                            <span>Labor-Komplettlösung</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Spectral Measurement & Analysis Set")}
+                            onMouseEnter={() => setHoveredSolution("Spektrale Mess- & Analyse-Set")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <BarChart3 className="h-5 w-5" />
-                            <span>Spectral Measurement & Analysis Set</span>
+                            <span>Spektrale Mess- & Analyse-Set</span>
                           </div>
                         </div>
                       </div>
@@ -312,19 +312,19 @@ const Navigation = () => {
                         <div className="space-y-4 flex-1">
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Photography")}
+                            onMouseEnter={() => setHoveredIndustry("Fotografie")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Camera className="h-6 w-6" />
-                            <span>Photography</span>
+                            <span>Fotografie</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
+                            onMouseEnter={() => setHoveredIndustry("Mobiltelefone")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Smartphone className="h-6 w-6" />
-                            <span>Mobile Phones</span>
+                            <span>Mobiltelefone</span>
                           </div>
                           <Link 
                             to="/automotive" 
@@ -350,11 +350,11 @@ const Navigation = () => {
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Security / Surveillance")}
+                            onMouseEnter={() => setHoveredIndustry("Sicherheit / Überwachung")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Shield className="h-6 w-6" />
-                            <span>Security / Surveillance</span>
+                            <span>Sicherheit / Überwachung</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -371,19 +371,19 @@ const Navigation = () => {
                         <div className="space-y-4 flex-1">
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
+                            onMouseEnter={() => setHoveredIndustry("Medizin / Endoskopie")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Stethoscope className="h-6 w-6" />
-                            <span>Medical / Endoscopy</span>
+                            <span>Medizin / Endoskopie</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Scanning & Archiving")}
+                            onMouseEnter={() => setHoveredIndustry("Scannen & Archivierung")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <ScanLine className="h-6 w-6" />
-                            <span>Scanning & Archiving</span>
+                            <span>Scannen & Archivierung</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"

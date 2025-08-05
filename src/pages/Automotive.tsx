@@ -20,23 +20,23 @@ const Automotive = () => {
 
   const applications = [
     {
-      title: "Camera testing for ADAS systems",
-      description: "Comprehensive validation of advanced driver assistance cameras for safety compliance",
+      title: "Kamera-Tests für ADAS-Systeme",
+      description: "Umfassende Validierung von Fahrerassistenz-Kameras für Sicherheitskonformität",
       icon: Camera
     },
     {
-      title: "High-End Sensors testing",
-      description: "Precision LED lighting for testing sophisticated sensor systems and components",
+      title: "High-End Sensor-Tests",
+      description: "Präzisions-LED-Beleuchtung für Tests anspruchsvoller Sensorsysteme und Komponenten",
       icon: TestTube
     },
     {
-      title: "HDR Scene Creation",
-      description: "Advanced lighting control for creating high dynamic range test scenarios",
+      title: "HDR-Szenen-Erstellung",
+      description: "Erweiterte Beleuchtungssteuerung für die Erstellung von High Dynamic Range Testszenarien",
       icon: Monitor
     },
     {
-      title: "Low-light performance testing",
-      description: "Critical validation for night driving and challenging lighting conditions",
+      title: "Schwachlicht-Leistungstests",
+      description: "Kritische Validierung für Nachtfahrten und herausfordernde Beleuchtungsbedingungen",
       icon: Camera
     }
   ];
@@ -71,7 +71,7 @@ const Automotive = () => {
       <Navigation />
       <AnnouncementBanner 
         message="Automotive Vision Excellence"
-        ctaText="Learn more"
+        ctaText="Mehr erfahren"
         ctaLink="#"
         icon="calendar"
       />
@@ -89,14 +89,14 @@ const Automotive = () => {
             <div className="space-y-8 lg:pr-8">
               <div>
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
-                  Image Quality
+                  Bildqualität
                   <br />
-                  <span className="font-medium text-soft-blue">for the Road</span>
+                  <span className="font-medium text-soft-blue">für die Straße</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                  Precision-engineered camera testing solutions 
-                  for automotive safety and innovation.
+                  Präzisions-entwickelte Kamera-Testlösungen 
+                  für Fahrzeugsicherheit und Innovation.
                 </p>
               </div>
               
@@ -162,10 +162,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Key Applications
+              Hauptanwendungen
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Essential testing solutions for automotive camera systems
+              Wesentliche Testlösungen für automotive Kamerasysteme
             </p>
           </div>
 

@@ -19,49 +19,49 @@ const Products = () => {
     {
       icon: Camera,
       name: "Charts",
-      description: "Professional test charts and patterns for image quality testing and calibration",
+      description: "Professionelle Testcharts und Muster für Bildqualitätstests und Kalibrierung",
       image: customChart,
       link: "#charts"
     },
     {
       icon: Zap,
-      name: "Equipment",
-      description: "High-precision testing equipment for image quality analysis",
+      name: "Geräte",
+      description: "Hochpräzise Testausrüstung für Bildqualitätsanalyse",
       image: arcturusMainProduct,
       link: "#equipment"
     },
     {
       icon: Monitor,
       name: "Software",
-      description: "Advanced software solutions for image analysis and quality control",
+      description: "Fortschrittliche Softwarelösungen für Bildanalyse und Qualitätskontrolle",
       image: iqAnalyzerIntro,
       link: "#software"
     },
     {
       icon: Package,
-      name: "Product Bundles",
-      description: "Complete testing packages combining hardware and software",
+      name: "Produktbündel",
+      description: "Komplette Testpakete mit Hardware und Software",
       image: productBundleIeee,
       link: "#bundles"
     },
     {
       icon: Lightbulb,
-      name: "Solutions",
-      description: "Complete lighting and illumination solutions for professional testing environments",
+      name: "Lösungen",
+      description: "Komplette Beleuchtungs- und Illuminationslösungen für professionelle Testumgebungen",
       image: iqLedIllumination,
       link: "#solutions"
     },
     {
       icon: Puzzle,
-      name: "Accessories",
-      description: "Professional accessories including chart cases, mounts, and calibration tools",
+      name: "Zubehör",
+      description: "Professionelles Zubehör einschließlich Chart-Koffer, Halterungen und Kalibrierungstools",
       image: chartCase,
       link: "#accessories"
     },
     {
       icon: Cpu,
-      name: "Technology",
-      description: "Latest innovations and cutting-edge technology in image quality measurement",
+      name: "Technologie",
+      description: "Neueste Innovationen und modernste Technologie in der Bildqualitätsmessung",
       image: technology2025,
       link: "#technology"
     }
@@ -95,8 +95,8 @@ const Products = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AnnouncementBanner 
-        message="New Product Launch: Arcturus LED System"
-        ctaText="Learn more"
+        message="Neuer Produktlaunch: Arcturus LED System"
+        ctaText="Mehr erfahren"
         ctaLink="/product-arcturus"
         icon="calendar"
       />
@@ -123,14 +123,14 @@ const Products = () => {
             {/* Main Headline */}
             <div className="mb-8">
               <h1 id="products-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
-                Innovation in
+                Innovation in der
                 <br />
-                <span className="font-medium text-blue-300">Image Technology</span>
+                <span className="font-medium text-blue-300">Bildtechnologie</span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl mx-auto">
-                Discover our comprehensive range of cutting-edge products designed 
-                to push the boundaries of image quality and precision testing.
+                Entdecken Sie unser umfassendes Sortiment modernster Produkte, die darauf ausgelegt sind, 
+                die Grenzen von Bildqualität und Präzisionstests zu verschieben.
               </p>
             </div>
 
@@ -140,7 +140,7 @@ const Products = () => {
                 size="lg" 
                 className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 text-lg"
               >
-                Explore Products
+                Produkte erkunden
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
               <Button 
@@ -148,7 +148,7 @@ const Products = () => {
                 size="lg" 
                 className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg"
               >
-                Download Catalog
+                Katalog herunterladen
                 <Download className="ml-2 w-5 h-5" />
               </Button>
             </div>
@@ -170,10 +170,10 @@ const Products = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="flex-1 text-center lg:text-left">
               <h2 className="text-2xl lg:text-3xl font-semibold text-foreground mb-3">
-                Meet us at IBC 2025
+                Treffen Sie uns auf der IBC 2025
               </h2>
               <p className="text-lg text-muted-foreground mb-4 max-w-2xl">
-                Book a meeting with us at IBC 2025 to get a tailored walkthrough of how we can help you streamline your media operations and stay ahead of changes.
+                Vereinbaren Sie ein Treffen mit uns auf der IBC 2025, um eine maßgeschneiderte Einführung darüber zu erhalten, wie wir Ihnen helfen können, Ihre Medienoperationen zu optimieren und Veränderungen voraus zu sein.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ const Products = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  <span>Amsterdam, Netherlands</span>
+                  <span>Amsterdam, Niederlande</span>
                 </div>
               </div>
             </div>
@@ -199,14 +199,14 @@ const Products = () => {
               size="lg" 
               className="bg-primary hover:bg-primary/90 text-white px-8"
             >
-              Book a Meeting
+              Termin vereinbaren
             </Button>
             <Button 
               variant="outline" 
               size="lg" 
               className="border-primary text-primary hover:bg-primary/5 px-8"
             >
-              Learn More
+              Mehr erfahren
             </Button>
           </div>
         </div>
@@ -217,10 +217,10 @@ const Products = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-black mb-6 tracking-tight">
-              Product Categories
+              Produktkategorien
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-              Comprehensive solutions for every aspect of image quality testing and analysis.
+              Umfassende Lösungen für jeden Aspekt von Bildqualitätstests und -analyse.
             </p>
           </div>
 
@@ -263,7 +263,7 @@ const Products = () => {
                       size="sm"
                       className="w-full bg-blue-200 text-black border border-blue-300 hover:bg-blue-300 hover:text-black transition-colors mt-auto"
                     >
-                      Learn More
+                      Mehr erfahren
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   </div>
@@ -279,10 +279,10 @@ const Products = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
-              Featured Products
+              Ausgewählte Produkte
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
-              Our flagship solutions that are setting new standards in the industry.
+              Unsere Flaggschiff-Lösungen, die neue Standards in der Branche setzen.
             </p>
           </div>
 
@@ -327,7 +327,7 @@ const Products = () => {
                     asChild
                   >
                     <Link to={product.link}>
-                      Learn More
+                      Mehr erfahren
                       <ExternalLink className="ml-2 w-4 h-4" />
                     </Link>
                   </Button>
@@ -342,24 +342,24 @@ const Products = () => {
       <section className="py-24 bg-gradient-to-r from-blue-600 to-blue-800">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your Testing?
+            Bereit, Ihre Tests zu transformieren?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Let our experts help you find the perfect solution for your specific requirements.
+            Lassen Sie unsere Experten Ihnen helfen, die perfekte Lösung für Ihre spezifischen Anforderungen zu finden.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
               className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg"
             >
-              Contact Sales
+              Vertrieb kontaktieren
             </Button>
             <Button 
               variant="outline" 
               size="lg" 
               className="border-white text-white hover:bg-white/10 px-8 py-4 text-lg"
             >
-              Request Demo
+              Demo anfordern
             </Button>
           </div>
         </div>
