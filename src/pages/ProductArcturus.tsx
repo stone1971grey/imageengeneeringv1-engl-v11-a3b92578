@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { ArrowLeft, Download, FileText, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, ChevronLeft, ChevronRight, Expand } from "lucide-react";
+import { ArrowLeft, Download, FileText, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, ChevronLeft, ChevronRight, Expand, X, Lightbulb, Monitor } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
@@ -366,6 +366,199 @@ const ProductArcturus = () => {
             <p className="text-[#555] leading-relaxed">
               Beinhaltet Analysen für CTA-, MMP/Flimmer- und CSNR-Messungen für umfassende Bildqualitätsbewertung.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Standards Compliance & KPIs */}
+      <section className="container mx-auto px-4 pb-20">
+        <div className="grid md:grid-cols-2 gap-8">
+          
+          {/* Standards Compliance */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-6">Unterstützte Standards</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="group p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors cursor-pointer">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-green-800">IEEE P2020</span>
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
+                <p className="text-sm text-green-700">Automotive Camera Standard</p>
+              </div>
+              
+              <div className="group p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-blue-800">ISO 12233</span>
+                  <CheckCircle className="w-5 h-5 text-blue-600" />
+                </div>
+                <p className="text-sm text-blue-700">Resolution Measurement</p>
+              </div>
+              
+              <div className="group p-4 bg-purple-50 rounded-lg border border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-purple-800">ISO 15739</span>
+                  <CheckCircle className="w-5 h-5 text-purple-600" />
+                </div>
+                <p className="text-sm text-purple-700">Noise Measurement</p>
+              </div>
+              
+              <div className="group p-4 bg-orange-50 rounded-lg border border-orange-200 hover:bg-orange-100 transition-colors cursor-pointer">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-orange-800">IEC 62676</span>
+                  <CheckCircle className="w-5 h-5 text-orange-600" />
+                </div>
+                <p className="text-sm text-orange-700">CCTV Standard</p>
+              </div>
+            </div>
+          </div>
+
+          {/* KPI Visualization */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-6">Leistungskennzahlen (KPIs)</h3>
+            <div className="space-y-4">
+              
+              <div className="group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-[#2D2D2D]">Maximale Leuchtdichte</span>
+                  <span className="text-sm text-[#555]">≥ 1Mcd/m²</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-700 h-2 rounded-full transition-all duration-1000 group-hover:from-blue-600 group-hover:to-blue-800" style={{width: '95%'}}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Branchenführend</p>
+              </div>
+
+              <div className="group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-[#2D2D2D]">Farbwiedergabeindex (CRI)</span>
+                  <span className="text-sm text-[#555]">≥ 95</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-gradient-to-r from-green-500 to-green-700 h-2 rounded-full transition-all duration-1000 group-hover:from-green-600 group-hover:to-green-800" style={{width: '98%'}}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Exzellent</p>
+              </div>
+
+              <div className="group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-[#2D2D2D]">Temperaturstabilität</span>
+                  <span className="text-sm text-[#555]">± 0.1°C</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-gradient-to-r from-purple-500 to-purple-700 h-2 rounded-full transition-all duration-1000 group-hover:from-purple-600 group-hover:to-purple-800" style={{width: '92%'}}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Hochpräzise</p>
+              </div>
+
+              <div className="group">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-medium text-[#2D2D2D]">Spektrale Genauigkeit</span>
+                  <span className="text-sm text-[#555]">± 2%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-gradient-to-r from-orange-500 to-orange-700 h-2 rounded-full transition-all duration-1000 group-hover:from-orange-600 group-hover:to-orange-800" style={{width: '90%'}}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Professionell</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Product Comparison */}
+      <section className="container mx-auto px-4 pb-20">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+          <h3 className="text-2xl font-semibold text-[#2D2D2D] mb-6 text-center">Produktvergleich</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-4 px-4 font-semibold text-[#2D2D2D]">Eigenschaft</th>
+                  <th className="text-center py-4 px-4 font-semibold text-[#2D2D2D] bg-blue-50">
+                    <div className="flex flex-col items-center">
+                      <Zap className="w-6 h-6 text-blue-600 mb-2" />
+                      <span>Arcturus</span>
+                    </div>
+                  </th>
+                  <th className="text-center py-4 px-4 font-semibold text-[#2D2D2D]">
+                    <div className="flex flex-col items-center">
+                      <Lightbulb className="w-6 h-6 text-gray-600 mb-2" />
+                      <span>Vega</span>
+                    </div>
+                  </th>
+                  <th className="text-center py-4 px-4 font-semibold text-[#2D2D2D]">
+                    <div className="flex flex-col items-center">
+                      <Monitor className="w-6 h-6 text-gray-600 mb-2" />
+                      <span>Standard LED</span>
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 text-[#555] font-medium">Max. Leuchtdichte</td>
+                  <td className="py-3 px-4 text-center bg-blue-50">
+                    <span className="inline-flex items-center text-blue-700 font-semibold">
+                      ≥ 1Mcd/m² <CheckCircle className="w-4 h-4 ml-2 text-green-600" />
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-center text-[#555]">500kcd/m²</td>
+                  <td className="py-3 px-4 text-center text-[#555]">100kcd/m²</td>
+                </tr>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 text-[#555] font-medium">CRI Wert</td>
+                  <td className="py-3 px-4 text-center bg-blue-50">
+                    <span className="inline-flex items-center text-blue-700 font-semibold">
+                      ≥ 95 <CheckCircle className="w-4 h-4 ml-2 text-green-600" />
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-center text-[#555]">≥ 90</td>
+                  <td className="py-3 px-4 text-center text-[#555]">80-85</td>
+                </tr>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 text-[#555] font-medium">IEEE P2020</td>
+                  <td className="py-3 px-4 text-center bg-blue-50">
+                    <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <X className="w-5 h-5 text-red-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 text-[#555] font-medium">Flimmerfrei</td>
+                  <td className="py-3 px-4 text-center bg-blue-50">
+                    <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <X className="w-5 h-5 text-red-500 mx-auto" />
+                  </td>
+                </tr>
+                <tr className="hover:bg-gray-50 transition-colors">
+                  <td className="py-3 px-4 text-[#555] font-medium">Automotive Einsatz</td>
+                  <td className="py-3 px-4 text-center bg-blue-50">
+                    <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <CheckCircle className="w-5 h-5 text-orange-500 mx-auto" />
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <X className="w-5 h-5 text-red-500 mx-auto" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div className="mt-6 text-center">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+              Detaillierten Vergleich anfordern
+            </Button>
           </div>
         </div>
       </section>

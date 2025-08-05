@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { Camera, Monitor, Zap, Cpu, Target, Settings, ArrowRight, Calendar, MapPin, Download, Package, Lightbulb, Puzzle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ProductSelectionHelper from "@/components/ProductSelectionHelper";
 import { Card } from "@/components/ui/card";
 import arcturusHero from "@/assets/arcturus-hero-professional.jpg";
 import ibcBanner from "@/assets/ibc.png";
@@ -275,6 +276,22 @@ const Products = () => {
               Demo anfordern
             </Button>
           </div>
+        </div>
+      </section>
+
+      {/* Interactive Product Selection Helper */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Produktauswahlhilfe
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Finden Sie die perfekte Lösung für Ihre spezifischen Anforderungen
+            </p>
+          </div>
+          
+          <ProductSelectionHelper />
         </div>
       </section>
 
