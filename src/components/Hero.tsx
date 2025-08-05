@@ -27,10 +27,10 @@ const Hero = () => {
       
       {/* Hero Content */}
       <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
+        <div className="flex items-center justify-center min-h-[80vh]">
           
-          {/* Left Content */}
-          <div className="space-y-8 lg:pr-8">
+          {/* Centered Content */}
+          <div className="text-center space-y-8 max-w-4xl">
             <div>
               <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
                 Wir entwickeln
@@ -38,7 +38,7 @@ const Hero = () => {
                 <span className="font-medium">Bildqualität</span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+              <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-2xl mx-auto">
                 Präzisionstests für Vision-Systeme der nächsten Generation. 
                 Von der Entwicklung bis zur Zertifizierung.
               </p>
@@ -55,7 +55,7 @@ const Hero = () => {
             </div>
 
             {/* Minimal stats */}
-            <div className="flex items-center space-x-12 pt-8">
+            <div className="flex items-center justify-center space-x-12 pt-8">
               <div>
                 <div className="text-2xl font-medium text-light-foreground">99.9%</div>
                 <div className="text-sm text-scandi-grey font-light">Genauigkeit</div>
@@ -68,39 +68,6 @@ const Hero = () => {
                 <div className="text-2xl font-medium text-light-foreground">100+</div>
                 <div className="text-sm text-scandi-grey font-light">Projekte</div>
               </div>
-            </div>
-          </div>
-
-          {/* Right Content - Enhanced with Animation */}
-          <div className="relative">
-            <div className="relative overflow-hidden rounded-lg shadow-soft">
-              {/* Animated glow effect behind image */}
-              <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
-              
-              <img 
-                src={precisionTestingHero}
-                alt="Precision Engineering Process"
-                className="w-full h-[500px] lg:h-[600px] object-cover relative z-10"
-              />
-              
-              {/* Video overlay simulation */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent z-20"></div>
-              
-              {/* Moving light beam effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_4s_ease-in-out_infinite] z-30"></div>
-              
-              {/* Play button overlay for video feeling */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300 z-40">
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                  <Play className="h-6 w-6 text-white ml-1" fill="currentColor" />
-                </div>
-              </div>
-            </div>
-            
-            {/* Floating stats */}
-            <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
-              <div className="text-sm text-scandi-grey font-light mb-1">Echtzeit-Verarbeitung</div>
-              <div className="text-2xl font-medium text-light-foreground">Live</div>
             </div>
           </div>
         </div>
