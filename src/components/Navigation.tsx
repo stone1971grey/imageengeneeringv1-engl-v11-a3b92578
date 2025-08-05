@@ -327,9 +327,9 @@ const Navigation = () => {
                         </div>
                       </div>
                       
-                      {/* Solution-Finder CTA */}
+                       {/* Solution-Finder CTA */}
                       <div className="bg-[#f3f3f3] px-6 pt-8 pb-8">
-                        <div className="bg-blue-600 hover:bg-blue-700 p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
+                        <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                           <div className="flex items-center gap-3 text-white">
                             <Search className="h-5 w-5" />
                             <span className="text-lg font-medium">Hilfe bei der Auswahl? → Lösungsfinder starten</span>
