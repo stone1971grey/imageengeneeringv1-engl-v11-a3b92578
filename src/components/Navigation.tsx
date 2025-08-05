@@ -187,7 +187,7 @@ const Navigation = () => {
             <img 
               src={logoIE} 
               alt="Image Engineering" 
-              className="h-12 md:h-16 w-auto object-contain brightness-0 invert" 
+              className="h-12 md:h-16 w-auto max-w-[200px] object-contain brightness-0 invert" 
             />
           </Link>
           
