@@ -16,14 +16,14 @@ const Hero = () => {
           <div className="space-y-8 lg:pr-8">
             <div>
               <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
-                Precision
+                Präzisions
                 <br />
                 <span className="font-medium">Vision</span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                Advanced image processing and computer vision solutions 
-                engineered for tomorrow's technologies.
+                Fortschrittliche Bildverarbeitung und Computer Vision Lösungen 
+                für die Technologien von morgen.
               </p>
             </div>
             
@@ -32,7 +32,7 @@ const Hero = () => {
                 size="lg"
                 className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
               >
-                Explore Solutions
+                Lösungen entdecken
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -41,15 +41,15 @@ const Hero = () => {
             <div className="flex items-center space-x-12 pt-8">
               <div>
                 <div className="text-2xl font-medium text-light-foreground">99.9%</div>
-                <div className="text-sm text-scandi-grey font-light">Accuracy</div>
+                <div className="text-sm text-scandi-grey font-light">Genauigkeit</div>
               </div>
               <div>
                 <div className="text-2xl font-medium text-light-foreground">50ms</div>
-                <div className="text-sm text-scandi-grey font-light">Response</div>
+                <div className="text-sm text-scandi-grey font-light">Reaktionszeit</div>
               </div>
               <div>
                 <div className="text-2xl font-medium text-light-foreground">100+</div>
-                <div className="text-sm text-scandi-grey font-light">Projects</div>
+                <div className="text-sm text-scandi-grey font-light">Projekte</div>
               </div>
             </div>
           </div>
@@ -76,7 +76,7 @@ const Hero = () => {
             
             {/* Floating stats */}
             <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
-              <div className="text-sm text-scandi-grey font-light mb-1">Real-time Processing</div>
+              <div className="text-sm text-scandi-grey font-light mb-1">Echtzeit-Verarbeitung</div>
               <div className="text-2xl font-medium text-light-foreground">Live</div>
             </div>
           </div>

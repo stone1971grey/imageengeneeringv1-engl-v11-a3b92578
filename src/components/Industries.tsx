@@ -15,49 +15,49 @@ const Industries = () => {
   const industries = [
     {
       icon: Camera,
-      name: "Photography",
-      description: "Digital cameras for professional and amateur applications"
+      name: "Fotografie",
+      description: "Digitalkameras für professionelle und Amateur-Anwendungen"
     },
     {
       icon: Smartphone,
-      name: "Mobile Phones",
-      description: "Image quality testing according to VCX standards"
+      name: "Mobiltelefone",
+      description: "Bildqualitätstests nach VCX-Standards"
     },
     {
       icon: Car,
       name: "Automotive & ADAS",
-      description: "Camera systems in vehicles, driver assistance and autonomous driving",
+      description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren",
       link: "/automotive"
     },
     {
       icon: Tv,
       name: "Broadcast & HDTV",
-      description: "Video transmission, TV cameras, color-accurate reproduction"
+      description: "Videoübertragung, TV-Kameras, farbgetreue Wiedergabe"
     },
     {
       icon: Shield,
-      name: "Security / Surveillance",
-      description: "CCTV systems, video surveillance"
+      name: "Sicherheit / Überwachung",
+      description: "CCTV-Systeme, Videoüberwachung"
     },
     {
       icon: Cog,
       name: "Machine Vision",
-      description: "Camera systems for inspection, robotics, quality control"
+      description: "Kamerasysteme für Inspektion, Robotik, Qualitätskontrolle"
     },
     {
       icon: Stethoscope,
-      name: "Medical / Endoscopy",
-      description: "Image quality in medical imaging and diagnostic systems"
+      name: "Medizin / Endoskopie",
+      description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen"
     },
     {
       icon: ScanLine,
-      name: "Scanning & Archiving",
-      description: "Quality assurance in digitization of documents, books, photos"
+      name: "Scannen & Archivierung",
+      description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos"
     },
     {
       icon: FlaskConical,
       name: "iQ‑Lab Testing",
-      description: "Independent laboratory services for numerous industries (e.g. Mobile, Automotive)"
+      description: "Unabhängige Labordienstleistungen für zahlreiche Branchen (z.B. Mobile, Automotive)"
     }
   ];
 
@@ -67,11 +67,11 @@ const Industries = () => {
         {/* Header */}
         <div className="text-center mb-20">
           <h2 className="text-4xl md:text-5xl font-bold text-light-foreground mb-6 tracking-tight">
-            Trusted Across Industries
+            Vertraut in allen Branchen
           </h2>
           <p className="text-xl text-light-muted max-w-2xl mx-auto font-light">
-            Our advanced image processing solutions power innovation 
-            in diverse sectors worldwide.
+            Unsere fortschrittlichen Bildverarbeitungslösungen treiben Innovationen 
+            in verschiedenen Sektoren weltweit voran.
           </p>
         </div>
 
@@ -130,10 +130,10 @@ const Industries = () => {
         {/* Bottom CTA */}
         <div className="text-center mt-20">
           <p className="text-scandi-grey mb-6 font-light">
-            Don't see your industry? We customize solutions for unique requirements.
+            Ihre Branche nicht dabei? Wir entwickeln maßgeschneiderte Lösungen für einzigartige Anforderungen.
           </p>
           <button className="inline-flex items-center text-accent-violet hover:text-light-foreground font-medium transition-colors duration-300 border-b border-accent-violet/30 hover:border-light-foreground/40 pb-1">
-            Explore Custom Solutions
+            Individuelle Lösungen entdecken
           </button>
         </div>
       </div>

@@ -9,27 +9,27 @@ const Services = () => {
     {
       icon: computerVisionIcon,
       title: "Computer Vision",
-      description: "Advanced object detection, recognition, and tracking systems for real-time applications.",
-      features: ["Real-time Processing", "Multi-object Detection", "3D Vision Systems"]
+      description: "Fortschrittliche Objekterkennung, -identifikation und -verfolgung für Echtzeitanwendungen.",
+      features: ["Echtzeit-Verarbeitung", "Multi-Objekt-Erkennung", "3D-Vision-Systeme"]
     },
     {
       icon: aiProcessingIcon,
-      title: "AI Image Processing",
-      description: "Machine learning-powered image enhancement, restoration, and intelligent analysis.",
-      features: ["Deep Learning Models", "Automated Enhancement", "Pattern Recognition"]
+      title: "KI-Bildverarbeitung",
+      description: "Machine Learning-basierte Bildverbesserung, -wiederherstellung und intelligente Analyse.",
+      features: ["Deep Learning Modelle", "Automatisierte Verbesserung", "Mustererkennung"]
     },
     {
       icon: analyticsIcon,
-      title: "Visual Analytics",
-      description: "Transform visual data into actionable insights with advanced analytics platforms.",
-      features: ["Predictive Analytics", "Custom Dashboards", "Real-time Monitoring"]
+      title: "Visuelle Analytik",
+      description: "Verwandeln Sie visuelle Daten in umsetzbare Erkenntnisse mit fortschrittlichen Analytics-Plattformen.",
+      features: ["Prädiktive Analytik", "Individuelle Dashboards", "Echtzeit-Überwachung"]
     }
   ];
 
   const capabilities = [
-    { icon: Camera, title: "High-Resolution Processing", desc: "Up to 8K image handling" },
-    { icon: Zap, title: "Lightning Fast", desc: "Sub-50ms processing times" },
-    { icon: Shield, title: "Enterprise Security", desc: "SOC 2 compliant infrastructure" }
+    { icon: Camera, title: "Hochauflösende Verarbeitung", desc: "Bis zu 8K Bildverarbeitung" },
+    { icon: Zap, title: "Blitzschnell", desc: "Unter 50ms Verarbeitungszeit" },
+    { icon: Shield, title: "Enterprise-Sicherheit", desc: "SOC 2 konforme Infrastruktur" }
   ];
 
   return (
@@ -37,12 +37,12 @@ const Services = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Precision-Engineered
-            <span className="bg-gradient-primary bg-clip-text text-transparent"> Solutions</span>
+            Präzisions-entwickelte
+            <span className="bg-gradient-primary bg-clip-text text-transparent"> Lösungen</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            From concept to deployment, we deliver cutting-edge image processing technologies 
-            that transform how you interact with visual data.
+            Von der Konzeption bis zur Umsetzung liefern wir modernste Bildverarbeitungstechnologien, 
+            die Ihre Interaktion mit visuellen Daten transformieren.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ const Services = () => {
                 </ul>
                 
                 <button className="flex items-center text-primary hover:text-primary-glow transition-colors group/btn">
-                  Learn More
+                  Mehr erfahren
                   <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                 </button>
               </CardContent>

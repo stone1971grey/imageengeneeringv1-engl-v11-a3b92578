@@ -18,7 +18,7 @@ const RegularNavigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <a href="/#services" className="text-muted-foreground hover:text-foreground transition-colors">
-              Services
+              Leistungen
             </a>
             <Link to="/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
               Automotive
@@ -27,13 +27,13 @@ const RegularNavigation = () => {
               Downloads
             </Link>
             <a href="/#technology" className="text-muted-foreground hover:text-foreground transition-colors">
-              Technology
+              Technologie
             </a>
             <a href="/#about" className="text-muted-foreground hover:text-foreground transition-colors">
-              About
+              Über uns
             </a>
             <Button variant="default" className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
-              Contact
+              Kontakt
             </Button>
           </div>
 
@@ -54,7 +54,7 @@ const RegularNavigation = () => {
           <div className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-3">
               <a href="/#services" className="text-muted-foreground hover:text-foreground transition-colors">
-                Services
+                Leistungen
               </a>
               <Link to="/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
                 Automotive
@@ -63,13 +63,13 @@ const RegularNavigation = () => {
                 Downloads
               </Link>
               <a href="/#technology" className="text-muted-foreground hover:text-foreground transition-colors">
-                Technology
+                Technologie
               </a>
               <a href="/#about" className="text-muted-foreground hover:text-foreground transition-colors">
-                About
+                Über uns
               </a>
               <Button variant="default" className="bg-gradient-primary w-fit">
-                Contact
+                Kontakt
               </Button>
             </div>
           </div>
