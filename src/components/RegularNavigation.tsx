@@ -1,0 +1,82 @@
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import logoIE from "@/assets/logo-ie.png";
+
+const RegularNavigation = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border py-12">
+      <div className="container mx-auto px-6">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <img src={logoIE} alt="Image Engineering" className="h-16 brightness-0 invert" />
+          </Link>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="/#services" className="text-muted-foreground hover:text-foreground transition-colors">
+              Services
+            </a>
+            <Link to="/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
+              Automotive
+            </Link>
+            <Link to="/downloads" className="text-muted-foreground hover:text-foreground transition-colors">
+              Downloads
+            </Link>
+            <a href="/#technology" className="text-muted-foreground hover:text-foreground transition-colors">
+              Technology
+            </a>
+            <a href="/#about" className="text-muted-foreground hover:text-foreground transition-colors">
+              About
+            </a>
+            <Button variant="default" className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
+              Contact
+            </Button>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="md:hidden py-4 border-t border-border">
+            <div className="flex flex-col space-y-3">
+              <a href="/#services" className="text-muted-foreground hover:text-foreground transition-colors">
+                Services
+              </a>
+              <Link to="/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
+                Automotive
+              </Link>
+              <Link to="/downloads" className="text-muted-foreground hover:text-foreground transition-colors">
+                Downloads
+              </Link>
+              <a href="/#technology" className="text-muted-foreground hover:text-foreground transition-colors">
+                Technology
+              </a>
+              <a href="/#about" className="text-muted-foreground hover:text-foreground transition-colors">
+                About
+              </a>
+              <Button variant="default" className="bg-gradient-primary w-fit">
+                Contact
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  );
+};
+
+export default RegularNavigation;
