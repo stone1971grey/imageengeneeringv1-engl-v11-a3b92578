@@ -196,7 +196,7 @@ const Navigation = () => {
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
-                      <div className="flex gap-6 p-6 h-[280px]">
+                      <div className="flex gap-6 p-6 h-[320px]">
                         {/* Left Column: Typische Anwendungen */}
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
@@ -246,7 +246,7 @@ const Navigation = () => {
                           </div>
                         </div>
                         
-                        <Separator orientation="vertical" className="bg-black h-60" />
+                        <Separator orientation="vertical" className="bg-black h-72" />
                         
                         {/* Middle Column: Vorkonfigurierte Lösungspakete */}
                         <div className="space-y-4 flex-1">
@@ -288,7 +288,7 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        <Separator orientation="vertical" className="bg-black h-60" />
+                        <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Right Column: Zielgruppen */}
                         <div className="space-y-4 flex-1">
