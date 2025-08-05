@@ -7,9 +7,9 @@ const Hero = () => {
     <section className="min-h-screen bg-scandi-white font-inter relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/30 to-accent-soft-blue/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/25 to-accent-soft-blue/25 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/20 to-soft-blue/20 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/50 to-accent-soft-blue/50 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/40 to-accent-soft-blue/40 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/35 to-soft-blue/35 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
       </div>
 
       {/* Hero Background Image with Ken Burns Effect */}
@@ -19,7 +19,7 @@ const Hero = () => {
           alt="Precision Engineering Process"
           className="w-full h-full object-cover animate-ken-burns opacity-40"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-scandi-white/70 via-scandi-white/50 to-scandi-white/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-scandi-white/60 via-scandi-white/40 to-scandi-white/20"></div>
       </div>
       
       {/* Navigation Spacer */}
