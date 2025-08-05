@@ -490,13 +490,13 @@ const Navigation = () => {
                             <Camera className="h-6 w-6" />
                             <span>Charts</span>
                           </div>
-                          <div 
+                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Equipment")}
+                            onMouseEnter={() => setHoveredProduct("Geräte")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Zap className="h-6 w-6" />
-                            <span>Equipment</span>
+                            <span>Geräte</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -511,42 +511,42 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-40" />
                         
                         <div className="space-y-4 flex-1">
-                          <div 
+                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Product Bundles")}
+                            onMouseEnter={() => setHoveredProduct("Produktbündel")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Package className="h-6 w-6" />
-                            <span>Product Bundles</span>
+                            <span>Produktbündel</span>
                           </div>
-                          <div 
+                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Solutions")}
+                            onMouseEnter={() => setHoveredProduct("Lösungen")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Lightbulb className="h-6 w-6" />
-                            <span>Solutions</span>
+                            <span>Lösungen</span>
                           </div>
                         </div>
                         
                         <Separator orientation="vertical" className="bg-black h-40" />
                         
                         <div className="space-y-4 flex-1">
-                          <div 
+                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Accessories")}
+                            onMouseEnter={() => setHoveredProduct("Zubehör")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Puzzle className="h-6 w-6" />
-                            <span>Accessories</span>
+                            <span>Zubehör</span>
                           </div>
-                          <div 
+                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Technology")}
+                            onMouseEnter={() => setHoveredProduct("Technologie")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Cpu className="h-6 w-6" />
-                            <span>Technology</span>
+                            <span>Technologie</span>
                           </div>
                         </div>
                       </div>
