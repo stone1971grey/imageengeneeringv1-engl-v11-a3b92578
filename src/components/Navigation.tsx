@@ -193,10 +193,10 @@ const Navigation = () => {
               <NavigationMenuList className="gap-x-8">
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ihre Lösung finden</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
-                      <div className="flex gap-6 p-6 h-[200px]">
+                      <div className="flex gap-6 p-6 h-[280px]">
                         {/* Left Column: Typische Anwendungen */}
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
@@ -246,7 +246,7 @@ const Navigation = () => {
                           </div>
                         </div>
                         
-                        <Separator orientation="vertical" className="bg-black h-40" />
+                        <Separator orientation="vertical" className="bg-black h-60" />
                         
                         {/* Middle Column: Vorkonfigurierte Lösungspakete */}
                         <div className="space-y-4 flex-1">
@@ -288,7 +288,7 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        <Separator orientation="vertical" className="bg-black h-40" />
+                        <Separator orientation="vertical" className="bg-black h-60" />
 
                         {/* Right Column: Zielgruppen */}
                         <div className="space-y-4 flex-1">
