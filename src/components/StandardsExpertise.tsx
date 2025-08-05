@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Award, CheckCircle, Users } from "lucide-react";
 import ieeeLogo from "@/assets/logo-ieee.png";
 import iecLogo from "@/assets/logo-iec.png";
+import isoLogo from "@/assets/logo-iso.jpg";
+import emvaLogo from "@/assets/logo-emva.jpg";
 
 const StandardsExpertise = () => {
   const standards = [
@@ -56,7 +58,7 @@ const StandardsExpertise = () => {
       name: "ISO",
       fullName: "International Organization for Standardization", 
       role: "Standards Implementation",
-      logo: null
+      logo: isoLogo
     },
     {
       name: "IEC",
@@ -68,7 +70,7 @@ const StandardsExpertise = () => {
       name: "EMVA",
       fullName: "European Machine Vision Association",
       role: "Standards Adoption",
-      logo: null
+      logo: emvaLogo
     }
   ];
 
