@@ -22,26 +22,12 @@ const ManufacturerSupplierShowcase = () => {
         <div className="relative">
           {/* Central Workflow Area */}
           <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 z-10">
-            <div className="flex items-center justify-center">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl p-6 shadow-lg">
-                <div className="text-center text-white">
-                  <div className="flex items-center justify-center gap-4 mb-2">
-                    <Search className="w-6 h-6" />
-                    <Camera className="w-6 h-6" />
-                    <FileCheck className="w-6 h-6" />
-                  </div>
-                  <div className="text-lg font-semibold">Third-Party Expertise</div>
-                  <div className="text-sm opacity-90">Customized Testing</div>
-                </div>
-              </div>
-            </div>
-            
             {/* Connection Arrows */}
             <div className="absolute left-1/4 top-1/2 transform -translate-y-1/2 -translate-x-12">
-              <ArrowRight className="w-8 h-8 text-emerald-500" />
+              <ArrowRight className="w-8 h-8 text-blue-500" />
             </div>
             <div className="absolute right-1/4 top-1/2 transform -translate-y-1/2 translate-x-12">
-              <ArrowRight className="w-8 h-8 text-emerald-500" />
+              <ArrowRight className="w-8 h-8 text-blue-500" />
             </div>
           </div>
 
