@@ -107,8 +107,8 @@ const StandardsExpertise = () => {
                   <div className="flex items-center justify-center mx-auto mb-4">
                     {org.logo ? (
                       <div 
-                        className="w-20 h-12 bg-no-repeat bg-center bg-contain"
-                        style={{ backgroundImage: `url(${org.logo})` }}
+                        className="w-50 h-12 bg-no-repeat bg-center bg-contain"
+                        style={{ backgroundImage: `url(${org.logo})`, maxWidth: '200px' }}
                         role="img"
                         aria-label={org.name}
                       />
