@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import IndustrySection from "@/components/IndustrySection";
 import Industries from "@/components/Industries";
 import Technology from "@/components/Technology";
+import StandardsExpertise from "@/components/StandardsExpertise";
 import Contact from "@/components/Contact";
 
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
       <IndustrySection />
       <Industries />
       <Technology />
+      <StandardsExpertise />
       <Contact />
     </div>
   );
