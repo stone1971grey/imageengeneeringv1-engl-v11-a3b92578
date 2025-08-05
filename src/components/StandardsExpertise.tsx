@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Award, CheckCircle, Users } from "lucide-react";
+import ieeeLogo from "@/assets/logo-ieee.png";
+import iecLogo from "@/assets/logo-iec.png";
 
 const StandardsExpertise = () => {
   const standards = [
@@ -47,22 +49,26 @@ const StandardsExpertise = () => {
     {
       name: "IEEE",
       fullName: "Institute of Electrical and Electronics Engineers",
-      role: "Active Member P2020 Working Group"
+      role: "Active Member P2020 Working Group",
+      logo: ieeeLogo
     },
     {
       name: "ISO",
       fullName: "International Organization for Standardization", 
-      role: "Standards Implementation"
+      role: "Standards Implementation",
+      logo: null
     },
     {
       name: "IEC",
       fullName: "International Electrotechnical Commission",
-      role: "Standards Compliance"
+      role: "Standards Compliance",
+      logo: iecLogo
     },
     {
       name: "EMVA",
       fullName: "European Machine Vision Association",
-      role: "Standards Adoption"
+      role: "Standards Adoption",
+      logo: null
     }
   ];
 
@@ -96,8 +102,12 @@ const StandardsExpertise = () => {
             {organizations.map((org, index) => (
               <Card key={index} className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 relative">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-xl font-bold text-blue-600">{org.name}</span>
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200">
+                    {org.logo ? (
+                      <img src={org.logo} alt={org.name} className="w-12 h-12 object-contain" />
+                    ) : (
+                      <span className="text-xl font-bold text-blue-600">{org.name}</span>
+                    )}
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{org.name}</h3>
                   <p className="text-sm text-gray-600 mb-3">{org.fullName}</p>
