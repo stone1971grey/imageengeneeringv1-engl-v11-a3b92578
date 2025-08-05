@@ -482,12 +482,12 @@ const Navigation = () => {
                       {/* Main navigation grid */}
                       <div className="flex gap-8 p-6 h-[200px]">
                         <div className="space-y-4 flex-1">
-                          <div 
+                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Charts")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
-                            <Camera className="h-6 w-6" />
+                            <Target className="h-6 w-6" />
                             <span>Charts</span>
                           </div>
                            <div 
@@ -495,7 +495,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredProduct("Geräte")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
-                            <Zap className="h-6 w-6" />
+                            <Camera className="h-6 w-6" />
                             <span>Geräte</span>
                           </div>
                           <div 
