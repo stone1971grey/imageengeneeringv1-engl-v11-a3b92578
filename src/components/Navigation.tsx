@@ -252,7 +252,7 @@ const Navigation = () => {
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Package className="h-6 w-6" />
-                            Vorkonfigurierte Lösungspakete
+                            Lösungspakete
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
