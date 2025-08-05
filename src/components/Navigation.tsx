@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search } from "lucide-react";
+import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
@@ -160,6 +160,25 @@ const Navigation = () => {
     }
   };
 
+  // Target groups data mapping
+  const targetGroupsData = {
+    "Hersteller": {
+      image: industryAutomotive,
+      description: "OEMs und Gerätehersteller, die Bildqualitätslösungen für ihre Produktentwicklung benötigen",
+      subline: "Für: Kamerahersteller, Automotive OEMs, Consumer Electronics"
+    },
+    "Zulieferer": {
+      image: industryMachineVision,
+      description: "Tier-1 und Tier-2 Zulieferer, die Komponenten und Systeme für ihre Kunden validieren",
+      subline: "Für: Automotive Suppliers, Sensor-Hersteller, Komponenten-Lieferanten"
+    },
+    "Forschungseinrichtungen": {
+      image: industryLabTesting,
+      description: "Universitäten und Forschungsinstitute für wissenschaftliche Untersuchungen und Standardentwicklung",
+      subline: "Für: Universitäten, Institute, R&D-Abteilungen"
+    }
+  };
+
   return (
     <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border py-12">
       <div className="container mx-auto px-6">
@@ -175,9 +194,9 @@ const Navigation = () => {
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ihre Lösung finden</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
-                    <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
+                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
-                      <div className="flex gap-8 p-6 h-[200px]">
+                      <div className="flex gap-6 p-6 h-[200px]">
                         {/* Left Column: Typische Anwendungen */}
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
@@ -229,7 +248,7 @@ const Navigation = () => {
                         
                         <Separator orientation="vertical" className="bg-black h-40" />
                         
-                        {/* Right Column: Vorkonfigurierte Lösungspakete */}
+                        {/* Middle Column: Vorkonfigurierte Lösungspakete */}
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Package className="h-6 w-6" />
@@ -268,6 +287,40 @@ const Navigation = () => {
                             <span>Spektrale Mess- & Analyse-Set</span>
                           </div>
                         </div>
+
+                        <Separator orientation="vertical" className="bg-black h-40" />
+
+                        {/* Right Column: Zielgruppen */}
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Users className="h-6 w-6" />
+                            Zielgruppen
+                          </h4>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Hersteller")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <Building className="h-5 w-5" />
+                            <span>Hersteller</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Zulieferer")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <Cog className="h-5 w-5" />
+                            <span>Zulieferer</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Forschungseinrichtungen")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <GraduationCap className="h-5 w-5" />
+                            <span>Forschungseinrichtungen</span>
+                          </div>
+                        </div>
                       </div>
                       
                       {/* Solution-Finder CTA */}
@@ -281,18 +334,18 @@ const Navigation = () => {
                       </div>
                       
                       {/* Image and description section */}
-                      {hoveredSolution && (solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages]) && (
+                      {hoveredSolution && (solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages] || targetGroupsData[hoveredSolution as keyof typeof targetGroupsData]) && (
                         <div className="bg-[#f3f3f3] p-4">
                           <div className="flex items-center gap-6 p-4 bg-white rounded">
                             <img 
-                              src={(solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages]).image} 
+                              src={(solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages] || targetGroupsData[hoveredSolution as keyof typeof targetGroupsData]).image} 
                               alt={hoveredSolution}
                               className="w-[190px] h-auto object-cover rounded"
                             />
                             <div className="text-black">
                               <h4 className="font-semibold text-xl">{hoveredSolution}</h4>
-                              <p className="text-lg text-gray-600">{(solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages]).description}</p>
-                              <p className="text-sm text-blue-600 mt-1">{(solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages]).subline}</p>
+                              <p className="text-lg text-gray-600">{(solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages] || targetGroupsData[hoveredSolution as keyof typeof targetGroupsData]).description}</p>
+                              <p className="text-sm text-blue-600 mt-1">{(solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages] || targetGroupsData[hoveredSolution as keyof typeof targetGroupsData]).subline}</p>
                             </div>
                           </div>
                         </div>
