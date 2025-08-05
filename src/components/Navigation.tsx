@@ -477,7 +477,7 @@ const Navigation = () => {
                   <Link to="/products">
                     <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Produkte</NavigationMenuTrigger>
                   </Link>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
                       <div className="flex gap-8 p-6 h-[200px]">
