@@ -138,8 +138,8 @@ const SolutionArcturusBundle = () => {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
-                {/* Floating bundle highlight - positioned exactly like automotive page */}
-                <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
+                {/* Floating bundle highlight - positioned within image bounds */}
+                <div className="absolute bottom-6 left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-10">
                   <div className="text-sm text-scandi-grey font-light mb-1">
                     Komplettpaket
                   </div>
