@@ -166,7 +166,7 @@ const InsideLab = () => {
             <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
               Inside the Lab
               <br />
-              <span className="text-soft-blue">Real Test Setups in Professional Environments</span>
+              <span className="text-soft-blue font-bold">Real Test Setups in Professional Environments</span>
             </h1>
             <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-3xl mx-auto">
               Erkunden Sie, wie Image Engineerings Testlösungen in realen Laborumgebungen eingesetzt werden. 
@@ -192,12 +192,12 @@ const InsideLab = () => {
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-4 right-4">
-                  <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm">
-                    <div className="flex items-center gap-1">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-2">
+                    <div className="flex items-center gap-2">
                       {setup.icon}
-                      <span className="text-xs font-medium">{setup.industry}</span>
+                      <h3 className="text-sm font-semibold text-gray-900">{setup.industry}</h3>
                     </div>
-                  </Badge>
+                  </div>
                 </div>
               </div>
               
@@ -209,12 +209,12 @@ const InsideLab = () => {
                   {setup.description}
                 </p>
                 
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Setup Details:</h4>
-                  <ul className="space-y-1">
+                <div className="space-y-3">
+                  <h4 className="text-base font-semibold text-gray-900 mb-3">Setup Details:</h4>
+                  <ul className="space-y-2">
                     {setup.details.map((detail, index) => (
-                      <li key={index} className="text-xs text-gray-500 flex items-center gap-2">
-                        <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
+                      <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                         {detail}
                       </li>
                     ))}
