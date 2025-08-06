@@ -214,8 +214,8 @@ const Navigation = () => {
             <img 
               src={logoIE} 
               alt="Image Engineering" 
-              className="h-12 md:h-16 w-auto max-w-[200px] object-contain brightness-0 invert" 
-              style={{ width: '200px' }}
+              className="h-12 md:h-16 w-auto max-w-[250px] object-contain brightness-0 invert" 
+              style={{ width: '250px' }}
             />
           </Link>
           
