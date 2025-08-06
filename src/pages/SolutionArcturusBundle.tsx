@@ -138,13 +138,13 @@ const SolutionArcturusBundle = () => {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
-                {/* Floating bundle highlight */}
-                <div className="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg border border-scandi-light-grey z-50">
-                  <div className="flex items-center gap-2 text-sm text-scandi-grey font-light mb-1">
-                    <Package className="h-4 w-4" />
+                {/* Floating bundle highlight - positioned within image */}
+                <div className="absolute bottom-4 left-4 bg-white rounded-xl shadow-lg border border-scandi-light-grey z-10 p-3 max-w-[80%] backdrop-blur-sm">
+                  <div className="flex items-center gap-2 text-xs text-scandi-grey font-light">
+                    <Package className="h-3 w-3" />
                     Komplettpaket
                   </div>
-                  <div className="text-2xl font-medium text-light-foreground">3-in-1 Lösung</div>
+                  <div className="text-lg font-semibold text-light-foreground mt-1">3-in-1 Lösung</div>
                 </div>
               </div>
             </div>
