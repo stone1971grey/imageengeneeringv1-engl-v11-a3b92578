@@ -211,10 +211,10 @@ const InsideLab = () => {
                 </p>
                 
                 <div className="space-y-3">
-                  <h4 className="text-base font-semibold text-gray-900 mb-3">Setup Details:</h4>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Setup Details:</h4>
                   <ul className="space-y-2">
                     {setup.details.map((detail, index) => (
-                      <li key={index} className="text-sm text-gray-600 flex items-center gap-2">
+                      <li key={index} className="text-lg text-gray-600 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                         {detail}
                       </li>
