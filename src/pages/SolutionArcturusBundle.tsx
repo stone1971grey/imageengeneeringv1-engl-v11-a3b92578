@@ -129,7 +129,27 @@ const SolutionArcturusBundle = () => {
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
-            {/* Left Content */}
+            {/* Left Product Image */}
+            <div className="relative">
+              <div className="relative overflow-hidden rounded-lg shadow-soft">
+                <img 
+                  src={arcturusSetup} 
+                  alt="Arcturus Komplettlösung"
+                  className="w-full h-[500px] lg:h-[600px] object-cover"
+                />
+                
+                {/* Floating bundle highlight */}
+                <div className="absolute bottom-6 right-6 bg-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
+                  <div className="flex items-center gap-2 text-sm text-scandi-grey font-light mb-1">
+                    <Package className="h-4 w-4" />
+                    Komplettpaket
+                  </div>
+                  <div className="text-2xl font-medium text-light-foreground">3-in-1 Lösung</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Content */}
             <div className="space-y-8">
               <div>
                 <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
@@ -161,26 +181,6 @@ const SolutionArcturusBundle = () => {
                 >
                   Technische Details
                 </Button>
-              </div>
-            </div>
-
-            {/* Right Product Image */}
-            <div className="relative">
-              <div className="relative overflow-hidden rounded-lg shadow-soft">
-                <img 
-                  src={arcturusSetup} 
-                  alt="Arcturus Komplettlösung"
-                  className="w-full h-[500px] lg:h-[600px] object-cover"
-                />
-                
-                {/* Floating bundle highlight */}
-                <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
-                  <div className="flex items-center gap-2 text-sm text-scandi-grey font-light mb-1">
-                    <Package className="h-4 w-4" />
-                    Komplettpaket
-                  </div>
-                  <div className="text-2xl font-medium text-light-foreground">3-in-1 Lösung</div>
-                </div>
               </div>
             </div>
           </div>
