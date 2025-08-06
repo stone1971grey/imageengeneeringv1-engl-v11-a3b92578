@@ -139,7 +139,7 @@ const SolutionArcturusBundle = () => {
                 />
                 
                 {/* Floating bundle highlight */}
-                <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
+                <div className="absolute bottom-4 left-4 bg-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
                   <div className="flex items-center gap-2 text-sm text-scandi-grey font-light mb-1">
                     <Package className="h-4 w-4" />
                     Komplettpaket
