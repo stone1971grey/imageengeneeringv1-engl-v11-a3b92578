@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
 import {
@@ -36,6 +36,28 @@ const Navigation = () => {
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [hoveredSolution, setHoveredSolution] = useState<string | null>(null);
+
+  // Preload all images for faster hover experience
+  useEffect(() => {
+    const preloadImages = () => {
+      // Collect all images from data objects
+      const allImages = [
+        ...Object.values(industryData).map(item => item.image),
+        ...Object.values(productData).map(item => item.image),
+        ...Object.values(solutionData).map(item => item.image),
+        ...Object.values(solutionPackages).map(item => item.image),
+        ...Object.values(targetGroupsData).map(item => item.image)
+      ];
+
+      // Preload each image
+      allImages.forEach(imageSrc => {
+        const img = new Image();
+        img.src = imageSrc;
+      });
+    };
+
+    preloadImages();
+  }, []);
 
   // Industry data mapping
   const industryData = {
