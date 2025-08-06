@@ -195,7 +195,7 @@ const InsideLab = () => {
                 <div className="absolute top-4 right-4">
                   <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-2">
                     <div className="flex items-center gap-2">
-                      {setup.icon}
+                      <div className="text-gray-900">{setup.icon}</div>
                       <h3 className="text-sm font-semibold text-gray-900">{setup.industry}</h3>
                     </div>
                   </div>
