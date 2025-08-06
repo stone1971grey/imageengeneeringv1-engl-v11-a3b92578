@@ -1,6 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Camera, Zap, Target, Microscope, Car, Smartphone, Shield, Monitor } from "lucide-react";
+import { Link } from "react-router-dom";
+import Navigation from "@/components/Navigation";
 
 // Import lab images
 import adasTesting from "@/assets/adas-testing.jpg";
@@ -17,133 +21,157 @@ const InsideLab = () => {
     {
       id: 1,
       image: arcturusSetupVega,
-      title: "Vega LED Illumination Setup",
-      description: "Vega LED + TE294 Chart + MMP-Test Configuration",
+      title: "Vega LED Beleuchtungsaufbau",
+      description: "Vega LED + TE294 Testtafel + MMP-Test Konfiguration",
       industry: "Mobile Testing",
       icon: <Smartphone className="h-5 w-5" />,
       details: [
-        "Arcturus Vega LED Light Source",
-        "TE294 Multi-Purpose Test Chart", 
-        "Precision Camera Mounting System",
+        "Arcturus Vega LED Lichtquelle",
+        "TE294 Mehrzweck-Testtafel", 
+        "Präzisions-Kamera-Montagesystem",
         "VCX Standard Compliance"
       ]
     },
     {
       id: 2,
       image: arcturusLabInstallation,
-      title: "Automotive Vision Lab",
-      description: "ADAS Camera Testing Environment",
+      title: "Automotive Vision Labor",
+      description: "ADAS Kamera-Testumgebung",
       industry: "Automotive",
       icon: <Car className="h-5 w-5" />,
       details: [
-        "IEEE P2020 Compliant Setup",
-        "High-Precision Chart Positioning",
-        "Automotive Grade Lighting",
-        "Environmental Control Systems"
+        "IEEE P2020 Konformer Aufbau",
+        "Hochpräzise Testtafel-Positionierung",
+        "Automotive-Grade Beleuchtung",
+        "Umgebungskontrollsysteme"
       ]
     },
     {
       id: 3,
       image: precisionTestingHero,
-      title: "Precision Measurement Station",
-      description: "High-Resolution Camera Analysis Setup",
-      industry: "Professional Photography",
+      title: "Präzisions-Messstation",
+      description: "Hochauflösende Kamera-Analyse-Aufbau",
+      industry: "Professionelle Fotografie",
       icon: <Camera className="h-5 w-5" />,
       details: [
-        "Ultra-High Resolution Charts",
-        "Color Temperature Control",
-        "Vibration-Free Mounting",
-        "Spectral Analysis Capability"
+        "Ultra-hochauflösende Testtafeln",
+        "Farbtemperatur-Kontrolle",
+        "Vibrationsfreie Montage",
+        "Spektralanalyse-Fähigkeit"
       ]
     },
     {
       id: 4,
       image: adasTesting,
-      title: "ADAS Testing Laboratory",
-      description: "Complete Automotive Vision Testing Suite",
+      title: "ADAS Testlabor",
+      description: "Komplette Automotive Vision Testing Suite",
       industry: "Automotive ADAS",
       icon: <Shield className="h-5 w-5" />,
       details: [
-        "Multi-Chart Test Scenarios",
-        "Dynamic Range Testing",
-        "Low-Light Performance Analysis",
-        "Safety Standard Compliance"
+        "Multi-Testtafel-Szenarien",
+        "Dynamikbereich-Tests",
+        "Schwachlicht-Leistungsanalyse",
+        "Sicherheitsstandard-Konformität"
       ]
     },
     {
       id: 5,
       image: qualityBenchmarking,
-      title: "Quality Benchmarking Setup",
-      description: "Comparative Analysis Laboratory",
-      industry: "Quality Control",
+      title: "Qualitäts-Benchmarking Aufbau",
+      description: "Vergleichsanalyse-Labor",
+      industry: "Qualitätskontrolle",
       icon: <Target className="h-5 w-5" />,
       details: [
-        "Multiple Device Testing",
-        "Standardized Conditions",
-        "Statistical Analysis Tools",
+        "Multi-Geräte-Tests",
+        "Standardisierte Bedingungen",
+        "Statistische Analyse-Tools",
         "ISO Compliance Framework"
       ]
     },
     {
       id: 6,
       image: arcturusRealisticLab,
-      title: "Real-World Testing Environment",
-      description: "Production-Grade Lab Installation",
-      industry: "Industrial Testing",
+      title: "Realitätsnahe Testumgebung",
+      description: "Produktionsreife Labor-Installation",
+      industry: "Industrielle Tests",
       icon: <Microscope className="h-5 w-5" />,
       details: [
-        "Industrial Grade Equipment",
-        "24/7 Operation Capability",
-        "Remote Monitoring Systems",
-        "Scalable Test Configurations"
+        "Industrietaugliche Ausrüstung",
+        "24/7 Betriebsfähigkeit",
+        "Remote-Überwachungssysteme",
+        "Skalierbare Testkonfigurationen"
       ]
     },
     {
       id: 7,
       image: automotiveLab,
-      title: "Automotive Electronics Lab",
-      description: "Vehicle Camera System Testing",
-      industry: "Automotive Electronics",
+      title: "Automotive Elektronik Labor",
+      description: "Fahrzeug-Kamerasystem-Tests",
+      industry: "Automotive Elektronik",
       icon: <Monitor className="h-5 w-5" />,
       details: [
-        "ECU Integration Testing",
-        "Real-Time Image Processing",
-        "Thermal Analysis Capability",
-        "EMC Testing Environment"
+        "ECU Integrationstests",
+        "Echtzeit-Bildverarbeitung",
+        "Thermische Analysefähigkeit",
+        "EMV-Testumgebung"
       ]
     },
     {
       id: 8,
       image: arcturusVegaCharts,
-      title: "Chart Analysis Workstation",
-      description: "Comprehensive Chart Testing Setup",
-      industry: "Chart Development",
+      title: "Testtafel-Analyse-Workstation",
+      description: "Umfassender Testtafel-Testaufbau",
+      industry: "Testtafel-Entwicklung",
       icon: <Zap className="h-5 w-5" />,
       details: [
-        "Multi-Chart Configurations",
-        "Precision Measurement Tools",
-        "Data Analysis Software",
-        "Custom Chart Development"
+        "Multi-Testtafel-Konfigurationen",
+        "Präzisions-Messwerkzeuge",
+        "Datenanalyse-Software",
+        "Individuelle Testtafel-Entwicklung"
       ]
     }
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white font-inter">
+      <Navigation />
+      
+      {/* Breadcrumb */}
+      <div className="container mx-auto px-6 pt-20 pb-4">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/">Startseite</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/products">Produkte</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Blick ins Testlabor</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
+
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-gray-50 to-white py-20">
-        <div className="container mx-auto px-4">
+      <div className="bg-scandi-white py-16 lg:py-24">
+        <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
               Inside the Lab
+              <br />
+              <span className="text-soft-blue">Real Test Setups in Professional Environments</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-4">
-              Real Test Setups in Professional Environments
-            </p>
-            <p className="text-lg text-gray-500 max-w-3xl mx-auto">
-              Explore how Image Engineering's testing solutions are deployed in real-world laboratories. 
-              From automotive ADAS testing to mobile device quality control, see the precision and 
-              professionalism that drives accurate results.
+            <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-3xl mx-auto">
+              Erkunden Sie, wie Image Engineerings Testlösungen in realen Laborumgebungen eingesetzt werden. 
+              Von automotive ADAS-Tests bis hin zur Qualitätskontrolle mobiler Geräte - erleben Sie die Präzision und 
+              Professionalität, die zu genauen Ergebnissen führt.
             </p>
           </div>
         </div>
@@ -177,7 +205,7 @@ const InsideLab = () => {
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                   {setup.title}
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-lg text-gray-700 leading-relaxed mb-4">
                   {setup.description}
                 </p>
                 
@@ -199,22 +227,22 @@ const InsideLab = () => {
       </div>
 
       {/* Call to Action */}
-      <div className="bg-gray-50 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">
-            Ready to Set Up Your Own Lab?
+      <div className="bg-scandi-light-grey py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+            Bereit, Ihr eigenes Labor einzurichten?
           </h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Our experts can help you design and implement the perfect testing environment 
-            for your specific requirements.
+          <p className="text-lg text-gray-700 leading-relaxed mb-8 max-w-2xl mx-auto">
+            Unsere Experten können Ihnen dabei helfen, die perfekte Testumgebung 
+            für Ihre spezifischen Anforderungen zu entwerfen und zu implementieren.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-              Contact Our Lab Experts
-            </button>
-            <button className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-              Download Lab Setup Guide
-            </button>
+            <Button className="bg-soft-blue hover:bg-soft-blue/90 text-white px-8 py-3 text-lg font-medium">
+              Kontaktieren Sie unsere Laborexperten
+            </Button>
+            <Button variant="outline" className="border-scandi-grey text-scandi-grey px-8 py-3 text-lg font-medium hover:bg-scandi-light-grey">
+              Labor-Setup-Leitfaden herunterladen
+            </Button>
           </div>
         </div>
       </div>
