@@ -286,14 +286,15 @@ const Navigation = () => {
                             <Package className="h-6 w-6" />
                             Lösungspakete
                           </h4>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                          <Link
+                            to="/solution/arcturus-bundle"
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
                             onMouseEnter={() => setHoveredSolution("Arcturus LED + Vega Software + Test Charts")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Zap className="h-5 w-5" />
                             <span>Arcturus LED + Vega Software + Test Charts</span>
-                          </div>
+                          </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredSolution("Kamera-Kalibrierungs-Paket")}

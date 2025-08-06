@@ -11,6 +11,7 @@ import Products from "./pages/Products";
 import Automotive from "./pages/Automotive";
 import Downloads from "./pages/Downloads";
 import ProductArcturus from "./pages/ProductArcturus";
+import SolutionArcturusBundle from "./pages/SolutionArcturusBundle";
 import HiddenSegments from "./pages/HiddenSegments";
 import NotFound from "./pages/NotFound";
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/automotive" element={<Automotive />} />
           <Route path="/downloads" element={<Downloads />} />
           <Route path="/product/arcturus" element={<ProductArcturus />} />
+          <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
           <Route path="/hidden-segments" element={<HiddenSegments />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
