@@ -166,7 +166,8 @@ const InsideLab = () => {
             <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
               Inside the Lab
               <br />
-              <span className="text-soft-blue font-semibold">Real Test Setups in Professional Environments</span>
+              <span className="text-soft-blue">Real Test Setups in </span>
+              <span className="text-soft-blue font-medium">Professional Environments</span>
             </h1>
             <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-3xl mx-auto">
               Erkunden Sie, wie Image Engineerings Testlösungen in realen Laborumgebungen eingesetzt werden. 
