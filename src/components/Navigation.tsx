@@ -29,6 +29,7 @@ import productBundleIeee from "@/assets/product-bundle-ieee.png";
 import iqLedIllumination from "@/assets/iq-led-illumination.png";
 import chartCase from "@/assets/chart-case.png";
 import technology2025 from "@/assets/technology-2025.png";
+import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,6 +106,10 @@ const Navigation = () => {
     "Technologie": {
       image: technology2025,
       description: "Neueste Innovationen und modernste Technologie in der Bildqualitätsmessung"
+    },
+    "Schulungen": {
+      image: trainingMobileTesting,
+      description: "Professionelle Schulungen zu Bildqualitätstests in verschiedenen Branchen - Was muss wie getestet werden? (z.B. Mobile Phones, Automotive, Medical)"
     }
   };
 
@@ -550,6 +555,8 @@ const Navigation = () => {
                           </div>
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Schulungen")}
+                            onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <GraduationCap className="h-6 w-6" />
                             <span>Schulungen</span>
