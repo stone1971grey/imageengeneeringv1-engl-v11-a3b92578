@@ -289,11 +289,11 @@ const Navigation = () => {
                           <Link
                             to="/solution/arcturus-bundle"
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
-                            onMouseEnter={() => setHoveredSolution("Arcturus LED + Vega Software + Test Charts")}
+                            onMouseEnter={() => setHoveredSolution("Arcturus HDR Test Bundle")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Zap className="h-5 w-5" />
-                            <span>Arcturus LED + Vega Software + Test Charts</span>
+                            <span>Arcturus HDR Test Bundle</span>
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"

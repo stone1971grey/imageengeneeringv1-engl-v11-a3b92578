@@ -154,7 +154,7 @@ const SolutionArcturusBundle = () => {
                 <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
                   Arcturus
                   <br />
-                  <span className="text-soft-blue font-light">Komplettlösung</span>
+                  <span className="text-soft-blue font-light">HDR Test Bundle</span>
                   <br />
                   <span className="text-soft-blue font-medium">für Bildqualitätstests</span>
                 </h1>
@@ -235,7 +235,7 @@ const SolutionArcturusBundle = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Warum die Arcturus Komplettlösung?
+              Warum das Arcturus HDR Test Bundle?
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
               Durch die perfekte Integration aller Komponenten erhalten Sie eine nahtlose 
@@ -284,7 +284,7 @@ const SolutionArcturusBundle = () => {
             Anwendungsbereiche
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-            Die Arcturus Komplettlösung eignet sich für verschiedenste Testszenarien 
+            Das Arcturus HDR Test Bundle eignet sich für verschiedenste Testszenarien 
             in professionellen Umgebungen.
           </p>
         </div>
