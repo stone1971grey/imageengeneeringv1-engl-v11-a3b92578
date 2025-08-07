@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X, Check } from "lucide-react";
+import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X, Check, Quote } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
@@ -15,6 +15,7 @@ import arcturusCharts from "@/assets/arcturus-vega-charts.jpg";
 import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
 import customChart from "@/assets/custom-chart.png";
 import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
+import testimonialDrBecker from "@/assets/testimonial-dr-becker.jpg";
 
 const SolutionArcturusBundle = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -764,6 +765,52 @@ const SolutionArcturusBundle = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        </section>
+
+        {/* Customer Testimonial */}
+        <section className="bg-gray-50 py-16">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
+              <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+                
+                {/* Portrait Image */}
+                <div className="flex-shrink-0">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-lg">
+                    <img 
+                      src={testimonialDrBecker} 
+                      alt="Dr. Thomas Becker, Head of Image Quality Lab bei VisionDrive Automotive GmbH"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+                
+                {/* Testimonial Content */}
+                <div className="flex-1 text-center md:text-left">
+                  <div className="mb-6">
+                    <Quote className="h-8 w-8 text-blue-600 mx-auto md:mx-0 mb-4" />
+                    <blockquote className="text-xl md:text-2xl text-gray-800 leading-relaxed font-medium italic">
+                      „Mit Arcturus konnten wir erstmals stabile HDR-Ergebnisse bei 0,3 ms Belichtungszeit messen – 
+                      ein entscheidender Fortschritt für unsere ADAS-Kalibrierung."
+                    </blockquote>
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-6">
+                    <div className="font-semibold text-gray-900 text-lg">
+                      Dr. Thomas Becker
+                    </div>
+                    <div className="text-blue-600 font-medium">
+                      Head of Image Quality Lab
+                    </div>
+                    <div className="text-gray-600">
+                      VisionDrive Automotive GmbH
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         </section>
 
