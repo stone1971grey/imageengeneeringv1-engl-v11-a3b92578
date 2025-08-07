@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -265,6 +265,9 @@ const SolutionArcturusBundle = () => {
                         <DialogContent className="max-w-6xl w-full h-[90vh] bg-white">
                           <DialogHeader>
                             <DialogTitle>System-Blockdiagramm - Detailansicht</DialogTitle>
+                            <DialogDescription>
+                              Detaillierte Ansicht der technischen System-Architektur des Arcturus HDR Test Bundle
+                            </DialogDescription>
                           </DialogHeader>
                           <div className="w-full h-full overflow-auto bg-white p-4">
                             <svg viewBox="0 0 800 500" className="w-full h-auto min-h-[500px] bg-white">
