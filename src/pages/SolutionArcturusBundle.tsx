@@ -50,7 +50,7 @@ const SolutionArcturusBundle = () => {
         "Weiter Dynamikbereich",
         "IEEE P2020 kompatibel"
       ],
-      icon: <Zap className="h-8 w-8 text-soft-blue" />
+      icon: <Zap className="h-8 w-8 text-black" />
     },
     {
       title: "Vega Software Suite",
@@ -61,7 +61,7 @@ const SolutionArcturusBundle = () => {
         "Python API Integration",
         "Umfassende Reportgenerierung"
       ],
-      icon: <Monitor className="h-8 w-8 text-soft-blue" />
+      icon: <Monitor className="h-8 w-8 text-black" />
     },
     {
       title: "Premium Test Charts",
@@ -72,7 +72,7 @@ const SolutionArcturusBundle = () => {
         "Farbkalibrierungs-Charts",
         "Individuelle Chart-Konfigurationen"
       ],
-      icon: <Target className="h-8 w-8 text-soft-blue" />
+      icon: <Target className="h-8 w-8 text-black" />
     }
   ];
 
@@ -202,12 +202,12 @@ const SolutionArcturusBundle = () => {
           {bundleComponents.map((component, index) => (
             <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-red-100">
               <CardHeader className="text-center pb-1 pt-4">
-                <div className="flex justify-center mb-12">
+                <div className="flex justify-center mb-4">
                   <div className="w-14 h-14 bg-soft-blue/10 rounded-full flex items-center justify-center">
                     {component.icon}
                   </div>
                 </div>
-                <CardTitle className="text-lg font-semibold text-gray-900 mb-12">
+                <CardTitle className="text-lg font-semibold text-gray-900 mb-4">
                   {component.title}
                 </CardTitle>
                 <CardDescription className="text-base text-gray-700">
@@ -215,7 +215,7 @@ const SolutionArcturusBundle = () => {
                 </CardDescription>
               </CardHeader>
               
-              <CardContent className="pt-1 pb-4">
+              <CardContent className="pt-8 pb-4">
                 <ul className="space-y-2">
                   {component.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center gap-2 text-sm text-gray-600">
