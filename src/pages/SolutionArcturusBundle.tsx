@@ -230,6 +230,162 @@ const SolutionArcturusBundle = () => {
         </div>
       </div>
 
+      {/* Technical Overview */}
+      <div className="bg-white py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Technische System-Architektur
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
+              Vollständig integrierte Testumgebung mit nahtloser Kommunikation zwischen 
+              Hardware, Software und Testmustern für maximale Effizienz und Genauigkeit.
+            </p>
+          </div>
+          
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-gray-50 rounded-xl p-8 shadow-soft">
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
+                
+                {/* Mermaid Diagram */}
+                <div className="order-2 lg:order-1">
+                  <div className="bg-white rounded-lg p-6 shadow-sm">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">
+                      System-Blockdiagramm
+                    </h3>
+                    
+                    <div className="mermaid-container">
+                      <svg viewBox="0 0 800 600" className="w-full h-auto">
+                        {/* Arcturus LED System */}
+                        <rect x="50" y="50" width="150" height="80" rx="8" fill="#3B82F6" stroke="#1E40AF" strokeWidth="2"/>
+                        <text x="125" y="85" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Arcturus LED</text>
+                        <text x="125" y="105" textAnchor="middle" fill="white" fontSize="12">System</text>
+                        
+                        {/* Test Charts */}
+                        <rect x="50" y="200" width="150" height="80" rx="8" fill="#10B981" stroke="#047857" strokeWidth="2"/>
+                        <text x="125" y="235" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Test Charts</text>
+                        <text x="125" y="255" textAnchor="middle" fill="white" fontSize="12">Collection</text>
+                        
+                        {/* Camera Under Test */}
+                        <rect x="350" y="125" width="150" height="80" rx="8" fill="#6B7280" stroke="#374151" strokeWidth="2"/>
+                        <text x="425" y="160" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Camera</text>
+                        <text x="425" y="180" textAnchor="middle" fill="white" fontSize="12">Under Test</text>
+                        
+                        {/* Vega Software */}
+                        <rect x="600" y="50" width="150" height="180" rx="8" fill="#8B5CF6" stroke="#7C3AED" strokeWidth="2"/>
+                        <text x="675" y="85" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Vega Software</text>
+                        <text x="675" y="105" textAnchor="middle" fill="white" fontSize="12">Suite</text>
+                        
+                        {/* Vega Components */}
+                        <rect x="620" y="125" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
+                        <text x="675" y="142" textAnchor="middle" fill="white" fontSize="10">Image Analysis</text>
+                        
+                        <rect x="620" y="155" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
+                        <text x="675" y="172" textAnchor="middle" fill="white" fontSize="10">API Control</text>
+                        
+                        <rect x="620" y="185" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
+                        <text x="675" y="202" textAnchor="middle" fill="white" fontSize="10">Report Generation</text>
+                        
+                        {/* Connections */}
+                        {/* LED to Test Chart */}
+                        <line x1="125" y1="130" x2="125" y2="200" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                        <text x="135" y="170" fill="#374151" fontSize="10">Illumination</text>
+                        
+                        {/* Test Chart to Camera */}
+                        <line x1="200" y1="240" x2="350" y2="165" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                        <text x="250" y="190" fill="#374151" fontSize="10">Optical Signal</text>
+                        
+                        {/* Camera to Vega */}
+                        <line x1="500" y1="165" x2="600" y2="140" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+                        <text x="520" y="145" fill="#374151" fontSize="10">Image Data</text>
+                        
+                        {/* Vega to LED (Control) */}
+                        <path d="M 600 90 Q 400 20 200 90" stroke="#EF4444" strokeWidth="2" fill="none" strokeDasharray="5,5" markerEnd="url(#arrowhead-red)"/>
+                        <text x="400" y="35" textAnchor="middle" fill="#EF4444" fontSize="10">LED Control (USB/Ethernet)</text>
+                        
+                        {/* Arrow markers */}
+                        <defs>
+                          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
+                          </marker>
+                          <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#EF4444"/>
+                          </marker>
+                        </defs>
+                        
+                        {/* Labels */}
+                        <text x="400" y="350" textAnchor="middle" fill="#374151" fontSize="14" fontWeight="bold">IEEE P2020 Konforme Testumgebung</text>
+                        
+                        {/* Connection Types Legend */}
+                        <g transform="translate(50, 450)">
+                          <text x="0" y="0" fill="#374151" fontSize="12" fontWeight="bold">Verbindungstypen:</text>
+                          <line x1="0" y1="20" x2="30" y2="20" stroke="#374151" strokeWidth="2"/>
+                          <text x="40" y="25" fill="#374151" fontSize="10">Optischer Pfad</text>
+                          <line x1="0" y1="40" x2="30" y2="40" stroke="#EF4444" strokeWidth="2" strokeDasharray="5,5"/>
+                          <text x="40" y="45" fill="#374151" fontSize="10">Digitale Steuerung</text>
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Technical Details */}
+                <div className="order-1 lg:order-2 space-y-6">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                      Technische Integration
+                    </h3>
+                    <div className="space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">LED-Steuerung</h4>
+                          <p className="text-gray-600 text-sm">USB/Ethernet Interface für präzise Helligkeits- und Farbtemperaturkontrolle</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Chart-Positionierung</h4>
+                          <p className="text-gray-600 text-sm">Automatisierte Test-Pattern Auswahl basierend auf Messziel</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Datenanalyse</h4>
+                          <p className="text-gray-600 text-sm">Echtzeit-Bildverarbeitung mit Python API Integration</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="w-3 h-3 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Feedback-Loop</h4>
+                          <p className="text-gray-600 text-sm">Automatische Anpassung der Testparameter basierend auf Messergebnissen</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-900 mb-2">Standards-Konformität</h4>
+                    <ul className="space-y-1 text-sm text-blue-800">
+                      <li>• IEEE P2020 für automotive ADAS Testing</li>
+                      <li>• VCX für Mobile Device Validation</li>
+                      <li>• ISO 12233 für Bildschärfe-Messungen</li>
+                      <li>• EMVA 1288 für industrielle Bildverarbeitung</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Key Benefits */}
       <div className="bg-scandi-light-grey py-16">
         <div className="container mx-auto px-6">
