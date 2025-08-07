@@ -201,22 +201,22 @@ const SolutionArcturusBundle = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {bundleComponents.map((component, index) => (
             <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white">
-              <CardHeader className="text-center pb-2 pt-6">
-                <div className="flex justify-center mb-3">
-                  <div className="w-16 h-16 bg-soft-blue/10 rounded-full flex items-center justify-center">
+              <CardHeader className="text-center pb-1 pt-4">
+                <div className="flex justify-center mb-2">
+                  <div className="w-14 h-14 bg-soft-blue/10 rounded-full flex items-center justify-center">
                     {component.icon}
                   </div>
                 </div>
-                <CardTitle className="text-xl font-semibold text-gray-900 mb-2">
+                <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
                   {component.title}
                 </CardTitle>
-                <CardDescription className="text-lg text-gray-700">
+                <CardDescription className="text-base text-gray-700">
                   {component.description}
                 </CardDescription>
               </CardHeader>
               
-              <CardContent className="pt-2">
-                <ul className="space-y-3">
+              <CardContent className="pt-1 pb-4">
+                <ul className="space-y-2">
                   {component.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center gap-2 text-sm text-gray-600">
                       <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
