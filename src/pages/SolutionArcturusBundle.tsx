@@ -80,19 +80,19 @@ const SolutionArcturusBundle = () => {
     {
       title: "Automotive ADAS Testing",
       description: "Komplette Testlösung für Fahrerassistenzsysteme nach IEEE P2020 Standard",
-      icon: <Shield className="h-6 w-6" />,
+      icon: <Shield className="h-8 w-8 text-blue-600" />,
       benefits: ["HDR Szenarien-Tests", "Sonnenlicht-Simulation", "Nachtsicht-Validierung"]
     },
     {
       title: "Mobile Device Validation",
       description: "Umfassende Bildqualitätstests für Smartphone-Kameras nach VCX Standards",
-      icon: <Eye className="h-6 w-6" />,
+      icon: <Eye className="h-8 w-8 text-blue-600" />,
       benefits: ["Farbgenauigkeits-Tests", "Schärfe-Analyse", "Low-Light Performance"]
     },
     {
       title: "Professional Photography",
       description: "Präzisions-Kalibrierung für professionelle Kamerasysteme",
-      icon: <Lightbulb className="h-6 w-6" />,
+      icon: <Lightbulb className="h-8 w-8 text-blue-600" />,
       benefits: ["Farbwiedergabe-Tests", "Dynamikbereich-Analyse", "Objektivschärfe-Messung"]
     }
   ];
@@ -291,26 +291,26 @@ const SolutionArcturusBundle = () => {
         
         <div className="grid lg:grid-cols-3 gap-8">
           {applicationAreas.map((area, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow duration-300">
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-soft-blue/10 rounded-lg flex items-center justify-center">
+            <Card key={index} className="hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-200">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center">
                     {area.icon}
                   </div>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
+                  <CardTitle className="text-xl font-semibold text-gray-900">
                     {area.title}
                   </CardTitle>
                 </div>
-                <CardDescription className="text-lg text-gray-700">
+                <CardDescription className="text-lg text-gray-700 leading-relaxed">
                   {area.description}
                 </CardDescription>
               </CardHeader>
               
-              <CardContent>
-                <div className="space-y-2">
+              <CardContent className="pt-2">
+                <div className="space-y-3">
                   {area.benefits.map((benefit, benefitIndex) => (
-                    <div key={benefitIndex} className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                    <div key={benefitIndex} className="flex items-center gap-3 text-base text-gray-600">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                       {benefit}
                     </div>
                   ))}
