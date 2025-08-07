@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X } from "lucide-react";
+import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X, Check } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import ProductFAQ from "@/components/ProductFAQ";
 
@@ -130,6 +130,114 @@ const SolutionArcturusBundle = () => {
       answer: "Absolut. Das modulare Design ermöglicht einfache Erweiterungen: zusätzliche LED-Module, weitere Test Charts, Software-Upgrades und Integration in bestehende Testsysteme. Die API unterstützt Custom-Scripts und Drittanbieter-Integration."
     }
   ];
+
+  // Comparison data for Arcturus vs. older solutions
+  const comparisonData = [
+    {
+      criterion: "Lichtstabilität",
+      arcturus: "±0,5 °C präzise, aktiv geregelt",
+      older: "Unpräzise, passiv",
+      arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
+      olderIcon: <X className="h-5 w-5 text-red-500" />
+    },
+    {
+      criterion: "Flicker-Frequenzsteuerung",
+      arcturus: "Sinus / Dreieck / Rechteck",
+      older: "Eingeschränkt",
+      arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
+      olderIcon: <X className="h-5 w-5 text-red-500" />
+    },
+    {
+      criterion: "API-Zugang",
+      arcturus: "C, C++, Python",
+      older: "Manuelle Bedienung",
+      arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
+      olderIcon: <X className="h-5 w-5 text-red-500" />
+    },
+    {
+      criterion: "Platzbedarf",
+      arcturus: "Kompakt, modular",
+      older: "Großes, starres Setup",
+      arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
+      olderIcon: <X className="h-5 w-5 text-red-500" />
+    },
+    {
+      criterion: "Erweiterbarkeit",
+      arcturus: "Bis zu 7 Lichtquellen",
+      older: "Nicht erweiterbar",
+      arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
+      olderIcon: <X className="h-5 w-5 text-red-500" />
+    },
+    {
+      criterion: "Prüfcharts-Kompatibilität",
+      arcturus: "TE294 (modular)",
+      older: "Proprietär",
+      arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
+      olderIcon: <X className="h-5 w-5 text-red-500" />
+    },
+    {
+      criterion: "HDR-Testpräzision",
+      arcturus: "Volle CTA / MMP / CSNR",
+      older: "Eingeschränkt",
+      arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
+      olderIcon: <X className="h-5 w-5 text-red-500" />
+    }
+  ];
+
+  // Schema.org markup for comparison
+  const comparisonSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Arcturus HDR Testpaket",
+    "description": "Vergleich moderner HDR-Testlösungen mit traditionellen Systemen wie DTS.",
+    "brand": {
+      "@type": "Brand",
+      "name": "Image Engineering"
+    },
+    "isSimilarTo": {
+      "@type": "Product",
+      "name": "DTS Testsystem"
+    },
+    "additionalProperty": [
+      {
+        "@type": "PropertyValue",
+        "name": "Lichtstabilität",
+        "value": "±0,5 °C geregelte Stabilität"
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "API-Zugang",
+        "value": "C, C++, Python"
+      },
+      {
+        "@type": "PropertyValue",
+        "name": "Flicker-Steuerung",
+        "value": "Sinus / Dreieck / Rechteck"
+      }
+    ]
+  };
+
+  // Add schema to head
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(comparisonSchema);
+    script.id = 'comparison-schema';
+    
+    const existingSchema = document.getElementById('comparison-schema');
+    if (existingSchema) {
+      existingSchema.remove();
+    }
+    
+    document.head.appendChild(script);
+    
+    return () => {
+      const schemaToRemove = document.getElementById('comparison-schema');
+      if (schemaToRemove) {
+        schemaToRemove.remove();
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#F7F9FB]">
@@ -656,6 +764,68 @@ const SolutionArcturusBundle = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        </section>
+
+        {/* Comparison Section */}
+        <section className="bg-white py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Warum nicht DTS? – Der Vergleich im Überblick
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
+              Sehen Sie selbst, wie das moderne Arcturus HDR Test Bundle traditionelle Testlösungen 
+              übertrifft und Ihnen entscheidende Vorteile bietet.
+            </p>
+          </div>
+          
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-gray-50 rounded-xl overflow-hidden shadow-soft">
+              {/* Header */}
+              <div className="grid md:grid-cols-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                <div className="p-4 text-center font-semibold text-lg">
+                  Kriterium
+                </div>
+                <div className="p-4 text-center font-semibold text-lg border-l border-blue-500">
+                  Arcturus HDR Testpaket
+                </div>
+                <div className="p-4 text-center font-semibold text-lg border-l border-blue-500">
+                  Frühere Lösung (z. B. DTS)
+                </div>
+              </div>
+              
+              {/* Comparison Rows */}
+              <div className="divide-y divide-gray-200">
+                {comparisonData.map((row, index) => (
+                  <div key={index} className={`grid md:grid-cols-3 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    <div className="p-6 font-medium text-gray-900 border-r border-gray-200">
+                      {row.criterion}
+                    </div>
+                    <div className="p-6 border-r border-gray-200">
+                      <div className="flex items-center gap-3">
+                        {row.arcturusIcon}
+                        <span className="text-gray-800 font-medium">{row.arcturus}</span>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center gap-3">
+                        {row.olderIcon}
+                        <span className="text-gray-600">{row.older}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Footnote */}
+            <div className="text-center mt-8">
+              <p className="text-sm text-gray-500">
+                * DTS ist ein eingetragenes Warenzeichen und wird hier nur zum Vergleich erwähnt.
+              </p>
+            </div>
+          </div>
         </div>
         </section>
 
