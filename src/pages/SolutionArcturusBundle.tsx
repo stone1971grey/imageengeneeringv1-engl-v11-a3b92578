@@ -202,12 +202,12 @@ const SolutionArcturusBundle = () => {
           {bundleComponents.map((component, index) => (
             <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white">
               <CardHeader className="text-center pb-1 pt-4">
-                <div className="flex justify-center mb-8">
+                <div className="flex justify-center mb-12">
                   <div className="w-14 h-14 bg-soft-blue/10 rounded-full flex items-center justify-center">
                     {component.icon}
                   </div>
                 </div>
-                <CardTitle className="text-lg font-semibold text-gray-900 mb-8">
+                <CardTitle className="text-lg font-semibold text-gray-900 mb-12">
                   {component.title}
                 </CardTitle>
                 <CardDescription className="text-base text-gray-700">
