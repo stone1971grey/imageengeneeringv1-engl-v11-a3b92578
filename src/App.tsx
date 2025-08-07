@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import InsideLab from "./pages/InsideLab";
+import ArcturusInAction from "./pages/ArcturusInAction";
 import Industries from "./pages/Industries";
 import Products from "./pages/Products";
 import Automotive from "./pages/Automotive";
@@ -27,6 +28,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/inside-lab" element={<InsideLab />} />
+          <Route path="/inside-lab/arcturus-in-action" element={<ArcturusInAction />} />
           <Route path="/industries" element={<Industries />} />
           <Route path="/products" element={<Products />} />
           <Route path="/automotive" element={<Automotive />} />

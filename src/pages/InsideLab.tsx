@@ -186,7 +186,7 @@ const InsideLab = () => {
           {labSetups.map((setup) => {
             const CardComponent = setup.id === 8 ? 
               ({ children, ...props }: any) => (
-                <Link to="/solution/arcturus-bundle">
+                <Link to="/inside-lab/arcturus-in-action">
                   <Card {...props}>{children}</Card>
                 </Link>
               ) : Card;
@@ -213,7 +213,7 @@ const InsideLab = () => {
                   {setup.id === 8 && (
                     <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                       <Button className="bg-blue-600 hover:bg-blue-700 text-white opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                        Mehr erfahren
+                        Im Einsatz sehen
                       </Button>
                     </div>
                   )}
