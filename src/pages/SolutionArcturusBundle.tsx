@@ -115,15 +115,45 @@ const SolutionArcturusBundle = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <span className="cursor-pointer">Lösungen</span>
+                <Link to="/products">Produkte</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Arcturus LED + Vega Software + Test Charts</BreadcrumbPage>
+              <BreadcrumbLink asChild>
+                <span className="cursor-pointer">Equipment</span>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Arcturus LED Produkt</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+      </div>
+
+      {/* Meta Navigation */}
+      <div className="container mx-auto px-6 pb-8">
+        <div className="flex flex-wrap gap-6 justify-center border-b border-gray-200">
+          <button className="text-blue-600 border-b-2 border-blue-600 pb-2 px-1 font-medium">
+            Übersicht
+          </button>
+          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
+            Vorteile
+          </button>
+          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
+            Spezifikationen
+          </button>
+          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
+            Anwendungen
+          </button>
+          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
+            Galerie
+          </button>
+          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
+            Downloads
+          </button>
+        </div>
       </div>
 
       {/* Hero Section */}
