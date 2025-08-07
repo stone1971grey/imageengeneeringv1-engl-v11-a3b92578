@@ -267,7 +267,7 @@ const SolutionArcturusBundle = () => {
                           <Button 
                             variant="outline" 
                             size="icon"
-                            className="absolute top-4 right-4 z-50 bg-white shadow-lg"
+                            className="absolute top-4 right-4 z-50 bg-white hover:bg-gray-100 shadow-lg"
                             onClick={() => setIsDialogOpen(false)}
                           >
                             <X className="h-4 w-4" />
@@ -354,7 +354,7 @@ const SolutionArcturusBundle = () => {
                       </Dialog>
                     </div>
                     
-                    <div className="cursor-pointer hover:shadow-lg transition-shadow duration-300 rounded-lg overflow-hidden">
+                    <div className="cursor-pointer rounded-lg overflow-hidden">
                       <svg viewBox="0 0 800 500" className="w-full h-auto">
                         {/* Arcturus LED System */}
                         <rect x="50" y="50" width="150" height="80" rx="8" fill="#3B82F6" stroke="#1E40AF" strokeWidth="2"/>
