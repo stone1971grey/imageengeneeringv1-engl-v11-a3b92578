@@ -264,10 +264,10 @@ const SolutionArcturusBundle = () => {
                         </DialogTrigger>
                         <DialogContent className="max-w-6xl w-full h-[90vh] bg-white">
                           <DialogHeader>
-                            <DialogTitle>System-Blockdiagramm</DialogTitle>
+                            <DialogTitle>System-Blockdiagramm - Detailansicht</DialogTitle>
                           </DialogHeader>
                           <div className="w-full h-full overflow-auto bg-white p-4">
-                            <svg viewBox="0 0 800 450" className="w-full h-auto min-h-[450px] bg-white">
+                            <svg viewBox="0 0 800 500" className="w-full h-auto min-h-[500px] bg-white">
                               {/* Arcturus LED System */}
                               <rect x="50" y="50" width="150" height="80" rx="8" fill="#3B82F6" stroke="#1E40AF" strokeWidth="2"/>
                               <text x="125" y="85" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Arcturus LED</text>
@@ -343,7 +343,7 @@ const SolutionArcturusBundle = () => {
                     </div>
                     
                     <div className="cursor-pointer hover:shadow-lg transition-shadow duration-300 rounded-lg overflow-hidden">
-                      <svg viewBox="0 0 800 450" className="w-full h-auto">
+                      <svg viewBox="0 0 800 500" className="w-full h-auto">
                         {/* Arcturus LED System */}
                         <rect x="50" y="50" width="150" height="80" rx="8" fill="#3B82F6" stroke="#1E40AF" strokeWidth="2"/>
                         <text x="125" y="85" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Arcturus LED</text>
