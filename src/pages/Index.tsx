@@ -3,9 +3,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Hero from "@/components/Hero";
 import IndustrySection from "@/components/IndustrySection";
 import Industries from "@/components/Industries";
-import Technology from "@/components/Technology";
 import StandardsExpertise from "@/components/StandardsExpertise";
-import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -21,9 +19,7 @@ const Index = () => {
       <Hero />
       <IndustrySection />
       <Industries />
-      <Technology />
       <StandardsExpertise />
-      <Contact />
       <Footer />
     </div>
   );
