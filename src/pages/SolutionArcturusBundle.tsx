@@ -6,6 +6,7 @@ import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircl
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
+import ProductFAQ from "@/components/ProductFAQ";
 
 // Import solution images
 import arcturusMain from "@/assets/arcturus-main-product.png";
@@ -96,6 +97,37 @@ const SolutionArcturusBundle = () => {
       description: "Präzisions-Kalibrierung für professionelle Kamerasysteme",
       icon: <Lightbulb className="h-8 w-8 text-blue-600" />,
       benefits: ["Farbwiedergabe-Tests", "Dynamikbereich-Analyse", "Objektivschärfe-Messung"]
+    }
+  ];
+
+  const faqData = [
+    {
+      question: "Ist das Bundle VCX-kompatibel?",
+      answer: "Ja, das Arcturus HDR Test Bundle ist vollständig VCX-kompatibel. Die Vega Software Suite unterstützt alle relevanten VCX-Standards für Mobile Device Testing und ermöglicht standardisierte Bildqualitätsmessungen nach VCX-Richtlinien."
+    },
+    {
+      question: "Welche API-Schnittstellen sind enthalten?",
+      answer: "Die Vega Software Suite bietet eine umfassende Python API für vollständige Automatisierung. Sie ermöglicht die Steuerung des Arcturus LED-Systems, automatisierte Bilderfassung, Datenanalyse und Report-Generierung. Zusätzlich sind REST-APIs für Webintegration verfügbar."
+    },
+    {
+      question: "Wie funktioniert die Kalibrierung?",
+      answer: "Das System wird werkseitig kalibriert geliefert und unterstützt automatische Rekalibrierung. Die Vega Software führt regelmäßige Konsistenzprüfungen durch und warnt bei Abweichungen. Manuelle Kalibrierung ist über die Software-Oberfläche möglich."
+    },
+    {
+      question: "Können Vega & Arcturus gleichzeitig genutzt werden?",
+      answer: "Ja, das ist der Hauptvorteil des Bundles. Vega und Arcturus sind nahtlos integriert und können synchron betrieben werden. Die Software steuert das LED-System automatisch basierend auf den gewählten Testprotokollen und optimiert die Beleuchtung in Echtzeit."
+    },
+    {
+      question: "Welche Kameratypen lassen sich damit testen?",
+      answer: "Das Bundle unterstützt alle gängigen Kameratypen: Automotive-Kameras (ADAS), Smartphone-Kameras, industrielle Machine-Vision-Systeme, Broadcast-Kameras und professionelle Fotografie-Equipment. Die Software erkennt automatisch Kameraparameter und passt die Testverfahren an."
+    },
+    {
+      question: "Was ist im Lieferumfang enthalten?",
+      answer: "Das Bundle umfasst: Arcturus LED-System mit Steuereinheit, vollständige Vega Software Suite mit Lizenz, Premium Test Charts Collection (TE294 und weitere), USB/Ethernet-Kabel, Installationshandbuch und 12 Monate Support."
+    },
+    {
+      question: "Ist das System erweiterbar?",
+      answer: "Absolut. Das modulare Design ermöglicht einfache Erweiterungen: zusätzliche LED-Module, weitere Test Charts, Software-Upgrades und Integration in bestehende Testsysteme. Die API unterstützt Custom-Scripts und Drittanbieter-Integration."
     }
   ];
 
@@ -648,6 +680,12 @@ const SolutionArcturusBundle = () => {
           </div>
         </div>
         </section>
+
+        {/* FAQ Section */}
+        <ProductFAQ 
+          faqs={faqData}
+          productName="Arcturus HDR Test Bundle"
+        />
       </div>
     </div>
   );
