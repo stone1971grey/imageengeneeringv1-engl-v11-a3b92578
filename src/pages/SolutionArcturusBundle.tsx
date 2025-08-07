@@ -263,14 +263,14 @@ const SolutionArcturusBundle = () => {
                             Vergrößern
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-6xl w-full h-[90vh] bg-white">
+                        <DialogContent className="max-w-6xl w-full h-[90vh] bg-white relative">
                           <Button 
                             variant="outline" 
                             size="icon"
-                            className="absolute top-4 right-4 z-50 bg-white hover:bg-gray-100 shadow-lg"
+                            className="absolute top-2 right-2 z-[60] bg-white hover:bg-gray-100 shadow-lg border-2"
                             onClick={() => setIsDialogOpen(false)}
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-4 w-4 text-gray-700" />
                           </Button>
                           <DialogHeader>
                             <DialogTitle>System-Blockdiagramm - Detailansicht</DialogTitle>
