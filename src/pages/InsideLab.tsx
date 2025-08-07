@@ -15,6 +15,7 @@ import automotiveLab from "@/assets/automotive-lab.jpg";
 import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
 import qualityBenchmarking from "@/assets/quality-benchmarking.jpg";
 import arcturusVegaCharts from "@/assets/arcturus-vega-charts.jpg";
+import arcturusMainProduct from "@/assets/arcturus-main-product.png";
 
 const InsideLab = () => {
   const labSetups = [
@@ -118,16 +119,17 @@ const InsideLab = () => {
     },
     {
       id: 8,
-      image: arcturusVegaCharts,
-      title: "Testtafel-Analyse-Workstation",
-      description: "Umfassender Testtafel-Testaufbau",
-      industry: "Testtafel-Entwicklung",
-      icon: <Zap className="h-5 w-5" />,
+      image: arcturusMainProduct,
+      title: "Arcturus HDR Testpaket",
+      description: "Hochpräzise Komplettlösung für Bildqualitätstests",
+      industry: "Komplettlösung",
+      icon: <Monitor className="h-5 w-5" />,
       details: [
-        "Multi-Testtafel-Konfigurationen",
-        "Präzisions-Messwerkzeuge",
-        "Datenanalyse-Software",
-        "Individuelle Testtafel-Entwicklung"
+        "Arcturus LED-System mit DC-Technologie",
+        "Vega Software Suite mit Reporting & API",
+        "Hochpräzise Testcharts (z. B. TE294)",
+        "Ideal für ADAS-, Mobilgeräte- und HDR-Kamera-Tests",
+        "IEEE P2020 & VCX konform"
       ]
     }
   ];
@@ -181,49 +183,65 @@ const InsideLab = () => {
       {/* Lab Gallery Grid */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {labSetups.map((setup) => (
-            <Card 
-              key={setup.id} 
-              className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white hover:-translate-y-2"
-            >
-              <div className="relative overflow-hidden rounded-t-lg">
-                <img
-                  src={setup.image}
-                  alt={setup.title}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <div className="text-gray-900">{setup.icon}</div>
-                      <h3 className="text-sm font-semibold text-gray-900">{setup.industry}</h3>
+          {labSetups.map((setup) => {
+            const CardComponent = setup.id === 8 ? 
+              ({ children, ...props }: any) => (
+                <Link to="/solution/arcturus-bundle">
+                  <Card {...props}>{children}</Card>
+                </Link>
+              ) : Card;
+              
+            return (
+              <CardComponent 
+                key={setup.id} 
+                className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white hover:-translate-y-2 cursor-pointer"
+              >
+                <div className="relative overflow-hidden rounded-t-lg">
+                  <img
+                    src={setup.image}
+                    alt={setup.title}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-4 right-4">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <div className="text-gray-900">{setup.icon}</div>
+                        <h3 className="text-sm font-semibold text-gray-900">{setup.industry}</h3>
+                      </div>
                     </div>
                   </div>
+                  {setup.id === 8 && (
+                    <div className="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                        Mehr erfahren
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                  {setup.title}
-                </h3>
-                <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                  {setup.description}
-                </p>
                 
-                <div className="space-y-3">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Setup Details:</h4>
-                  <ul className="space-y-2">
-                    {setup.details.map((detail, index) => (
-                      <li key={index} className="text-lg text-gray-600 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                        {detail}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    {setup.title}
+                  </h3>
+                  <p className="text-lg text-gray-700 leading-relaxed mb-4">
+                    {setup.description}
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-3">Setup Details:</h4>
+                    <ul className="space-y-2">
+                      {setup.details.map((detail, index) => (
+                        <li key={index} className="text-lg text-gray-600 flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                          {detail}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </CardContent>
+              </CardComponent>
+            );
+          })}
         </div>
       </div>
 
