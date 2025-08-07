@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand } from "lucide-react";
+import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import Navigation from "@/components/Navigation";
@@ -17,6 +17,7 @@ import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
 
 const SolutionArcturusBundle = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const solutionImages = [
     {
@@ -255,7 +256,7 @@ const SolutionArcturusBundle = () => {
                       <h3 className="text-xl font-semibold text-gray-900">
                         System-Blockdiagramm
                       </h3>
-                      <Dialog>
+                      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="gap-2">
                             <Expand className="h-4 w-4" />
@@ -263,6 +264,14 @@ const SolutionArcturusBundle = () => {
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-6xl w-full h-[90vh] bg-white">
+                          <Button 
+                            variant="outline" 
+                            size="icon"
+                            className="absolute top-4 right-4 z-50 bg-white hover:bg-gray-100 shadow-lg"
+                            onClick={() => setIsDialogOpen(false)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
                           <DialogHeader>
                             <DialogTitle>System-Blockdiagramm - Detailansicht</DialogTitle>
                             <DialogDescription>
