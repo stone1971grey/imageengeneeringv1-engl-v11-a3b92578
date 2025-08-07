@@ -262,55 +262,55 @@ const SolutionArcturusBundle = () => {
                             Vergrößern
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-6xl w-full h-[90vh]">
-                          <div className="w-full h-full overflow-auto">
-                            <svg viewBox="0 0 800 600" className="w-full h-auto min-h-[600px]">
+                        <DialogContent className="max-w-6xl w-full h-[90vh] bg-white">
+                          <div className="w-full h-full overflow-auto bg-white p-4">
+                            <svg viewBox="0 0 800 550" className="w-full h-auto min-h-[550px] bg-white">
                               {/* Arcturus LED System */}
                               <rect x="50" y="50" width="150" height="80" rx="8" fill="#3B82F6" stroke="#1E40AF" strokeWidth="2"/>
-                              <text x="125" y="85" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Arcturus LED</text>
-                              <text x="125" y="105" textAnchor="middle" fill="white" fontSize="12">System</text>
+                              <text x="125" y="85" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Arcturus LED</text>
+                              <text x="125" y="105" textAnchor="middle" fill="white" fontSize="14">System</text>
                               
                               {/* Test Charts */}
                               <rect x="50" y="200" width="150" height="80" rx="8" fill="#10B981" stroke="#047857" strokeWidth="2"/>
-                              <text x="125" y="235" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Test Charts</text>
-                              <text x="125" y="255" textAnchor="middle" fill="white" fontSize="12">Collection</text>
+                              <text x="125" y="235" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Test Charts</text>
+                              <text x="125" y="255" textAnchor="middle" fill="white" fontSize="14">Collection</text>
                               
                               {/* Camera Under Test */}
                               <rect x="350" y="125" width="150" height="80" rx="8" fill="#6B7280" stroke="#374151" strokeWidth="2"/>
-                              <text x="425" y="160" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Camera</text>
-                              <text x="425" y="180" textAnchor="middle" fill="white" fontSize="12">Under Test</text>
+                              <text x="425" y="160" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Camera</text>
+                              <text x="425" y="180" textAnchor="middle" fill="white" fontSize="14">Under Test</text>
                               
                               {/* Vega Software */}
                               <rect x="600" y="50" width="150" height="180" rx="8" fill="#8B5CF6" stroke="#7C3AED" strokeWidth="2"/>
-                              <text x="675" y="85" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Vega Software</text>
-                              <text x="675" y="105" textAnchor="middle" fill="white" fontSize="12">Suite</text>
+                              <text x="675" y="85" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Vega Software</text>
+                              <text x="675" y="105" textAnchor="middle" fill="white" fontSize="14">Suite</text>
                               
                               {/* Vega Components */}
                               <rect x="620" y="125" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
-                              <text x="675" y="142" textAnchor="middle" fill="white" fontSize="10">Image Analysis</text>
+                              <text x="675" y="142" textAnchor="middle" fill="white" fontSize="12">Image Analysis</text>
                               
                               <rect x="620" y="155" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
-                              <text x="675" y="172" textAnchor="middle" fill="white" fontSize="10">API Control</text>
+                              <text x="675" y="172" textAnchor="middle" fill="white" fontSize="12">API Control</text>
                               
                               <rect x="620" y="185" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
-                              <text x="675" y="202" textAnchor="middle" fill="white" fontSize="10">Report Generation</text>
+                              <text x="675" y="202" textAnchor="middle" fill="white" fontSize="12">Report Generation</text>
                               
                               {/* Connections */}
                               {/* LED to Test Chart */}
                               <line x1="125" y1="130" x2="125" y2="200" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
-                              <text x="135" y="170" fill="#374151" fontSize="10">Illumination</text>
+                              <text x="135" y="170" fill="#374151" fontSize="12">Illumination</text>
                               
                               {/* Test Chart to Camera */}
                               <line x1="200" y1="240" x2="350" y2="165" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
-                              <text x="250" y="190" fill="#374151" fontSize="10">Optical Signal</text>
+                              <text x="250" y="190" fill="#374151" fontSize="12">Optical Signal</text>
                               
                               {/* Camera to Vega */}
                               <line x1="500" y1="165" x2="600" y2="140" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
-                              <text x="520" y="145" fill="#374151" fontSize="10">Image Data</text>
+                              <text x="520" y="145" fill="#374151" fontSize="12">Image Data</text>
                               
                               {/* Vega to LED (Control) */}
                               <path d="M 600 90 Q 400 20 200 90" stroke="#EF4444" strokeWidth="2" fill="none" strokeDasharray="5,5" markerEnd="url(#arrowhead-red)"/>
-                              <text x="400" y="35" textAnchor="middle" fill="#EF4444" fontSize="10">LED Control (USB/Ethernet)</text>
+                              <text x="400" y="35" textAnchor="middle" fill="#EF4444" fontSize="12">LED Control (USB/Ethernet)</text>
                               
                               {/* Arrow markers */}
                               <defs>
@@ -323,15 +323,15 @@ const SolutionArcturusBundle = () => {
                               </defs>
                               
                               {/* Labels */}
-                              <text x="400" y="350" textAnchor="middle" fill="#374151" fontSize="14" fontWeight="bold">IEEE P2020 Konforme Testumgebung</text>
+                              <text x="400" y="320" textAnchor="middle" fill="#374151" fontSize="16" fontWeight="bold">IEEE P2020 Konforme Testumgebung</text>
                               
                               {/* Connection Types Legend */}
-                              <g transform="translate(50, 450)">
-                                <text x="0" y="0" fill="#374151" fontSize="12" fontWeight="bold">Verbindungstypen:</text>
+                              <g transform="translate(50, 400)">
+                                <text x="0" y="0" fill="#374151" fontSize="14" fontWeight="bold">Verbindungstypen:</text>
                                 <line x1="0" y1="20" x2="30" y2="20" stroke="#374151" strokeWidth="2"/>
-                                <text x="40" y="25" fill="#374151" fontSize="10">Optischer Pfad</text>
+                                <text x="40" y="25" fill="#374151" fontSize="12">Optischer Pfad</text>
                                 <line x1="0" y1="40" x2="30" y2="40" stroke="#EF4444" strokeWidth="2" strokeDasharray="5,5"/>
-                                <text x="40" y="45" fill="#374151" fontSize="10">Digitale Steuerung</text>
+                                <text x="40" y="45" fill="#374151" fontSize="12">Digitale Steuerung</text>
                               </g>
                             </svg>
                           </div>
@@ -340,74 +340,74 @@ const SolutionArcturusBundle = () => {
                     </div>
                     
                     <div className="cursor-pointer hover:shadow-lg transition-shadow duration-300 rounded-lg overflow-hidden">
-                      <svg viewBox="0 0 800 600" className="w-full h-auto">
+                      <svg viewBox="0 0 800 550" className="w-full h-auto">
                         {/* Arcturus LED System */}
                         <rect x="50" y="50" width="150" height="80" rx="8" fill="#3B82F6" stroke="#1E40AF" strokeWidth="2"/>
-                        <text x="125" y="85" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Arcturus LED</text>
-                        <text x="125" y="105" textAnchor="middle" fill="white" fontSize="12">System</text>
+                        <text x="125" y="85" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Arcturus LED</text>
+                        <text x="125" y="105" textAnchor="middle" fill="white" fontSize="14">System</text>
                         
                         {/* Test Charts */}
                         <rect x="50" y="200" width="150" height="80" rx="8" fill="#10B981" stroke="#047857" strokeWidth="2"/>
-                        <text x="125" y="235" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Test Charts</text>
-                        <text x="125" y="255" textAnchor="middle" fill="white" fontSize="12">Collection</text>
+                        <text x="125" y="235" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Test Charts</text>
+                        <text x="125" y="255" textAnchor="middle" fill="white" fontSize="14">Collection</text>
                         
                         {/* Camera Under Test */}
                         <rect x="350" y="125" width="150" height="80" rx="8" fill="#6B7280" stroke="#374151" strokeWidth="2"/>
-                        <text x="425" y="160" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Camera</text>
-                        <text x="425" y="180" textAnchor="middle" fill="white" fontSize="12">Under Test</text>
+                        <text x="425" y="160" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Camera</text>
+                        <text x="425" y="180" textAnchor="middle" fill="white" fontSize="14">Under Test</text>
                         
                         {/* Vega Software */}
                         <rect x="600" y="50" width="150" height="180" rx="8" fill="#8B5CF6" stroke="#7C3AED" strokeWidth="2"/>
-                        <text x="675" y="85" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Vega Software</text>
-                        <text x="675" y="105" textAnchor="middle" fill="white" fontSize="12">Suite</text>
+                        <text x="675" y="85" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold">Vega Software</text>
+                        <text x="675" y="105" textAnchor="middle" fill="white" fontSize="14">Suite</text>
                         
                         {/* Vega Components */}
                         <rect x="620" y="125" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
-                        <text x="675" y="142" textAnchor="middle" fill="white" fontSize="10">Image Analysis</text>
+                        <text x="675" y="142" textAnchor="middle" fill="white" fontSize="12">Image Analysis</text>
                         
                         <rect x="620" y="155" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
-                        <text x="675" y="172" textAnchor="middle" fill="white" fontSize="10">API Control</text>
+                        <text x="675" y="172" textAnchor="middle" fill="white" fontSize="12">API Control</text>
                         
                         <rect x="620" y="185" width="110" height="25" rx="4" fill="#A855F7" stroke="#9333EA" strokeWidth="1"/>
-                        <text x="675" y="202" textAnchor="middle" fill="white" fontSize="10">Report Generation</text>
+                        <text x="675" y="202" textAnchor="middle" fill="white" fontSize="12">Report Generation</text>
                         
                         {/* Connections */}
                         {/* LED to Test Chart */}
-                        <line x1="125" y1="130" x2="125" y2="200" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
-                        <text x="135" y="170" fill="#374151" fontSize="10">Illumination</text>
+                        <line x1="125" y1="130" x2="125" y2="200" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead2)"/>
+                        <text x="135" y="170" fill="#374151" fontSize="12">Illumination</text>
                         
                         {/* Test Chart to Camera */}
-                        <line x1="200" y1="240" x2="350" y2="165" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
-                        <text x="250" y="190" fill="#374151" fontSize="10">Optical Signal</text>
+                        <line x1="200" y1="240" x2="350" y2="165" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead2)"/>
+                        <text x="250" y="190" fill="#374151" fontSize="12">Optical Signal</text>
                         
                         {/* Camera to Vega */}
-                        <line x1="500" y1="165" x2="600" y2="140" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead)"/>
-                        <text x="520" y="145" fill="#374151" fontSize="10">Image Data</text>
+                        <line x1="500" y1="165" x2="600" y2="140" stroke="#374151" strokeWidth="2" markerEnd="url(#arrowhead2)"/>
+                        <text x="520" y="145" fill="#374151" fontSize="12">Image Data</text>
                         
                         {/* Vega to LED (Control) */}
-                        <path d="M 600 90 Q 400 20 200 90" stroke="#EF4444" strokeWidth="2" fill="none" strokeDasharray="5,5" markerEnd="url(#arrowhead-red)"/>
-                        <text x="400" y="35" textAnchor="middle" fill="#EF4444" fontSize="10">LED Control (USB/Ethernet)</text>
+                        <path d="M 600 90 Q 400 20 200 90" stroke="#EF4444" strokeWidth="2" fill="none" strokeDasharray="5,5" markerEnd="url(#arrowhead-red2)"/>
+                        <text x="400" y="35" textAnchor="middle" fill="#EF4444" fontSize="12">LED Control (USB/Ethernet)</text>
                         
                         {/* Arrow markers */}
                         <defs>
-                          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                          <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                             <polygon points="0 0, 10 3.5, 0 7" fill="#374151"/>
                           </marker>
-                          <marker id="arrowhead-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                          <marker id="arrowhead-red2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                             <polygon points="0 0, 10 3.5, 0 7" fill="#EF4444"/>
                           </marker>
                         </defs>
                         
                         {/* Labels */}
-                        <text x="400" y="350" textAnchor="middle" fill="#374151" fontSize="14" fontWeight="bold">IEEE P2020 Konforme Testumgebung</text>
+                        <text x="400" y="320" textAnchor="middle" fill="#374151" fontSize="16" fontWeight="bold">IEEE P2020 Konforme Testumgebung</text>
                         
                         {/* Connection Types Legend */}
-                        <g transform="translate(50, 450)">
-                          <text x="0" y="0" fill="#374151" fontSize="12" fontWeight="bold">Verbindungstypen:</text>
+                        <g transform="translate(50, 400)">
+                          <text x="0" y="0" fill="#374151" fontSize="14" fontWeight="bold">Verbindungstypen:</text>
                           <line x1="0" y1="20" x2="30" y2="20" stroke="#374151" strokeWidth="2"/>
-                          <text x="40" y="25" fill="#374151" fontSize="10">Optischer Pfad</text>
+                          <text x="40" y="25" fill="#374151" fontSize="12">Optischer Pfad</text>
                           <line x1="0" y1="40" x2="30" y2="40" stroke="#EF4444" strokeWidth="2" strokeDasharray="5,5"/>
-                          <text x="40" y="45" fill="#374151" fontSize="10">Digitale Steuerung</text>
+                          <text x="40" y="45" fill="#374151" fontSize="12">Digitale Steuerung</text>
                         </g>
                       </svg>
                     </div>
