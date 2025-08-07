@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Camera, Zap, Target, Microscope, Car, Smartphone, Shield, Monitor } from "lucide-react";
+import { Camera, Zap, Target, Microscope, Car, Smartphone, Shield, Monitor, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 
@@ -15,6 +15,7 @@ import automotiveLab from "@/assets/automotive-lab.jpg";
 import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
 import qualityBenchmarking from "@/assets/quality-benchmarking.jpg";
 import arcturusVegaCharts from "@/assets/arcturus-vega-charts.jpg";
+import productBundleIeee from "@/assets/product-bundle-ieee.png";
 
 const InsideLab = () => {
   const labSetups = [
@@ -118,17 +119,19 @@ const InsideLab = () => {
     },
     {
       id: 8,
-      image: arcturusVegaCharts,
-      title: "Testtafel-Analyse-Workstation",
-      description: "Umfassender Testtafel-Testaufbau",
-      industry: "Testtafel-Entwicklung",
-      icon: <Zap className="h-5 w-5" />,
+      image: productBundleIeee,
+      title: "Arcturus HDR Testpaket",
+      description: "Hochpräzise Komplettlösung für Bildqualitätstests",
+      industry: "Komplettlösung",
+      icon: <Package className="h-5 w-5" />,
       details: [
-        "Multi-Testtafel-Konfigurationen",
-        "Präzisions-Messwerkzeuge",
-        "Datenanalyse-Software",
-        "Individuelle Testtafel-Entwicklung"
-      ]
+        "Arcturus LED-System mit DC-Technologie",
+        "Vega Software Suite mit Reporting & API",
+        "Hochpräzise Testcharts (z. B. TE294)",
+        "Ideal für ADAS-, Mobilgeräte- und HDR-Kamera-Tests",
+        "IEEE P2020 & VCX konform"
+      ],
+      link: "/solution/arcturus-bundle"
     }
   ];
 
@@ -221,6 +224,14 @@ const InsideLab = () => {
                     ))}
                   </ul>
                 </div>
+                
+                {setup.link && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                      <Link to={setup.link}>Mehr erfahren</Link>
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
