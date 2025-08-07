@@ -201,8 +201,8 @@ const SolutionArcturusBundle = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {bundleComponents.map((component, index) => (
             <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white">
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-4">
+              <CardHeader className="text-center pb-2 pt-6">
+                <div className="flex justify-center mb-3">
                   <div className="w-16 h-16 bg-soft-blue/10 rounded-full flex items-center justify-center">
                     {component.icon}
                   </div>
@@ -215,7 +215,7 @@ const SolutionArcturusBundle = () => {
                 </CardDescription>
               </CardHeader>
               
-              <CardContent>
+              <CardContent className="pt-2">
                 <ul className="space-y-3">
                   {component.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center gap-2 text-sm text-gray-600">
