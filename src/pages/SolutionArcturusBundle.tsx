@@ -627,6 +627,70 @@ const SolutionArcturusBundle = () => {
         </div>
         </section>
 
+        {/* Real Setups Section */}
+        <section className="bg-white py-16">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Real Setups - Anwendungsfotos
+              </h2>
+              <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto mb-8">
+                Sehen Sie das Arcturus HDR Test Bundle in Aktion in professionellen Testlaboren 
+                und realen Anwendungsszenarien.
+              </p>
+              <Link 
+                to="/inside-lab" 
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-lg transition-colors"
+              >
+                <Eye className="h-5 w-5" />
+                Blick ins Testlabor
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="group relative overflow-hidden rounded-lg shadow-soft hover:shadow-lg transition-all duration-300">
+                <img 
+                  src={arcturusRealisticLab} 
+                  alt="HDR Szenario-Test mit Vega & Arcturus"
+                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h3 className="text-lg font-semibold mb-1">HDR Szenario-Test mit Vega & Arcturus</h3>
+                  <p className="text-sm text-gray-200">Professioneller Laboraufbau für Automotive ADAS Testing</p>
+                </div>
+              </div>
+              
+              <div className="group relative overflow-hidden rounded-lg shadow-soft hover:shadow-lg transition-all duration-300">
+                <img 
+                  src={arcturusSetup} 
+                  alt="Kompletter Laboraufbau mit Arcturus System"
+                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h3 className="text-lg font-semibold mb-1">Kompletter Laboraufbau mit Arcturus System</h3>
+                  <p className="text-sm text-gray-200">Integrierte Test-Umgebung mit LED-Beleuchtung und Software</p>
+                </div>
+              </div>
+              
+              <div className="group relative overflow-hidden rounded-lg shadow-soft hover:shadow-lg transition-all duration-300">
+                <img 
+                  src={arcturusCharts} 
+                  alt="Präzisions-Testcharts in Kombination mit Vega Software"
+                  className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-4 left-4 right-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <h3 className="text-lg font-semibold mb-1">Präzisions-Testcharts in Kombination mit Vega Software</h3>
+                  <p className="text-sm text-gray-200">Live-Analyse von Bildqualitätsparametern</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Call to Action */}
         <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[260px]">
         <div className="container mx-auto px-6 text-center">
