@@ -6,6 +6,7 @@ import Industries from "@/components/Industries";
 import Technology from "@/components/Technology";
 import StandardsExpertise from "@/components/StandardsExpertise";
 import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -23,6 +24,7 @@ const Index = () => {
       <Technology />
       <StandardsExpertise />
       <Contact />
+      <Footer />
     </div>
   );
 };
