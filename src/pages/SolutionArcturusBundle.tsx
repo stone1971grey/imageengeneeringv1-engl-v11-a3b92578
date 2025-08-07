@@ -898,6 +898,116 @@ const SolutionArcturusBundle = () => {
         </div>
         </section>
 
+        {/* Related Products */}
+        <section className="py-20 bg-white">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Verwandte Produkte
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Ergänzende Tools und Erweiterungen für Ihre Testumgebung
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              
+              {/* TE294 Chart Set */}
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden flex items-center justify-center">
+                    <FileText className="h-16 w-16 text-gray-400" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      TE294 Chart Set
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed mb-4">
+                      Optimierte Testtafel für CTA-, CSNR- und MMP-Messungen
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                    >
+                      Mehr erfahren
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Arcturus Accessories */}
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden flex items-center justify-center">
+                    <Settings className="h-16 w-16 text-gray-400" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      Arcturus Accessories
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed mb-4">
+                      Präzisionshalterungen, Erweiterungen und Kalibrierhilfen
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                    >
+                      Mehr erfahren
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Vega Add-on Kit */}
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden flex items-center justify-center">
+                    <Package className="h-16 w-16 text-gray-400" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      Vega Add-on Kit
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed mb-4">
+                      Erweiterung für bestehende Installationen mit Vega-LED
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                    >
+                      Mehr erfahren
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Vega Control API */}
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden flex items-center justify-center">
+                    <Monitor className="h-16 w-16 text-gray-400" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      Vega Control API
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed mb-4">
+                      API-Paket (C, C++, Python) zur nahtlosen Systemintegration
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                    >
+                      Mehr erfahren
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+            </div>
+          </div>
+        </section>
+
         {/* FAQ Section */}
         <ProductFAQ 
           faqs={faqData}
