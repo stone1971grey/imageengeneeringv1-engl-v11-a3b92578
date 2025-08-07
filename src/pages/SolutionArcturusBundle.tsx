@@ -207,7 +207,7 @@ const SolutionArcturusBundle = () => {
                     {component.icon}
                   </div>
                 </div>
-                <CardTitle className="text-lg font-semibold text-gray-900 mb-1">
+                <CardTitle className="text-lg font-semibold text-gray-900 mb-3">
                   {component.title}
                 </CardTitle>
                 <CardDescription className="text-base text-gray-700">
