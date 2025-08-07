@@ -267,7 +267,7 @@ const SolutionArcturusBundle = () => {
                           <Button 
                             variant="outline" 
                             size="icon"
-                            className="absolute top-4 right-4 z-50 bg-white hover:bg-gray-100 shadow-lg"
+                            className="absolute top-4 right-4 z-50 bg-white shadow-lg"
                             onClick={() => setIsDialogOpen(false)}
                           >
                             <X className="h-4 w-4" />
