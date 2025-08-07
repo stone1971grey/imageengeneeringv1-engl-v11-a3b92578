@@ -100,65 +100,84 @@ const SolutionArcturusBundle = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white font-inter">
+    <div className="min-h-screen bg-[#F7F9FB]">
       <Navigation />
       
-      
-      {/* Breadcrumb */}
-      <div className="container mx-auto px-6 pt-20 pb-4">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/">Startseite</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/products">Produkte</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <span className="cursor-pointer">Equipment</span>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Arcturus LED Produkt</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
+      {/* Main content wrapper with top margin to clear fixed navigation */}
+      <div className="pt-[140px]">
+        {/* Breadcrumb Navigation */}
+        <nav aria-label="Breadcrumb" className="sticky top-[140px] z-40 bg-[#F7F9FB] py-6 border-b border-gray-100">
+          <div className="container mx-auto px-4 mt-8">
+            <ol className="flex gap-2 text-base text-muted-foreground">
+              <li>
+                <Link to="/" className="hover:text-foreground transition-colors">
+                  Startseite
+                </Link>
+              </li>
+              <li>/</li>
+              <li>
+                <span className="hover:text-foreground transition-colors cursor-pointer">
+                  Lösungen
+                </span>
+              </li>
+              <li>/</li>
+              <li>
+                <span className="hover:text-foreground transition-colors cursor-pointer">
+                  Testpakete
+                </span>
+              </li>
+              <li>/</li>
+              <li>
+                <span className="text-muted-foreground underline">
+                  Arcturus HDR
+                </span>
+              </li>
+            </ol>
+          </div>
+        </nav>
 
-      {/* Meta Navigation */}
-      <div className="container mx-auto px-6 pb-8">
-        <div className="flex flex-wrap gap-6 justify-center border-b border-gray-200">
-          <button className="text-blue-600 border-b-2 border-blue-600 pb-2 px-1 font-medium">
-            Übersicht
-          </button>
-          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
-            Vorteile
-          </button>
-          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
-            Spezifikationen
-          </button>
-          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
-            Anwendungen
-          </button>
-          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
-            Galerie
-          </button>
-          <button className="text-gray-600 hover:text-blue-600 pb-2 px-1 font-medium transition-colors">
-            Downloads
-          </button>
-        </div>
-      </div>
+        {/* Quick Navigation */}
+        <nav className="sticky top-[215px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+              <div className="flex flex-wrap gap-6 justify-center text-lg">
+                 <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
+                   onClick={(e) => {
+                     e.preventDefault();
+                     document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Übersicht</a>
+                 <a href="#components" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   onClick={(e) => {
+                     e.preventDefault();
+                     document.getElementById('components')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Komponenten</a>
+                 <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   onClick={(e) => {
+                     e.preventDefault();
+                     document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Vorteile</a>
+                 <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   onClick={(e) => {
+                     e.preventDefault();
+                     document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Bereiche</a>
+                 <a href="#gallery" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   onClick={(e) => {
+                     e.preventDefault();
+                     document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Galerie</a>
+                 <a href="#downloads" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   onClick={(e) => {
+                     e.preventDefault();
+                     document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Downloads</a>
+              </div>
+            </div>
+          </div>
+        </nav>
 
-      {/* Hero Section */}
-      <div className="bg-scandi-white py-16 lg:py-24">
+        {/* Hero Section */}
+        <section id="overview" className="bg-scandi-white py-16 lg:py-24 scroll-mt-[260px]">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
@@ -217,10 +236,10 @@ const SolutionArcturusBundle = () => {
             </div>
           </div>
         </div>
-      </div>
+        </section>
 
-      {/* Bundle Components */}
-      <div className="container mx-auto px-6 py-16">
+        {/* Bundle Components */}
+        <section id="components" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Was ist in der Komplettlösung enthalten?
@@ -261,10 +280,10 @@ const SolutionArcturusBundle = () => {
             </Card>
           ))}
         </div>
-      </div>
+        </section>
 
-      {/* Technical Overview */}
-      <div className="bg-white py-16">
+        {/* Technical Overview */}
+        <section id="benefits" className="bg-white py-16 scroll-mt-[260px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -515,10 +534,10 @@ const SolutionArcturusBundle = () => {
             </div>
           </div>
         </div>
-      </div>
+        </section>
 
-      {/* Key Benefits */}
-      <div className="bg-scandi-light-grey py-16">
+        {/* Key Benefits */}
+        <section id="applications" className="bg-scandi-light-grey py-16 scroll-mt-[260px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -562,10 +581,10 @@ const SolutionArcturusBundle = () => {
             </div>
           </div>
         </div>
-      </div>
+        </section>
 
-      {/* Application Areas */}
-      <div className="container mx-auto px-6 py-16">
+        {/* Application Areas */}
+        <section id="gallery" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Anwendungsbereiche
@@ -606,10 +625,10 @@ const SolutionArcturusBundle = () => {
             </Card>
           ))}
         </div>
-      </div>
+        </section>
 
-      {/* Call to Action */}
-      <div className="bg-scandi-white py-16">
+        {/* Call to Action */}
+        <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[260px]">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Bereit für professionelle Bildqualitätstests?
@@ -628,6 +647,7 @@ const SolutionArcturusBundle = () => {
             </Button>
           </div>
         </div>
+        </section>
       </div>
     </div>
   );
