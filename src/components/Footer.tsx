@@ -23,7 +23,7 @@ const Footer = () => {
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold mb-4">
-                Sie haben Fragen? Sprechen Sie mit uns.
+                Sie haben Fragen?<br />Sprechen Sie mit uns.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 Unsere Experten beraten Sie gerne persönlich zu Ihrer Anwendung oder unterstützen Sie bei der Planung Ihrer Testlösung.
