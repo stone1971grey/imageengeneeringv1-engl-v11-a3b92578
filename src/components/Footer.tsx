@@ -69,7 +69,7 @@ const Footer = () => {
                 <img 
                   src={teamLaura}
                   alt="Laura Neumann, Head of Optical Systems"
-                  className="w-16 h-16 rounded-full object-cover grayscale"
+                  className="w-24 h-24 rounded-full object-cover grayscale"
                 />
               </div>
               <div className="flex-1">
