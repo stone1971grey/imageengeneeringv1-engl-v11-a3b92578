@@ -776,9 +776,9 @@ const SolutionArcturusBundle = () => {
             <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                 
-                {/* Portrait Image */}
+                 {/* Portrait Image */}
                 <div className="flex-shrink-0">
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-lg">
+                  <div className="w-[150px] h-[150px] rounded-full overflow-hidden shadow-lg">
                     <img 
                       src={testimonialDrBecker} 
                       alt="Dr. Thomas Becker, Head of Image Quality Lab bei VisionDrive Automotive GmbH"
