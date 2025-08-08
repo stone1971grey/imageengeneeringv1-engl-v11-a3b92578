@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, Clock } from "lucide-react";
-import teamLaura from "@/assets/team-laura.jpg";
+import teamLaura from "@/assets/team-laura-color.jpg";
 
 const Footer = () => {
   return (
@@ -66,11 +66,11 @@ const Footer = () => {
           <div className="bg-card border border-border rounded-lg p-8">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0">
-                <img 
-                  src={teamLaura}
-                  alt="Laura Neumann, Head of Optical Systems"
-                  className="w-[150px] h-[150px] rounded-full object-cover grayscale"
-                />
+                 <img 
+                   src={teamLaura}
+                   alt="Laura Neumann, Head of Optical Systems"
+                   className="w-[150px] h-[150px] rounded-full object-cover"
+                 />
               </div>
               <div className="flex-1">
                 <blockquote className="text-lg text-foreground leading-relaxed mb-4">
