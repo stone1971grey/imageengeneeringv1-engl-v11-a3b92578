@@ -57,7 +57,7 @@ const Footer = () => {
               </div>
             </div>
 
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-3">
               Jetzt Demo vereinbaren
             </Button>
           </div>
