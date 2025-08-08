@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, HeadphonesIcon } from "lucide-react";
+import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
@@ -622,7 +622,7 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ressourcen</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none right-0 ml-auto">
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
                     <div className="bg-[#f3f3f3] p-6 w-[400px]">
                       <div className="flex gap-8 h-[200px]">
                         <div className="space-y-4 flex-1">
@@ -640,13 +640,11 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-40" />
                         
                         <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <HeadphonesIcon className="h-6 w-6" />
-                            Support
-                          </h4>
+                          <h4 className="font-semibold mb-3 text-lg text-black">Support</h4>
                           <ul className="space-y-4">
                             <li><a href="#" className="text-lg text-black hover:text-blue-400 transition-colors">Knowledge Base</a></li>
                             <li><a href="#" className="text-lg text-black hover:text-blue-400 transition-colors">Technical Support</a></li>
+                            <li><a href="#" className="text-lg text-black hover:text-blue-400 transition-colors">Community</a></li>
                           </ul>
                         </div>
                       </div>
