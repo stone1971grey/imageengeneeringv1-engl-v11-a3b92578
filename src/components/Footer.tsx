@@ -5,8 +5,19 @@ import teamLaura from "@/assets/team-laura.jpg";
 const Footer = () => {
   return (
     <footer className="bg-background border-t border-border">
-      {/* Top Section - Contact & Team Quote */}
-      <div className="container mx-auto px-6 py-16">
+      {/* Vision CTA Section */}
+      <div className="container mx-auto px-6 py-16 text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          Bereit, Ihre Vision zu transformieren?
+        </h2>
+        <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+          Lassen Sie uns besprechen, wie unsere Bildverarbeitungslösungen Ihr Unternehmen revolutionieren können. Kontaktieren Sie noch heute unsere Experten.
+        </p>
+      </div>
+
+      {/* Contact & Team Quote Section */}
+      <div className="border-t border-border bg-muted/30">
+        <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left Column - Contact */}
           <div className="space-y-8">
@@ -72,6 +83,7 @@ const Footer = () => {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
 
