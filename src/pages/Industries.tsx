@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { Camera, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -166,7 +167,7 @@ const Industries = () => {
           </div>
         </div>
       </section>
-
+      <Footer />
     </div>
   );
 };

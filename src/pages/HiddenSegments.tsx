@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Services from "@/components/Services";
 import ChartFinder from "@/components/ChartFinder";
+import Footer from "@/components/Footer";
 
 const HiddenSegments = () => {
   return (
@@ -20,6 +21,7 @@ const HiddenSegments = () => {
       
       {/* Chart Finder Segment */}
       <ChartFinder />
+      <Footer />
     </div>
   );
 };

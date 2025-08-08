@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
+import Footer from "@/components/Footer";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
@@ -413,6 +414,7 @@ const Automotive = () => {
           </div>
         </div>
         </section>
+      <Footer />
     </div>
   );
 };

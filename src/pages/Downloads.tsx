@@ -6,6 +6,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Download, Lock, FileText, Image, Video, FileCode, File } from "lucide-react";
 import { Link } from "react-router-dom";
 import RegularNavigation from "@/components/RegularNavigation";
+import Footer from "@/components/Footer";
 
 const Downloads = () => {
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
@@ -293,6 +294,7 @@ const Downloads = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

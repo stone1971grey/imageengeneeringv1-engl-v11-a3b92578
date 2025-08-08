@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ArrowLeft, Download, FileText, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, ChevronLeft, ChevronRight, Expand, X, Lightbulb, Monitor } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 
 import arcturusMain from "@/assets/arcturus-main-product.png";
@@ -893,6 +894,7 @@ const ProductArcturus = () => {
           </Button>
         </div>
       </section>
+      <Footer />
       </div>
     </div>
   );

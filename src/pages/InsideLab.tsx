@@ -1,10 +1,11 @@
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Camera, Zap, Target, Microscope, Car, Smartphone, Shield, Monitor, Package } from "lucide-react";
 import { Link } from "react-router-dom";
-import Navigation from "@/components/Navigation";
 
 // Import lab images
 import adasTesting from "@/assets/adas-testing.jpg";
@@ -258,6 +259,7 @@ const InsideLab = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

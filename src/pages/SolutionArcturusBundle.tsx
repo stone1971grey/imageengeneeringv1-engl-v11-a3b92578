@@ -6,6 +6,7 @@ import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircl
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import ProductFAQ from "@/components/ProductFAQ";
 
 // Import solution images
@@ -1014,6 +1015,7 @@ const SolutionArcturusBundle = () => {
           productName="Arcturus HDR Test Bundle"
         />
       </div>
+      <Footer />
     </div>
   );
 };

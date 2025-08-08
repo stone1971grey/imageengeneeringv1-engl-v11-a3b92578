@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { Camera, Monitor, Zap, Cpu, Target, Settings, ArrowRight, Calendar, MapPin, Download, Package, Lightbulb, Puzzle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -294,7 +295,7 @@ const Products = () => {
           <ProductSelectionHelper />
         </div>
       </section>
-
+      <Footer />
     </div>
   );
 };
