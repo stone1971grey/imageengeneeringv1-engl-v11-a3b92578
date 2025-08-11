@@ -167,6 +167,11 @@ const Navigation = () => {
   };
 
   const solutionPackages = {
+    "Arcturus HDR Test Bundle": {
+      image: productBundleIeee,
+      description: "HDR‑Testbundle mit Arcturus LED, Vega Software und Testcharts – ideal für Automotive & Mobile.",
+      subline: "Komplettpaket: Beleuchtung + Software + Charts"
+    },
     "Arcturus LED + Vega Software + Test Charts": {
       image: arcturusMainProduct,
       description: "Komplettlösung für Beleuchtungstests",
