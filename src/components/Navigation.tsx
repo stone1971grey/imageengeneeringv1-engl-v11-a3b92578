@@ -710,7 +710,7 @@ const Navigation = () => {
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main grid */}
-                      <div className="flex gap-6 p-6 h-[320px]">
+                      <div className="flex gap-6 px-6 pt-4 pb-4 h-[320px]">
                         {/* Column 1: Kontakt & Standort */}
                         <div className="flex flex-col justify-center space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
@@ -739,10 +739,6 @@ const Navigation = () => {
 
                         {/* Column 2: Über das Unternehmen */}
                         <div className="flex flex-col justify-center space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Info className="h-6 w-6" />
-                            Über das Unternehmen
-                          </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Info className="h-5 w-5" />
                             <a href="#about">Über Image Engineering</a>
@@ -792,17 +788,6 @@ const Navigation = () => {
                         </div>
                       </div>
 
-                      {/* CTA Button */}
-                      <div className="bg-[#f3f3f3] px-6 pt-8 pb-8">
-                        <Link to="/#about">
-                          <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
-                            <div className="flex items-center gap-3 text-black">
-                              <Search className="h-5 w-5" />
-                              <span className="text-lg font-medium">Alle Unternehmensinfos ansehen →</span>
-                            </div>
-                          </div>
-                        </Link>
-                      </div>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
