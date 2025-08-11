@@ -626,7 +626,7 @@ const Navigation = () => {
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       <div className="flex gap-6 p-6 h-[320px]">
                         {/* Column 1: Downloads */}
-                        <div className="space-y-4 flex-1">
+                        <div className="flex flex-col justify-center space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Download className="h-6 w-6" />
                             Downloads
@@ -648,7 +648,7 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 2: Support & Hilfe */}
-                        <div className="space-y-4 flex-1">
+                        <div className="flex flex-col justify-center space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Wrench className="h-6 w-6" />
                             Support & Hilfe
@@ -670,7 +670,7 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 3: Zusatzressourcen */}
-                        <div className="space-y-4 flex-1">
+                        <div className="flex flex-col justify-center space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Info className="h-6 w-6" />
                             Zusatzressourcen
