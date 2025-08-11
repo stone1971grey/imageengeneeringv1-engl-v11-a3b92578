@@ -807,8 +807,8 @@ const Navigation = () => {
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetContent side="right" className="w-full sm:max-w-sm p-0">
               <div className="h-full overflow-y-auto">
-                <nav className="px-4 pt-4 pb-28">
-                  <Accordion type="single" collapsible defaultValue="solutions" className="space-y-0">
+                <nav className="px-4 pt-6 pb-28">
+                  <Accordion type="single" collapsible className="space-y-0">
                     {/* Ihre Lösung finden */}
                     <AccordionItem value="solutions">
                       <AccordionTrigger className="px-4 py-3 text-base">
@@ -913,47 +913,6 @@ const Navigation = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Produkte */}
-                    <AccordionItem value="products">
-                      <AccordionTrigger className="px-4 py-3 text-base">
-                        <div className="flex items-center gap-3">
-                          <Package className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Produkte</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2 pt-2">
-                          <ul className="space-y-1">
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Target className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Charts</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Camera className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Geräte</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Monitor className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Software</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Package className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Produktbündel</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Lösungen</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Puzzle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Zubehör</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Cpu className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technologie</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Schulungen</span></div>
-                            </li>
-                          </ul>
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">Inside the Lab – Real Test Setups</Button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
                     {/* Branchen */}
                     <AccordionItem value="industries">
                       <AccordionTrigger className="px-4 py-3 text-base">
@@ -1020,6 +979,47 @@ const Navigation = () => {
                               </Link>
                             </li>
                           </ul>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Produkte */}
+                    <AccordionItem value="products">
+                      <AccordionTrigger className="px-4 py-3 text-base">
+                        <div className="flex items-center gap-3">
+                          <Package className="w-5 h-5 shrink-0 text-muted-foreground" />
+                          <span className="text-foreground">Produkte</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2 pt-2">
+                          <ul className="space-y-1">
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Target className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Charts</span></div>
+                            </li>
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Camera className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Geräte</span></div>
+                            </li>
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Monitor className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Software</span></div>
+                            </li>
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Package className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Produktbündel</span></div>
+                            </li>
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Lösungen</span></div>
+                            </li>
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Puzzle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Zubehör</span></div>
+                            </li>
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Cpu className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technologie</span></div>
+                            </li>
+                            <li>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Schulungen</span></div>
+                            </li>
+                          </ul>
+                          <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">Inside the Lab – Real Test Setups</Button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
