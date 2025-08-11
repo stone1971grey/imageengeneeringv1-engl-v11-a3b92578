@@ -32,6 +32,7 @@ import iqLedIllumination from "@/assets/iq-led-illumination.png";
 import chartCase from "@/assets/chart-case.png";
 import technology2025 from "@/assets/technology-2025.png";
 import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
+import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -168,7 +169,7 @@ const Navigation = () => {
 
   const solutionPackages = {
     "Arcturus HDR Test Bundle": {
-      image: productBundleIeee,
+      image: arcturusSetupVegaLaptop,
       description: "HDR‑Testbundle mit Arcturus LED, Vega Software und Testcharts – ideal für Automotive & Mobile.",
       subline: "Komplettpaket: Beleuchtung + Software + Charts"
     },
