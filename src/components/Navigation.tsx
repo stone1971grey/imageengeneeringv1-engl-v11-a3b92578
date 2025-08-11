@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText } from "lucide-react";
+import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText, Phone, MapPin, Calendar, Briefcase, Handshake, Leaf, Recycle, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
@@ -707,18 +707,101 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Über uns</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
-                    <div className="bg-[#f3f3f3] p-6 w-[300px]">
-                      <div className="flex gap-8 h-[200px]">
-                        <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 text-lg text-black">Company</h4>
-                          <ul className="space-y-4">
-                            <li><a href="#about" className="text-lg text-black hover:text-blue-400 transition-colors">About Us</a></li>
-                            <li><a href="#" className="text-lg text-black hover:text-blue-400 transition-colors">Team</a></li>
-                            <li><a href="#" className="text-lg text-black hover:text-blue-400 transition-colors">Careers</a></li>
-                            <li><a href="#" className="text-lg text-black hover:text-blue-400 transition-colors">News</a></li>
-                          </ul>
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
+                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
+                      {/* Main grid */}
+                      <div className="flex gap-6 p-6 h-[320px]">
+                        {/* Column 1: Kontakt & Standort */}
+                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Building2 className="h-6 w-6" />
+                            Kontakt & Standort
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <MessageCircle className="h-5 w-5" />
+                            <a href="#">Kontakt</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <MapPin className="h-5 w-5" />
+                            <a href="#">Besuch uns</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Building className="h-5 w-5" />
+                            <a href="#">Händler / Reseller</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Calendar className="h-5 w-5" />
+                            <a href="#">Events</a>
+                          </div>
                         </div>
+
+                        <Separator orientation="vertical" className="bg-black h-72" />
+
+                        {/* Column 2: Über das Unternehmen */}
+                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Info className="h-6 w-6" />
+                            Über das Unternehmen
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Info className="h-5 w-5" />
+                            <a href="#about">Über Image Engineering</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Users className="h-5 w-5" />
+                            <a href="#">Team</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Building2 className="h-5 w-5" />
+                            <a href="#">Nynomic Group</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Briefcase className="h-5 w-5" />
+                            <a href="#">Stellenangebote</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Handshake className="h-5 w-5" />
+                            <a href="#">Mitgliedschaften & Partnerschaften</a>
+                          </div>
+                        </div>
+
+                        <Separator orientation="vertical" className="bg-black h-72" />
+
+                        {/* Column 3: Qualität & Nachhaltigkeit */}
+                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <ShieldCheck className="h-6 w-6" />
+                            Qualität & Nachhaltigkeit
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <CheckCircle className="h-5 w-5" />
+                            <a href="#">Qualitätsmanagement</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Leaf className="h-5 w-5" />
+                            <a href="#">Klimaneutralität</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Leaf className="h-5 w-5" />
+                            <a href="#">ESG – Nachhaltigkeit</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Recycle className="h-5 w-5" />
+                            <a href="#">Entsorgung & Recycling</a>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CTA Button */}
+                      <div className="bg-[#f3f3f3] px-6 pt-8 pb-8">
+                        <Link to="/#about">
+                          <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
+                            <div className="flex items-center gap-3 text-black">
+                              <Search className="h-5 w-5" />
+                              <span className="text-lg font-medium">Alle Unternehmensinfos ansehen →</span>
+                            </div>
+                          </div>
+                        </Link>
                       </div>
                     </div>
                   </NavigationMenuContent>
