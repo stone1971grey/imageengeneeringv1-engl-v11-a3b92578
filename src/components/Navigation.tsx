@@ -357,7 +357,7 @@ const Navigation = () => {
                       </div>
                       
                        {/* Solution-Finder CTA */}
-                      <div className="bg-[#f3f3f3] px-6 pt-8 pb-8">
+                      <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                           <div className="flex items-center gap-3 text-black">
                             <Search className="h-5 w-5" />
@@ -589,7 +589,7 @@ const Navigation = () => {
                       </div>
                       
                       {/* Testlabor CTA */}
-                      <div className="bg-[#f3f3f3] px-6 pt-8 pb-8">
+                      <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <Link to="/inside-lab">
                           <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                             <div className="flex items-center gap-3 text-black">
@@ -624,9 +624,9 @@ const Navigation = () => {
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ressourcen</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
-                      <div className="flex gap-6 px-6 pt-4 pb-4 h-[320px]">
+                      <div className="flex gap-6 p-6 h-[320px]">
                         {/* Column 1: Downloads */}
-                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                        <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Download className="h-6 w-6" />
                             Downloads
@@ -648,7 +648,7 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 2: Support & Hilfe */}
-                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                        <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Wrench className="h-6 w-6" />
                             Support & Hilfe
@@ -670,7 +670,7 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 3: Zusatzressourcen */}
-                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                        <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Info className="h-6 w-6" />
                             Zusatzressourcen
@@ -691,7 +691,7 @@ const Navigation = () => {
                       </div>
 
                       {/* CTA Button */}
-                      <div className="bg-[#f3f3f3] px-6 pt-4 pb-6">
+                      <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <Link to="/downloads">
                           <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                             <div className="flex items-center gap-3 text-black">
@@ -710,9 +710,9 @@ const Navigation = () => {
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main grid */}
-                      <div className="flex gap-6 px-6 pt-4 pb-4 h-[320px]">
+                      <div className="flex gap-6 p-6 h-[320px]">
                         {/* Column 1: Kontakt & Standort */}
-                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                        <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Building2 className="h-6 w-6" />
                             Kontakt & Standort
@@ -738,7 +738,7 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 2: Über das Unternehmen */}
-                        <div className="flex flex-col justify-center space-y-4 flex-1">
+                        <div className="space-y-4 flex-1">
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Info className="h-5 w-5" />
                             <a href="#about">Über Image Engineering</a>
@@ -764,11 +764,7 @@ const Navigation = () => {
                         <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 3: Qualität & Nachhaltigkeit */}
-                        <div className="flex flex-col justify-center space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <ShieldCheck className="h-6 w-6" />
-                            Qualität & Nachhaltigkeit
-                          </h4>
+                        <div className="space-y-4 flex-1">
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <CheckCircle className="h-5 w-5" />
                             <a href="#">Qualitätsmanagement</a>
