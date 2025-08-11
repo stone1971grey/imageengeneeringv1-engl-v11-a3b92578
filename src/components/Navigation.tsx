@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText, Phone, MapPin, Calendar, Briefcase, Handshake, Leaf, Recycle, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Sprout } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
@@ -767,20 +768,20 @@ const Navigation = () => {
                         {/* Column 3: Qualität & Nachhaltigkeit */}
                         <div className="space-y-4 flex-1">
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <CheckCircle className="h-5 w-5" />
-                            <a href="#">Qualitätsmanagement</a>
+                            <BadgeCheck className="h-5 w-5" />
+                            <a href="#" aria-label="Qualitätsmanagement">{/* TODO: link to /company/quality-management when route exists */}Qualitätsmanagement</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Leaf className="h-5 w-5" />
-                            <a href="#">Klimaneutralität</a>
+                            <a href="#" aria-label="Klimaneutralität">{/* TODO: link to /company/climate-neutrality when route exists */}Klimaneutralität</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Leaf className="h-5 w-5" />
-                            <a href="#">ESG – Nachhaltigkeit</a>
+                            <Sprout className="h-5 w-5" />
+                            <a href="#" aria-label="ESG – Nachhaltigkeit">{/* TODO: link to /company/esg-sustainability when route exists */}ESG – Nachhaltigkeit</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Recycle className="h-5 w-5" />
-                            <a href="#">Entsorgung & Recycling</a>
+                            <a href="#" aria-label="Entsorgung & Recycling">{/* TODO: link to /company/disposal-recycling when route exists */}Entsorgung & Recycling</a>
                           </div>
                         </div>
                       </div>
@@ -1126,6 +1127,30 @@ const Navigation = () => {
                             </li>
                             <li>
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Handshake className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Mitgliedschaften & Partnerschaften</span></div>
+                            </li>
+                            <li>
+                              <Link to="#" aria-label="Qualitätsmanagement" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                                <BadgeCheck className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
+                                <span className="text-[15px] leading-5 text-foreground">Qualitätsmanagement</span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link to="#" aria-label="Klimaneutralität" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                                <Leaf className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
+                                <span className="text-[15px] leading-5 text-foreground">Klimaneutralität</span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link to="#" aria-label="ESG – Nachhaltigkeit" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                                <Sprout className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
+                                <span className="text-[15px] leading-5 text-foreground">ESG – Nachhaltigkeit</span>
+                              </Link>
+                            </li>
+                            <li>
+                              <Link to="#" aria-label="Entsorgung & Recycling" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                                <Recycle className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
+                                <span className="text-[15px] leading-5 text-foreground">Entsorgung & Recycling</span>
+                              </Link>
                             </li>
                           </ul>
                         </div>
