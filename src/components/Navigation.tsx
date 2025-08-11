@@ -228,9 +228,9 @@ const Navigation = () => {
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
-                      <div className="flex gap-6 p-6 h-[320px]">
+                        <div className="flex gap-6 p-6">
                         {/* Left Column: Typische Anwendungen */}
-                        <div className="space-y-4 flex-1">
+                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Target className="h-6 w-6" />
                             Typische Anwendungen
@@ -278,10 +278,9 @@ const Navigation = () => {
                           </div>
                         </div>
                         
-                        <Separator orientation="vertical" className="bg-black h-72" />
                         
                         {/* Middle Column: Vorkonfigurierte Lösungspakete */}
-                        <div className="space-y-4 flex-1">
+                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Package className="h-6 w-6" />
                             Lösungspakete
@@ -321,7 +320,6 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Right Column: Zielgruppen */}
                         <div className="space-y-4 flex-1">
@@ -509,8 +507,8 @@ const Navigation = () => {
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
-                      <div className="flex gap-8 p-6 h-[200px]">
-                        <div className="space-y-4 flex-1">
+                        <div className="flex gap-8 p-6">
+                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Charts")}
@@ -537,9 +535,8 @@ const Navigation = () => {
                           </div>
                         </div>
                         
-                        <Separator orientation="vertical" className="bg-black h-40" />
                         
-                        <div className="space-y-4 flex-1">
+                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Produktbündel")}
@@ -558,7 +555,6 @@ const Navigation = () => {
                           </div>
                         </div>
                         
-                        <Separator orientation="vertical" className="bg-black h-40" />
                         
                          <div className="space-y-4 flex-1">
                            <div 
@@ -624,9 +620,9 @@ const Navigation = () => {
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ressourcen</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
-                      <div className="flex gap-6 p-6 h-[320px]">
+                        <div className="flex gap-6 p-6">
                         {/* Column 1: Downloads */}
-                        <div className="space-y-4 flex-1">
+                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Download className="h-6 w-6" />
                             Downloads
@@ -645,10 +641,9 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 2: Support & Hilfe */}
-                        <div className="space-y-4 flex-1">
+                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Wrench className="h-6 w-6" />
                             Support & Hilfe
@@ -667,7 +662,6 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 3: Zusatzressourcen */}
                         <div className="space-y-4 flex-1">
@@ -696,7 +690,7 @@ const Navigation = () => {
                           <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                             <div className="flex items-center gap-3 text-black">
                               <Search className="h-5 w-5" />
-                              <span className="text-lg font-medium">Zum Downloadcenter →</span>
+                              <span className="text-lg font-medium">Zum Downloadcenter</span>
                             </div>
                           </div>
                         </Link>
@@ -710,9 +704,9 @@ const Navigation = () => {
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main grid */}
-                      <div className="flex gap-6 p-6 h-[320px]">
+                      <div className="flex gap-6 p-6">
                         {/* Column 1: Kontakt & Standort */}
-                        <div className="space-y-4 flex-1">
+                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Building2 className="h-6 w-6" />
                             Kontakt & Standort
@@ -735,10 +729,9 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        <Separator orientation="vertical" className="bg-black h-72" />
 
                         {/* Column 2: Über das Unternehmen */}
-                        <div className="space-y-4 flex-1">
+                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Info className="h-5 w-5" />
                             <a href="#about">Über Image Engineering</a>
@@ -761,7 +754,7 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        <Separator orientation="vertical" className="bg-black h-72" />
+                        
 
                         {/* Column 3: Qualität & Nachhaltigkeit */}
                         <div className="space-y-4 flex-1">
