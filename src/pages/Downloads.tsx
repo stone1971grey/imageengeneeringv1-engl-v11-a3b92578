@@ -429,7 +429,7 @@ export default function Downloads() {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-muted text-foreground">
       <RegularNavigation />
 
       <header className="border-b">
@@ -508,28 +508,30 @@ export default function Downloads() {
 
             {/* Desktop filters */}
             <div className="hidden md:block">
-              <Filters
-                q={q}
-                setQ={setQ}
-                cats={cats}
-                setCats={setCats}
-                products={products}
-                setProducts={setProducts}
-                oses={oses}
-                setOses={setOses}
-                langs={langs}
-                setLangs={setLangs}
-                period={period}
-                setPeriod={setPeriod}
-                allProducts={allProducts}
-                clearAll={clearAll}
-                hitCount={total}
-              />
+              <div className="rounded-lg border bg-card shadow-sm p-5">
+                <Filters
+                  q={q}
+                  setQ={setQ}
+                  cats={cats}
+                  setCats={setCats}
+                  products={products}
+                  setProducts={setProducts}
+                  oses={oses}
+                  setOses={setOses}
+                  langs={langs}
+                  setLangs={setLangs}
+                  period={period}
+                  setPeriod={setPeriod}
+                  allProducts={allProducts}
+                  clearAll={clearAll}
+                  hitCount={total}
+                />
+              </div>
             </div>
           </aside>
 
           {/* Content */}
-          <section className="md:col-span-8 lg:col-span-9 space-y-5">
+          <section className="md:col-span-8 lg:col-span-9 space-y-6 mt-6 md:mt-0 md:border-l md:border-border md:pl-8">
             {/* Top tabs */}
             <Tabs
               value={cats.length === 1 ? cats[0] : "all"}
@@ -618,18 +620,18 @@ export default function Downloads() {
             )}
 
             {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
               {pageItems.map((item) => (
                 <Card key={item.id} className="flex flex-col">
-                  <CardHeader className="pb-3">
+                  <CardHeader className="py-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <CardTitle className="text-base font-semibold leading-6">
                           {item.title}
                         </CardTitle>
                         <div className="mt-1 flex items-center gap-2">
-                          <Badge variant="secondary">{item.product}</Badge>
-                          <Badge>{CATEGORY_LABEL[item.category]}</Badge>
+                          <Badge variant="secondary" className="text-xs px-2.5 py-1 rounded-md">{item.product}</Badge>
+                          <Badge className="text-xs px-2.5 py-1 rounded-md">{CATEGORY_LABEL[item.category]}</Badge>
                         </div>
                       </div>
                       <div className="text-muted-foreground">
@@ -781,7 +783,7 @@ export default function Downloads() {
 
       {/* KI Assistant Floating Button */}
       <Button
-        className="fixed bottom-5 right-5 shadow-lg"
+        className="fixed bottom-6 right-6 shadow-lg hover:shadow-xl focus-visible:ring-2 focus-visible:ring-primary/40"
         onClick={() => setAiOpen(true)}
         aria-label="KI‑Assistenz öffnen"
       >
@@ -844,7 +846,7 @@ function Filters(props: {
     <div className="space-y-6" aria-label="Filter">
       {/* Suche */}
       <div>
-        <label className="mb-2 block text-sm font-medium">Suche</label>
+        <label className="mb-3 block text-base font-semibold">Suche</label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -859,7 +861,7 @@ function Filters(props: {
 
       {/* Kategorien */}
       <div>
-        <div className="mb-2 text-sm font-medium">Kategorien</div>
+        <div className="mb-3 text-base font-semibold">Kategorien</div>
         <div className="grid grid-cols-1 gap-2">
           {(Object.keys(CATEGORY_LABEL) as DownloadItem["category"][]).map((key) => (
             <label key={key} className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60">
@@ -876,7 +878,7 @@ function Filters(props: {
 
       {/* Produkte */}
       <div>
-        <div className="mb-2 text-sm font-medium">Produkte</div>
+        <div className="mb-3 text-base font-semibold">Produkte</div>
         <div className="space-y-2">
           {allProducts.map((p) => (
             <label key={p} className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60">
@@ -893,7 +895,7 @@ function Filters(props: {
 
       {/* Betriebssystem */}
       <div>
-        <div className="mb-2 text-sm font-medium">Betriebssystem</div>
+        <div className="mb-3 text-base font-semibold">Betriebssystem</div>
         <div className="flex flex-wrap gap-2">
           {["windows", "mac", "linux"].map((o) => (
             <button
@@ -919,7 +921,7 @@ function Filters(props: {
 
       {/* Sprachen */}
       <div>
-        <div className="mb-2 text-sm font-medium">Sprachen</div>
+        <div className="mb-3 text-base font-semibold">Sprachen</div>
         <div className="space-y-2">
           {[
             { v: "de", l: "Deutsch" },
@@ -939,7 +941,7 @@ function Filters(props: {
 
       {/* Zeitraum */}
       <div>
-        <div className="mb-2 text-sm font-medium">Version/Zeitraum</div>
+        <div className="mb-3 text-base font-semibold">Version/Zeitraum</div>
         <Select value={period} onValueChange={(v) => setPeriod(v)}>
           <SelectTrigger aria-label="Zeitraum">
             <SelectValue placeholder="Neueste" />
@@ -1027,7 +1029,7 @@ function AiAssistantDialog({
           ))}
         </div>
 
-        <div className="mt-4 h-64 overflow-auto rounded border p-3 space-y-3 bg-background">
+        <div className="mt-4 h-64 overflow-auto rounded border p-3 space-y-3 bg-card">
           {messages.map((m, idx) => (
             <div key={idx} className={`max-w-[85%] ${m.role === "user" ? "ml-auto text-right" : ""}`}>
               <div
