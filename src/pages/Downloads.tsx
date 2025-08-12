@@ -43,7 +43,7 @@ import {
   Link as LinkIcon,
   Monitor,
   Apple,
-  Terminal as LinuxIcon,
+  Terminal as OsLinuxIcon,
   Download as DownloadIcon,
 } from "lucide-react";
 
@@ -423,7 +423,7 @@ export default function Downloads() {
     <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
       {os === "windows" && <Monitor className="h-3.5 w-3.5" aria-hidden />}
       {os === "mac" && <Apple className="h-3.5 w-3.5" aria-hidden />}
-      {os === "linux" && <LinuxIcon className="h-3.5 w-3.5" aria-hidden />}
+      {os === "linux" && <OsLinuxIcon className="h-3.5 w-3.5" aria-hidden />}
       <span className="capitalize">{os}</span>
     </span>
   );
@@ -910,7 +910,7 @@ function Filters(props: {
             >
               {o === "windows" && <Monitor className="h-4 w-4" />}
               {o === "mac" && <Apple className="h-4 w-4" />}
-              {o === "linux" && <LinuxIcon className="h-4 w-4" />}
+              {o === "linux" && <OsLinuxIcon className="h-4 w-4" />}
               <span className="capitalize">{o}</span>
             </button>
           ))}
