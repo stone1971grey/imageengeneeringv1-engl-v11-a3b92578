@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import {
   Search,
@@ -242,6 +243,8 @@ export default function Downloads() {
   // Dialogs
   const [detailsItem, setDetailsItem] = useState<DownloadItem | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const cacheSuffix = import.meta.env.DEV ? `?ts=${Date.now()}` : "";
 
   // Derived options
   const allProducts = useMemo(() => {
@@ -380,6 +383,12 @@ export default function Downloads() {
     if (page > totalPages) setPage(1);
   }, [totalPages, page]);
 
+  useEffect(() => {
+    setIsLoading(true);
+    const t = setTimeout(() => setIsLoading(false), 250);
+    return () => clearTimeout(t);
+  }, [q, cats, products, oses, langs, period, sort]);
+
   // Helpers
   const clearAll = () => {
     setQ("");
@@ -404,7 +413,8 @@ export default function Downloads() {
   const openDetails = (item: DownloadItem) => setDetailsItem(item);
 
   const copyLink = (url: string) => {
-    navigator.clipboard.writeText(url).then(() =>
+    const link = `${url}${cacheSuffix}`;
+    navigator.clipboard.writeText(link).then(() =>
       toast({ title: "Link kopiert", description: "Der Download‑Link wurde in die Zwischenablage kopiert." })
     );
   };
@@ -429,11 +439,11 @@ export default function Downloads() {
   );
 
   return (
-    <div className="min-h-screen bg-muted text-foreground">
+    <div className="min-h-screen bg-downloads-bg text-downloads-text">
       <RegularNavigation />
 
       <header className="border-b">
-        <div className="container mx-auto px-6 py-6">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6">
           <Breadcrumb aria-label="Breadcrumb">
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -454,10 +464,10 @@ export default function Downloads() {
         </div>
       </header>
 
-      <main>
+      <main className="relative z-0">
         {/* Hero */}
         <section className="border-b">
-          <div className="container mx-auto px-6 py-10 flex items-start justify-between gap-6">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 flex items-start justify-between gap-6">
             <div className="max-w-3xl">
               <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Downloadcenter</h1>
               <p className="mt-3 text-muted-foreground">
@@ -473,7 +483,7 @@ export default function Downloads() {
         </section>
 
         {/* Layout */}
-        <section className="container mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
+        <section className="max-w-[1200px] mx-auto px-4 md:px-6 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Sidebar */}
           <aside className="md:col-span-4 lg:col-span-3 md:sticky md:top-20 self-start space-y-6">
             {/* Mobile trigger */}
@@ -485,30 +495,32 @@ export default function Downloads() {
                   </Button>
                 </DrawerTrigger>
                 <DrawerContent className="p-6">
-                  <Filters
-                    q={q}
-                    setQ={setQ}
-                    cats={cats}
-                    setCats={setCats}
-                    products={products}
-                    setProducts={setProducts}
-                    oses={oses}
-                    setOses={setOses}
-                    langs={langs}
-                    setLangs={setLangs}
-                    period={period}
-                    setPeriod={setPeriod}
-                    allProducts={allProducts}
-                    clearAll={clearAll}
-                    hitCount={total}
-                  />
+                  <div className="bg-light-card rounded-xl border border-downloads-border p-5 shadow-sm">
+                    <Filters
+                      q={q}
+                      setQ={setQ}
+                      cats={cats}
+                      setCats={setCats}
+                      products={products}
+                      setProducts={setProducts}
+                      oses={oses}
+                      setOses={setOses}
+                      langs={langs}
+                      setLangs={setLangs}
+                      period={period}
+                      setPeriod={setPeriod}
+                      allProducts={allProducts}
+                      clearAll={clearAll}
+                      hitCount={total}
+                    />
+                  </div>
                 </DrawerContent>
               </Drawer>
             </div>
 
             {/* Desktop filters */}
             <div className="hidden md:block">
-              <div className="rounded-lg border bg-card shadow-sm p-5">
+              <div className="bg-light-card rounded-xl border border-downloads-border p-5 shadow-sm">
                 <Filters
                   q={q}
                   setQ={setQ}
@@ -531,7 +543,7 @@ export default function Downloads() {
           </aside>
 
           {/* Content */}
-          <section className="md:col-span-8 lg:col-span-9 space-y-6 mt-6 md:mt-0 md:border-l md:border-border md:pl-8">
+          <section className="md:col-span-8 lg:col-span-9 space-y-6 mt-6 md:mt-0 md:border-l md:border-downloads-border md:pl-6">
             {/* Top tabs */}
             <Tabs
               value={cats.length === 1 ? cats[0] : "all"}
@@ -621,80 +633,99 @@ export default function Downloads() {
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-              {pageItems.map((item) => (
-                <Card key={item.id} className="flex flex-col">
-                  <CardHeader className="py-4">
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="bg-light-card rounded-xl border border-downloads-border p-5 shadow-sm">
                     <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <CardTitle className="text-base font-semibold leading-6">
-                          {item.title}
-                        </CardTitle>
-                        <div className="mt-1 flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs px-2.5 py-1 rounded-md">{item.product}</Badge>
-                          <Badge className="text-xs px-2.5 py-1 rounded-md">{CATEGORY_LABEL[item.category]}</Badge>
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <div className="flex gap-2">
+                          <Skeleton className="h-6 w-20 rounded-full" />
+                          <Skeleton className="h-6 w-24 rounded-full" />
                         </div>
                       </div>
-                      <div className="text-muted-foreground">
-                        {FILETYPE_ICON[item.filetype]}
+                      <Skeleton className="h-5 w-5 rounded" />
+                    </div>
+                    <div className="mt-4 space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                      <Skeleton className="h-4 w-2/3" />
+                    </div>
+                    <div className="mt-4 flex justify-end gap-2">
+                      <Skeleton className="h-9 w-28 rounded-md" />
+                      <Skeleton className="h-9 w-28 rounded-md" />
+                    </div>
+                  </div>
+                ))
+              ) : (
+                pageItems.map((item) => (
+                  <Card key={item.id} className="bg-light-card rounded-xl shadow-sm border border-downloads-border flex flex-col">
+                    <CardHeader className="p-5 pb-0">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <CardTitle className="text-base font-semibold leading-6 text-downloads-text">
+                            {item.title}
+                          </CardTitle>
+                          <div className="mt-1 flex items-center gap-2">
+                            <Badge variant="secondary" className="text-sm px-3 py-1.5 rounded-md">{item.product}</Badge>
+                            <Badge className="text-sm px-3 py-1.5 rounded-md">{CATEGORY_LABEL[item.category]}</Badge>
+                          </div>
+                        </div>
+                        <div className="text-scandi-grey">
+                          {FILETYPE_ICON[item.filetype]}
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="text-sm text-muted-foreground space-y-3">
-                    <p className="line-clamp-2">{item.description}</p>
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                      {item.version && <span>Version {item.version}</span>}
-                      <span>•</span>
-                      <span>{formatDate(item.date)}</span>
-                      {item.os && item.os.length > 0 && (
-                        <>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
-                            {item.os.map((o) => (
-                              <OsChip key={o} os={o} />
-                            ))}
-                          </span>
-                        </>
-                      )}
-                      <span>•</span>
-                      <span>Sprache: {item.languages.map((l) => l.toUpperCase()).join(", ")}</span>
-                      {item.size && (
-                        <>
-                          <span>•</span>
-                          <span>{item.size}</span>
-                        </>
-                      )}
-                      <span>•</span>
-                      <span className="uppercase">{item.filetype}</span>
-                    </div>
-                    <div className="flex items-center justify-end gap-2 pt-2">
-                      <Button size="sm" onClick={() => openDetails(item)} variant="outline">
-                        <Info className="h-4 w-4 mr-2" /> Details
-                      </Button>
-                      <Button size="sm" onClick={() => copyLink(item.url)} variant="ghost">
-                        <LinkIcon className="h-4 w-4 mr-2" /> Link kopieren
-                      </Button>
-                      <Button size="sm" asChild>
-                        <a href={item.url} aria-label={`Download ${item.title}`}>
-                          <FileDown className="h-4 w-4 mr-2" /> Download
-                        </a>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardHeader>
+                    <CardContent className="p-5 pt-3 text-[15px] text-scandi-grey space-y-3">
+                      <p className="line-clamp-2">{item.description}</p>
+                      <div className="flex flex-wrap items-center gap-2 text-sm">
+                        {item.version && <span>Version {item.version}</span>}
+                        <span>•</span>
+                        <span>{formatDate(item.date)}</span>
+                        {item.os && item.os.length > 0 && (
+                          <>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              {item.os.map((o) => (
+                                <OsChip key={o} os={o} />
+                              ))}
+                            </span>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span>Sprache: {item.languages.map((l) => l.toUpperCase()).join(", ")}</span>
+                        {item.size && (
+                          <>
+                            <span>•</span>
+                            <span>{item.size}</span>
+                          </>
+                        )}
+                        <span>•</span>
+                        <span className="uppercase">{item.filetype}</span>
+                      </div>
+                      <div className="flex items-center justify-end gap-2 pt-2">
+                        <Button size="sm" onClick={() => openDetails(item)} variant="outline">
+                          <Info className="h-4 w-4 mr-2" /> Details
+                        </Button>
+                        <Button size="sm" asChild>
+                          <a href={`${item.url}${cacheSuffix}`} aria-label={`Download ${item.title}`}>
+                            <FileDown className="h-4 w-4 mr-2" /> Herunterladen
+                          </a>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
             </div>
 
             {/* Empty state */}
             {total === 0 && (
-              <div className="text-center py-14">
-                <div className="mx-auto mb-3 h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                  <Info className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold">Keine Downloads gefunden</h3>
-                <p className="text-muted-foreground mt-1">Passen Sie Ihre Filter an oder starten Sie die KI‑Assistenz.</p>
-                <div className="mt-4 flex items-center justify-center gap-2">
+              <div className="bg-light-card border border-downloads-border rounded-xl p-8 text-center">
+                <h3 className="text-lg font-semibold">Keine Treffer für die aktuelle Auswahl.</h3>
+                <p className="text-scandi-grey mt-1">Passen Sie Ihre Filter an oder setzen Sie sie zurück.</p>
+                <div className="mt-4 flex items-center justify-center">
                   <Button variant="outline" onClick={clearAll}>Filter zurücksetzen</Button>
-                  <Button onClick={() => setAiOpen(true)}>KI‑Assistenz öffnen</Button>
                 </div>
               </div>
             )}
@@ -768,7 +799,7 @@ export default function Downloads() {
                 )}
                 <div className="flex flex-wrap items-center gap-2">
                   <Button asChild>
-                    <a href={detailsItem.url} aria-label={`Download ${detailsItem.title}`}>
+                    <a href={`${detailsItem.url}${cacheSuffix}`} aria-label={`Download ${detailsItem.title}`}>
                       <FileDown className="h-4 w-4 mr-2" /> Download
                     </a>
                   </Button>
@@ -783,7 +814,7 @@ export default function Downloads() {
 
       {/* KI Assistant Floating Button */}
       <Button
-        className="fixed bottom-6 right-6 shadow-lg hover:shadow-xl focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="fixed bottom-6 right-6 shadow-lg hover:shadow-xl focus-visible:ring-2 focus-visible:ring-primary/40 bg-primary text-primary-foreground hover:shadow-glow"
         onClick={() => setAiOpen(true)}
         aria-label="KI‑Assistenz öffnen"
       >
@@ -985,6 +1016,7 @@ function AiAssistantDialog({
     },
   ]);
   const [input, setInput] = useState("");
+  const cacheSuffix = import.meta.env.DEV ? `?ts=${Date.now()}` : "";
 
   const submit = (text: string) => {
     if (!text.trim()) return;
@@ -1029,7 +1061,7 @@ function AiAssistantDialog({
           ))}
         </div>
 
-        <div className="mt-4 h-64 overflow-auto rounded border p-3 space-y-3 bg-card">
+        <div className="mt-4 h-64 overflow-auto rounded border p-3 space-y-3 bg-light-card">
           {messages.map((m, idx) => (
             <div key={idx} className={`max-w-[85%] ${m.role === "user" ? "ml-auto text-right" : ""}`}>
               <div
@@ -1059,7 +1091,7 @@ function AiAssistantDialog({
                         </div>
                         <div className="mt-2 flex items-center justify-end gap-2">
                           <Button asChild size="sm">
-                            <a href={r.url}>
+                            <a href={`${r.url}${cacheSuffix}`}>
                               <FileDown className="h-3.5 w-3.5 mr-1" /> Download
                             </a>
                           </Button>
