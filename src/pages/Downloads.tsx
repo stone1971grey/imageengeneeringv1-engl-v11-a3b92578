@@ -775,8 +775,9 @@ export default function Downloads() {
                                 </a>
                               </Button>
                               <Button 
-                                variant="outline" 
+                                variant="ghost" 
                                 size="sm"
+                                className="text-gray-600 hover:text-gray-900"
                                 onClick={() => openDetails(item)}
                               >
                                 Details
@@ -788,46 +789,9 @@ export default function Downloads() {
                     ))}
                   </div>
                 )}
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex justify-center">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={page === 1}
-                        onClick={() => setPage(page - 1)}
-                      >
-                        Zurück
-                      </Button>
-                      <span className="text-sm text-gray-600">
-                        Seite {page} von {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={page === totalPages}
-                        onClick={() => setPage(page + 1)}
-                      >
-                        Weiter
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Download Center CTA */}
-        <div className="mt-12 text-center">
-          <Button asChild variant="outline" className="mt-4">
-            <a href="#" target="_blank" rel="noopener noreferrer">
-              <LinkIcon className="h-4 w-4 mr-2" />
-              Zum Downloadcenter
-            </a>
-          </Button>
         </div>
 
         {/* AI Assistant */}
