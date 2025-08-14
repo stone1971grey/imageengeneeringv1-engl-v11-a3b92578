@@ -518,14 +518,15 @@ const Navigation = () => {
                       {/* Main navigation grid */}
                         <div className="flex gap-8 p-6">
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                           <Link
+                            to="/products/charts"
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
                             onMouseEnter={() => setHoveredProduct("Charts")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Target className="h-6 w-6" />
                             <span>Charts</span>
-                          </div>
+                          </Link>
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Geräte")}
@@ -1002,7 +1003,7 @@ const Navigation = () => {
                         <div className="space-y-2 pt-2">
                           <ul className="space-y-1">
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Target className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Charts</span></div>
+                              <Link to="/products/charts" className="min-h-12 px-4 flex items-center gap-3 py-3 hover:bg-accent rounded-md transition-colors"><Target className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Charts</span></Link>
                             </li>
                             <li>
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Camera className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Geräte</span></div>
