@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import RegularNavigation from "@/components/RegularNavigation";
+import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
 import { Button } from "@/components/ui/button";
@@ -472,7 +472,7 @@ export default function Downloads() {
 
   return (
     <div className="min-h-screen bg-white">
-      <RegularNavigation />
+      <Navigation />
 
       {/* Navigation Spacer */}
       <div className="h-24"></div>
