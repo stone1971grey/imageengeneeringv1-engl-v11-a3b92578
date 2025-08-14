@@ -46,6 +46,7 @@ import {
   Apple,
   Terminal as OsLinuxIcon,
   Download as DownloadIcon,
+  MessageCircle,
 } from "lucide-react";
 
 // Data model
@@ -222,11 +223,10 @@ export default function Downloads() {
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // State synced with URL
+  // State synced with URL - set "all" as default
+  const [activeTab, setActiveTab] = useState<string>("all");
   const [q, setQ] = useState<string>(searchParams.get("q") || "");
-  const [cats, setCats] = useState<DownloadItem["category"][]>(
-    (searchParams.get("cat")?.split(",").filter(Boolean) as DownloadItem["category"][]) || []
-  );
+  const [cats, setCats] = useState<DownloadItem["category"][]>([]);
   const [products, setProducts] = useState<string[]>(
     searchParams.get("product")?.split(",").filter(Boolean) || []
   );
@@ -236,9 +236,9 @@ export default function Downloads() {
   const [langs, setLangs] = useState<("de" | "en")[]>(
     (searchParams.get("lang")?.split(",").filter(Boolean) as ("de" | "en")[]) || []
   );
-  const [period, setPeriod] = useState<string>(searchParams.get("period") || "latest");
-  const [sort, setSort] = useState<string>(searchParams.get("sort") || "newest");
-  const [page, setPage] = useState<number>(Number(searchParams.get("page") || 1));
+  const [period, setPeriod] = useState<string>("latest");
+  const [sort, setSort] = useState<string>("newest");
+  const [page, setPage] = useState<number>(1);
 
   // Dialogs
   const [detailsItem, setDetailsItem] = useState<DownloadItem | null>(null);
@@ -252,78 +252,12 @@ export default function Downloads() {
     return Array.from(set);
   }, []);
 
-  // Sync URL on change
-  useEffect(() => {
-    const sp = new URLSearchParams();
-    if (q) sp.set("q", q);
-    if (cats.length) sp.set("cat", cats.join(","));
-    if (products.length) sp.set("product", products.join(","));
-    if (oses.length) sp.set("os", oses.join(","));
-    if (langs.length) sp.set("lang", langs.join(","));
-    if (sort && sort !== "newest") sp.set("sort", sort);
-    if (period && period !== "latest") sp.set("period", period);
-    if (page !== 1) sp.set("page", String(page));
-    setSearchParams(sp, { replace: true });
-  }, [q, cats, products, oses, langs, sort, period, page, setSearchParams]);
-
   // SEO
   useEffect(() => {
     document.title = "Downloadcenter | Image Engineering";
     const metaDesc = document.querySelector('meta[name="description"]');
-    const canonical = document.querySelector('link[rel="canonical"]');
-
     if (metaDesc) metaDesc.setAttribute("content", "Alle Downloads – Software, Handbücher, API‑Dokumente und mehr.");
-    else {
-      const m = document.createElement("meta");
-      m.name = "description";
-      m.content = "Alle Downloads – Software, Handbücher, API‑Dokumente und mehr.";
-      document.head.appendChild(m);
-    }
-
-    if (!canonical) {
-      const linkEl = document.createElement("link");
-      linkEl.setAttribute("rel", "canonical");
-      linkEl.setAttribute("href", window.location.href);
-      document.head.appendChild(linkEl);
-    }
   }, []);
-
-  // JSON-LD (basic, for first few items)
-  useEffect(() => {
-    const scriptId = "downloads-jsonld";
-    const el = document.getElementById(scriptId);
-    if (el) el.remove();
-
-    const items = filtered.slice(0, 3).map((i) => {
-      if (i.category === "software" || i.category === "firmware") {
-        return {
-          "@type": "SoftwareApplication",
-          name: i.title,
-          applicationCategory: i.category,
-          operatingSystem: (i.os || []).join(", ") || "—",
-          softwareVersion: i.version || "",
-          url: i.url,
-        };
-      }
-      return {
-        "@type": "TechArticle",
-        headline: i.title,
-        datePublished: i.date,
-        inLanguage: i.languages.join(","),
-        url: i.url,
-      };
-    });
-
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.id = scriptId;
-    script.text = JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "ItemList",
-      itemListElement: items,
-    });
-    document.head.appendChild(script);
-  });
 
   // Filtering
   const filtered = useMemo(() => {
@@ -379,9 +313,6 @@ export default function Downloads() {
     () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
     [filtered, page]
   );
-  useEffect(() => {
-    if (page > totalPages) setPage(1);
-  }, [totalPages, page]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -399,6 +330,7 @@ export default function Downloads() {
     setPeriod("latest");
     setSort("newest");
     setPage(1);
+    setActiveTab("all");
   };
 
   const removeChip = (type: string, value: string) => {
@@ -428,6 +360,17 @@ export default function Downloads() {
     setPage(1);
   };
 
+  // Handle tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    if (value === "all") {
+      setCats([]);
+    } else {
+      setCats([value as DownloadItem["category"]]);
+    }
+    setPage(1);
+  };
+
   // OS chip component
   const OsChip = ({ os }: { os: "windows" | "mac" | "linux" }) => (
     <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
@@ -438,26 +381,115 @@ export default function Downloads() {
     </span>
   );
 
+  // Active Filters Component
+  const ActiveFilters = () => (
+    <>
+      {/* Top tabs */}
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList className="flex flex-wrap">
+          <TabsTrigger value="all">Alle</TabsTrigger>
+          <TabsTrigger value="software">Software</TabsTrigger>
+          <TabsTrigger value="firmware">Firmware</TabsTrigger>
+          <TabsTrigger value="manual">Handbücher</TabsTrigger>
+          <TabsTrigger value="whitepaper">Whitepaper</TabsTrigger>
+          <TabsTrigger value="api">API‑Docs</TabsTrigger>
+          <TabsTrigger value="release">Release Notes</TabsTrigger>
+        </TabsList>
+        <TabsContent value={activeTab} />
+      </Tabs>
+
+      {/* Header row */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
+          {total} Ergebnisse
+        </div>
+        <div className="flex items-center gap-2">
+          <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1); }}>
+            <SelectTrigger className="w-[190px]" aria-label="Sortierung">
+              <SelectValue placeholder="Sortierung" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Neueste zuerst</SelectItem>
+              <SelectItem value="oldest">Älteste zuerst</SelectItem>
+              <SelectItem value="az">A–Z</SelectItem>
+              <SelectItem value="za">Z–A</SelectItem>
+              <SelectItem value="size">Größe</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Active chips */}
+      {(q || cats.length || products.length || oses.length || langs.length) && (
+        <div className="flex flex-wrap gap-2">
+          {q && (
+            <Badge variant="secondary" className="flex items-center gap-1">
+              Suche: "{q}"
+              <button aria-label="Suche entfernen" onClick={() => removeChip("q", q)}>
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </Badge>
+          )}
+          {cats.map((c) => (
+            <Badge key={c} variant="secondary" className="flex items-center gap-1">
+              {CATEGORY_LABEL[c]}
+              <button aria-label={`${CATEGORY_LABEL[c]} entfernen`} onClick={() => removeChip("cat", c)}>
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </Badge>
+          ))}
+          {products.map((p) => (
+            <Badge key={p} variant="secondary" className="flex items-center gap-1">
+              {p}
+              <button aria-label={`${p} entfernen`} onClick={() => removeChip("product", p)}>
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </Badge>
+          ))}
+          {oses.map((o) => (
+            <Badge key={o} variant="secondary" className="flex items-center gap-1 capitalize">
+              {o}
+              <button aria-label={`${o} entfernen`} onClick={() => removeChip("os", o)}>
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </Badge>
+          ))}
+          {langs.map((l) => (
+            <Badge key={l} variant="secondary" className="flex items-center gap-1 uppercase">
+              {l}
+              <button aria-label={`${l} entfernen`} onClick={() => removeChip("lang", l)}>
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </Badge>
+          ))}
+          <Button variant="ghost" size="sm" onClick={clearAll} aria-label="Filter zurücksetzen">
+            Zurücksetzen
+          </Button>
+        </div>
+      )}
+    </>
+  );
+
   return (
-    <div className="min-h-screen bg-downloads-bg text-downloads-text">
+    <div className="min-h-screen" style={{ backgroundColor: 'hsl(var(--light-background))' }}>
       <RegularNavigation />
 
-      <header className="border-b">
+      <header className="border-b" style={{ borderColor: 'hsl(var(--light-border))' }}>
         <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6">
           <Breadcrumb aria-label="Breadcrumb">
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link to="/">Startseite</Link>
+                  <Link to="/" className="hover:text-primary transition-colors">Startseite</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Ressourcen</BreadcrumbPage>
+                <BreadcrumbPage style={{ color: 'hsl(var(--light-foreground))' }}>Ressourcen</BreadcrumbPage>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Downloadcenter</BreadcrumbPage>
+                <BreadcrumbPage style={{ color: 'hsl(var(--light-foreground))' }}>Downloadcenter</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -466,16 +498,16 @@ export default function Downloads() {
 
       <main className="relative z-0">
         {/* Hero */}
-        <section className="border-b">
+        <section className="border-b" style={{ borderColor: 'hsl(var(--light-border))' }}>
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 flex items-start justify-between gap-6">
             <div className="max-w-3xl">
-              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">Downloadcenter</h1>
-              <p className="mt-3 text-muted-foreground">
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: 'hsl(var(--light-foreground))' }}>Downloadcenter</h1>
+              <p className="mt-3" style={{ color: 'hsl(var(--light-muted))' }}>
                 Finden Sie Software, Handbücher, Datenblätter, API‑Dokumente und Release Notes – gefiltert nach Produkt, Kategorie, Version und Betriebssystem.
               </p>
             </div>
             <div className="hidden md:block">
-              <Button variant="secondary" onClick={() => setAiOpen(true)} aria-label="KI‑Assistenz öffnen">
+              <Button variant="default" className="bg-gradient-primary hover:shadow-glow transition-all duration-300" onClick={() => setAiOpen(true)} aria-label="KI‑Assistenz öffnen">
                 <DownloadIcon className="h-4 w-4 mr-2" /> KI‑Assistenz
               </Button>
             </div>
@@ -495,7 +527,7 @@ export default function Downloads() {
                   </Button>
                 </DrawerTrigger>
                 <DrawerContent className="p-6">
-                  <div className="bg-light-card rounded-xl border border-downloads-border p-5 shadow-sm">
+                  <div style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="rounded-xl border p-5 shadow-soft">
                     <Filters
                       q={q}
                       setQ={setQ}
@@ -520,7 +552,7 @@ export default function Downloads() {
 
             {/* Desktop filters */}
             <div className="hidden md:block">
-              <div className="bg-light-card rounded-xl border border-downloads-border p-5 shadow-sm">
+              <Card style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="p-5 shadow-soft">
                 <Filters
                   q={q}
                   setQ={setQ}
@@ -538,296 +570,283 @@ export default function Downloads() {
                   clearAll={clearAll}
                   hitCount={total}
                 />
-              </div>
+              </Card>
             </div>
           </aside>
 
           {/* Content */}
-          <section className="md:col-span-8 lg:col-span-9 space-y-6 mt-6 md:mt-0 md:border-l md:border-downloads-border md:pl-6">
-            {/* Top tabs */}
-            <Tabs
-              value={cats.length === 1 ? cats[0] : "all"}
-              onValueChange={(v) => setCats(v === "all" ? [] : ([v] as any))}
-            >
-              <TabsList className="flex flex-wrap">
-                <TabsTrigger value="all">Alle</TabsTrigger>
-                <TabsTrigger value="software">Software</TabsTrigger>
-                <TabsTrigger value="firmware">Firmware</TabsTrigger>
-                <TabsTrigger value="manual">Handbücher</TabsTrigger>
-                <TabsTrigger value="whitepaper">Whitepaper</TabsTrigger>
-                <TabsTrigger value="api">API‑Docs</TabsTrigger>
-                <TabsTrigger value="release">Release Notes</TabsTrigger>
-              </TabsList>
-              <TabsContent value={cats.length === 1 ? cats[0] : "all"} />
-            </Tabs>
-
-            {/* Header row */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="text-sm text-muted-foreground">
-                {total} Ergebnisse
-              </div>
-              <div className="flex items-center gap-2">
-                <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1); }}>
-                  <SelectTrigger className="w-[190px]" aria-label="Sortierung">
-                    <SelectValue placeholder="Sortierung" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Neueste zuerst</SelectItem>
-                    <SelectItem value="oldest">Älteste zuerst</SelectItem>
-                    <SelectItem value="az">A–Z</SelectItem>
-                    <SelectItem value="za">Z–A</SelectItem>
-                    <SelectItem value="size">Größe</SelectItem>
-                  </SelectContent>
-                </Select>
+          <div className="md:col-span-8 lg:col-span-9 space-y-6 md:border-l md:pl-6" style={{ borderColor: 'hsl(var(--light-border))' }}>
+            <div className="flex items-center justify-between gap-4 mt-6 md:mt-0">
+              <div className="flex-1">
+                <ActiveFilters />
               </div>
             </div>
 
-            {/* Active chips */}
-            {(q || cats.length || products.length || oses.length || langs.length) && (
-              <div className="flex flex-wrap gap-2">
-                {q && (
-                  <Badge variant="secondary" className="flex items-center gap-1">
-                    Suche: “{q}”
-                    <button aria-label="Suche entfernen" onClick={() => removeChip("q", q)}>
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </Badge>
-                )}
-                {cats.map((c) => (
-                  <Badge key={c} variant="secondary" className="flex items-center gap-1">
-                    {CATEGORY_LABEL[c]}
-                    <button aria-label={`${CATEGORY_LABEL[c]} entfernen`} onClick={() => removeChip("cat", c)}>
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </Badge>
-                ))}
-                {products.map((p) => (
-                  <Badge key={p} variant="secondary" className="flex items-center gap-1">
-                    {p}
-                    <button aria-label={`${p} entfernen`} onClick={() => removeChip("product", p)}>
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </Badge>
-                ))}
-                {oses.map((o) => (
-                  <Badge key={o} variant="secondary" className="flex items-center gap-1 capitalize">
-                    {o}
-                    <button aria-label={`${o} entfernen`} onClick={() => removeChip("os", o)}>
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </Badge>
-                ))}
-                {langs.map((l) => (
-                  <Badge key={l} variant="secondary" className="flex items-center gap-1 uppercase">
-                    {l}
-                    <button aria-label={`${l} entfernen`} onClick={() => removeChip("lang", l)}>
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </Badge>
-                ))}
-                <Button variant="ghost" size="sm" onClick={clearAll} aria-label="Filter zurücksetzen">
-                  Zurücksetzen
-                </Button>
-              </div>
-            )}
-
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-              {isLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="bg-light-card rounded-xl border border-downloads-border p-5 shadow-sm">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 space-y-2">
-                        <Skeleton className="h-5 w-3/4" />
-                        <div className="flex gap-2">
-                          <Skeleton className="h-6 w-20 rounded-full" />
-                          <Skeleton className="h-6 w-24 rounded-full" />
-                        </div>
-                      </div>
-                      <Skeleton className="h-5 w-5 rounded" />
-                    </div>
-                    <div className="mt-4 space-y-2">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-5/6" />
+            {/* Results */}
+            {isLoading ? (
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+                {Array.from({ length: 6 }, (_, i) => (
+                  <Card key={i} style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="shadow-soft">
+                    <CardContent className="p-5">
+                      <Skeleton className="h-6 w-3/4 mb-3" />
+                      <Skeleton className="h-4 w-full mb-2" />
                       <Skeleton className="h-4 w-2/3" />
-                    </div>
-                    <div className="mt-4 flex justify-end gap-2">
-                      <Skeleton className="h-9 w-28 rounded-md" />
-                      <Skeleton className="h-9 w-28 rounded-md" />
-                    </div>
-                  </div>
-                ))
-              ) : (
-                pageItems.map((item) => (
-                  <Card key={item.id} className="bg-light-card rounded-xl shadow-sm border border-downloads-border flex flex-col">
-                    <CardHeader className="p-5 pb-0">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <CardTitle className="text-base font-semibold leading-6 text-downloads-text">
-                            {item.title}
-                          </CardTitle>
-                          <div className="mt-1 flex items-center gap-2">
-                            <Badge variant="secondary" className="text-sm px-3 py-1.5 rounded-md">{item.product}</Badge>
-                            <Badge className="text-sm px-3 py-1.5 rounded-md">{CATEGORY_LABEL[item.category]}</Badge>
-                          </div>
-                        </div>
-                        <div className="text-scandi-grey">
-                          {FILETYPE_ICON[item.filetype]}
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-3 text-[15px] text-scandi-grey space-y-3">
-                      <p className="line-clamp-2">{item.description}</p>
-                      <div className="flex flex-wrap items-center gap-2 text-sm">
-                        {item.version && <span>Version {item.version}</span>}
-                        <span>•</span>
-                        <span>{formatDate(item.date)}</span>
-                        {item.os && item.os.length > 0 && (
-                          <>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              {item.os.map((o) => (
-                                <OsChip key={o} os={o} />
-                              ))}
-                            </span>
-                          </>
-                        )}
-                        <span>•</span>
-                        <span>Sprache: {item.languages.map((l) => l.toUpperCase()).join(", ")}</span>
-                        {item.size && (
-                          <>
-                            <span>•</span>
-                            <span>{item.size}</span>
-                          </>
-                        )}
-                        <span>•</span>
-                        <span className="uppercase">{item.filetype}</span>
-                      </div>
-                      <div className="flex items-center justify-end gap-2 pt-2">
-                        <Button size="sm" onClick={() => openDetails(item)} variant="outline">
-                          <Info className="h-4 w-4 mr-2" /> Details
-                        </Button>
-                        <Button size="sm" asChild>
-                          <a href={`${item.url}${cacheSuffix}`} aria-label={`Download ${item.title}`}>
-                            <FileDown className="h-4 w-4 mr-2" /> Herunterladen
-                          </a>
-                        </Button>
-                      </div>
                     </CardContent>
                   </Card>
-                ))
-              )}
-            </div>
-
-            {/* Empty state */}
-            {total === 0 && (
-              <div className="bg-light-card border border-downloads-border rounded-xl p-8 text-center">
-                <h3 className="text-lg font-semibold">Keine Treffer für die aktuelle Auswahl.</h3>
-                <p className="text-scandi-grey mt-1">Passen Sie Ihre Filter an oder setzen Sie sie zurück.</p>
-                <div className="mt-4 flex items-center justify-center">
-                  <Button variant="outline" onClick={clearAll}>Filter zurücksetzen</Button>
-                </div>
+                ))}
               </div>
-            )}
-
-            {/* Pagination */}
-            {total > 0 && (
-              <div className="flex items-center justify-between pt-2">
-                <div className="text-sm text-muted-foreground">
-                  Seite {page} von {totalPages}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  >
-                    Zurück
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  >
-                    Weiter
+            ) : total === 0 ? (
+              <div className="text-center py-12">
+                <div style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="rounded-xl border p-8 shadow-soft">
+                  <p style={{ color: 'hsl(var(--light-muted))' }} className="mb-4">Keine Treffer für die aktuelle Auswahl.</p>
+                  <Button onClick={clearAll} variant="outline">
+                    Filter zurücksetzen
                   </Button>
                 </div>
               </div>
-            )}
-          </section>
-        </section>
-      </main>
+            ) : (
+              <>
+                {/* Results Grid - 2 columns only */}
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+                  {pageItems.map((item) => (
+                    <Card key={item.id} style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))', color: 'hsl(var(--light-foreground))' }} className="rounded-xl shadow-soft p-5 hover:shadow-gentle transition-shadow">
+                      <CardHeader className="py-4 px-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <CardTitle className="text-lg font-semibold line-clamp-2" style={{ color: 'hsl(var(--light-foreground))' }}>
+                              {item.title}
+                            </CardTitle>
+                            {item.description && (
+                              <p className="text-sm mt-2 line-clamp-2" style={{ color: 'hsl(var(--light-muted))' }}>
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
+                          <div style={{ color: 'hsl(var(--light-muted))' }}>
+                            {FILETYPE_ICON[item.filetype]}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="px-0 pb-0 space-y-3">
+                        {/* Meta info */}
+                        <div className="flex flex-wrap items-center gap-2 text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
+                          <Badge variant="secondary" className="text-xs px-3 py-1 font-medium">
+                            {CATEGORY_LABEL[item.category]}
+                          </Badge>
+                          <span>•</span>
+                          <span>{item.product}</span>
+                          {item.version && (
+                            <>
+                              <span>•</span>
+                              <span>v{item.version}</span>
+                            </>
+                          )}
+                        </div>
 
-      {/* Details Modal */}
-      <Dialog open={!!detailsItem} onOpenChange={(o) => !o && setDetailsItem(null)}>
-        <DialogContent aria-labelledby="details-title">
-          {detailsItem && (
-            <div>
-              <DialogHeader>
-                <DialogTitle id="details-title">{detailsItem.title}</DialogTitle>
-                <DialogDescription>
-                  Produkt: {detailsItem.product} • {CATEGORY_LABEL[detailsItem.category]}
-                </DialogDescription>
-              </DialogHeader>
-              <div className="mt-4 space-y-3 text-sm">
-                {detailsItem.description && <p>{detailsItem.description}</p>}
-                {detailsItem.category === "release" && (
-                  <div className="space-y-1">
-                    <div className="font-medium">Changelog / Release Notes</div>
-                    <p>• Verbesserte Stabilität und Performance.\
-• Kleinere Bugfixes.</p>
-                  </div>
-                )}
-                {detailsItem.checksumSha256 && (
-                  <div className="space-y-1">
-                    <div className="font-medium">SHA‑256</div>
-                    <code className="block rounded bg-muted p-2 text-xs break-all">
-                      {detailsItem.checksumSha256}
-                    </code>
-                    <div>
+                        {/* OS and size */}
+                        {(item.os?.length || item.size) && (
+                          <div className="flex items-center gap-3 text-sm">
+                            {item.os?.map((os) => (
+                              <OsChip key={os} os={os} />
+                            ))}
+                            {item.size && item.size !== "—" && (
+                              <span style={{ color: 'hsl(var(--light-muted))' }}>{item.size}</span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Date and languages */}
+                        <div className="flex items-center gap-3 text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
+                          <span>{formatDate(item.date)}</span>
+                          {item.languages.length > 0 && (
+                            <>
+                              <span>•</span>
+                              <span>
+                                {item.languages.map((l) => l.toUpperCase()).join(", ")}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 pt-2">
+                          <Button size="sm" className="flex-1 bg-gradient-primary hover:shadow-glow transition-all duration-300">
+                            <a
+                              href={`${item.url}${cacheSuffix}`}
+                              className="flex items-center gap-2 text-white no-underline"
+                            >
+                              <FileDown className="h-4 w-4" />
+                              Herunterladen
+                            </a>
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => openDetails(item)} className="hover:bg-accent/50 transition-colors">
+                            <Info className="h-4 w-4 mr-1" />
+                            Details
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {total > PAGE_SIZE && (
+                  <div className="flex items-center justify-between pt-2">
+                    <div className="text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
+                      Seite {page} von {totalPages}
+                    </div>
+                    <div className="flex items-center gap-2">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
-                        onClick={() => copyLink(detailsItem.checksumSha256!)}
+                        disabled={page <= 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
                       >
-                        <LinkIcon className="h-4 w-4 mr-2" /> Checksum kopieren
+                        Zurück
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      >
+                        Weiter
                       </Button>
                     </div>
                   </div>
                 )}
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button asChild>
-                    <a href={`${detailsItem.url}${cacheSuffix}`} aria-label={`Download ${detailsItem.title}`}>
-                      <FileDown className="h-4 w-4 mr-2" /> Download
-                    </a>
-                  </Button>
-                  <Button variant="outline">Zur Produktseite</Button>
-                  <Button variant="outline">Zur Dokumentation</Button>
+              </>
+            )}
+          </div>
+        </section>
+
+        {/* Footer CTA */}
+        <section className="border-t" style={{ borderColor: 'hsl(var(--light-border))', backgroundColor: 'hsl(var(--scandi-white))' }}>
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-12 text-center">
+            <h2 className="text-2xl font-semibold mb-4" style={{ color: 'hsl(var(--light-foreground))' }}>Mehr Downloads im Downloadcenter</h2>
+            <p className="mb-6 max-w-2xl mx-auto" style={{ color: 'hsl(var(--light-muted))' }}>
+              Vollständige Software‑Pakete, detaillierte Handbücher und API‑Dokumentationen für alle Produkte.
+            </p>
+            <Button size="lg" className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
+              <LinkIcon className="mr-2 h-5 w-5" />
+              Zum Downloadcenter
+            </Button>
+          </div>
+        </section>
+      </main>
+
+      {/* AI Assistant - Chat Window Bottom Right */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <div className="relative">
+          <Button
+            size="lg"
+            className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-glow transition-all duration-300"
+            onClick={() => setAiOpen(true)}
+            aria-label="KI‑Assistenz öffnen"
+          >
+            <MessageCircle className="h-6 w-6" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Details Dialog */}
+      <Dialog open={!!detailsItem} onOpenChange={() => setDetailsItem(null)}>
+        <DialogContent style={{ backgroundColor: 'hsl(var(--scandi-white))', color: 'hsl(var(--light-foreground))' }} className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{detailsItem?.title}</DialogTitle>
+            <DialogDescription style={{ color: 'hsl(var(--light-muted))' }}>Download Details</DialogDescription>
+          </DialogHeader>
+          {detailsItem && (
+            <div className="space-y-3 text-sm">
+              <div>
+                <strong>Produkt:</strong> {detailsItem.product}
+              </div>
+              <div>
+                <strong>Kategorie:</strong> {CATEGORY_LABEL[detailsItem.category]}
+              </div>
+              {detailsItem.version && (
+                <div>
+                  <strong>Version:</strong> {detailsItem.version}
                 </div>
+              )}
+              <div>
+                <strong>Datum:</strong> {formatDate(detailsItem.date)}
+              </div>
+              {detailsItem.size && (
+                <div>
+                  <strong>Größe:</strong> {detailsItem.size}
+                </div>
+              )}
+              <div>
+                <strong>Sprachen:</strong> {detailsItem.languages.map((l) => l.toUpperCase()).join(", ")}
+              </div>
+              {detailsItem.os && (
+                <div>
+                  <strong>Betriebssysteme:</strong> {detailsItem.os.map((o) => o.charAt(0).toUpperCase() + o.slice(1)).join(", ")}
+                </div>
+              )}
+              {detailsItem.description && (
+                <div>
+                  <strong>Beschreibung:</strong> {detailsItem.description}
+                </div>
+              )}
+              {detailsItem.checksumSha256 && (
+                <div className="text-xs" style={{ color: 'hsl(var(--light-muted))' }}>
+                  <strong>SHA256:</strong> {detailsItem.checksumSha256}
+                </div>
+              )}
+              <div className="flex gap-2 pt-4">
+                <Button size="sm" asChild className="flex-1 bg-gradient-primary hover:shadow-glow transition-all duration-300">
+                  <a href={`${detailsItem.url}${cacheSuffix}`}>
+                    <FileDown className="h-4 w-4 mr-2" />
+                    Herunterladen
+                  </a>
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => copyLink(detailsItem.url)} className="hover:bg-accent/50 transition-colors">
+                  <LinkIcon className="h-4 w-4 mr-1" />
+                  Link kopieren
+                </Button>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
 
-      {/* KI Assistant Floating Button */}
-      <Button
-        className="fixed bottom-6 right-6 shadow-lg hover:shadow-xl focus-visible:ring-2 focus-visible:ring-primary/40 bg-primary text-primary-foreground hover:shadow-glow"
-        onClick={() => setAiOpen(true)}
-        aria-label="KI‑Assistenz öffnen"
-      >
-        <DownloadIcon className="h-4 w-4 mr-2" /> KI‑Assistenz
-      </Button>
-
-      {/* KI Assistant Dialog */}
-      <AiAssistantDialog
-        open={aiOpen}
-        onOpenChange={setAiOpen}
-        items={MOCK_ITEMS}
-        onPick={setFiltersFromAI}
-      />
+      {/* AI Assistant Dialog */}
+      <Dialog open={aiOpen} onOpenChange={setAiOpen}>
+        <DialogContent style={{ backgroundColor: 'hsl(var(--scandi-white))', color: 'hsl(var(--light-foreground))' }} className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>KI‑Assistent</DialogTitle>
+            <DialogDescription style={{ color: 'hsl(var(--light-muted))' }}>Lassen Sie sich bei der Suche helfen</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
+              Der KI‑Assistent kann Ihnen helfen, die passenden Downloads zu finden. Beschreiben Sie, was Sie suchen.
+            </p>
+            <div style={{ backgroundColor: 'hsl(var(--light-background))' }} className="p-4 rounded-lg">
+              <p className="text-sm mb-3 font-medium" style={{ color: 'hsl(var(--light-foreground))' }}>Beispiele für häufige Anfragen:</p>
+              <div className="space-y-2">
+                {MOCK_ITEMS.slice(0, 3).map((item) => (
+                  <Button
+                    key={item.id}
+                    variant="outline"
+                    size="sm"
+                    className="text-left justify-start w-full h-auto p-2 hover:bg-accent/50 transition-colors"
+                    onClick={() => setFiltersFromAI(item)}
+                  >
+                    <div>
+                      <div className="font-medium">{item.title}</div>
+                      <div className="text-xs" style={{ color: 'hsl(var(--light-muted))' }}>
+                        {item.product} • {CATEGORY_LABEL[item.category]}
+                      </div>
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
@@ -877,7 +896,7 @@ function Filters(props: {
     <div className="space-y-6" aria-label="Filter">
       {/* Suche */}
       <div>
-        <label className="mb-3 block text-base font-semibold">Suche</label>
+        <label className="mb-3 block text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Suche</label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -892,7 +911,7 @@ function Filters(props: {
 
       {/* Kategorien */}
       <div>
-        <div className="mb-3 text-base font-semibold">Kategorien</div>
+        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Kategorien</div>
         <div className="grid grid-cols-1 gap-2">
           {(Object.keys(CATEGORY_LABEL) as DownloadItem["category"][]).map((key) => (
             <label key={key} className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60">
@@ -909,7 +928,7 @@ function Filters(props: {
 
       {/* Produkte */}
       <div>
-        <div className="mb-3 text-base font-semibold">Produkte</div>
+        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Produkte</div>
         <div className="space-y-2">
           {allProducts.map((p) => (
             <label key={p} className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60">
@@ -926,7 +945,7 @@ function Filters(props: {
 
       {/* Betriebssystem */}
       <div>
-        <div className="mb-3 text-base font-semibold">Betriebssystem</div>
+        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Betriebssystem</div>
         <div className="flex flex-wrap gap-2">
           {["windows", "mac", "linux"].map((o) => (
             <button
@@ -952,7 +971,7 @@ function Filters(props: {
 
       {/* Sprachen */}
       <div>
-        <div className="mb-3 text-base font-semibold">Sprachen</div>
+        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Sprachen</div>
         <div className="space-y-2">
           {[
             { v: "de", l: "Deutsch" },
@@ -972,7 +991,7 @@ function Filters(props: {
 
       {/* Zeitraum */}
       <div>
-        <div className="mb-3 text-base font-semibold">Version/Zeitraum</div>
+        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Version/Zeitraum</div>
         <Select value={period} onValueChange={(v) => setPeriod(v)}>
           <SelectTrigger aria-label="Zeitraum">
             <SelectValue placeholder="Neueste" />
@@ -993,137 +1012,5 @@ function Filters(props: {
         <Badge variant="secondary">{hitCount} Treffer</Badge>
       </div>
     </div>
-  );
-}
-
-// AI Assistant Dialog (mocked)
-function AiAssistantDialog({
-  open,
-  onOpenChange,
-  items,
-  onPick,
-}: {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  items: DownloadItem[];
-  onPick: (item: DownloadItem) => void;
-}) {
-  const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string; results?: DownloadItem[] }[]>([
-    {
-      role: "assistant",
-      content:
-        "Ich helfe beim Finden des richtigen Downloads. Beschreiben Sie, was Sie brauchen (Produkt/OS/Version).",
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const cacheSuffix = import.meta.env.DEV ? `?ts=${Date.now()}` : "";
-
-  const submit = (text: string) => {
-    if (!text.trim()) return;
-    const userMsg = { role: "user" as const, content: text };
-    setMessages((m) => [...m, userMsg]);
-    setInput("");
-    // Fake response using simple filter
-    const term = text.toLowerCase();
-    const results = items.filter(
-      (i) =>
-        i.title.toLowerCase().includes(term) ||
-        i.product.toLowerCase().includes(term) ||
-        (i.version || "").toLowerCase().includes(term)
-    );
-    const reply = {
-      role: "assistant" as const,
-      content: results.length
-        ? `Ich habe ${results.length} passende Downloads gefunden:`
-        : "Ich habe nichts Passendes gefunden. Versuchen Sie andere Begriffe (z. B. Produkt oder OS).",
-      results: results.slice(0, 3),
-    };
-    setTimeout(() => setMessages((m) => [...m, reply]), 400);
-  };
-
-  const suggestions = ["Arcturus", "Vega", "iQ‑Analyzer‑X", "TE294"];
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl" aria-labelledby="ai-title">
-        <DialogHeader>
-          <DialogTitle id="ai-title">KI‑Assistenz</DialogTitle>
-          <DialogDescription>
-            Ich helfe beim Finden des richtigen Downloads. Beschreiben Sie, was Sie brauchen (Produkt/OS/Version).
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex flex-wrap gap-2">
-          {suggestions.map((s) => (
-            <Button key={s} variant="outline" size="sm" onClick={() => submit(s)}>
-              {s}
-            </Button>
-          ))}
-        </div>
-
-        <div className="mt-4 h-64 overflow-auto rounded border p-3 space-y-3 bg-light-card">
-          {messages.map((m, idx) => (
-            <div key={idx} className={`max-w-[85%] ${m.role === "user" ? "ml-auto text-right" : ""}`}>
-              <div
-                className={`inline-block rounded-lg px-3 py-2 text-sm ${
-                  m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
-                }`}
-              >
-                {m.content}
-              </div>
-              {m.results && (
-                <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {m.results.map((r) => (
-                    <Card key={r.id} className="border-dashed">
-                      <CardHeader className="py-3">
-                        <CardTitle className="text-sm font-medium line-clamp-1">{r.title}</CardTitle>
-                      </CardHeader>
-                      <CardContent className="pt-0 text-xs text-muted-foreground">
-                        <div className="flex flex-wrap items-center gap-2">
-                          {r.version && <span>v{r.version}</span>}
-                          {r.os && r.os.length > 0 && (
-                            <span className="flex items-center gap-1">
-                              {r.os.map((o) => (
-                                <span key={o} className="capitalize">{o}</span>
-                              ))}
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-2 flex items-center justify-end gap-2">
-                          <Button asChild size="sm">
-                            <a href={`${r.url}${cacheSuffix}`}>
-                              <FileDown className="h-3.5 w-3.5 mr-1" /> Download
-                            </a>
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => onPick(r)}>
-                            Im Downloadcenter anzeigen
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <form
-          className="mt-4 flex items-center gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            submit(input);
-          }}
-        >
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="z. B. ‘Vega Software für Windows, neueste Version’"
-            aria-label="KI Eingabe"
-          />
-          <Button type="submit">Senden</Button>
-        </form>
-      </DialogContent>
-    </Dialog>
   );
 }
