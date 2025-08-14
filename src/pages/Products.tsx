@@ -7,12 +7,12 @@ import ProductSelectionHelper from "@/components/ProductSelectionHelper";
 import { Card } from "@/components/ui/card";
 import arcturusHero from "@/assets/arcturus-hero-professional.jpg";
 import ibcBanner from "@/assets/ibc.png";
-import customChart from "@/assets/custom-chart.png";
+
 import arcturusMainProduct from "@/assets/arcturus-main-product.png";
 import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
 import productBundleIeee from "@/assets/product-bundle-ieee.png";
 import iqLedIllumination from "@/assets/iq-led-illumination.png";
-import chartCase from "@/assets/chart-case.png";
+
 import technology2025 from "@/assets/technology-2025.png";
 
 const Products = () => {
@@ -21,7 +21,7 @@ const Products = () => {
       icon: Camera,
       name: "Charts",
       description: "Professionelle Testcharts und Muster für Bildqualitätstests und Kalibrierung",
-      image: customChart,
+      image: "/images/custom-chart.png",
       link: "#charts"
     },
     {
@@ -56,7 +56,7 @@ const Products = () => {
       icon: Puzzle,
       name: "Zubehör",
       description: "Professionelles Zubehör einschließlich Chart-Koffer, Halterungen und Kalibrierungstools",
-      image: chartCase,
+      image: "/images/chart-case.png",
       link: "#accessories"
     },
     {
