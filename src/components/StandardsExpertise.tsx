@@ -106,7 +106,7 @@ const StandardsExpertise = () => {
                 <CardContent className="p-6 text-center">
                   <div className="w-[90px] h-[90px] bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 overflow-hidden">
                     {org.logo ? (
-                      <img src={org.logo} alt={org.name} className="w-[80px] h-[80px] object-cover rounded-full" />
+                      <img src={org.logo} alt={org.name} className="w-[60px] h-[60px] object-contain" />
                     ) : (
                       <span className="text-xl font-bold text-blue-600">{org.name}</span>
                     )}
