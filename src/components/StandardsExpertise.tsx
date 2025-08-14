@@ -104,9 +104,9 @@ const StandardsExpertise = () => {
             {organizations.map((org, index) => (
               <Card key={index} className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 relative">
                 <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200">
+                  <div className="w-[90px] h-[90px] bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 overflow-hidden">
                     {org.logo ? (
-                      <img src={org.logo} alt={org.name} className="w-12 h-12 object-contain" />
+                      <img src={org.logo} alt={org.name} className="w-[80px] h-[80px] object-cover rounded-full" />
                     ) : (
                       <span className="text-xl font-bold text-blue-600">{org.name}</span>
                     )}
@@ -114,13 +114,6 @@ const StandardsExpertise = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{org.name}</h3>
                   <p className="text-sm text-gray-600 mb-3">{org.fullName}</p>
                 </CardContent>
-                
-                {/* Connecting Arrows */}
-                {index < organizations.length - 1 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                    <ArrowRight className="w-6 h-6 text-teal-500" />
-                  </div>
-                )}
               </Card>
             ))}
           </div>
