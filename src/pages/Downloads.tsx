@@ -474,32 +474,32 @@ export default function Downloads() {
     <div className="min-h-screen bg-white">
       <Navigation />
 
-      {/* Navigation Spacer */}
-      <div className="h-24"></div>
+      {/* Main content wrapper with top margin to clear fixed navigation */}
+      <div className="pt-[140px]">
+        {/* Breadcrumb Navigation */}
+        <nav aria-label="Breadcrumb" className="sticky top-[140px] z-40 bg-white py-6 border-b border-gray-200">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/" className="hover:text-primary transition-colors">Startseite</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="text-gray-600">Ressourcen</BreadcrumbPage>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="text-gray-900">Downloadcenter</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </nav>
 
-      <header className="border-b border-gray-200">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-8">
-          <Breadcrumb aria-label="Breadcrumb">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/" className="hover:text-primary transition-colors">Startseite</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-gray-600">Ressourcen</BreadcrumbPage>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-gray-900">Downloadcenter</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
-
-      <main className="relative z-0">
+        <main className="relative z-0">
         {/* Hero */}
         <section className="bg-gray-50">
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-16">
@@ -840,7 +840,8 @@ export default function Downloads() {
             <MessageCircle className="h-5 w-5" />
           </Button>
         </div>
-      </main>
+        </main>
+      </div>
 
       {/* Details Dialog */}
       <Dialog open={!!detailsItem} onOpenChange={() => setDetailsItem(null)}>
