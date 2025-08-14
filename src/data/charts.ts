@@ -39,27 +39,27 @@ export const charts: Chart[] = [
     slug: 'texx',
     title: 'TEXX',
     sku: 'TEXX',
-    heroImage: '/images/chart-placeholder.jpg',
-    gallery: ['/images/chart-placeholder.jpg'],
+    heroImage: 'https://www.image-engineering.de/content/products/charts/tex/images/Custom_chart.png',
+    gallery: ['https://www.image-engineering.de/content/products/charts/tex/images/Custom_chart.png'],
     excerpt: 'Individuelle Testchart-Erstellung – maßgeschneidert für Ihre spezifischen Testanforderungen.',
-    description: 'TEXX bietet maßgeschneiderte Testchart-Lösungen für spezifische Testanforderungen. Entwickelt für individuelle Anwendungen und Testverfahren.',
-    standards: ['Custom'],
-    applications: ['Alle'],
-    categories: ['Kundenspezifisch'],
+    description: 'Suchen Sie nach einem individuellen Testchart? Wir produzieren derzeit über 250 Testcharts, die das gesamte Spektrum der Bildqualitätsprüfung abdecken. Diese Charts reichen von einem einfachen ColorChecker bis hin zu fortschrittlichen OECF-Charts für Automotive-Kameratests. Dennoch verstehen wir, dass wir nicht alle Kameratest-Anforderungen abdecken können, um alle individuellen Leistungsprüfungen zu erfüllen. Daher bieten wir die Möglichkeit, individuelle Charts mit der Erfahrung und den Fähigkeiten unseres hauseigenen Chart-Design-Teams zu erstellen.',
+    standards: ['Custom Design'],
+    applications: ['Alle Anwendungen', 'Spezialanforderungen'],
+    categories: ['Kundenspezifisch', 'Design Service'],
     materials: ['Nach Anforderung'],
     sizes: ['Kundenspezifisch'],
     variants: [],
-    price_mode: 'fixed',
-    price_from: 1950,
+    price_mode: 'rfq',
     currency: 'EUR',
     downloads: [
+      { name: 'Custom Chart Request Form', url: '#', type: 'PDF' },
       { name: 'Datenblatt', url: '#', type: 'PDF' }
     ],
     compatibility: ['Alle Systeme'],
-    badges: ['Kundenspezifisch'],
+    badges: ['Kundenspezifisch', 'Design Service'],
     seo: {
       title: 'TEXX - Individuelle Testchart-Erstellung',
-      description: 'Maßgeschneiderte Testchart-Lösungen für spezifische Testanforderungen.'
+      description: 'Maßgeschneiderte Testchart-Lösungen für spezifische Testanforderungen. Über 250 Charts verfügbar, individuelle Designs möglich.'
     }
   },
   {
