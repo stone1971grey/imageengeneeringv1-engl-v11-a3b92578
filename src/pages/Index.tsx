@@ -1,7 +1,6 @@
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Hero from "@/components/Hero";
-import IndustrySection from "@/components/IndustrySection";
 import Industries from "@/components/Industries";
 import StandardsExpertise from "@/components/StandardsExpertise";
 import Footer from "@/components/Footer";
@@ -17,7 +16,6 @@ const Index = () => {
         icon="calendar"
       />
       <Hero />
-      <IndustrySection />
       <Industries />
       <StandardsExpertise />
       <Footer />

@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
+import IndustrySection from "@/components/IndustrySection";
 import { Camera, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, ArrowRight, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -119,6 +120,9 @@ const Industries = () => {
           </div>
         </div>
       </section>
+
+      {/* Industry Section - Vertraut in allen Branchen */}
+      <IndustrySection />
 
       {/* IBC 2025 Teaser Banner */}
       <section className="w-full bg-gradient-to-r from-primary/5 to-accent-soft-blue/5 border-b border-muted-foreground/10">
