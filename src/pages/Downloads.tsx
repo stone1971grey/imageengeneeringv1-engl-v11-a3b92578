@@ -471,11 +471,11 @@ export default function Downloads() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: 'hsl(var(--light-background))' }}>
       <RegularNavigation />
 
-      <header className="border-b border-border bg-background">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-6">
+      <header className="border-b" style={{ borderColor: 'hsl(var(--light-border))' }}>
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6">
           <Breadcrumb aria-label="Breadcrumb">
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -485,11 +485,11 @@ export default function Downloads() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-foreground">Ressourcen</BreadcrumbPage>
+                <BreadcrumbPage style={{ color: 'hsl(var(--light-foreground))' }}>Ressourcen</BreadcrumbPage>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-foreground">Downloadcenter</BreadcrumbPage>
+                <BreadcrumbPage style={{ color: 'hsl(var(--light-foreground))' }}>Downloadcenter</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -498,16 +498,16 @@ export default function Downloads() {
 
       <main className="relative z-0">
         {/* Hero */}
-        <section className="border-b border-border bg-background">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-12 flex items-start justify-between gap-6">
+        <section className="border-b" style={{ borderColor: 'hsl(var(--light-border))' }}>
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 flex items-start justify-between gap-6">
             <div className="max-w-3xl">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">Downloadcenter</h1>
-              <p className="mt-4 text-lg text-muted-foreground">
+              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: 'hsl(var(--light-foreground))' }}>Downloadcenter</h1>
+              <p className="mt-3" style={{ color: 'hsl(var(--light-muted))' }}>
                 Finden Sie Software, Handbücher, Datenblätter, API‑Dokumente und Release Notes – gefiltert nach Produkt, Kategorie, Version und Betriebssystem.
               </p>
             </div>
             <div className="hidden md:block">
-              <Button onClick={() => setAiOpen(true)} aria-label="KI‑Assistenz öffnen" style={{ backgroundColor: '#3464e3' }} className="hover:opacity-90 text-white">
+              <Button variant="default" className="bg-gradient-primary hover:shadow-glow transition-all duration-300" onClick={() => setAiOpen(true)} aria-label="KI‑Assistenz öffnen">
                 <DownloadIcon className="h-4 w-4 mr-2" /> KI‑Assistenz
               </Button>
             </div>
@@ -515,7 +515,7 @@ export default function Downloads() {
         </section>
 
         {/* Layout */}
-        <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 grid grid-cols-1 md:grid-cols-12 gap-8">
+        <section className="max-w-[1200px] mx-auto px-4 md:px-6 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Sidebar */}
           <aside className="md:col-span-4 lg:col-span-3 md:sticky md:top-20 self-start space-y-6">
             {/* Mobile trigger */}
@@ -527,7 +527,7 @@ export default function Downloads() {
                   </Button>
                 </DrawerTrigger>
                 <DrawerContent className="p-6">
-                  <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                  <div style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="rounded-xl border p-5 shadow-soft">
                     <Filters
                       q={q}
                       setQ={setQ}
@@ -552,7 +552,7 @@ export default function Downloads() {
 
             {/* Desktop filters */}
             <div className="hidden md:block">
-              <Card className="bg-card border border-border p-6 shadow-sm">
+              <Card style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="p-5 shadow-soft">
                 <Filters
                   q={q}
                   setQ={setQ}
@@ -575,8 +575,8 @@ export default function Downloads() {
           </aside>
 
           {/* Content */}
-          <div className="md:col-span-8 lg:col-span-9 space-y-8 md:border-l md:border-border md:pl-8">
-            <div className="flex items-center justify-between gap-4">
+          <div className="md:col-span-8 lg:col-span-9 space-y-6 md:border-l md:pl-6" style={{ borderColor: 'hsl(var(--light-border))' }}>
+            <div className="flex items-center justify-between gap-4 mt-6 md:mt-0">
               <div className="flex-1">
                 <ActiveFilters />
               </div>
@@ -584,10 +584,10 @@ export default function Downloads() {
 
             {/* Results */}
             {isLoading ? (
-              <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
+              <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
                 {Array.from({ length: 6 }, (_, i) => (
-                  <Card key={i} className="bg-card border border-border shadow-sm">
-                    <CardContent className="p-6">
+                  <Card key={i} style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="shadow-soft">
+                    <CardContent className="p-5">
                       <Skeleton className="h-6 w-3/4 mb-3" />
                       <Skeleton className="h-4 w-full mb-2" />
                       <Skeleton className="h-4 w-2/3" />
@@ -596,9 +596,9 @@ export default function Downloads() {
                 ))}
               </div>
             ) : total === 0 ? (
-              <div className="text-center py-16">
-                <div className="bg-card border border-border rounded-xl p-8 shadow-sm">
-                  <p className="text-muted-foreground mb-4">Keine Treffer für die aktuelle Auswahl.</p>
+              <div className="text-center py-12">
+                <div style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="rounded-xl border p-8 shadow-soft">
+                  <p style={{ color: 'hsl(var(--light-muted))' }} className="mb-4">Keine Treffer für die aktuelle Auswahl.</p>
                   <Button onClick={clearAll} variant="outline">
                     Filter zurücksetzen
                   </Button>
@@ -607,29 +607,29 @@ export default function Downloads() {
             ) : (
               <>
                 {/* Results Grid - 2 columns only */}
-                <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
                   {pageItems.map((item) => (
-                    <Card key={item.id} className="bg-card border border-border rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                      <CardHeader className="p-0 pb-4">
-                        <div className="flex items-start justify-between gap-3">
+                    <Card key={item.id} style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))', color: 'hsl(var(--light-foreground))' }} className="rounded-xl shadow-soft p-5 hover:shadow-gentle transition-shadow">
+                      <CardHeader className="py-4 px-0">
+                        <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
-                            <CardTitle className="text-lg font-semibold line-clamp-2 text-foreground">
+                            <CardTitle className="text-lg font-semibold line-clamp-2" style={{ color: 'hsl(var(--light-foreground))' }}>
                               {item.title}
                             </CardTitle>
                             {item.description && (
-                              <p className="text-sm mt-2 line-clamp-2 text-muted-foreground">
+                              <p className="text-sm mt-2 line-clamp-2" style={{ color: 'hsl(var(--light-muted))' }}>
                                 {item.description}
                               </p>
                             )}
                           </div>
-                          <div className="text-muted-foreground">
+                          <div style={{ color: 'hsl(var(--light-muted))' }}>
                             {FILETYPE_ICON[item.filetype]}
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="p-0 space-y-4">
+                      <CardContent className="px-0 pb-0 space-y-3">
                         {/* Meta info */}
-                        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-2 text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
                           <Badge variant="secondary" className="text-xs px-3 py-1 font-medium">
                             {CATEGORY_LABEL[item.category]}
                           </Badge>
@@ -650,13 +650,13 @@ export default function Downloads() {
                               <OsChip key={os} os={os} />
                             ))}
                             {item.size && item.size !== "—" && (
-                              <span className="text-muted-foreground">{item.size}</span>
+                              <span style={{ color: 'hsl(var(--light-muted))' }}>{item.size}</span>
                             )}
                           </div>
                         )}
 
                         {/* Date and languages */}
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-3 text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
                           <span>{formatDate(item.date)}</span>
                           {item.languages.length > 0 && (
                             <>
@@ -669,17 +669,17 @@ export default function Downloads() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-3 pt-2">
-                          <Button size="sm" className="flex-1 text-white" style={{ backgroundColor: '#3464e3' }} asChild>
+                        <div className="flex items-center gap-2 pt-2">
+                          <Button size="sm" className="flex-1 bg-gradient-primary hover:shadow-glow transition-all duration-300">
                             <a
                               href={`${item.url}${cacheSuffix}`}
-                              className="flex items-center gap-2 no-underline"
+                              className="flex items-center gap-2 text-white no-underline"
                             >
                               <FileDown className="h-4 w-4" />
                               Herunterladen
                             </a>
                           </Button>
-                          <Button size="sm" variant="outline" onClick={() => openDetails(item)} className="hover:bg-accent transition-colors">
+                          <Button size="sm" variant="outline" onClick={() => openDetails(item)} className="hover:bg-accent/50 transition-colors">
                             <Info className="h-4 w-4 mr-1" />
                             Details
                           </Button>
@@ -721,13 +721,13 @@ export default function Downloads() {
         </section>
 
         {/* Footer CTA */}
-        <section className="border-t border-border bg-card">
-          <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 text-center">
-            <h2 className="text-2xl font-semibold mb-4 text-foreground">Mehr Downloads im Downloadcenter</h2>
-            <p className="mb-8 max-w-2xl mx-auto text-muted-foreground">
+        <section className="border-t" style={{ borderColor: 'hsl(var(--light-border))', backgroundColor: 'hsl(var(--scandi-white))' }}>
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-12 text-center">
+            <h2 className="text-2xl font-semibold mb-4" style={{ color: 'hsl(var(--light-foreground))' }}>Mehr Downloads im Downloadcenter</h2>
+            <p className="mb-6 max-w-2xl mx-auto" style={{ color: 'hsl(var(--light-muted))' }}>
               Vollständige Software‑Pakete, detaillierte Handbücher und API‑Dokumentationen für alle Produkte.
             </p>
-            <Button size="lg" className="text-white" style={{ backgroundColor: '#3464e3' }}>
+            <Button size="lg" className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
               <LinkIcon className="mr-2 h-5 w-5" />
               Zum Downloadcenter
             </Button>
@@ -740,8 +740,7 @@ export default function Downloads() {
         <div className="relative">
           <Button
             size="lg"
-            className="rounded-full h-14 w-14 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-            style={{ backgroundColor: '#3464e3' }}
+            className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-glow transition-all duration-300"
             onClick={() => setAiOpen(true)}
             aria-label="KI‑Assistenz öffnen"
           >
@@ -797,7 +796,7 @@ export default function Downloads() {
                 </div>
               )}
               <div className="flex gap-2 pt-4">
-                <Button size="sm" asChild className="flex-1 text-white" style={{ backgroundColor: '#3464e3' }}>
+                <Button size="sm" asChild className="flex-1 bg-gradient-primary hover:shadow-glow transition-all duration-300">
                   <a href={`${detailsItem.url}${cacheSuffix}`}>
                     <FileDown className="h-4 w-4 mr-2" />
                     Herunterladen
