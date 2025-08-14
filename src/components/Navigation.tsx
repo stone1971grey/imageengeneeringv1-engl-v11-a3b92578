@@ -25,12 +25,10 @@ import industryMachineVision from "@/assets/industry-machine-vision.jpg";
 import industryMedical from "@/assets/industry-medical.jpg";
 import industryScanning from "@/assets/industry-scanning.jpg";
 import industryLabTesting from "@/assets/industry-lab-testing.jpg";
-import customChart from "@/assets/custom-chart.png";
 import arcturusMainProduct from "@/assets/arcturus-main-product.png";
 import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
 import productBundleIeee from "@/assets/product-bundle-ieee.png";
 import iqLedIllumination from "@/assets/iq-led-illumination.png";
-import chartCase from "@/assets/chart-case.png";
 import technology2025 from "@/assets/technology-2025.png";
 import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
 import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
@@ -106,7 +104,7 @@ const Navigation = () => {
   // Product data mapping
   const productData = {
     "Charts": {
-      image: customChart,
+      image: "/images/custom-chart.png",
       description: "Hochpräzise Testmuster und Farbcharts für umfassende Bildqualitätsanalyse"
     },
     "Geräte": {
@@ -126,7 +124,7 @@ const Navigation = () => {
       description: "Komplette Beleuchtungs- und Illuminationslösungen für professionelle Testumgebungen"
     },
     "Zubehör": {
-      image: chartCase,
+      image: "/images/chart-case.png",
       description: "Professionelles Zubehör einschließlich Chart-Koffer, Halterungen und Kalibrierungstools"
     },
     "Technologie": {
@@ -180,7 +178,7 @@ const Navigation = () => {
       subline: "Hardware + Software + Charts Bundle"
     },
     "Kamera-Kalibrierungs-Paket": {
-      image: customChart,
+      image: "/images/custom-chart.png",
       description: "Beleuchtungssystem, Charts, Software – speziell für kalibrierte Tests",
       subline: "Kalibrierungs-Komplettlösung"
     },
