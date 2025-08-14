@@ -400,7 +400,7 @@ export default function Downloads() {
 
       {/* Header row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
+        <div className="text-sm text-gray-600">
           {total} Ergebnisse
         </div>
         <div className="flex items-center gap-2">
@@ -471,11 +471,14 @@ export default function Downloads() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'hsl(var(--light-background))' }}>
+    <div className="min-h-screen bg-white">
       <RegularNavigation />
 
-      <header className="border-b" style={{ borderColor: 'hsl(var(--light-border))' }}>
-        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6">
+      {/* Navigation Spacer */}
+      <div className="h-24"></div>
+
+      <header className="border-b border-gray-200">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-8">
           <Breadcrumb aria-label="Breadcrumb">
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -485,11 +488,11 @@ export default function Downloads() {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage style={{ color: 'hsl(var(--light-foreground))' }}>Ressourcen</BreadcrumbPage>
+                <BreadcrumbPage className="text-gray-600">Ressourcen</BreadcrumbPage>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage style={{ color: 'hsl(var(--light-foreground))' }}>Downloadcenter</BreadcrumbPage>
+                <BreadcrumbPage className="text-gray-900">Downloadcenter</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -498,312 +501,402 @@ export default function Downloads() {
 
       <main className="relative z-0">
         {/* Hero */}
-        <section className="border-b" style={{ borderColor: 'hsl(var(--light-border))' }}>
-          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 flex items-start justify-between gap-6">
-            <div className="max-w-3xl">
-              <h1 className="text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: 'hsl(var(--light-foreground))' }}>Downloadcenter</h1>
-              <p className="mt-3" style={{ color: 'hsl(var(--light-muted))' }}>
-                Finden Sie Software, Handbücher, Datenblätter, API‑Dokumente und Release Notes – gefiltert nach Produkt, Kategorie, Version und Betriebssystem.
+        <section className="bg-gray-50">
+          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-16">
+            <div className="text-center">
+              <h1 className="text-4xl sm:text-5xl font-medium mb-4 text-gray-900">
+                Downloadcenter
+              </h1>
+              <p className="text-lg text-gray-600">
+                Alle Ressourcen – Software, Handbücher, API‑Dokumente und mehr.
               </p>
-            </div>
-            <div className="hidden md:block">
-              <Button variant="default" className="bg-gradient-primary hover:shadow-glow transition-all duration-300" onClick={() => setAiOpen(true)} aria-label="KI‑Assistenz öffnen">
-                <DownloadIcon className="h-4 w-4 mr-2" /> KI‑Assistenz
-              </Button>
             </div>
           </div>
         </section>
 
-        {/* Layout */}
-        <section className="max-w-[1200px] mx-auto px-4 md:px-6 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* Sidebar */}
-          <aside className="md:col-span-4 lg:col-span-3 md:sticky md:top-20 self-start space-y-6">
-            {/* Mobile trigger */}
-            <div className="md:hidden">
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <Button variant="outline" className="w-full" aria-label="Filter öffnen">
-                    <SlidersHorizontal className="mr-2 h-4 w-4" /> Filter
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent className="p-6">
-                  <div style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="rounded-xl border p-5 shadow-soft">
-                    <Filters
-                      q={q}
-                      setQ={setQ}
-                      cats={cats}
-                      setCats={setCats}
-                      products={products}
-                      setProducts={setProducts}
-                      oses={oses}
-                      setOses={setOses}
-                      langs={langs}
-                      setLangs={setLangs}
-                      period={period}
-                      setPeriod={setPeriod}
-                      allProducts={allProducts}
-                      clearAll={clearAll}
-                      hitCount={total}
-                    />
+        {/* Content wrapper */}
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-12">
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Sidebar */}
+            <aside className="w-full lg:w-80 shrink-0">
+              <Card className="p-6 bg-white shadow-sm border border-gray-200">
+                <div className="space-y-6">
+                  {/* Search */}
+                  <div>
+                    <label htmlFor="search" className="text-sm font-semibold mb-3 block text-gray-900">
+                      Suche
+                    </label>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="search"
+                        placeholder="Nach Downloads suchen..."
+                        value={q}
+                        onChange={(e) => { setQ(e.target.value); setPage(1); }}
+                        className="pl-9"
+                      />
+                    </div>
                   </div>
-                </DrawerContent>
-              </Drawer>
-            </div>
 
-            {/* Desktop filters */}
-            <div className="hidden md:block">
-              <Card style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="p-5 shadow-soft">
-                <Filters
-                  q={q}
-                  setQ={setQ}
-                  cats={cats}
-                  setCats={setCats}
-                  products={products}
-                  setProducts={setProducts}
-                  oses={oses}
-                  setOses={setOses}
-                  langs={langs}
-                  setLangs={setLangs}
-                  period={period}
-                  setPeriod={setPeriod}
-                  allProducts={allProducts}
-                  clearAll={clearAll}
-                  hitCount={total}
-                />
-              </Card>
-            </div>
-          </aside>
+                  {/* Category Filter */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-3 text-gray-900">
+                      Kategorie
+                    </h3>
+                    <div className="space-y-2">
+                      {Object.entries(CATEGORY_LABEL).map(([cat, label]) => (
+                        <div key={cat} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={cat}
+                            checked={cats.includes(cat as DownloadItem["category"])}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setCats([...cats, cat as DownloadItem["category"]]);
+                              } else {
+                                setCats(cats.filter((c) => c !== cat));
+                              }
+                              setPage(1);
+                            }}
+                          />
+                          <label htmlFor={cat} className="text-sm text-gray-700 cursor-pointer">
+                            {label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-          {/* Content */}
-          <div className="md:col-span-8 lg:col-span-9 space-y-6 md:border-l md:pl-6" style={{ borderColor: 'hsl(var(--light-border))' }}>
-            <div className="flex items-center justify-between gap-4 mt-6 md:mt-0">
-              <div className="flex-1">
-                <ActiveFilters />
-              </div>
-            </div>
+                  {/* Product Filter */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-3 text-gray-900">
+                      Produkt
+                    </h3>
+                    <div className="space-y-2">
+                      {allProducts.map((prod) => (
+                        <div key={prod} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`product-${prod}`}
+                            checked={products.includes(prod)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setProducts([...products, prod]);
+                              } else {
+                                setProducts(products.filter((p) => p !== prod));
+                              }
+                              setPage(1);
+                            }}
+                          />
+                          <label htmlFor={`product-${prod}`} className="text-sm text-gray-700 cursor-pointer">
+                            {prod}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
-            {/* Results */}
-            {isLoading ? (
-              <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                {Array.from({ length: 6 }, (_, i) => (
-                  <Card key={i} style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="shadow-soft">
-                    <CardContent className="p-5">
-                      <Skeleton className="h-6 w-3/4 mb-3" />
-                      <Skeleton className="h-4 w-full mb-2" />
-                      <Skeleton className="h-4 w-2/3" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : total === 0 ? (
-              <div className="text-center py-12">
-                <div style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))' }} className="rounded-xl border p-8 shadow-soft">
-                  <p style={{ color: 'hsl(var(--light-muted))' }} className="mb-4">Keine Treffer für die aktuelle Auswahl.</p>
-                  <Button onClick={clearAll} variant="outline">
-                    Filter zurücksetzen
+                  {/* OS Filter */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-3 text-gray-900">
+                      Betriebssystem
+                    </h3>
+                    <div className="space-y-2">
+                      {[
+                        { key: "windows", label: "Windows" },
+                        { key: "mac", label: "macOS" },
+                        { key: "linux", label: "Linux" },
+                      ].map(({ key, label }) => (
+                        <div key={key} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`os-${key}`}
+                            checked={oses.includes(key as "windows" | "mac" | "linux")}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setOses([...oses, key as "windows" | "mac" | "linux"]);
+                              } else {
+                                setOses(oses.filter((o) => o !== key));
+                              }
+                              setPage(1);
+                            }}
+                          />
+                          <label htmlFor={`os-${key}`} className="text-sm text-gray-700 cursor-pointer">
+                            {label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Language Filter */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-3 text-gray-900">
+                      Sprache
+                    </h3>
+                    <div className="space-y-2">
+                      {[
+                        { key: "de", label: "Deutsch" },
+                        { key: "en", label: "English" },
+                      ].map(({ key, label }) => (
+                        <div key={key} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`lang-${key}`}
+                            checked={langs.includes(key as "de" | "en")}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setLangs([...langs, key as "de" | "en"]);
+                              } else {
+                                setLangs(langs.filter((l) => l !== key));
+                              }
+                              setPage(1);
+                            }}
+                          />
+                          <label htmlFor={`lang-${key}`} className="text-sm text-gray-700 cursor-pointer">
+                            {label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Time Period */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-3 text-gray-900">
+                      Zeitraum
+                    </h3>
+                    <Select value={period} onValueChange={(v) => { setPeriod(v); setPage(1); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Zeitraum wählen" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="latest">Keine Einschränkung</SelectItem>
+                        <SelectItem value="6m">Letzte 6 Monate</SelectItem>
+                        <SelectItem value="12m">Letztes Jahr</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Reset Button */}
+                  <Button variant="outline" className="w-full" onClick={clearAll}>
+                    Alle Filter zurücksetzen
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <>
-                {/* Results Grid - 2 columns only */}
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                  {pageItems.map((item) => (
-                    <Card key={item.id} style={{ backgroundColor: 'hsl(var(--scandi-white))', borderColor: 'hsl(var(--light-border))', color: 'hsl(var(--light-foreground))' }} className="rounded-xl shadow-soft p-5 hover:shadow-gentle transition-shadow">
-                      <CardHeader className="py-4 px-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <CardTitle className="text-lg font-semibold line-clamp-2" style={{ color: 'hsl(var(--light-foreground))' }}>
-                              {item.title}
-                            </CardTitle>
+              </Card>
+            </aside>
+
+            {/* Main Content */}
+            <div className="flex-1 min-w-0 md:border-l md:border-gray-200 md:pl-12">
+              <div className="space-y-8">
+                <ActiveFilters />
+                
+                {/* Results Grid */}
+                {isLoading ? (
+                  <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <Card key={i} className="p-6 bg-white border border-gray-100 shadow-sm">
+                        <div className="space-y-3">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                          <Skeleton className="h-4 w-full" />
+                          <div className="flex gap-2">
+                            <Skeleton className="h-8 w-20" />
+                            <Skeleton className="h-8 w-16" />
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                ) : pageItems.length === 0 ? (
+                  <Card className="p-8 text-center bg-white border border-gray-100 shadow-sm">
+                    <p className="text-lg text-gray-600">
+                      Keine Treffer für die aktuelle Auswahl.
+                    </p>
+                    <Button variant="outline" className="mt-3" onClick={clearAll}>
+                      Filter zurücksetzen
+                    </Button>
+                  </Card>
+                ) : (
+                  <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
+                    {pageItems.map((item) => (
+                      <Card key={item.id} className="group p-6 hover:shadow-lg transition-all duration-200 bg-white border border-gray-100 shadow-sm">
+                        <CardContent className="p-0">
+                          <div className="space-y-4">
+                            {/* Header */}
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-lg leading-snug text-gray-900">
+                                  {item.title}
+                                </h3>
+                                <p className="text-sm mt-1 text-gray-600">
+                                  {item.product} {item.version && `• v${item.version}`}
+                                </p>
+                              </div>
+                              <div className="ml-3 flex items-center text-muted-foreground">
+                                {FILETYPE_ICON[item.filetype]}
+                              </div>
+                            </div>
+
+                            {/* Description */}
                             {item.description && (
-                              <p className="text-sm mt-2 line-clamp-2" style={{ color: 'hsl(var(--light-muted))' }}>
+                              <p className="text-sm leading-relaxed text-gray-600">
                                 {item.description}
                               </p>
                             )}
-                          </div>
-                          <div style={{ color: 'hsl(var(--light-muted))' }}>
-                            {FILETYPE_ICON[item.filetype]}
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="px-0 pb-0 space-y-3">
-                        {/* Meta info */}
-                        <div className="flex flex-wrap items-center gap-2 text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
-                          <Badge variant="secondary" className="text-xs px-3 py-1 font-medium">
-                            {CATEGORY_LABEL[item.category]}
-                          </Badge>
-                          <span>•</span>
-                          <span>{item.product}</span>
-                          {item.version && (
-                            <>
-                              <span>•</span>
-                              <span>v{item.version}</span>
-                            </>
-                          )}
-                        </div>
 
-                        {/* OS and size */}
-                        {(item.os?.length || item.size) && (
-                          <div className="flex items-center gap-3 text-sm">
-                            {item.os?.map((os) => (
-                              <OsChip key={os} os={os} />
-                            ))}
-                            {item.size && item.size !== "—" && (
-                              <span style={{ color: 'hsl(var(--light-muted))' }}>{item.size}</span>
-                            )}
+                            {/* Tags */}
+                            <div className="flex flex-wrap gap-2">
+                              <Badge variant="secondary" className="text-xs">
+                                {CATEGORY_LABEL[item.category]}
+                              </Badge>
+                              {item.os?.map((o) => (
+                                <OsChip key={o} os={o} />
+                              ))}
+                              {item.languages.map((lang) => (
+                                <Badge key={lang} variant="outline" className="text-xs uppercase">
+                                  {lang}
+                                </Badge>
+                              ))}
+                            </div>
+
+                            {/* Meta info */}
+                            <div className="flex items-center justify-between text-xs text-gray-500">
+                              <span>{formatDate(item.date)}</span>
+                              {item.size && <span>{item.size}</span>}
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-2 pt-2">
+                              <Button 
+                                size="sm" 
+                                className="flex-1 bg-[#3464e3] hover:bg-[#2851d4] text-white"
+                                asChild
+                              >
+                                <a href={`${item.url}${cacheSuffix}`} target="_blank" rel="noopener noreferrer">
+                                  <DownloadIcon className="h-3.5 w-3.5 mr-1.5" />
+                                  Herunterladen
+                                </a>
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => openDetails(item)}
+                              >
+                                Details
+                              </Button>
+                            </div>
                           </div>
-                        )}
-
-                        {/* Date and languages */}
-                        <div className="flex items-center gap-3 text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
-                          <span>{formatDate(item.date)}</span>
-                          {item.languages.length > 0 && (
-                            <>
-                              <span>•</span>
-                              <span>
-                                {item.languages.map((l) => l.toUpperCase()).join(", ")}
-                              </span>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Actions */}
-                        <div className="flex items-center gap-2 pt-2">
-                          <Button size="sm" className="flex-1 bg-gradient-primary hover:shadow-glow transition-all duration-300">
-                            <a
-                              href={`${item.url}${cacheSuffix}`}
-                              className="flex items-center gap-2 text-white no-underline"
-                            >
-                              <FileDown className="h-4 w-4" />
-                              Herunterladen
-                            </a>
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => openDetails(item)} className="hover:bg-accent/50 transition-colors">
-                            <Info className="h-4 w-4 mr-1" />
-                            Details
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
 
                 {/* Pagination */}
-                {total > PAGE_SIZE && (
-                  <div className="flex items-center justify-between pt-2">
-                    <div className="text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
-                      Seite {page} von {totalPages}
-                    </div>
+                {totalPages > 1 && (
+                  <div className="flex justify-center">
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={page <= 1}
-                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        onClick={() => setPage(page - 1)}
                       >
                         Zurück
                       </Button>
+                      <span className="text-sm text-gray-600">
+                        Seite {page} von {totalPages}
+                      </span>
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={page >= totalPages}
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page === totalPages}
+                        onClick={() => setPage(page + 1)}
                       >
                         Weiter
                       </Button>
                     </div>
                   </div>
                 )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
 
-        {/* Footer CTA */}
-        <section className="border-t" style={{ borderColor: 'hsl(var(--light-border))', backgroundColor: 'hsl(var(--scandi-white))' }}>
-          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-12 text-center">
-            <h2 className="text-2xl font-semibold mb-4" style={{ color: 'hsl(var(--light-foreground))' }}>Mehr Downloads im Downloadcenter</h2>
-            <p className="mb-6 max-w-2xl mx-auto" style={{ color: 'hsl(var(--light-muted))' }}>
-              Vollständige Software‑Pakete, detaillierte Handbücher und API‑Dokumentationen für alle Produkte.
-            </p>
-            <Button size="lg" className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
-              <LinkIcon className="mr-2 h-5 w-5" />
+        {/* Download Center CTA */}
+        <div className="mt-12 text-center">
+          <Button asChild variant="outline" className="mt-4">
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <LinkIcon className="h-4 w-4 mr-2" />
               Zum Downloadcenter
-            </Button>
-          </div>
-        </section>
-      </main>
-
-      {/* AI Assistant - Chat Window Bottom Right */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <div className="relative">
-          <Button
-            size="lg"
-            className="rounded-full h-14 w-14 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-glow transition-all duration-300"
-            onClick={() => setAiOpen(true)}
-            aria-label="KI‑Assistenz öffnen"
-          >
-            <MessageCircle className="h-6 w-6" />
+            </a>
           </Button>
         </div>
-      </div>
+
+        {/* AI Assistant */}
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={() => setAiOpen(true)}
+            className="rounded-full shadow-lg bg-[#3464e3] hover:bg-[#2851d4] text-white transition-all duration-300"
+            size="lg"
+          >
+            <MessageCircle className="h-5 w-5" />
+          </Button>
+        </div>
+      </main>
 
       {/* Details Dialog */}
       <Dialog open={!!detailsItem} onOpenChange={() => setDetailsItem(null)}>
-        <DialogContent style={{ backgroundColor: 'hsl(var(--scandi-white))', color: 'hsl(var(--light-foreground))' }} className="max-w-md">
+        <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{detailsItem?.title}</DialogTitle>
-            <DialogDescription style={{ color: 'hsl(var(--light-muted))' }}>Download Details</DialogDescription>
+            <DialogTitle className="text-gray-900">{detailsItem?.title}</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              {detailsItem?.product} {detailsItem?.version && `• v${detailsItem.version}`}
+            </DialogDescription>
           </DialogHeader>
           {detailsItem && (
-            <div className="space-y-3 text-sm">
-              <div>
-                <strong>Produkt:</strong> {detailsItem.product}
-              </div>
-              <div>
-                <strong>Kategorie:</strong> {CATEGORY_LABEL[detailsItem.category]}
-              </div>
-              {detailsItem.version && (
-                <div>
-                  <strong>Version:</strong> {detailsItem.version}
-                </div>
-              )}
-              <div>
-                <strong>Datum:</strong> {formatDate(detailsItem.date)}
-              </div>
-              {detailsItem.size && (
-                <div>
-                  <strong>Größe:</strong> {detailsItem.size}
-                </div>
-              )}
-              <div>
-                <strong>Sprachen:</strong> {detailsItem.languages.map((l) => l.toUpperCase()).join(", ")}
-              </div>
-              {detailsItem.os && (
-                <div>
-                  <strong>Betriebssysteme:</strong> {detailsItem.os.map((o) => o.charAt(0).toUpperCase() + o.slice(1)).join(", ")}
-                </div>
-              )}
+            <div className="space-y-4">
               {detailsItem.description && (
+                <p className="text-gray-700">{detailsItem.description}</p>
+              )}
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <strong>Beschreibung:</strong> {detailsItem.description}
+                  <strong className="text-gray-900">Kategorie:</strong> {CATEGORY_LABEL[detailsItem.category]}
                 </div>
-              )}
-              {detailsItem.checksumSha256 && (
-                <div className="text-xs" style={{ color: 'hsl(var(--light-muted))' }}>
-                  <strong>SHA256:</strong> {detailsItem.checksumSha256}
+                <div>
+                  <strong className="text-gray-900">Datum:</strong> {formatDate(detailsItem.date)}
                 </div>
-              )}
+                {detailsItem.size && (
+                  <div>
+                    <strong className="text-gray-900">Größe:</strong> {detailsItem.size}
+                  </div>
+                )}
+                <div>
+                  <strong className="text-gray-900">Sprachen:</strong> {detailsItem.languages.join(", ")}
+                </div>
+                {detailsItem.os && (
+                  <div>
+                    <strong className="text-gray-900">Betriebssystem:</strong> {detailsItem.os.join(", ")}
+                  </div>
+                )}
+                {detailsItem.checksumSha256 && (
+                  <div className="col-span-2">
+                    <strong className="text-gray-900">SHA256:</strong> 
+                    <code className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded">
+                      {detailsItem.checksumSha256}
+                    </code>
+                  </div>
+                )}
+              </div>
               <div className="flex gap-2 pt-4">
-                <Button size="sm" asChild className="flex-1 bg-gradient-primary hover:shadow-glow transition-all duration-300">
-                  <a href={`${detailsItem.url}${cacheSuffix}`}>
-                    <FileDown className="h-4 w-4 mr-2" />
+                <Button 
+                  className="bg-[#3464e3] hover:bg-[#2851d4] text-white"
+                  asChild
+                >
+                  <a href={`${detailsItem.url}${cacheSuffix}`} target="_blank" rel="noopener noreferrer">
+                    <DownloadIcon className="h-4 w-4 mr-2" />
                     Herunterladen
                   </a>
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => copyLink(detailsItem.url)} className="hover:bg-accent/50 transition-colors">
-                  <LinkIcon className="h-4 w-4 mr-1" />
+                <Button variant="outline" onClick={() => copyLink(detailsItem.url)}>
+                  <LinkIcon className="h-4 w-4 mr-2" />
                   Link kopieren
                 </Button>
               </div>
@@ -814,32 +907,29 @@ export default function Downloads() {
 
       {/* AI Assistant Dialog */}
       <Dialog open={aiOpen} onOpenChange={setAiOpen}>
-        <DialogContent style={{ backgroundColor: 'hsl(var(--scandi-white))', color: 'hsl(var(--light-foreground))' }} className="max-w-lg">
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>KI‑Assistent</DialogTitle>
-            <DialogDescription style={{ color: 'hsl(var(--light-muted))' }}>Lassen Sie sich bei der Suche helfen</DialogDescription>
+            <DialogTitle className="text-gray-900">KI‑Assistent</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Lassen Sie sich bei der Suche nach Downloads helfen.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm" style={{ color: 'hsl(var(--light-muted))' }}>
-              Der KI‑Assistent kann Ihnen helfen, die passenden Downloads zu finden. Beschreiben Sie, was Sie suchen.
+            <p className="text-sm text-gray-700">
+              Hier könnte ein intelligenter Chatbot bei der Suche nach den richtigen Downloads helfen.
             </p>
-            <div style={{ backgroundColor: 'hsl(var(--light-background))' }} className="p-4 rounded-lg">
-              <p className="text-sm mb-3 font-medium" style={{ color: 'hsl(var(--light-foreground))' }}>Beispiele für häufige Anfragen:</p>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">Beliebte Downloads:</h4>
               <div className="space-y-2">
                 {MOCK_ITEMS.slice(0, 3).map((item) => (
                   <Button
                     key={item.id}
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="text-left justify-start w-full h-auto p-2 hover:bg-accent/50 transition-colors"
+                    className="justify-start w-full text-left"
                     onClick={() => setFiltersFromAI(item)}
                   >
-                    <div>
-                      <div className="font-medium">{item.title}</div>
-                      <div className="text-xs" style={{ color: 'hsl(var(--light-muted))' }}>
-                        {item.product} • {CATEGORY_LABEL[item.category]}
-                      </div>
-                    </div>
+                    {item.title}
                   </Button>
                 ))}
               </div>
@@ -849,168 +939,6 @@ export default function Downloads() {
       </Dialog>
 
       <Footer />
-    </div>
-  );
-}
-
-// Filters component (shared between desktop and drawer)
-function Filters(props: {
-  q: string;
-  setQ: (v: string) => void;
-  cats: DownloadItem["category"][];
-  setCats: (v: DownloadItem["category"][]) => void;
-  products: string[];
-  setProducts: (v: string[]) => void;
-  oses: ("windows" | "mac" | "linux")[];
-  setOses: (v: ("windows" | "mac" | "linux")[]) => void;
-  langs: ("de" | "en")[];
-  setLangs: (v: ("de" | "en")[]) => void;
-  period: string;
-  setPeriod: (v: string) => void;
-  allProducts: string[];
-  clearAll: () => void;
-  hitCount: number;
-}) {
-  const {
-    q,
-    setQ,
-    cats,
-    setCats,
-    products,
-    setProducts,
-    oses,
-    setOses,
-    langs,
-    setLangs,
-    period,
-    setPeriod,
-    allProducts,
-    clearAll,
-    hitCount,
-  } = props;
-
-  const toggleInArray = <T,>(arr: T[], value: T): T[] =>
-    arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value];
-
-  return (
-    <div className="space-y-6" aria-label="Filter">
-      {/* Suche */}
-      <div>
-        <label className="mb-3 block text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Suche</label>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Suche nach Name, Produkt, Version, Dateityp…"
-            className="pl-9"
-            aria-label="Volltextsuche"
-          />
-        </div>
-      </div>
-
-      {/* Kategorien */}
-      <div>
-        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Kategorien</div>
-        <div className="grid grid-cols-1 gap-2">
-          {(Object.keys(CATEGORY_LABEL) as DownloadItem["category"][]).map((key) => (
-            <label key={key} className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60">
-              <Checkbox
-                checked={cats.includes(key)}
-                onCheckedChange={() => setCats(toggleInArray(cats, key))}
-                aria-label={CATEGORY_LABEL[key]}
-              />
-              <span className="text-[15px] leading-5">{CATEGORY_LABEL[key]}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Produkte */}
-      <div>
-        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Produkte</div>
-        <div className="space-y-2">
-          {allProducts.map((p) => (
-            <label key={p} className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60">
-              <Checkbox
-                checked={products.includes(p)}
-                onCheckedChange={() => setProducts(toggleInArray(products, p))}
-                aria-label={p}
-              />
-              <span className="text-[15px] leading-5">{p}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Betriebssystem */}
-      <div>
-        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Betriebssystem</div>
-        <div className="flex flex-wrap gap-2">
-          {["windows", "mac", "linux"].map((o) => (
-            <button
-              key={o}
-              type="button"
-              onClick={() => setOses(toggleInArray(oses, o as any))}
-              className={`inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                oses.includes(o as any)
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-background hover:bg-muted"
-              }`}
-              aria-pressed={oses.includes(o as any)}
-              aria-label={`OS ${o}`}
-            >
-              {o === "windows" && <Monitor className="h-4 w-4" />}
-              {o === "mac" && <Apple className="h-4 w-4" />}
-              {o === "linux" && <OsLinuxIcon className="h-4 w-4" />}
-              <span className="capitalize">{o}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Sprachen */}
-      <div>
-        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Sprachen</div>
-        <div className="space-y-2">
-          {[
-            { v: "de", l: "Deutsch" },
-            { v: "en", l: "Englisch" },
-          ].map((lang) => (
-            <label key={lang.v} className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60">
-              <Checkbox
-                checked={langs.includes(lang.v as any)}
-                onCheckedChange={() => setLangs(toggleInArray(langs, lang.v as any))}
-                aria-label={lang.l}
-              />
-              <span className="text-[15px] leading-5">{lang.l}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Zeitraum */}
-      <div>
-        <div className="mb-3 text-base font-semibold" style={{ color: 'hsl(var(--light-foreground))' }}>Version/Zeitraum</div>
-        <Select value={period} onValueChange={(v) => setPeriod(v)}>
-          <SelectTrigger aria-label="Zeitraum">
-            <SelectValue placeholder="Neueste" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="latest">Neueste</SelectItem>
-            <SelectItem value="6m">Letzte 6 Monate</SelectItem>
-            <SelectItem value="12m">Letzte 12 Monate</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Footer actions */}
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={clearAll} aria-label="Filter zurücksetzen">
-          Filter zurücksetzen
-        </Button>
-        <Badge variant="secondary">{hitCount} Treffer</Badge>
-      </div>
     </div>
   );
 }
