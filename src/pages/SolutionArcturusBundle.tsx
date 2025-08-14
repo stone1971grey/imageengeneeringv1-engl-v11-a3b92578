@@ -14,7 +14,7 @@ import arcturusMain from "@/assets/arcturus-main-product.png";
 import arcturusSetup from "@/assets/arcturus-setup-vega.jpg";
 import arcturusCharts from "@/assets/arcturus-vega-charts.jpg";
 import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
-import customChart from "@/assets/custom-chart.png";
+
 import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
 import testimonialDrBecker from "@/assets/testimonial-dr-becker.jpg";
 
@@ -34,7 +34,7 @@ const SolutionArcturusBundle = () => {
       description: "Umfassende Bildanalyse und Qualitätskontrollsoftware"
     },
     {
-      src: customChart,
+      src: "/images/custom-chart.png",
       title: "Test Charts Collection",
       description: "Präzisions-Testcharts für verschiedene Anwendungsbereiche"
     },
