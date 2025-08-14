@@ -135,7 +135,7 @@ const Navigation = () => {
     },
     "Schulungen": {
       image: trainingMobileTesting,
-      description: "Professionelle Schulungen zu Bildqualitätstests in verschiedenen Branchen - Was muss wie getestet werden? (z.B. Mobile Phones, Automotive, Medical)"
+      description: "Professionelle Schulungen zu Bildqualitätstests in verschiedenen Branchen - Was muss wie getestet werden? (z.B. Mobile Phones, Automotive, Medical) - Was gibt es an neuen Tests für meine Branche"
     }
   };
 
