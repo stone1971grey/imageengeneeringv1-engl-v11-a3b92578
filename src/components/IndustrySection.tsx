@@ -1,10 +1,7 @@
-import { Car, Stethoscope, Smartphone, Shield, Camera, Tv, Cog, ScanLine, FlaskConical, ChevronDown, ChevronUp } from "lucide-react";
+import { Car, Stethoscope, Smartphone, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 
 const IndustrySection = () => {
-  const [showAllIndustries, setShowAllIndustries] = useState(false);
-
   const industries = [
     {
       icon: Car,
@@ -26,35 +23,6 @@ const IndustrySection = () => {
       icon: Shield,
       title: "Sicherheit / Überwachung",
       description: "CCTV-Systeme, Videoüberwachung"
-    }
-  ];
-
-  // Additional industries that show up when "Alle Branchen erkunden" is clicked
-  const additionalIndustries = [
-    {
-      icon: Camera,
-      title: "Fotografie",
-      description: "Digitalkameras für professionelle und Amateur-Anwendungen"
-    },
-    {
-      icon: Tv,
-      title: "Broadcast & HDTV",
-      description: "Videoübertragung, TV-Kameras, farbgetreue Wiedergabe"
-    },
-    {
-      icon: Cog,
-      title: "Machine Vision",
-      description: "Kamerasysteme für Inspektion, Robotik, Qualitätskontrolle"
-    },
-    {
-      icon: ScanLine,
-      title: "Scannen & Archivierung",
-      description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos"
-    },
-    {
-      icon: FlaskConical,
-      title: "iQ‑Lab Testing",
-      description: "Unabhängige Labordienstleistungen für zahlreiche Branchen (z.B. Mobile, Automotive)"
     }
   ];
 
@@ -134,62 +102,14 @@ const IndustrySection = () => {
           })}
         </div>
 
-        {/* Additional Industries - Expandable */}
-        {showAllIndustries && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mt-8 animate-fade-in">
-            {additionalIndustries.map((industry, index) => {
-              const IconComponent = industry.icon;
-              return (
-                <div
-                  key={industry.title}
-                  className="group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-80 flex flex-col justify-between"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {/* Icon container with animated background */}
-                  <div className="relative mb-6 flex-shrink-0">
-                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[#7a933b] to-[#7a933b]/80 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <IconComponent 
-                        size={32} 
-                        className="text-white group-hover:rotate-12 transition-transform duration-300" 
-                      />
-                    </div>
-                    {/* Animated ring */}
-                    <div className="absolute inset-0 w-20 h-20 mx-auto border-2 border-[#7a933b]/20 rounded-xl animate-pulse"></div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="text-center flex-grow flex flex-col justify-center">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#7a933b] transition-colors duration-300">
-                      {industry.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      {industry.description}
-                    </p>
-                  </div>
-
-                  {/* Hover effect gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#7a933b]/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
         {/* Call to action */}
         <div className="text-center mt-16">
-          <button
-            onClick={() => setShowAllIndustries(!showAllIndustries)}
-            className="inline-flex items-center gap-2 bg-[#7a933b] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#7a933b]/90 transition-all duration-300 group hover:scale-105"
-          >
-            <span>{showAllIndustries ? 'Weniger anzeigen' : 'Alle Branchen erkunden'}</span>
+          <div className="inline-flex items-center gap-2 bg-[#7a933b] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#7a933b]/90 transition-colors duration-300 cursor-pointer group">
+            <span>Alle Branchen erkunden</span>
             <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
-              {showAllIndustries ? (
-                <ChevronUp size={12} className="text-white" />
-              ) : (
-                <ChevronDown size={12} className="text-white" />
-              )}
+              <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>
-          </button>
+          </div>
         </div>
       </div>
     </section>
