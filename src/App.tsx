@@ -16,7 +16,6 @@ import HiddenSegments from "./pages/HiddenSegments";
 import Charts from "./pages/Charts";
 import ChartDetail from "./pages/ChartDetail";
 import Cart from "./pages/Cart";
-import Veranstaltungen from "./pages/Veranstaltungen";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,7 +40,6 @@ const App = () => (
           <Route path="/products/charts" element={<Charts />} />
           <Route path="/products/charts/:slug" element={<ChartDetail />} />
           <Route path="/cart" element={<Cart />} />
-          <Route path="/veranstaltungen" element={<Veranstaltungen />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
