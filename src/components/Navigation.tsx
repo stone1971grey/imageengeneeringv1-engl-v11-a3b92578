@@ -731,10 +731,10 @@ const Navigation = () => {
                             <Building className="h-5 w-5" />
                             <a href="#">Händler / Reseller</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                          <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                             <Calendar className="h-5 w-5" />
-                            <a href="#">Events</a>
-                          </div>
+                            <span>Events</span>
+                          </Link>
                         </div>
 
 
@@ -1110,7 +1110,7 @@ const Navigation = () => {
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Händler / Reseller</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Calendar className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Events</span></div>
+                              <Link to="/events" className="min-h-12 px-4 flex items-center gap-3 py-3"><Calendar className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Events</span></Link>
                             </li>
                             <li>
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Über Image Engineering</span></div>
