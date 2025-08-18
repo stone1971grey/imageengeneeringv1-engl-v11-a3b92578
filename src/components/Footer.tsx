@@ -6,7 +6,7 @@ import teamMarkus from "@/assets/team-markus-color.jpg";
 
 const Footer = () => {
   const location = useLocation();
-  const isChartsPage = location.pathname === '/products/charts';
+  const isChartsPage = location.pathname === '/products/charts' || location.pathname.startsWith('/products/charts/');
 
   return (
     <footer className="bg-background border-t border-border">
