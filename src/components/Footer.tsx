@@ -3,6 +3,7 @@ import { Mail, Phone, Clock } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import teamLaura from "@/assets/team-laura-color.jpg";
 import teamMarkus from "@/assets/team-markus-color.jpg";
+import teamStefan from "@/assets/team-stefan-color.jpg";
 
 const Footer = () => {
   const location = useLocation();
@@ -104,7 +105,7 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0">
                  <img 
-                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamLaura : teamLaura}
+                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : teamLaura}
                    alt={isChartsPage 
                      ? "Markus Weber, Technical Chart Specialist" 
                      : isSolutionBundlePage 
