@@ -93,7 +93,12 @@ const Charts = () => {
   };
 
   const scrollToCharts = () => {
-    document.getElementById('charts-grid')?.scrollIntoView({ behavior: 'smooth' });
+    const element = document.getElementById('charts-grid');
+    if (element) {
+      const yOffset = -120; // Offset für sticky navigation
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -154,7 +159,8 @@ const Charts = () => {
               <Button 
                 size="lg" 
                 onClick={scrollToCharts}
-                className="bg-primary hover:bg-primary/90 text-white px-8"
+                className="text-white px-8"
+                style={{ backgroundColor: '#1f6ae8' }}
               >
                 Alle Charts entdecken
               </Button>
