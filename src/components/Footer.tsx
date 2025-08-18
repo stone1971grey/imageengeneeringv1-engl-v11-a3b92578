@@ -118,13 +118,13 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0">
                  <img 
-                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamStefan : teamLaura}
+                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamLaura : teamLaura}
                    alt={isChartsPage 
                      ? "Markus Weber, Technical Chart Specialist" 
                      : isSolutionBundlePage 
                        ? "Dr. Stefan Mueller, Experte für Test Lösungen"
                      : isAutomotivePage
-                       ? "Dr. Michael Fischer, Automotive Vision Expert"
+                       ? "Dr. Anna Hoffmann, Automotive Vision Expert"
                        : "Laura Neumann, Head of Optical Systems"
                    }
                    className="w-[150px] h-[150px] rounded-full object-cover"
@@ -148,7 +148,7 @@ const Footer = () => {
                       : isSolutionBundlePage 
                         ? 'Dr. Stefan Mueller'
                       : isAutomotivePage
-                        ? 'Dr. Michael Fischer'
+                        ? 'Dr. Anna Hoffmann'
                         : 'Laura Neumann'
                     }
                   </div>
