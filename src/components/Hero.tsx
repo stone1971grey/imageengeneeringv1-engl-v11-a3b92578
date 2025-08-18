@@ -33,14 +33,14 @@ const Hero = () => {
           <div className="text-center space-y-8 max-w-4xl">
             <div>
               <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
-                Wir entwickeln
+                Test Charts
                 <br />
-                <span className="font-medium">Bildqualität</span>
+                <span className="font-medium">Präzision für jede Anwendung</span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-2xl mx-auto">
-                Präzisionstests für Vision-Systeme der nächsten Generation. 
-                Von der Entwicklung bis zur Zertifizierung.
+                Hochwertige Testcharts für alle Bildqualitätstests – 
+                von Low-Light bis Ultra-HD.
               </p>
             </div>
             
@@ -49,8 +49,9 @@ const Hero = () => {
                 size="lg"
                 className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
                 style={{ backgroundColor: '#7a933b' }}
+                onClick={() => window.location.href = '/products/charts'}
               >
-                Testlösungen entdecken
+                Charts entdecken
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
