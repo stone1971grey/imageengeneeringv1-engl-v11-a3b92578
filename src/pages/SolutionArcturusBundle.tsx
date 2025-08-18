@@ -368,6 +368,12 @@ const SolutionArcturusBundle = () => {
                 <Button 
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                  onClick={() => {
+                    const footer = document.querySelector('footer');
+                    if (footer) {
+                      footer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                  }}
                 >
                   Komplettlösung anfragen
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
