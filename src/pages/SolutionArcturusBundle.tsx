@@ -308,11 +308,6 @@ const SolutionArcturusBundle = () => {
                      e.preventDefault();
                      document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                    }}>Vergleich</a>
-                 <a href="#related" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
-                   onClick={(e) => {
-                     e.preventDefault();
-                     document.getElementById('related')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Verwandte Produkte</a>
                  <a href="#faq" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
@@ -888,27 +883,6 @@ const SolutionArcturusBundle = () => {
         </div>
         </section>
 
-        {/* Call to Action */}
-        <section id="related" className="bg-scandi-white py-16 scroll-mt-[260px]">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            Verwandte Produkte
-          </h2>
-          <p className="text-lg text-gray-700 leading-relaxed mb-8 max-w-2xl mx-auto">
-            Kontaktieren Sie unsere Experten für eine individuelle Beratung oder fordern Sie 
-            ein maßgeschneidertes Angebot für Ihre Anforderungen an.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium">
-              Beratungstermin vereinbaren
-            </Button>
-            <Button variant="outline" className="border-scandi-grey text-scandi-grey px-8 py-3 text-lg font-medium hover:bg-scandi-light-grey">
-              <Download className="mr-2 h-5 w-5" />
-              Produktdatenblatt herunterladen
-            </Button>
-          </div>
-        </div>
-        </section>
 
         {/* Related Products */}
         <section className="py-20 bg-white">
