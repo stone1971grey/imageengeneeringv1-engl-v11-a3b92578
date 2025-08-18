@@ -127,14 +127,14 @@ const Charts = () => {
   const FilterContent = () => (
     <Accordion type="multiple" className="w-full space-y-1">
       {/* Category Filter */}
-      <AccordionItem value="categories" className="border border-gray-200 rounded-lg bg-gray-50">
+      <AccordionItem value="categories" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
         </AccordionTrigger>
         <AccordionContent className="px-4 pb-3">
-          <div className="space-y-1 max-h-32 overflow-y-auto">
+          <div className="space-y-0.5 max-h-32 overflow-y-auto">
             {categories.map(category => (
-              <label key={category} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer py-1">
+              <label key={category} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer py-0.5">
                 <Checkbox
                   checked={selectedCategories.includes(category)}
                   onCheckedChange={(checked) => {
@@ -153,14 +153,14 @@ const Charts = () => {
       </AccordionItem>
 
       {/* Application Filter */}
-      <AccordionItem value="applications" className="border border-gray-200 rounded-lg bg-gray-50">
+      <AccordionItem value="applications" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
         </AccordionTrigger>
         <AccordionContent className="px-4 pb-3">
-          <div className="space-y-1 max-h-32 overflow-y-auto">
+          <div className="space-y-0.5 max-h-32 overflow-y-auto">
             {applications.map(application => (
-              <label key={application} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer py-1">
+              <label key={application} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer py-0.5">
                 <Checkbox
                   checked={selectedApplications.includes(application)}
                   onCheckedChange={(checked) => {
@@ -179,14 +179,14 @@ const Charts = () => {
       </AccordionItem>
 
       {/* Formats Filter */}
-      <AccordionItem value="formats" className="border border-gray-200 rounded-lg bg-gray-50">
+      <AccordionItem value="formats" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
         </AccordionTrigger>
         <AccordionContent className="px-4 pb-3">
-          <div className="space-y-1 max-h-32 overflow-y-auto">
+          <div className="space-y-0.5 max-h-32 overflow-y-auto">
             {formats.map(format => (
-              <label key={format} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer py-1">
+              <label key={format} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer py-0.5">
                 <Checkbox
                   checked={selectedFormats.includes(format)}
                   onCheckedChange={(checked) => {
@@ -205,7 +205,7 @@ const Charts = () => {
       </AccordionItem>
 
       {/* Price Filter */}
-      <AccordionItem value="price" className="border border-gray-200 rounded-lg bg-gray-50">
+      <AccordionItem value="price" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Preisbereich (EUR)
         </AccordionTrigger>
@@ -218,7 +218,7 @@ const Charts = () => {
               step={50}
               className="mb-2"
             />
-            <div className="flex justify-between text-xs text-gray-600 mb-3">
+            <div className="flex justify-between text-xs text-[#000000] mb-3 bg-white px-2 py-1 rounded">
               <span>{priceRange[0]}€</span>
               <span>{priceRange[1]}€</span>
             </div>
@@ -230,7 +230,7 @@ const Charts = () => {
                   value={minPrice}
                   onChange={(e) => setMinPrice(e.target.value)}
                   onBlur={updatePriceFromInputs}
-                  className="text-[#000000] text-sm h-8"
+                  className="text-[#000000] text-sm h-8 bg-white"
                   min="0"
                   max="5000"
                 />
@@ -242,7 +242,7 @@ const Charts = () => {
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
                   onBlur={updatePriceFromInputs}
-                  className="text-[#000000] text-sm h-8"
+                  className="text-[#000000] text-sm h-8 bg-white"
                   min="0"
                   max="5000"
                 />
@@ -340,8 +340,8 @@ const Charts = () => {
       <div className="sticky top-16 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="container mx-auto px-6 py-6">
           {/* Header */}
-          <div className="mb-6 mt-10">
-            <h2 className="text-2xl font-semibold text-[#000000] mb-2">Finden und Sortieren Sie Ihre perfekten Testcharts</h2>
+          <div className="mb-6 mt-16">
+            <h2 className="text-3xl font-semibold text-[#000000] mb-2">Finden und Sortieren Sie Ihre perfekten Testcharts</h2>
             <p className="text-gray-600">Nutzen Sie unsere Filter und Suchfunktion für präzise Suchergebnisse</p>
           </div>
           
@@ -402,13 +402,13 @@ const Charts = () => {
           {/* Desktop Filters - Horizontal Layout */}
           <div className="hidden lg:grid lg:grid-cols-4 gap-4 mb-4">
             {/* Category Filter */}
-            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
               <h3 className="text-[#000000] font-medium mb-2 text-sm">
                 Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
               </h3>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
+              <div className="space-y-0.5 max-h-32 overflow-y-auto">
                 {categories.map(category => (
-                  <label key={category} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
+                  <label key={category} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
                     <Checkbox
                       checked={selectedCategories.includes(category)}
                       onCheckedChange={(checked) => {
@@ -419,20 +419,20 @@ const Charts = () => {
                         }
                       }}
                     />
-                    <span className="text-xs">{category}</span>
+                    <span>{category}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             {/* Application Filter */}
-            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
               <h3 className="text-[#000000] font-medium mb-2 text-sm">
                 Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
               </h3>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
+              <div className="space-y-0.5 max-h-32 overflow-y-auto">
                 {applications.map(application => (
-                  <label key={application} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
+                  <label key={application} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
                     <Checkbox
                       checked={selectedApplications.includes(application)}
                       onCheckedChange={(checked) => {
@@ -443,20 +443,20 @@ const Charts = () => {
                         }
                       }}
                     />
-                    <span className="text-xs">{application}</span>
+                    <span>{application}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             {/* Formats Filter */}
-            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
               <h3 className="text-[#000000] font-medium mb-2 text-sm">
                 Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
               </h3>
-              <div className="space-y-1 max-h-32 overflow-y-auto">
+              <div className="space-y-0.5 max-h-32 overflow-y-auto">
                 {formats.map(format => (
-                  <label key={format} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
+                  <label key={format} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
                     <Checkbox
                       checked={selectedFormats.includes(format)}
                       onCheckedChange={(checked) => {
@@ -467,14 +467,14 @@ const Charts = () => {
                         }
                       }}
                     />
-                    <span className="text-xs">{format}</span>
+                    <span>{format}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             {/* Price Filter */}
-            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
               <h3 className="text-[#000000] font-medium mb-2 text-sm">Preisbereich (EUR)</h3>
               <div className="space-y-2">
                 <Slider
@@ -484,7 +484,7 @@ const Charts = () => {
                   step={50}
                   className="mb-1"
                 />
-                <div className="flex justify-between text-xs text-gray-600">
+                <div className="flex justify-between text-xs text-[#000000] mb-1 bg-white px-2 py-1 rounded">
                   <span>{priceRange[0]}€</span>
                   <span>{priceRange[1]}€</span>
                 </div>
@@ -494,7 +494,7 @@ const Charts = () => {
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
                     onBlur={updatePriceFromInputs}
-                    className="text-[#000000] text-xs h-6 p-1"
+                    className="text-[#000000] text-xs h-6 p-1 bg-white"
                     min="0"
                     max="5000"
                     placeholder="Min"
@@ -504,7 +504,7 @@ const Charts = () => {
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
                     onBlur={updatePriceFromInputs}
-                    className="text-[#000000] text-xs h-6 p-1"
+                    className="text-[#000000] text-xs h-6 p-1 bg-white"
                     min="0"
                     max="5000"
                     placeholder="Max"
