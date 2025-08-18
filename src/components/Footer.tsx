@@ -7,18 +7,26 @@ import teamMarkus from "@/assets/team-markus-color.jpg";
 const Footer = () => {
   const location = useLocation();
   const isChartsPage = location.pathname === '/products/charts' || location.pathname.startsWith('/products/charts/');
+  const isSolutionBundlePage = location.pathname.startsWith('/solution/');
 
   return (
     <footer className="bg-background border-t border-border">
       {/* Vision CTA Section */}
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          {isChartsPage ? 'Beratung bei Testcharts?' : 'Bereit, Ihre Vision zu transformieren?'}
+          {isChartsPage 
+            ? 'Beratung bei Testcharts?' 
+            : isSolutionBundlePage 
+              ? 'Maßgeschneiderte Lösungspakete für Ihre Anwendung' 
+              : 'Bereit, Ihre Vision zu transformieren?'
+          }
         </h2>
         <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
           {isChartsPage 
             ? 'Unsere Experten helfen Ihnen bei der Auswahl der richtigen Testcharts für Ihre spezifischen Anforderungen. Profitieren Sie von unserer langjährigen Erfahrung in der Bildqualitätsanalyse.'
-            : 'Lassen Sie uns besprechen, wie unsere Bildverarbeitungslösungen Ihr Unternehmen revolutionieren können. Kontaktieren Sie noch heute unsere Experten.'
+            : isSolutionBundlePage
+              ? 'Profitieren Sie von unseren kompletten Testlösungen und Kalibrierungspaketen. Wir entwickeln individuelle Lösungen, die perfekt auf Ihre Anforderungen zugeschnitten sind.'
+              : 'Lassen Sie uns besprechen, wie unsere Bildverarbeitungslösungen Ihr Unternehmen revolutionieren können. Kontaktieren Sie noch heute unsere Experten.'
           }
         </p>
       </div>
@@ -31,13 +39,25 @@ const Footer = () => {
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold mb-4">
-                {isChartsPage ? 'Fragen zu Testcharts?' : 'Sie haben Fragen?'}<br />
-                {isChartsPage ? 'Sprechen Sie mit unseren Chart-Experten.' : 'Sprechen Sie mit uns.'}
+                {isChartsPage 
+                  ? 'Fragen zu Testcharts?' 
+                  : isSolutionBundlePage 
+                    ? 'Individuelle Lösungspakete gewünscht?' 
+                    : 'Sie haben Fragen?'
+                }<br />
+                {isChartsPage 
+                  ? 'Sprechen Sie mit unseren Chart-Experten.' 
+                  : isSolutionBundlePage 
+                    ? 'Sprechen Sie mit unseren Lösungsexperten.' 
+                    : 'Sprechen Sie mit uns.'
+                }
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 {isChartsPage 
                   ? 'Unsere Testchart-Experten beraten Sie gerne bei der Auswahl der optimalen Charts für Ihre Bildqualitätsmessungen und unterstützen Sie bei der Konfiguration Ihrer Testsysteme.'
-                  : 'Unsere Experten beraten Sie gerne persönlich zu Ihrer Anwendung oder unterstützen Sie bei der Planung Ihrer Testlösung.'
+                  : isSolutionBundlePage
+                    ? 'Unsere Lösungsexperten entwickeln maßgeschneiderte Testlösungen und Kalibrierungspakete für Ihre spezifischen Anforderungen. Von der Beratung bis zur Implementierung begleiten wir Sie.'
+                    : 'Unsere Experten beraten Sie gerne persönlich zu Ihrer Anwendung oder unterstützen Sie bei der Planung Ihrer Testlösung.'
                 }
               </p>
             </div>
@@ -70,7 +90,12 @@ const Footer = () => {
             </div>
 
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-3">
-              {isChartsPage ? 'Ihre Frage zu unseren Charts' : 'Jetzt Demo vereinbaren'}
+              {isChartsPage 
+                ? 'Ihre Frage zu unseren Charts' 
+                : isSolutionBundlePage 
+                  ? 'Jetzt beratungstermin vereinbaren' 
+                  : 'Jetzt Demo vereinbaren'
+              }
             </Button>
           </div>
 
@@ -79,8 +104,13 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0">
                  <img 
-                   src={isChartsPage ? teamMarkus : teamLaura}
-                   alt={isChartsPage ? "Markus Weber, Technical Chart Specialist" : "Laura Neumann, Head of Optical Systems"}
+                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamLaura : teamLaura}
+                   alt={isChartsPage 
+                     ? "Markus Weber, Technical Chart Specialist" 
+                     : isSolutionBundlePage 
+                       ? "Dr. Stefan Mueller, Experte für Test Lösungen"  
+                       : "Laura Neumann, Head of Optical Systems"
+                   }
                    className="w-[150px] h-[150px] rounded-full object-cover"
                  />
               </div>
@@ -88,15 +118,27 @@ const Footer = () => {
                 <blockquote className="text-lg text-foreground leading-relaxed mb-4">
                   {isChartsPage 
                     ? '"Präzise Testcharts sind das Fundament jeder seriösen Bildqualitätsanalyse. Mit über 15 Jahren Erfahrung helfe ich Ihnen dabei, die perfekten Charts für Ihre Messungen zu finden."'
-                    : '"Was mich jeden Tag begeistert, ist der direkte Einfluss unserer Arbeit auf Bildqualität weltweit. Ob bei Smartphones oder Fahrzeugkameras – unsere Lösungen machen den Unterschied."'
+                    : isSolutionBundlePage
+                      ? '"Als Experte für Test Lösungen und Kalibrierungslösungen entwickle ich täglich maßgeschneiderte Pakete für unsere Kunden. Jede Lösung ist einzigartig und perfekt auf die individuellen Anforderungen abgestimmt."'
+                      : '"Was mich jeden Tag begeistert, ist der direkte Einfluss unserer Arbeit auf Bildqualität weltweit. Ob bei Smartphones oder Fahrzeugkameras – unsere Lösungen machen den Unterschied."'
                   }
                 </blockquote>
                 <cite className="text-muted-foreground not-italic">
                   <div className="font-semibold text-foreground">
-                    {isChartsPage ? 'Markus Weber' : 'Laura Neumann'}
+                    {isChartsPage 
+                      ? 'Markus Weber' 
+                      : isSolutionBundlePage 
+                        ? 'Dr. Stefan Mueller' 
+                        : 'Laura Neumann'
+                    }
                   </div>
                   <div className="text-sm">
-                    {isChartsPage ? 'Technical Chart Specialist' : 'Head of Optical Systems'}
+                    {isChartsPage 
+                      ? 'Technical Chart Specialist' 
+                      : isSolutionBundlePage 
+                        ? 'Experte für Test Lösungen & Kalibrierungslösungen' 
+                        : 'Head of Optical Systems'
+                    }
                   </div>
                 </cite>
               </div>
