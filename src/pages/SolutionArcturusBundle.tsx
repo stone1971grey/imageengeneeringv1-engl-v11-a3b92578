@@ -376,7 +376,10 @@ const SolutionArcturusBundle = () => {
                 <Button 
                   size="lg"
                   variant="outline"
-                  className="border-scandi-grey text-scandi-grey px-8 py-4 text-lg font-medium hover:bg-scandi-light-grey"
+                  className="border-white text-white px-8 py-4 text-lg font-medium hover:bg-white hover:text-gray-900"
+                  onClick={() => {
+                    document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
                 >
                   Technische Details
                 </Button>
@@ -1003,7 +1006,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Downloads Section */}
-        <section className="bg-scandi-white py-16">
+        <section id="downloads" className="bg-scandi-white py-16">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
