@@ -1110,14 +1110,6 @@ const SolutionArcturusBundle = () => {
             </Card>
           </div>
 
-          <div className="text-center mt-12">
-            <p className="text-sm text-gray-500 mb-4">
-              Für vollständige Software-Lizenzen und erweiterte Dokumentation kontaktieren Sie unser Support-Team.
-            </p>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
-              Support kontaktieren
-            </Button>
-          </div>
         </div>
         </section>
       </div>
