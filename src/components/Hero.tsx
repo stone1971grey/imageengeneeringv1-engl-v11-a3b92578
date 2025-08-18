@@ -17,7 +17,7 @@ const Hero = () => {
         <img 
           src={precisionTestingHero}
           alt="Precision Engineering Process"
-          className="w-full h-full object-cover animate-ken-burns opacity-85"
+          className="w-full h-full object-cover animate-ken-burns opacity-100"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-scandi-white/60 via-scandi-white/40 to-scandi-white/20"></div>
       </div>
