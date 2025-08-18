@@ -101,6 +101,15 @@ const Charts = () => {
     }
   };
 
+  const scrollToFooterExpert = () => {
+    const footer = document.querySelector('footer');
+    if (footer) {
+      const yOffset = -80; // Offset für bessere Positionierung
+      const y = footer.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -165,12 +174,12 @@ const Charts = () => {
                 Alle Charts entdecken
               </Button>
               <Button 
-                variant="outline" 
                 size="lg" 
-                className="border-white/20 text-white hover:bg-white/10 px-8"
-                asChild
+                onClick={scrollToFooterExpert}
+                className="text-white px-8"
+                style={{ backgroundColor: '#22c55e' }}
               >
-                <Link to="/#contact">Beratung anfragen</Link>
+                Beratung anfragen
               </Button>
             </div>
           </div>
