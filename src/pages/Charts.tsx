@@ -19,13 +19,11 @@ const Charts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedApplications, setSelectedApplications] = useState<string[]>([]);
-  const [selectedStandards, setSelectedStandards] = useState<string[]>([]);
-  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
   const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("5000");
-  const [sortBy, setSortBy] = useState("relevance");
+  const [sortBy, setSortBy] = useState("title");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const updatePriceFromInputs = () => {
@@ -55,18 +53,6 @@ const Charts = () => {
       remove: () => setSelectedApplications(prev => prev.filter(a => a !== app))
     }));
     
-    selectedStandards.forEach(std => filters.push({
-      type: 'Standard',
-      value: std, 
-      remove: () => setSelectedStandards(prev => prev.filter(s => s !== std))
-    }));
-    
-    selectedMaterials.forEach(mat => filters.push({
-      type: 'Material',
-      value: mat,
-      remove: () => setSelectedMaterials(prev => prev.filter(m => m !== mat))
-    }));
-    
     selectedFormats.forEach(fmt => filters.push({
       type: 'Format',
       value: fmt,
@@ -92,14 +78,6 @@ const Charts = () => {
       const applicationMatch = selectedApplications.length === 0 || 
         chart.applications.some(app => selectedApplications.includes(app));
 
-      // Standards filter
-      const standardMatch = selectedStandards.length === 0 || 
-        chart.standards.some(std => selectedStandards.includes(std));
-
-      // Materials filter
-      const materialMatch = selectedMaterials.length === 0 || 
-        chart.materials.some(mat => selectedMaterials.includes(mat));
-
       // Formats filter
       const formatMatch = selectedFormats.length === 0 || 
         chart.sizes.some(size => selectedFormats.includes(size));
@@ -109,7 +87,7 @@ const Charts = () => {
         !chart.price_from || 
         (chart.price_from >= priceRange[0] && chart.price_from <= priceRange[1]);
 
-      return searchMatch && categoryMatch && applicationMatch && standardMatch && materialMatch && formatMatch && priceMatch;
+      return searchMatch && categoryMatch && applicationMatch && formatMatch && priceMatch;
     });
 
     // Sort
@@ -124,12 +102,12 @@ const Charts = () => {
         filtered.sort((a, b) => a.title.localeCompare(b.title));
         break;
       default:
-        // Relevance - keep original order
+        // Keep original order
         break;
     }
 
     return filtered;
-  }, [searchQuery, selectedCategories, selectedApplications, selectedStandards, selectedMaterials, selectedFormats, priceRange, sortBy]);
+  }, [searchQuery, selectedCategories, selectedApplications, selectedFormats, priceRange, sortBy]);
 
   const activeFilters = getAllActiveFilters();
   const activeFiltersCount = activeFilters.length;
@@ -137,8 +115,6 @@ const Charts = () => {
   const clearAllFilters = () => {
     setSelectedCategories([]);
     setSelectedApplications([]);
-    setSelectedStandards([]);
-    setSelectedMaterials([]);
     setSelectedFormats([]);
     setPriceRange([0, 5000]);
     setMinPrice("0");
@@ -165,16 +141,16 @@ const Charts = () => {
   };
 
   const FilterContent = () => (
-    <Accordion type="multiple" className="w-full">
+    <Accordion type="multiple" className="w-full space-y-1">
       {/* Category Filter */}
-      <AccordionItem value="categories" className="border-b border-gray-200">
-        <AccordionTrigger className="text-[#111111] font-medium hover:no-underline">
+      <AccordionItem value="categories" className="border border-gray-200 rounded-lg bg-gray-50">
+        <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
         </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 max-h-48 overflow-y-auto bg-gray-50 p-4 rounded-lg">
+        <AccordionContent className="px-4 pb-3">
+          <div className="space-y-1 max-h-32 overflow-y-auto">
             {categories.map(category => (
-              <label key={category} className="flex items-center space-x-3 text-sm text-[#111111] cursor-pointer">
+              <label key={category} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer py-1">
                 <Checkbox
                   checked={selectedCategories.includes(category)}
                   onCheckedChange={(checked) => {
@@ -193,14 +169,14 @@ const Charts = () => {
       </AccordionItem>
 
       {/* Application Filter */}
-      <AccordionItem value="applications" className="border-b border-gray-200">
-        <AccordionTrigger className="text-[#111111] font-medium hover:no-underline">
+      <AccordionItem value="applications" className="border border-gray-200 rounded-lg bg-gray-50">
+        <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
         </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 max-h-48 overflow-y-auto bg-gray-50 p-4 rounded-lg">
+        <AccordionContent className="px-4 pb-3">
+          <div className="space-y-1 max-h-32 overflow-y-auto">
             {applications.map(application => (
-              <label key={application} className="flex items-center space-x-3 text-sm text-[#111111] cursor-pointer">
+              <label key={application} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer py-1">
                 <Checkbox
                   checked={selectedApplications.includes(application)}
                   onCheckedChange={(checked) => {
@@ -218,67 +194,15 @@ const Charts = () => {
         </AccordionContent>
       </AccordionItem>
 
-      {/* Standards Filter */}
-      <AccordionItem value="standards" className="border-b border-gray-200">
-        <AccordionTrigger className="text-[#111111] font-medium hover:no-underline">
-          Standard {selectedStandards.length > 0 && `(${selectedStandards.length})`}
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 max-h-48 overflow-y-auto bg-gray-50 p-4 rounded-lg">
-            {standards.map(standard => (
-              <label key={standard} className="flex items-center space-x-3 text-sm text-[#111111] cursor-pointer">
-                <Checkbox
-                  checked={selectedStandards.includes(standard)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setSelectedStandards([...selectedStandards, standard]);
-                    } else {
-                      setSelectedStandards(selectedStandards.filter(s => s !== standard));
-                    }
-                  }}
-                />
-                <span>{standard}</span>
-              </label>
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
-      {/* Materials Filter */}
-      <AccordionItem value="materials" className="border-b border-gray-200">
-        <AccordionTrigger className="text-[#111111] font-medium hover:no-underline">
-          Material {selectedMaterials.length > 0 && `(${selectedMaterials.length})`}
-        </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 max-h-48 overflow-y-auto bg-gray-50 p-4 rounded-lg">
-            {materials.map(material => (
-              <label key={material} className="flex items-center space-x-3 text-sm text-[#111111] cursor-pointer">
-                <Checkbox
-                  checked={selectedMaterials.includes(material)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setSelectedMaterials([...selectedMaterials, material]);
-                    } else {
-                      setSelectedMaterials(selectedMaterials.filter(m => m !== material));
-                    }
-                  }}
-                />
-                <span>{material}</span>
-              </label>
-            ))}
-          </div>
-        </AccordionContent>
-      </AccordionItem>
-
       {/* Formats Filter */}
-      <AccordionItem value="formats" className="border-b border-gray-200">
-        <AccordionTrigger className="text-[#111111] font-medium hover:no-underline">
+      <AccordionItem value="formats" className="border border-gray-200 rounded-lg bg-gray-50">
+        <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
         </AccordionTrigger>
-        <AccordionContent>
-          <div className="space-y-3 max-h-48 overflow-y-auto bg-gray-50 p-4 rounded-lg">
+        <AccordionContent className="px-4 pb-3">
+          <div className="space-y-1 max-h-32 overflow-y-auto">
             {formats.map(format => (
-              <label key={format} className="flex items-center space-x-3 text-sm text-[#111111] cursor-pointer">
+              <label key={format} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer py-1">
                 <Checkbox
                   checked={selectedFormats.includes(format)}
                   onCheckedChange={(checked) => {
@@ -297,46 +221,44 @@ const Charts = () => {
       </AccordionItem>
 
       {/* Price Filter */}
-      <AccordionItem value="price" className="border-b border-gray-200">
-        <AccordionTrigger className="text-[#111111] font-medium hover:no-underline">
+      <AccordionItem value="price" className="border border-gray-200 rounded-lg bg-gray-50">
+        <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
           Preisbereich (EUR)
         </AccordionTrigger>
-        <AccordionContent>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="mb-4">
-              <Slider
-                value={priceRange}
-                onValueChange={handlePriceSliderChange}
-                max={5000}
-                step={50}
-                className="mb-4"
-              />
-              <div className="flex justify-between text-xs text-gray-600 mb-4">
-                <span>{priceRange[0]}€</span>
-                <span>{priceRange[1]}€</span>
-              </div>
+        <AccordionContent className="px-4 pb-3">
+          <div className="space-y-3">
+            <Slider
+              value={priceRange}
+              onValueChange={handlePriceSliderChange}
+              max={5000}
+              step={50}
+              className="mb-2"
+            />
+            <div className="flex justify-between text-xs text-gray-600 mb-3">
+              <span>{priceRange[0]}€</span>
+              <span>{priceRange[1]}€</span>
             </div>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className="block text-xs text-[#111111] mb-1">Min (€)</label>
+                <label className="block text-xs text-[#000000] mb-1">Min (€)</label>
                 <Input
                   type="number"
                   value={minPrice}
                   onChange={(e) => setMinPrice(e.target.value)}
                   onBlur={updatePriceFromInputs}
-                  className="text-[#111111] text-sm"
+                  className="text-[#000000] text-sm h-8"
                   min="0"
                   max="5000"
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-xs text-[#111111] mb-1">Max (€)</label>
+                <label className="block text-xs text-[#000000] mb-1">Max (€)</label>
                 <Input
                   type="number"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
                   onBlur={updatePriceFromInputs}
-                  className="text-[#111111] text-sm"
+                  className="text-[#000000] text-sm h-8"
                   min="0"
                   max="5000"
                 />
@@ -472,17 +394,19 @@ const Charts = () => {
                     )}
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="max-h-[80vh]">
-                  <DrawerHeader>
-                    <DrawerTitle className="text-[#111111]">Filter & Sortierung</DrawerTitle>
-                    <DrawerClose className="absolute right-4 top-4" />
+                <DrawerContent className="max-h-[80vh] bg-white">
+                  <DrawerHeader className="bg-white border-b">
+                    <DrawerTitle className="text-[#000000]">Filter & Sortierung</DrawerTitle>
+                    <DrawerClose className="absolute right-4 top-4 text-[#000000]" />
                   </DrawerHeader>
-                  <div className="px-4 pb-6 overflow-y-auto">
-                    <FilterContent />
+                  <div className="px-4 pb-6 overflow-y-auto bg-white">
+                    <div className="text-[#000000]">
+                      <FilterContent />
+                    </div>
                     <div className="mt-6 pt-4 border-t">
                       <Button 
                         onClick={() => setMobileFiltersOpen(false)}
-                        className="w-full"
+                        className="w-full text-white"
                         style={{ backgroundColor: '#3464e3' }}
                       >
                         Filter anwenden
@@ -512,10 +436,9 @@ const Charts = () => {
                   onChange={(e) => setSortBy(e.target.value)}
                   className="bg-white text-[#111111] border border-gray-300 rounded-md px-3 py-2 text-sm focus:border-[#3464e3] focus:ring-[#3464e3]"
                 >
-                  <option value="relevance">Relevanz</option>
+                  <option value="title">Titel A-Z</option>
                   <option value="price-asc">Preis ↑</option>
                   <option value="price-desc">Preis ↓</option>
-                  <option value="title">Titel A-Z</option>
                 </select>
               </div>
 
