@@ -132,7 +132,7 @@ const Industries = () => {
           <p className="text-scandi-grey mb-6 font-light">
             Ihre Branche nicht dabei? Wir entwickeln maßgeschneiderte Lösungen für einzigartige Anforderungen.
           </p>
-          <button className="inline-flex items-center text-accent-violet hover:text-light-foreground font-medium transition-colors duration-300 border-b border-accent-violet/30 hover:border-light-foreground/40 pb-1">
+          <button className="inline-flex items-center text-gray-900 hover:text-gray-700 font-medium transition-colors duration-300 border-b border-gray-900/30 hover:border-gray-700/40 pb-1 bg-transparent">
             Individuelle Lösungen entdecken
           </button>
         </div>

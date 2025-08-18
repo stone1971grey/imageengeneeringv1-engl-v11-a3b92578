@@ -31,7 +31,7 @@ const AnnouncementBanner = ({
           
           <a
             href={ctaLink}
-            className="text-sm font-medium text-primary hover:text-accent-soft-blue transition-colors duration-200 flex items-center gap-1.5 whitespace-nowrap group"
+            className="text-sm font-medium text-gray-900 hover:text-gray-700 transition-colors duration-200 flex items-center gap-1.5 whitespace-nowrap group"
           >
             {ctaText}
             <ExternalLink 

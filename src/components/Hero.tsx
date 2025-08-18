@@ -40,8 +40,8 @@ const Hero = () => {
             <div className="pt-4">
               <Button 
                 size="lg"
-                className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                style={{ backgroundColor: '#7a933b' }}
+                variant="decision"
+                className="text-white border-0 px-8 py-4 group"
                 onClick={() => window.location.href = '/products/charts'}
               >
                 Charts entdecken

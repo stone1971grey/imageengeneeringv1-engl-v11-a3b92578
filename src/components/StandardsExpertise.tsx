@@ -237,7 +237,8 @@ const StandardsExpertise = () => {
               </p>
               <Button 
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold shadow-lg group"
+                variant="contact"
+                className="px-8 py-4 shadow-lg group"
               >
                 Jetzt Beratungstermin vereinbaren
                 <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />

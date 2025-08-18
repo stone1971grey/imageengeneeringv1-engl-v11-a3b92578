@@ -102,7 +102,7 @@ const Footer = () => {
               </div>
             </div>
 
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-8 py-3">
+            <Button className="bg-[#3D7BA2] hover:bg-[#326591] text-white px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
               {isChartsPage 
                 ? 'Ihre Frage zu unseren Charts' 
                 : isSolutionBundlePage 
