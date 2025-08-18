@@ -23,6 +23,7 @@ const Charts = () => {
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("5000");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -358,6 +359,26 @@ const Charts = () => {
             </div>
           </div>
 
+          {/* Filter Toggle Button and Results Count */}
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              variant="outline"
+              onClick={() => setFiltersOpen(!filtersOpen)}
+              className="flex items-center gap-2 border-gray-300 hover:bg-gray-50"
+            >
+              <Filter className="w-4 h-4" />
+              Filter {filtersOpen ? 'ausblenden' : 'anzeigen'}
+              {activeFiltersCount > 0 && (
+                <Badge variant="secondary" className="ml-1 bg-[#3464e3] text-white">
+                  {activeFiltersCount}
+                </Badge>
+              )}
+            </Button>
+            <div className="text-sm text-gray-600">
+              <span className="font-medium text-[#000000]">{filteredCharts.length}</span> Charts gefunden
+            </div>
+          </div>
+
           {/* Mobile Filter Button */}
           <div className="lg:hidden mb-4">
             <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
@@ -376,7 +397,7 @@ const Charts = () => {
                   )}
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="max-h-[80vh] bg-white">
+              <DrawerContent className="max-h-[80vh] bg-white z-50">
                 <DrawerHeader className="bg-white border-b">
                   <DrawerTitle className="text-[#000000]">Filter</DrawerTitle>
                   <DrawerClose className="absolute right-4 top-4 text-[#000000]" />
@@ -399,120 +420,122 @@ const Charts = () => {
             </Drawer>
           </div>
 
-          {/* Desktop Filters - Horizontal Layout */}
-          <div className="hidden lg:grid lg:grid-cols-4 gap-4 mb-4">
-            {/* Category Filter */}
-            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-              <h3 className="text-[#000000] font-medium mb-2 text-sm">
-                Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
-              </h3>
-              <div className="space-y-0.5 max-h-32 overflow-y-auto">
-                {categories.map(category => (
-                  <label key={category} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
-                    <Checkbox
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedCategories([...selectedCategories, category]);
-                        } else {
-                          setSelectedCategories(selectedCategories.filter(c => c !== category));
-                        }
-                      }}
-                    />
-                    <span>{category}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Application Filter */}
-            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-              <h3 className="text-[#000000] font-medium mb-2 text-sm">
-                Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
-              </h3>
-              <div className="space-y-0.5 max-h-32 overflow-y-auto">
-                {applications.map(application => (
-                  <label key={application} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
-                    <Checkbox
-                      checked={selectedApplications.includes(application)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedApplications([...selectedApplications, application]);
-                        } else {
-                          setSelectedApplications(selectedApplications.filter(a => a !== application));
-                        }
-                      }}
-                    />
-                    <span>{application}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Formats Filter */}
-            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-              <h3 className="text-[#000000] font-medium mb-2 text-sm">
-                Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
-              </h3>
-              <div className="space-y-0.5 max-h-32 overflow-y-auto">
-                {formats.map(format => (
-                  <label key={format} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
-                    <Checkbox
-                      checked={selectedFormats.includes(format)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedFormats([...selectedFormats, format]);
-                        } else {
-                          setSelectedFormats(selectedFormats.filter(f => f !== format));
-                        }
-                      }}
-                    />
-                    <span>{format}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Price Filter */}
-            <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-              <h3 className="text-[#000000] font-medium mb-2 text-sm">Preisbereich (EUR)</h3>
-              <div className="space-y-2">
-                <Slider
-                  value={priceRange}
-                  onValueChange={handlePriceSliderChange}
-                  max={5000}
-                  step={50}
-                  className="mb-1"
-                />
-                <div className="flex justify-between text-xs text-[#000000] mb-1 bg-white px-2 py-1 rounded">
-                  <span>{priceRange[0]}€</span>
-                  <span>{priceRange[1]}€</span>
-                </div>
-                <div className="flex gap-1">
-                  <Input
-                    type="number"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                    onBlur={updatePriceFromInputs}
-                    className="text-[#000000] text-xs h-6 p-1 bg-white"
-                    min="0"
-                    max="5000"
-                    placeholder="Min"
-                  />
-                  <Input
-                    type="number"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                    onBlur={updatePriceFromInputs}
-                    className="text-[#000000] text-xs h-6 p-1 bg-white"
-                    min="0"
-                    max="5000"
-                    placeholder="Max"
-                  />
+          {/* Desktop Filters - Collapsible */}
+          {filtersOpen && (
+            <div className="hidden lg:grid lg:grid-cols-4 gap-4 mb-4 animate-in slide-in-from-top-2 duration-200">
+              {/* Category Filter */}
+              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-2 text-sm">
+                  Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
+                </h3>
+                <div className="space-y-0.5 max-h-32 overflow-y-auto">
+                  {categories.map(category => (
+                    <label key={category} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
+                      <Checkbox
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedCategories([...selectedCategories, category]);
+                          } else {
+                            setSelectedCategories(selectedCategories.filter(c => c !== category));
+                          }
+                        }}
+                      />
+                      <span>{category}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
+
+              {/* Application Filter */}
+              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-2 text-sm">
+                  Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
+                </h3>
+                <div className="space-y-0.5 max-h-32 overflow-y-auto">
+                  {applications.map(application => (
+                    <label key={application} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
+                      <Checkbox
+                        checked={selectedApplications.includes(application)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedApplications([...selectedApplications, application]);
+                          } else {
+                            setSelectedApplications(selectedApplications.filter(a => a !== application));
+                          }
+                        }}
+                      />
+                      <span>{application}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Formats Filter */}
+              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-2 text-sm">
+                  Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
+                </h3>
+                <div className="space-y-0.5 max-h-32 overflow-y-auto">
+                  {formats.map(format => (
+                    <label key={format} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
+                      <Checkbox
+                        checked={selectedFormats.includes(format)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedFormats([...selectedFormats, format]);
+                          } else {
+                            setSelectedFormats(selectedFormats.filter(f => f !== format));
+                          }
+                        }}
+                      />
+                      <span>{format}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price Filter */}
+              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-2 text-sm">Preisbereich (EUR)</h3>
+                <div className="space-y-2">
+                  <Slider
+                    value={priceRange}
+                    onValueChange={handlePriceSliderChange}
+                    max={5000}
+                    step={50}
+                    className="mb-1"
+                  />
+                  <div className="flex justify-between text-xs text-[#000000] mb-1 bg-white px-2 py-1 rounded">
+                    <span>{priceRange[0]}€</span>
+                    <span>{priceRange[1]}€</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <Input
+                      type="number"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(e.target.value)}
+                      onBlur={updatePriceFromInputs}
+                      className="text-[#000000] text-xs h-6 p-1 bg-white"
+                      min="0"
+                      max="5000"
+                      placeholder="Min"
+                    />
+                    <Input
+                      type="number"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(e.target.value)}
+                      onBlur={updatePriceFromInputs}
+                      className="text-[#000000] text-xs h-6 p-1 bg-white"
+                      min="0"
+                      max="5000"
+                      placeholder="Max"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Active Filters and Results Count */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
