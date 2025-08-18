@@ -10,7 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
-import { Search, Filter, ShoppingCart, FileText, X, ArrowUpDown, Menu } from "lucide-react";
+import { Search, Filter, ShoppingCart, FileText, X, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 import { charts, categories, applications, standards, materials, formats } from "@/data/charts";
 import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
@@ -23,7 +23,7 @@ const Charts = () => {
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [minPrice, setMinPrice] = useState("0");
   const [maxPrice, setMaxPrice] = useState("5000");
-  const [sortBy, setSortBy] = useState("title");
+  
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const updatePriceFromInputs = () => {
@@ -90,24 +90,8 @@ const Charts = () => {
       return searchMatch && categoryMatch && applicationMatch && formatMatch && priceMatch;
     });
 
-    // Sort
-    switch (sortBy) {
-      case "price-asc":
-        filtered.sort((a, b) => (a.price_from || 0) - (b.price_from || 0));
-        break;
-      case "price-desc":
-        filtered.sort((a, b) => (b.price_from || 0) - (a.price_from || 0));
-        break;
-      case "title":
-        filtered.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      default:
-        // Keep original order
-        break;
-    }
-
     return filtered;
-  }, [searchQuery, selectedCategories, selectedApplications, selectedFormats, priceRange, sortBy]);
+  }, [searchQuery, selectedCategories, selectedApplications, selectedFormats, priceRange]);
 
   const activeFilters = getAllActiveFilters();
   const activeFiltersCount = activeFilters.length;
@@ -356,8 +340,8 @@ const Charts = () => {
       <div className="sticky top-16 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="container mx-auto px-6 py-6">
           {/* Header */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-[#111111] mb-2">Finden und Sortieren Sie Ihre perfekten Testcharts</h2>
+          <div className="mb-6 mt-10">
+            <h2 className="text-2xl font-semibold text-[#000000] mb-2">Finden und Sortieren Sie Ihre perfekten Testcharts</h2>
             <p className="text-gray-600">Nutzen Sie unsere Filter und Suchfunktion für präzise Suchergebnisse</p>
           </div>
           
@@ -369,57 +353,170 @@ const Charts = () => {
                 placeholder="Suche nach Titel, SKU oder Tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-3 text-lg bg-white text-[#111111] border-gray-300 focus:border-[#3464e3] focus:ring-[#3464e3]"
+                className="pl-12 py-3 text-lg bg-white text-[#000000] border-gray-300 focus:border-[#3464e3] focus:ring-[#3464e3]"
               />
             </div>
           </div>
 
-          {/* Controls Row */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
-            {/* Mobile Filter Button - Left */}
-            <div className="lg:hidden">
-              <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
-                <DrawerTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2 text-[#111111] border-gray-300"
-                    style={{ backgroundColor: '#3464e3', color: 'white', borderColor: '#3464e3' }}
-                  >
-                    <Menu className="w-4 h-4" />
-                    Filter
-                    {activeFiltersCount > 0 && (
-                      <Badge variant="secondary" className="ml-1 bg-white text-[#3464e3]">
-                        {activeFiltersCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent className="max-h-[80vh] bg-white">
-                  <DrawerHeader className="bg-white border-b">
-                    <DrawerTitle className="text-[#000000]">Filter & Sortierung</DrawerTitle>
-                    <DrawerClose className="absolute right-4 top-4 text-[#000000]" />
-                  </DrawerHeader>
-                  <div className="px-4 pb-6 overflow-y-auto bg-white">
-                    <div className="text-[#000000]">
-                      <FilterContent />
-                    </div>
-                    <div className="mt-6 pt-4 border-t">
-                      <Button 
-                        onClick={() => setMobileFiltersOpen(false)}
-                        className="w-full text-white"
-                        style={{ backgroundColor: '#3464e3' }}
-                      >
-                        Filter anwenden
-                      </Button>
-                    </div>
+          {/* Mobile Filter Button */}
+          <div className="lg:hidden mb-4">
+            <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+              <DrawerTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  style={{ backgroundColor: '#3464e3', color: 'white', borderColor: '#3464e3' }}
+                >
+                  <Menu className="w-4 h-4" />
+                  Filter
+                  {activeFiltersCount > 0 && (
+                    <Badge variant="secondary" className="ml-1 bg-white text-[#3464e3]">
+                      {activeFiltersCount}
+                    </Badge>
+                  )}
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="max-h-[80vh] bg-white">
+                <DrawerHeader className="bg-white border-b">
+                  <DrawerTitle className="text-[#000000]">Filter</DrawerTitle>
+                  <DrawerClose className="absolute right-4 top-4 text-[#000000]" />
+                </DrawerHeader>
+                <div className="px-4 pb-6 overflow-y-auto bg-white">
+                  <div className="text-[#000000]">
+                    <FilterContent />
                   </div>
-                </DrawerContent>
-              </Drawer>
+                  <div className="mt-6 pt-4 border-t">
+                    <Button 
+                      onClick={() => setMobileFiltersOpen(false)}
+                      className="w-full text-white"
+                      style={{ backgroundColor: '#3464e3' }}
+                    >
+                      Filter anwenden
+                    </Button>
+                  </div>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+
+          {/* Desktop Filters - Horizontal Layout */}
+          <div className="hidden lg:grid lg:grid-cols-4 gap-4 mb-4">
+            {/* Category Filter */}
+            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+              <h3 className="text-[#000000] font-medium mb-2 text-sm">
+                Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
+              </h3>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {categories.map(category => (
+                  <label key={category} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
+                    <Checkbox
+                      checked={selectedCategories.includes(category)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedCategories([...selectedCategories, category]);
+                        } else {
+                          setSelectedCategories(selectedCategories.filter(c => c !== category));
+                        }
+                      }}
+                    />
+                    <span className="text-xs">{category}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
-            {/* Desktop Controls */}
-            <div className="hidden lg:flex items-center gap-4">
-              <span className="text-[#111111] font-medium">Filter:</span>
+            {/* Application Filter */}
+            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+              <h3 className="text-[#000000] font-medium mb-2 text-sm">
+                Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
+              </h3>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {applications.map(application => (
+                  <label key={application} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
+                    <Checkbox
+                      checked={selectedApplications.includes(application)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedApplications([...selectedApplications, application]);
+                        } else {
+                          setSelectedApplications(selectedApplications.filter(a => a !== application));
+                        }
+                      }}
+                    />
+                    <span className="text-xs">{application}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Formats Filter */}
+            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+              <h3 className="text-[#000000] font-medium mb-2 text-sm">
+                Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
+              </h3>
+              <div className="space-y-1 max-h-32 overflow-y-auto">
+                {formats.map(format => (
+                  <label key={format} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
+                    <Checkbox
+                      checked={selectedFormats.includes(format)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedFormats([...selectedFormats, format]);
+                        } else {
+                          setSelectedFormats(selectedFormats.filter(f => f !== format));
+                        }
+                      }}
+                    />
+                    <span className="text-xs">{format}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Filter */}
+            <div className="border border-gray-200 rounded-lg bg-gray-50 p-3">
+              <h3 className="text-[#000000] font-medium mb-2 text-sm">Preisbereich (EUR)</h3>
+              <div className="space-y-2">
+                <Slider
+                  value={priceRange}
+                  onValueChange={handlePriceSliderChange}
+                  max={5000}
+                  step={50}
+                  className="mb-1"
+                />
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span>{priceRange[0]}€</span>
+                  <span>{priceRange[1]}€</span>
+                </div>
+                <div className="flex gap-1">
+                  <Input
+                    type="number"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    onBlur={updatePriceFromInputs}
+                    className="text-[#000000] text-xs h-6 p-1"
+                    min="0"
+                    max="5000"
+                    placeholder="Min"
+                  />
+                  <Input
+                    type="number"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    onBlur={updatePriceFromInputs}
+                    className="text-[#000000] text-xs h-6 p-1"
+                    min="0"
+                    max="5000"
+                    placeholder="Max"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Filters and Results Count */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
+            <div className="flex items-center gap-2">
               {activeFiltersCount > 0 && (
                 <Badge variant="outline" className="text-[#3464e3] border-[#3464e3]">
                   {activeFiltersCount} aktiv
@@ -427,24 +524,9 @@ const Charts = () => {
               )}
             </div>
 
-            {/* Sort & Results Count */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <ArrowUpDown className="w-4 h-4 text-gray-500" />
-                <select 
-                  value={sortBy} 
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-white text-[#111111] border border-gray-300 rounded-md px-3 py-2 text-sm focus:border-[#3464e3] focus:ring-[#3464e3]"
-                >
-                  <option value="title">Titel A-Z</option>
-                  <option value="price-asc">Preis ↑</option>
-                  <option value="price-desc">Preis ↓</option>
-                </select>
-              </div>
-
-              <div className="text-[#111111] font-semibold bg-gray-100 px-3 py-2 rounded-md">
-                {filteredCharts.length} Charts gefunden
-              </div>
+            {/* Results Count */}
+            <div className="text-[#000000] font-semibold bg-gray-100 px-3 py-2 rounded-md">
+              {filteredCharts.length} Charts gefunden
             </div>
           </div>
 
@@ -452,7 +534,7 @@ const Charts = () => {
           {activeFilters.length > 0 && (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-[#111111] font-medium">Aktive Filter:</span>
+                <span className="text-sm text-[#000000] font-medium">Aktive Filter:</span>
                 {activeFilters.map((filter, index) => (
                   <Badge key={index} variant="secondary" className="text-xs bg-[#3464e3] text-white hover:bg-[#2852d1]">
                     {filter.type}: {filter.value}
@@ -476,10 +558,6 @@ const Charts = () => {
             </div>
           )}
 
-          {/* Desktop Filters - Accordion */}
-          <div className="hidden lg:block">
-            <FilterContent />
-          </div>
         </div>
       </div>
 
@@ -558,7 +636,7 @@ const Charts = () => {
 
           {filteredCharts.length === 0 && (
             <div className="text-center py-16">
-              <h3 className="text-xl font-semibold mb-2 text-[#111111]">Keine Charts gefunden</h3>
+              <h3 className="text-xl font-semibold mb-2 text-[#000000]">Keine Charts gefunden</h3>
               <p className="text-gray-600 mb-4">
                 Versuchen Sie es mit anderen Suchbegriffen oder Filtern.
               </p>
