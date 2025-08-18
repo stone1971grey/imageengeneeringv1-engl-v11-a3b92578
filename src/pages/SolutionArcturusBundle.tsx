@@ -287,32 +287,37 @@ const SolutionArcturusBundle = () => {
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Übersicht</a>
-                 <a href="#components" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   }}>Komplettlösung</a>
+                 <a href="#architecture" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
-                     document.getElementById('components')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Komponenten</a>
+                     document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>System-Architektur</a>
                  <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Vorteile</a>
+                   }}>Warum Test Bundle</a>
                  <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Bereiche</a>
-                 <a href="#gallery" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   }}>Anwendungsbereiche</a>
+                 <a href="#comparison" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
-                     document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Galerie</a>
-                 <a href="#downloads" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                     document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Vergleich</a>
+                 <a href="#related" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
-                     document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Downloads</a>
+                     document.getElementById('related')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>Verwandte Produkte</a>
+                 <a href="#faq" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                   onClick={(e) => {
+                     e.preventDefault();
+                     document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                   }}>FAQ</a>
               </div>
             </div>
           </div>
@@ -381,7 +386,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Bundle Components */}
-        <section id="components" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
+        <section id="architecture" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Was ist in der Komplettlösung enthalten?
@@ -726,7 +731,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Application Areas */}
-        <section id="gallery" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
+        <section id="comparison" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Anwendungsbereiche
@@ -878,7 +883,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Call to Action */}
-        <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[260px]">
+        <section id="related" className="bg-scandi-white py-16 scroll-mt-[260px]">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Bereit für professionelle Bildqualitätstests?
