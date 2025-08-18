@@ -194,7 +194,13 @@ const Charts = () => {
 
       {/* Sticky Filter Bar */}
       <div className="sticky top-16 z-40 bg-white/95 backdrop-blur-sm border-b border-muted-foreground/10">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-6 py-6">
+          {/* Section Header */}
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold text-foreground mb-2">Finden und Sortieren Sie Ihre perfekten Testcharts</h2>
+            <p className="text-sm text-muted-foreground">Nutzen Sie unsere Filter und Suchfunktion für präzise Suchergebnisse</p>
+          </div>
+          
           <div className="flex flex-col lg:flex-row gap-4 items-center">
             {/* Search */}
             <div className="relative flex-1 max-w-md">
@@ -203,7 +209,7 @@ const Charts = () => {
                 placeholder="Suche nach Titel, SKU oder Tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-white text-foreground"
               />
             </div>
 
@@ -211,7 +217,7 @@ const Charts = () => {
             <Button
               variant="outline"
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-white text-foreground border-border hover:bg-muted"
             >
               <Filter className="w-4 h-4" />
               Filter
@@ -229,7 +235,7 @@ const Charts = () => {
               <select 
                 value={sortBy} 
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-transparent border border-input rounded-md px-3 py-2 text-sm"
+                className="bg-white text-foreground border border-border rounded-md px-3 py-2 text-sm"
               >
                 <option value="relevance">Relevanz</option>
                 <option value="price-asc">Preis ↑</option>
@@ -239,21 +245,21 @@ const Charts = () => {
             </div>
 
             {/* Results Count */}
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-foreground font-medium">
               {filteredCharts.length} Charts gefunden
             </div>
           </div>
 
           {/* Collapsible Filters */}
           <Collapsible open={filtersOpen} onOpenChange={setFiltersOpen}>
-            <CollapsibleContent className="mt-4 pt-4 border-t border-muted-foreground/10">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <CollapsibleContent className="mt-6 pt-6 border-t border-muted-foreground/10 bg-white/50 rounded-lg p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
                 {/* Categories Filter */}
-                <div>
-                  <h4 className="font-medium mb-2">Kategorie</h4>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                <div className="bg-white rounded-lg p-4 border border-border">
+                  <h4 className="font-medium mb-3 text-foreground">Kategorie</h4>
+                  <div className="space-y-3 max-h-40 overflow-y-auto">
                     {categories.map(category => (
-                      <label key={category} className="flex items-center space-x-2 text-sm">
+                      <label key={category} className="flex items-center space-x-3 text-sm text-foreground cursor-pointer">
                         <Checkbox
                           checked={selectedCategories.includes(category)}
                           onCheckedChange={(checked) => {
@@ -271,11 +277,11 @@ const Charts = () => {
                 </div>
 
                 {/* Applications Filter */}
-                <div>
-                  <h4 className="font-medium mb-2">Anwendung</h4>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                <div className="bg-white rounded-lg p-4 border border-border">
+                  <h4 className="font-medium mb-3 text-foreground">Anwendung</h4>
+                  <div className="space-y-3 max-h-40 overflow-y-auto">
                     {applications.map(application => (
-                      <label key={application} className="flex items-center space-x-2 text-sm">
+                      <label key={application} className="flex items-center space-x-3 text-sm text-foreground cursor-pointer">
                         <Checkbox
                           checked={selectedApplications.includes(application)}
                           onCheckedChange={(checked) => {
@@ -293,11 +299,11 @@ const Charts = () => {
                 </div>
 
                 {/* Standards Filter */}
-                <div>
-                  <h4 className="font-medium mb-2">Standard</h4>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                <div className="bg-white rounded-lg p-4 border border-border">
+                  <h4 className="font-medium mb-3 text-foreground">Standard</h4>
+                  <div className="space-y-3 max-h-40 overflow-y-auto">
                     {standards.map(standard => (
-                      <label key={standard} className="flex items-center space-x-2 text-sm">
+                      <label key={standard} className="flex items-center space-x-3 text-sm text-foreground cursor-pointer">
                         <Checkbox
                           checked={selectedStandards.includes(standard)}
                           onCheckedChange={(checked) => {
@@ -315,11 +321,11 @@ const Charts = () => {
                 </div>
 
                 {/* Materials Filter */}
-                <div>
-                  <h4 className="font-medium mb-2">Material</h4>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                <div className="bg-white rounded-lg p-4 border border-border">
+                  <h4 className="font-medium mb-3 text-foreground">Material</h4>
+                  <div className="space-y-3 max-h-40 overflow-y-auto">
                     {materials.map(material => (
-                      <label key={material} className="flex items-center space-x-2 text-sm">
+                      <label key={material} className="flex items-center space-x-3 text-sm text-foreground cursor-pointer">
                         <Checkbox
                           checked={selectedMaterials.includes(material)}
                           onCheckedChange={(checked) => {
@@ -337,11 +343,11 @@ const Charts = () => {
                 </div>
 
                 {/* Formats Filter */}
-                <div>
-                  <h4 className="font-medium mb-2">Format/Größe</h4>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
+                <div className="bg-white rounded-lg p-4 border border-border">
+                  <h4 className="font-medium mb-3 text-foreground">Format/Größe</h4>
+                  <div className="space-y-3 max-h-40 overflow-y-auto">
                     {formats.map(format => (
-                      <label key={format} className="flex items-center space-x-2 text-sm">
+                      <label key={format} className="flex items-center space-x-3 text-sm text-foreground cursor-pointer">
                         <Checkbox
                           checked={selectedFormats.includes(format)}
                           onCheckedChange={(checked) => {
@@ -359,15 +365,15 @@ const Charts = () => {
                 </div>
 
                 {/* Price Filter */}
-                <div>
-                  <h4 className="font-medium mb-2">Preisbereich (EUR)</h4>
+                <div className="bg-white rounded-lg p-4 border border-border">
+                  <h4 className="font-medium mb-3 text-foreground">Preisbereich (EUR)</h4>
                   <div className="px-2">
                     <Slider
                       value={priceRange}
                       onValueChange={setPriceRange}
                       max={5000}
                       step={50}
-                      className="mb-2"
+                      className="mb-4"
                     />
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>{priceRange[0]}€</span>
@@ -379,8 +385,8 @@ const Charts = () => {
 
               {/* Active Filters & Clear All */}
               {activeFiltersCount > 0 && (
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-muted-foreground/10">
-                  <span className="text-sm text-muted-foreground">Aktive Filter:</span>
+                <div className="flex items-center gap-2 mt-6 pt-4 border-t border-muted-foreground/10 bg-white rounded-lg p-4">
+                  <span className="text-sm text-foreground font-medium">Aktive Filter:</span>
                   <div className="flex flex-wrap gap-2">
                     {selectedCategories.map(cat => (
                       <Badge key={cat} variant="secondary" className="text-xs">
