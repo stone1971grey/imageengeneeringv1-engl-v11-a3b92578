@@ -1027,6 +1027,125 @@ const SolutionArcturusBundle = () => {
           productName="Arcturus HDR Test Bundle"
         />
         </section>
+
+        {/* Downloads Section */}
+        <section className="bg-scandi-white py-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+              Downloads & Dokumentation
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
+              Laden Sie technische Spezifikationen, Datenblätter und Software-Dokumentation herunter.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Arcturus LED System Downloads */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
+              <CardHeader className="text-center pb-4">
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Zap className="h-8 w-8 text-blue-600" />
+                  </div>
+                </div>
+                <CardTitle className="text-xl font-bold text-gray-900">
+                  Arcturus LED System
+                </CardTitle>
+                <CardDescription className="text-gray-600">
+                  Technische Dokumentation und Spezifikationen
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                >
+                  <FileText className="mr-3 h-4 w-4" />
+                  Datenblatt (PDF)
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                >
+                  <Download className="mr-3 h-4 w-4" />
+                  Technische Spezifikationen
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                >
+                  <Settings className="mr-3 h-4 w-4" />
+                  Installation Guide
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                >
+                  <Package className="mr-3 h-4 w-4" />
+                  API Dokumentation
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Vega Software Suite Downloads */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
+              <CardHeader className="text-center pb-4">
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <Monitor className="h-8 w-8 text-green-600" />
+                  </div>
+                </div>
+                <CardTitle className="text-xl font-bold text-gray-900">
+                  Vega Software Suite
+                </CardTitle>
+                <CardDescription className="text-gray-600">
+                  Software-Downloads und Benutzerhandbücher
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                >
+                  <Download className="mr-3 h-4 w-4" />
+                  Vega Demo Version
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                >
+                  <FileText className="mr-3 h-4 w-4" />
+                  Benutzerhandbuch (PDF)
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                >
+                  <Settings className="mr-3 h-4 w-4" />
+                  Python API Guide
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                >
+                  <BarChart3 className="mr-3 h-4 w-4" />
+                  Beispiel-Reports
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center mt-12">
+            <p className="text-sm text-gray-500 mb-4">
+              Für vollständige Software-Lizenzen und erweiterte Dokumentation kontaktieren Sie unser Support-Team.
+            </p>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+              Support kontaktieren
+            </Button>
+          </div>
+        </div>
+        </section>
       </div>
       <Footer />
     </div>
