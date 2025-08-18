@@ -177,7 +177,7 @@ const Charts = () => {
                 size="lg" 
                 onClick={scrollToFooterExpert}
                 className="text-white px-8"
-                style={{ backgroundColor: '#22c55e' }}
+                style={{ backgroundColor: '#7a933b' }}
               >
                 Beratung anfragen
               </Button>
