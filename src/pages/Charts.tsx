@@ -114,7 +114,7 @@ const Charts = () => {
             alt="Testcharts für präzise Bildqualitätsmessungen" 
             className="w-full h-full object-cover animate-ken-burns"
           />
-          <div className="absolute inset-0 bg-black/45"></div>
+          <div className="absolute inset-0 bg-black/25"></div>
         </div>
 
         <div className="h-16"></div>
