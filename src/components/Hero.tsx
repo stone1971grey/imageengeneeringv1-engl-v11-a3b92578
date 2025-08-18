@@ -17,7 +17,7 @@ const Hero = () => {
         <img 
           src={precisionTestingHero}
           alt="Precision Engineering Process"
-          className="w-full h-full object-cover animate-ken-burns opacity-40"
+          className="w-full h-full object-cover animate-ken-burns opacity-70"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-scandi-white/60 via-scandi-white/40 to-scandi-white/20"></div>
       </div>
@@ -35,12 +35,12 @@ const Hero = () => {
               <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
                 Test Charts
                 <br />
-                <span className="font-medium">Präzision für jede Anwendung</span>
+                <span className="font-medium">Made by Image Engineering</span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-2xl mx-auto">
-                Hochwertige Testcharts für alle Bildqualitätstests – 
-                von Low-Light bis Ultra-HD.
+                Wir entwickeln und produzieren hochpräzise Testcharts für professionelle Bildqualitätstests. 
+                Jetzt direkt im Shop bestellen.
               </p>
             </div>
             
@@ -59,16 +59,16 @@ const Hero = () => {
             {/* Minimal stats */}
             <div className="flex items-center justify-center space-x-12 pt-8">
               <div>
-                <div className="text-2xl font-medium text-light-foreground">99.9%</div>
-                <div className="text-sm text-scandi-grey font-light">Genauigkeit</div>
+                <div className="text-2xl font-medium text-light-foreground">200+</div>
+                <div className="text-sm text-scandi-grey font-light">Testchart-Varianten</div>
               </div>
               <div>
-                <div className="text-2xl font-medium text-light-foreground">50ms</div>
-                <div className="text-sm text-scandi-grey font-light">Reaktionszeit</div>
+                <div className="text-2xl font-medium text-light-foreground">0,01%</div>
+                <div className="text-sm text-scandi-grey font-light">Messtoleranz</div>
               </div>
               <div>
-                <div className="text-2xl font-medium text-light-foreground">100+</div>
-                <div className="text-sm text-scandi-grey font-light">Projekte</div>
+                <div className="text-2xl font-medium text-light-foreground">15+</div>
+                <div className="text-sm text-scandi-grey font-light">Jahre Erfahrung</div>
               </div>
             </div>
           </div>
