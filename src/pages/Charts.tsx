@@ -313,16 +313,16 @@ const Charts = () => {
               <Button 
                 size="lg" 
                 onClick={scrollToCharts}
+                variant="decision"
                 className="text-white px-8"
-                style={{ backgroundColor: '#1f6ae8' }}
               >
                 Alle Charts entdecken
               </Button>
               <Button 
                 size="lg" 
                 onClick={scrollToFooterExpert}
+                variant="contact"
                 className="text-white px-8"
-                style={{ backgroundColor: '#7a933b' }}
               >
                 Beratung anfragen
               </Button>
