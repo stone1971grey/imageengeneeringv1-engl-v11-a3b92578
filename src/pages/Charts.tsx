@@ -339,15 +339,15 @@ const Charts = () => {
 
       {/* Search and Filter Section */}
       <div className="sticky top-16 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="container mx-auto px-6 py-6">
+        <div className="container mx-auto px-6 py-4">
           {/* Header */}
-          <div className="mb-6 mt-16">
+          <div className="mb-4 mt-8">
             <h2 className="text-3xl font-semibold text-[#000000] mb-2">Finden und Sortieren Sie Ihre perfekten Testcharts</h2>
             <p className="text-gray-600">Nutzen Sie unsere Filter und Suchfunktion für präzise Suchergebnisse</p>
           </div>
           
           {/* Search Bar - Full Width */}
-          <div className="mb-6">
+          <div className="mb-4">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
               <Input
@@ -359,8 +359,8 @@ const Charts = () => {
             </div>
           </div>
 
-          {/* Filter Toggle Button and Results Count */}
-          <div className="flex items-center justify-between mb-4">
+          {/* Filter Toggle Button */}
+          <div className="flex items-center justify-start mb-4">
             <Button
               variant="outline"
               onClick={() => setFiltersOpen(!filtersOpen)}
@@ -374,9 +374,6 @@ const Charts = () => {
                 </Badge>
               )}
             </Button>
-            <div className="text-sm text-gray-600">
-              <span className="font-medium text-[#000000]">{filteredCharts.length}</span> Charts gefunden
-            </div>
           </div>
 
           {/* Mobile Filter Button */}
