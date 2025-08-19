@@ -369,25 +369,6 @@ const Automotive = () => {
         </div>
       </section>
 
-      {/* Quote/Testimonial Block */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <blockquote className="text-2xl md:text-3xl font-light text-gray-900 italic mb-8 leading-relaxed">
-              "Trusted by OEMs and Tier-1 suppliers worldwide"
-            </blockquote>
-            <div className="flex items-center justify-center space-x-8 text-gray-600">
-              <span className="font-medium">BMW</span>
-              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-              <span className="font-medium">Bosch</span>
-              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-              <span className="font-medium">Continental</span>
-              <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-              <span className="font-medium">Aptiv</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <Footer />
     </div>
