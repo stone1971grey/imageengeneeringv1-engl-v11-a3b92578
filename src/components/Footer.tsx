@@ -13,7 +13,7 @@ const Footer = () => {
   const isAutomotivePage = location.pathname === '/automotive';
 
   return (
-    <footer className="bg-background border-t border-border">
+    <footer id="footer" className="bg-background border-t border-border">
       {/* Vision CTA Section */}
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
