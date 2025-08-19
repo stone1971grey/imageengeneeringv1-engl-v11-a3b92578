@@ -301,7 +301,7 @@ const Charts = () => {
             <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-32 pt-32">
               Test Charts – Precision
               <br />
-              <span className="font-medium" style={{ color: '#1f6ae8' }}>for Every Application</span>
+              <span className="font-medium text-white">for Every Application</span>
             </h1>
             
             <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl">
