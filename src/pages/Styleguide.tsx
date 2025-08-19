@@ -70,7 +70,7 @@ const Styleguide = () => {
               <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                 <div className="w-32">
                   <p className="font-medium text-gray-900">Secondary</p>
-                  <p className="text-sm text-gray-500">Secondary actions</p>
+                  <p className="text-sm text-gray-500">Secondary technical actions</p>
                 </div>
                 <Button variant="secondary">
                   Secondary Button
