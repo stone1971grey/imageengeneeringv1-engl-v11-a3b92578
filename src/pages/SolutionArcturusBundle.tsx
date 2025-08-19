@@ -376,12 +376,13 @@ const SolutionArcturusBundle = () => {
                 <Button 
                   size="lg"
                   variant="outline"
-                  className="border-white text-white px-8 py-4 text-lg font-medium hover:bg-white hover:text-gray-900"
+                  className="border-white text-white px-8 py-4 text-lg font-medium hover:bg-[#626262] hover:text-white hover:border-[#626262]"
                   onClick={() => {
                     document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
                 >
                   Technical Details
+                  <Download className="ml-2 h-5 w-5" />
                 </Button>
               </div>
             </div>
