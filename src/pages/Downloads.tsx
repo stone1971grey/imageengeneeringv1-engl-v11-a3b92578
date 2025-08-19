@@ -895,31 +895,43 @@ export default function Downloads() {
 
       {/* AI Assistant Dialog */}
       <Dialog open={aiOpen} onOpenChange={setAiOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-primary to-primary/80 border-primary">
           <DialogHeader>
-            <DialogTitle className="text-gray-900">KI‑Assistent</DialogTitle>
-            <DialogDescription className="text-gray-600">
-              Lassen Sie sich bei der Suche nach Downloads helfen.
+            <DialogTitle className="text-white text-2xl font-bold">AI Assistant</DialogTitle>
+            <DialogDescription className="text-white/90 text-lg">
+              Let us help you find the right downloads quickly and easily.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-sm text-gray-700">
-              Hier könnte ein intelligenter Chatbot bei der Suche nach den richtigen Downloads helfen.
+          <div className="space-y-6">
+            <p className="text-lg text-white/95 leading-relaxed">
+              Our intelligent assistant can help you find exactly what you're looking for in our download center.
             </p>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="font-medium text-gray-900 mb-2">Beliebte Downloads:</h4>
-              <div className="space-y-2">
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+              <h4 className="font-semibold text-white text-xl mb-4">Popular Downloads:</h4>
+              <div className="space-y-3">
                 {MOCK_ITEMS.slice(0, 3).map((item) => (
                   <Button
                     key={item.id}
                     variant="ghost"
-                    size="sm"
-                    className="justify-start w-full text-left"
+                    size="lg"
+                    className="justify-start w-full text-left text-white hover:bg-white/20 hover:text-white border border-white/30 rounded-lg p-4 text-base"
                     onClick={() => setFiltersFromAI(item)}
                   >
-                    {item.title}
+                    <div className="flex flex-col items-start">
+                      <span className="font-medium">{item.title}</span>
+                      <span className="text-sm text-white/80">{item.product} • {CATEGORY_LABEL[item.category]}</span>
+                    </div>
                   </Button>
                 ))}
+              </div>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
+              <h4 className="font-semibold text-white text-xl mb-3">How can I help?</h4>
+              <div className="text-white/90 text-base leading-relaxed">
+                <p>• Find software for specific products</p>
+                <p>• Locate manuals and documentation</p>
+                <p>• Filter by operating system or language</p>
+                <p>• Get the latest firmware updates</p>
               </div>
             </div>
           </div>
