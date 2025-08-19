@@ -5,12 +5,14 @@ import teamLaura from "@/assets/team-laura-color.jpg";
 import teamMarkus from "@/assets/team-markus-color.jpg";
 import teamStefan from "@/assets/team-stefan-color.jpg";
 import teamAnna from "@/assets/team-anna-automotive.jpg";
+import teamThomas from "@/assets/team-thomas-lighting.jpg";
 
 const Footer = () => {
   const location = useLocation();
   const isChartsPage = location.pathname === '/products/charts' || location.pathname.startsWith('/products/charts/');
   const isSolutionBundlePage = location.pathname.startsWith('/solution/');
   const isAutomotivePage = location.pathname === '/automotive';
+  const isArcturusPage = location.pathname === '/product/arcturus';
 
   return (
     <footer id="footer" className="bg-background border-t border-border">
@@ -23,6 +25,8 @@ const Footer = () => {
               ? 'Customized Solution Packages for Your Application'
             : isAutomotivePage
               ? 'Next-Generation Automotive Camera Testing Solutions'
+            : isArcturusPage
+              ? 'Professional LED Lighting Solutions for Testing'
               : 'Ready to Transform Your Vision?'
           }
         </h2>
@@ -33,6 +37,8 @@ const Footer = () => {
               ? 'Benefit from our complete testing solutions and calibration packages. We develop individual solutions perfectly tailored to your requirements.'
             : isAutomotivePage
               ? 'From ADAS cameras to driver assistance systems - our specialized automotive testing solutions ensure the highest safety standards. Let us shape the future of autonomous driving together.'
+            : isArcturusPage
+              ? 'From high-intensity LED systems to precision lighting control - our Arcturus specialists ensure optimal illumination for your most demanding testing scenarios. Maximum luminance meets unmatched stability.'
               : 'Let us discuss how our image processing solutions can revolutionize your business. Contact our experts today.'
           }
         </p>
@@ -52,6 +58,8 @@ const Footer = () => {
                     ? 'Looking for Individual Solution Packages?'
                   : isAutomotivePage
                     ? 'Automotive Camera Testing?'
+                  : isArcturusPage
+                    ? 'Questions About LED Lighting Systems?'
                     : 'Have Questions?'
                 }<br />
                 {isChartsPage 
@@ -60,6 +68,8 @@ const Footer = () => {
                     ? 'Speak with Our Solution Experts.'
                   : isAutomotivePage
                     ? 'Speak with Our Automotive Experts.'
+                  : isArcturusPage
+                    ? 'Speak with Our Lighting Specialists.'
                     : 'Speak with Us.'
                 }
               </h2>
@@ -70,6 +80,8 @@ const Footer = () => {
                     ? 'Our solution experts develop customized testing solutions and calibration packages for your specific requirements. From consultation to implementation, we accompany you.'
                   : isAutomotivePage
                     ? 'Our automotive specialists develop precise testing procedures for vehicle cameras, ADAS systems and autonomous driving functions. From IEEE-P2020 certification to individual test protocols.'
+                  : isArcturusPage
+                    ? 'Our lighting specialists design optimal LED illumination systems for your testing requirements. From maximum luminance configuration to precise spectral control - we ensure your Arcturus system delivers perfect results.'
                     : 'Our experts are happy to advise you personally on your application or support you in planning your test solution.'
                 }
               </p>
@@ -104,6 +116,8 @@ const Footer = () => {
                   ? 'Schedule Consultation Now'
                 : isAutomotivePage
                   ? 'Schedule Consultation Now'
+                : isArcturusPage
+                  ? 'Lighting Consultation Now'
                   : 'Get in contact with us'
               }
             </Button>
@@ -114,13 +128,15 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0">
                  <img 
-                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamAnna : teamLaura}
+                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamAnna : isArcturusPage ? teamThomas : teamLaura}
                     alt={isChartsPage 
                       ? "Markus Weber, Technical Chart Specialist" 
                       : isSolutionBundlePage 
                         ? "Dr. Stefan Mueller, Test Solutions Expert"
                       : isAutomotivePage
                         ? "Dr. Anna Hoffmann, Automotive Vision Expert"
+                      : isArcturusPage
+                        ? "Dr. Thomas Lichtner, LED Lighting Technology Specialist"
                         : "Laura Neumann, Head of Optical Systems"
                     }
                    className="w-[150px] h-[150px] rounded-full object-cover"
@@ -134,6 +150,8 @@ const Footer = () => {
                       ? '"As an expert in test solutions and calibration solutions, I develop customized packages for our customers daily. Each solution is unique and perfectly tailored to individual requirements."'
                     : isAutomotivePage
                       ? '"Safety comes first in automotive applications. With over 12 years of experience in vehicle camera development, I ensure that every test meets the highest industry standards."'
+                    : isArcturusPage
+                      ? '"Maximum luminance with perfect stability - that\'s what sets Arcturus apart. With over 18 years in LED technology development, I ensure every system delivers the precise lighting conditions your sensors demand."'
                       : '"What excites me every day is the direct impact of our work on image quality worldwide. Whether in smartphones or vehicle cameras – our solutions make the difference."'
                   }
                 </blockquote>
@@ -145,6 +163,8 @@ const Footer = () => {
                         ? 'Dr. Stefan Mueller'
                       : isAutomotivePage
                         ? 'Dr. Anna Hoffmann'
+                      : isArcturusPage
+                        ? 'Dr. Thomas Lichtner'
                         : 'Laura Neumann'
                     }
                   </div>
@@ -155,6 +175,8 @@ const Footer = () => {
                         ? 'Test Solutions & Calibration Expert'
                       : isAutomotivePage
                         ? 'Automotive Vision Expert & IEEE-P2020 Specialist'
+                      : isArcturusPage
+                        ? 'LED Lighting Technology Specialist & Arcturus Expert'
                         : 'Head of Optical Systems'
                     }
                   </div>
