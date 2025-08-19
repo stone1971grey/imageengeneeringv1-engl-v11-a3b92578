@@ -185,7 +185,7 @@ const Automotive = () => {
                   <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
                     {app.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-lg text-gray-600 leading-relaxed">
                     {app.description}
                   </p>
                 </div>
@@ -219,13 +219,13 @@ const Automotive = () => {
               {/* What tests are included */}
               <div className="bg-blue-50 rounded-2xl p-8">
                 <h4 className="text-2xl font-bold text-gray-900 mb-6">What tests are included in camPAS?</h4>
-                <p className="text-gray-700 leading-relaxed mb-6">
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   The difference between a camPAS test and a standard test method is the ability to fully customize the camPAS test to customer specifications. We evaluate camera systems based on various image quality KPIs or use tests to analyze sensor smoothness or error susceptibility.
                 </p>
-                <p className="text-gray-700 leading-relaxed mb-6">
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   Some of the most common image quality KPIs we test include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (Flicker), High Dynamic Range (HDR), visual assessment of low-light performance, etc. These tests are performed using the latest techniques (as described in IEEE-P2020) and equipment to ensure the highest results.
                 </p>
-                <p className="text-gray-700 leading-relaxed mb-8">
+                <p className="text-lg text-gray-700 leading-relaxed mb-8">
                   It is important to note that these KPIs are just examples and we test an extensive range of KPIs for camera and sensor systems. camPAS tests are not pre-made tests and instead require consultation with our test lab to ensure we design a test that meets customer requirements.
                 </p>
                 
@@ -245,15 +245,15 @@ const Automotive = () => {
               <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mt-12">
                 <h4 className="text-2xl font-bold text-gray-900 mb-6">IEEE-P2020 Product Package</h4>
                 
-                <p className="text-gray-700 leading-relaxed mb-6">
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   <a href="https://sagroups.ieee.org/2020/" className="text-blue-600 hover:underline">IEEE-P2020</a> establishes an internationally recognized standard for automotive and ADAS applications. This standard addresses the fundamental KPIs that contribute to the image quality of automotive camera systems. Unlike most camera industries, automotive and ADAS applications are unique because they directly affect consumer safety.
                 </p>
 
-                <p className="text-gray-700 leading-relaxed mb-6">
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
                   During the development of the standard, it became clear that new metrics must be established to account for the unique environments in which autonomous driving systems must operate. Direct sunlight, dense fog, low light, flickering lights and heavy pedestrian traffic are just some of the environments in which ADAS systems operate. The new KPIs to address these testing challenges include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (MMP - Flicker), Contrast Signal-to-Noise Ratio (CSNR) and High Dynamic Range (HDR), among others.
                 </p>
 
-                <p className="text-gray-700 leading-relaxed mb-8">
+                <p className="text-lg text-gray-700 leading-relaxed mb-8">
                   These KPIs require new testing methods and equipment. We have developed many of our newer camera testing devices based on the testing procedures described in the standard and offer a product package for those who want to start with IEEE-P2020 measurements today.
                 </p>
 
@@ -341,7 +341,7 @@ const Automotive = () => {
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                       {product.title}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed mb-4">
+                    <p className="text-lg text-gray-600 leading-relaxed mb-4">
                       {product.description}
                     </p>
                     {product.link ? (
