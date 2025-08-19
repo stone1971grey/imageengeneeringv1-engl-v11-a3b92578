@@ -363,11 +363,11 @@ const Navigation = () => {
                       
                        {/* Solution-Finder CTA */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                        <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
-                          <div className="flex items-center gap-3 text-black">
-                            <Search className="h-5 w-5" />
+                        <div className="flex items-center justify-center transition-colors cursor-pointer">
+                          <Button variant="decision" className="w-full">
+                            <Search className="h-5 w-5 mr-3" />
                             <span className="text-lg font-medium">Need Help Choosing? → Start Solution Finder</span>
-                          </div>
+                          </Button>
                         </div>
                       </div>
                       
@@ -595,11 +595,11 @@ const Navigation = () => {
                       {/* Lab View CTA */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <Link to="/inside-lab">
-                          <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
-                            <div className="flex items-center gap-3 text-black">
-                              <Microscope className="h-5 w-5" />
+                          <div className="flex items-center justify-center transition-colors cursor-pointer">
+                            <Button variant="technical" className="w-full">
+                              <Microscope className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">Inside the Testing Lab</span>
-                            </div>
+                            </Button>
                           </div>
                         </Link>
                       </div>
@@ -695,11 +695,11 @@ const Navigation = () => {
                       {/* CTA Button */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <Link to="/downloads">
-                          <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
-                            <div className="flex items-center gap-3 text-black">
-                              <Search className="h-5 w-5" />
+                          <div className="flex items-center justify-center transition-colors cursor-pointer">
+                            <Button variant="technical" className="w-full">
+                              <Search className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">To Download Center</span>
-                            </div>
+                            </Button>
                           </div>
                         </Link>
                       </div>
