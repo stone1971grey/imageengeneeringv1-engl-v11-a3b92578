@@ -1,6 +1,7 @@
 import { Car, Stethoscope, Smartphone, Shield, Camera, Tv, Cog, ScanLine, FlaskConical, ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 const IndustrySection = () => {
   const [showAllIndustries, setShowAllIndustries] = useState(false);
@@ -177,19 +178,21 @@ const IndustrySection = () => {
 
         {/* Call to action */}
         <div className="text-center mt-16">
-          <button
+          <Button
+            variant="decision"
+            size="lg"
             onClick={() => setShowAllIndustries(!showAllIndustries)}
-            className="inline-flex items-center gap-2 bg-[#7a933b] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#7a933b]/90 transition-all duration-300 group hover:scale-105"
+            className="group"
           >
             <span>{showAllIndustries ? 'Show Less' : 'Explore All Industries'}</span>
-            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
+            <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center ml-2 group-hover:translate-x-1 transition-transform duration-300">
               {showAllIndustries ? (
                 <ChevronUp size={12} className="text-white" />
               ) : (
                 <ChevronDown size={12} className="text-white" />
               )}
             </div>
-          </button>
+          </Button>
         </div>
       </div>
     </section>
