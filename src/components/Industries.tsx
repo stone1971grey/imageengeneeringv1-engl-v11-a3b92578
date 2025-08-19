@@ -126,16 +126,6 @@ const Industries = () => {
             );
           })}
         </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-20">
-          <p className="text-scandi-grey mb-6 font-light">
-            Don't see your industry? We develop custom solutions for unique requirements.
-          </p>
-          <button className="inline-flex items-center text-gray-900 hover:text-gray-700 font-medium transition-colors duration-300 border-b border-gray-900/30 hover:border-gray-700/40 pb-1 bg-transparent">
-            Discover Custom Solutions
-          </button>
-        </div>
       </div>
     </section>
   );
