@@ -103,10 +103,10 @@ const Industries = () => {
 
                 {/* Text Content - warme Farbtöne */}
                 <div className="text-center space-y-1">
-                  <h3 className="font-medium text-light-foreground text-sm md:text-base tracking-wide">
+                  <h3 className="font-medium text-light-foreground text-base md:text-lg tracking-wide">
                     {industry.name}
                   </h3>
-                  <p className="text-xs md:text-sm text-light-muted font-light max-w-[140px] leading-relaxed">
+                  <p className="text-base text-light-muted font-light max-w-[160px] leading-relaxed">
                     {industry.description}
                   </p>
                 </div>
