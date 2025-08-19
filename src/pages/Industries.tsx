@@ -12,58 +12,58 @@ const Industries = () => {
   const industries = [
     {
       icon: Camera,
-      name: "Fotografie",
-      description: "Digitalkameras für professionelle und Amateur-Anwendungen",
-      applications: ["DSLR Testing", "Sensor-Validierung", "Farbgenauigkeit"]
+      name: "Photography",
+      description: "Digital cameras for professional and amateur applications",
+      applications: ["DSLR Testing", "Sensor Validation", "Color Accuracy"]
     },
     {
       icon: Smartphone,
-      name: "Mobiltelefone",
-      description: "Bildqualitätstests nach VCX-Standards",
-      applications: ["Display-Tests", "Kamera-Validierung", "Leistungsanalyse"]
+      name: "Mobile Phones",
+      description: "Image quality testing according to VCX standards",
+      applications: ["Display Testing", "Camera Validation", "Performance Analysis"]
     },
     {
       icon: Car,
       name: "Automotive & ADAS",
-      description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren",
+      description: "Camera systems in vehicles, driver assistance and autonomous driving",
       link: "/automotive",
-      applications: ["ADAS-Tests", "Nachtsicht", "HDR-Validierung"]
+      applications: ["ADAS Testing", "Night Vision", "HDR Validation"]
     },
     {
       icon: Tv,
       name: "Broadcast & HDTV",
-      description: "Videoübertragung, TV-Kameras, farbgetreue Wiedergabe",
-      applications: ["Color Grading", "Signalqualität", "Video-Standards"]
+      description: "Video transmission, TV cameras, color-accurate reproduction",
+      applications: ["Color Grading", "Signal Quality", "Video Standards"]
     },
     {
       icon: Shield,
-      name: "Sicherheit / Überwachung",
-      description: "CCTV-Systeme, Videoüberwachung",
-      applications: ["Schwachlicht-Leistung", "Bewegungserkennung", "Bildklarheit"]
+      name: "Security / Surveillance",
+      description: "CCTV systems, video surveillance",
+      applications: ["Low-Light Performance", "Motion Detection", "Image Clarity"]
     },
     {
       icon: Cog,
       name: "Machine Vision",
-      description: "Kamerasysteme für Inspektion, Robotik, Qualitätskontrolle",
-      applications: ["Qualitätskontrolle", "Robotik", "Inspektionssysteme"]
+      description: "Camera systems for inspection, robotics, quality control",
+      applications: ["Quality Control", "Robotics", "Inspection Systems"]
     },
     {
       icon: Stethoscope,
-      name: "Medizin / Endoskopie",
-      description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen",
-      applications: ["Medizinische Bildgebung", "Endoskopie", "Diagnose-Tools"]
+      name: "Medical / Endoscopy",
+      description: "Image quality in medical imaging and diagnostic systems",
+      applications: ["Medical Imaging", "Endoscopy", "Diagnostic Tools"]
     },
     {
       icon: ScanLine,
-      name: "Scannen & Archivierung",
-      description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos",
-      applications: ["Dokument-Scannen", "Foto-Archivierung", "Qualitätssicherung"]
+      name: "Scanning & Archiving",
+      description: "Quality assurance in digitization of documents, books, photos",
+      applications: ["Document Scanning", "Photo Archiving", "Quality Assurance"]
     },
     {
       icon: FlaskConical,
       name: "iQ‑Lab Testing",
-      description: "Unabhängige Labordienstleistungen für zahlreiche Branchen",
-      applications: ["Unabhängige Tests", "Zertifizierung", "Standards-Konformität"]
+      description: "Independent laboratory services for numerous industries",
+      applications: ["Independent Testing", "Certification", "Standards Compliance"]
     }
   ];
 
@@ -71,8 +71,8 @@ const Industries = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AnnouncementBanner 
-        message="Besuchen Sie uns auf der IBC 2025"
-        ctaText="Mehr erfahren"
+        message="Visit us at IBC 2025"
+        ctaText="Learn more"
         ctaLink="#"
         icon="calendar"
       />
@@ -99,14 +99,14 @@ const Industries = () => {
             {/* Main Headline */}
             <div className="mb-8">
               <h1 id="industries-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
-                Präzisionslösungen
+                Precision Solutions
                 <br />
-                <span className="font-medium text-[#7a933b]">für alle Branchen</span>
+                <span className="font-medium text-[#7a933b]">for All Industries</span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl mx-auto">
-                Von der Fahrzeugsicherheit bis zur medizinischen Diagnostik - unsere fortschrittlichen Bildverarbeitungstechnologien 
-                treiben Innovationen in verschiedenen Sektoren weltweit voran.
+                From vehicle safety to medical diagnostics - our advanced image processing technologies 
+                drive innovation across various sectors worldwide.
               </p>
             </div>
             
@@ -130,19 +130,19 @@ const Industries = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="flex-1 text-center lg:text-left">
               <h2 className="text-2xl lg:text-3xl font-semibold text-foreground mb-3">
-                Treffen Sie uns auf der IBC 2025
+                Meet us at IBC 2025
               </h2>
               <p className="text-lg text-muted-foreground mb-4 max-w-2xl">
-                Vereinbaren Sie ein Treffen mit uns auf der IBC 2025, um eine maßgeschneiderte Einführung darüber zu erhalten, wie wir Ihnen helfen können, Ihre Medienoperationen zu optimieren und Veränderungen voraus zu sein.
+                Schedule a meeting with us at IBC 2025 to get a customized introduction on how we can help you optimize your media operations and stay ahead of change.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  <span>12-15 September 2025</span>
+                  <span>September 12-15, 2025</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  <span>Amsterdam, Niederlande</span>
+                  <span>Amsterdam, Netherlands</span>
                 </div>
               </div>
             </div>
@@ -159,14 +159,14 @@ const Industries = () => {
               size="lg" 
               className="bg-primary hover:bg-primary/90 text-white px-8"
             >
-              Termin vereinbaren
+              Schedule Appointment
             </Button>
             <Button 
               variant="outline" 
               size="lg" 
               className="border-primary text-primary hover:bg-primary/5 px-8"
             >
-              Mehr erfahren
+              Learn More
             </Button>
           </div>
         </div>
