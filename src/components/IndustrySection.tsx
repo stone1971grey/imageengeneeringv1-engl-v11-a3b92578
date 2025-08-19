@@ -9,52 +9,52 @@ const IndustrySection = () => {
     {
       icon: Car,
       title: "Automotive & ADAS",
-      description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren",
+      description: "Camera systems in vehicles, driver assistance and autonomous driving",
       link: "/automotive#automotive-hero"
     },
     {
       icon: Stethoscope,
-      title: "Medizin / Endoskopie",
-      description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen"
+      title: "Medical / Endoscopy",
+      description: "Image quality in medical imaging and diagnostic systems"
     },
     {
       icon: Smartphone,
-      title: "Mobiltelefone",
-      description: "Bildqualitätstests nach VCX-Standards"
+      title: "Mobile Phones",
+      description: "Image quality testing according to VCX standards"
     },
     {
       icon: Shield,
-      title: "Sicherheit / Überwachung",
-      description: "CCTV-Systeme, Videoüberwachung"
+      title: "Security / Surveillance",
+      description: "CCTV systems, video surveillance"
     }
   ];
 
-  // Additional industries that show up when "Alle Branchen erkunden" is clicked
+  // Additional industries that show up when "Explore All Industries" is clicked
   const additionalIndustries = [
     {
       icon: Camera,
-      title: "Fotografie",
-      description: "Digitalkameras für professionelle und Amateur-Anwendungen"
+      title: "Photography",
+      description: "Digital cameras for professional and amateur applications"
     },
     {
       icon: Tv,
       title: "Broadcast & HDTV",
-      description: "Videoübertragung, TV-Kameras, farbgetreue Wiedergabe"
+      description: "Video transmission, TV cameras, color-accurate reproduction"
     },
     {
       icon: Cog,
       title: "Machine Vision",
-      description: "Kamerasysteme für Inspektion, Robotik, Qualitätskontrolle"
+      description: "Camera systems for inspection, robotics, quality control"
     },
     {
       icon: ScanLine,
-      title: "Scannen & Archivierung",
-      description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos"
+      title: "Scanning & Archiving",
+      description: "Quality assurance in digitization of documents, books, photos"
     },
     {
       icon: FlaskConical,
       title: "iQ‑Lab Testing",
-      description: "Unabhängige Labordienstleistungen für zahlreiche Branchen (z.B. Mobile, Automotive)"
+      description: "Independent laboratory services for numerous industries (e.g. Mobile, Automotive)"
     }
   ];
 
@@ -73,14 +73,14 @@ const IndustrySection = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Wir bedienen Ihre{" "}
+            We Serve Your{" "}
             <span className="text-[#7a933b] relative">
-              Branche
+              Industry
               <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-[#7a933b] to-[#7a933b]/60 rounded-full"></div>
             </span>
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Führende Organisationen aus verschiedenen Branchen vertrauen unseren Präzisionslösungen
+            Leading organizations across various industries trust our precision solutions
           </p>
         </div>
 
@@ -181,7 +181,7 @@ const IndustrySection = () => {
             onClick={() => setShowAllIndustries(!showAllIndustries)}
             className="inline-flex items-center gap-2 bg-[#7a933b] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#7a933b]/90 transition-all duration-300 group hover:scale-105"
           >
-            <span>{showAllIndustries ? 'Weniger anzeigen' : 'Alle Branchen erkunden'}</span>
+            <span>{showAllIndustries ? 'Show Less' : 'Explore All Industries'}</span>
             <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center group-hover:translate-x-1 transition-transform duration-300">
               {showAllIndustries ? (
                 <ChevronUp size={12} className="text-white" />

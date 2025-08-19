@@ -14,7 +14,7 @@ const ManufacturerSupplierShowcase = () => {
             camPAS Testing Workflow
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Spezialisierte Testlösungen für die automotive Supply Chain
+            Specialized testing solutions for the automotive supply chain
           </p>
         </div>
 
@@ -43,59 +43,59 @@ const ManufacturerSupplierShowcase = () => {
                   </div>
                   <div>
                     <Badge variant="secondary" className="mb-2">OEM</Badge>
-                    <h3 className="text-2xl font-bold text-gray-900">Hersteller</h3>
+                    <h3 className="text-2xl font-bold text-gray-900">Manufacturer</h3>
                   </div>
                 </div>
 
                 <p className="text-gray-700 leading-relaxed mb-8">
-                  OEMs profitieren von objektiven Tests durch neutrale Drittpartei für fundierte Sensorauswahl und maßgeschneiderte camPAS-Tests.
+                  OEMs benefit from objective testing through neutral third parties for informed sensor selection and customized camPAS tests.
                 </p>
 
-                {/* Vorteile */}
+                {/* Benefits */}
                 <div className="mb-8">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4 uppercase tracking-wide">
-                    Vorteile
+                    Benefits
                   </h4>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">Objektive Sensorauswahl aus breiter Palette</span>
+                      <span className="text-gray-700">Objective sensor selection from wide range</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">Maßgeschneiderte camPAS-Tests</span>
+                      <span className="text-gray-700">Customized camPAS tests</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">Fundierte Entscheidungsgrundlagen</span>
+                      <span className="text-gray-700">Well-founded decision basis</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Prozess */}
+                {/* Process */}
                 <div className="mb-8">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4 uppercase tracking-wide">
-                    Prozess
+                    Process
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white rounded-lg px-3 py-2 border border-gray-200">
-                      <span className="text-sm text-gray-600">Spezifikationsanalyse</span>
+                      <span className="text-sm text-gray-600">Specification Analysis</span>
                     </div>
                     <div className="bg-white rounded-lg px-3 py-2 border border-gray-200">
-                      <span className="text-sm text-gray-600">Test-Design</span>
+                      <span className="text-sm text-gray-600">Test Design</span>
                     </div>
                     <div className="bg-white rounded-lg px-3 py-2 border border-gray-200">
-                      <span className="text-sm text-gray-600">Objektive Bewertung</span>
+                      <span className="text-sm text-gray-600">Objective Evaluation</span>
                     </div>
                     <div className="bg-white rounded-lg px-3 py-2 border border-gray-200">
-                      <span className="text-sm text-gray-600">Entscheidungsunterstützung</span>
+                      <span className="text-sm text-gray-600">Decision Support</span>
                     </div>
                   </div>
                 </div>
 
                 {/* CTA Button */}
                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-semibold group">
-                  Mehr über Hersteller-Lösungen
+                  Learn More About Manufacturer Solutions
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </CardContent>
@@ -110,39 +110,39 @@ const ManufacturerSupplierShowcase = () => {
                   </div>
                   <div>
                     <Badge variant="secondary" className="mb-2">Tier 1/2</Badge>
-                    <h3 className="text-2xl font-bold text-gray-900">Zulieferer</h3>
+                    <h3 className="text-2xl font-bold text-gray-900">Supplier</h3>
                   </div>
                 </div>
 
                 <p className="text-gray-700 leading-relaxed mb-8">
-                  Tier-1/2 Zulieferer validieren Komponenten vor Lieferung und optimieren Bildqualität proaktiv durch neutrale Drittpartei-Beratung.
+                  Tier-1/2 suppliers validate components before delivery and optimize image quality proactively through neutral third-party consulting.
                 </p>
 
-                {/* Vorteile */}
+                {/* Benefits */}
                 <div className="mb-8">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4 uppercase tracking-wide">
-                    Vorteile
+                    Benefits
                   </h4>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">Validierung vor Lieferung</span>
+                      <span className="text-gray-700">Pre-delivery validation</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">Frühe Fehlererkennung</span>
+                      <span className="text-gray-700">Early error detection</span>
                     </div>
                     <div className="flex items-start gap-3">
                       <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700">Bildqualitätsverbesserungen</span>
+                      <span className="text-gray-700">Image quality improvements</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Prozess */}
+                {/* Process */}
                 <div className="mb-8">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4 uppercase tracking-wide">
-                    Prozess
+                    Process
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white rounded-lg px-3 py-2 border border-gray-200">
@@ -162,7 +162,7 @@ const ManufacturerSupplierShowcase = () => {
 
                 {/* CTA Button */}
                 <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-semibold group">
-                  Mehr über Zulieferer-Lösungen
+                  Learn More About Supplier Solutions
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </CardContent>
@@ -176,8 +176,8 @@ const ManufacturerSupplierShowcase = () => {
                 Sensor Validation - Third-Party, Neutral camPAS Testing
               </h4>
               <p className="text-gray-700 leading-relaxed max-w-4xl mx-auto">
-                Unsere neutralen Tests helfen beiden Seiten der Supply Chain dabei, fundierte Entscheidungen zu treffen 
-                und die Bildqualität automotive Kamerasysteme zu optimieren.
+                Our neutral tests help both sides of the supply chain make informed decisions 
+                and optimize the image quality of automotive camera systems.
               </p>
             </div>
           </div>
