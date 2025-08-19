@@ -9,14 +9,16 @@ const HiddenSegments = () => {
       <Navigation />
       <div className="pt-32 pb-16">
         <div className="container mx-auto px-6">
-          <h1 className="text-4xl font-bold text-center mb-8">Versteckte Segmente</h1>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-center mb-8">Hidden Segments</h1>
           <p className="text-xl text-center text-muted-foreground mb-16">
-            Diese Segmente wurden vorübergehend von der Startseite entfernt und hier zur späteren Verwendung gespeichert.
+            These segments were temporarily removed from the homepage and saved here for later use.
           </p>
+        </div>
         </div>
       </div>
       
-      {/* Services Segment - "Präzisions-entwickelte Lösungen" */}
+      {/* Services Segment - "Precision-Engineered Solutions" */}
       <Services />
       
       {/* Chart Finder Segment */}

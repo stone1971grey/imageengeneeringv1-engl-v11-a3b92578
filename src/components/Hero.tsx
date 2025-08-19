@@ -32,8 +32,8 @@ const Hero = () => {
               </h1>
               
               <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto">
-                Wir entwickeln und produzieren hochpräzise Testcharts für professionelle Bildqualitätstests. 
-                Jetzt direkt im Shop bestellen.
+                We develop and manufacture high-precision test charts for professional image quality testing. 
+                Order directly from our shop now.
               </p>
             </div>
             
@@ -44,7 +44,7 @@ const Hero = () => {
                 className="text-white border-0 px-8 py-4 group"
                 onClick={() => window.location.href = '/products/charts'}
               >
-                Charts entdecken
+                Discover Charts
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -53,15 +53,15 @@ const Hero = () => {
             <div className="flex items-center justify-center space-x-12 pt-8">
               <div>
                 <div className="text-2xl font-medium text-white">200+</div>
-                <div className="text-sm text-white/80 font-light">Testchart-Varianten</div>
+                <div className="text-sm text-white/80 font-light">Test Chart Variants</div>
               </div>
               <div>
-                <div className="text-2xl font-medium text-white">0,01%</div>
-                <div className="text-sm text-white/80 font-light">Messtoleranz</div>
+                <div className="text-2xl font-medium text-white">0.01%</div>
+                <div className="text-sm text-white/80 font-light">Measurement Tolerance</div>
               </div>
               <div>
                 <div className="text-2xl font-medium text-white">15+</div>
-                <div className="text-sm text-white/80 font-light">Jahre Erfahrung</div>
+                <div className="text-sm text-white/80 font-light">Years of Experience</div>
               </div>
             </div>
           </div>

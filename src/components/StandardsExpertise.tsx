@@ -93,8 +93,8 @@ const StandardsExpertise = () => {
             </h2>
           </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Als aktives Mitglied internationaler Standardisierungsgremien entwickeln wir 
-            Testmethoden, die den neuesten Industriestandards entsprechen
+            As an active member of international standardization bodies, we develop 
+            test methods that comply with the latest industry standards
           </p>
         </div>
 
@@ -123,10 +123,10 @@ const StandardsExpertise = () => {
         <div className="mb-16">
           <div className="text-center mb-12">
             <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-              Unterstützte Standards
+              Supported Standards
             </h3>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Unsere Testverfahren basieren auf international anerkannten Standards
+              Our testing procedures are based on internationally recognized standards
             </p>
           </div>
 
@@ -177,28 +177,28 @@ const StandardsExpertise = () => {
                 </div>
               </div>
               <p className="text-gray-700 leading-relaxed mb-6">
-                Als aktives Mitglied der IEEE-P2020 Arbeitsgruppe tragen wir direkt zur Entwicklung 
-                des ersten international anerkannten Standards für automotive Bildqualitätstests bei. 
-                Dieser Standard wird Ende 2024 veröffentlicht.
+                As an active member of the IEEE-P2020 working group, we contribute directly to the development 
+                of the first internationally recognized standard for automotive image quality testing. 
+                This standard will be published at the end of 2024.
               </p>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-gray-700">Direkte Implementierung neuer Test-Methoden</span>
+                  <span className="text-gray-700">Direct implementation of new test methods</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-gray-700">Cutting-edge KPIs für ADAS-Systeme</span>
+                  <span className="text-gray-700">Cutting-edge KPIs for ADAS systems</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle className="w-5 h-5 text-green-600" />
-                  <span className="text-gray-700">Zukunftssichere Testverfahren</span>
+                  <span className="text-gray-700">Future-proof testing procedures</span>
                 </div>
               </div>
             </div>
             
             <div className="bg-blue-50 rounded-xl p-8">
-              <h4 className="text-xl font-semibold text-gray-900 mb-4">Neue KPIs für Automotive</h4>
+              <h4 className="text-xl font-semibold text-gray-900 mb-4">New KPIs for Automotive</h4>
               <div className="space-y-4 text-sm">
                 <div className="bg-white rounded-lg p-4">
                   <div className="font-medium text-gray-900">CTA</div>
@@ -228,19 +228,19 @@ const StandardsExpertise = () => {
               <div className="flex items-center justify-center gap-3 mb-6">
                 <Users className="w-8 h-8 text-white" />
                 <h3 className="text-3xl font-bold text-white">
-                  Sprechen Sie mit unseren Ingenieuren
+                  Speak with Our Engineers
                 </h3>
               </div>
               <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Unsere Experten helfen Ihnen dabei, die richtigen Standards für Ihre 
-                Anwendung zu identifizieren und maßgeschneiderte Testlösungen zu entwickeln
+                Our experts help you identify the right standards for your 
+                application and develop customized testing solutions
               </p>
               <Button 
                 size="lg"
                 variant="contact"
                 className="px-8 py-4 shadow-lg group"
               >
-                Jetzt Beratungstermin vereinbaren
+                Schedule Consultation Now
                 <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </CardContent>

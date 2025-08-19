@@ -63,41 +63,41 @@ const Navigation = () => {
 
   // Industry data mapping
   const industryData = {
-    "Fotografie": {
+    "Photography": {
       image: industryPhotography,
-      description: "Digitalkameras für professionelle und Amateur-Anwendungen"
+      description: "Digital cameras for professional and amateur applications"
     },
-    "Mobiltelefone": {
+    "Mobile Phones": {
       image: industryMobile,
-      description: "Bildqualitätstests nach VCX-Standards"
+      description: "Image quality testing according to VCX standards"
     },
     "Automotive & ADAS": {
       image: industryAutomotive,
-      description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren"
+      description: "Camera systems in vehicles, driver assistance and autonomous driving"
     },
     "Broadcast & HDTV": {
       image: industryBroadcast,
-      description: "Videoübertragung, TV-Kameras, farbgetreue Wiedergabe"
+      description: "Video transmission, TV cameras, color-accurate reproduction"
     },
-    "Sicherheit / Überwachung": {
+    "Security / Surveillance": {
       image: industrySecurity,
-      description: "CCTV-Systeme, Videoüberwachung"
+      description: "CCTV systems, video surveillance"
     },
     "Machine Vision": {
       image: industryMachineVision,
-      description: "Kamerasysteme für Inspektion, Robotik, Qualitätskontrolle"
+      description: "Camera systems for inspection, robotics, quality control"
     },
-    "Medizin / Endoskopie": {
+    "Medical / Endoscopy": {
       image: industryMedical,
-      description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen"
+      description: "Image quality in medical imaging and diagnostic systems"
     },
-    "Scannen & Archivierung": {
+    "Scanning & Archiving": {
       image: industryScanning,
-      description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos"
+      description: "Quality assurance in digitization of documents, books, photos"
     },
     "iQ‑Lab Testing": {
       image: industryLabTesting,
-      description: "Unabhängige Labordienstleistungen für zahlreiche Branchen (z.B. Mobile, Automotive)"
+      description: "Independent laboratory services for numerous industries (e.g. Mobile, Automotive)"
     }
   };
 
@@ -105,111 +105,111 @@ const Navigation = () => {
   const productData = {
     "Charts": {
       image: "/images/custom-chart.png",
-      description: "Hochpräzise Testmuster und Farbcharts für umfassende Bildqualitätsanalyse"
+      description: "High-precision test patterns and color charts for comprehensive image quality analysis"
     },
-    "Geräte": {
+    "Equipment": {
       image: arcturusMainProduct,
-      description: "Professionelle Testausrüstung einschließlich LED-Beleuchtungssystemen und Messgeräten"
+      description: "Professional testing equipment including LED lighting systems and measurement devices"
     },
     "Software": {
       image: iqAnalyzerIntro,
-      description: "Fortschrittliche Softwarelösungen für Bildanalyse, Kalibrierung und Qualitätskontrolle"
+      description: "Advanced software solutions for image analysis, calibration and quality control"
     },
-    "Produktbündel": {
+    "Product Bundles": {
       image: productBundleIeee,
-      description: "Komplette Testlösungen mit Hardware, Software und Zubehör"
+      description: "Complete testing solutions with hardware, software and accessories"
     },
-    "Lösungen": {
+    "Solutions": {
       image: iqLedIllumination,
-      description: "Komplette Beleuchtungs- und Illuminationslösungen für professionelle Testumgebungen"
+      description: "Complete lighting and illumination solutions for professional testing environments"
     },
-    "Zubehör": {
+    "Accessories": {
       image: "/images/chart-case.png",
-      description: "Professionelles Zubehör einschließlich Chart-Koffer, Halterungen und Kalibrierungstools"
+      description: "Professional accessories including chart cases, mounts and calibration tools"
     },
-    "Technologie": {
+    "Technology": {
       image: technology2025,
-      description: "Neueste Innovationen und modernste Technologie in der Bildqualitätsmessung"
+      description: "Latest innovations and cutting-edge technology in image quality measurement"
     },
-    "Schulungen": {
+    "Training": {
       image: trainingMobileTesting,
-      description: "Professionelle Schulungen zu Bildqualitätstests in verschiedenen Branchen - Was muss wie getestet werden? (z.B. Mobile Phones, Automotive, Medical) - Was gibt es an neuen Tests für meine Branche?"
+      description: "Professional training on image quality testing in various industries - What needs to be tested and how? (e.g. Mobile Phones, Automotive, Medical) - What new tests are available for my industry?"
     }
   };
 
   // Solution data mapping  
   const solutionData = {
-    "Kamera-Qualitätsvalidierung": {
+    "Camera Quality Validation": {
       image: industryPhotography,
-      description: "Für Kamerahersteller, die präzise Beleuchtungssysteme und Testcharts benötigen.",
-      subline: "Geeignet für: Consumer & Professional Kameras"
+      description: "For camera manufacturers who need precise lighting systems and test charts.",
+      subline: "Suitable for: Consumer & Professional Cameras"
     },
     "ADAS Testing / Automotive Vision": {
       image: industryAutomotive,
-      description: "Für Entwickler von Fahrerassistenzsystemen, die stabile Beleuchtungsbedingungen benötigen.",
-      subline: "Geeignet für: Automotive Labs, IEEE P2020"
+      description: "For developers of driver assistance systems who need stable lighting conditions.",
+      subline: "Suitable for: Automotive Labs, IEEE P2020"
     },
-    "Testumgebungen für Smartphones & Displays": {
+    "Test Environments for Smartphones & Displays": {
       image: industryMobile,
-      description: "Für OEMs und Forschung bei Tests der Farbwiedergabe und Schärfe.",
-      subline: "Geeignet für: Mobile Industry, VCX Testing"
+      description: "For OEMs and research in color reproduction and sharpness testing.",
+      subline: "Suitable for: Mobile Industry, VCX Testing"
     },
-    "Mikroskopie & Medizinische Bildgebung": {
+    "Microscopy & Medical Imaging": {
       image: industryMedical,
-      description: "Für Medizintechnik & Life Sciences.",
-      subline: "Geeignet für: Medizinische Geräte, Endoskopie"
+      description: "For medical technology & life sciences.",
+      subline: "Suitable for: Medical Devices, Endoscopy"
     },
-    "ISO und IEEE konforme Test-Setups": {
+    "ISO and IEEE Compliant Test Setups": {
       image: industryLabTesting,
-      description: "Für Unternehmen, die standards-konforme Umgebungen benötigen.",
-      subline: "Geeignet für: Standards Compliance, Labs"
+      description: "For companies that need standards-compliant environments.",
+      subline: "Suitable for: Standards Compliance, Labs"
     }
   };
 
   const solutionPackages = {
     "Arcturus HDR Test Bundle": {
       image: arcturusSetupVegaLaptop,
-      description: "HDR‑Testbundle mit Arcturus LED, Vega Software und Testcharts – ideal für Automotive & Mobile.",
-      subline: "Komplettpaket: Beleuchtung + Software + Charts"
+      description: "HDR test bundle with Arcturus LED, Vega software and test charts – ideal for Automotive & Mobile.",
+      subline: "Complete package: Lighting + Software + Charts"
     },
     "Arcturus LED + Vega Software + Test Charts": {
       image: arcturusMainProduct,
-      description: "Komplettlösung für Beleuchtungstests",
+      description: "Complete solution for lighting tests",
       subline: "Hardware + Software + Charts Bundle"
     },
-    "Kamera-Kalibrierungs-Paket": {
+    "Camera Calibration Package": {
       image: "/images/custom-chart.png",
-      description: "Beleuchtungssystem, Charts, Software – speziell für kalibrierte Tests",
-      subline: "Kalibrierungs-Komplettlösung"
+      description: "Lighting system, charts, software – specially for calibrated tests",
+      subline: "Complete calibration solution"
     },
-    "Labor-Komplettlösung": {
+    "Laboratory Complete Solution": {
       image: industryLabTesting,
-      description: "Für Forschungseinrichtungen mit Hardware + Analyse",
-      subline: "Forschungslabor Komplett-Setup"
+      description: "For research institutions with hardware + analysis",
+      subline: "Complete research lab setup"
     },
-    "Spektrale Mess- & Analyse-Set": {
+    "Spectral Measurement & Analysis Set": {
       image: iqAnalyzerIntro,
-      description: "Lichtquelle + Auswertung + Export-Funktionen",
-      subline: "Spektralanalyse Komplett-Kit"
+      description: "Light source + evaluation + export functions",
+      subline: "Complete spectral analysis kit"
     }
   };
 
   // Target groups data mapping
   const targetGroupsData = {
-    "Hersteller": {
+    "Manufacturers": {
       image: industryAutomotive,
-      description: "OEMs und Gerätehersteller, die Bildqualitätslösungen für ihre Produktentwicklung benötigen",
-      subline: "Für: Kamerahersteller, Automotive OEMs, Consumer Electronics"
+      description: "OEMs and device manufacturers who need image quality solutions for their product development",
+      subline: "For: Camera manufacturers, Automotive OEMs, Consumer Electronics"
     },
-    "Zulieferer": {
+    "Suppliers": {
       image: industryMachineVision,
-      description: "Tier-1 und Tier-2 Zulieferer, die Komponenten und Systeme für ihre Kunden validieren",
-      subline: "Für: Automotive Suppliers, Sensor-Hersteller, Komponenten-Lieferanten"
+      description: "Tier-1 and Tier-2 suppliers who validate components and systems for their customers",
+      subline: "For: Automotive Suppliers, Sensor manufacturers, Component suppliers"
     },
-    "Forschungseinrichtungen": {
+    "Research Institutions": {
       image: industryLabTesting,
-      description: "Universitäten und Forschungsinstitute für wissenschaftliche Untersuchungen und Standardentwicklung",
-      subline: "Für: Universitäten, Institute, R&D-Abteilungen"
+      description: "Universities and research institutes for scientific investigations and standards development",
+      subline: "For: Universities, Institutes, R&D departments"
     }
   };
 
@@ -231,24 +231,24 @@ const Navigation = () => {
             <NavigationMenu>
               <NavigationMenuList className="gap-x-8">
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ihre Lösung finden</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Find Your Solution</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
                         <div className="flex gap-6 p-6">
-                        {/* Left Column: Typische Anwendungen */}
+                        {/* Left Column: Typical Applications */}
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Target className="h-6 w-6" />
-                            Typische Anwendungen
+                            Typical Applications
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Kamera-Qualitätsvalidierung")}
+                            onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-5 w-5" />
-                            <span>Kamera-Qualitätsvalidierung</span>
+                            <span>Camera Quality Validation</span>
                           </div>
                           <Link 
                             to="/automotive"
@@ -261,36 +261,36 @@ const Navigation = () => {
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Testumgebungen für Smartphones & Displays")}
+                            onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-6 w-6" />
-                            <span>Testumgebungen für Smartphones & Displays</span>
+                            <span>Test Environments for Smartphones & Displays</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Mikroskopie & Medizinische Bildgebung")}
+                            onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-5 w-5" />
-                            <span>Mikroskopie & Medizinische Bildgebung</span>
+                            <span>Microscopy & Medical Imaging</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("ISO und IEEE konforme Test-Setups")}
+                            onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <CheckCircle className="h-5 w-5" />
-                            <span>ISO und IEEE konforme Test-Setups</span>
+                            <span>ISO and IEEE Compliant Test Setups</span>
                           </div>
                         </div>
                         
                         
-                        {/* Middle Column: Vorkonfigurierte Lösungspakete */}
+                        {/* Middle Column: Pre-configured Solution Packages */}
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Package className="h-6 w-6" />
-                            Lösungspakete
+                            Solution Packages
                           </h4>
                           <Link
                             to="/solution/arcturus-bundle"
@@ -303,60 +303,60 @@ const Navigation = () => {
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Kamera-Kalibrierungs-Paket")}
+                            onMouseEnter={() => setHoveredSolution("Camera Calibration Package")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Settings className="h-5 w-5" />
-                            <span>Kamera-Kalibrierungs-Paket</span>
+                            <span>Camera Calibration Package</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Labor-Komplettlösung")}
+                            onMouseEnter={() => setHoveredSolution("Laboratory Complete Solution")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Microscope className="h-5 w-5" />
-                            <span>Labor-Komplettlösung</span>
+                            <span>Laboratory Complete Solution</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Spektrale Mess- & Analyse-Set")}
+                            onMouseEnter={() => setHoveredSolution("Spectral Measurement & Analysis Set")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <BarChart3 className="h-5 w-5" />
-                            <span>Spektrale Mess- & Analyse-Set</span>
+                            <span>Spectral Measurement & Analysis Set</span>
                           </div>
                         </div>
 
 
-                        {/* Right Column: Zielgruppen */}
+                        {/* Right Column: Target Groups */}
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Users className="h-6 w-6" />
-                            Zielgruppen
+                            Target Groups
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Hersteller")}
+                            onMouseEnter={() => setHoveredSolution("Manufacturers")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Building className="h-5 w-5" />
-                            <span>Hersteller</span>
+                            <span>Manufacturers</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Zulieferer")}
+                            onMouseEnter={() => setHoveredSolution("Suppliers")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <Cog className="h-5 w-5" />
-                            <span>Zulieferer</span>
+                            <span>Suppliers</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Forschungseinrichtungen")}
+                            onMouseEnter={() => setHoveredSolution("Research Institutions")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
                             <GraduationCap className="h-5 w-5" />
-                            <span>Forschungseinrichtungen</span>
+                            <span>Research Institutions</span>
                           </div>
                         </div>
                       </div>

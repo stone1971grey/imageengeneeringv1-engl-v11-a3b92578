@@ -18,22 +18,22 @@ const Footer = () => {
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           {isChartsPage 
-            ? 'Beratung bei Testcharts?' 
+            ? 'Test Chart Consultation?' 
             : isSolutionBundlePage 
-              ? 'Maßgeschneiderte Lösungspakete für Ihre Anwendung'
+              ? 'Customized Solution Packages for Your Application'
             : isAutomotivePage
-              ? 'Automotive Kameratest-Lösungen der nächsten Generation'
-              : 'Bereit, Ihre Vision zu transformieren?'
+              ? 'Next-Generation Automotive Camera Testing Solutions'
+              : 'Ready to Transform Your Vision?'
           }
         </h2>
         <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
           {isChartsPage 
-            ? 'Unsere Experten helfen Ihnen bei der Auswahl der richtigen Testcharts für Ihre spezifischen Anforderungen. Profitieren Sie von unserer langjährigen Erfahrung in der Bildqualitätsanalyse.'
+            ? 'Our experts help you select the right test charts for your specific requirements. Benefit from our years of experience in image quality analysis.'
             : isSolutionBundlePage
-              ? 'Profitieren Sie von unseren kompletten Testlösungen und Kalibrierungspaketen. Wir entwickeln individuelle Lösungen, die perfekt auf Ihre Anforderungen zugeschnitten sind.'
+              ? 'Benefit from our complete testing solutions and calibration packages. We develop individual solutions perfectly tailored to your requirements.'
             : isAutomotivePage
-              ? 'Von ADAS-Kameras bis zu Fahrerassistenzsystemen - unsere spezialisierten Automotive-Testlösungen gewährleisten höchste Sicherheitsstandards. Lassen Sie uns gemeinsam die Zukunft des autonomen Fahrens gestalten.'
-              : 'Lassen Sie uns besprechen, wie unsere Bildverarbeitungslösungen Ihr Unternehmen revolutionieren können. Kontaktieren Sie noch heute unsere Experten.'
+              ? 'From ADAS cameras to driver assistance systems - our specialized automotive testing solutions ensure the highest safety standards. Let us shape the future of autonomous driving together.'
+              : 'Let us discuss how our image processing solutions can revolutionize your business. Contact our experts today.'
           }
         </p>
       </div>
@@ -47,30 +47,30 @@ const Footer = () => {
             <div>
               <h2 className="text-2xl md:text-3xl font-bold mb-4">
                 {isChartsPage 
-                  ? 'Fragen zu Testcharts?' 
+                  ? 'Questions About Test Charts?' 
                   : isSolutionBundlePage 
-                    ? 'Individuelle Lösungspakete gewünscht?'
+                    ? 'Looking for Individual Solution Packages?'
                   : isAutomotivePage
-                    ? 'Automotive Kameratests?'
-                    : 'Sie haben Fragen?'
+                    ? 'Automotive Camera Testing?'
+                    : 'Have Questions?'
                 }<br />
                 {isChartsPage 
-                  ? 'Sprechen Sie mit unseren Chart-Experten.' 
+                  ? 'Speak with Our Chart Experts.' 
                   : isSolutionBundlePage 
-                    ? 'Sprechen Sie mit unseren Lösungsexperten.'
+                    ? 'Speak with Our Solution Experts.'
                   : isAutomotivePage
-                    ? 'Sprechen Sie mit unseren Automotive-Experten.'
-                    : 'Sprechen Sie mit uns.'
+                    ? 'Speak with Our Automotive Experts.'
+                    : 'Speak with Us.'
                 }
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 {isChartsPage 
-                  ? 'Unsere Testchart-Experten beraten Sie gerne bei der Auswahl der optimalen Charts für Ihre Bildqualitätsmessungen und unterstützen Sie bei der Konfiguration Ihrer Testsysteme.'
+                  ? 'Our test chart experts are happy to advise you on selecting the optimal charts for your image quality measurements and support you in configuring your test systems.'
                   : isSolutionBundlePage
-                    ? 'Unsere Lösungsexperten entwickeln maßgeschneiderte Testlösungen und Kalibrierungspakete für Ihre spezifischen Anforderungen. Von der Beratung bis zur Implementierung begleiten wir Sie.'
+                    ? 'Our solution experts develop customized testing solutions and calibration packages for your specific requirements. From consultation to implementation, we accompany you.'
                   : isAutomotivePage
-                    ? 'Unsere Automotive-Spezialisten entwickeln präzise Testverfahren für Fahrzeugkameras, ADAS-Systeme und autonome Fahrfunktionen. Von der IEEE-P2020 Zertifizierung bis zu individuellen Testprotokollen.'
-                    : 'Unsere Experten beraten Sie gerne persönlich zu Ihrer Anwendung oder unterstützen Sie bei der Planung Ihrer Testlösung.'
+                    ? 'Our automotive specialists develop precise testing procedures for vehicle cameras, ADAS systems and autonomous driving functions. From IEEE-P2020 certification to individual test protocols.'
+                    : 'Our experts are happy to advise you personally on your application or support you in planning your test solution.'
                 }
               </p>
             </div>
@@ -84,32 +84,32 @@ const Footer = () => {
               <div className="space-y-2">
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-primary mr-3" />
-                  <span className="text-foreground">Telefon (DE): +49 2273 99 99 1-0</span>
+                  <span className="text-foreground">Phone (DE): +49 2273 99 99 1-0</span>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-primary mr-3" />
-                  <span className="text-foreground">Telefon (USA): +1 408 386 1496</span>
+                  <span className="text-foreground">Phone (USA): +1 408 386 1496</span>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-primary mr-3" />
-                  <span className="text-foreground">Telefon (China): +86 158 8961 9096</span>
+                  <span className="text-foreground">Phone (China): +86 158 8961 9096</span>
                 </div>
               </div>
               
               <div className="flex items-center">
                 <Clock className="h-5 w-5 text-primary mr-3" />
-                <span className="text-foreground">Bürozeiten: Mo–Fr, 9–17 Uhr (CET)</span>
+                <span className="text-foreground">Office Hours: Mon–Fri, 9–5 PM (CET)</span>
               </div>
             </div>
 
             <Button className="bg-[#1f6ae8] hover:bg-[#1a5dc7] text-white px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
               {isChartsPage 
-                ? 'Ihre Frage zu unseren Charts' 
+                ? 'Your Questions About Our Charts' 
                 : isSolutionBundlePage 
-                  ? 'Jetzt beratungstermin vereinbaren'
+                  ? 'Schedule Consultation Now'
                 : isAutomotivePage
-                  ? 'Jetzt Beratungstermin vereinbaren'
-                  : 'Jetzt Demo vereinbaren'
+                  ? 'Schedule Consultation Now'
+                  : 'Schedule Demo Now'
               }
             </Button>
           </div>
@@ -120,26 +120,26 @@ const Footer = () => {
               <div className="flex-shrink-0">
                  <img 
                    src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamAnna : teamLaura}
-                   alt={isChartsPage 
-                     ? "Markus Weber, Technical Chart Specialist" 
-                     : isSolutionBundlePage 
-                       ? "Dr. Stefan Mueller, Experte für Test Lösungen"
-                     : isAutomotivePage
-                       ? "Dr. Anna Hoffmann, Automotive Vision Expert"
-                       : "Laura Neumann, Head of Optical Systems"
-                   }
+                    alt={isChartsPage 
+                      ? "Markus Weber, Technical Chart Specialist" 
+                      : isSolutionBundlePage 
+                        ? "Dr. Stefan Mueller, Test Solutions Expert"
+                      : isAutomotivePage
+                        ? "Dr. Anna Hoffmann, Automotive Vision Expert"
+                        : "Laura Neumann, Head of Optical Systems"
+                    }
                    className="w-[150px] h-[150px] rounded-full object-cover"
                  />
               </div>
               <div className="flex-1">
                 <blockquote className="text-lg text-foreground leading-relaxed mb-4">
                   {isChartsPage 
-                    ? '"Präzise Testcharts sind das Fundament jeder seriösen Bildqualitätsanalyse. Mit über 15 Jahren Erfahrung helfe ich Ihnen dabei, die perfekten Charts für Ihre Messungen zu finden."'
+                    ? '"Precise test charts are the foundation of every serious image quality analysis. With over 15 years of experience, I help you find the perfect charts for your measurements."'
                     : isSolutionBundlePage
-                      ? '"Als Experte für Test Lösungen und Kalibrierungslösungen entwickle ich täglich maßgeschneiderte Pakete für unsere Kunden. Jede Lösung ist einzigartig und perfekt auf die individuellen Anforderungen abgestimmt."'
+                      ? '"As an expert in test solutions and calibration solutions, I develop customized packages for our customers daily. Each solution is unique and perfectly tailored to individual requirements."'
                     : isAutomotivePage
-                      ? '"Sicherheit steht bei Automotive-Anwendungen an erster Stelle. Mit über 12 Jahren Erfahrung in der Fahrzeugkamera-Entwicklung sorge ich dafür, dass jeder Test den höchsten Industriestandards entspricht."'
-                      : '"Was mich jeden Tag begeistert, ist der direkte Einfluss unserer Arbeit auf Bildqualität weltweit. Ob bei Smartphones oder Fahrzeugkameras – unsere Lösungen machen den Unterschied."'
+                      ? '"Safety comes first in automotive applications. With over 12 years of experience in vehicle camera development, I ensure that every test meets the highest industry standards."'
+                      : '"What excites me every day is the direct impact of our work on image quality worldwide. Whether in smartphones or vehicle cameras – our solutions make the difference."'
                   }
                 </blockquote>
                 <cite className="text-muted-foreground not-italic">
@@ -157,9 +157,9 @@ const Footer = () => {
                     {isChartsPage 
                       ? 'Technical Chart Specialist' 
                       : isSolutionBundlePage 
-                        ? 'Experte für Test Lösungen & Kalibrierungslösungen'
+                        ? 'Test Solutions & Calibration Expert'
                       : isAutomotivePage
-                        ? 'Automotive Vision Expert & IEEE-P2020 Spezialist'
+                        ? 'Automotive Vision Expert & IEEE-P2020 Specialist'
                         : 'Head of Optical Systems'
                     }
                   </div>
@@ -176,23 +176,23 @@ const Footer = () => {
         <div className="container mx-auto px-6 py-6">
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">
-              © Image Engineering GmbH & Co. KG – Mitglied der Nynomic Group
+              © Image Engineering GmbH & Co. KG – Member of the Nynomic Group
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                Impressum
+                Legal Notice
               </a>
               <span className="text-muted-foreground">•</span>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                Datenschutz
+                Privacy Policy
               </a>
               <span className="text-muted-foreground">•</span>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                AGB
+                Terms & Conditions
               </a>
               <span className="text-muted-foreground">•</span>
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                Recycling & Entsorgung
+                Recycling & Disposal
               </a>
             </div>
           </div>
