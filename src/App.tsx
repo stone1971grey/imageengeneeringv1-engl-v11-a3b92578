@@ -17,6 +17,7 @@ import Charts from "./pages/Charts";
 import ChartDetail from "./pages/ChartDetail";
 import Cart from "./pages/Cart";
 import Events from "./pages/Events";
+import Styleguide from "./pages/Styleguide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/products/charts/:slug" element={<ChartDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/styleguide" element={<Styleguide />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
