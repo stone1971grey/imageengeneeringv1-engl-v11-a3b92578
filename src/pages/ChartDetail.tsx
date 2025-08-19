@@ -174,7 +174,7 @@ const ChartDetail = () => {
             {/* Variants */}
             {chart.variants.length > 0 && (
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Optionen</h3>
+                <h3 className="text-lg font-semibold">Options</h3>
                 {chart.variants.map(variant => (
                   <div key={variant.name}>
                     <label className="text-sm font-medium mb-2 block">{variant.name}</label>
@@ -185,7 +185,7 @@ const ChartDetail = () => {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder={`${variant.name} wählen`} />
+                        <SelectValue placeholder={`Select ${variant.name}`} />
                       </SelectTrigger>
                       <SelectContent>
                         {variant.options.map(option => (
@@ -204,27 +204,27 @@ const ChartDetail = () => {
             <div className="p-4 bg-muted/50 rounded-lg">
               {chart.price_mode === 'rfq' ? (
                 <div>
-                  <span className="text-2xl font-bold text-muted-foreground">Preis auf Anfrage</span>
+                  <span className="text-2xl font-bold text-muted-foreground">Price on Request</span>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Kontaktieren Sie uns für ein individuelles Angebot
+                    Contact us for an individual quote
                   </p>
                 </div>
               ) : currentPrice ? (
                 <div>
                   <span className="text-2xl font-bold text-primary">
-                    {currentPrice.toLocaleString('de-DE')}€
+                    {currentPrice.toLocaleString('en-US')}€
                   </span>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Preis inkl. MwSt., zzgl. Versand
+                    Price incl. VAT, plus shipping
                   </p>
                 </div>
               ) : (
                 <div>
                   <span className="text-2xl font-bold text-primary">
-                    ab {chart.price_from?.toLocaleString('de-DE')}€
+                    from {chart.price_from?.toLocaleString('en-US')}€
                   </span>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Preis abhängig von Größe/Material
+                    Price depends on size/material
                   </p>
                 </div>
               )}
@@ -238,18 +238,18 @@ const ChartDetail = () => {
                   disabled={chart.variants.some(v => !selectedVariants[v.name])}
                 >
                   <ShoppingCart className="w-4 h-4 mr-2" />
-                  {chart.price_mode === 'rfq' ? 'Angebot anfragen' : 'In den Warenkorb'}
+                  {chart.price_mode === 'rfq' ? 'Request Quote' : 'Add to Cart'}
                 </Button>
                 <Button variant="outline">
                   <FileText className="w-4 h-4 mr-2" />
-                  Angebot anfragen
+                  Request Quote
                 </Button>
               </div>
               
               {chart.downloads.length > 0 && (
                 <Button variant="ghost" className="w-full">
                   <Download className="w-4 h-4 mr-2" />
-                  Datenblatt herunterladen
+                  Download Datasheet
                 </Button>
               )}
             </div>
@@ -259,16 +259,16 @@ const ChartDetail = () => {
         {/* Product Details Tabs */}
         <Tabs defaultValue="description" className="mb-12">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="description">Beschreibung</TabsTrigger>
-            <TabsTrigger value="technical">Technische Daten</TabsTrigger>
-            <TabsTrigger value="compatibility">Kompatibilität</TabsTrigger>
+            <TabsTrigger value="description">Description</TabsTrigger>
+            <TabsTrigger value="technical">Technical Data</TabsTrigger>
+            <TabsTrigger value="compatibility">Compatibility</TabsTrigger>
             <TabsTrigger value="downloads">Downloads</TabsTrigger>
           </TabsList>
           
           <TabsContent value="description" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Produktbeschreibung</CardTitle>
+                <CardTitle>Product Description</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
@@ -279,7 +279,7 @@ const ChartDetail = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-semibold mb-3">Anwendungsbereiche</h4>
+                    <h4 className="font-semibold mb-3">Application Areas</h4>
                     <ul className="space-y-1">
                       {chart.applications.map(app => (
                         <li key={app} className="text-sm text-muted-foreground flex items-center">
@@ -291,7 +291,7 @@ const ChartDetail = () => {
                   </div>
                   
                   <div>
-                    <h4 className="font-semibold mb-3">Verfügbare Materialien</h4>
+                    <h4 className="font-semibold mb-3">Available Materials</h4>
                     <ul className="space-y-1">
                       {chart.materials.map(material => (
                         <li key={material} className="text-sm text-muted-foreground flex items-center">
@@ -309,12 +309,12 @@ const ChartDetail = () => {
           <TabsContent value="technical" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Technische Spezifikationen</CardTitle>
+                <CardTitle>Technical Specifications</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-semibold mb-3">Verfügbare Größen</h4>
+                    <h4 className="font-semibold mb-3">Available Sizes</h4>
                     <ul className="space-y-2">
                       {chart.sizes.map(size => (
                         <li key={size} className="text-sm text-muted-foreground">
@@ -342,7 +342,7 @@ const ChartDetail = () => {
           <TabsContent value="compatibility" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Software & System Kompatibilität</CardTitle>
+                <CardTitle>Software & System Compatibility</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -359,7 +359,7 @@ const ChartDetail = () => {
           <TabsContent value="downloads" className="mt-6">
             <Card>
               <CardHeader>
-                <CardTitle>Downloads & Dokumentation</CardTitle>
+                <CardTitle>Downloads & Documentation</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -409,7 +409,7 @@ const ChartDetail = () => {
                         <span className="font-semibold text-muted-foreground">On Request</span>
                       ) : (
                         <span className="font-semibold text-primary">
-                          from ${relatedChart.price_from}
+                          from €{relatedChart.price_from}
                         </span>
                       )}
                       <Button size="sm" asChild>

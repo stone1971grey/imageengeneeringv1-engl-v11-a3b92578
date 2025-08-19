@@ -43,13 +43,13 @@ const Charts = () => {
     const filters: Array<{type: string, value: string, remove: () => void}> = [];
     
     selectedCategories.forEach(cat => filters.push({
-      type: 'Kategorie',
+      type: 'Category',
       value: cat,
       remove: () => setSelectedCategories(prev => prev.filter(c => c !== cat))
     }));
     
     selectedApplications.forEach(app => filters.push({
-      type: 'Anwendung', 
+      type: 'Application', 
       value: app,
       remove: () => setSelectedApplications(prev => prev.filter(a => a !== app))
     }));
@@ -423,7 +423,7 @@ const Charts = () => {
               {/* Category Filter */}
               <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
                 <h3 className="text-[#000000] font-medium mb-2 text-sm">
-                  Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
+                  Category {selectedCategories.length > 0 && `(${selectedCategories.length})`}
                 </h3>
                 <div className="space-y-0.5 max-h-32 overflow-y-auto">
                   {categories.map(category => (
@@ -447,7 +447,7 @@ const Charts = () => {
               {/* Application Filter */}
               <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
                 <h3 className="text-[#000000] font-medium mb-2 text-sm">
-                  Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
+                  Application {selectedApplications.length > 0 && `(${selectedApplications.length})`}
                 </h3>
                 <div className="space-y-0.5 max-h-32 overflow-y-auto">
                   {applications.map(application => (
@@ -471,7 +471,7 @@ const Charts = () => {
               {/* Formats Filter */}
               <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
                 <h3 className="text-[#000000] font-medium mb-2 text-sm">
-                  Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
+                  Format/Size {selectedFormats.length > 0 && `(${selectedFormats.length})`}
                 </h3>
                 <div className="space-y-0.5 max-h-32 overflow-y-auto">
                   {formats.map(format => (
@@ -494,7 +494,7 @@ const Charts = () => {
 
               {/* Price Filter */}
               <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-                <h3 className="text-[#000000] font-medium mb-2 text-sm">Preisbereich (EUR)</h3>
+                <h3 className="text-[#000000] font-medium mb-2 text-sm">Price Range (EUR)</h3>
                 <div className="space-y-2">
                   <Slider
                     value={priceRange}
@@ -539,14 +539,14 @@ const Charts = () => {
             <div className="flex items-center gap-2">
               {activeFiltersCount > 0 && (
                 <Badge variant="outline" className="text-[#3464e3] border-[#3464e3]">
-                  {activeFiltersCount} aktiv
+                  {activeFiltersCount} active
                 </Badge>
               )}
             </div>
 
             {/* Results Count */}
             <div className="text-[#000000] font-semibold bg-gray-100 px-3 py-2 rounded-md">
-              {filteredCharts.length} Charts gefunden
+              {filteredCharts.length} Charts found
             </div>
           </div>
 
@@ -554,7 +554,7 @@ const Charts = () => {
           {activeFilters.length > 0 && (
             <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-[#000000] font-medium">Aktive Filter:</span>
+                <span className="text-sm text-[#000000] font-medium">Active Filters:</span>
                 {activeFilters.map((filter, index) => (
                   <Badge key={index} variant="secondary" className="text-xs bg-[#3464e3] text-white hover:bg-[#2852d1]">
                     {filter.type}: {filter.value}
@@ -572,7 +572,7 @@ const Charts = () => {
                   onClick={clearAllFilters}
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  Alle löschen
+                  Clear All
                 </Button>
               </div>
             </div>
@@ -624,11 +624,11 @@ const Charts = () => {
                   {/* Price */}
                   <div className="mb-4">
                     {chart.price_mode === 'rfq' ? (
-                      <span className="text-lg font-semibold text-muted-foreground">Auf Anfrage</span>
+                      <span className="text-lg font-semibold text-muted-foreground">On Request</span>
                     ) : chart.price_from ? (
-                      <span className="text-lg font-semibold text-primary">
-                        ab {chart.price_from}€
-                      </span>
+                    <span className="text-lg font-semibold text-primary">
+                      from {chart.price_from}€
+                    </span>
                     ) : null}
                   </div>
 
@@ -646,7 +646,7 @@ const Charts = () => {
                       style={chart.price_mode !== 'rfq' ? { backgroundColor: '#3464e3', color: 'white' } : {}}
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
-                      {chart.price_mode === 'rfq' ? 'Anfragen' : 'In den Warenkorb'}
+                      {chart.price_mode === 'rfq' ? 'Request Quote' : 'Add to Cart'}
                     </Button>
                   </div>
                 </CardContent>
@@ -656,16 +656,16 @@ const Charts = () => {
 
           {filteredCharts.length === 0 && (
             <div className="text-center py-16">
-              <h3 className="text-xl font-semibold mb-2 text-[#000000]">Keine Charts gefunden</h3>
+              <h3 className="text-xl font-semibold mb-2 text-[#000000]">No Charts Found</h3>
               <p className="text-gray-600 mb-4">
-                Versuchen Sie es mit anderen Suchbegriffen oder Filtern.
+                Try different search terms or filters.
               </p>
               <Button 
                 onClick={clearAllFilters} 
                 variant="outline" 
                 className="border-[#3464e3] text-[#3464e3] hover:bg-[#3464e3] hover:text-white"
               >
-                Alle Filter zurücksetzen
+                Reset All Filters
               </Button>
             </div>
           )}

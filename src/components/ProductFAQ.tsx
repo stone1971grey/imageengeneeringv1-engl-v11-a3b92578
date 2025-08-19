@@ -18,9 +18,9 @@ interface ProductFAQProps {
 }
 
 const ProductFAQ: React.FC<ProductFAQProps> = ({
-  title = "Häufige Fragen",
+  title = "Frequently Asked Questions",
   faqs,
-  productName = "Produkt"
+  productName = "Product"
 }) => {
   // Generate JSON-LD schema for SEO
   const faqSchema = {
