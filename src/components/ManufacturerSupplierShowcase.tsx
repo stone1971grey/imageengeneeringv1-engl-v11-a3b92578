@@ -21,19 +21,8 @@ const ManufacturerSupplierShowcase = () => {
 
         {/* Main Workflow Layout */}
         <div className="relative">
-          {/* Central Workflow Area */}
-          <div className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 z-10">
-            {/* Connection Arrows */}
-            <div className="absolute left-1/4 top-1/2 transform -translate-y-1/2 -translate-x-12">
-              <ArrowRight className="w-8 h-8 text-blue-500" />
-            </div>
-            <div className="absolute right-1/4 top-1/2 transform -translate-y-1/2 translate-x-12">
-              <ArrowRight className="w-8 h-8 text-blue-500" />
-            </div>
-          </div>
-
           {/* Two Column Layout */}
-          <div className="grid lg:grid-cols-2 gap-16 relative z-0">
+          <div className="grid lg:grid-cols-2 gap-16">
             
             {/* Hersteller (OEM) Section */}
             <Card className="bg-gray-50 border-2 border-gray-200 shadow-lg">
