@@ -456,13 +456,13 @@ const SolutionArcturusBundle = () => {
                   <div className="bg-white rounded-lg p-8 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-semibold text-gray-900">
-                        System-Blockdiagramm
+                        System Block Diagram
                       </h3>
                       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm" className="gap-2">
                             <Expand className="h-4 w-4" />
-                            Vergrößern
+                            Enlarge
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-6xl w-full h-[90vh] bg-white">
@@ -475,9 +475,9 @@ const SolutionArcturusBundle = () => {
                             <X className="h-4 w-4" />
                           </Button>
                           <DialogHeader>
-                            <DialogTitle>System-Blockdiagramm - Detailansicht</DialogTitle>
+                            <DialogTitle>System Block Diagram - Detail View</DialogTitle>
                             <DialogDescription>
-                              Detaillierte Ansicht der technischen System-Architektur des Arcturus HDR Test Bundle
+                              Detailed view of the technical system architecture of the Arcturus HDR Test Bundle
                             </DialogDescription>
                           </DialogHeader>
                           <div className="w-full h-full overflow-auto bg-white p-4">
