@@ -341,32 +341,32 @@ const Charts = () => {
 
       {/* Search and Filter Section */}
       <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-6 py-2">
+        <div className="container mx-auto px-6 py-1">
           {/* Header */}
-          <div className="mb-3 mt-4">
+          <div className="mb-2 mt-2">
             <h2 className="text-2xl font-semibold text-[#000000] mb-1">Find and Sort Your Perfect Test Charts</h2>
             <p className="text-gray-600 text-sm">Use our filters and search function for precise search results</p>
           </div>
           
-          {/* Search Bar - Full Width */}
-          <div className="mb-3">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
-              <Input
-                placeholder="Search by title, SKU or tags..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-2 text-base bg-white text-[#000000] border-gray-300 focus:border-[#3464e3] focus:ring-[#3464e3]"
-              />
+          {/* Search Bar and Filter Button - Same Row */}
+          <div className="flex gap-3 items-start mb-2">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                <Input
+                  placeholder="Search by title, SKU or tags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 py-2 text-base bg-white text-[#000000] border-gray-300 focus:border-[#3464e3] focus:ring-[#3464e3] h-10"
+                />
+              </div>
             </div>
-          </div>
-
-          {/* Filter Toggle Button */}
-          <div className="flex items-center justify-start mb-3">
+            
+            {/* Filter Toggle Button - Aligned with search */}
             <Button
               variant="outline"
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className="flex items-center gap-2 border-gray-300 hover:bg-gray-50"
+              className="flex items-center gap-2 border-gray-300 hover:bg-gray-50 h-10 px-4"
             >
               <Filter className="w-4 h-4" />
               {filtersOpen ? 'Hide Filter' : 'Show Filter'}
