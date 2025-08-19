@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Download, Settings, Trash2, ExternalLink, Play } from "lucide-react";
+import { ArrowRight, Download, Settings, Trash2, ExternalLink, Play, Palette } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
@@ -12,7 +13,18 @@ const Styleguide = () => {
         <div className="pt-60 pb-16">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Style Guide</h1>
-          <p className="text-xl text-gray-600 mb-12">All button variants and sizes used in the application</p>
+          <p className="text-xl text-gray-600 mb-8">All button variants and sizes used in the application</p>
+          
+          {/* Quick Navigation */}
+          <div className="flex gap-4 mb-12">
+            <Link to="/icons-styleguide">
+              <Button variant="outline" className="group">
+                <Palette className="w-4 h-4 mr-2" />
+                View Icons Styleguide
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+          </div>
           
           {/* Button Variants */}
           <section className="mb-16">

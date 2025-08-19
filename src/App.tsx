@@ -18,6 +18,7 @@ import ChartDetail from "./pages/ChartDetail";
 import Cart from "./pages/Cart";
 import Events from "./pages/Events";
 import Styleguide from "./pages/Styleguide";
+import IconsStyleguide from "./pages/IconsStyleguide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/cart" element={<Cart />} />
           <Route path="/events" element={<Events />} />
           <Route path="/styleguide" element={<Styleguide />} />
+          <Route path="/icons-styleguide" element={<IconsStyleguide />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
