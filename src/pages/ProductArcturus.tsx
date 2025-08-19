@@ -557,7 +557,7 @@ const ProductArcturus = () => {
           </div>
           
           <div className="mt-6 text-center">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8">
+            <Button variant="secondary" className="px-8">
               Request Detailed Comparison
             </Button>
           </div>
@@ -804,8 +804,7 @@ const ProductArcturus = () => {
                 Complete German datasheet with technical specifications
               </CardDescription>
               <Button 
-                variant="outline" 
-                className="border-[#3D7BA2] text-[#3D7BA2] hover:bg-[#3D7BA2] hover:text-white"
+                variant="technical"
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Arcturus_Lightsource-Datenblatt.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -826,8 +825,7 @@ const ProductArcturus = () => {
                 Complete English datasheet with technical specifications
               </CardDescription>
               <Button 
-                variant="outline" 
-                className="border-[#3D7BA2] text-[#3D7BA2] hover:bg-[#3D7BA2] hover:text-white"
+                variant="technical"
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Arcturus_Lightsource-Datasheet.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -848,8 +846,7 @@ const ProductArcturus = () => {
                 German datasheet for Lightcube Controller specifications
               </CardDescription>
               <Button 
-                variant="outline" 
-                className="border-[#3D7BA2] text-[#3D7BA2] hover:bg-[#3D7BA2] hover:text-white"
+                variant="technical"
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Lightcube-Controller-Datenblatt.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -870,8 +867,7 @@ const ProductArcturus = () => {
                 English datasheet for Lightcube Controller specifications
               </CardDescription>
               <Button 
-                variant="outline" 
-                className="border-[#3D7BA2] text-[#3D7BA2] hover:bg-[#3D7BA2] hover:text-white"
+                variant="technical"
                 onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Lightcube-Controller-Datasheet.pdf')}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -882,18 +878,6 @@ const ProductArcturus = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="bg-[#3D7BA2] rounded-xl text-white text-center p-12">
-          <h2 className="text-3xl font-bold mb-4">Speak with Our Lighting Specialists</h2>
-          <p className="text-xl mb-8 opacity-90">
-            Get expert advice on configuring Arcturus for your specific testing requirements.
-          </p>
-          <Button className="bg-white text-[#3D7BA2] hover:bg-gray-50 px-8 py-3 text-lg font-semibold">
-            Schedule Consultation
-          </Button>
-        </div>
-      </section>
       <Footer />
       </div>
     </div>
