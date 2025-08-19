@@ -10,7 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
-import { Search, Filter, ShoppingCart, FileText, X, Menu } from "lucide-react";
+import { Search, Filter, ShoppingCart, FileText, X, Menu, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { charts, categories, applications, standards, materials, formats } from "@/data/charts";
 import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
@@ -314,17 +314,19 @@ const Charts = () => {
                 size="lg" 
                 onClick={scrollToCharts}
                 variant="decision"
-                className="text-white px-8"
+                className="text-white px-8 group"
               >
                 Explore All Charts
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button 
                 size="lg" 
                 onClick={scrollToFooterExpert}
                 variant="contact"
-                className="text-white px-8"
+                className="text-white px-8 group"
               >
                 Request Consultation
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
           </div>
