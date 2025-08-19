@@ -208,13 +208,13 @@ const Styleguide = () => {
                   <p className="text-sm text-gray-500">Main landing actions</p>
                 </div>
                 <div className="flex gap-4">
-                  <Button variant="decision" size="lg">
+                  <Button variant="decision" size="lg" className="group">
                     Discover Charts
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
-                  <Button variant="outline" size="lg">
+                  <Button variant="technical" size="lg" className="group">
                     Watch Demo
-                    <Play className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </div>
