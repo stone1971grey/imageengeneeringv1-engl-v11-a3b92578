@@ -104,9 +104,9 @@ const StandardsExpertise = () => {
             {organizations.map((org, index) => (
               <Card key={index} className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 relative">
                 <CardContent className="p-6 text-center">
-                  <div className="w-[90px] h-[90px] bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-200 overflow-hidden">
+                  <div className="w-[90px] h-[90px] flex items-center justify-center mx-auto mb-4">
                     {org.logo ? (
-                      <img src={org.logo} alt={org.name} className="w-[60px] h-[60px] object-contain" />
+                      <img src={org.logo} alt={org.name} className="w-[90px] h-[90px] object-contain" />
                     ) : (
                       <span className="text-xl font-bold text-blue-600">{org.name}</span>
                     )}
