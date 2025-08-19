@@ -41,13 +41,13 @@ export const charts: Chart[] = [
     sku: 'TEXX',
     heroImage: 'https://www.image-engineering.de/content/products/charts/tex/images/Custom_chart.png',
     gallery: ['https://www.image-engineering.de/content/products/charts/tex/images/Custom_chart.png'],
-    excerpt: 'Individuelle Testchart-Erstellung – maßgeschneidert für Ihre spezifischen Testanforderungen.',
+    excerpt: 'Custom test chart creation – tailored to your specific testing requirements.',
     description: "Looking for a custom test chart? We currently produce 250+ test charts that cover the full spectrum of image quality testing. These charts cover everything from a basic ColorChecker to advanced OECF charts for automotive camera testing. Nevertheless, we understand that we can't cover every camera test requirement to satisfy all individual performance checks, so we offer the opportunity to create custom charts using the experience and skills of our in-house chart design team. How to create a custom chart? You can submit your custom chart request by downloading and filling out the form below and then submitting it to our support team. Please note that not all layout specifications are possible. If that's the case with your design, our team will assist you with finding an alternate layout that can be printed. We look forward to helping you with all of your test chart needs. Contact our support team at: support@image-engineering.de",
     standards: ['Custom Design'],
-    applications: ['Alle Anwendungen', 'Spezialanforderungen'],
-    categories: ['Kundenspezifisch', 'Design Service'],
-    materials: ['Nach Anforderung'],
-    sizes: ['Kundenspezifisch'],
+    applications: ['All Applications', 'Special Requirements'],
+    categories: ['Custom', 'Design Service'],
+    materials: ['On Request'],
+    sizes: ['Custom'],
     variants: [],
     price_mode: 'rfq',
     currency: 'EUR',
@@ -55,11 +55,11 @@ export const charts: Chart[] = [
       { name: 'Custom Chart Request Form', url: '#', type: 'PDF' },
       { name: 'Datenblatt', url: '#', type: 'PDF' }
     ],
-    compatibility: ['Alle Systeme'],
-    badges: ['Kundenspezifisch', 'Design Service'],
+    compatibility: ['All Systems'],
+    badges: ['Custom', 'Design Service'],
     seo: {
-      title: 'TEXX - Individuelle Testchart-Erstellung',
-      description: 'Maßgeschneiderte Testchart-Lösungen für spezifische Testanforderungen. Über 250 Charts verfügbar, individuelle Designs möglich.'
+      title: 'TEXX - Custom Test Chart Creation',
+      description: 'Customized test chart solutions for specific testing requirements. Over 250 charts available, custom designs possible.'
     }
   },
   {
@@ -1437,7 +1437,7 @@ export const charts: Chart[] = [
 ];
 
 export const categories = [
-  'Kundenspezifisch',
+  'Custom',
   'Low-Light',
   'Multipurpose',
   'Ultra-Wide',
@@ -1675,7 +1675,7 @@ export const materials = [
 ];
 
 export const formats = [
-  'Kundenspezifisch',
+  'Custom',
   'Standard',
   'Large Format',
   'A2',

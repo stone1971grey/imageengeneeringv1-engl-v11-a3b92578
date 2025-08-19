@@ -367,7 +367,7 @@ const Charts = () => {
               className="flex items-center gap-2 border-gray-300 hover:bg-gray-50"
             >
               <Filter className="w-4 h-4" />
-              Filter {filtersOpen ? 'hide' : 'show'}
+              {filtersOpen ? 'Hide Filter' : 'Show Filter'}
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-1 bg-[#3464e3] text-white">
                   {activeFiltersCount}
