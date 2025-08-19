@@ -6,6 +6,7 @@ import teamMarkus from "@/assets/team-markus-color.jpg";
 import teamStefan from "@/assets/team-stefan-color.jpg";
 import teamAnna from "@/assets/team-anna-automotive.jpg";
 import teamThomas from "@/assets/team-thomas-lighting.jpg";
+import trainingInstructor from "@/assets/training-instructor.jpg";
 
 const Footer = () => {
   const location = useLocation();
@@ -13,6 +14,7 @@ const Footer = () => {
   const isSolutionBundlePage = location.pathname.startsWith('/solution/');
   const isAutomotivePage = location.pathname === '/automotive';
   const isArcturusPage = location.pathname === '/product/arcturus';
+  const isEventsPage = location.pathname === '/events';
 
   return (
     <footer id="footer" className="bg-background border-t border-border">
@@ -27,6 +29,8 @@ const Footer = () => {
               ? 'Next-Generation Automotive Camera Testing Solutions'
             : isArcturusPage
               ? 'Professional LED Lighting Solutions for Testing'
+            : isEventsPage
+              ? 'Need Training?'
               : 'Ready to Transform Your Vision?'
           }
         </h2>
@@ -39,6 +43,8 @@ const Footer = () => {
               ? 'From ADAS cameras to driver assistance systems - our specialized automotive testing solutions ensure the highest safety standards. Let us shape the future of autonomous driving together.'
             : isArcturusPage
               ? 'From high-intensity LED systems to precision lighting control - our Arcturus specialists ensure optimal illumination for your most demanding testing scenarios. Maximum luminance meets unmatched stability.'
+            : isEventsPage
+              ? 'Ask our team for a training near you. Our experienced instructors provide hands-on workshops and seminars worldwide, helping you master the latest testing technologies and industry standards.'
               : 'Let us discuss how our image processing solutions can revolutionize your business. Contact our experts today.'
           }
         </p>
@@ -60,6 +66,8 @@ const Footer = () => {
                     ? 'Automotive Camera Testing?'
                   : isArcturusPage
                     ? 'Questions About LED Lighting Systems?'
+                  : isEventsPage
+                    ? 'Looking for Training & Workshops?'
                     : 'Have Questions?'
                 }<br />
                 {isChartsPage 
@@ -70,6 +78,8 @@ const Footer = () => {
                     ? 'Speak with Our Automotive Experts.'
                   : isArcturusPage
                     ? 'Speak with Our Lighting Specialists.'
+                  : isEventsPage
+                    ? 'Speak with Our Training Team.'
                     : 'Speak with Us.'
                 }
               </h2>
@@ -82,6 +92,8 @@ const Footer = () => {
                     ? 'Our automotive specialists develop precise testing procedures for vehicle cameras, ADAS systems and autonomous driving functions. From IEEE-P2020 certification to individual test protocols.'
                   : isArcturusPage
                     ? 'Our lighting specialists design optimal LED illumination systems for your testing requirements. From maximum luminance configuration to precise spectral control - we ensure your Arcturus system delivers perfect results.'
+                  : isEventsPage
+                    ? 'Our training specialists organize professional workshops, seminars and hands-on training sessions worldwide. From basic camera testing to advanced ADAS certification - we bring expertise directly to your location.'
                     : 'Our experts are happy to advise you personally on your application or support you in planning your test solution.'
                 }
               </p>
@@ -118,6 +130,8 @@ const Footer = () => {
                   ? 'Schedule Consultation Now'
                 : isArcturusPage
                   ? 'Lighting Consultation Now'
+                : isEventsPage
+                  ? 'Request Training Information'
                   : 'Get in contact with us'
               }
             </Button>
@@ -128,7 +142,7 @@ const Footer = () => {
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0">
                  <img 
-                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamAnna : isArcturusPage ? teamThomas : teamLaura}
+                   src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamAnna : isArcturusPage ? teamThomas : isEventsPage ? trainingInstructor : teamLaura}
                     alt={isChartsPage 
                       ? "Markus Weber, Technical Chart Specialist" 
                       : isSolutionBundlePage 
@@ -137,6 +151,8 @@ const Footer = () => {
                         ? "Dr. Anna Hoffmann, Automotive Vision Expert"
                       : isArcturusPage
                         ? "Dr. Thomas Lichtner, LED Lighting Technology Specialist"
+                      : isEventsPage
+                        ? "Training Specialist, Professional Instructor"
                         : "Laura Neumann, Head of Optical Systems"
                     }
                    className="w-[150px] h-[150px] rounded-full object-cover"
@@ -152,6 +168,8 @@ const Footer = () => {
                       ? '"Safety comes first in automotive applications. With over 12 years of experience in vehicle camera development, I ensure that every test meets the highest industry standards."'
                     : isArcturusPage
                       ? '"Maximum luminance with perfect stability - that\'s what sets Arcturus apart. With over 18 years in LED technology development, I ensure every system delivers the precise lighting conditions your sensors demand."'
+                    : isEventsPage
+                      ? '"Training is the key to unlocking the full potential of testing technology. I have conducted over 200 workshops worldwide and love sharing knowledge that transforms how teams approach image quality testing."'
                       : '"What excites me every day is the direct impact of our work on image quality worldwide. Whether in smartphones or vehicle cameras – our solutions make the difference."'
                   }
                 </blockquote>
@@ -165,6 +183,8 @@ const Footer = () => {
                         ? 'Dr. Anna Hoffmann'
                       : isArcturusPage
                         ? 'Dr. Thomas Lichtner'
+                      : isEventsPage
+                        ? 'Michael Training'
                         : 'Laura Neumann'
                     }
                   </div>
@@ -177,6 +197,8 @@ const Footer = () => {
                         ? 'Automotive Vision Expert & IEEE-P2020 Specialist'
                       : isArcturusPage
                         ? 'LED Lighting Technology Specialist & Arcturus Expert'
+                      : isEventsPage
+                        ? 'Head of Training & Professional Development'
                         : 'Head of Optical Systems'
                     }
                   </div>
