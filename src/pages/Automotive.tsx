@@ -209,7 +209,7 @@ const Automotive = () => {
 
               <div className="mb-12">
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Aktuelle Arbeitsgruppen, z.B. <a href="https://sagroups.ieee.org/2020/" className="text-blue-600 hover:underline">IEEE-P2020</a>, arbeiten an einem international anerkannten Bildqualitätstest-Standard für automotive Kamerasysteme. Die Veröffentlichung von IEEE-P2020 wird für Ende 2024 erwartet. Derzeit gibt es keine branchenweiten Teststandards. Die Entwicklung des camPAS-Tests entstand durch die Unterstützung unserer Kunden bei der Suche nach und Erstellung von Testmethoden, die unvoreingenommene Ergebnisse liefern. Als aktives Mitglied von IEEE-P2020 können wir die neuesten automotive Kameratest-Methoden und -Verfahren aus dem Standard direkt implementieren, um camPAS relevant und aktuell zu halten.
+                  Current working groups, e.g. <a href="https://sagroups.ieee.org/2020/" className="text-blue-600 hover:underline">IEEE-P2020</a>, are working on an internationally recognized image quality testing standard for automotive camera systems. The publication of IEEE-P2020 is expected by the end of 2024. Currently, there are no industry-wide testing standards. The development of the camPAS test arose from supporting our customers in finding and creating test methods that deliver unbiased results. As an active member of IEEE-P2020, we can directly implement the latest automotive camera testing methods and procedures from the standard to keep camPAS relevant and current.
                 </p>
               </div>
 
@@ -218,15 +218,15 @@ const Automotive = () => {
 
               {/* What tests are included */}
               <div className="bg-blue-50 rounded-2xl p-8">
-                <h4 className="text-2xl font-bold text-gray-900 mb-6">Welche Tests sind in camPAS enthalten?</h4>
+                <h4 className="text-2xl font-bold text-gray-900 mb-6">What tests are included in camPAS?</h4>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                  Der Unterschied zwischen einem camPAS-Test und einer Standardtestmethode ist die Möglichkeit, den camPAS-Test vollständig an die Kundenspezifikationen anzupassen. Wir bewerten Kamerasysteme anhand verschiedener Bildqualitäts-KPIs oder nutzen Tests zur Analyse der Glätte oder Fehleranfälligkeit des Sensors.
+                  The difference between a camPAS test and a standard test method is the ability to fully customize the camPAS test to customer specifications. We evaluate camera systems based on various image quality KPIs or use tests to analyze sensor smoothness or error susceptibility.
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-6">
-                  Einige der häufigsten Bildqualitäts-KPIs, die wir testen, umfassen Kontrastübertragungsgenauigkeit (CTA), modulierte Lichtminderungswahrscheinlichkeit (Flimmern), hoher Dynamikbereich (HDR), visuelle Bewertung der Schwachlichtleistung etc. Diese Tests werden mit den neuesten Techniken (wie sie in IEEE-P2020 beschrieben sind) und Geräten durchgeführt, um höchste Ergebnisse zu gewährleisten.
+                  Some of the most common image quality KPIs we test include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (Flicker), High Dynamic Range (HDR), visual assessment of low-light performance, etc. These tests are performed using the latest techniques (as described in IEEE-P2020) and equipment to ensure the highest results.
                 </p>
                 <p className="text-gray-700 leading-relaxed mb-8">
-                  Es ist wichtig zu beachten, dass diese KPIs nur Beispiele sind und wir eine umfangreiche Palette von KPIs für Kamera- und Sensorsysteme testen. camPAS-Tests sind keine vorgefertigten Tests und erfordern stattdessen eine Beratung mit unserem Testlabor, um sicherzustellen, dass wir einen Test entwerfen, der den Kundenanforderungen entspricht.
+                  It is important to note that these KPIs are just examples and we test an extensive range of KPIs for camera and sensor systems. camPAS tests are not pre-made tests and instead require consultation with our test lab to ensure we design a test that meets customer requirements.
                 </p>
                 
                 <div className="text-center">
@@ -234,7 +234,7 @@ const Automotive = () => {
                     size="lg"
                     className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
                   >
-                    iQ-Lab für camPAS-Beratung kontaktieren
+                    Contact iQ-Lab for camPAS Consultation
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </div>
@@ -242,34 +242,34 @@ const Automotive = () => {
 
               {/* IEEE-P2020 Product Bundle Section */}
               <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mt-12">
-                <h4 className="text-2xl font-bold text-gray-900 mb-6">IEEE-P2020 Produktpaket</h4>
+                <h4 className="text-2xl font-bold text-gray-900 mb-6">IEEE-P2020 Product Package</h4>
                 
                 <p className="text-gray-700 leading-relaxed mb-6">
-                  <a href="https://sagroups.ieee.org/2020/" className="text-blue-600 hover:underline">IEEE-P2020</a> etabliert einen international anerkannten Standard für automotive und ADAS-Anwendungen. Dieser Standard behandelt die grundlegenden KPIs, die zur Bildqualität automotive Kamerasysteme beitragen. Im Gegensatz zu den meisten Kameraindustrien sind automotive und ADAS-Anwendungen einzigartig, da sie direkt die Verbrauchersicherheit betreffen.
+                  <a href="https://sagroups.ieee.org/2020/" className="text-blue-600 hover:underline">IEEE-P2020</a> establishes an internationally recognized standard for automotive and ADAS applications. This standard addresses the fundamental KPIs that contribute to the image quality of automotive camera systems. Unlike most camera industries, automotive and ADAS applications are unique because they directly affect consumer safety.
                 </p>
 
                 <p className="text-gray-700 leading-relaxed mb-6">
-                  Während der Entwicklung des Standards wurde klar, dass neue Metriken etabliert werden müssen, um den einzigartigen Umgebungen Rechnung zu tragen, in denen autonome Fahrsysteme operieren müssen. Direktes Sonnenlicht, dichter Nebel, schwaches Licht, flackernde Lichter und starker Fußgängerverkehr sind nur einige der Umgebungen, in denen ADAS-Systeme operieren. Die neuen KPIs zur Bewältigung dieser Testherausforderungen umfassen Kontrastübertragungsgenauigkeit (CTA), modulierte Lichtminderungswahrscheinlichkeit (MMP - Flimmern), Kontrast-Signal-Rausch-Verhältnis (CSNR) und hoher Dynamikbereich (HDR), unter anderem.
+                  During the development of the standard, it became clear that new metrics must be established to account for the unique environments in which autonomous driving systems must operate. Direct sunlight, dense fog, low light, flickering lights and heavy pedestrian traffic are just some of the environments in which ADAS systems operate. The new KPIs to address these testing challenges include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (MMP - Flicker), Contrast Signal-to-Noise Ratio (CSNR) and High Dynamic Range (HDR), among others.
                 </p>
 
                 <p className="text-gray-700 leading-relaxed mb-8">
-                  Diese KPIs erfordern neue Testmethoden und Geräte. Wir haben viele unserer neueren Kameratestgeräte basierend auf den im Standard beschriebenen Testverfahren entwickelt und bieten ein Produktpaket für diejenigen an, die heute mit IEEE-P2020-Messungen beginnen möchten.
+                  These KPIs require new testing methods and equipment. We have developed many of our newer camera testing devices based on the testing procedures described in the standard and offer a product package for those who want to start with IEEE-P2020 measurements today.
                 </p>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                   {/* Vega Light Source */}
                   <div className="bg-gray-50 rounded-xl p-6">
-                    <h5 className="text-lg font-bold text-gray-900 mb-3">Vega Hochintensive Lichtquelle</h5>
+                    <h5 className="text-lg font-bold text-gray-900 mb-3">Vega High-Intensity Light Source</h5>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      Eine hochintensive Lichtquelle basierend auf DC-Technologie mit extrem hoher Stabilität für die Messung von Kameras mit sehr kurzen Belichtungszeiten.
+                      A high-intensity light source based on DC technology with extremely high stability for measuring cameras with very short exposure times.
                     </p>
                   </div>
 
                   {/* TE294 Test Chart */}
                   <div className="bg-gray-50 rounded-xl p-6">
-                    <h5 className="text-lg font-bold text-gray-900 mb-3">Vega Testtafel (TE294)</h5>
+                    <h5 className="text-lg font-bold text-gray-900 mb-3">Vega Test Chart (TE294)</h5>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      Eine einzigartige Graustufen-Testtafel mit 36 Feldern und 10:1 Kontrast für Hochpräzisionsmessungen von automotive Kamerasystemen.
+                      A unique grayscale test chart with 36 fields and 10:1 contrast for high-precision measurements of automotive camera systems.
                     </p>
                   </div>
 
@@ -277,7 +277,7 @@ const Automotive = () => {
                   <div className="bg-gray-50 rounded-xl p-6">
                     <h5 className="text-lg font-bold text-gray-900 mb-3">VLS Software</h5>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      Evaluierungssoftware, die CTA-, MMP- und CSNR-Messungen und -Bewertungen für vielseitige Lichtsystemtests unterstützt.
+                      Evaluation software that supports CTA, MMP and CSNR measurements and evaluations for versatile lighting system testing.
                     </p>
                   </div>
 
@@ -285,21 +285,21 @@ const Automotive = () => {
                   <div className="bg-gray-50 rounded-xl p-6">
                     <h5 className="text-lg font-bold text-gray-900 mb-3">Vega API</h5>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      Flexible Workflows mit C++-basierter API, die C-Schnittstellen und Python-Beispielskripte für vollständige Integrationsflexibilität bietet.
+                      Flexible workflows with C++-based API that provides C interfaces and Python example scripts for complete integration flexibility.
                     </p>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 rounded-xl p-6">
                   <p className="text-sm text-gray-700 mb-4">
-                    <strong>Wichtiger Hinweis:</strong> Dieses Paket enthält ein Vega-Gerät, eine Steuerung und eine Testtafel. Zusätzliche Vega-Geräte und Tafeln können separat erworben werden (eine Steuerung kann bis zu sieben Vega-Geräte steuern).
+                    <strong>Important Note:</strong> This package includes one Vega device, one controller and one test chart. Additional Vega devices and charts can be purchased separately (one controller can control up to seven Vega devices).
                   </p>
                   <div className="text-center">
                     <Button 
                       size="lg"
                       className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
                     >
-                      Vertrieb für IEEE-P2020 Paket kontaktieren
+                      Contact Sales for IEEE-P2020 Package
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </div>
