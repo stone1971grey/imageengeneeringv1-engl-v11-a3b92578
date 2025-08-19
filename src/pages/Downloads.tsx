@@ -52,7 +52,7 @@ import {
 } from "lucide-react";
 
 // Import AI assistant avatar
-import aiAssistantAvatar from "@/assets/ai-assistant-avatar.jpg";
+import aiAssistantAvatar from "@/assets/ai-assistant-realistic.jpg";
 
 // Data model
 export type DownloadItem = {
@@ -803,27 +803,27 @@ export default function Downloads() {
         <div className="fixed bottom-6 right-6 z-50">
           <div 
             onClick={() => setAiOpen(true)}
-            className="group cursor-pointer bg-white rounded-2xl shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center gap-4 p-4 pr-6 hover-scale"
+            className="group cursor-pointer bg-white rounded-3xl shadow-2xl border border-gray-200 hover:shadow-3xl transition-all duration-300 transform hover:scale-105 flex items-center gap-5 p-6 pr-8 hover-scale max-w-sm"
           >
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               <img 
                 src={aiAssistantAvatar}
                 alt="AI Assistant"
-                className="w-12 h-12 rounded-full object-cover border-2 border-primary/20"
+                className="w-20 h-20 rounded-full object-cover border-3 border-primary/30 shadow-lg"
               />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white animate-pulse shadow-sm"></div>
             </div>
             
             {/* Text - Hidden on mobile */}
             <div className="hidden sm:block">
-              <div className="text-sm font-medium text-gray-900">Need help?</div>
-              <div className="text-xs text-gray-600">Ask our AI-Assistant</div>
+              <div className="text-base font-semibold text-gray-900 mb-1">Need help?</div>
+              <div className="text-sm text-gray-600">Ask our AI-Assistant</div>
             </div>
             
             {/* Chat Icon - Always visible */}
-            <div className="flex-shrink-0 bg-primary text-white rounded-full p-2 group-hover:animate-pulse">
-              <MessageCircle className="h-4 w-4" />
+            <div className="flex-shrink-0 bg-primary text-white rounded-full p-3 group-hover:animate-pulse shadow-lg">
+              <MessageCircle className="h-5 w-5" />
             </div>
           </div>
         </div>
