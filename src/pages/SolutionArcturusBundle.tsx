@@ -916,7 +916,7 @@ const SolutionArcturusBundle = () => {
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                     >
                       Learn More
                     </Button>
@@ -939,7 +939,7 @@ const SolutionArcturusBundle = () => {
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                     >
                       Learn More
                     </Button>
@@ -962,7 +962,7 @@ const SolutionArcturusBundle = () => {
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                     >
                       Learn More
                     </Button>
@@ -985,7 +985,7 @@ const SolutionArcturusBundle = () => {
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                     >
                       Learn More
                     </Button>
@@ -1036,28 +1036,28 @@ const SolutionArcturusBundle = () => {
               <CardContent className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <FileText className="mr-3 h-4 w-4" />
                   Data Sheet (PDF)
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <Download className="mr-3 h-4 w-4" />
                   Technical Specifications
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <Settings className="mr-3 h-4 w-4" />
                   Installation Guide
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <Package className="mr-3 h-4 w-4" />
                   API Documentation
