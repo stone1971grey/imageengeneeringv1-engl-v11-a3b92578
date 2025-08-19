@@ -389,32 +389,6 @@ const Automotive = () => {
         </div>
       </section>
 
-      {/* Contact CTA */}
-      <section id="contact" className="py-20 bg-white">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Ready to Improve Your Automotive Vision Systems?
-            </h2>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Connect with our automotive experts and discover how our 
-              testing solutions can accelerate your development process.
-            </p>
-            
-            <Button 
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg group"
-            >
-              Speak with Our Automotive Expert
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            
-            <p className="text-sm text-gray-500 mt-6">
-              Free consultation • Expert guidance • No obligations
-            </p>
-          </div>
-        </div>
-        </section>
       <Footer />
     </div>
   );
