@@ -108,8 +108,9 @@ const Automotive = () => {
               
               <div className="pt-4">
                 <Button 
+                  variant="decision"
                   size="lg"
-                  className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                  className="px-8 py-4 text-lg font-medium group"
                 >
                   Discover Automotive Solutions
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -353,8 +354,9 @@ const Automotive = () => {
                     {product.link ? (
                       <Link to={product.link}>
                         <Button 
+                          variant="decision"
                           size="lg"
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white group"
+                          className="w-full group"
                         >
                           Learn More
                           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -362,8 +364,9 @@ const Automotive = () => {
                       </Link>
                     ) : (
                       <Button 
+                        variant="decision"
                         size="lg"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white group"
+                        className="w-full group"
                       >
                         Learn More
                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
