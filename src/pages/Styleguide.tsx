@@ -73,8 +73,9 @@ const Styleguide = () => {
                   <p className="font-medium text-gray-900">Secondary</p>
                   <p className="text-sm text-gray-500">Secondary technical actions</p>
                 </div>
-                <Button variant="secondary">
+                <Button variant="secondary" className="group">
                   Secondary Button
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
               
