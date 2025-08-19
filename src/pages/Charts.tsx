@@ -536,21 +536,14 @@ const Charts = () => {
             </div>
           )}
 
-          {/* Active Filters and Results Count */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
-            <div className="flex items-center gap-2">
-              {activeFiltersCount > 0 && (
-                <Badge variant="outline" className="text-[#3464e3] border-[#3464e3]">
-                  {activeFiltersCount} active
-                </Badge>
-              )}
+          {/* Active Filters */}
+          {activeFiltersCount > 0 && (
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="outline" className="text-[#3464e3] border-[#3464e3]">
+                {activeFiltersCount} active
+              </Badge>
             </div>
-
-            {/* Results Count */}
-            <div className="text-[#000000] font-semibold bg-gray-100 px-3 py-2 rounded-md">
-              {filteredCharts.length} Charts found
-            </div>
-          </div>
+          )}
 
           {/* Active Filter Badges */}
           {activeFilters.length > 0 && (
