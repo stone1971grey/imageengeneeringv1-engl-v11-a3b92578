@@ -261,40 +261,40 @@ const Automotive = () => {
                   {/* Vega Light Source */}
                   <div className="bg-gray-50 rounded-xl p-6">
                     <h5 className="text-lg font-bold text-gray-900 mb-3">Vega High-Intensity Light Source</h5>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      A high-intensity light source based on DC technology with extremely high stability for measuring cameras with very short exposure times.
-                    </p>
+                     <p className="text-lg text-gray-600 leading-relaxed">
+                       A high-intensity light source based on DC technology with extremely high stability for measuring cameras with very short exposure times.
+                     </p>
                   </div>
 
                   {/* TE294 Test Chart */}
                   <div className="bg-gray-50 rounded-xl p-6">
                     <h5 className="text-lg font-bold text-gray-900 mb-3">Vega Test Chart (TE294)</h5>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      A unique grayscale test chart with 36 fields and 10:1 contrast for high-precision measurements of automotive camera systems.
-                    </p>
+                     <p className="text-lg text-gray-600 leading-relaxed">
+                       A unique grayscale test chart with 36 fields and 10:1 contrast for high-precision measurements of automotive camera systems.
+                     </p>
                   </div>
 
                   {/* VLS Software */}
                   <div className="bg-gray-50 rounded-xl p-6">
                     <h5 className="text-lg font-bold text-gray-900 mb-3">VLS Software</h5>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      Evaluation software that supports CTA, MMP and CSNR measurements and evaluations for versatile lighting system testing.
-                    </p>
+                     <p className="text-lg text-gray-600 leading-relaxed">
+                       Evaluation software that supports CTA, MMP and CSNR measurements and evaluations for versatile lighting system testing.
+                     </p>
                   </div>
 
                   {/* Vega API */}
                   <div className="bg-gray-50 rounded-xl p-6">
                     <h5 className="text-lg font-bold text-gray-900 mb-3">Vega API</h5>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      Flexible workflows with C++-based API that provides C interfaces and Python example scripts for complete integration flexibility.
-                    </p>
+                     <p className="text-lg text-gray-600 leading-relaxed">
+                       Flexible workflows with C++-based API that provides C interfaces and Python example scripts for complete integration flexibility.
+                     </p>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 rounded-xl p-6">
-                  <p className="text-sm text-gray-700 mb-4">
-                    <strong>Important Note:</strong> This package includes one Vega device, one controller and one test chart. Additional Vega devices and charts can be purchased separately (one controller can control up to seven Vega devices).
-                  </p>
+                   <p className="text-lg text-gray-700 mb-4">
+                     <strong>Important Note:</strong> This package includes one Vega device, one controller and one test chart. Additional Vega devices and charts can be purchased separately (one controller can control up to seven Vega devices).
+                   </p>
                   <div className="text-center">
                     <Button 
                       size="lg"
