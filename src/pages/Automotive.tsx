@@ -331,9 +331,9 @@ const Automotive = () => {
             {products.map((product, index) => (
               <Card 
                 key={index}
-                className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden"
+                className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col"
               >
-                <CardContent className="p-0">
+                <CardContent className="p-0 flex flex-col flex-1">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
                     <img 
                       src={product.image}
@@ -341,28 +341,30 @@ const Automotive = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex flex-col flex-1">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                       {product.title}
                     </h3>
-                    <p className="text-lg text-gray-600 leading-relaxed mb-4">
+                    <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
                       {product.description}
                     </p>
                     {product.link ? (
                       <Link to={product.link}>
                         <Button 
-                          variant="outline" 
-                          className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                          size="lg"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white group"
                         >
-                          Contact
+                          Learn More
+                          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                         </Button>
                       </Link>
                     ) : (
                       <Button 
-                        variant="outline" 
-                        className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
+                        size="lg"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white group"
                       >
-                        Contact
+                        Learn More
+                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     )}
                   </div>
