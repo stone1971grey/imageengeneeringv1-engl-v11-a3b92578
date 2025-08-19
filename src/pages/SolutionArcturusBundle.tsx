@@ -26,56 +26,56 @@ const SolutionArcturusBundle = () => {
     {
       src: arcturusMain,
       title: "Arcturus LED System",
-      description: "Hochleistungs-LED-Beleuchtungssystem für maximale Intensität"
+      description: "High-performance LED lighting system for maximum intensity"
     },
     {
       src: iqAnalyzerIntro,
       title: "Vega Software Suite",
-      description: "Umfassende Bildanalyse und Qualitätskontrollsoftware"
+      description: "Comprehensive image analysis and quality control software"
     },
     {
       src: "/images/custom-chart.png",
       title: "Test Charts Collection",
-      description: "Präzisions-Testcharts für verschiedene Anwendungsbereiche"
+      description: "Precision test charts for various application areas"
     },
     {
       src: arcturusSetup,
-      title: "Kompletter Laboraufbau",
-      description: "Integrierte Lösung mit allen Komponenten"
+      title: "Complete Laboratory Setup",
+      description: "Integrated solution with all components"
     }
   ];
 
   const bundleComponents = [
     {
       title: "Arcturus LED System",
-      description: "Hochstabile Lichtquelle bis zu 1 Mcd/m²",
+      description: "Highly stable light source up to 1 Mcd/m²",
       features: [
-        "DC-betriebene LED-Technologie",
-        "Flimmerfrei für konsistente Tests",
-        "Weiter Dynamikbereich",
-        "IEEE P2020 kompatibel"
+        "DC-powered LED technology",
+        "Flicker-free for consistent testing",
+        "Wide dynamic range",
+        "IEEE P2020 compatible"
       ],
       icon: <Zap className="h-8 w-8 text-black" />
     },
     {
       title: "Vega Software Suite",
-      description: "Professionelle Bildanalyse und Kalibrierung",
+      description: "Professional image analysis and calibration",
       features: [
-        "Automatisierte Bildqualitätsanalyse",
-        "Multi-Format Exportfunktionen",
-        "Python API Integration",
-        "Umfassende Reportgenerierung"
+        "Automated image quality analysis",
+        "Multi-format export functions",
+        "Python API integration",
+        "Comprehensive report generation"
       ],
       icon: <Monitor className="h-8 w-8 text-black" />
     },
     {
       title: "Premium Test Charts",
-      description: "Hochpräzise Testmuster für verschiedene Anwendungen",
+      description: "High-precision test patterns for various applications",
       features: [
-        "Automotive spezifische Charts",
-        "Mobile Device Testing Charts",
-        "Farbkalibrierungs-Charts",
-        "Individuelle Chart-Konfigurationen"
+        "Automotive specific charts",
+        "Mobile device testing charts",
+        "Color calibration charts",
+        "Individual chart configurations"
       ],
       icon: <Target className="h-8 w-8 text-black" />
     }
@@ -253,19 +253,19 @@ const SolutionArcturusBundle = () => {
             <ol className="flex gap-2 text-base text-muted-foreground">
               <li>
                 <Link to="/" className="hover:text-foreground transition-colors">
-                  Startseite
+                  Home
                 </Link>
               </li>
               <li>/</li>
               <li>
                 <span className="hover:text-foreground transition-colors cursor-pointer">
-                  Lösungen
+                  Solutions
                 </span>
               </li>
               <li>/</li>
               <li>
                 <span className="hover:text-foreground transition-colors cursor-pointer">
-                  Testpakete
+                  Test Packages
                 </span>
               </li>
               <li>/</li>
@@ -284,30 +284,30 @@ const SolutionArcturusBundle = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
                  <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
-                   onClick={(e) => {
-                     e.preventDefault();
-                     document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Komplettlösung</a>
-                 <a href="#architecture" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
-                   onClick={(e) => {
-                     e.preventDefault();
-                     document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>System-Architektur</a>
-                 <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
-                   onClick={(e) => {
-                     e.preventDefault();
-                     document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Warum Test Bundle</a>
-                 <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
-                   onClick={(e) => {
-                     e.preventDefault();
-                     document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Anwendungsbereiche</a>
-                 <a href="#comparison" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
-                   onClick={(e) => {
-                     e.preventDefault();
-                     document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                   }}>Vergleich</a>
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>Complete Solution</a>
+                  <a href="#architecture" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>System Architecture</a>
+                  <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>Why Test Bundle</a>
+                  <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>Application Areas</a>
+                  <a href="#comparison" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>Comparison</a>
                  <a href="#faq" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
@@ -438,11 +438,11 @@ const SolutionArcturusBundle = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Warum Test Bundle?
+              Why Test Bundle?
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
-              Vollständig integrierte Testumgebung mit nahtloser Kommunikation zwischen 
-              Hardware, Software und Testmustern für maximale Effizienz und Genauigkeit.
+              Fully integrated test environment with seamless communication between 
+              hardware, software and test patterns for maximum efficiency and accuracy.
             </p>
           </div>
           
@@ -539,15 +539,15 @@ const SolutionArcturusBundle = () => {
                               </defs>
                               
                               {/* Labels */}
-                              <text x="400" y="320" textAnchor="middle" fill="#374151" fontSize="16" fontWeight="bold">IEEE P2020 Konforme Testumgebung</text>
+                              <text x="400" y="320" textAnchor="middle" fill="#374151" fontSize="16" fontWeight="bold">IEEE P2020 Compliant Test Environment</text>
                               
                               {/* Connection Types Legend */}
                               <g transform="translate(50, 400)">
-                                <text x="0" y="0" fill="#374151" fontSize="14" fontWeight="bold">Verbindungstypen:</text>
+                                <text x="0" y="0" fill="#374151" fontSize="14" fontWeight="bold">Connection Types:</text>
                                 <line x1="0" y1="20" x2="30" y2="20" stroke="#374151" strokeWidth="2"/>
-                                <text x="40" y="25" fill="#374151" fontSize="12">Optischer Pfad</text>
+                                <text x="40" y="25" fill="#374151" fontSize="12">Optical Path</text>
                                 <line x1="0" y1="40" x2="30" y2="40" stroke="#EF4444" strokeWidth="2" strokeDasharray="5,5"/>
-                                <text x="40" y="45" fill="#374151" fontSize="12">Digitale Steuerung</text>
+                                <text x="40" y="45" fill="#374151" fontSize="12">Digital Control</text>
                               </g>
                             </svg>
                           </div>
@@ -615,15 +615,15 @@ const SolutionArcturusBundle = () => {
                         </defs>
                         
                         {/* Labels */}
-                        <text x="400" y="320" textAnchor="middle" fill="#374151" fontSize="16" fontWeight="bold">IEEE P2020 Konforme Testumgebung</text>
+                        <text x="400" y="320" textAnchor="middle" fill="#374151" fontSize="16" fontWeight="bold">IEEE P2020 Compliant Test Environment</text>
                         
                         {/* Connection Types Legend */}
                         <g transform="translate(50, 400)">
-                          <text x="0" y="0" fill="#374151" fontSize="14" fontWeight="bold">Verbindungstypen:</text>
+                          <text x="0" y="0" fill="#374151" fontSize="14" fontWeight="bold">Connection Types:</text>
                           <line x1="0" y1="20" x2="30" y2="20" stroke="#374151" strokeWidth="2"/>
-                          <text x="40" y="25" fill="#374151" fontSize="12">Optischer Pfad</text>
+                          <text x="40" y="25" fill="#374151" fontSize="12">Optical Path</text>
                           <line x1="0" y1="40" x2="30" y2="40" stroke="#EF4444" strokeWidth="2" strokeDasharray="5,5"/>
-                          <text x="40" y="45" fill="#374151" fontSize="12">Digitale Steuerung</text>
+                          <text x="40" y="45" fill="#374151" fontSize="12">Digital Control</text>
                         </g>
                       </svg>
                     </div>
@@ -634,50 +634,50 @@ const SolutionArcturusBundle = () => {
                 <div className="order-1 lg:order-2 space-y-6">
                   <div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                      Technische Integration
+                      Technical Integration
                     </h3>
                     <div className="space-y-4">
                       <div className="flex items-start gap-3">
                         <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="font-medium text-gray-900">LED-Steuerung</h4>
-                          <p className="text-gray-600 text-sm">USB/Ethernet Interface für präzise Helligkeits- und Farbtemperaturkontrolle</p>
+                          <h4 className="font-medium text-gray-900">LED Control</h4>
+                          <p className="text-gray-600 text-sm">USB/Ethernet interface for precise brightness and color temperature control</p>
                         </div>
                       </div>
                       
                       <div className="flex items-start gap-3">
                         <div className="w-3 h-3 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="font-medium text-gray-900">Chart-Positionierung</h4>
-                          <p className="text-gray-600 text-sm">Automatisierte Test-Pattern Auswahl basierend auf Messziel</p>
+                          <h4 className="font-medium text-gray-900">Chart Positioning</h4>
+                          <p className="text-gray-600 text-sm">Automated test pattern selection based on measurement target</p>
                         </div>
                       </div>
                       
                       <div className="flex items-start gap-3">
                         <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="font-medium text-gray-900">Datenanalyse</h4>
-                          <p className="text-gray-600 text-sm">Echtzeit-Bildverarbeitung mit Python API Integration</p>
+                          <h4 className="font-medium text-gray-900">Data Analysis</h4>
+                          <p className="text-gray-600 text-sm">Real-time image processing with Python API integration</p>
                         </div>
                       </div>
                       
                       <div className="flex items-start gap-3">
                         <div className="w-3 h-3 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                         <div>
-                          <h4 className="font-medium text-gray-900">Feedback-Loop</h4>
-                          <p className="text-gray-600 text-sm">Automatische Anpassung der Testparameter basierend auf Messergebnissen</p>
+                          <h4 className="font-medium text-gray-900">Feedback Loop</h4>
+                          <p className="text-gray-600 text-sm">Automatic adjustment of test parameters based on measurement results</p>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   <div className="bg-blue-50 rounded-lg p-4">
-                    <h4 className="font-semibold text-blue-900 mb-2">Standards-Konformität</h4>
+                    <h4 className="font-semibold text-blue-900 mb-2">Standards Compliance</h4>
                     <ul className="space-y-1 text-sm text-blue-800">
-                      <li>• IEEE P2020 für automotive ADAS Testing</li>
-                      <li>• VCX für Mobile Device Validation</li>
-                      <li>• ISO 12233 für Bildschärfe-Messungen</li>
-                      <li>• EMVA 1288 für industrielle Bildverarbeitung</li>
+                      <li>• IEEE P2020 for automotive ADAS testing</li>
+                      <li>• VCX for mobile device validation</li>
+                      <li>• ISO 12233 for image sharpness measurements</li>
+                      <li>• EMVA 1288 for industrial image processing</li>
                     </ul>
                   </div>
                 </div>
@@ -692,11 +692,11 @@ const SolutionArcturusBundle = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Anwendungsbereiche
+              Application Areas
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              Durch die perfekte Integration aller Komponenten erhalten Sie eine nahtlose 
-              Testumgebung mit maximaler Effizienz.
+              Through the perfect integration of all components, you get a seamless 
+              test environment with maximum efficiency.
             </p>
           </div>
           
@@ -707,7 +707,7 @@ const SolutionArcturusBundle = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Plug & Play Setup</h3>
               <p className="text-lg text-gray-700 leading-relaxed">
-                Alle Komponenten sind bereits aufeinander abgestimmt und sofort einsatzbereit.
+                All components are already coordinated and ready to use immediately.
               </p>
             </div>
             
@@ -715,9 +715,9 @@ const SolutionArcturusBundle = () => {
               <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <BarChart3 className="text-blue-600" size={32} />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Maximale Genauigkeit</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Maximum Accuracy</h3>
               <p className="text-lg text-gray-700 leading-relaxed">
-                Kalibrierte Komponenten garantieren höchste Messgenauigkeit und Reproduzierbarkeit.
+                Calibrated components guarantee highest measurement accuracy and reproducibility.
               </p>
             </div>
             
@@ -725,9 +725,9 @@ const SolutionArcturusBundle = () => {
               <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Shield className="text-blue-600" size={32} />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Standards-Konformität</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Standards Compliance</h3>
               <p className="text-lg text-gray-700 leading-relaxed">
-                Vollständige Konformität mit IEEE P2020, VCX und anderen relevanten Standards.
+                Full compliance with IEEE P2020, VCX and other relevant standards.
               </p>
             </div>
           </div>
@@ -738,11 +738,11 @@ const SolutionArcturusBundle = () => {
         <section id="comparison" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            Vergleich
+            Comparison
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-            Das Arcturus HDR Test Bundle eignet sich für verschiedenste Testszenarien 
-            in professionellen Umgebungen.
+            The Arcturus HDR Test Bundle is suitable for various test scenarios 
+            in professional environments.
           </p>
         </div>
         
@@ -801,8 +801,8 @@ const SolutionArcturusBundle = () => {
                   <div className="mb-6">
                     <Quote className="h-8 w-8 text-blue-600 mx-auto md:mx-0 mb-4" />
                     <blockquote className="text-xl md:text-2xl text-gray-800 leading-relaxed font-medium italic">
-                      „Mit Arcturus konnten wir erstmals stabile HDR-Ergebnisse bei 0,3 ms Belichtungszeit messen – 
-                      ein entscheidender Fortschritt für unsere ADAS-Kalibrierung."
+                      "With Arcturus, we were able to measure stable HDR results at 0.3 ms exposure time for the first time – 
+                      a decisive breakthrough for our ADAS calibration."
                     </blockquote>
                   </div>
                   
@@ -829,11 +829,11 @@ const SolutionArcturusBundle = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Warum nicht DTS? – Der Vergleich im Überblick
+              Why not DTS? – The Comparison at a Glance
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
-              Sehen Sie selbst, wie das moderne Arcturus HDR Test Bundle traditionelle Testlösungen 
-              übertrifft und Ihnen entscheidende Vorteile bietet.
+              See for yourself how the modern Arcturus HDR Test Bundle 
+              outperforms traditional test solutions and offers you decisive advantages.
             </p>
           </div>
           
@@ -842,13 +842,13 @@ const SolutionArcturusBundle = () => {
               {/* Header */}
               <div className="grid md:grid-cols-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
                 <div className="p-4 text-center font-semibold text-lg">
-                  Kriterium
+                  Criterion
                 </div>
                 <div className="p-4 text-center font-semibold text-lg border-l border-blue-500">
-                  Arcturus HDR Testpaket
+                  Arcturus HDR Test Package
                 </div>
                 <div className="p-4 text-center font-semibold text-lg border-l border-blue-500">
-                  Frühere Lösung (z. B. DTS)
+                  Previous Solution (e.g. DTS)
                 </div>
               </div>
               
@@ -879,7 +879,7 @@ const SolutionArcturusBundle = () => {
             {/* Footnote */}
             <div className="text-center mt-8">
               <p className="text-sm text-gray-500">
-                * DTS ist ein eingetragenes Warenzeichen und wird hier nur zum Vergleich erwähnt.
+                * DTS is a registered trademark and is mentioned here for comparison purposes only.
               </p>
             </div>
           </div>
@@ -892,10 +892,10 @@ const SolutionArcturusBundle = () => {
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Verwandte Produkte
+                Related Products
               </h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Ergänzende Tools und Erweiterungen für Ihre Testumgebung
+                Complementary tools and extensions for your test environment
               </p>
             </div>
 
@@ -912,13 +912,13 @@ const SolutionArcturusBundle = () => {
                       TE294 Chart Set
                     </h3>
                     <p className="text-gray-600 leading-relaxed mb-4">
-                      Optimierte Testtafel für CTA-, CSNR- und MMP-Messungen
+                      Optimized test chart for CTA, CSNR and MMP measurements
                     </p>
                     <Button 
                       variant="outline" 
                       className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                     >
-                      Mehr erfahren
+                      Learn More
                     </Button>
                   </div>
                 </CardContent>
@@ -935,13 +935,13 @@ const SolutionArcturusBundle = () => {
                       Arcturus Accessories
                     </h3>
                     <p className="text-gray-600 leading-relaxed mb-4">
-                      Präzisionshalterungen, Erweiterungen und Kalibrierhilfen
+                      Precision mounts, extensions and calibration aids
                     </p>
                     <Button 
                       variant="outline" 
                       className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                     >
-                      Mehr erfahren
+                      Learn More
                     </Button>
                   </div>
                 </CardContent>
@@ -958,13 +958,13 @@ const SolutionArcturusBundle = () => {
                       Vega Add-on Kit
                     </h3>
                     <p className="text-gray-600 leading-relaxed mb-4">
-                      Erweiterung für bestehende Installationen mit Vega-LED
+                      Extension for existing installations with Vega LED
                     </p>
                     <Button 
                       variant="outline" 
                       className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                     >
-                      Mehr erfahren
+                      Learn More
                     </Button>
                   </div>
                 </CardContent>
@@ -981,13 +981,13 @@ const SolutionArcturusBundle = () => {
                       Vega Control API
                     </h3>
                     <p className="text-gray-600 leading-relaxed mb-4">
-                      API-Paket (C, C++, Python) zur nahtlosen Systemintegration
+                      API package (C, C++, Python) for seamless system integration
                     </p>
                     <Button 
                       variant="outline" 
                       className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                     >
-                      Mehr erfahren
+                      Learn More
                     </Button>
                   </div>
                 </CardContent>
@@ -1010,10 +1010,10 @@ const SolutionArcturusBundle = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Downloads & Dokumentation
+              Downloads & Documentation
             </h2>
             <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              Laden Sie technische Spezifikationen, Datenblätter und Software-Dokumentation herunter.
+              Download technical specifications, data sheets and software documentation.
             </p>
           </div>
           
@@ -1030,7 +1030,7 @@ const SolutionArcturusBundle = () => {
                   Arcturus LED System
                 </CardTitle>
                 <CardDescription className="text-gray-600">
-                  Technische Dokumentation und Spezifikationen
+                  Technical documentation and specifications
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -1039,14 +1039,14 @@ const SolutionArcturusBundle = () => {
                   className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
                 >
                   <FileText className="mr-3 h-4 w-4" />
-                  Datenblatt (PDF)
+                  Data Sheet (PDF)
                 </Button>
                 <Button 
                   variant="outline" 
                   className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
                 >
                   <Download className="mr-3 h-4 w-4" />
-                  Technische Spezifikationen
+                  Technical Specifications
                 </Button>
                 <Button 
                   variant="outline" 
@@ -1060,7 +1060,7 @@ const SolutionArcturusBundle = () => {
                   className="w-full justify-start border-gray-200 hover:border-blue-600 hover:text-blue-600"
                 >
                   <Package className="mr-3 h-4 w-4" />
-                  API Dokumentation
+                  API Documentation
                 </Button>
               </CardContent>
             </Card>
@@ -1077,7 +1077,7 @@ const SolutionArcturusBundle = () => {
                   Vega Software Suite
                 </CardTitle>
                 <CardDescription className="text-gray-600">
-                  Software-Downloads und Benutzerhandbücher
+                  Software downloads and user manuals
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -1093,7 +1093,7 @@ const SolutionArcturusBundle = () => {
                   className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
                 >
                   <FileText className="mr-3 h-4 w-4" />
-                  Benutzerhandbuch (PDF)
+                  User Manual (PDF)
                 </Button>
                 <Button 
                   variant="outline" 
@@ -1107,7 +1107,7 @@ const SolutionArcturusBundle = () => {
                   className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
                 >
                   <BarChart3 className="mr-3 h-4 w-4" />
-                  Beispiel-Reports
+                  Example Reports
                 </Button>
               </CardContent>
             </Card>
