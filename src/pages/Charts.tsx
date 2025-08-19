@@ -340,29 +340,29 @@ const Charts = () => {
       </section>
 
       {/* Search and Filter Section */}
-      <div className="sticky top-16 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="container mx-auto px-6 py-4">
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-6 py-2">
           {/* Header */}
-          <div className="mb-4 mt-8">
-            <h2 className="text-3xl font-semibold text-[#000000] mb-2">Find and Sort Your Perfect Test Charts</h2>
-            <p className="text-gray-600">Use our filters and search function for precise search results</p>
+          <div className="mb-3 mt-4">
+            <h2 className="text-2xl font-semibold text-[#000000] mb-1">Find and Sort Your Perfect Test Charts</h2>
+            <p className="text-gray-600 text-sm">Use our filters and search function for precise search results</p>
           </div>
           
           {/* Search Bar - Full Width */}
-          <div className="mb-4">
+          <div className="mb-3">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
               <Input
                 placeholder="Search by title, SKU or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 py-3 text-lg bg-white text-[#000000] border-gray-300 focus:border-[#3464e3] focus:ring-[#3464e3]"
+                className="pl-12 py-2 text-base bg-white text-[#000000] border-gray-300 focus:border-[#3464e3] focus:ring-[#3464e3]"
               />
             </div>
           </div>
 
           {/* Filter Toggle Button */}
-          <div className="flex items-center justify-start mb-4">
+          <div className="flex items-center justify-start mb-3">
             <Button
               variant="outline"
               onClick={() => setFiltersOpen(!filtersOpen)}
@@ -379,7 +379,7 @@ const Charts = () => {
           </div>
 
           {/* Mobile Filter Button */}
-          <div className="lg:hidden mb-4">
+          <div className="lg:hidden mb-3">
             <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
               <DrawerTrigger asChild>
                 <Button
@@ -421,15 +421,15 @@ const Charts = () => {
 
           {/* Desktop Filters - Collapsible */}
           {filtersOpen && (
-            <div className="hidden lg:grid lg:grid-cols-4 gap-4 mb-4 animate-in slide-in-from-top-2 duration-200">
+            <div className="hidden lg:grid lg:grid-cols-4 gap-3 mb-3 animate-in slide-in-from-top-2 duration-200">
               {/* Category Filter */}
-              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-                <h3 className="text-[#000000] font-medium mb-2 text-sm">
+              <div className="border border-gray-200 rounded-lg p-2" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-1 text-sm">
                   Category {selectedCategories.length > 0 && `(${selectedCategories.length})`}
                 </h3>
-                <div className="space-y-0.5 max-h-32 overflow-y-auto">
+                <div className="space-y-0.5 max-h-28 overflow-y-auto">
                   {categories.map(category => (
-                    <label key={category} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
+                    <label key={category} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
                       <Checkbox
                         checked={selectedCategories.includes(category)}
                         onCheckedChange={(checked) => {
@@ -447,13 +447,13 @@ const Charts = () => {
               </div>
 
               {/* Application Filter */}
-              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-                <h3 className="text-[#000000] font-medium mb-2 text-sm">
+              <div className="border border-gray-200 rounded-lg p-2" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-1 text-sm">
                   Application {selectedApplications.length > 0 && `(${selectedApplications.length})`}
                 </h3>
-                <div className="space-y-0.5 max-h-32 overflow-y-auto">
+                <div className="space-y-0.5 max-h-28 overflow-y-auto">
                   {applications.map(application => (
-                    <label key={application} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
+                    <label key={application} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
                       <Checkbox
                         checked={selectedApplications.includes(application)}
                         onCheckedChange={(checked) => {
@@ -471,13 +471,13 @@ const Charts = () => {
               </div>
 
               {/* Formats Filter */}
-              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-                <h3 className="text-[#000000] font-medium mb-2 text-sm">
+              <div className="border border-gray-200 rounded-lg p-2" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-1 text-sm">
                   Format/Size {selectedFormats.length > 0 && `(${selectedFormats.length})`}
                 </h3>
-                <div className="space-y-0.5 max-h-32 overflow-y-auto">
+                <div className="space-y-0.5 max-h-28 overflow-y-auto">
                   {formats.map(format => (
-                    <label key={format} className="flex items-center space-x-2 text-base text-[#000000] cursor-pointer">
+                    <label key={format} className="flex items-center space-x-2 text-sm text-[#000000] cursor-pointer">
                       <Checkbox
                         checked={selectedFormats.includes(format)}
                         onCheckedChange={(checked) => {
@@ -495,8 +495,8 @@ const Charts = () => {
               </div>
 
               {/* Price Filter */}
-              <div className="border border-gray-200 rounded-lg p-3" style={{backgroundColor: '#F8F8F8'}}>
-                <h3 className="text-[#000000] font-medium mb-2 text-sm">Price Range (EUR)</h3>
+              <div className="border border-gray-200 rounded-lg p-2" style={{backgroundColor: '#F8F8F8'}}>
+                <h3 className="text-[#000000] font-medium mb-1 text-sm">Price Range (EUR)</h3>
                 <div className="space-y-2">
                   <Slider
                     value={priceRange}
