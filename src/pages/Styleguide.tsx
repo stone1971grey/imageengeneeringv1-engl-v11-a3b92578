@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Download, Settings, Trash2, ExternalLink, Play } from "lucide-react";
-import RegularNavigation from "@/components/RegularNavigation";
+import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
 const Styleguide = () => {
   return (
     <div className="min-h-screen bg-white">
-      <RegularNavigation />
+      <Navigation />
       
-      <div className="container mx-auto px-6 py-16">
+      <div className="container mx-auto px-6">
+        <div className="pt-32 pb-16">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Style Guide</h1>
           <p className="text-xl text-gray-600 mb-12">All button variants and sizes used in the application</p>
@@ -245,6 +246,7 @@ const Styleguide = () => {
               </div>
             </div>
           </section>
+          </div>
         </div>
       </div>
       
