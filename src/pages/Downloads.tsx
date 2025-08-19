@@ -187,10 +187,10 @@ const MOCK_ITEMS: DownloadItem[] = [
 const CATEGORY_LABEL: Record<DownloadItem["category"], string> = {
   software: "Software",
   firmware: "Firmware",
-  manual: "Handbücher",
-  datasheet: "Datenblätter",
-  whitepaper: "Whitepaper",
-  api: "API‑Dokumentation",
+  manual: "Manuals",
+  datasheet: "Datasheets",
+  whitepaper: "Whitepapers",
+  api: "API Documentation",
   release: "Release Notes",
 };
 
@@ -254,9 +254,9 @@ export default function Downloads() {
 
   // SEO
   useEffect(() => {
-    document.title = "Downloadcenter | Image Engineering";
+    document.title = "Download Center | Image Engineering";
     const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute("content", "Alle Downloads – Software, Handbücher, API‑Dokumente und mehr.");
+    if (metaDesc) metaDesc.setAttribute("content", "All Downloads – Software, Manuals, API Documents and more.");
   }, []);
 
   // Filtering
@@ -387,12 +387,12 @@ export default function Downloads() {
       {/* Top tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="flex flex-wrap">
-          <TabsTrigger value="all">Alle</TabsTrigger>
+          <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="software">Software</TabsTrigger>
           <TabsTrigger value="firmware">Firmware</TabsTrigger>
-          <TabsTrigger value="manual">Handbücher</TabsTrigger>
-          <TabsTrigger value="whitepaper">Whitepaper</TabsTrigger>
-          <TabsTrigger value="api">API‑Docs</TabsTrigger>
+          <TabsTrigger value="manual">Manuals</TabsTrigger>
+          <TabsTrigger value="whitepaper">Whitepapers</TabsTrigger>
+          <TabsTrigger value="api">API Docs</TabsTrigger>
           <TabsTrigger value="release">Release Notes</TabsTrigger>
         </TabsList>
         <TabsContent value={activeTab} />
@@ -401,7 +401,7 @@ export default function Downloads() {
       {/* Header row */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="text-sm text-gray-600">
-          {total} Ergebnisse
+          {total} Results
         </div>
         <div className="flex items-center gap-2">
           <Select value={sort} onValueChange={(v) => { setSort(v); setPage(1); }}>
@@ -409,11 +409,11 @@ export default function Downloads() {
               <SelectValue placeholder="Sortierung" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Neueste zuerst</SelectItem>
-              <SelectItem value="oldest">Älteste zuerst</SelectItem>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="oldest">Oldest First</SelectItem>
               <SelectItem value="az">A–Z</SelectItem>
               <SelectItem value="za">Z–A</SelectItem>
-              <SelectItem value="size">Größe</SelectItem>
+              <SelectItem value="size">Size</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -424,8 +424,8 @@ export default function Downloads() {
         <div className="flex flex-wrap gap-2">
           {q && (
             <Badge variant="secondary" className="flex items-center gap-1">
-              Suche: "{q}"
-              <button aria-label="Suche entfernen" onClick={() => removeChip("q", q)}>
+              Search: "{q}"
+              <button aria-label="Remove search" onClick={() => removeChip("q", q)}>
                 <X className="h-3.5 w-3.5" />
               </button>
             </Badge>
@@ -462,8 +462,8 @@ export default function Downloads() {
               </button>
             </Badge>
           ))}
-          <Button variant="ghost" size="sm" onClick={clearAll} aria-label="Filter zurücksetzen">
-            Zurücksetzen
+          <Button variant="ghost" size="sm" onClick={clearAll} aria-label="Reset filters">
+            Reset
           </Button>
         </div>
       )}
@@ -483,16 +483,16 @@ export default function Downloads() {
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link to="/" className="hover:text-primary transition-colors">Startseite</Link>
+                    <Link to="/" className="hover:text-primary transition-colors">Home</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="text-gray-600">Ressourcen</BreadcrumbPage>
+                  <BreadcrumbPage className="text-gray-600">Resources</BreadcrumbPage>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="text-gray-900">Downloadcenter</BreadcrumbPage>
+                  <BreadcrumbPage className="text-gray-900">Download Center</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

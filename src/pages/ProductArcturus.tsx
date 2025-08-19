@@ -143,15 +143,15 @@ const ProductArcturus = () => {
               {/* Left Content */}
               <div className="space-y-8">
                 <div>
-                  <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
-                    ARCTURUS
-                    <br />
-                    <span className="font-medium text-accent-soft-blue">LED</span>
-                  </h1>
-                  
-                  <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                    Heutige Bildsensoren und High Dynamic Range-Konfigurationen machen Tests bei oder nahe der Sensorsättigung herausfordernd. Mit Arcturus können wir mehr als genug Intensität erzeugen, um diese Sensoren mit viel höherer Empfindlichkeit als derzeit möglich herauszufordern.
-                  </p>
+                        <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
+                          ARCTURUS
+                          <br />
+                          <span className="font-medium text-accent-soft-blue">LED</span>
+                        </h1>
+                        
+                        <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+                          Today's image sensors and High Dynamic Range configurations make testing at or near sensor saturation challenging. With Arcturus, we can generate more than enough intensity to challenge these sensors with much higher sensitivity than currently possible.
+                        </p>
                 </div>
                 
                 <div className="pt-4">
@@ -159,7 +159,7 @@ const ProductArcturus = () => {
                     size="lg"
                     className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
                   >
-                    Mehr erfahren
+                    Learn More
                     <ArrowLeft className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
@@ -187,7 +187,7 @@ const ProductArcturus = () => {
                 {/* Floating feature highlight */}
                 <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
                   <div className="text-sm text-scandi-grey font-light mb-1">IEEE P2020</div>
-                  <div className="text-2xl font-medium text-light-foreground">Kompatibel</div>
+                  <div className="text-2xl font-medium text-light-foreground">Compatible</div>
                 </div>
               </div>
             </div>
@@ -196,15 +196,15 @@ const ProductArcturus = () => {
           {/* Main Benefits */}
           <div id="benefits" className="bg-gray-100 py-16 scroll-mt-[260px]">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Hauptvorteile von Arcturus</h2>
+              <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Key Benefits of Arcturus</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Zap className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximale Beleuchtungsstärke</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximum Illuminance</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Bis zu 1 Mcd/m² - mehr als genug Intensität, um selbst die empfindlichsten Bildsensoren herauszufordern.
+                    Up to 1 Mcd/m² - more than enough intensity to challenge even the most sensitive image sensors.
                   </p>
                 </div>
                 
@@ -212,9 +212,9 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Shield className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flimmerfrei</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flicker-Free</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    DC-betriebene LED-Technologie sorgt für flimmerfreien Betrieb für konsistente, zuverlässige Testergebnisse.
+                    DC-powered LED technology ensures flicker-free operation for consistent, reliable test results.
                   </p>
                 </div>
                 
@@ -222,9 +222,9 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Eye className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Hohe Stabilität</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">High Stability</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Extrem hohe Stabilität und Konsistenz für reproduzierbare Testbedingungen und genaue Messungen.
+                    Extremely high stability and consistency for reproducible test conditions and accurate measurements.
                   </p>
                 </div>
                 

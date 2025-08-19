@@ -84,103 +84,103 @@ const SolutionArcturusBundle = () => {
   const applicationAreas = [
     {
       title: "Automotive ADAS Testing",
-      description: "Komplette Testlösung für Fahrerassistenzsysteme nach IEEE P2020 Standard",
+      description: "Complete testing solution for driver assistance systems according to IEEE P2020 standard",
       icon: <Shield className="h-8 w-8 text-blue-600" />,
-      benefits: ["HDR Szenarien-Tests", "Sonnenlicht-Simulation", "Nachtsicht-Validierung"]
+      benefits: ["HDR scenario testing", "Sunlight simulation", "Night vision validation"]
     },
     {
       title: "Mobile Device Validation",
-      description: "Umfassende Bildqualitätstests für Smartphone-Kameras nach VCX Standards",
+      description: "Comprehensive image quality testing for smartphone cameras according to VCX standards",
       icon: <Eye className="h-8 w-8 text-blue-600" />,
-      benefits: ["Farbgenauigkeits-Tests", "Schärfe-Analyse", "Low-Light Performance"]
+      benefits: ["Color accuracy testing", "Sharpness analysis", "Low-light performance"]
     },
     {
       title: "Professional Photography",
-      description: "Präzisions-Kalibrierung für professionelle Kamerasysteme",
+      description: "Precision calibration for professional camera systems",
       icon: <Lightbulb className="h-8 w-8 text-blue-600" />,
-      benefits: ["Farbwiedergabe-Tests", "Dynamikbereich-Analyse", "Objektivschärfe-Messung"]
+      benefits: ["Color reproduction testing", "Dynamic range analysis", "Lens sharpness measurement"]
     }
   ];
 
   const faqData = [
     {
-      question: "Ist das Bundle VCX-kompatibel?",
-      answer: "Ja, das Arcturus HDR Test Bundle ist vollständig VCX-kompatibel. Die Vega Software Suite unterstützt alle relevanten VCX-Standards für Mobile Device Testing und ermöglicht standardisierte Bildqualitätsmessungen nach VCX-Richtlinien."
+      question: "Is the bundle VCX compatible?",
+      answer: "Yes, the Arcturus HDR Test Bundle is fully VCX compatible. The Vega Software Suite supports all relevant VCX standards for mobile device testing and enables standardized image quality measurements according to VCX guidelines."
     },
     {
-      question: "Welche API-Schnittstellen sind enthalten?",
-      answer: "Die Vega Software Suite bietet eine umfassende Python API für vollständige Automatisierung. Sie ermöglicht die Steuerung des Arcturus LED-Systems, automatisierte Bilderfassung, Datenanalyse und Report-Generierung. Zusätzlich sind REST-APIs für Webintegration verfügbar."
+      question: "What API interfaces are included?",
+      answer: "The Vega Software Suite offers a comprehensive Python API for complete automation. It enables control of the Arcturus LED system, automated image capture, data analysis and report generation. Additionally, REST APIs are available for web integration."
     },
     {
-      question: "Wie funktioniert die Kalibrierung?",
-      answer: "Das System wird werkseitig kalibriert geliefert und unterstützt automatische Rekalibrierung. Die Vega Software führt regelmäßige Konsistenzprüfungen durch und warnt bei Abweichungen. Manuelle Kalibrierung ist über die Software-Oberfläche möglich."
+      question: "How does calibration work?",
+      answer: "The system is delivered factory-calibrated and supports automatic recalibration. The Vega software performs regular consistency checks and warns of deviations. Manual calibration is possible via the software interface."
     },
     {
-      question: "Können Vega & Arcturus gleichzeitig genutzt werden?",
-      answer: "Ja, das ist der Hauptvorteil des Bundles. Vega und Arcturus sind nahtlos integriert und können synchron betrieben werden. Die Software steuert das LED-System automatisch basierend auf den gewählten Testprotokollen und optimiert die Beleuchtung in Echtzeit."
+      question: "Can Vega & Arcturus be used simultaneously?",
+      answer: "Yes, that's the main advantage of the bundle. Vega and Arcturus are seamlessly integrated and can be operated synchronously. The software automatically controls the LED system based on selected test protocols and optimizes lighting in real-time."
     },
     {
-      question: "Welche Kameratypen lassen sich damit testen?",
-      answer: "Das Bundle unterstützt alle gängigen Kameratypen: Automotive-Kameras (ADAS), Smartphone-Kameras, industrielle Machine-Vision-Systeme, Broadcast-Kameras und professionelle Fotografie-Equipment. Die Software erkennt automatisch Kameraparameter und passt die Testverfahren an."
+      question: "What camera types can be tested with this?",
+      answer: "The bundle supports all common camera types: automotive cameras (ADAS), smartphone cameras, industrial machine vision systems, broadcast cameras and professional photography equipment. The software automatically recognizes camera parameters and adapts test procedures accordingly."
     },
     {
-      question: "Was ist im Lieferumfang enthalten?",
-      answer: "Das Bundle umfasst: Arcturus LED-System mit Steuereinheit, vollständige Vega Software Suite mit Lizenz, Premium Test Charts Collection (TE294 und weitere), USB/Ethernet-Kabel, Installationshandbuch und 12 Monate Support."
+      question: "What is included in the delivery?",
+      answer: "The bundle includes: Arcturus LED system with control unit, complete Vega Software Suite with license, Premium Test Charts Collection (TE294 and others), USB/Ethernet cables, installation manual and 12 months support."
     },
     {
-      question: "Ist das System erweiterbar?",
-      answer: "Absolut. Das modulare Design ermöglicht einfache Erweiterungen: zusätzliche LED-Module, weitere Test Charts, Software-Upgrades und Integration in bestehende Testsysteme. Die API unterstützt Custom-Scripts und Drittanbieter-Integration."
+      question: "Is the system expandable?",
+      answer: "Absolutely. The modular design enables simple extensions: additional LED modules, more test charts, software upgrades and integration into existing test systems. The API supports custom scripts and third-party integration."
     }
   ];
 
   // Comparison data for Arcturus vs. older solutions
   const comparisonData = [
     {
-      criterion: "Lichtstabilität",
-      arcturus: "±0,5 °C präzise, aktiv geregelt",
-      older: "Unpräzise, passiv",
+      criterion: "Light Stability",
+      arcturus: "±0.5 °C precise, actively controlled",
+      older: "Imprecise, passive",
       arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
       olderIcon: <X className="h-5 w-5 text-red-500" />
     },
     {
-      criterion: "Flicker-Frequenzsteuerung",
-      arcturus: "Sinus / Dreieck / Rechteck",
-      older: "Eingeschränkt",
+      criterion: "Flicker Frequency Control",
+      arcturus: "Sine / Triangle / Square",
+      older: "Limited",
       arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
       olderIcon: <X className="h-5 w-5 text-red-500" />
     },
     {
-      criterion: "API-Zugang",
+      criterion: "API Access",
       arcturus: "C, C++, Python",
-      older: "Manuelle Bedienung",
+      older: "Manual Operation",
       arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
       olderIcon: <X className="h-5 w-5 text-red-500" />
     },
     {
-      criterion: "Platzbedarf",
-      arcturus: "Kompakt, modular",
-      older: "Großes, starres Setup",
+      criterion: "Space Requirement",
+      arcturus: "Compact, modular",
+      older: "Large, rigid setup",
       arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
       olderIcon: <X className="h-5 w-5 text-red-500" />
     },
     {
-      criterion: "Erweiterbarkeit",
-      arcturus: "Bis zu 7 Lichtquellen",
-      older: "Nicht erweiterbar",
+      criterion: "Expandability",
+      arcturus: "Up to 7 light sources",
+      older: "Not expandable",
       arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
       olderIcon: <X className="h-5 w-5 text-red-500" />
     },
     {
-      criterion: "Prüfcharts-Kompatibilität",
+      criterion: "Test Chart Compatibility",
       arcturus: "TE294 (modular)",
-      older: "Proprietär",
+      older: "Proprietary",
       arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
       olderIcon: <X className="h-5 w-5 text-red-500" />
     },
     {
-      criterion: "HDR-Testpräzision",
-      arcturus: "Volle CTA / MMP / CSNR",
-      older: "Eingeschränkt",
+      criterion: "HDR Test Precision",
+      arcturus: "Full CTA / MMP / CSNR",
+      older: "Limited",
       arcturusIcon: <Check className="h-5 w-5 text-green-600" />,
       olderIcon: <X className="h-5 w-5 text-red-500" />
     }
@@ -190,8 +190,8 @@ const SolutionArcturusBundle = () => {
   const comparisonSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "Arcturus HDR Testpaket",
-    "description": "Vergleich moderner HDR-Testlösungen mit traditionellen Systemen wie DTS.",
+    "name": "Arcturus HDR Test Package",
+    "description": "Comparison of modern HDR testing solutions with traditional systems like DTS.",
     "brand": {
       "@type": "Brand",
       "name": "Image Engineering"
@@ -203,18 +203,18 @@ const SolutionArcturusBundle = () => {
     "additionalProperty": [
       {
         "@type": "PropertyValue",
-        "name": "Lichtstabilität",
-        "value": "±0,5 °C geregelte Stabilität"
+        "name": "Light Stability",
+        "value": "±0.5 °C controlled stability"
       },
       {
         "@type": "PropertyValue",
-        "name": "API-Zugang",
+        "name": "API Access",
         "value": "C, C++, Python"
       },
       {
         "@type": "PropertyValue",
-        "name": "Flicker-Steuerung",
-        "value": "Sinus / Dreieck / Rechteck"
+        "name": "Flicker Control",
+        "value": "Sine / Triangle / Square"
       }
     ]
   };
@@ -345,18 +345,18 @@ const SolutionArcturusBundle = () => {
             {/* Right Content */}
             <div className="space-y-8">
               <div>
-                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
-                  Arcturus
-                  <br />
-                  <span className="text-soft-blue font-light">HDR</span>
-                  <br />
-                  <span className="text-soft-blue font-medium">Test Bundle</span>
-                </h1>
-                
-                <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                  Die ultimative Kombination aus Arcturus LED-Beleuchtungssystem, Vega Software Suite und 
-                  präzisions-entwickelten Test Charts für professionelle Bildqualitätsanalyse.
-                </p>
+            <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
+              Arcturus
+              <br />
+              <span className="text-soft-blue font-light">HDR</span>
+              <br />
+              <span className="text-soft-blue font-medium">Test Bundle</span>
+            </h1>
+            
+            <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+              The ultimate combination of Arcturus LED lighting system, Vega software suite and 
+              precision-engineered test charts for professional image quality analysis.
+            </p>
               </div>
               
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
@@ -370,7 +370,7 @@ const SolutionArcturusBundle = () => {
                     }
                   }}
                 >
-                  Komplettlösung anfragen
+                  Request Complete Solution
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button 
@@ -381,7 +381,7 @@ const SolutionArcturusBundle = () => {
                     document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                   }}
                 >
-                  Technische Details
+                  Technical Details
                 </Button>
               </div>
             </div>
@@ -393,11 +393,11 @@ const SolutionArcturusBundle = () => {
         <section id="architecture" className="container mx-auto px-6 py-16 scroll-mt-[260px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            System-Architektur
+            System Architecture
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed max-w-3xl mx-auto">
-            Drei perfekt aufeinander abgestimmte Komponenten für maximale Effizienz und Genauigkeit 
-            in Ihren Bildqualitätstests.
+            Three perfectly coordinated components for maximum efficiency and accuracy 
+            in your image quality testing.
           </p>
         </div>
         

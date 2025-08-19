@@ -130,7 +130,7 @@ const Charts = () => {
       {/* Category Filter */}
       <AccordionItem value="categories" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
-          Kategorie {selectedCategories.length > 0 && `(${selectedCategories.length})`}
+          Category {selectedCategories.length > 0 && `(${selectedCategories.length})`}
         </AccordionTrigger>
         <AccordionContent className="px-4 pb-3">
           <div className="space-y-0.5 max-h-32 overflow-y-auto">
@@ -156,7 +156,7 @@ const Charts = () => {
       {/* Application Filter */}
       <AccordionItem value="applications" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
-          Anwendung {selectedApplications.length > 0 && `(${selectedApplications.length})`}
+          Application {selectedApplications.length > 0 && `(${selectedApplications.length})`}
         </AccordionTrigger>
         <AccordionContent className="px-4 pb-3">
           <div className="space-y-0.5 max-h-32 overflow-y-auto">
@@ -182,7 +182,7 @@ const Charts = () => {
       {/* Formats Filter */}
       <AccordionItem value="formats" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
-          Format/Größe {selectedFormats.length > 0 && `(${selectedFormats.length})`}
+          Format/Size {selectedFormats.length > 0 && `(${selectedFormats.length})`}
         </AccordionTrigger>
         <AccordionContent className="px-4 pb-3">
           <div className="space-y-0.5 max-h-32 overflow-y-auto">
@@ -208,7 +208,7 @@ const Charts = () => {
       {/* Price Filter */}
       <AccordionItem value="price" className="border border-gray-200 rounded-lg" style={{backgroundColor: '#F8F8F8'}}>
         <AccordionTrigger className="text-[#000000] font-medium hover:no-underline px-4 py-2">
-          Preisbereich (EUR)
+          Price Range (EUR)
         </AccordionTrigger>
         <AccordionContent className="px-4 pb-3">
           <div className="space-y-3">
@@ -259,8 +259,8 @@ const Charts = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AnnouncementBanner 
-        message="Kostenloser Versand ab 500€ Bestellwert"
-        ctaText="Mehr erfahren"
+        message="Free shipping on orders over €500"
+        ctaText="Learn more"
         ctaLink="#"
         icon="calendar"
       />
@@ -298,15 +298,15 @@ const Charts = () => {
             </nav>
 
             <div className="mb-8">
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-32 pt-32">
-                Test Charts – Präzision
-                <br />
-                <span className="font-medium" style={{ color: '#1f6ae8' }}>für jede Anwendung</span>
-              </h1>
-              
-              <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl">
-                Unsere umfassende Auswahl an Testcharts für alle Kamera- und Bildqualitätstests – von Low-Light bis Ultra-HD.
-              </p>
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-32 pt-32">
+              Test Charts – Precision
+              <br />
+              <span className="font-medium" style={{ color: '#1f6ae8' }}>for Every Application</span>
+            </h1>
+            
+            <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl">
+              Our comprehensive selection of test charts for all camera and image quality testing – from low-light to ultra-HD.
+            </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -316,7 +316,7 @@ const Charts = () => {
                 variant="decision"
                 className="text-white px-8"
               >
-                Alle Charts entdecken
+                Explore All Charts
               </Button>
               <Button 
                 size="lg" 
@@ -324,7 +324,7 @@ const Charts = () => {
                 variant="contact"
                 className="text-white px-8"
               >
-                Beratung anfragen
+                Request Consultation
               </Button>
             </div>
           </div>
@@ -342,8 +342,8 @@ const Charts = () => {
         <div className="container mx-auto px-6 py-4">
           {/* Header */}
           <div className="mb-4 mt-8">
-            <h2 className="text-3xl font-semibold text-[#000000] mb-2">Finden und Sortieren Sie Ihre perfekten Testcharts</h2>
-            <p className="text-gray-600">Nutzen Sie unsere Filter und Suchfunktion für präzise Suchergebnisse</p>
+            <h2 className="text-3xl font-semibold text-[#000000] mb-2">Find and Sort Your Perfect Test Charts</h2>
+            <p className="text-gray-600">Use our filters and search function for precise search results</p>
           </div>
           
           {/* Search Bar - Full Width */}
@@ -351,7 +351,7 @@ const Charts = () => {
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
               <Input
-                placeholder="Suche nach Titel, SKU oder Tags..."
+                placeholder="Search by title, SKU or tags..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-12 py-3 text-lg bg-white text-[#000000] border-gray-300 focus:border-[#3464e3] focus:ring-[#3464e3]"
@@ -367,7 +367,7 @@ const Charts = () => {
               className="flex items-center gap-2 border-gray-300 hover:bg-gray-50"
             >
               <Filter className="w-4 h-4" />
-              Filter {filtersOpen ? 'ausblenden' : 'anzeigen'}
+              Filter {filtersOpen ? 'hide' : 'show'}
               {activeFiltersCount > 0 && (
                 <Badge variant="secondary" className="ml-1 bg-[#3464e3] text-white">
                   {activeFiltersCount}
@@ -409,7 +409,7 @@ const Charts = () => {
                       className="w-full text-white"
                       style={{ backgroundColor: '#3464e3' }}
                     >
-                      Filter anwenden
+                      Apply Filters
                     </Button>
                   </div>
                 </div>

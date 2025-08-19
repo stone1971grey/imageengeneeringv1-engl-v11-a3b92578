@@ -387,7 +387,7 @@ const ChartDetail = () => {
         {/* Related Charts */}
         {relatedCharts.length > 0 && (
           <section>
-            <h2 className="text-2xl font-bold mb-6">Ähnliche Testcharts</h2>
+            <h2 className="text-2xl font-bold mb-6">Similar Test Charts</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {relatedCharts.map(relatedChart => (
                 <Card key={relatedChart.id} className="hover:shadow-md transition-shadow">
@@ -406,10 +406,10 @@ const ChartDetail = () => {
                   <CardContent>
                     <div className="flex items-center justify-between">
                       {relatedChart.price_mode === 'rfq' ? (
-                        <span className="font-semibold text-muted-foreground">Auf Anfrage</span>
+                        <span className="font-semibold text-muted-foreground">On Request</span>
                       ) : (
                         <span className="font-semibold text-primary">
-                          ab {relatedChart.price_from}€
+                          from ${relatedChart.price_from}
                         </span>
                       )}
                       <Button size="sm" asChild>
