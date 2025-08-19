@@ -366,7 +366,7 @@ const Navigation = () => {
                         <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                           <div className="flex items-center gap-3 text-black">
                             <Search className="h-5 w-5" />
-                            <span className="text-lg font-medium">Hilfe bei der Auswahl? → Lösungsfinder starten</span>
+                            <span className="text-lg font-medium">Need Help Choosing? → Start Solution Finder</span>
                           </div>
                         </div>
                       </div>
@@ -394,7 +394,7 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <Link to="/industries">
-                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Branchen</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Industries</NavigationMenuTrigger>
                   </Link>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-none">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
@@ -403,19 +403,19 @@ const Navigation = () => {
                         <div className="space-y-4 flex-1">
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Fotografie")}
+                            onMouseEnter={() => setHoveredIndustry("Photography")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Camera className="h-6 w-6" />
-                            <span>Fotografie</span>
+                            <span>Photography</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Mobiltelefone")}
+                            onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Smartphone className="h-6 w-6" />
-                            <span>Mobiltelefone</span>
+                            <span>Mobile Phones</span>
                           </div>
                           <Link 
                             to="/automotive" 
@@ -441,11 +441,11 @@ const Navigation = () => {
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Sicherheit / Überwachung")}
+                            onMouseEnter={() => setHoveredIndustry("Security / Surveillance")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Shield className="h-6 w-6" />
-                            <span>Sicherheit / Überwachung</span>
+                            <span>Security / Surveillance</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -462,19 +462,19 @@ const Navigation = () => {
                         <div className="space-y-4 flex-1">
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Medizin / Endoskopie")}
+                            onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Stethoscope className="h-6 w-6" />
-                            <span>Medizin / Endoskopie</span>
+                            <span>Medical / Endoscopy</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Scannen & Archivierung")}
+                            onMouseEnter={() => setHoveredIndustry("Scanning & Archiving")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <ScanLine className="h-6 w-6" />
-                            <span>Scannen & Archivierung</span>
+                            <span>Scanning & Archiving</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -509,7 +509,7 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <Link to="/products">
-                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Produkte</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Products</NavigationMenuTrigger>
                   </Link>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
@@ -527,11 +527,11 @@ const Navigation = () => {
                           </Link>
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Geräte")}
+                            onMouseEnter={() => setHoveredProduct("Equipment")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Camera className="h-6 w-6" />
-                            <span>Geräte</span>
+                            <span>Equipment</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -547,19 +547,19 @@ const Navigation = () => {
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Produktbündel")}
+                            onMouseEnter={() => setHoveredProduct("Product Bundles")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Package className="h-6 w-6" />
-                            <span>Produktbündel</span>
+                            <span>Product Bundles</span>
                           </div>
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Lösungen")}
+                            onMouseEnter={() => setHoveredProduct("Solutions")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Lightbulb className="h-6 w-6" />
-                            <span>Lösungen</span>
+                            <span>Solutions</span>
                           </div>
                         </div>
                         
@@ -567,38 +567,38 @@ const Navigation = () => {
                          <div className="space-y-4 flex-1">
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Zubehör")}
+                            onMouseEnter={() => setHoveredProduct("Accessories")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Puzzle className="h-6 w-6" />
-                            <span>Zubehör</span>
+                            <span>Accessories</span>
                           </div>
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Technologie")}
+                            onMouseEnter={() => setHoveredProduct("Technology")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Cpu className="h-6 w-6" />
-                            <span>Technologie</span>
+                            <span>Technology</span>
                           </div>
                            <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Schulungen")}
+                            onMouseEnter={() => setHoveredProduct("Training")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <GraduationCap className="h-6 w-6" />
-                            <span>Schulungen</span>
+                            <span>Training</span>
                           </div>
                         </div>
                       </div>
                       
-                      {/* Testlabor CTA */}
+                      {/* Lab View CTA */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <Link to="/inside-lab">
                           <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                             <div className="flex items-center gap-3 text-black">
                               <Microscope className="h-5 w-5" />
-                              <span className="text-lg font-medium">Blick ins Testlabor</span>
+                              <span className="text-lg font-medium">Inside the Testing Lab</span>
                             </div>
                           </div>
                         </Link>
@@ -625,7 +625,7 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Ressourcen</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Resources</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                         <div className="flex gap-6 p-6">
@@ -641,7 +641,7 @@ const Navigation = () => {
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <FileText className="h-5 w-5" />
-                            <a href="#">Dokumentation</a>
+                            <a href="#">Documentation</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <BookOpen className="h-5 w-5" />
@@ -650,11 +650,11 @@ const Navigation = () => {
                         </div>
 
 
-                        {/* Column 2: Support & Hilfe */}
+                        {/* Column 2: Support & Help */}
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Wrench className="h-6 w-6" />
-                            Support & Hilfe
+                            Support & Help
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Lightbulb className="h-5 w-5" />
@@ -662,7 +662,7 @@ const Navigation = () => {
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Wrench className="h-5 w-5" />
-                            <a href="#">Technischer Support</a>
+                            <a href="#">Technical Support</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Users className="h-5 w-5" />
@@ -671,19 +671,19 @@ const Navigation = () => {
                         </div>
 
 
-                        {/* Column 3: Zusatzressourcen */}
+                        {/* Column 3: Additional Resources */}
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Info className="h-6 w-6" />
-                            Zusatzressourcen
+                            Additional Resources
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Video className="h-5 w-5" />
-                            <a href="#">Tutorials & Video-Guides</a>
+                            <a href="#">Tutorials & Video Guides</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Link2 className="h-5 w-5" />
-                            <a href="#">API-Dokumentation</a>
+                            <a href="#">API Documentation</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <ScrollText className="h-5 w-5" />
@@ -698,7 +698,7 @@ const Navigation = () => {
                           <div className="bg-[#56bef9] hover:bg-[#4aa8e0] p-4 rounded flex items-center justify-center transition-colors cursor-pointer">
                             <div className="flex items-center gap-3 text-black">
                               <Search className="h-5 w-5" />
-                              <span className="text-lg font-medium">Zum Downloadcenter</span>
+                              <span className="text-lg font-medium">To Download Center</span>
                             </div>
                           </div>
                         </Link>
@@ -708,28 +708,28 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Über uns</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">About Us</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main grid */}
                       <div className="flex gap-6 p-6">
-                        {/* Column 1: Kontakt & Standort */}
+                        {/* Column 1: Contact & Location */}
                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Building2 className="h-6 w-6" />
-                            Kontakt & Standort
+                            Contact & Location
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <MessageCircle className="h-5 w-5" />
-                            <a href="#">Kontakt</a>
+                            <a href="#">Contact</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <MapPin className="h-5 w-5" />
-                            <a href="#">Besuch uns</a>
+                            <a href="#">Visit Us</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Building className="h-5 w-5" />
-                            <a href="#">Händler / Reseller</a>
+                            <a href="#">Dealers / Resellers</a>
                           </div>
                           <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                             <Calendar className="h-5 w-5" />
@@ -738,11 +738,11 @@ const Navigation = () => {
                         </div>
 
 
-                        {/* Column 2: Über das Unternehmen */}
+                        {/* Column 2: About the Company */}
                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Info className="h-5 w-5" />
-                            <a href="#about">Über Image Engineering</a>
+                            <a href="#about">About Image Engineering</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Users className="h-5 w-5" />
@@ -754,33 +754,33 @@ const Navigation = () => {
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Briefcase className="h-5 w-5" />
-                            <a href="#">Stellenangebote</a>
+                            <a href="#">Job Opportunities</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Handshake className="h-5 w-5" />
-                            <a href="#">Mitgliedschaften & Partnerschaften</a>
+                            <a href="#">Memberships & Partnerships</a>
                           </div>
                         </div>
 
                         
 
-                        {/* Column 3: Qualität & Nachhaltigkeit */}
+                        {/* Column 3: Quality & Sustainability */}
                         <div className="space-y-4 flex-1">
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <BadgeCheck className="h-5 w-5" />
-                            <a href="#" aria-label="Qualitätsmanagement">{/* TODO: link to /company/quality-management when route exists */}Qualitätsmanagement</a>
+                            <a href="#" aria-label="Quality Management">{/* TODO: link to /company/quality-management when route exists */}Quality Management</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Leaf className="h-5 w-5" />
-                            <a href="#" aria-label="Klimaneutralität">{/* TODO: link to /company/climate-neutrality when route exists */}Klimaneutralität</a>
+                            <a href="#" aria-label="Climate Neutrality">{/* TODO: link to /company/climate-neutrality when route exists */}Climate Neutrality</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Sprout className="h-5 w-5" />
-                            <a href="#" aria-label="ESG – Nachhaltigkeit">{/* TODO: link to /company/esg-sustainability when route exists */}ESG – Nachhaltigkeit</a>
+                            <a href="#" aria-label="ESG – Sustainability">{/* TODO: link to /company/esg-sustainability when route exists */}ESG – Sustainability</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Recycle className="h-5 w-5" />
-                            <a href="#" aria-label="Entsorgung & Recycling">{/* TODO: link to /company/disposal-recycling when route exists */}Entsorgung & Recycling</a>
+                            <a href="#" aria-label="Disposal & Recycling">{/* TODO: link to /company/disposal-recycling when route exists */}Disposal & Recycling</a>
                           </div>
                         </div>
                       </div>
@@ -792,7 +792,7 @@ const Navigation = () => {
             </NavigationMenu>
             
             <Button variant="default" className="bg-gradient-primary hover:bg-white hover:text-black transition-all duration-300 ml-4 text-lg">
-              Kontakt
+              Contact
             </Button>
           </div>
 
@@ -919,12 +919,12 @@ const Navigation = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Branchen */}
+                    {/* Industries */}
                     <AccordionItem value="industries">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
                           <Building2 className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Branchen</span>
+                          <span className="text-foreground">Industries</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
@@ -933,13 +933,13 @@ const Navigation = () => {
                             <li>
                               <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
                                 <Camera className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Fotografie</span>
+                                <span className="text-foreground">Photography</span>
                               </Link>
                             </li>
                             <li>
                               <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
                                 <Smartphone className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Mobiltelefone</span>
+                                <span className="text-foreground">Mobile Phones</span>
                               </Link>
                             </li>
                             <li>
@@ -957,7 +957,7 @@ const Navigation = () => {
                             <li>
                               <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
                                 <Shield className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Sicherheit / Überwachung</span>
+                                <span className="text-foreground">Security / Surveillance</span>
                               </Link>
                             </li>
                             <li>
@@ -969,13 +969,13 @@ const Navigation = () => {
                             <li>
                               <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
                                 <Stethoscope className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Medizin / Endoskopie</span>
+                                <span className="text-foreground">Medical / Endoscopy</span>
                               </Link>
                             </li>
                             <li>
                               <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
                                 <ScanLine className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Scannen & Archivierung</span>
+                                <span className="text-foreground">Scanning & Archiving</span>
                               </Link>
                             </li>
                             <li>
@@ -989,12 +989,12 @@ const Navigation = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Produkte */}
+                    {/* Products */}
                     <AccordionItem value="products">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
                           <Package className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Produkte</span>
+                          <span className="text-foreground">Products</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
@@ -1004,25 +1004,25 @@ const Navigation = () => {
                               <Link to="/products/charts" className="min-h-12 px-4 flex items-center gap-3 py-3 hover:bg-accent rounded-md transition-colors"><Target className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Charts</span></Link>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Camera className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Geräte</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Camera className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Equipment</span></div>
                             </li>
                             <li>
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Monitor className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Software</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Package className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Produktbündel</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Package className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Product Bundles</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Lösungen</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Solutions</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Puzzle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Zubehör</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Puzzle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Accessories</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Cpu className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technologie</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Cpu className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technology</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Schulungen</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Training</span></div>
                             </li>
                           </ul>
                           <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">Inside the Lab – Real Test Setups</Button>
@@ -1030,12 +1030,12 @@ const Navigation = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Ressourcen */}
+                    {/* Resources */}
                     <AccordionItem value="resources">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
                           <Download className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Ressourcen</span>
+                          <span className="text-foreground">Resources</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
@@ -1047,7 +1047,7 @@ const Navigation = () => {
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Package className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Software</span></div>
                               </li>
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><FileText className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Dokumentation</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><FileText className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Documentation</span></div>
                               </li>
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3"><BookOpen className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">White Papers</span></div>
@@ -1056,13 +1056,13 @@ const Navigation = () => {
                           </div>
                           <Separator />
                           <div>
-                            <h4 className="font-medium mb-2 px-4">Support & Hilfe</h4>
+                            <h4 className="font-medium mb-2 px-4">Support & Help</h4>
                             <ul className="space-y-1">
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Knowledge Base</span></div>
                               </li>
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Wrench className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technischer Support</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Wrench className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technical Support</span></div>
                               </li>
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Users className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Community</span></div>
@@ -1071,49 +1071,49 @@ const Navigation = () => {
                           </div>
                           <Separator />
                           <div>
-                            <h4 className="font-medium mb-2 px-4">Zusatzressourcen</h4>
+                            <h4 className="font-medium mb-2 px-4">Additional Resources</h4>
                             <ul className="space-y-1">
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Video className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Tutorials & Video-Guides</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Video className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Tutorials & Video Guides</span></div>
                               </li>
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Link2 className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">API-Dokumentation</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Link2 className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">API Documentation</span></div>
                               </li>
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3"><ScrollText className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Release Notes</span></div>
                               </li>
                             </ul>
                           </div>
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">Zum Downloadcenter →</Button>
+                          <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">To Download Center →</Button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Über uns */}
+                    {/* About Us */}
                     <AccordionItem value="about">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
                           <Info className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Über uns</span>
+                          <span className="text-foreground">About Us</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="pt-2">
                           <ul className="space-y-1">
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><MessageCircle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Kontakt</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><MessageCircle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Contact</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><MapPin className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Besuch uns</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><MapPin className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Visit Us</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Händler / Reseller</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Dealers / Resellers</span></div>
                             </li>
                             <li>
                               <Link to="/events" className="min-h-12 px-4 flex items-center gap-3 py-3"><Calendar className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Events</span></Link>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Über Image Engineering</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">About Image Engineering</span></div>
                             </li>
                             <li>
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Users className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Team</span></div>
@@ -1122,33 +1122,33 @@ const Navigation = () => {
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building2 className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Nynomic Group</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Briefcase className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Stellenangebote</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Briefcase className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Job Opportunities</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Handshake className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Mitgliedschaften & Partnerschaften</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Handshake className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Memberships & Partnerships</span></div>
                             </li>
                             <li>
-                              <Link to="#" aria-label="Qualitätsmanagement" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                              <Link to="#" aria-label="Quality Management" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                                 <BadgeCheck className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">Qualitätsmanagement</span>
+                                <span className="text-[15px] leading-5 text-foreground">Quality Management</span>
                               </Link>
                             </li>
                             <li>
-                              <Link to="#" aria-label="Klimaneutralität" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                              <Link to="#" aria-label="Climate Neutrality" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                                 <Leaf className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">Klimaneutralität</span>
+                                <span className="text-[15px] leading-5 text-foreground">Climate Neutrality</span>
                               </Link>
                             </li>
                             <li>
-                              <Link to="#" aria-label="ESG – Nachhaltigkeit" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                              <Link to="#" aria-label="ESG – Sustainability" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                                 <Sprout className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">ESG – Nachhaltigkeit</span>
+                                <span className="text-[15px] leading-5 text-foreground">ESG – Sustainability</span>
                               </Link>
                             </li>
                             <li>
-                              <Link to="#" aria-label="Entsorgung & Recycling" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                              <Link to="#" aria-label="Disposal & Recycling" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                                 <Recycle className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">Entsorgung & Recycling</span>
+                                <span className="text-[15px] leading-5 text-foreground">Disposal & Recycling</span>
                               </Link>
                             </li>
                           </ul>
