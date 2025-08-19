@@ -300,13 +300,15 @@ const Automotive = () => {
                      <strong>Important Note:</strong> This package includes one Vega device, one controller and one test chart. Additional Vega devices and charts can be purchased separately (one controller can control up to seven Vega devices).
                    </p>
                   <div className="text-center">
-                    <Button 
-                      size="lg"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
-                    >
-                      Contact Sales for IEEE-P2020 Package
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
+                    <Link to="#footer">
+                      <Button 
+                        size="lg"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+                      >
+                        Contact Sales for IEEE-P2020 Package
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
