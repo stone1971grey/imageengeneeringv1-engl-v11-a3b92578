@@ -10,6 +10,10 @@ import Footer from "@/components/Footer";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
+import arcturusProduct from "@/assets/arcturus-main-product-new.png";
+import te42Image from "@/assets/te42-ll.jpg";
+import camspecsImage from "@/assets/camspecs-xl.png";
+import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
 
 // Automotive landing page component
 const Automotive = () => {
@@ -47,23 +51,23 @@ const Automotive = () => {
     {
       title: "Arcturus",
       description: "High-performance LED lighting for automotive testing, HDR scenes & high-end sensors",
-      image: "/src/assets/arcturus-main-product.png",
+      image: arcturusProduct,
       link: "/product/arcturus"
     },
     {
       title: "TE42-LL",
       description: "Low-light test chart for automotive camera validation",
-      image: "/placeholder.svg"
+      image: te42Image
     },
     {
       title: "camSPECS XL",
       description: "Spectral sensitivity measurement system",
-      image: "/placeholder.svg"
+      image: camspecsImage
     },
     {
       title: "iQ-Analyzer-X",
       description: "Image quality assessment software suite",
-      image: "/placeholder.svg"
+      image: iqAnalyzerImage
     }
   ];
 
@@ -350,7 +354,7 @@ const Automotive = () => {
                           variant="outline" 
                           className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                         >
-                          Learn More
+                          Contact
                         </Button>
                       </Link>
                     ) : (
@@ -358,7 +362,7 @@ const Automotive = () => {
                         variant="outline" 
                         className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                       >
-                        Learn More
+                        Contact
                       </Button>
                     )}
                   </div>
