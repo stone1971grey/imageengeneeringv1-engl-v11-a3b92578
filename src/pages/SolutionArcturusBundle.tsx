@@ -1084,28 +1084,28 @@ const SolutionArcturusBundle = () => {
               <CardContent className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <Download className="mr-3 h-4 w-4" />
                   Vega Demo Version
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <FileText className="mr-3 h-4 w-4" />
                   User Manual (PDF)
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <Settings className="mr-3 h-4 w-4" />
                   Python API Guide
                 </Button>
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-green-600 hover:text-green-600"
+                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
                 >
                   <BarChart3 className="mr-3 h-4 w-4" />
                   Example Reports
