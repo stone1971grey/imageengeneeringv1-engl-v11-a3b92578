@@ -107,14 +107,16 @@ const Automotive = () => {
               </div>
               
               <div className="pt-4">
-                <Button 
-                  variant="decision"
-                  size="lg"
-                  className="px-8 py-4 text-lg font-medium group"
-                >
-                  Discover Automotive Solutions
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <Link to="#applications">
+                  <Button 
+                    variant="decision"
+                    size="lg"
+                    className="px-8 py-4 text-lg font-medium group"
+                  >
+                    Discover Automotive Solutions
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
               </div>
 
               {/* Minimal stats */}
