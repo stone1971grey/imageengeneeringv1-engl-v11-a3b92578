@@ -111,8 +111,8 @@ const StandardsExpertise = () => {
                       <span className="text-xl font-bold text-blue-600">{org.name}</span>
                     )}
                   </div>
-                  <h3 className="text-base text-gray-900 mb-2">{org.name}</h3>
-                  <p className="text-base text-gray-700 mb-3">{org.fullName}</p>
+                  <h3 className="text-lg text-gray-900 mb-2">{org.name}</h3>
+                  <p className="text-lg text-gray-700 mb-3">{org.fullName}</p>
                 </CardContent>
               </Card>
             ))}
