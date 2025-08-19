@@ -8,6 +8,15 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Calendar, MapPin, Clock, Globe, Filter, ArrowUpDown } from "lucide-react";
 
+// Import event images
+import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
+import eventAutomotiveConference from "@/assets/event-automotive-conference.jpg";
+import eventTechExpo from "@/assets/event-tech-expo.jpg";
+import eventHdrMasterclass from "@/assets/event-hdr-masterclass.jpg";
+import eventMedicalSeminar from "@/assets/event-medical-seminar.jpg";
+import eventAutomotiveStandards from "@/assets/event-automotive-standards.jpg";
+import eventsHero from "@/assets/events-hero.jpg";
+
 // Event data types
 interface Event {
   id: string;
@@ -42,7 +51,7 @@ const sampleEvents: Event[] = [
     category: "Workshop",
     language: "DE",
     description: "Comprehensive workshop covering advanced camera testing methodologies using Arcturus systems and industry-standard test charts.",
-    image: "/images/event-placeholder.jpg",
+    image: eventCameraWorkshop,
     isPast: false,
     registrationUrl: "#"
   },
@@ -59,7 +68,7 @@ const sampleEvents: Event[] = [
     category: "Schulung",
     language: "EN",
     description: "Professional training on ADAS vision system testing protocols and IEEE P2020 compliance requirements.",
-    image: "/images/event-placeholder.jpg",
+    image: eventAutomotiveConference,
     isPast: false,
     registrationUrl: "#"
   },
@@ -76,7 +85,7 @@ const sampleEvents: Event[] = [
     category: "Messe",
     language: "EN",
     description: "Industry conference showcasing the latest developments in mobile camera quality testing and VCX standards.",
-    image: "/images/event-placeholder.jpg",
+    image: eventTechExpo,
     isPast: false,
     registrationUrl: "#"
   },
@@ -93,7 +102,7 @@ const sampleEvents: Event[] = [
     category: "Workshop",
     language: "DE",
     description: "In-depth masterclass on HDR testing techniques using Arcturus LED systems and advanced measurement tools.",
-    image: "/images/event-placeholder.jpg",
+    image: eventHdrMasterclass,
     isPast: false,
     registrationUrl: "#"
   },
@@ -110,7 +119,7 @@ const sampleEvents: Event[] = [
     category: "Schulung",
     language: "EN",
     description: "Comprehensive training on automotive vision testing standards and regulatory compliance.",
-    image: "/images/event-placeholder.jpg",
+    image: eventAutomotiveStandards,
     isPast: false,
     registrationUrl: "#"
   },
@@ -127,7 +136,7 @@ const sampleEvents: Event[] = [
     category: "Messe",
     language: "EN",
     description: "Annual expo featuring the latest innovations in image quality testing technology and industry best practices.",
-    image: "/images/event-placeholder.jpg",
+    image: eventTechExpo,
     isPast: false,
     registrationUrl: "#"
   },
@@ -145,7 +154,7 @@ const sampleEvents: Event[] = [
     category: "Schulung",
     language: "DE",
     description: "Specialized training on medical imaging quality assessment and endoscopy testing standards.",
-    image: "/images/event-placeholder.jpg",
+    image: eventMedicalSeminar,
     isPast: true
   },
   {
@@ -161,7 +170,7 @@ const sampleEvents: Event[] = [
     category: "Messe",
     language: "EN",
     description: "Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.",
-    image: "/images/event-placeholder.jpg",
+    image: eventAutomotiveConference,
     isPast: true
   }
 ];
@@ -272,7 +281,7 @@ const Events = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/event-placeholder.jpg')"
+            backgroundImage: `url(${eventsHero})`
           }}
         />
         <div className="relative container mx-auto px-6">
