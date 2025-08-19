@@ -22,23 +22,23 @@ const Automotive = () => {
 
   const applications = [
     {
-      title: "Kamera-Tests für ADAS-Systeme",
-      description: "Umfassende Validierung von Fahrerassistenz-Kameras für Sicherheitskonformität",
+      title: "Camera Testing for ADAS Systems",
+      description: "Comprehensive validation of driver assistance cameras for safety compliance",
       icon: Camera
     },
     {
-      title: "High-End Sensor-Tests",
-      description: "Präzisions-LED-Beleuchtung für Tests anspruchsvoller Sensorsysteme und Komponenten",
+      title: "High-End Sensor Testing",
+      description: "Precision LED lighting for testing demanding sensor systems and components",
       icon: TestTube
     },
     {
-      title: "HDR-Szenen-Erstellung",
-      description: "Erweiterte Beleuchtungssteuerung für die Erstellung von High Dynamic Range Testszenarien",
+      title: "HDR Scene Creation",
+      description: "Advanced lighting control for creating High Dynamic Range test scenarios",
       icon: Monitor
     },
     {
-      title: "Schwachlicht-Leistungstests",
-      description: "Kritische Validierung für Nachtfahrten und herausfordernde Beleuchtungsbedingungen",
+      title: "Low-Light Performance Testing",
+      description: "Critical validation for night driving and challenging lighting conditions",
       icon: Camera
     }
   ];
@@ -46,23 +46,23 @@ const Automotive = () => {
   const products = [
     {
       title: "Arcturus",
-      description: "Hochleistungs-LED-Beleuchtung für automotive Tests, HDR-Szenen & High-End-Sensoren",
+      description: "High-performance LED lighting for automotive testing, HDR scenes & high-end sensors",
       image: "/src/assets/arcturus-main-product.png",
       link: "/product/arcturus"
     },
     {
       title: "TE42-LL",
-      description: "Schwachlicht-Testtafel für automotive Kameravalidierung",
+      description: "Low-light test chart for automotive camera validation",
       image: "/placeholder.svg"
     },
     {
       title: "camSPECS XL",
-      description: "Spektrale Empfindlichkeitsmesssystem",
+      description: "Spectral sensitivity measurement system",
       image: "/placeholder.svg"
     },
     {
       title: "iQ-Analyzer-X",
-      description: "Bildqualitätsbewertungs-Softwaresuite",
+      description: "Image quality assessment software suite",
       image: "/placeholder.svg"
     }
   ];
@@ -73,7 +73,7 @@ const Automotive = () => {
       <Navigation />
         <AnnouncementBanner 
         message="Automotive Vision Excellence"
-        ctaText="Mehr erfahren"
+        ctaText="Learn More"
         ctaLink="#"
         icon="calendar"
       />
@@ -91,14 +91,14 @@ const Automotive = () => {
             <div className="space-y-8 lg:pr-8">
               <div>
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
-                  Bildqualität
+                  Image Quality
                   <br />
-                  <span className="font-medium text-soft-blue">für die Straße</span>
+                  <span className="font-medium text-soft-blue">for the Road</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                  Präzisions-entwickelte Kamera-Testlösungen 
-                  für Fahrzeugsicherheit und Innovation.
+                  Precision-engineered camera testing solutions 
+                  for vehicle safety and innovation.
                 </p>
               </div>
               
@@ -107,7 +107,7 @@ const Automotive = () => {
                   size="lg"
                   className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
                 >
-                  Jetzt Automotive-Lösungen entdecken
+                  Discover Automotive Solutions
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
@@ -116,15 +116,15 @@ const Automotive = () => {
               <div className="flex items-center space-x-12 pt-8">
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">99.9%</div>
-                  <div className="text-sm text-scandi-grey font-light">Genauigkeit</div>
+                  <div className="text-sm text-scandi-grey font-light">Accuracy</div>
                 </div>
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">50ms</div>
-                  <div className="text-sm text-scandi-grey font-light">Reaktion</div>
+                  <div className="text-sm text-scandi-grey font-light">Response</div>
                 </div>
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">100+</div>
-                  <div className="text-sm text-scandi-grey font-light">Projekte</div>
+                  <div className="text-sm text-scandi-grey font-light">Projects</div>
                 </div>
               </div>
             </div>
@@ -151,8 +151,8 @@ const Automotive = () => {
               
               {/* Floating stats */}
               <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
-                <div className="text-sm text-scandi-grey font-light mb-1">Live-Verarbeitung</div>
-                <div className="text-2xl font-medium text-light-foreground">Aktiv</div>
+                <div className="text-sm text-scandi-grey font-light mb-1">Live Processing</div>
+                <div className="text-2xl font-medium text-light-foreground">Active</div>
               </div>
             </div>
           </div>
@@ -164,10 +164,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Hauptanwendungen
+              Main Applications
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Wesentliche Testlösungen für automotive Kamerasysteme
+              Essential testing solutions for automotive camera systems
             </p>
           </div>
 
@@ -200,10 +200,10 @@ const Automotive = () => {
             <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100">
               <div className="text-center mb-12">
                 <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                  camPAS - Camera Performance für Automotive-Systeme
+                  camPAS - Camera Performance for Automotive Systems
                 </h3>
                 <p className="text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
-                  Der camPAS (Camera Performance for Automotive Systems) Test ist ein einzigartig entwickelter Bildqualitäts-Leistungstest für Kamerabilqualität und Sensorsysteme in der Automobilindustrie. Wir bieten camPAS für Kunden an, die unabhängige und objektive Testergebnisse von einer neutralen dritten Partei benötigen, um ihre Entwicklungsentscheidungen zu unterstützen.
+                  The camPAS (Camera Performance for Automotive Systems) test is a uniquely developed image quality performance test for camera image quality and sensor systems in the automotive industry. We offer camPAS for customers who need independent and objective test results from a neutral third party to support their development decisions.
                 </p>
               </div>
 
@@ -315,10 +315,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Empfohlene Produkte
+              Recommended Products
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Branchenführende Tools für automotive Kameratests
+              Industry-leading tools for automotive camera testing
             </p>
           </div>
 
@@ -349,7 +349,7 @@ const Automotive = () => {
                           variant="outline" 
                           className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                         >
-                          Mehr erfahren
+                          Learn More
                         </Button>
                       </Link>
                     ) : (
@@ -357,7 +357,7 @@ const Automotive = () => {
                         variant="outline" 
                         className="w-full border-gray-200 hover:border-blue-600 hover:text-blue-600"
                       >
-                        Mehr erfahren
+                        Learn More
                       </Button>
                     )}
                   </div>
@@ -373,7 +373,7 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto text-center">
             <blockquote className="text-2xl md:text-3xl font-light text-gray-900 italic mb-8 leading-relaxed">
-              "Vertraut von OEMs und Tier-1-Zulieferern weltweit"
+              "Trusted by OEMs and Tier-1 suppliers worldwide"
             </blockquote>
             <div className="flex items-center justify-center space-x-8 text-gray-600">
               <span className="font-medium">BMW</span>
@@ -393,23 +393,23 @@ const Automotive = () => {
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Bereit, Ihre automotive Vision-Systeme zu verbessern?
+              Ready to Improve Your Automotive Vision Systems?
             </h2>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Verbinden Sie sich mit unseren Automotive-Experten und entdecken Sie, wie unsere 
-              Testlösungen Ihren Entwicklungsprozess beschleunigen können.
+              Connect with our automotive experts and discover how our 
+              testing solutions can accelerate your development process.
             </p>
             
             <Button 
               size="lg"
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg group"
             >
-              Mit unserem Automotive-Experten sprechen
+              Speak with Our Automotive Expert
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             
             <p className="text-sm text-gray-500 mt-6">
-              Kostenlose Beratung • Expertenführung • Keine Verpflichtungen
+              Free consultation • Expert guidance • No obligations
             </p>
           </div>
         </div>

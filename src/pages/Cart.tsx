@@ -88,8 +88,8 @@ const Cart = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         <AnnouncementBanner 
-          message="Kostenloser Versand ab 500€ Bestellwert"
-          ctaText="Mehr erfahren"
+        message="Free shipping on orders over €500"
+        ctaText="Learn more"
           ctaLink="#"
           icon="calendar"
         />
@@ -97,13 +97,13 @@ const Cart = () => {
         <div className="container mx-auto px-6 py-16">
           <div className="text-center max-w-md mx-auto">
             <ShoppingCart className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
-            <h1 className="text-2xl font-bold mb-4">Ihr Warenkorb ist leer</h1>
+            <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
             <p className="text-muted-foreground mb-8">
-              Entdecken Sie unsere große Auswahl an Testcharts
+              Discover our wide selection of test charts
             </p>
             <Button asChild>
               <Link to="/products/charts">
-                Testcharts entdecken
+                Explore Test Charts
               </Link>
             </Button>
           </div>
@@ -118,17 +118,17 @@ const Cart = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AnnouncementBanner 
-        message="Kostenloser Versand ab 500€ Bestellwert"
-        ctaText="Mehr erfahren"
+        message="Free shipping on orders over €500"
+        ctaText="Learn more"
         ctaLink="#"
         icon="calendar"
       />
 
       <div className="container mx-auto px-6 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">Warenkorb</h1>
+          <h1 className="text-3xl font-bold mb-2">Shopping Cart</h1>
           <p className="text-muted-foreground">
-            {cartItems.length} {cartItems.length === 1 ? 'Artikel' : 'Artikel'} in Ihrem Warenkorb
+            {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
           </p>
         </div>
 
@@ -195,9 +195,9 @@ const Cart = () => {
                         
                         <div className="text-right">
                           {item.priceMode === 'rfq' ? (
-                            <span className="font-semibold text-muted-foreground">
-                              Auf Anfrage
-                            </span>
+                  <span className="font-semibold text-muted-foreground">
+                    On Request
+                  </span>
                           ) : item.price ? (
                             <span className="font-semibold text-lg text-primary">
                               {(item.price * item.quantity).toLocaleString('de-DE')}€
@@ -218,26 +218,26 @@ const Cart = () => {
             {hasPricedItems && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Preisübersicht</CardTitle>
+                  <CardTitle>Price Overview</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between">
-                    <span>Zwischensumme</span>
-                    <span>{subtotal.toLocaleString('de-DE')}€</span>
+                    <span>Subtotal</span>
+                    <span>${subtotal.toLocaleString('en-US')}</span>
                   </div>
                   <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>Versand</span>
-                    <span>{subtotal >= 500 ? 'Kostenlos' : 'Wird berechnet'}</span>
+                    <span>Shipping</span>
+                    <span>{subtotal >= 500 ? 'Free' : 'Calculated'}</span>
                   </div>
                   <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>MwSt. (19%)</span>
-                    <span>Wird ausgewiesen</span>
+                    <span>VAT (19%)</span>
+                    <span>Will be shown</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-semibold text-lg">
-                    <span>Summe (Netto)</span>
+                    <span>Total (Net)</span>
                     <span className="text-primary">
-                      {hasRfqItems ? `${subtotal.toLocaleString('de-DE')}€ + Anfrage` : `${subtotal.toLocaleString('de-DE')}€`}
+                      {hasRfqItems ? `$${subtotal.toLocaleString('en-US')} + Quote` : `$${subtotal.toLocaleString('en-US')}`}
                     </span>
                   </div>
                 </CardContent>
@@ -248,78 +248,78 @@ const Cart = () => {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {hasRfqItems ? 'Angebot anfragen' : 'Bestellung anfragen'}
+                  {hasRfqItems ? 'Request Quote' : 'Request Order'}
                 </CardTitle>
                 <CardDescription>
                   {hasRfqItems 
-                    ? 'Da Ihr Warenkorb Artikel "auf Anfrage" enthält, erstellen wir Ihnen ein individuelles Angebot.'
-                    : 'Senden Sie uns Ihre Bestellanfrage und wir melden uns schnellstmöglich bei Ihnen.'
+                    ? 'Since your cart contains "quote on request" items, we\'ll create a custom quote for you.'
+                    : 'Send us your order request and we\'ll get back to you as soon as possible.'
                   }
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="company">Firmenname *</Label>
+                    <Label htmlFor="company">Company Name *</Label>
                     <Input
                       id="company"
                       value={customerInfo.company}
                       onChange={(e) => setCustomerInfo({...customerInfo, company: e.target.value})}
-                      placeholder="Ihre Firma"
+                      placeholder="Your Company"
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="name">Ansprechpartner *</Label>
+                    <Label htmlFor="name">Contact Person *</Label>
                     <Input
                       id="name"
                       value={customerInfo.name}
                       onChange={(e) => setCustomerInfo({...customerInfo, name: e.target.value})}
-                      placeholder="Ihr Name"
+                      placeholder="Your Name"
                       required
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="email">E-Mail-Adresse *</Label>
+                  <Label htmlFor="email">Email Address *</Label>
                   <Input
                     id="email"
                     type="email"
                     value={customerInfo.email}
                     onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
-                    placeholder="ihre@email.de"
+                    placeholder="your@email.com"
                     required
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="country">Land</Label>
+                  <Label htmlFor="country">Country</Label>
                   <Select
                     value={customerInfo.country}
                     onValueChange={(value) => setCustomerInfo({...customerInfo, country: value})}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Land auswählen" />
+                      <SelectValue placeholder="Select Country" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="de">Deutschland</SelectItem>
-                      <SelectItem value="at">Österreich</SelectItem>
-                      <SelectItem value="ch">Schweiz</SelectItem>
+                      <SelectItem value="de">Germany</SelectItem>
+                      <SelectItem value="at">Austria</SelectItem>
+                      <SelectItem value="ch">Switzerland</SelectItem>
                       <SelectItem value="us">USA</SelectItem>
                       <SelectItem value="cn">China</SelectItem>
-                      <SelectItem value="other">Andere</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div>
-                  <Label htmlFor="notes">Anmerkungen</Label>
+                  <Label htmlFor="notes">Notes</Label>
                   <Textarea
                     id="notes"
                     value={customerInfo.notes}
                     onChange={(e) => setCustomerInfo({...customerInfo, notes: e.target.value})}
-                    placeholder="Besondere Anforderungen, Liefertermin, etc."
+                    placeholder="Special requirements, delivery date, etc."
                     rows={3}
                   />
                 </div>
@@ -331,11 +331,11 @@ const Cart = () => {
                   disabled={!customerInfo.company || !customerInfo.name || !customerInfo.email}
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  {hasRfqItems ? 'Angebot anfragen' : 'Bestellung anfragen'}
+                  {hasRfqItems ? 'Request Quote' : 'Request Order'}
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center">
-                  * Pflichtfelder. Ihre Daten werden verschlüsselt übertragen.
+                  * Required fields. Your data will be transmitted encrypted.
                 </p>
               </CardContent>
             </Card>

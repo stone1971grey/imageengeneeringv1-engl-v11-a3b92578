@@ -55,8 +55,8 @@ const ChartDetail = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <AnnouncementBanner 
-        message="Kostenloser Versand ab 500€ Bestellwert"
-        ctaText="Mehr erfahren"
+        message="Free shipping on orders over €500"
+        ctaText="Learn more"
         ctaLink="#"
         icon="calendar"
       />
@@ -74,7 +74,7 @@ const ChartDetail = () => {
             <span>/</span>
             <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
               <Link to="/products/charts" className="hover:text-foreground transition-colors" itemProp="item">
-                <span itemProp="name">Testcharts</span>
+                <span itemProp="name">Test Charts</span>
               </Link>
               <meta itemProp="position" content="2" />
             </li>
@@ -90,7 +90,7 @@ const ChartDetail = () => {
         <Button variant="ghost" asChild className="mb-6">
           <Link to="/products/charts">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Zurück zu allen Charts
+            Back to All Charts
           </Link>
         </Button>
 
@@ -160,7 +160,7 @@ const ChartDetail = () => {
               </div>
               
               <div>
-                <h3 className="text-sm font-medium mb-2">Kompatibilität</h3>
+                <h3 className="text-sm font-medium mb-2">Compatibility</h3>
                 <div className="flex flex-wrap gap-2">
                   {chart.compatibility.map(comp => (
                     <Badge key={comp} variant="secondary">
