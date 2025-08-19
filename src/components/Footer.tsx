@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, Clock } from "lucide-react";
+import { Phone, Clock } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import teamLaura from "@/assets/team-laura-color.jpg";
 import teamMarkus from "@/assets/team-markus-color.jpg";
@@ -75,12 +75,7 @@ const Footer = () => {
               </p>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <Mail className="h-5 w-5 text-primary mr-3" />
-                <span className="text-foreground">info@image-engineering.de</span>
-              </div>
-              
+            <div className="space-y-4">              
               <div className="space-y-2">
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-primary mr-3" />
@@ -109,7 +104,7 @@ const Footer = () => {
                   ? 'Schedule Consultation Now'
                 : isAutomotivePage
                   ? 'Schedule Consultation Now'
-                  : 'Schedule Demo Now'
+                  : 'Get in contact with us'
               }
             </Button>
           </div>
