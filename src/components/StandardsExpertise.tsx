@@ -237,7 +237,7 @@ const StandardsExpertise = () => {
               </p>
               <Button 
                 size="lg"
-                variant="contact"
+                variant="default"
                 className="px-8 py-4 shadow-lg group"
               >
                 Schedule Consultation Now
