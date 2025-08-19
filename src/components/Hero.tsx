@@ -40,7 +40,7 @@ const Hero = () => {
             <div className="pt-4">
               <Button 
                 size="lg"
-                variant="default"
+                variant="decision"
                 className="text-white border-0 px-8 py-4 group"
                 onClick={() => window.location.href = '/products/charts'}
               >
