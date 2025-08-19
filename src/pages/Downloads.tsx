@@ -47,7 +47,12 @@ import {
   Terminal as OsLinuxIcon,
   Download as DownloadIcon,
   MessageCircle,
+  User,
+  Hand,
 } from "lucide-react";
+
+// Import AI assistant avatar
+import aiAssistantAvatar from "@/assets/ai-assistant-avatar.jpg";
 
 // Data model
 export type DownloadItem = {
@@ -796,13 +801,31 @@ export default function Downloads() {
 
         {/* AI Assistant */}
         <div className="fixed bottom-6 right-6 z-50">
-          <Button
+          <div 
             onClick={() => setAiOpen(true)}
-            className="rounded-full shadow-lg bg-[#3464e3] hover:bg-[#2851d4] text-white transition-all duration-300"
-            size="lg"
+            className="group cursor-pointer bg-white rounded-2xl shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center gap-4 p-4 pr-6 hover-scale"
           >
-            <MessageCircle className="h-5 w-5" />
-          </Button>
+            {/* Avatar */}
+            <div className="relative flex-shrink-0">
+              <img 
+                src={aiAssistantAvatar}
+                alt="AI Assistant"
+                className="w-12 h-12 rounded-full object-cover border-2 border-primary/20"
+              />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+            </div>
+            
+            {/* Text - Hidden on mobile */}
+            <div className="hidden sm:block">
+              <div className="text-sm font-medium text-gray-900">Need help?</div>
+              <div className="text-xs text-gray-600">Ask our AI-Assistant</div>
+            </div>
+            
+            {/* Chat Icon - Always visible */}
+            <div className="flex-shrink-0 bg-primary text-white rounded-full p-2 group-hover:animate-pulse">
+              <MessageCircle className="h-4 w-4" />
+            </div>
+          </div>
         </div>
         </main>
       </div>
