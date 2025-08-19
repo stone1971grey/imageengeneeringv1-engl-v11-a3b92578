@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Building, Cog, ArrowRight, CheckCircle, Search, FileCheck, Camera } from "lucide-react";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
@@ -94,10 +95,14 @@ const ManufacturerSupplierShowcase = () => {
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-semibold group">
+                <Button 
+                  variant="decision"
+                  size="lg"
+                  className="w-full group"
+                >
                   Learn More About Manufacturer Solutions
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Button>
               </CardContent>
             </Card>
 
@@ -161,10 +166,14 @@ const ManufacturerSupplierShowcase = () => {
                 </div>
 
                 {/* CTA Button */}
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 font-semibold group">
+                <Button 
+                  variant="decision"
+                  size="lg"
+                  className="w-full group"
+                >
                   Learn More About Supplier Solutions
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Button>
               </CardContent>
             </Card>
           </div>
