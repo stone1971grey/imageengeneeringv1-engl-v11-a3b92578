@@ -629,7 +629,7 @@ const Charts = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <Button asChild className="flex-1" style={{ backgroundColor: '#3464e3' }}>
+                    <Button asChild className="flex-1" style={{ backgroundColor: '#3464e3', color: 'white' }}>
                       <Link to={`/products/charts/${chart.slug}`}>
                         <FileText className="w-4 h-4 mr-2" />
                         Details
