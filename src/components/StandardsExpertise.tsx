@@ -139,7 +139,7 @@ const StandardsExpertise = () => {
                       <h4 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                         {standard.title}
                       </h4>
-                      <p className="text-gray-600 text-sm leading-relaxed mb-3">
+                      <p className="text-gray-600 text-base leading-relaxed mb-3">
                         {standard.description}
                       </p>
                     </div>
