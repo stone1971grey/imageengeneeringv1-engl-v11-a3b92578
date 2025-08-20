@@ -17,6 +17,7 @@ import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
 
 import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
 import testimonialDrBecker from "@/assets/testimonial-dr-becker.jpg";
+import te294Grayscale from "@/assets/te294-grayscale.png";
 
 const SolutionArcturusBundle = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -905,8 +906,12 @@ const SolutionArcturusBundle = () => {
               {/* TE294 Chart Set */}
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden flex items-center justify-center">
-                    <FileText className="h-16 w-16 text-gray-400" />
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+                    <img 
+                      src={te294Grayscale}
+                      alt="TE294 Chart Set for CTA, CSNR and MMP measurements"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
