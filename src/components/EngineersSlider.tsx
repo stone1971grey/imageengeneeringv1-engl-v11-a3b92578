@@ -96,7 +96,7 @@ const EngineersSlider = () => {
 
   return (
     <section 
-      className="py-24 bg-background"
+      className="py-24 bg-muted"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
@@ -105,11 +105,11 @@ const EngineersSlider = () => {
       aria-label="Engineers slider"
     >
       <div className="container mx-auto px-4">
-        {/* Eyebrow */}
+        {/* Headline */}
         <div className="text-center mb-16">
-          <p className="text-sm font-medium text-primary mb-4 tracking-wide uppercase">
+          <h2 className="text-4xl font-bold text-foreground mb-4">
             Speak with Our Engineers
-          </p>
+          </h2>
         </div>
 
         {/* Slider Content */}
