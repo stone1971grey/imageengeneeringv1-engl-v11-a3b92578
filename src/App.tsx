@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
+import GlobalPasswordGate from "@/components/GlobalPasswordGate";
 import Index from "./pages/Index";
 import InsideLab from "./pages/InsideLab";
 import Industries from "./pages/Industries";
@@ -29,9 +30,10 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
+      <GlobalPasswordGate>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/inside-lab" element={<InsideLab />} />
           <Route path="/industries" element={<Industries />} />
@@ -48,10 +50,11 @@ const App = () => (
           <Route path="/styleguide" element={<Styleguide />} />
           <Route path="/icons-styleguide" element={<IconsStyleguide />} />
           <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </GlobalPasswordGate>
     </TooltipProvider>
   </QueryClientProvider>
 );
