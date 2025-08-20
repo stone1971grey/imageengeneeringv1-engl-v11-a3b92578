@@ -20,6 +20,7 @@ import testimonialDrBecker from "@/assets/testimonial-dr-becker.jpg";
 import te294Grayscale from "@/assets/te294-grayscale.png";
 import arcturusAccessories from "@/assets/arcturus-accessories.png";
 import vegaAddon from "@/assets/vega-addon.png";
+import professionalTraining from "@/assets/professional-training.jpg";
 
 const SolutionArcturusBundle = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -906,8 +907,8 @@ const SolutionArcturusBundle = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
               
               {/* TE294 Chart Set */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
-                <CardContent className="p-0">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col h-full">
+                <CardContent className="p-0 flex-grow flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
                     <img 
                       src={te294Grayscale}
@@ -915,16 +916,16 @@ const SolutionArcturusBundle = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex-grow flex flex-col">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                       TE294 Chart Set
                     </h3>
-                    <p className="text-gray-600 leading-relaxed mb-4">
+                    <p className="text-gray-600 leading-relaxed mb-4 flex-grow">
                       Optimized test chart for CTA, CSNR and MMP measurements
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262] mt-auto"
                     >
                       Learn More
                     </Button>
@@ -933,8 +934,8 @@ const SolutionArcturusBundle = () => {
               </Card>
 
               {/* Arcturus Accessories */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
-                <CardContent className="p-0">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col h-full">
+                <CardContent className="p-0 flex-grow flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
                     <img 
                       src={arcturusAccessories}
@@ -942,16 +943,16 @@ const SolutionArcturusBundle = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex-grow flex flex-col">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                       Arcturus Accessories
                     </h3>
-                    <p className="text-gray-600 leading-relaxed mb-4">
+                    <p className="text-gray-600 leading-relaxed mb-4 flex-grow">
                       Precision mounts, extensions and calibration aids
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262] mt-auto"
                     >
                       Learn More
                     </Button>
@@ -960,8 +961,8 @@ const SolutionArcturusBundle = () => {
               </Card>
 
               {/* Vega Add-on Kit */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
-                <CardContent className="p-0">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col h-full">
+                <CardContent className="p-0 flex-grow flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
                     <img 
                       src={vegaAddon}
@@ -969,16 +970,16 @@ const SolutionArcturusBundle = () => {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex-grow flex flex-col">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                       Vega Add-on Kit
                     </h3>
-                    <p className="text-gray-600 leading-relaxed mb-4">
+                    <p className="text-gray-600 leading-relaxed mb-4 flex-grow">
                       Extension for existing installations with Vega LED
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262] mt-auto"
                     >
                       Learn More
                     </Button>
@@ -987,33 +988,30 @@ const SolutionArcturusBundle = () => {
               </Card>
 
               {/* Professional Training Program */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-indigo-100 overflow-hidden flex items-center justify-center">
-                    <div className="text-center p-6">
-                      <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                      </div>
-                      <div className="text-blue-900 font-semibold">Professional Training</div>
-                    </div>
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col h-full">
+                <CardContent className="p-0 flex-grow flex flex-col">
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+                    <img 
+                      src={professionalTraining}
+                      alt="Professional training for technical equipment and camera testing systems"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-6 flex-grow flex flex-col">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      Professional Training Program
+                    </h3>
+                    <p className="text-gray-600 leading-relaxed mb-4 flex-grow">
+                      Comprehensive training courses and certification for optimal system usage
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262] mt-auto"
+                    >
+                      Learn More
+                    </Button>
                   </div>
                 </CardContent>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                    Professional Training Program
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-4">
-                    Comprehensive training courses and certification for optimal system usage
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
-                  >
-                    Learn More
-                  </Button>
-                </div>
               </Card>
 
             </div>
