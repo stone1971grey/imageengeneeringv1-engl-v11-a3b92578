@@ -61,7 +61,7 @@ const EngineersSlider = () => {
     setProgress(0);
   }, []);
 
-  // Auto-rotation every 12 seconds
+  // Auto-rotation every 6 seconds
   useEffect(() => {
     if (isPaused) return;
     
@@ -71,7 +71,7 @@ const EngineersSlider = () => {
           nextSlide();
           return 0;
         }
-        return prev + (100 / 120); // 120 steps for 12 seconds (100ms intervals)
+        return prev + (100 / 60); // 60 steps for 6 seconds (100ms intervals)
       });
     }, 100);
 
