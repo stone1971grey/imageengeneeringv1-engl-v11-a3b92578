@@ -1,6 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import emvaLogo from "@/assets/news-emva-1288-logo.png";
+import te300Image from "@/assets/news-te300.png";
+import iqAnalyzerImage from "@/assets/news-iq-analyzer-x.png";
+import geocalImage from "@/assets/news-geocal-xl.png";
 
 const newsItems = [
   {
@@ -8,28 +12,28 @@ const newsItems = [
     date: "July 21, 2025",
     headline: "EMVA 1288 becoming ISO 24942",
     teaser: "Dietmar Wueller is leading the international effort to migrate EMVA 1288 into ISO 24942, enhancing global standards for image quality testing.",
-    image: "/images/chart-placeholder.jpg"
+    image: emvaLogo
   },
   {
     id: 2,
     date: "June 20, 2025",
     headline: "TE300 – A new skin tone test chart",
     teaser: "Introducing the TE300 Skin Tone Checker: a modern tool for assessing skin tone accuracy in camera systems with real-world spectral data.",
-    image: "/images/chart-placeholder.jpg"
+    image: te300Image
   },
   {
     id: 3,
     date: "May 27, 2025",
     headline: "AI-powered image quality analysis software",
     teaser: "The iQ-Analyzer-X introduces advanced AI-powered tools for chart detection, automation, and video file analysis to streamline workflows.",
-    image: "/images/chart-placeholder.jpg"
+    image: iqAnalyzerImage
   },
   {
     id: 4,
     date: "July 21, 2025",
     headline: "Geometric Camera Calibration",
     teaser: "GEOCAL offers a compact, laser-based solution for geometric calibration, improving accuracy compared to traditional checkerboard targets.",
-    image: "/images/chart-placeholder.jpg"
+    image: geocalImage
   }
 ];
 
