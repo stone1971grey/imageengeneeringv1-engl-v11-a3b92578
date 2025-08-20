@@ -110,6 +110,9 @@ const EngineersSlider = () => {
           <h2 className="text-4xl font-bold text-foreground mb-4">
             Speak with Our Engineers
           </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Our experts help you identify the right standards for your application and develop customized testing solutions
+          </p>
         </div>
 
         {/* Slider Content */}
@@ -130,9 +133,9 @@ const EngineersSlider = () => {
 
             {/* Text Content */}
             <div className="text-center lg:text-left">
-              <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+              <h3 className="text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
                 Meet {currentEngineer.name}
-              </h2>
+              </h3>
               <p className="text-xl text-primary font-medium mb-4">
                 {currentEngineer.title}
               </p>

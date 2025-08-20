@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Award, CheckCircle, Users } from "lucide-react";
+import { Award, CheckCircle } from "lucide-react";
 import ieeeLogo from "@/assets/logo-ieee.png";
 import iecLogo from "@/assets/logo-iec.png";
 import isoLogo from "@/assets/logo-iso.jpg";
@@ -221,31 +220,6 @@ const StandardsExpertise = () => {
           </div>
         </div>
 
-        {/* CTA Section */}
-        <div className="text-center">
-          <Card className="bg-gradient-to-r from-blue-600 to-blue-700 border-0 shadow-xl">
-            <CardContent className="p-12">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <Users className="w-8 h-8 text-white" />
-                <h3 className="text-3xl font-bold text-white">
-                  Speak with Our Engineers
-                </h3>
-              </div>
-              <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Our experts help you identify the right standards for your 
-                application and develop customized testing solutions
-              </p>
-              <Button 
-                size="lg"
-                variant="contact"
-                className="px-8 py-4 shadow-lg group"
-              >
-                Schedule Consultation Now
-                <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </section>
   );
