@@ -18,6 +18,8 @@ import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
 import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
 import testimonialDrBecker from "@/assets/testimonial-dr-becker.jpg";
 import te294Grayscale from "@/assets/te294-grayscale.png";
+import arcturusAccessories from "@/assets/arcturus-accessories.png";
+import vegaAddon from "@/assets/vega-addon.png";
 
 const SolutionArcturusBundle = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -933,8 +935,12 @@ const SolutionArcturusBundle = () => {
               {/* Arcturus Accessories */}
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden flex items-center justify-center">
-                    <Settings className="h-16 w-16 text-gray-400" />
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+                    <img 
+                      src={arcturusAccessories}
+                      alt="Arcturus LED System and accessories"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
@@ -956,8 +962,12 @@ const SolutionArcturusBundle = () => {
               {/* Vega Add-on Kit */}
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden">
                 <CardContent className="p-0">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden flex items-center justify-center">
-                    <Package className="h-16 w-16 text-gray-400" />
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+                    <img 
+                      src={vegaAddon}
+                      alt="Vega LED system and add-on components"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
