@@ -217,7 +217,7 @@ const Navigation = () => {
   return (
     <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
       {/* Utility Navigation */}
-      <div className="container mx-auto px-6 py-2">
+      <div className="container mx-auto px-6 pt-5 pb-2">
         <div className="flex justify-end">
           <UtilityNavigation />
         </div>
@@ -799,10 +799,6 @@ const Navigation = () => {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-            
-            <Button variant="default" className="bg-gradient-primary hover:bg-white hover:text-black transition-all duration-300 ml-4 text-lg">
-              Contact
-            </Button>
           </div>
 
           {/* Mobile menu button */}
