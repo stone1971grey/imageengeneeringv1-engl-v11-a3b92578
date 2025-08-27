@@ -364,6 +364,22 @@ const Navigation = () => {
                       </div>
                       
                       {/* Image and description section */}
+                      {(hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData]) && (
+                        <div className="bg-[#f3f3f3] p-4">
+                          <div className="flex items-center gap-6 p-4 bg-white rounded">
+                            <img 
+                              src={industryData[hoveredIndustry as keyof typeof industryData].image} 
+                              alt={hoveredIndustry}
+                              className="w-[190px] h-auto object-cover rounded"
+                            />
+                            <div className="text-black">
+                              <h4 className="font-semibold text-xl">{hoveredIndustry}</h4>
+                              <p className="text-lg text-gray-600">{industryData[hoveredIndustry as keyof typeof industryData].description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
                       {hoveredSolution && (solutionData[hoveredSolution as keyof typeof solutionData] || solutionPackages[hoveredSolution as keyof typeof solutionPackages] || targetGroupsData[hoveredSolution as keyof typeof targetGroupsData]) && (
                         <div className="bg-[#f3f3f3] p-4">
                           <div className="flex items-center gap-6 p-4 bg-white rounded">
