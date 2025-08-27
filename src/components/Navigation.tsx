@@ -245,11 +245,69 @@ const Navigation = () => {
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
                         <div className="flex gap-6 p-6">
-                        {/* Left Column: Typical Applications */}
+                        {/* Left Column: Industries */}
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Building2 className="h-6 w-6" />
+                            Industries
+                          </h4>
+                          <Link 
+                            to="/automotive"
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
+                            onMouseEnter={() => setHoveredIndustry("Automotive & ADAS")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Car className="h-5 w-5" />
+                            <span>Automotive & ADAS</span>
+                          </Link>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Smartphone className="h-5 w-5" />
+                            <span>Smartphones & Consumer Electronics</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Stethoscope className="h-5 w-5" />
+                            <span>Medical Imaging</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Security / Surveillance")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Shield className="h-5 w-5" />
+                            <span>Security & Surveillance</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Broadcast & HDTV")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Tv className="h-5 w-5" />
+                            <span>Broadcast & Film</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("iQ‑Lab Testing")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <GraduationCap className="h-5 w-5" />
+                            <span>Research & Academia</span>
+                          </div>
+                        </div>
+                        
+                        
+                        {/* Right Column: Popular Applications */}
+                          <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Target className="h-6 w-6" />
-                            Typical Applications
+                            Popular Applications
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -273,7 +331,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CheckCircle className="h-6 w-6" />
+                            <CheckCircle className="h-5 w-5" />
                             <span>Test Environments for Smartphones & Displays</span>
                           </div>
                           <div 
@@ -291,81 +349,6 @@ const Navigation = () => {
                           >
                             <CheckCircle className="h-5 w-5" />
                             <span>ISO and IEEE Compliant Test Setups</span>
-                          </div>
-                        </div>
-                        
-                        
-                        {/* Middle Column: Pre-configured Solution Packages */}
-                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Package className="h-6 w-6" />
-                            Solution Packages
-                          </h4>
-                          <Link
-                            to="/solution/arcturus-bundle"
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
-                            onMouseEnter={() => setHoveredSolution("Arcturus HDR Test Bundle")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <Zap className="h-5 w-5" />
-                            <span>Arcturus HDR Test Bundle</span>
-                          </Link>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Camera Calibration Package")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <Settings className="h-5 w-5" />
-                            <span>Camera Calibration Package</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Laboratory Complete Solution")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <Microscope className="h-5 w-5" />
-                            <span>Laboratory Complete Solution</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Spectral Measurement & Analysis Set")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <BarChart3 className="h-5 w-5" />
-                            <span>Spectral Measurement & Analysis Set</span>
-                          </div>
-                        </div>
-
-
-                        {/* Right Column: Target Groups */}
-                        <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Users className="h-6 w-6" />
-                            Target Groups
-                          </h4>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Manufacturers")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <Building className="h-5 w-5" />
-                            <span>Manufacturers</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Suppliers")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <Cog className="h-5 w-5" />
-                            <span>Suppliers</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Research Institutions")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <GraduationCap className="h-5 w-5" />
-                            <span>Research Institutions</span>
                           </div>
                         </div>
                       </div>
