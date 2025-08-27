@@ -157,7 +157,7 @@ export default {
 				'slide-in-up': 'slide-in-up 0.4s ease-out',
 				'hover-lift': 'hover-lift 0.3s ease-out',
 				'fade-in': 'fade-in 1.2s ease-out',
-				'ken-burns': 'ken-burns 40s ease-in-out infinite',
+				'ken-burns': 'ken-burns 40s ease-in-out 1 forwards',
 				'slide-in-right': 'slide-in-right 3s ease-in-out infinite'
 			}
 		}
