@@ -39,15 +39,29 @@ const Hero = () => {
               </p>
             </div>
             
-            <div className="pt-4">
+            <div className="pt-4 flex gap-4">
               <Button 
                 size="lg"
-                variant="decision"
+                variant="contact"
                 className="text-white border-0 px-8 py-4 group"
                 onClick={() => window.location.href = '/products/charts'}
               >
                 Discover Charts
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              
+              <Button 
+                size="lg"
+                variant="decision"
+                className="text-white border-0 px-8 py-4"
+                onClick={() => {
+                  const element = document.getElementById('trusted-industries');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >
+                Trusted Across All Industries
               </Button>
             </div>
 
