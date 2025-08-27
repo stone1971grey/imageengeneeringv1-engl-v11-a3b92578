@@ -66,7 +66,7 @@ const Industries = () => {
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-20">
-          <h2 id="trusted-industries" className="text-4xl md:text-5xl font-bold text-light-foreground mb-6 tracking-tight">
+          <h2 id="trusted-industries" className="text-4xl md:text-5xl font-bold text-light-foreground mb-6 tracking-tight scroll-mt-24">
             Trusted Across All Industries
           </h2>
           <p className="text-xl text-light-muted max-w-2xl mx-auto font-light">
