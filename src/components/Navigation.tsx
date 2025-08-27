@@ -4,7 +4,7 @@ import { BadgeCheck, Sprout } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
-import IntelligentSearchBar from "@/components/IntelligentSearchBar";
+import UtilityNavigation from "@/components/UtilityNavigation";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -215,8 +215,16 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border py-3 lg:py-12">
-      <div className="container mx-auto px-6">
+    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
+      {/* Utility Navigation */}
+      <div className="container mx-auto px-6 py-2">
+        <div className="flex justify-end">
+          <UtilityNavigation />
+        </div>
+      </div>
+      
+      {/* Main Navigation */}
+      <div className="container mx-auto px-6 py-3 lg:py-6">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
@@ -229,7 +237,6 @@ const Navigation = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center flex-row gap-x-8">
-            <IntelligentSearchBar />
             <NavigationMenu>
               <NavigationMenuList className="gap-x-8">
                 <NavigationMenuItem className="mx-4">

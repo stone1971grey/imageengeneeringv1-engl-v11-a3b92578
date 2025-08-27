@@ -28,13 +28,13 @@ const IntelligentSearchBar = () => {
   // Static search data for navigation items and pages
   const staticSearchData: SearchResult[] = [
     // Pages
-    { id: 'home', title: 'Startseite', description: 'Hauptseite von Image Engineering', category: 'page', url: '/' },
-    { id: 'charts', title: 'Test Charts', description: 'Alle verfügbaren Test Charts und Kalibrierlösungen', category: 'page', url: '/charts' },
-    { id: 'downloads', title: 'Downloads', description: 'Datenblätter, Software und Dokumentationen', category: 'page', url: '/downloads' },
-    { id: 'automotive', title: 'Automotive', description: 'ADAS Testing und Automotive Vision Lösungen', category: 'page', url: '/automotive' },
-    { id: 'products', title: 'Produkte', description: 'Übersicht aller Produkte und Lösungen', category: 'page', url: '/products' },
-    { id: 'industries', title: 'Branchen', description: 'Lösungen für verschiedene Industriezweige', category: 'page', url: '/industries' },
-    { id: 'events', title: 'Events', description: 'Kommende Veranstaltungen und Schulungen', category: 'page', url: '/events' },
+    { id: 'home', title: 'Home', description: 'Image Engineering main page', category: 'page', url: '/' },
+    { id: 'charts', title: 'Test Charts', description: 'All available test charts and calibration solutions', category: 'page', url: '/charts' },
+    { id: 'downloads', title: 'Downloads', description: 'Data sheets, software and documentation', category: 'page', url: '/downloads' },
+    { id: 'automotive', title: 'Automotive', description: 'ADAS Testing and Automotive Vision solutions', category: 'page', url: '/automotive' },
+    { id: 'products', title: 'Products', description: 'Overview of all products and solutions', category: 'page', url: '/products' },
+    { id: 'industries', title: 'Industries', description: 'Solutions for various industry sectors', category: 'page', url: '/industries' },
+    { id: 'events', title: 'Events', description: 'Upcoming events and training sessions', category: 'page', url: '/events' },
     
     // Industries
     { id: 'industry-photography', title: 'Photography', description: 'Digital cameras for professional and amateur applications', category: 'industry', url: '/industries#photography' },
@@ -150,11 +150,11 @@ const IntelligentSearchBar = () => {
   const getCategoryLabel = (category: string) => {
     switch (category) {
       case 'chart': return 'Test Chart';
-      case 'industry': return 'Branche';
-      case 'product': return 'Produkt';
-      case 'solution': return 'Lösung';
-      case 'page': return 'Seite';
-      default: return 'Ergebnis';
+      case 'industry': return 'Industry';
+      case 'product': return 'Product';
+      case 'solution': return 'Solution';
+      case 'page': return 'Page';
+      default: return 'Result';
     }
   };
 
@@ -227,7 +227,7 @@ const IntelligentSearchBar = () => {
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Suche nach Charts, Produkten, Lösungen..."
+          placeholder="Search for charts, products, solutions..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
@@ -292,8 +292,8 @@ const IntelligentSearchBar = () => {
           ) : (
             <div className="px-4 py-8 text-center text-muted-foreground">
               <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>Keine Ergebnisse für "{query}" gefunden</p>
-              <p className="text-sm mt-1">Versuchen Sie andere Suchbegriffe</p>
+              <p>No results found for "{query}"</p>
+              <p className="text-sm mt-1">Try different search terms</p>
             </div>
           )}
         </div>
