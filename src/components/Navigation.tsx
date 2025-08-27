@@ -4,6 +4,7 @@ import { BadgeCheck, Sprout } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
+import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -228,6 +229,7 @@ const Navigation = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center flex-row gap-x-8">
+            <IntelligentSearchBar />
             <NavigationMenu>
               <NavigationMenuList className="gap-x-8">
                 <NavigationMenuItem className="mx-4">
