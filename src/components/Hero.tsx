@@ -13,6 +13,8 @@ const Hero = () => {
           className="w-full h-full object-cover animate-ken-burns"
         />
         <div className="absolute inset-0 bg-black/15"></div>
+        {/* Left fade overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
       </div>
       
       {/* Navigation Spacer */}
@@ -20,10 +22,10 @@ const Hero = () => {
       
       {/* Hero Content */}
       <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10">
-        <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="flex items-center justify-start min-h-[80vh]">
           
-          {/* Centered Content */}
-          <div className="text-center space-y-8 max-w-4xl">
+          {/* Left-aligned Content */}
+          <div className="text-left space-y-8 max-w-4xl">
             <div>
               <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6">
                 Test Charts
@@ -31,7 +33,7 @@ const Hero = () => {
                 <span className="font-medium">Made by Image Engineering</span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl mx-auto">
+              <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
                 We develop and manufacture high-precision test charts for professional image quality testing. 
                 Order directly from our shop now.
               </p>
@@ -50,7 +52,7 @@ const Hero = () => {
             </div>
 
             {/* Minimal stats */}
-            <div className="flex items-center justify-center space-x-12 pt-8">
+            <div className="flex items-center justify-start space-x-12 pt-8">
               <div>
                 <div className="text-2xl font-medium text-white">200+</div>
                 <div className="text-sm text-white/80 font-light">Test Chart Variants</div>
