@@ -889,6 +889,182 @@ const Styleguide = () => {
                     </div>
                   </div>
 
+                  {/* Hero Gesamtbeispiel */}
+                  <div className="mb-16">
+                    <h3 className="text-2xl font-semibold text-gray-900 mb-8">🎯 Hero-Bereich Gesamtbeispiel</h3>
+                    <p className="text-gray-600 mb-6">Praktische Anwendung aller Typografie-Elemente aus der Startseite:</p>
+                    
+                    <div className="p-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-lg text-white">
+                      {/* H1 Hero Überschrift */}
+                      <div className="mb-6">
+                        <h1 style={{ 
+                          fontFamily: 'Roboto, sans-serif', 
+                          fontWeight: 100, 
+                          fontSize: '48px', 
+                          color: '#ffffff',
+                          lineHeight: '0.9',
+                          margin: 0,
+                          marginBottom: '4px'
+                        }}>
+                          Test Charts
+                        </h1>
+                        <h1 style={{ 
+                          fontFamily: 'Roboto, sans-serif', 
+                          fontWeight: 700, 
+                          fontSize: '48px', 
+                          color: '#ffffff',
+                          lineHeight: '0.9',
+                          margin: 0
+                        }}>
+                          Made by Image Engineering
+                        </h1>
+                      </div>
+
+                      {/* Hero Beschreibungstext */}
+                      <div className="mb-8">
+                        <p style={{ 
+                          fontFamily: 'Roboto, sans-serif', 
+                          fontWeight: 300, 
+                          fontSize: '20px', 
+                          color: 'rgba(255, 255, 255, 0.9)',
+                          lineHeight: '1.5',
+                          margin: 0,
+                          maxWidth: '600px'
+                        }}>
+                          We develop and manufacture high-precision test charts for professional image quality testing. 
+                          Order directly from our shop now.
+                        </p>
+                      </div>
+
+                      {/* Hero Buttons */}
+                      <div className="mb-8 flex gap-4">
+                        <span 
+                          style={{ 
+                            fontFamily: 'Roboto, sans-serif',
+                            fontWeight: 700, 
+                            fontSize: '16px', 
+                            color: '#ffffff',
+                            backgroundColor: '#577eb4',
+                            padding: '16px 32px',
+                            borderRadius: '6px',
+                            display: 'inline-block'
+                          }}
+                        >
+                          Discover Charts
+                        </span>
+                        <span 
+                          style={{ 
+                            fontFamily: 'Roboto, sans-serif',
+                            fontWeight: 700, 
+                            fontSize: '16px', 
+                            color: '#ffffff',
+                            backgroundColor: '#74952a',
+                            padding: '16px 32px',
+                            borderRadius: '6px',
+                            display: 'inline-block'
+                          }}
+                        >
+                          Trusted Across All Industries
+                        </span>
+                      </div>
+
+                      {/* Hero Statistiken */}
+                      <div className="flex gap-12">
+                        <div>
+                          <div style={{ 
+                            fontFamily: 'Roboto, sans-serif', 
+                            fontWeight: 500, 
+                            fontSize: '24px', 
+                            color: '#ffffff',
+                            margin: 0
+                          }}>
+                            200+
+                          </div>
+                          <div style={{ 
+                            fontFamily: 'Roboto, sans-serif', 
+                            fontWeight: 300, 
+                            fontSize: '14px', 
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            margin: 0
+                          }}>
+                            Test Chart Variants
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ 
+                            fontFamily: 'Roboto, sans-serif', 
+                            fontWeight: 500, 
+                            fontSize: '24px', 
+                            color: '#ffffff',
+                            margin: 0
+                          }}>
+                            0.01%
+                          </div>
+                          <div style={{ 
+                            fontFamily: 'Roboto, sans-serif', 
+                            fontWeight: 300, 
+                            fontSize: '14px', 
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            margin: 0
+                          }}>
+                            Measurement Tolerance
+                          </div>
+                        </div>
+                        <div>
+                          <div style={{ 
+                            fontFamily: 'Roboto, sans-serif', 
+                            fontWeight: 500, 
+                            fontSize: '24px', 
+                            color: '#ffffff',
+                            margin: 0
+                          }}>
+                            15+
+                          </div>
+                          <div style={{ 
+                            fontFamily: 'Roboto, sans-serif', 
+                            fontWeight: 300, 
+                            fontSize: '14px', 
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            margin: 0
+                          }}>
+                            Years of Experience
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Technische Spezifikationen des Hero-Beispiels */}
+                    <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                      <h4 className="font-semibold text-gray-900 mb-3">🔧 Verwendete Typografie-Elemente:</h4>
+                      <div className="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="font-mono text-xs text-gray-600">H1 Hero Title:</p>
+                          <p className="font-mono text-xs text-gray-800">Roboto Thin | 100 | 48px | #ffffff</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-gray-600">H1 "Made by" (Fett):</p>
+                          <p className="font-mono text-xs text-gray-800">Roboto Bold | 700 | 48px | #ffffff</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-gray-600">Hero Beschreibung:</p>
+                          <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 20px | rgba(255,255,255,0.9)</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-gray-600">Button Text:</p>
+                          <p className="font-mono text-xs text-gray-800">Roboto Bold | 700 | 16px | #ffffff</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-gray-600">Statistik Zahlen:</p>
+                          <p className="font-mono text-xs text-gray-800">Roboto Medium | 500 | 24px | #ffffff</p>
+                        </div>
+                        <div>
+                          <p className="font-mono text-xs text-gray-600">Statistik Labels:</p>
+                          <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 14px | rgba(255,255,255,0.8)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Verwendungsrichtlinien */}
                   <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
                     <h4 className="text-lg font-semibold text-blue-900 mb-4">📋 Verwendungsrichtlinien</h4>
