@@ -22,6 +22,9 @@ const Styleguide = () => {
                 <a href="#colors" className="text-gray-700 hover:text-[#7a933b] transition-colors duration-200 font-medium">
                   Colors
                 </a>
+                <a href="#typography" className="text-gray-700 hover:text-[#7a933b] transition-colors duration-200 font-medium">
+                  Schrift
+                </a>
               </div>
             </div>
           </div>
@@ -359,6 +362,35 @@ const Styleguide = () => {
                       <div>
                         <p className="font-mono text-sm text-gray-900">#a3a3a3</p>
                         <p className="text-xs text-gray-500">Neutral gray tone</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Typography Section */}
+              <section id="typography" className="mb-16 scroll-mt-[320px]">
+                <h2 className="text-3xl font-bold text-gray-900 mb-12">Schrift</h2>
+                <p className="text-lg text-gray-600 mb-8">Schriftfarben und Typografie-Einstellungen</p>
+                
+                {/* Font Colors */}
+                <div className="grid gap-8">
+                  {/* Dark Gray Font Color */}
+                  <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="w-32">
+                      <p className="font-medium text-gray-900">Dark Gray</p>
+                      <p className="text-sm text-gray-500">Text color</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div 
+                        className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm flex items-center justify-center" 
+                        style={{ backgroundColor: '#f8f9fa' }}
+                      >
+                        <span className="text-lg font-semibold" style={{ color: '#555555' }}>Aa</span>
+                      </div>
+                      <div>
+                        <p className="font-mono text-sm text-gray-900">#555555</p>
+                        <p className="text-xs text-gray-500">Dark gray font color</p>
                       </div>
                     </div>
                   </div>
