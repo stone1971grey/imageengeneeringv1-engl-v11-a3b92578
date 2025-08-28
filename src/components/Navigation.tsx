@@ -579,6 +579,85 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Services</NavigationMenuTrigger>
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
+                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
+                      <div className="flex gap-6 p-6">
+                        {/* Column 1: Training & Education */}
+                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <GraduationCap className="h-6 w-6" />
+                            Training & Education
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Video className="h-5 w-5" />
+                            <a href="#">Professional Training</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <BookOpen className="h-5 w-5" />
+                            <a href="#">Workshops</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Users className="h-5 w-5" />
+                            <a href="#">Certification Programs</a>
+                          </div>
+                        </div>
+
+                        {/* Column 2: Technical Services */}
+                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Wrench className="h-6 w-6" />
+                            Technical Services
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Settings className="h-5 w-5" />
+                            <a href="#">Custom Solutions</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Wrench className="h-5 w-5" />
+                            <a href="#">Technical Support</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Target className="h-5 w-5" />
+                            <a href="#">Calibration Services</a>
+                          </div>
+                        </div>
+
+                        {/* Column 3: Consulting */}
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Lightbulb className="h-6 w-6" />
+                            Consulting
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <BarChart3 className="h-5 w-5" />
+                            <a href="#">Project Consulting</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <CheckCircle className="h-5 w-5" />
+                            <a href="#">Quality Assurance</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Briefcase className="h-5 w-5" />
+                            <a href="#">Implementation Support</a>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CTA Button */}
+                      <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
+                        <div className="flex items-center justify-center transition-colors cursor-pointer">
+                          <Button variant="technical" className="w-full">
+                            <Phone className="h-5 w-5 mr-3" />
+                            <span className="text-lg font-medium">Contact Our Service Team</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Resources</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
