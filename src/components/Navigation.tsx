@@ -11,6 +11,7 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuTrigger,
+  NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -718,10 +719,14 @@ const Navigation = () => {
                       {/* CTA Button */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <div className="flex items-center justify-center transition-colors cursor-pointer">
-                          <Button variant="technical" className="w-full">
-                            <Microscope className="h-5 w-5 mr-3" />
-                            <span className="text-lg font-medium">Explore Image Quality Resources</span>
-                          </Button>
+                          <NavigationMenuLink asChild>
+                            <Link to="/downloads">
+                              <Button variant="technical" className="w-full">
+                                <Microscope className="h-5 w-5 mr-3" />
+                                <span className="text-lg font-medium">Explore Image Quality Resources</span>
+                              </Button>
+                            </Link>
+                          </NavigationMenuLink>
                         </div>
                       </div>
                     </div>
