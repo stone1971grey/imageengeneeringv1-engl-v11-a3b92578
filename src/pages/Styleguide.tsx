@@ -897,27 +897,27 @@ const Styleguide = () => {
                     <div className="p-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-lg text-white">
                       {/* H1 Hero Überschrift */}
                       <div className="mb-6">
-                        <h1 style={{ 
-                          fontFamily: 'Roboto, sans-serif', 
-                          fontWeight: 100, 
-                          fontSize: '48px', 
-                          color: '#ffffff',
-                          lineHeight: '0.9',
-                          margin: 0,
-                          marginBottom: '4px'
-                        }}>
-                          Test Charts
-                        </h1>
-                        <h1 style={{ 
-                          fontFamily: 'Roboto, sans-serif', 
-                          fontWeight: 700, 
-                          fontSize: '48px', 
-                          color: '#ffffff',
-                          lineHeight: '0.9',
-                          margin: 0
-                        }}>
-                          Made by Image Engineering
-                        </h1>
+                         <h1 style={{ 
+                           fontFamily: 'Roboto, sans-serif', 
+                           fontWeight: 300, 
+                           fontSize: '72px', 
+                           color: '#ffffff',
+                           lineHeight: '0.9',
+                           margin: 0,
+                           marginBottom: '4px'
+                         }}>
+                           Test Charts
+                         </h1>
+                         <h1 style={{ 
+                           fontFamily: 'Roboto, sans-serif', 
+                           fontWeight: 500, 
+                           fontSize: '72px', 
+                           color: '#ffffff',
+                           lineHeight: '0.9',
+                           margin: 0
+                         }}>
+                           Made by Image Engineering
+                         </h1>
                       </div>
 
                       {/* Hero Beschreibungstext */}
