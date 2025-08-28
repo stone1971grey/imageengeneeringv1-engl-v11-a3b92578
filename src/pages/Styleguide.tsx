@@ -566,7 +566,7 @@ const Styleguide = () => {
                                  fontSize: '14px', 
                                  fontWeight: 500, 
                                  color: '#ffffff',
-                                 backgroundColor: '#74952a',
+                                 backgroundColor: '#577eb4',
                                  padding: '8px 16px',
                                  borderRadius: '4px'
                                }}
@@ -809,7 +809,7 @@ const Styleguide = () => {
                              fontWeight: 500, 
                              fontSize: '16px', 
                              color: '#ffffff',
-                             backgroundColor: '#74952a',
+                             backgroundColor: '#577eb4',
                              padding: '12px 24px',
                              borderRadius: '6px',
                              display: 'inline-block'
@@ -823,7 +823,7 @@ const Styleguide = () => {
                              fontWeight: 500, 
                              fontSize: '14px', 
                              color: '#ffffff',
-                             backgroundColor: '#1f2937',
+                             backgroundColor: '#577eb4',
                              padding: '10px 20px',
                              borderRadius: '6px',
                              display: 'inline-block'
@@ -954,7 +954,7 @@ const Styleguide = () => {
                              fontWeight: 500, 
                              fontSize: '18px', 
                              color: '#ffffff',
-                             backgroundColor: '#74952a',
+                             backgroundColor: '#577eb4',
                              padding: '16px 48px',
                              borderRadius: '6px',
                              display: 'inline-block'
