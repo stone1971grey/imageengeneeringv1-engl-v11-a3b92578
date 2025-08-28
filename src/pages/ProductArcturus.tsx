@@ -57,7 +57,7 @@ const ProductArcturus = () => {
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
         {/* Quick Navigation */}
-        <nav className="sticky top-[140px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+        <nav className="sticky top-[260px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
@@ -268,7 +268,7 @@ const ProductArcturus = () => {
       </section>
 
       {/* Detailed Specifications */}
-      <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[240px]">
+      <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[380px]">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
           <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Detailed Specifications</h2>
           <div className="overflow-x-auto">
