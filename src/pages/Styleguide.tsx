@@ -936,37 +936,37 @@ const Styleguide = () => {
                         </p>
                       </div>
 
-                      {/* Hero Buttons */}
-                      <div className="mb-8 flex gap-4">
-                        <span 
-                          style={{ 
-                            fontFamily: 'Roboto, sans-serif',
-                            fontWeight: 700, 
-                            fontSize: '16px', 
-                            color: '#ffffff',
-                            backgroundColor: '#577eb4',
-                            padding: '16px 32px',
-                            borderRadius: '6px',
-                            display: 'inline-block'
-                          }}
-                        >
-                          Discover Charts
-                        </span>
-                        <span 
-                          style={{ 
-                            fontFamily: 'Roboto, sans-serif',
-                            fontWeight: 700, 
-                            fontSize: '16px', 
-                            color: '#ffffff',
-                            backgroundColor: '#74952a',
-                            padding: '16px 32px',
-                            borderRadius: '6px',
-                            display: 'inline-block'
-                          }}
-                        >
-                          Trusted Across All Industries
-                        </span>
-                      </div>
+                       {/* Hero Buttons */}
+                       <div className="mb-8 flex gap-4">
+                         <span 
+                           style={{ 
+                             fontFamily: 'Roboto, sans-serif',
+                             fontWeight: 500, 
+                             fontSize: '16px', 
+                             color: '#ffffff',
+                             backgroundColor: '#577eb4',
+                             padding: '16px 32px',
+                             borderRadius: '6px',
+                             display: 'inline-block'
+                           }}
+                         >
+                           Discover Charts
+                         </span>
+                         <span 
+                           style={{ 
+                             fontFamily: 'Roboto, sans-serif',
+                             fontWeight: 500, 
+                             fontSize: '16px', 
+                             color: '#ffffff',
+                             backgroundColor: '#74952a',
+                             padding: '16px 32px',
+                             borderRadius: '6px',
+                             display: 'inline-block'
+                           }}
+                         >
+                           Trusted Across All Industries
+                         </span>
+                       </div>
 
                       {/* Hero Statistiken */}
                       <div className="flex gap-12">
