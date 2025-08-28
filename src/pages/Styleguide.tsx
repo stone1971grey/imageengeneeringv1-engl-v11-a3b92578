@@ -554,27 +554,27 @@ const Styleguide = () => {
                             <span style={{ fontSize: '16px', fontWeight: 600, color: '#ffffff' }}>Navigation</span>
                           </td>
                         </tr>
-                        <tr>
-                          <td className="border border-gray-300 px-4 py-3">Buttons / CTA</td>
-                          <td className="border border-gray-300 px-4 py-3">Roboto Bold</td>
-                          <td className="border border-gray-300 px-4 py-3">700</td>
-                          <td className="border border-gray-300 px-4 py-3">~14–16px</td>
-                          <td className="border border-gray-300 px-4 py-3">#ffffff</td>
-                          <td className="border border-gray-300 px-4 py-3">
-                            <span 
-                              style={{ 
-                                fontSize: '14px', 
-                                fontWeight: 700, 
-                                color: '#ffffff',
-                                backgroundColor: '#74952a',
-                                padding: '8px 16px',
-                                borderRadius: '4px'
-                              }}
-                            >
-                              Button Text
-                            </span>
-                          </td>
-                        </tr>
+                         <tr>
+                           <td className="border border-gray-300 px-4 py-3">Buttons / CTA</td>
+                           <td className="border border-gray-300 px-4 py-3">Roboto Medium</td>
+                           <td className="border border-gray-300 px-4 py-3">500</td>
+                           <td className="border border-gray-300 px-4 py-3">~14–16px</td>
+                           <td className="border border-gray-300 px-4 py-3">#ffffff</td>
+                           <td className="border border-gray-300 px-4 py-3">
+                             <span 
+                               style={{ 
+                                 fontSize: '14px', 
+                                 fontWeight: 500, 
+                                 color: '#ffffff',
+                                 backgroundColor: '#74952a',
+                                 padding: '8px 16px',
+                                 borderRadius: '4px'
+                               }}
+                             >
+                               Button Text
+                             </span>
+                           </td>
+                         </tr>
                         <tr>
                           <td className="border border-gray-300 px-4 py-3">Kategorien / Kacheln</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Regular</td>
@@ -788,53 +788,53 @@ const Styleguide = () => {
                     <h4 className="text-xl font-semibold text-gray-900 mb-6">Button / CTA Text</h4>
                     
                     <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
-                      <div className="flex gap-4 flex-wrap">
-                        <span 
-                          style={{ 
-                            fontFamily: 'Roboto, sans-serif',
-                            fontWeight: 700, 
-                            fontSize: '16px', 
-                            color: '#ffffff',
-                            backgroundColor: '#74952a',
-                            padding: '12px 24px',
-                            borderRadius: '6px',
-                            display: 'inline-block'
-                          }}
-                        >
-                          Discover Charts
-                        </span>
-                        <span 
-                          style={{ 
-                            fontFamily: 'Roboto, sans-serif',
-                            fontWeight: 700, 
-                            fontSize: '16px', 
-                            color: '#ffffff',
-                            backgroundColor: '#577eb4',
-                            padding: '12px 24px',
-                            borderRadius: '6px',
-                            display: 'inline-block'
-                          }}
-                        >
-                          Contact Sales
-                        </span>
-                        <span 
-                          style={{ 
-                            fontFamily: 'Roboto, sans-serif',
-                            fontWeight: 700, 
-                            fontSize: '14px', 
-                            color: '#ffffff',
-                            backgroundColor: '#1f2937',
-                            padding: '10px 20px',
-                            borderRadius: '6px',
-                            display: 'inline-block'
-                          }}
-                        >
-                          Download PDF
-                        </span>
-                      </div>
-                      <div className="mt-4 text-xs text-gray-500 font-mono">
-                        font-family: Roboto Bold | font-weight: 700 | font-size: 14-16px | color: #ffffff
-                      </div>
+                       <div className="flex gap-4 flex-wrap">
+                         <span 
+                           style={{ 
+                             fontFamily: 'Roboto, sans-serif',
+                             fontWeight: 500, 
+                             fontSize: '16px', 
+                             color: '#ffffff',
+                             backgroundColor: '#74952a',
+                             padding: '12px 24px',
+                             borderRadius: '6px',
+                             display: 'inline-block'
+                           }}
+                         >
+                           Discover Charts
+                         </span>
+                         <span 
+                           style={{ 
+                             fontFamily: 'Roboto, sans-serif',
+                             fontWeight: 500, 
+                             fontSize: '16px', 
+                             color: '#ffffff',
+                             backgroundColor: '#577eb4',
+                             padding: '12px 24px',
+                             borderRadius: '6px',
+                             display: 'inline-block'
+                           }}
+                         >
+                           Contact Sales
+                         </span>
+                         <span 
+                           style={{ 
+                             fontFamily: 'Roboto, sans-serif',
+                             fontWeight: 500, 
+                             fontSize: '14px', 
+                             color: '#ffffff',
+                             backgroundColor: '#1f2937',
+                             padding: '10px 20px',
+                             borderRadius: '6px',
+                             display: 'inline-block'
+                           }}
+                         >
+                           Download PDF
+                         </span>
+                       </div>
+                       <div className="mt-4 text-xs text-gray-500 font-mono">
+                         font-family: Roboto Medium | font-weight: 500 | font-size: 14-16px | color: #ffffff
+                       </div>
                       <p className="text-sm text-gray-600 mt-3">
                         Verwendung: Call-to-Action Buttons, primäre und sekundäre Aktionen
                       </p>
@@ -1051,7 +1051,7 @@ const Styleguide = () => {
                         </div>
                         <div>
                           <p className="font-mono text-xs text-gray-600">Button Text:</p>
-                          <p className="font-mono text-xs text-gray-800">Roboto Bold | 700 | 16px | #ffffff</p>
+                          <p className="font-mono text-xs text-gray-800">Roboto Medium | 500 | 16px | #ffffff</p>
                         </div>
                         <div>
                           <p className="font-mono text-xs text-gray-600">Statistik Zahlen:</p>
