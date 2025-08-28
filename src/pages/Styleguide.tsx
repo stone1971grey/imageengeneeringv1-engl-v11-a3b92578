@@ -16,15 +16,15 @@ const Styleguide = () => {
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
-                <a href="#buttons" className="text-gray-700 hover:text-[#7a933b] transition-colors duration-200 font-medium">
-                  Buttons
-                </a>
-                <a href="#colors" className="text-gray-700 hover:text-[#7a933b] transition-colors duration-200 font-medium">
-                  Colors
-                </a>
-                <a href="#typography" className="text-gray-700 hover:text-[#7a933b] transition-colors duration-200 font-medium">
-                  Schrift
-                </a>
+                 <a href="#buttons" className="text-gray-700 hover:text-[#74952a] transition-colors duration-200 font-medium">
+                   Buttons
+                 </a>
+                 <a href="#colors" className="text-gray-700 hover:text-[#74952a] transition-colors duration-200 font-medium">
+                   Colors
+                 </a>
+                 <a href="#typography" className="text-gray-700 hover:text-[#74952a] transition-colors duration-200 font-medium">
+                   Schrift
+                 </a>
               </div>
             </div>
           </div>
@@ -68,41 +68,44 @@ const Styleguide = () => {
                       </Button>
                     </div>
                     
-                    {/* Decision Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Decision</p>
-                        <p className="text-sm text-gray-500">Main CTA buttons</p>
-                      </div>
-                      <Button variant="decision">
-                        Discover Charts
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
+                     {/* Decision Variant */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Decision</p>
+                         <p className="text-sm text-gray-500">Main CTA buttons</p>
+                         <p className="text-xs text-gray-400 font-mono">#74952a</p>
+                       </div>
+                       <Button variant="decision">
+                         Discover Charts
+                         <ArrowRight className="ml-2 h-4 w-4" />
+                       </Button>
+                     </div>
                     
-                    {/* Contact Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Contact</p>
-                        <p className="text-sm text-gray-500">Contact actions</p>
-                      </div>
-                      <Button variant="contact">
-                        Contact Sales
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    </div>
+                     {/* Contact Variant */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Contact</p>
+                         <p className="text-sm text-gray-500">Contact actions</p>
+                         <p className="text-xs text-gray-400 font-mono">#1f6ae8</p>
+                       </div>
+                       <Button variant="contact">
+                         Contact Sales
+                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                       </Button>
+                     </div>
                     
-                    {/* Technical Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Technical</p>
-                        <p className="text-sm text-gray-500">Technical actions</p>
-                      </div>
-                      <Button variant="technical">
-                        Download Specs
-                        <Download className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
+                     {/* Technical Variant */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Technical</p>
+                         <p className="text-sm text-gray-500">Technical actions</p>
+                         <p className="text-xs text-gray-400 font-mono">#1f2937</p>
+                       </div>
+                       <Button variant="technical">
+                         Download Specs
+                         <Download className="ml-2 h-4 w-4" />
+                       </Button>
+                     </div>
                     
                     {/* Secondary Variant */}
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
