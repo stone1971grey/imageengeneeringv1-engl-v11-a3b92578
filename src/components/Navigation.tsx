@@ -584,50 +584,50 @@ const Navigation = () => {
                           {/* Test Charts subgroups */}
                           {hoveredProduct === "Test Charts" && (
                             <div className="space-y-2">
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Multipurpose</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Reflective</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Transparent</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">HDR Testing</div>
+                              <Link to="/products/charts/multipurpose" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Multipurpose</Link>
+                              <Link to="/products/charts/reflective" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Reflective</Link>
+                              <Link to="/products/charts/transparent" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Transparent</Link>
+                              <Link to="/products/charts/hdr" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">HDR Testing</Link>
                             </div>
                           )}
                           {/* Illumination Devices subgroups */}
                           {hoveredProduct === "Illumination Devices" && (
                             <div className="space-y-2">
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">LED Illumination</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Uniform Light Sources</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Specialized Lighting</div>
+                              <Link to="/products/illumination/led" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">LED Illumination</Link>
+                              <Link to="/products/illumination/uniform" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Uniform Light Sources</Link>
+                              <Link to="/products/illumination/specialized" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Specialized Lighting</Link>
                             </div>
                           )}
                           {/* Measurement Devices subgroups */}
                           {hoveredProduct === "Measurement Devices" && (
                             <div className="space-y-2">
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Colorimeters</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Photometers</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Spectroradiometers</div>
+                              <Link to="/products/measurement/colorimeters" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Colorimeters</Link>
+                              <Link to="/products/measurement/photometers" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Photometers</Link>
+                              <Link to="/products/measurement/spectroradiometers" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Spectroradiometers</Link>
                             </div>
                           )}
                           {/* Software subgroups */}
                           {hoveredProduct === "Software" && (
                             <div className="space-y-2">
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Analysis Software</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Measurement Tools</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Automation Suite</div>
+                              <Link to="/products/software/analysis" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Analysis Software</Link>
+                              <Link to="/products/software/measurement" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Measurement Tools</Link>
+                              <Link to="/products/software/automation" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Automation Suite</Link>
                             </div>
                           )}
                           {/* Accessories subgroups */}
                           {hoveredProduct === "Accessories" && (
                             <div className="space-y-2">
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Mounting Systems</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Cables & Connectors</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Protective Cases</div>
+                              <Link to="/products/accessories/mounting" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Mounting Systems</Link>
+                              <Link to="/products/accessories/cables" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Cables & Connectors</Link>
+                              <Link to="/products/accessories/cases" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Protective Cases</Link>
                             </div>
                           )}
                           {/* Services subgroups */}
                           {hoveredProduct === "Services" && (
                             <div className="space-y-2">
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Training & Support</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Custom Solutions</div>
-                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Consultation</div>
+                              <Link to="/services/training" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Training & Support</Link>
+                              <Link to="/services/custom" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Custom Solutions</Link>
+                              <Link to="/services/consultation" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Consultation</Link>
                             </div>
                           )}
                         </div>
