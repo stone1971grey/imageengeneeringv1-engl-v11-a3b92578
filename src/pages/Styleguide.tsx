@@ -633,8 +633,8 @@ const Styleguide = () => {
                     </div>
                     
                     <div className="p-6 border border-gray-200 rounded-lg">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Icons: FontAwesome</h4>
-                      <p className="text-sm text-gray-600">Icon-System für UI-Elemente und Navigation</p>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Icons: Lucide React</h4>
+                      <p className="text-sm text-gray-600">Icon-System für UI-Elemente und Navigation - moderne SVG-Icons aus der Lucide React Bibliothek</p>
                     </div>
                   </div>
                 </div>
