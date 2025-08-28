@@ -740,7 +740,7 @@ const Navigation = () => {
                       {/* Main grid */}
                       <div className="flex gap-8 p-6">
                         {/* Column 1: Company Information */}
-                         <div className="space-y-4 flex-1">
+                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Building2 className="h-6 w-6" />
                             Company Information
