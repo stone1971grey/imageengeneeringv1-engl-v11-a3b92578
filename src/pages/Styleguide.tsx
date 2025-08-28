@@ -495,7 +495,7 @@ const Styleguide = () => {
                       </thead>
                       <tbody>
                         <tr>
-                          <td className="border border-gray-300 px-4 py-3">H1 Headlines</td>
+                          <td className="border border-gray-300 px-4 py-3">H1 Headlines (dunkler BG)</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Thin</td>
                           <td className="border border-gray-300 px-4 py-3">100</td>
                           <td className="border border-gray-300 px-4 py-3">~45px</td>
@@ -505,13 +505,33 @@ const Styleguide = () => {
                           </td>
                         </tr>
                         <tr>
-                          <td className="border border-gray-300 px-4 py-3">H2/H3 Unterüberschriften</td>
-                          <td className="border border-gray-300 px-4 py-3">Roboto Regular/Bold</td>
-                          <td className="border border-gray-300 px-4 py-3">400/700</td>
-                          <td className="border border-gray-300 px-4 py-3">~24–32px</td>
+                          <td className="border border-gray-300 px-4 py-3">H1 Headlines (heller BG)</td>
+                          <td className="border border-gray-300 px-4 py-3">Roboto Thin</td>
+                          <td className="border border-gray-300 px-4 py-3">100</td>
+                          <td className="border border-gray-300 px-4 py-3">~45px</td>
                           <td className="border border-gray-300 px-4 py-3">#222222</td>
                           <td className="border border-gray-300 px-4 py-3">
-                            <span style={{ fontSize: '20px', fontWeight: 700, color: '#222222' }}>Unterüberschrift</span>
+                            <span style={{ fontSize: '24px', fontWeight: 100, color: '#222222' }}>Image Quality Test Lab</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 px-4 py-3">H2 Überschriften</td>
+                          <td className="border border-gray-300 px-4 py-3">Roboto Bold</td>
+                          <td className="border border-gray-300 px-4 py-3">700</td>
+                          <td className="border border-gray-300 px-4 py-3">~32px</td>
+                          <td className="border border-gray-300 px-4 py-3">#222222</td>
+                          <td className="border border-gray-300 px-4 py-3">
+                            <span style={{ fontSize: '22px', fontWeight: 700, color: '#222222' }}>Hauptüberschrift</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 px-4 py-3">H3 Unterüberschriften</td>
+                          <td className="border border-gray-300 px-4 py-3">Roboto Regular</td>
+                          <td className="border border-gray-300 px-4 py-3">400</td>
+                          <td className="border border-gray-300 px-4 py-3">~24px</td>
+                          <td className="border border-gray-300 px-4 py-3">#222222</td>
+                          <td className="border border-gray-300 px-4 py-3">
+                            <span style={{ fontSize: '18px', fontWeight: 400, color: '#222222' }}>Unterüberschrift</span>
                           </td>
                         </tr>
                         <tr>
@@ -546,7 +566,7 @@ const Styleguide = () => {
                                 fontSize: '14px', 
                                 fontWeight: 700, 
                                 color: '#ffffff',
-                                backgroundColor: '#b4497d',
+                                backgroundColor: '#74952a',
                                 padding: '8px 16px',
                                 borderRadius: '4px'
                               }}
