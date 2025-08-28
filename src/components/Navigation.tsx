@@ -525,7 +525,6 @@ const Navigation = () => {
                             to="/products/charts"
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
                             onMouseEnter={() => setHoveredProduct("Test Charts")}
-                            onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Target className="h-5 w-5" />
                             <span>Test Charts</span>
@@ -533,7 +532,6 @@ const Navigation = () => {
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Illumination Devices")}
-                            onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Lightbulb className="h-5 w-5" />
                             <span>Illumination Devices</span>
@@ -541,7 +539,6 @@ const Navigation = () => {
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Measurement Devices")}
-                            onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Camera className="h-5 w-5" />
                             <span>Measurement Devices</span>
@@ -549,7 +546,6 @@ const Navigation = () => {
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Software")}
-                            onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Monitor className="h-5 w-5" />
                             <span>Software</span>
@@ -557,7 +553,6 @@ const Navigation = () => {
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Accessories")}
-                            onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <Puzzle className="h-5 w-5" />
                             <span>Accessories</span>
@@ -565,7 +560,6 @@ const Navigation = () => {
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Services")}
-                            onMouseLeave={() => setHoveredProduct(null)}
                           >
                             <GraduationCap className="h-5 w-5" />
                             <span>Services</span>
@@ -573,7 +567,13 @@ const Navigation = () => {
                         </div>
                         
                         {/* Right Column: Subgroups (placeholder for now) */}
-                        <div className="space-y-4 flex-1">
+                        <div 
+                          className="space-y-4 flex-1"
+                          onMouseEnter={() => {
+                            // Keep current hovered product when entering subgroups area
+                          }}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <ChevronRight className="h-6 w-6" />
                             Subgroups
