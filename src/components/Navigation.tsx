@@ -734,83 +734,90 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">About Us</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Company</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main grid */}
                       <div className="flex gap-6 p-6">
-                        {/* Column 1: Contact & Location */}
+                        {/* Column 1: Company Information */}
                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Building2 className="h-6 w-6" />
-                            Contact & Location
+                            Company Information
                           </h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <MessageCircle className="h-5 w-5" />
-                            <a href="#">Contact</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <MapPin className="h-5 w-5" />
-                            <a href="#">Visit Us</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Building className="h-5 w-5" />
-                            <a href="#">Dealers / Resellers</a>
-                          </div>
-                          <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                            <Calendar className="h-5 w-5" />
-                            <span>Events</span>
+                          <Link to="/about" className="block group">
+                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
+                              <Info className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">About IE</div>
+                                <div className="text-sm text-muted-foreground">Learn about our company</div>
+                              </div>
+                            </div>
+                          </Link>
+                          <Link to="/team" className="block group">
+                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
+                              <Users className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">Team</div>
+                                <div className="text-sm text-muted-foreground">Meet our experts</div>
+                              </div>
+                            </div>
+                          </Link>
+                          <Link to="/subsidiaries" className="block group">
+                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
+                              <Building className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">Subsidiaries/Resellers</div>
+                                <div className="text-sm text-muted-foreground">Our global network</div>
+                              </div>
+                            </div>
+                          </Link>
+                          <Link to="/nynomic-group" className="block group">
+                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
+                              <Briefcase className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">Nynomic Group</div>
+                                <div className="text-sm text-muted-foreground">Parent company</div>
+                              </div>
+                            </div>
                           </Link>
                         </div>
 
-
-                        {/* Column 2: About the Company */}
-                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Info className="h-5 w-5" />
-                            <a href="#about">About Image Engineering</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Users className="h-5 w-5" />
-                            <a href="#">Team</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Building2 className="h-5 w-5" />
-                            <a href="#">Nynomic Group</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Briefcase className="h-5 w-5" />
-                            <a href="#">Job Opportunities</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Handshake className="h-5 w-5" />
-                            <a href="#">Memberships & Partnerships</a>
-                          </div>
-                        </div>
-
-                        
-
-                        {/* Column 3: Quality & Sustainability */}
-                        <div className="space-y-4 flex-1">
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <BadgeCheck className="h-5 w-5" />
-                            <a href="#" aria-label="Quality Management">{/* TODO: link to /company/quality-management when route exists */}Quality Management</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Leaf className="h-5 w-5" />
-                            <a href="#" aria-label="Climate Neutrality">{/* TODO: link to /company/climate-neutrality when route exists */}Climate Neutrality</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Sprout className="h-5 w-5" />
-                            <a href="#" aria-label="ESG – Sustainability">{/* TODO: link to /company/esg-sustainability when route exists */}ESG – Sustainability</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Recycle className="h-5 w-5" />
-                            <a href="#" aria-label="Disposal & Recycling">{/* TODO: link to /company/disposal-recycling when route exists */}Disposal & Recycling</a>
-                          </div>
+                        {/* Column 2: Business & Partnerships */}
+                        <div className="space-y-4 flex-1 pl-6">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Handshake className="h-6 w-6" />
+                            Business & Partnerships
+                          </h4>
+                          <Link to="/events" className="block group">
+                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
+                              <Calendar className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">Events</div>
+                                <div className="text-sm text-muted-foreground">Upcoming events & conferences</div>
+                              </div>
+                            </div>
+                          </Link>
+                          <Link to="/careers" className="block group">
+                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
+                              <GraduationCap className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">Careers</div>
+                                <div className="text-sm text-muted-foreground">Join our team</div>
+                              </div>
+                            </div>
+                          </Link>
+                          <Link to="/partnerships" className="block group">
+                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
+                              <Handshake className="h-5 w-5 text-muted-foreground" />
+                              <div>
+                                <div className="font-medium">Partnerships</div>
+                                <div className="text-sm text-muted-foreground">Collaborate with us</div>
+                              </div>
+                            </div>
+                          </Link>
                         </div>
                       </div>
-
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
@@ -1111,67 +1118,37 @@ const Navigation = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* About Us */}
+                    {/* Company */}
                     <AccordionItem value="about">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
-                          <Info className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">About Us</span>
+                          <Building2 className="w-5 h-5 shrink-0 text-muted-foreground" />
+                          <span className="text-foreground">Company</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="pt-2">
                           <ul className="space-y-1">
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><MessageCircle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Contact</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><MapPin className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Visit Us</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Dealers / Resellers</span></div>
-                            </li>
-                            <li>
-                              <Link to="/events" className="min-h-12 px-4 flex items-center gap-3 py-3"><Calendar className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Events</span></Link>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">About Image Engineering</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">About IE</span></div>
                             </li>
                             <li>
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Users className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Team</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building2 className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Nynomic Group</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Subsidiaries/Resellers</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Briefcase className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Job Opportunities</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Briefcase className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Nynomic Group</span></div>
                             </li>
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Handshake className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Memberships & Partnerships</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Calendar className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Events</span></div>
                             </li>
                             <li>
-                              <Link to="#" aria-label="Quality Management" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                                <BadgeCheck className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">Quality Management</span>
-                              </Link>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Careers</span></div>
                             </li>
                             <li>
-                              <Link to="#" aria-label="Climate Neutrality" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                                <Leaf className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">Climate Neutrality</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="#" aria-label="ESG – Sustainability" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                                <Sprout className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">ESG – Sustainability</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="#" aria-label="Disposal & Recycling" className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                                <Recycle className="w-[18px] h-[18px] shrink-0 text-muted-foreground" />
-                                <span className="text-[15px] leading-5 text-foreground">Disposal & Recycling</span>
-                              </Link>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Handshake className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Partnerships</span></div>
                             </li>
                           </ul>
                         </div>
