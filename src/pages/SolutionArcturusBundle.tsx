@@ -251,36 +251,36 @@ const SolutionArcturusBundle = () => {
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
         {/* Quick Navigation */}
-        <nav className="sticky top-[140px] z-40 bg-[#F7F9FB] shadow-sm border-b border-gray-200 backdrop-blur-md">
-          <div className="container mx-auto px-4 py-3">
-            <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100 p-4">
-              <div className="flex flex-wrap gap-4 lg:gap-6 justify-center text-sm lg:text-base overflow-x-auto scrollbar-hide">
-                 <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth whitespace-nowrap"
+        <nav className="sticky top-[210px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+              <div className="flex flex-wrap gap-6 justify-center text-lg">
+                 <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Complete Solution</a>
-                   <a href="#architecture" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth whitespace-nowrap"
-                     onClick={(e) => {
-                       e.preventDefault();
-                       document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                     }}>System Architecture</a>
-                   <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth whitespace-nowrap"
-                     onClick={(e) => {
-                       e.preventDefault();
-                       document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                     }}>Why Test Bundle</a>
-                   <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth whitespace-nowrap"
-                     onClick={(e) => {
-                       e.preventDefault();
-                       document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                     }}>Application Areas</a>
-                   <a href="#comparison" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth whitespace-nowrap"
-                     onClick={(e) => {
-                       e.preventDefault();
-                       document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                     }}>Comparison</a>
-                  <a href="#faq" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth whitespace-nowrap"
+                  <a href="#architecture" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>System Architecture</a>
+                  <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>Why Test Bundle</a>
+                  <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>Application Areas</a>
+                  <a href="#comparison" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>Comparison</a>
+                 <a href="#faq" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -291,7 +291,7 @@ const SolutionArcturusBundle = () => {
         </nav>
 
         {/* Hero Section */}
-        <section id="overview" className="bg-scandi-white py-16 lg:py-24 scroll-mt-[200px]">
+        <section id="overview" className="bg-scandi-white py-16 lg:py-24 scroll-mt-[280px]">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
@@ -363,7 +363,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Bundle Components */}
-        <section id="architecture" className="container mx-auto px-6 py-16 scroll-mt-[200px]">
+        <section id="architecture" className="container mx-auto px-6 py-16 scroll-mt-[280px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             System Architecture
@@ -407,7 +407,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Technical Overview */}
-        <section id="benefits" className="bg-white py-16 scroll-mt-[200px]">
+        <section id="benefits" className="bg-white py-16 scroll-mt-[280px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -661,7 +661,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Key Benefits */}
-        <section id="applications" className="bg-scandi-light-grey py-16 scroll-mt-[200px]">
+        <section id="applications" className="bg-scandi-light-grey py-16 scroll-mt-[280px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -708,7 +708,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Application Areas */}
-        <section id="comparison" className="container mx-auto px-6 py-16 scroll-mt-[200px]">
+        <section id="comparison" className="container mx-auto px-6 py-16 scroll-mt-[280px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Comparison
@@ -987,7 +987,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="scroll-mt-[200px]">
+        <section id="faq" className="scroll-mt-[280px]">
         <ProductFAQ 
           faqs={faqData}
           productName="Arcturus HDR Test Bundle"
@@ -995,7 +995,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Downloads Section */}
-        <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[200px]">
+        <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[280px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
