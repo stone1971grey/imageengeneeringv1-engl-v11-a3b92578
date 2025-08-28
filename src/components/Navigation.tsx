@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText, Phone, MapPin, Calendar, Briefcase, Handshake, Leaf, Recycle, ShieldCheck } from "lucide-react";
+import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText, Phone, MapPin, Calendar, Briefcase, Handshake, Leaf, Recycle, ShieldCheck, ChevronRight } from "lucide-react";
 import { BadgeCheck, Sprout } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -104,37 +104,29 @@ const Navigation = () => {
 
   // Product data mapping
   const productData = {
-    "Charts": {
+    "Test Charts": {
       image: "/images/custom-chart.png",
-      description: "High-precision test patterns and color charts for comprehensive image quality analysis"
+      description: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options"
     },
-    "Equipment": {
+    "Illumination Devices": {
+      image: iqLedIllumination,
+      description: "Professional LED lighting systems and uniform light sources for stable testing environments"
+    },
+    "Measurement Devices": {
       image: arcturusMainProduct,
-      description: "Professional testing equipment including LED lighting systems and measurement devices"
+      description: "Precision colorimeters, photometers and spectroradiometers for accurate optical measurements"
     },
     "Software": {
       image: iqAnalyzerIntro,
-      description: "Advanced software solutions for image analysis, calibration and quality control"
-    },
-    "Product Bundles": {
-      image: productBundleIeee,
-      description: "Complete testing solutions with hardware, software and accessories"
-    },
-    "Solutions": {
-      image: iqLedIllumination,
-      description: "Complete lighting and illumination solutions for professional testing environments"
+      description: "Advanced software solutions for image analysis, calibration and automated quality control"
     },
     "Accessories": {
       image: "/images/chart-case.png",
-      description: "Professional accessories including chart cases, mounts and calibration tools"
+      description: "Professional accessories including mounting systems, cables, connectors and protective cases"
     },
-    "Technology": {
-      image: technology2025,
-      description: "Latest innovations and cutting-edge technology in image quality measurement"
-    },
-    "Training": {
+    "Services": {
       image: trainingMobileTesting,
-      description: "Professional training on image quality testing in various industries - What needs to be tested and how? (e.g. Mobile Phones, Automotive, Medical) - What new tests are available for my industry?"
+      description: "Comprehensive training, support, custom solutions and professional consultation services"
     }
   };
 
@@ -521,82 +513,123 @@ const Navigation = () => {
                   </Link>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
-                      {/* Main navigation grid */}
-                        <div className="flex gap-8 p-6">
-                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                           <Link
+                      {/* Main navigation grid - Two column layout */}
+                      <div className="flex gap-8 p-6">
+                        {/* Left Column: Product Groups */}
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <Package className="h-6 w-6" />
+                            Product Groups
+                          </h4>
+                          <Link
                             to="/products/charts"
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
-                            onMouseEnter={() => setHoveredProduct("Charts")}
+                            onMouseEnter={() => setHoveredProduct("Test Charts")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
-                            <Target className="h-6 w-6" />
-                            <span>Charts</span>
+                            <Target className="h-5 w-5" />
+                            <span>Test Charts</span>
                           </Link>
-                           <div 
+                          <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Equipment")}
+                            onMouseEnter={() => setHoveredProduct("Illumination Devices")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
-                            <Camera className="h-6 w-6" />
-                            <span>Equipment</span>
+                            <Lightbulb className="h-5 w-5" />
+                            <span>Illumination Devices</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Measurement Devices")}
+                            onMouseLeave={() => setHoveredProduct(null)}
+                          >
+                            <Camera className="h-5 w-5" />
+                            <span>Measurement Devices</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Software")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
-                            <Monitor className="h-6 w-6" />
+                            <Monitor className="h-5 w-5" />
                             <span>Software</span>
                           </div>
-                        </div>
-                        
-                        
-                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Product Bundles")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <Package className="h-6 w-6" />
-                            <span>Product Bundles</span>
-                          </div>
-                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Solutions")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <Lightbulb className="h-6 w-6" />
-                            <span>Solutions</span>
-                          </div>
-                        </div>
-                        
-                        
-                         <div className="space-y-4 flex-1">
-                           <div 
+                          <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Accessories")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
-                            <Puzzle className="h-6 w-6" />
+                            <Puzzle className="h-5 w-5" />
                             <span>Accessories</span>
                           </div>
-                           <div 
+                          <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Technology")}
+                            onMouseEnter={() => setHoveredProduct("Services")}
                             onMouseLeave={() => setHoveredProduct(null)}
                           >
-                            <Cpu className="h-6 w-6" />
-                            <span>Technology</span>
+                            <GraduationCap className="h-5 w-5" />
+                            <span>Services</span>
                           </div>
-                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Training")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <GraduationCap className="h-6 w-6" />
-                            <span>Training</span>
+                        </div>
+                        
+                        {/* Right Column: Subgroups (placeholder for now) */}
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <ChevronRight className="h-6 w-6" />
+                            Subgroups
+                          </h4>
+                          <div className="text-gray-500 italic">
+                            Hover over a product group to see subcategories
                           </div>
+                          {/* Test Charts subgroups */}
+                          {hoveredProduct === "Test Charts" && (
+                            <div className="space-y-2">
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Multipurpose</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Reflective</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Transparent</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">HDR Testing</div>
+                            </div>
+                          )}
+                          {/* Illumination Devices subgroups */}
+                          {hoveredProduct === "Illumination Devices" && (
+                            <div className="space-y-2">
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">LED Illumination</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Uniform Light Sources</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Specialized Lighting</div>
+                            </div>
+                          )}
+                          {/* Measurement Devices subgroups */}
+                          {hoveredProduct === "Measurement Devices" && (
+                            <div className="space-y-2">
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Colorimeters</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Photometers</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Spectroradiometers</div>
+                            </div>
+                          )}
+                          {/* Software subgroups */}
+                          {hoveredProduct === "Software" && (
+                            <div className="space-y-2">
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Analysis Software</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Measurement Tools</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Automation Suite</div>
+                            </div>
+                          )}
+                          {/* Accessories subgroups */}
+                          {hoveredProduct === "Accessories" && (
+                            <div className="space-y-2">
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Mounting Systems</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Cables & Connectors</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Protective Cases</div>
+                            </div>
+                          )}
+                          {/* Services subgroups */}
+                          {hoveredProduct === "Services" && (
+                            <div className="space-y-2">
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Training & Support</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Custom Solutions</div>
+                              <div className="text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Consultation</div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       
