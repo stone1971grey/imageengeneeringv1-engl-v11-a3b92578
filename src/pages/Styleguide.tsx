@@ -894,47 +894,40 @@ const Styleguide = () => {
                     <h3 className="text-2xl font-semibold text-gray-900 mb-8">🎯 Hero-Bereich Gesamtbeispiel</h3>
                     <p className="text-gray-600 mb-6">Praktische Anwendung aller Typografie-Elemente aus der Startseite:</p>
                     
-                    <div className="p-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-lg text-white">
-                      {/* H1 Hero Überschrift */}
-                      <div className="mb-6">
+                     <div className="p-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-lg text-white">
+                       {/* H1 Hero Überschrift */}
+                       <div className="mb-6">
                          <h1 style={{ 
                            fontFamily: 'Roboto, sans-serif', 
                            fontWeight: 300, 
-                           fontSize: '96px', 
+                           fontSize: '60px', 
                            color: '#ffffff',
                            lineHeight: '0.9',
+                           letterSpacing: '-0.025em',
                            margin: 0,
-                           marginBottom: '4px'
+                           marginBottom: '6px'
                          }}>
                            Test Charts
+                           <br />
+                           <span style={{ fontWeight: 500 }}>Made by Image Engineering</span>
                          </h1>
-                         <h1 style={{ 
-                           fontFamily: 'Roboto, sans-serif', 
-                           fontWeight: 500, 
-                           fontSize: '96px', 
-                           color: '#ffffff',
-                           lineHeight: '0.9',
-                           margin: 0
-                         }}>
-                           Made by Image Engineering
-                         </h1>
-                      </div>
+                       </div>
 
-                      {/* Hero Beschreibungstext */}
-                      <div className="mb-8">
-                        <p style={{ 
-                          fontFamily: 'Roboto, sans-serif', 
-                          fontWeight: 300, 
-                          fontSize: '20px', 
-                          color: 'rgba(255, 255, 255, 0.9)',
-                          lineHeight: '1.5',
-                          margin: 0,
-                          maxWidth: '600px'
-                        }}>
-                          We develop and manufacture high-precision test charts for professional image quality testing. 
-                          Order directly from our shop now.
-                        </p>
-                      </div>
+                       {/* Hero Beschreibungstext */}
+                       <div className="mb-8">
+                         <p style={{ 
+                           fontFamily: 'Roboto, sans-serif', 
+                           fontWeight: 300, 
+                           fontSize: '20px', 
+                           color: 'rgba(255, 255, 255, 0.9)',
+                           lineHeight: '1.6',
+                           margin: 0,
+                           maxWidth: '512px'
+                         }}>
+                           We develop and manufacture high-precision test charts for professional image quality testing. 
+                           Order directly from our shop now.
+                         </p>
+                       </div>
 
                        {/* Hero Buttons */}
                        <div className="mb-8 flex gap-4">
@@ -942,24 +935,27 @@ const Styleguide = () => {
                            style={{ 
                              fontFamily: 'Roboto, sans-serif',
                              fontWeight: 500, 
-                             fontSize: '16px', 
+                             fontSize: '18px', 
                              color: '#ffffff',
                              backgroundColor: '#577eb4',
-                             padding: '16px 32px',
+                             padding: '16px 48px',
                              borderRadius: '6px',
-                             display: 'inline-block'
+                             display: 'inline-flex',
+                             alignItems: 'center',
+                             gap: '8px'
                            }}
                          >
                            Discover Charts
+                           <span style={{ fontSize: '16px' }}>→</span>
                          </span>
                          <span 
                            style={{ 
                              fontFamily: 'Roboto, sans-serif',
                              fontWeight: 500, 
-                             fontSize: '16px', 
+                             fontSize: '18px', 
                              color: '#ffffff',
                              backgroundColor: '#74952a',
-                             padding: '16px 32px',
+                             padding: '16px 48px',
                              borderRadius: '6px',
                              display: 'inline-block'
                            }}
@@ -968,70 +964,70 @@ const Styleguide = () => {
                          </span>
                        </div>
 
-                      {/* Hero Statistiken */}
-                      <div className="flex gap-12">
-                        <div>
-                          <div style={{ 
-                            fontFamily: 'Roboto, sans-serif', 
-                            fontWeight: 500, 
-                            fontSize: '24px', 
-                            color: '#ffffff',
-                            margin: 0
-                          }}>
-                            200+
-                          </div>
-                          <div style={{ 
-                            fontFamily: 'Roboto, sans-serif', 
-                            fontWeight: 300, 
-                            fontSize: '14px', 
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            margin: 0
-                          }}>
-                            Test Chart Variants
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ 
-                            fontFamily: 'Roboto, sans-serif', 
-                            fontWeight: 500, 
-                            fontSize: '24px', 
-                            color: '#ffffff',
-                            margin: 0
-                          }}>
-                            0.01%
-                          </div>
-                          <div style={{ 
-                            fontFamily: 'Roboto, sans-serif', 
-                            fontWeight: 300, 
-                            fontSize: '14px', 
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            margin: 0
-                          }}>
-                            Measurement Tolerance
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ 
-                            fontFamily: 'Roboto, sans-serif', 
-                            fontWeight: 500, 
-                            fontSize: '24px', 
-                            color: '#ffffff',
-                            margin: 0
-                          }}>
-                            15+
-                          </div>
-                          <div style={{ 
-                            fontFamily: 'Roboto, sans-serif', 
-                            fontWeight: 300, 
-                            fontSize: '14px', 
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            margin: 0
-                          }}>
-                            Years of Experience
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                       {/* Hero Statistiken */}
+                       <div className="flex gap-12 pt-8">
+                         <div>
+                           <div style={{ 
+                             fontFamily: 'Roboto, sans-serif', 
+                             fontWeight: 500, 
+                             fontSize: '24px', 
+                             color: '#ffffff',
+                             margin: 0
+                           }}>
+                             200+
+                           </div>
+                           <div style={{ 
+                             fontFamily: 'Roboto, sans-serif', 
+                             fontWeight: 300, 
+                             fontSize: '14px', 
+                             color: 'rgba(255, 255, 255, 0.8)',
+                             margin: 0
+                           }}>
+                             Test Chart Variants
+                           </div>
+                         </div>
+                         <div>
+                           <div style={{ 
+                             fontFamily: 'Roboto, sans-serif', 
+                             fontWeight: 500, 
+                             fontSize: '24px', 
+                             color: '#ffffff',
+                             margin: 0
+                           }}>
+                             0.01%
+                           </div>
+                           <div style={{ 
+                             fontFamily: 'Roboto, sans-serif', 
+                             fontWeight: 300, 
+                             fontSize: '14px', 
+                             color: 'rgba(255, 255, 255, 0.8)',
+                             margin: 0
+                           }}>
+                             Measurement Tolerance
+                           </div>
+                         </div>
+                         <div>
+                           <div style={{ 
+                             fontFamily: 'Roboto, sans-serif', 
+                             fontWeight: 500, 
+                             fontSize: '24px', 
+                             color: '#ffffff',
+                             margin: 0
+                           }}>
+                             15+
+                           </div>
+                           <div style={{ 
+                             fontFamily: 'Roboto, sans-serif', 
+                             fontWeight: 300, 
+                             fontSize: '14px', 
+                             color: 'rgba(255, 255, 255, 0.8)',
+                             margin: 0
+                           }}>
+                             Years of Experience
+                           </div>
+                         </div>
+                       </div>
+                     </div>
 
                     {/* Technische Spezifikationen des Hero-Beispiels */}
                     <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
