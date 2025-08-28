@@ -494,26 +494,26 @@ const Styleguide = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td className="border border-gray-300 px-4 py-3">H1 Headlines (dunkler BG)</td>
-                          <td className="border border-gray-300 px-4 py-3">Roboto Thin</td>
-                          <td className="border border-gray-300 px-4 py-3">100</td>
-                          <td className="border border-gray-300 px-4 py-3">~45px</td>
-                          <td className="border border-gray-300 px-4 py-3">#ffffff</td>
-                          <td className="border border-gray-300 px-4 py-3 bg-gray-800">
-                            <span style={{ fontSize: '24px', fontWeight: 100, color: '#ffffff' }}>Image Quality Test Lab</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 px-4 py-3">H1 Headlines (heller BG)</td>
-                          <td className="border border-gray-300 px-4 py-3">Roboto Thin</td>
-                          <td className="border border-gray-300 px-4 py-3">100</td>
-                          <td className="border border-gray-300 px-4 py-3">~45px</td>
-                          <td className="border border-gray-300 px-4 py-3">#222222</td>
-                          <td className="border border-gray-300 px-4 py-3">
-                            <span style={{ fontSize: '24px', fontWeight: 100, color: '#222222' }}>Image Quality Test Lab</span>
-                          </td>
-                        </tr>
+                         <tr>
+                           <td className="border border-gray-300 px-4 py-3">H1 Headlines (dunkler BG)</td>
+                           <td className="border border-gray-300 px-4 py-3">Roboto Light</td>
+                           <td className="border border-gray-300 px-4 py-3">300</td>
+                           <td className="border border-gray-300 px-4 py-3">60px / 72px / 96px</td>
+                           <td className="border border-gray-300 px-4 py-3">#ffffff</td>
+                           <td className="border border-gray-300 px-4 py-3 bg-gray-800">
+                             <span style={{ fontSize: '24px', fontWeight: 300, color: '#ffffff' }}>Test Charts</span>
+                           </td>
+                         </tr>
+                         <tr>
+                           <td className="border border-gray-300 px-4 py-3">H1 Headlines (heller BG)</td>
+                           <td className="border border-gray-300 px-4 py-3">Roboto Light</td>
+                           <td className="border border-gray-300 px-4 py-3">300</td>
+                           <td className="border border-gray-300 px-4 py-3">60px / 72px / 96px</td>
+                           <td className="border border-gray-300 px-4 py-3">#222222</td>
+                           <td className="border border-gray-300 px-4 py-3">
+                             <span style={{ fontSize: '24px', fontWeight: 300, color: '#222222' }}>Test Charts</span>
+                           </td>
+                         </tr>
                         <tr>
                           <td className="border border-gray-300 px-4 py-3">H2 Überschriften</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Bold</td>
@@ -1037,14 +1037,14 @@ const Styleguide = () => {
                     <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                       <h4 className="font-semibold text-gray-900 mb-3">🔧 Verwendete Typografie-Elemente:</h4>
                       <div className="grid md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="font-mono text-xs text-gray-600">H1 Hero Title:</p>
-                          <p className="font-mono text-xs text-gray-800">Roboto Thin | 100 | 48px | #ffffff</p>
-                        </div>
-                        <div>
-                          <p className="font-mono text-xs text-gray-600">H1 "Made by" (Fett):</p>
-                          <p className="font-mono text-xs text-gray-800">Roboto Bold | 700 | 48px | #ffffff</p>
-                        </div>
+                         <div>
+                           <p className="font-mono text-xs text-gray-600">H1 Hero Title:</p>
+                           <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 60-96px | #ffffff</p>
+                         </div>
+                         <div>
+                           <p className="font-mono text-xs text-gray-600">H1 "Made by" (Fett):</p>
+                           <p className="font-mono text-xs text-gray-800">Roboto Medium | 500 | 60-96px | #ffffff</p>
+                         </div>
                         <div>
                           <p className="font-mono text-xs text-gray-600">Hero Beschreibung:</p>
                           <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 20px | rgba(255,255,255,0.9)</p>
