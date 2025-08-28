@@ -334,15 +334,27 @@ const Navigation = () => {
                             <CheckCircle className="h-5 w-5" />
                             <span>Camera Quality Validation</span>
                           </div>
-                          <Link 
-                            to="/automotive"
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
-                            onMouseEnter={() => setHoveredSolution("ADAS Testing / Automotive Vision")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <CheckCircle className="h-5 w-5" />
-                            <span>ADAS Testing / Automotive Vision</span>
-                          </Link>
+                          <div className="space-y-2">
+                            <Link 
+                              to="/automotive"
+                              className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
+                              onMouseEnter={() => setHoveredSolution("ADAS Testing / Automotive Vision")}
+                              onMouseLeave={() => setHoveredSolution(null)}
+                            >
+                              <CheckCircle className="h-5 w-5" />
+                              <span>ADAS Testing / Automotive Vision</span>
+                            </Link>
+                            <div className="ml-8">
+                              <Link 
+                                to="/solution/arcturus-bundle"
+                                className="flex items-center gap-3 text-base text-gray-700 hover:text-blue-400 transition-colors"
+                                onMouseEnter={() => setHoveredSolution("Arcturus HDR Test Bundle")}
+                                onMouseLeave={() => setHoveredSolution(null)}
+                              >
+                                <span>→ Arcturus HDR Test Bundle</span>
+                              </Link>
+                            </div>
+                          </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
