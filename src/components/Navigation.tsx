@@ -658,83 +658,71 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Resources</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                         <div className="flex gap-6 p-6">
-                        {/* Column 1: Downloads */}
+                        {/* Column 1: Technical Resources */}
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Download className="h-6 w-6" />
-                            Downloads
+                            <Microscope className="h-6 w-6" />
+                            Technical Resources
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Package className="h-5 w-5" />
-                            <Link to="/downloads">Software</Link>
+                            <FlaskConical className="h-5 w-5" />
+                            <a href="#">IQ-Lab</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <BarChart3 className="h-5 w-5" />
+                            <a href="#">Image quality factors</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <FileText className="h-5 w-5" />
-                            <a href="#">Documentation</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <BookOpen className="h-5 w-5" />
-                            <a href="#">White Papers</a>
-                          </div>
-                        </div>
-
-
-                        {/* Column 2: Support & Help */}
-                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Wrench className="h-6 w-6" />
-                            Support & Help
-                          </h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Lightbulb className="h-5 w-5" />
-                            <a href="#">Knowledge Base</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Wrench className="h-5 w-5" />
-                            <a href="#">Technical Support</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Users className="h-5 w-5" />
-                            <a href="#">Community</a>
-                          </div>
-                        </div>
-
-
-                        {/* Column 3: Additional Resources */}
-                        <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Info className="h-6 w-6" />
-                            Additional Resources
-                          </h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Video className="h-5 w-5" />
-                            <a href="#">Tutorials & Video Guides</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Link2 className="h-5 w-5" />
-                            <a href="#">API Documentation</a>
+                            <a href="#">Blog</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <ScrollText className="h-5 w-5" />
-                            <a href="#">Release Notes</a>
+                            <a href="#">Newsletter</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <BadgeCheck className="h-5 w-5" />
+                            <a href="#">International standards</a>
+                          </div>
+                        </div>
+
+                        {/* Column 2: Training & Resources */}
+                          <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                            <GraduationCap className="h-6 w-6" />
+                            Training & Resources
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Cpu className="h-5 w-5" />
+                            <a href="#">IE Technology</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Calendar className="h-5 w-5" />
+                            <a href="#">Webinar schedule</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <Video className="h-5 w-5" />
+                            <a href="#">Video Archive</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <BookOpen className="h-5 w-5" />
+                            <a href="#">Whitepapers</a>
                           </div>
                         </div>
                       </div>
 
                       {/* CTA Button */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                        <Link to="/downloads">
-                          <div className="flex items-center justify-center transition-colors cursor-pointer">
-                            <Button variant="technical" className="w-full">
-                              <Search className="h-5 w-5 mr-3" />
-                              <span className="text-lg font-medium">To Download Center</span>
-                            </Button>
-                          </div>
-                        </Link>
+                        <div className="flex items-center justify-center transition-colors cursor-pointer">
+                          <Button variant="technical" className="w-full">
+                            <Microscope className="h-5 w-5 mr-3" />
+                            <span className="text-lg font-medium">Explore Image Quality Resources</span>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </NavigationMenuContent>
