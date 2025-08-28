@@ -736,85 +736,50 @@ const Navigation = () => {
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Company</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
+                    <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
                       {/* Main grid */}
-                      <div className="flex gap-6 p-6">
+                      <div className="flex gap-8 p-6">
                         {/* Column 1: Company Information */}
-                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Building2 className="h-6 w-6" />
                             Company Information
                           </h4>
-                          <Link to="/about" className="block group">
-                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
-                              <Info className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">About IE</div>
-                                <div className="text-sm text-muted-foreground">Learn about our company</div>
-                              </div>
-                            </div>
+                          <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <Info className="h-5 w-5" />
+                            <span>About IE</span>
                           </Link>
-                          <Link to="/team" className="block group">
-                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
-                              <Users className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">Team</div>
-                                <div className="text-sm text-muted-foreground">Meet our experts</div>
-                              </div>
-                            </div>
+                          <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <Users className="h-5 w-5" />
+                            <span>Team</span>
                           </Link>
-                          <Link to="/subsidiaries" className="block group">
-                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
-                              <Building className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">Subsidiaries/Resellers</div>
-                                <div className="text-sm text-muted-foreground">Our global network</div>
-                              </div>
-                            </div>
+                          <Link to="/subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <Building className="h-5 w-5" />
+                            <span>Subsidiaries/Resellers</span>
                           </Link>
-                          <Link to="/nynomic-group" className="block group">
-                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
-                              <Briefcase className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">Nynomic Group</div>
-                                <div className="text-sm text-muted-foreground">Parent company</div>
-                              </div>
-                            </div>
+                          <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <Briefcase className="h-5 w-5" />
+                            <span>Nynomic Group</span>
                           </Link>
                         </div>
 
                         {/* Column 2: Business & Partnerships */}
-                        <div className="space-y-4 flex-1 pl-6">
+                        <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Handshake className="h-6 w-6" />
                             Business & Partnerships
                           </h4>
-                          <Link to="/events" className="block group">
-                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
-                              <Calendar className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">Events</div>
-                                <div className="text-sm text-muted-foreground">Upcoming events & conferences</div>
-                              </div>
-                            </div>
+                          <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <Calendar className="h-5 w-5" />
+                            <span>Events</span>
                           </Link>
-                          <Link to="/careers" className="block group">
-                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
-                              <GraduationCap className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">Careers</div>
-                                <div className="text-sm text-muted-foreground">Join our team</div>
-                              </div>
-                            </div>
+                          <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <GraduationCap className="h-5 w-5" />
+                            <span>Careers</span>
                           </Link>
-                          <Link to="/partnerships" className="block group">
-                            <div className="flex items-center space-x-3 text-black hover:text-primary p-3 rounded-md hover:bg-white transition-colors">
-                              <Handshake className="h-5 w-5 text-muted-foreground" />
-                              <div>
-                                <div className="font-medium">Partnerships</div>
-                                <div className="text-sm text-muted-foreground">Collaborate with us</div>
-                              </div>
-                            </div>
+                          <Link to="/partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <Handshake className="h-5 w-5" />
+                            <span>Partnerships</span>
                           </Link>
                         </div>
                       </div>
