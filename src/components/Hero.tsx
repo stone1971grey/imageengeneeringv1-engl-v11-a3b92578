@@ -43,7 +43,7 @@ const Hero = () => {
               <Button 
                 size="lg"
                 variant="contact"
-                className="text-white border-0 px-8 py-4 group"
+                className="text-white border-0 px-12 py-4 group"
                 onClick={() => window.location.href = '/products/charts'}
               >
                 Discover Charts
@@ -53,7 +53,7 @@ const Hero = () => {
               <Button 
                 size="lg"
                 variant="decision"
-                className="text-white border-0 px-8 py-4"
+                className="text-white border-0 px-12 py-4"
                 onClick={() => {
                   const element = document.getElementById('trusted-industries');
                   if (element) {
