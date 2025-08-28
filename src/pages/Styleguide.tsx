@@ -344,6 +344,24 @@ const Styleguide = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Neutral Gray Color */}
+                  <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="w-32">
+                      <p className="font-medium text-gray-900">Neutral Gray</p>
+                      <p className="text-sm text-gray-500">Base color</p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div 
+                        className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                        style={{ backgroundColor: '#a3a3a3' }}
+                      ></div>
+                      <div>
+                        <p className="font-mono text-sm text-gray-900">#a3a3a3</p>
+                        <p className="text-xs text-gray-500">Neutral gray tone</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </section>
             </div>
