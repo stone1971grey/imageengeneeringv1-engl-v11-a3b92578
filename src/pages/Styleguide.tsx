@@ -285,7 +285,7 @@ const Styleguide = () => {
               </section>
 
               {/* Colors Section */}
-              <section id="colors" className="mb-16 scroll-mt-[265px]">
+              <section id="colors" className="mb-16 scroll-mt-[280px]">
                 <h2 className="text-3xl font-bold text-gray-900 mb-12">Colors</h2>
                 <p className="text-lg text-gray-600 mb-8">Color palette used throughout the design system</p>
                 
