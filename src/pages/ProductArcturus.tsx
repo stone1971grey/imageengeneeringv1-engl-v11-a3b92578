@@ -56,10 +56,10 @@ const ProductArcturus = () => {
       
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
-        {/* Quick Navigation - Meta Navigation */}
-        <nav className="sticky top-[140px] z-[980] bg-[#F7F9FB] py-4 border-b border-gray-200 shadow-sm">
+        {/* Quick Navigation */}
+        <nav className="sticky top-[210px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
-            <div className="hidden md:block">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
                  <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
                     onClick={(e) => {
@@ -93,31 +93,11 @@ const ProductArcturus = () => {
                     }}>Downloads</a>
               </div>
             </div>
-            {/* Mobile dropdown menu */}
-            <div className="md:hidden">
-              <select 
-                className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[#3D7BA2] focus:border-transparent"
-                onChange={(e) => {
-                  const target = document.getElementById(e.target.value);
-                  if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }}
-              >
-                <option value="">Navigate to section...</option>
-                <option value="overview">Overview</option>
-                <option value="benefits">Benefits</option>
-                <option value="specifications">Specifications</option>
-                <option value="applications">Applications</option>
-                <option value="gallery">Gallery</option>
-                <option value="downloads">Downloads</option>
-              </select>
-            </div>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <section id="overview" className="min-h-[60vh] bg-scandi-white font-inter scroll-mt-[220px] relative overflow-hidden">
+        <section id="overview" className="min-h-[60vh] bg-scandi-white font-inter scroll-mt-[280px] relative overflow-hidden">
           {/* Animated background light effects */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
@@ -181,8 +161,8 @@ const ProductArcturus = () => {
             </div>
           </div>
           
-           {/* Main Benefits */}
-           <div id="benefits" className="bg-gray-100 py-16 scroll-mt-[220px]">
+          {/* Main Benefits */}
+          <div id="benefits" className="bg-gray-100 py-16 scroll-mt-[280px]">
             <div className="container mx-auto px-4">
               <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Key Benefits of Arcturus</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -287,8 +267,8 @@ const ProductArcturus = () => {
         </div>
       </section>
 
-       {/* Detailed Specifications */}
-       <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[220px]">
+      {/* Detailed Specifications */}
+      <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[280px]">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
           <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Detailed Specifications</h2>
           <div className="overflow-x-auto">
@@ -552,8 +532,8 @@ const ProductArcturus = () => {
         </div>
       </section>
 
-       {/* Typical Applications */}
-       <section id="applications" className="container mx-auto px-4 pb-20 scroll-mt-[220px]">
+      {/* Typical Applications */}
+      <section id="applications" className="container mx-auto px-4 pb-20 scroll-mt-[320px]">
         <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Typical Applications</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
@@ -600,8 +580,8 @@ const ProductArcturus = () => {
         </div>
       </section>
 
-       {/* Product Image Gallery */}
-       <section id="gallery" className="container mx-auto px-4 pb-20 scroll-mt-[220px]">
+      {/* Product Image Gallery */}
+      <section id="gallery" className="container mx-auto px-4 pb-20 scroll-mt-[310px]">
         <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-12 text-center">Product Gallery</h2>
         
         <div className="max-w-6xl mx-auto">
@@ -776,8 +756,8 @@ const ProductArcturus = () => {
         </div>
       </section>
 
-       {/* Related Downloads */}
-       <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[220px]">
+      {/* Related Downloads */}
+      <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[280px]">
         <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Related Downloads</h2>
         <div className="grid md:grid-cols-4 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
