@@ -795,7 +795,7 @@ const Styleguide = () => {
                              fontWeight: 500, 
                              fontSize: '16px', 
                              color: '#ffffff',
-                             backgroundColor: '#74952a',
+                             backgroundColor: '#577eb4',
                              padding: '12px 24px',
                              borderRadius: '6px',
                              display: 'inline-block'
@@ -809,13 +809,13 @@ const Styleguide = () => {
                              fontWeight: 500, 
                              fontSize: '16px', 
                              color: '#ffffff',
-                             backgroundColor: '#577eb4',
+                             backgroundColor: '#74952a',
                              padding: '12px 24px',
                              borderRadius: '6px',
                              display: 'inline-block'
                            }}
                          >
-                           Contact Sales
+                           Trusted Across All Industries
                          </span>
                          <span 
                            style={{ 
