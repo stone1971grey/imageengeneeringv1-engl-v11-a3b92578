@@ -606,6 +606,16 @@ const Styleguide = () => {
                             <span style={{ fontSize: '12px', fontWeight: 400, color: '#999999' }}>Footer Text</span>
                           </td>
                         </tr>
+                        <tr>
+                          <td className="border border-gray-300 px-4 py-3">Made by / Credits</td>
+                          <td className="border border-gray-300 px-4 py-3">Roboto Bold</td>
+                          <td className="border border-gray-300 px-4 py-3">700</td>
+                          <td className="border border-gray-300 px-4 py-3">~12–14px</td>
+                          <td className="border border-gray-300 px-4 py-3">#555555</td>
+                          <td className="border border-gray-300 px-4 py-3">
+                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#555555' }}>Made by Image Engineering</span>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                 </div>
@@ -851,6 +861,30 @@ const Styleguide = () => {
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
                         Verwendung: Copyright-Hinweise, Footer-Links, rechtliche Informationen, kleine Zusatzinformationen
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Made by / Credits Text */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Made by / Credits (Fett)</h4>
+                    
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg">
+                      <p style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontWeight: 700, 
+                        fontSize: '14px', 
+                        color: '#555555',
+                        lineHeight: '1.4',
+                        margin: 0
+                      }}>
+                        Made by Image Engineering
+                      </p>
+                      <div className="mt-3 text-xs text-gray-500 font-mono">
+                        font-family: Roboto Bold | font-weight: 700 | font-size: 12-14px | color: #555555
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3">
+                        Verwendung: Fett geschriebene Credits, Markenerwähnungen, "Powered by"-Texte, betonte Footer-Elemente
                       </p>
                     </div>
                   </div>
