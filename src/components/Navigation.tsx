@@ -243,6 +243,22 @@ const Navigation = () => {
                             <Building2 className="h-6 w-6" />
                             Industries
                           </h4>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Photography")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Camera className="h-5 w-5" />
+                            <span>Photography</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Smartphone className="h-5 w-5" />
+                            <span>Mobile Phones</span>
+                          </div>
                           <Link 
                             to="/automotive"
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
@@ -254,19 +270,11 @@ const Navigation = () => {
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
+                            onMouseEnter={() => setHoveredIndustry("Broadcast & HDTV")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
-                            <Smartphone className="h-5 w-5" />
-                            <span>Smartphones & Consumer Electronics</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Stethoscope className="h-5 w-5" />
-                            <span>Medical Imaging</span>
+                            <Tv className="h-5 w-5" />
+                            <span>Broadcast & HDTV</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -274,23 +282,39 @@ const Navigation = () => {
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Shield className="h-5 w-5" />
-                            <span>Security & Surveillance</span>
+                            <span>Security / Surveillance</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Broadcast & HDTV")}
+                            onMouseEnter={() => setHoveredIndustry("Machine Vision")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
-                            <Tv className="h-5 w-5" />
-                            <span>Broadcast & Film</span>
+                            <Cog className="h-5 w-5" />
+                            <span>Machine Vision</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <Stethoscope className="h-5 w-5" />
+                            <span>Medical / Endoscopy</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredIndustry("Scanning & Archiving")}
+                            onMouseLeave={() => setHoveredIndustry(null)}
+                          >
+                            <ScanLine className="h-5 w-5" />
+                            <span>Scanning & Archiving</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("iQ‑Lab Testing")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
-                            <GraduationCap className="h-5 w-5" />
-                            <span>Research & Academia</span>
+                            <FlaskConical className="h-5 w-5" />
+                            <span>iQ‑Lab Testing</span>
                           </div>
                         </div>
                         
