@@ -89,16 +89,16 @@ const Industries = () => {
               >
                 {/* Icon Circle - Image Engineering grün */}
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 md:w-24 md:h-24 bg-[#7a933b]/10 rounded-full flex items-center justify-center border-2 border-[#7a933b]/20 shadow-lg hover:shadow-xl hover:bg-[#7a933b] hover:border-[#7a933b] transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105 cursor-pointer">
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-[#74952a]/10 rounded-full flex items-center justify-center border-2 border-[#74952a]/20 shadow-lg hover:shadow-xl hover:bg-[#74952a] hover:border-[#74952a] transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105 cursor-pointer">
                     <IconComponent 
                       size={28} 
-                      className="text-[#7a933b] group-hover:scale-125 transition-all duration-300" 
+                      className="text-[#74952a] group-hover:scale-125 transition-all duration-300" 
                       strokeWidth={1.8}
                     />
                   </div>
                   
                   {/* Image Engineering grün Glow-Effekt */}
-                  <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 bg-[#7a933b] rounded-full opacity-0 hover:opacity-20 transition-opacity duration-500 blur-xl" />
+                  <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 bg-[#74952a] rounded-full opacity-0 hover:opacity-20 transition-opacity duration-500 blur-xl" />
                 </div>
 
                 {/* Text Content - warme Farbtöne */}

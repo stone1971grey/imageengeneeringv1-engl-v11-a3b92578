@@ -260,11 +260,11 @@ const ComprehensiveStyleguide = () => {
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg border">
-                    <Camera size={32} className="text-[#7a933b]" strokeWidth={2} />
+                    <Camera size={32} className="text-[#74952a]" strokeWidth={2} />
                   </div>
                   <h4 className="font-semibold text-gray-900 mb-1">Brand Green</h4>
                   <p className="text-sm text-gray-600">Highlights, CTAs</p>
-                  <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">text-[#7a933b]</code>
+                  <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">text-[#74952a]</code>
                 </div>
                 <div className="text-center">
                   <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg border">

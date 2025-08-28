@@ -760,7 +760,7 @@ export default function Downloads() {
                               <Button 
                                 variant="ghost" 
                                 size="sm"
-                                className="text-[#7a933b] hover:text-[#6a7f35] hover:bg-[#7a933b]/10"
+                                className="text-[#74952a] hover:text-[#658023] hover:bg-[#74952a]/10"
                                 onClick={() => openDetails(item)}
                               >
                                 Details

@@ -101,7 +101,7 @@ const Industries = () => {
               <h1 id="industries-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
                 Precision Solutions
                 <br />
-                <span className="font-medium text-[#7a933b]">for All Industries</span>
+                <span className="font-medium text-[#74952a]">for All Industries</span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl mx-auto">
@@ -115,8 +115,8 @@ const Industries = () => {
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-[#7a933b]/40 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-[#7a933b]/60 rounded-full mt-2 animate-pulse"></div>
+          <div className="w-6 h-10 border-2 border-[#74952a]/40 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-[#74952a]/60 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </section>
