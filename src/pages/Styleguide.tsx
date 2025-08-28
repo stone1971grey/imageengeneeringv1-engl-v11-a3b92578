@@ -608,7 +608,276 @@ const Styleguide = () => {
                         </tr>
                       </tbody>
                     </table>
+                </div>
+
+                {/* Ausführliche Typografie-Beispiele */}
+                <div className="mb-16">
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Ausführliche Typografie-Beispiele</h3>
+                  
+                  {/* H1 Varianten */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">H1 Headlines</h4>
+                    
+                    {/* H1 auf dunklem Hintergrund */}
+                    <div className="mb-8 p-8 bg-gray-900 rounded-lg">
+                      <div className="mb-4">
+                        <span className="text-sm text-gray-400 font-mono">H1 auf dunklem Hintergrund</span>
+                      </div>
+                      <h1 style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontWeight: 100, 
+                        fontSize: '45px', 
+                        color: '#ffffff',
+                        lineHeight: '1.1',
+                        margin: 0
+                      }}>
+                        Image Quality Test Lab
+                      </h1>
+                      <div className="mt-4 text-xs text-gray-400 font-mono">
+                        font-family: Roboto Thin | font-weight: 100 | font-size: 45px | color: #ffffff
+                      </div>
+                    </div>
+
+                    {/* H1 auf hellem Hintergrund */}
+                    <div className="mb-8 p-8 bg-white border border-gray-200 rounded-lg">
+                      <div className="mb-4">
+                        <span className="text-sm text-gray-600 font-mono">H1 auf hellem Hintergrund</span>
+                      </div>
+                      <h1 style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontWeight: 100, 
+                        fontSize: '45px', 
+                        color: '#222222',
+                        lineHeight: '1.1',
+                        margin: 0
+                      }}>
+                        Advanced Computer Vision Solutions
+                      </h1>
+                      <div className="mt-4 text-xs text-gray-500 font-mono">
+                        font-family: Roboto Thin | font-weight: 100 | font-size: 45px | color: #222222
+                      </div>
+                    </div>
                   </div>
+
+                  {/* H2 Überschriften */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">H2 Hauptüberschriften</h4>
+                    
+                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                      <h2 style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontWeight: 700, 
+                        fontSize: '32px', 
+                        color: '#222222',
+                        lineHeight: '1.2',
+                        margin: 0
+                      }}>
+                        Präzise Bildanalyse für Ihre Anforderungen
+                      </h2>
+                      <div className="mt-4 text-xs text-gray-500 font-mono">
+                        font-family: Roboto Bold | font-weight: 700 | font-size: 32px | color: #222222
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3">
+                        Verwendung: Hauptsektionen, wichtige Inhaltsblöcke, Kategorien-Überschriften
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* H3 Unterüberschriften */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">H3 Unterüberschriften</h4>
+                    
+                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                      <h3 style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontWeight: 400, 
+                        fontSize: '24px', 
+                        color: '#222222',
+                        lineHeight: '1.3',
+                        margin: 0
+                      }}>
+                        Technische Spezifikationen und Features
+                      </h3>
+                      <div className="mt-4 text-xs text-gray-500 font-mono">
+                        font-family: Roboto Regular | font-weight: 400 | font-size: 24px | color: #222222
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3">
+                        Verwendung: Unterabschnitte, Feature-Listen, Produktdetails
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Body Text */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Body Text / Fließtext</h4>
+                    
+                    <div className="p-6 bg-white border border-gray-200 rounded-lg">
+                      <p style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontWeight: 400, 
+                        fontSize: '16px', 
+                        color: '#555555',
+                        lineHeight: '1.6',
+                        margin: 0
+                      }}>
+                        Unsere fortschrittlichen Computer-Vision-Lösungen bieten präzise Bildanalyse für industrielle Anwendungen. 
+                        Mit modernster Technologie und jahrelanger Expertise entwickeln wir maßgeschneiderte Systeme für Ihre 
+                        spezifischen Anforderungen in der Qualitätskontrolle und Bildverarbeitung.
+                      </p>
+                      <div className="mt-4 text-xs text-gray-500 font-mono">
+                        font-family: Roboto Regular | font-weight: 400 | font-size: 16px | color: #555555
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3">
+                        Verwendung: Haupttext, Beschreibungen, Artikel-Inhalte, längere Textpassagen
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Navigation Text */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Navigation / Menü</h4>
+                    
+                    <div className="p-6 bg-gray-800 rounded-lg">
+                      <div className="flex gap-8">
+                        <span style={{ 
+                          fontFamily: 'Roboto, sans-serif', 
+                          fontWeight: 400, 
+                          fontSize: '16px', 
+                          color: '#ffffff'
+                        }}>
+                          Products
+                        </span>
+                        <span style={{ 
+                          fontFamily: 'Roboto, sans-serif', 
+                          fontWeight: 600, 
+                          fontSize: '16px', 
+                          color: '#ffffff'
+                        }}>
+                          Solutions
+                        </span>
+                        <span style={{ 
+                          fontFamily: 'Roboto, sans-serif', 
+                          fontWeight: 400, 
+                          fontSize: '16px', 
+                          color: '#ffffff'
+                        }}>
+                          Industries
+                        </span>
+                      </div>
+                      <div className="mt-4 text-xs text-gray-400 font-mono">
+                        font-family: Roboto Regular/Semibold | font-weight: 400/600 | font-size: 14-16px | color: #ffffff
+                      </div>
+                      <p className="text-sm text-gray-400 mt-3">
+                        Verwendung: Hauptnavigation, Dropdown-Menüs, Footer-Links
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Button Text */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Button / CTA Text</h4>
+                    
+                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                      <div className="flex gap-4 flex-wrap">
+                        <span 
+                          style={{ 
+                            fontFamily: 'Roboto, sans-serif',
+                            fontWeight: 700, 
+                            fontSize: '16px', 
+                            color: '#ffffff',
+                            backgroundColor: '#74952a',
+                            padding: '12px 24px',
+                            borderRadius: '6px',
+                            display: 'inline-block'
+                          }}
+                        >
+                          Discover Charts
+                        </span>
+                        <span 
+                          style={{ 
+                            fontFamily: 'Roboto, sans-serif',
+                            fontWeight: 700, 
+                            fontSize: '16px', 
+                            color: '#ffffff',
+                            backgroundColor: '#577eb4',
+                            padding: '12px 24px',
+                            borderRadius: '6px',
+                            display: 'inline-block'
+                          }}
+                        >
+                          Contact Sales
+                        </span>
+                        <span 
+                          style={{ 
+                            fontFamily: 'Roboto, sans-serif',
+                            fontWeight: 700, 
+                            fontSize: '14px', 
+                            color: '#ffffff',
+                            backgroundColor: '#1f2937',
+                            padding: '10px 20px',
+                            borderRadius: '6px',
+                            display: 'inline-block'
+                          }}
+                        >
+                          Download PDF
+                        </span>
+                      </div>
+                      <div className="mt-4 text-xs text-gray-500 font-mono">
+                        font-family: Roboto Bold | font-weight: 700 | font-size: 14-16px | color: #ffffff
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3">
+                        Verwendung: Call-to-Action Buttons, primäre und sekundäre Aktionen
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Footer Text */}
+                  <div className="mb-12">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Footer Text</h4>
+                    
+                    <div className="p-6 bg-gray-100 border border-gray-200 rounded-lg">
+                      <p style={{ 
+                        fontFamily: 'Roboto, sans-serif', 
+                        fontWeight: 400, 
+                        fontSize: '12px', 
+                        color: '#999999',
+                        lineHeight: '1.4',
+                        margin: 0
+                      }}>
+                        © 2024 Image Engineering. All rights reserved. | Privacy Policy | Terms of Service | Contact
+                      </p>
+                      <div className="mt-3 text-xs text-gray-500 font-mono">
+                        font-family: Roboto Regular | font-weight: 400 | font-size: 12px | color: #999999
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3">
+                        Verwendung: Copyright-Hinweise, Footer-Links, rechtliche Informationen, kleine Zusatzinformationen
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Verwendungsrichtlinien */}
+                  <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h4 className="text-lg font-semibold text-blue-900 mb-4">📋 Verwendungsrichtlinien</h4>
+                    <ul className="space-y-3 text-sm text-blue-800">
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold">•</span>
+                        <span><strong>Konsistenz:</strong> Verwenden Sie immer die definierten Schriftgrößen und -gewichte für eine einheitliche Erscheinung</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold">•</span>
+                        <span><strong>Kontrast:</strong> Achten Sie auf ausreichenden Farbkontrast für beste Lesbarkeit</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold">•</span>
+                        <span><strong>Hierarchie:</strong> H1 → H2 → H3 → Body Text folgt der visuellen Wichtigkeit</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-blue-600 font-bold">•</span>
+                        <span><strong>Zeilenhöhe:</strong> Verwenden Sie angemessene Zeilenhöhen (1.1-1.6) für bessere Lesbarkeit</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
                 </div>
 
                 {/* Fonts Section */}
