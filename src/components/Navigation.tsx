@@ -747,7 +747,7 @@ const Navigation = () => {
                           </h4>
                           <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                             <Info className="h-5 w-5" />
-                            <span>About IE</span>
+                            <span>About Image Engineering</span>
                           </Link>
                           <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                             <Users className="h-5 w-5" />
@@ -1095,7 +1095,7 @@ const Navigation = () => {
                         <div className="pt-2">
                           <ul className="space-y-1">
                             <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">About IE</span></div>
+                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">About Image Engineering</span></div>
                             </li>
                             <li>
                               <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Users className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Team</span></div>
