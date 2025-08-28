@@ -251,7 +251,7 @@ const SolutionArcturusBundle = () => {
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
         {/* Quick Navigation */}
-        <nav className="sticky top-[210px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+        <nav className="sticky top-[140px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100 shadow-sm">
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
@@ -291,7 +291,7 @@ const SolutionArcturusBundle = () => {
         </nav>
 
         {/* Hero Section */}
-        <section id="overview" className="bg-scandi-white py-16 lg:py-24 scroll-mt-[280px]">
+        <section id="overview" className="bg-scandi-white py-16 lg:py-24 scroll-mt-[220px]">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             
@@ -363,7 +363,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Bundle Components */}
-        <section id="architecture" className="container mx-auto px-6 py-16 scroll-mt-[280px]">
+        <section id="architecture" className="container mx-auto px-6 py-16 scroll-mt-[220px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             System Architecture
@@ -407,7 +407,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Technical Overview */}
-        <section id="benefits" className="bg-white py-16 scroll-mt-[280px]">
+        <section id="benefits" className="bg-white py-16 scroll-mt-[220px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -661,7 +661,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Key Benefits */}
-        <section id="applications" className="bg-scandi-light-grey py-16 scroll-mt-[280px]">
+        <section id="applications" className="bg-scandi-light-grey py-16 scroll-mt-[220px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
@@ -708,7 +708,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Application Areas */}
-        <section id="comparison" className="container mx-auto px-6 py-16 scroll-mt-[280px]">
+        <section id="comparison" className="container mx-auto px-6 py-16 scroll-mt-[220px]">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             Comparison
@@ -987,7 +987,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="scroll-mt-[280px]">
+        <section id="faq" className="scroll-mt-[220px]">
         <ProductFAQ 
           faqs={faqData}
           productName="Arcturus HDR Test Bundle"
@@ -995,7 +995,7 @@ const SolutionArcturusBundle = () => {
         </section>
 
         {/* Downloads Section */}
-        <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[280px]">
+        <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[220px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
