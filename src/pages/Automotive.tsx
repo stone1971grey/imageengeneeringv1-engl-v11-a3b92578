@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ArrowRight, Camera, TestTube, Monitor, Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X, Check, Quote } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -251,39 +250,8 @@ const SolutionArcturusBundle = () => {
       
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
-        {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumb" className="sticky top-[140px] z-40 bg-[#F7F9FB] py-6 border-b border-gray-100">
-          <div className="container mx-auto px-4 mt-8">
-            <ol className="flex gap-2 text-base text-muted-foreground">
-              <li>
-                <Link to="/" className="hover:text-foreground transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>/</li>
-              <li>
-                <span className="hover:text-foreground transition-colors cursor-pointer">
-                  Solutions
-                </span>
-              </li>
-              <li>/</li>
-              <li>
-                <span className="hover:text-foreground transition-colors cursor-pointer">
-                  Test Packages
-                </span>
-              </li>
-              <li>/</li>
-              <li>
-                <span className="text-muted-foreground underline">
-                  Arcturus HDR
-                </span>
-              </li>
-            </ol>
-          </div>
-        </nav>
-
         {/* Quick Navigation */}
-        <nav className="sticky top-[215px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+        <nav className="sticky top-[140px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">

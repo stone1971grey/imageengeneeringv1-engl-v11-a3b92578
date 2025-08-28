@@ -280,22 +280,6 @@ const Charts = () => {
         
         <div className="relative z-10 container mx-auto px-6 py-24 lg:py-32">
           <div className="max-w-4xl">
-            {/* Breadcrumbs */}
-            <nav className="mb-8" itemScope itemType="https://schema.org/BreadcrumbList">
-              <ol className="flex items-center space-x-2 text-sm text-white/80">
-                <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-                  <Link to="/" className="hover:text-white transition-colors" itemProp="item">
-                    <span itemProp="name">Home</span>
-                  </Link>
-                  <meta itemProp="position" content="1" />
-                </li>
-                <span className="text-white/60">/</span>
-                <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-                  <span className="text-white" itemProp="name">Testcharts</span>
-                  <meta itemProp="position" content="2" />
-                </li>
-              </ol>
-            </nav>
 
             <div className="mb-8">
             <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-32 pt-32">

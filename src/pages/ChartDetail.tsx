@@ -62,29 +62,6 @@ const ChartDetail = () => {
       />
 
       <div className="container mx-auto px-6 py-8">
-        {/* Breadcrumbs */}
-        <nav className="mb-6" itemScope itemType="https://schema.org/BreadcrumbList">
-          <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-              <Link to="/" className="hover:text-foreground transition-colors" itemProp="item">
-                <span itemProp="name">Home</span>
-              </Link>
-              <meta itemProp="position" content="1" />
-            </li>
-            <span>/</span>
-            <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-              <Link to="/products/charts" className="hover:text-foreground transition-colors" itemProp="item">
-                <span itemProp="name">Test Charts</span>
-              </Link>
-              <meta itemProp="position" content="2" />
-            </li>
-            <span>/</span>
-            <li itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
-              <span className="text-foreground" itemProp="name">{chart.title}</span>
-              <meta itemProp="position" content="3" />
-            </li>
-          </ol>
-        </nav>
 
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6">

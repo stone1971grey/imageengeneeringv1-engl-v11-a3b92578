@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Camera, Zap, Target, Microscope, Car, Smartphone, Shield, Monitor, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -140,28 +139,6 @@ const InsideLab = () => {
     <div className="min-h-screen bg-white font-inter">
       <Navigation />
       
-      {/* Breadcrumb */}
-      <div className="container mx-auto px-6 pt-20 pb-4">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/">Startseite</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/products">Produkte</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Blick ins Testlabor</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </div>
 
       {/* Hero Section */}
       <div className="bg-scandi-white py-16 lg:py-24">
