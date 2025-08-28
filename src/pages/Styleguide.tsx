@@ -900,7 +900,7 @@ const Styleguide = () => {
                          <h1 style={{ 
                            fontFamily: 'Roboto, sans-serif', 
                            fontWeight: 300, 
-                           fontSize: '72px', 
+                           fontSize: '96px', 
                            color: '#ffffff',
                            lineHeight: '0.9',
                            margin: 0,
@@ -911,7 +911,7 @@ const Styleguide = () => {
                          <h1 style={{ 
                            fontFamily: 'Roboto, sans-serif', 
                            fontWeight: 500, 
-                           fontSize: '72px', 
+                           fontSize: '96px', 
                            color: '#ffffff',
                            lineHeight: '0.9',
                            margin: 0
