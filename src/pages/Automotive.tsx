@@ -82,7 +82,7 @@ const Automotive = () => {
       />
 
       {/* Hero Section - starts immediately after navigation */}
-      <section id="introduction" className="min-h-screen bg-scandi-white font-inter">
+      <section id="introduction" className="min-h-screen bg-scandi-white font-roboto">
         {/* Navigation Spacer */}
         <div className="h-16"></div>
         

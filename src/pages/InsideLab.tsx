@@ -136,7 +136,7 @@ const InsideLab = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white font-inter">
+    <div className="min-h-screen bg-white font-roboto">
       <Navigation />
       
 
