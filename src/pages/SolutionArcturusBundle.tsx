@@ -88,19 +88,19 @@ const SolutionArcturusBundle = () => {
     {
       title: "Automotive ADAS Testing",
       description: "Complete testing solution for driver assistance systems according to IEEE P2020 standard",
-      icon: <Shield className="h-8 w-8 text-blue-600" />,
+      icon: <Shield className="h-8 w-8 text-[#577eb4]" />,
       benefits: ["HDR scenario testing", "Sunlight simulation", "Night vision validation"]
     },
     {
       title: "Mobile Device Validation",
       description: "Comprehensive image quality testing for smartphone cameras according to VCX standards",
-      icon: <Eye className="h-8 w-8 text-blue-600" />,
+      icon: <Eye className="h-8 w-8 text-[#577eb4]" />,
       benefits: ["Color accuracy testing", "Sharpness analysis", "Low-light performance"]
     },
     {
       title: "Professional Photography",
       description: "Precision calibration for professional camera systems",
-      icon: <Lightbulb className="h-8 w-8 text-blue-600" />,
+      icon: <Lightbulb className="h-8 w-8 text-[#577eb4]" />,
       benefits: ["Color reproduction testing", "Dynamic range analysis", "Lens sharpness measurement"]
     }
   ];
@@ -334,7 +334,7 @@ const SolutionArcturusBundle = () => {
               <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <Button 
                   size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                  className="bg-[#577eb4] hover:bg-[#4a6b9a] text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
                   onClick={() => {
                     const footer = document.querySelector('footer');
                     if (footer) {
@@ -376,7 +376,7 @@ const SolutionArcturusBundle = () => {
         
         <div className="grid lg:grid-cols-3 gap-8">
           {bundleComponents.map((component, index) => (
-            <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-red-100">
+            <Card key={index} className="group hover:shadow-2xl transition-all duration-300 border-0 bg-[#e8d3dd]">
               <CardHeader className="text-center pb-1 pt-4">
                 <div className="flex justify-center mb-4">
                   <div className="w-14 h-14 bg-soft-blue/10 rounded-full flex items-center justify-center">
@@ -675,8 +675,8 @@ const SolutionArcturusBundle = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Settings className="text-blue-600" size={32} />
+              <div className="w-16 h-16 bg-[#577eb4]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Settings className="text-[#577eb4]" size={32} />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Plug & Play Setup</h3>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -685,8 +685,8 @@ const SolutionArcturusBundle = () => {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <BarChart3 className="text-blue-600" size={32} />
+              <div className="w-16 h-16 bg-[#577eb4]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <BarChart3 className="text-[#577eb4]" size={32} />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Maximum Accuracy</h3>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -695,8 +695,8 @@ const SolutionArcturusBundle = () => {
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="text-blue-600" size={32} />
+              <div className="w-16 h-16 bg-[#577eb4]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Shield className="text-[#577eb4]" size={32} />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Standards Compliance</h3>
               <p className="text-lg text-gray-700 leading-relaxed">
@@ -724,7 +724,7 @@ const SolutionArcturusBundle = () => {
             <Card key={index} className="hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-200">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <div className="w-16 h-16 bg-[#577eb4]/10 rounded-xl flex items-center justify-center">
                     {area.icon}
                   </div>
                   <CardTitle className="text-xl font-semibold text-gray-900">
@@ -740,7 +740,7 @@ const SolutionArcturusBundle = () => {
                 <div className="space-y-3">
                   {area.benefits.map((benefit, benefitIndex) => (
                     <div key={benefitIndex} className="flex items-center gap-3 text-base text-gray-600">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
+                      <div className="w-2 h-2 bg-[#577eb4] rounded-full flex-shrink-0"></div>
                       {benefit}
                     </div>
                   ))}
@@ -772,7 +772,7 @@ const SolutionArcturusBundle = () => {
                 {/* Testimonial Content */}
                 <div className="flex-1 text-center md:text-left">
                   <div className="mb-6">
-                    <Quote className="h-8 w-8 text-blue-600 mx-auto md:mx-0 mb-4" />
+                    <Quote className="h-8 w-8 text-[#577eb4] mx-auto md:mx-0 mb-4" />
                     <blockquote className="text-xl md:text-2xl text-gray-800 leading-relaxed font-medium italic">
                       "With Arcturus, we were able to measure stable HDR results at 0.3 ms exposure time for the first time – 
                       a decisive breakthrough for our ADAS calibration."
@@ -783,7 +783,7 @@ const SolutionArcturusBundle = () => {
                     <div className="font-semibold text-gray-900 text-lg">
                       Dr. Thomas Becker
                     </div>
-                    <div className="text-blue-600 font-medium">
+                    <div className="text-[#577eb4] font-medium">
                       Head of Image Quality Lab
                     </div>
                     <div className="text-gray-600">
@@ -813,14 +813,14 @@ const SolutionArcturusBundle = () => {
           <div className="max-w-6xl mx-auto">
             <div className="bg-gray-50 rounded-xl overflow-hidden shadow-soft">
               {/* Header */}
-              <div className="grid md:grid-cols-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+              <div className="grid md:grid-cols-3 bg-gradient-to-r from-[#577eb4] to-[#4a6b9a] text-white">
                 <div className="p-4 text-center font-semibold text-lg">
                   Criterion
                 </div>
-                <div className="p-4 text-center font-semibold text-lg border-l border-blue-500">
+                <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
                   Arcturus HDR Test Package
                 </div>
-                <div className="p-4 text-center font-semibold text-lg border-l border-blue-500">
+                <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
                   Previous Solution (e.g. DTS)
                 </div>
               </div>
@@ -1011,8 +1011,8 @@ const SolutionArcturusBundle = () => {
             <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Zap className="h-8 w-8 text-blue-600" />
+                  <div className="w-16 h-16 bg-[#577eb4]/10 rounded-full flex items-center justify-center">
+                    <Zap className="h-8 w-8 text-[#577eb4]" />
                   </div>
                 </div>
                 <CardTitle className="text-xl font-bold text-gray-900">
@@ -1058,8 +1058,8 @@ const SolutionArcturusBundle = () => {
             <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                    <Monitor className="h-8 w-8 text-green-600" />
+                  <div className="w-16 h-16 bg-[#577eb4]/10 rounded-full flex items-center justify-center">
+                    <Monitor className="h-8 w-8 text-[#577eb4]" />
                   </div>
                 </div>
                 <CardTitle className="text-xl font-bold text-gray-900">
