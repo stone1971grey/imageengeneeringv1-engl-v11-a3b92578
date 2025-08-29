@@ -660,7 +660,7 @@ const Navigation = () => {
                       {/* CTA Button */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <div className="flex items-center justify-center transition-colors cursor-pointer">
-                          <Button variant="technical" className="w-full">
+                          <Button variant="default" className="w-full">
                             <Phone className="h-5 w-5 mr-3" />
                             <span className="text-lg font-medium">Contact Our Service Team</span>
                           </Button>
