@@ -188,8 +188,8 @@ const Automotive = () => {
                   key={index}
                   className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100"
                 >
-                  <div className="w-12 h-12 bg-blue-600/10 rounded-xl flex items-center justify-center mb-6">
-                    <IconComponent className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style={{ backgroundColor: '#577eb4' + '1A' }}>
+                    <IconComponent className="w-6 h-6" style={{ color: '#577eb4' }} />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
                     {app.title}
@@ -218,7 +218,7 @@ const Automotive = () => {
 
               <div className="mb-12">
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Current working groups, e.g. <a href="https://sagroups.ieee.org/2020/" className="text-blue-600 hover:underline">IEEE-P2020</a>, are working on an internationally recognized image quality testing standard for automotive camera systems. The publication of IEEE-P2020 is expected by the end of 2024. Currently, there are no industry-wide testing standards. The development of the camPAS test arose from supporting our customers in finding and creating test methods that deliver unbiased results. As an active member of IEEE-P2020, we can directly implement the latest automotive camera testing methods and procedures from the standard to keep camPAS relevant and current.
+                  Current working groups, e.g. <a href="https://sagroups.ieee.org/2020/" className="hover:underline" style={{ color: '#577eb4' }}>IEEE-P2020</a>, are working on an internationally recognized image quality testing standard for automotive camera systems. The publication of IEEE-P2020 is expected by the end of 2024. Currently, there are no industry-wide testing standards. The development of the camPAS test arose from supporting our customers in finding and creating test methods that deliver unbiased results. As an active member of IEEE-P2020, we can directly implement the latest automotive camera testing methods and procedures from the standard to keep camPAS relevant and current.
                 </p>
               </div>
 
@@ -240,7 +240,7 @@ const Automotive = () => {
                 
                 <div className="text-center">
                   <Button 
-                    variant="technical"
+                    variant="contact"
                     size="lg"
                     className="group"
                   >
@@ -255,7 +255,7 @@ const Automotive = () => {
                 <h4 className="text-2xl font-bold text-gray-900 mb-6">IEEE-P2020 Product Package</h4>
                 
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  <a href="https://sagroups.ieee.org/2020/" className="text-blue-600 hover:underline">IEEE-P2020</a> establishes an internationally recognized standard for automotive and ADAS applications. This standard addresses the fundamental KPIs that contribute to the image quality of automotive camera systems. Unlike most camera industries, automotive and ADAS applications are unique because they directly affect consumer safety.
+                  <a href="https://sagroups.ieee.org/2020/" className="hover:underline" style={{ color: '#577eb4' }}>IEEE-P2020</a> establishes an internationally recognized standard for automotive and ADAS applications. This standard addresses the fundamental KPIs that contribute to the image quality of automotive camera systems. Unlike most camera industries, automotive and ADAS applications are unique because they directly affect consumer safety.
                 </p>
 
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -307,8 +307,9 @@ const Automotive = () => {
                   <div className="text-center">
                     <Link to="#footer">
                       <Button 
+                        variant="contact"
                         size="lg"
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+                        className="px-8 py-3 text-lg"
                       >
                         Contact Sales for IEEE-P2020 Package
                         <ArrowRight className="ml-2 h-5 w-5" />
@@ -349,7 +350,7 @@ const Automotive = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#577eb4]">
                       {product.title}
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
