@@ -597,7 +597,7 @@ const Navigation = () => {
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       <div className="flex gap-6 p-6">
                         {/* Column 1: Training & Education */}
-                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                        <div className="space-y-4 flex-1 pr-6 border-r border-border bg-yellow-100 p-4 rounded-lg">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <GraduationCap className="h-6 w-6" />
                             Training & Education
@@ -704,7 +704,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Training & Resources */}
-                          <div className="space-y-4 flex-1">
+                          <div className="space-y-4 flex-1 bg-yellow-100 p-4 rounded-lg">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <GraduationCap className="h-6 w-6" />
                             Training & Resources
