@@ -23,7 +23,7 @@ const Styleguide = () => {
                    Colors
                  </a>
                  <a href="#typography" className="text-gray-700 hover:text-[#74952a] transition-colors duration-200 font-medium">
-                   Schrift
+                   Typography
                  </a>
               </div>
             </div>
@@ -293,18 +293,18 @@ const Styleguide = () => {
               {/* Colors Section */}
               <section id="colors" className="mb-16 scroll-mt-[320px]">
                 <h2 className="text-3xl font-bold text-gray-900 mb-12">🎨 Company Colors</h2>
-                <p className="text-lg text-gray-600 mb-8">Vollständige Farbpalette aus den CSS-Variablen für Image Engineering</p>
+                <p className="text-lg text-gray-600 mb-8">Complete color palette from CSS variables for Image Engineering</p>
                 
                 {/* Company Colors */}
                 <div className="mb-12">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Hauptfarben</h3>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Main Colors</h3>
                   
                   <div className="grid gap-6">
                     {/* iQ Lab - Türkisgrün */}
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">iQ Lab</p>
-                        <p className="text-sm text-gray-500">Türkisgrün</p>
+                        <p className="text-sm text-gray-500">Turquoise Green</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div 
@@ -313,7 +313,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#049486</p>
-                          <p className="text-xs text-gray-500">Primärfarbe für iQ Lab Produkte</p>
+                          <p className="text-xs text-gray-500">Primary color for iQ Lab products</p>
                         </div>
                       </div>
                     </div>
@@ -331,7 +331,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#b4497d</p>
-                          <p className="text-xs text-gray-500">Primärfarbe für iQ Charts Produkte</p>
+                          <p className="text-xs text-gray-500">Primary color for iQ Charts products</p>
                         </div>
                       </div>
                     </div>
@@ -340,7 +340,7 @@ const Styleguide = () => {
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">iQ Equipment</p>
-                        <p className="text-sm text-gray-500">Olivgrün</p>
+                        <p className="text-sm text-gray-500">Olive Green</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div 
@@ -349,7 +349,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#74952a</p>
-                          <p className="text-xs text-gray-500">Primärfarbe für iQ Equipment Produkte</p>
+                          <p className="text-xs text-gray-500">Primary color for iQ Equipment products</p>
                         </div>
                       </div>
                     </div>
@@ -358,7 +358,7 @@ const Styleguide = () => {
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Software</p>
-                        <p className="text-sm text-gray-500">Blau</p>
+                        <p className="text-sm text-gray-500">Blue</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div 
@@ -367,7 +367,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#577eb4</p>
-                          <p className="text-xs text-gray-500">Primärfarbe für Software Produkte</p>
+                          <p className="text-xs text-gray-500">Primary color for Software products</p>
                         </div>
                       </div>
                     </div>
@@ -376,7 +376,7 @@ const Styleguide = () => {
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Product Bundles</p>
-                        <p className="text-sm text-gray-500">Grau</p>
+                        <p className="text-sm text-gray-500">Gray</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div 
@@ -385,7 +385,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#a3a3a3</p>
-                          <p className="text-xs text-gray-500">Primärfarbe für Product Bundle Kategorie</p>
+                          <p className="text-xs text-gray-500">Primary color for Product Bundle category</p>
                         </div>
                       </div>
                     </div>
@@ -394,14 +394,14 @@ const Styleguide = () => {
 
                 {/* Base Colors */}
                 <div className="mb-12">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Basisfarben</h3>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Base Colors</h3>
                   
                   <div className="grid gap-6">
                     {/* Weiß */}
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                       <div className="w-32">
-                        <p className="font-medium text-gray-900">Weiß</p>
-                        <p className="text-sm text-gray-500">Hintergrund</p>
+                        <p className="font-medium text-gray-900">White</p>
+                        <p className="text-sm text-gray-500">Background</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div 
@@ -410,7 +410,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#ffffff</p>
-                          <p className="text-xs text-gray-500">Primärer Hintergrund und Text auf dunklen Flächen</p>
+                          <p className="text-xs text-gray-500">Primary background and text on dark surfaces</p>
                         </div>
                       </div>
                     </div>
@@ -419,7 +419,7 @@ const Styleguide = () => {
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Dark Grey</p>
-                        <p className="text-sm text-gray-500">Überschriften</p>
+                        <p className="text-sm text-gray-500">Headlines</p>
                       </div>
                       <div className="flex items-center gap-4">
                         <div 
@@ -428,7 +428,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#222222</p>
-                          <p className="text-xs text-gray-500">Für H2/H3 Überschriften</p>
+                          <p className="text-xs text-gray-500">For H2/H3 headlines</p>
                         </div>
                       </div>
                     </div>
@@ -446,7 +446,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#555555</p>
-                          <p className="text-xs text-gray-500">Hauptschriftfarbe für Fließtext</p>
+                          <p className="text-xs text-gray-500">Main font color for body text</p>
                         </div>
                       </div>
                     </div>
@@ -464,7 +464,7 @@ const Styleguide = () => {
                         ></div>
                         <div>
                           <p className="font-mono text-sm text-gray-900">#999999</p>
-                          <p className="text-xs text-gray-500">Für Footer-Text und sekundäre Informationen</p>
+                          <p className="text-xs text-gray-500">For footer text and secondary information</p>
                         </div>
                       </div>
                     </div>
@@ -474,28 +474,28 @@ const Styleguide = () => {
 
               {/* Typography Section */}
               <section id="typography" className="mb-16 scroll-mt-[320px]">
-                <h2 className="text-3xl font-bold text-gray-900 mb-12">🎨 Typografie-Hierarchie</h2>
-                <p className="text-lg text-gray-600 mb-8">Schrift-Hierarchie und Typografie-Einstellungen für Image Engineering</p>
+                <h2 className="text-3xl font-bold text-gray-900 mb-12">🎨 Typography Hierarchy</h2>
+                <p className="text-lg text-gray-600 mb-8">Font hierarchy and typography settings for Image Engineering</p>
                 
                 {/* Typography Hierarchy Table */}
                 <div className="mb-16">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Typografie-Hierarchie</h3>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Typography Hierarchy</h3>
                   
                   <div className="overflow-x-auto">
                     <table className="w-full border-collapse border border-gray-300 rounded-lg">
                       <thead>
                         <tr className="bg-gray-50">
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Bereich / Element</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Area / Element</th>
                           <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Font-Family</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Gewicht</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Größe</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Farbe</th>
-                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Beispiel</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Weight</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Size</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Color</th>
+                          <th className="border border-gray-300 px-4 py-3 text-left font-semibold">Example</th>
                         </tr>
                       </thead>
                       <tbody>
                          <tr>
-                           <td className="border border-gray-300 px-4 py-3">H1 Headlines (dunkler BG)</td>
+                           <td className="border border-gray-300 px-4 py-3">H1 Headlines (dark BG)</td>
                            <td className="border border-gray-300 px-4 py-3">Roboto Light</td>
                            <td className="border border-gray-300 px-4 py-3">300</td>
                            <td className="border border-gray-300 px-4 py-3">60px / 72px / 96px</td>
@@ -505,7 +505,7 @@ const Styleguide = () => {
                            </td>
                          </tr>
                          <tr>
-                           <td className="border border-gray-300 px-4 py-3">H1 Headlines (heller BG)</td>
+                           <td className="border border-gray-300 px-4 py-3">H1 Headlines (light BG)</td>
                            <td className="border border-gray-300 px-4 py-3">Roboto Light</td>
                            <td className="border border-gray-300 px-4 py-3">300</td>
                            <td className="border border-gray-300 px-4 py-3">60px / 72px / 96px</td>
@@ -515,37 +515,37 @@ const Styleguide = () => {
                            </td>
                          </tr>
                         <tr>
-                          <td className="border border-gray-300 px-4 py-3">H2 Überschriften</td>
+                          <td className="border border-gray-300 px-4 py-3">H2 Headlines</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Bold</td>
                           <td className="border border-gray-300 px-4 py-3">700</td>
                           <td className="border border-gray-300 px-4 py-3">~32px</td>
                           <td className="border border-gray-300 px-4 py-3">#222222</td>
                           <td className="border border-gray-300 px-4 py-3">
-                            <span style={{ fontSize: '22px', fontWeight: 700, color: '#222222' }}>Hauptüberschrift</span>
+                            <span style={{ fontSize: '22px', fontWeight: 700, color: '#222222' }}>Main Headline</span>
                           </td>
                         </tr>
                         <tr>
-                          <td className="border border-gray-300 px-4 py-3">H3 Unterüberschriften</td>
+                          <td className="border border-gray-300 px-4 py-3">H3 Subheadings</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Regular</td>
                           <td className="border border-gray-300 px-4 py-3">400</td>
                           <td className="border border-gray-300 px-4 py-3">~24px</td>
                           <td className="border border-gray-300 px-4 py-3">#222222</td>
                           <td className="border border-gray-300 px-4 py-3">
-                            <span style={{ fontSize: '18px', fontWeight: 400, color: '#222222' }}>Unterüberschrift</span>
+                            <span style={{ fontSize: '18px', fontWeight: 400, color: '#222222' }}>Subheading</span>
                           </td>
                         </tr>
                         <tr>
-                          <td className="border border-gray-300 px-4 py-3">Body Text / Paragraphen</td>
+                          <td className="border border-gray-300 px-4 py-3">Body Text / Paragraphs</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Regular</td>
                           <td className="border border-gray-300 px-4 py-3">400</td>
                           <td className="border border-gray-300 px-4 py-3">~16px</td>
                           <td className="border border-gray-300 px-4 py-3">#555555</td>
                           <td className="border border-gray-300 px-4 py-3">
-                            <span style={{ fontSize: '16px', fontWeight: 400, color: '#555555' }}>Fließtext Beispiel</span>
+                            <span style={{ fontSize: '16px', fontWeight: 400, color: '#555555' }}>Body text example</span>
                           </td>
                         </tr>
                         <tr>
-                          <td className="border border-gray-300 px-4 py-3">Navigation / Menü</td>
+                          <td className="border border-gray-300 px-4 py-3">Navigation / Menu</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Regular/Semibold</td>
                           <td className="border border-gray-300 px-4 py-3">400/600</td>
                           <td className="border border-gray-300 px-4 py-3">~14–16px</td>
@@ -576,7 +576,7 @@ const Styleguide = () => {
                            </td>
                          </tr>
                         <tr>
-                          <td className="border border-gray-300 px-4 py-3">Kategorien / Kacheln</td>
+                          <td className="border border-gray-300 px-4 py-3">Categories / Tiles</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Regular</td>
                           <td className="border border-gray-300 px-4 py-3">400</td>
                           <td className="border border-gray-300 px-4 py-3">~14–16px</td>
@@ -620,9 +620,9 @@ const Styleguide = () => {
                     </table>
                 </div>
 
-                {/* Ausführliche Typografie-Beispiele */}
+                {/* Detailed Typography Examples */}
                 <div className="mb-16">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Ausführliche Typografie-Beispiele</h3>
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Detailed Typography Examples</h3>
                   
                   {/* H1 Varianten */}
                   <div className="mb-12">
@@ -631,7 +631,7 @@ const Styleguide = () => {
                     {/* H1 auf dunklem Hintergrund */}
                     <div className="mb-8 p-8 bg-gray-900 rounded-lg">
                       <div className="mb-4">
-                        <span className="text-sm text-gray-400 font-mono">H1 auf dunklem Hintergrund</span>
+                        <span className="text-sm text-gray-400 font-mono">H1 on dark background</span>
                       </div>
                       <h1 style={{ 
                         fontFamily: 'Roboto, sans-serif', 
@@ -651,7 +651,7 @@ const Styleguide = () => {
                     {/* H1 auf hellem Hintergrund */}
                     <div className="mb-8 p-8 bg-white border border-gray-200 rounded-lg">
                       <div className="mb-4">
-                        <span className="text-sm text-gray-600 font-mono">H1 auf hellem Hintergrund</span>
+                        <span className="text-sm text-gray-600 font-mono">H1 on light background</span>
                       </div>
                       <h1 style={{ 
                         fontFamily: 'Roboto, sans-serif', 
@@ -836,7 +836,7 @@ const Styleguide = () => {
                          font-family: Roboto Medium | font-weight: 500 | font-size: 14-16px | color: #ffffff
                        </div>
                       <p className="text-sm text-gray-600 mt-3">
-                        Verwendung: Call-to-Action Buttons, primäre und sekundäre Aktionen
+                        Usage: Call-to-action buttons, primary and secondary actions
                       </p>
                     </div>
                   </div>
@@ -860,14 +860,14 @@ const Styleguide = () => {
                         font-family: Roboto Regular | font-weight: 400 | font-size: 12px | color: #999999
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
-                        Verwendung: Copyright-Hinweise, Footer-Links, rechtliche Informationen, kleine Zusatzinformationen
+                        Usage: Copyright notices, footer links, legal information, small additional information
                       </p>
                     </div>
                   </div>
 
                   {/* Made by / Credits Text */}
                   <div className="mb-12">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Made by / Credits (Fett)</h4>
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Made by / Credits (Bold)</h4>
                     
                     <div className="p-6 bg-white border border-gray-200 rounded-lg">
                       <p style={{ 
@@ -884,15 +884,15 @@ const Styleguide = () => {
                         font-family: Roboto Bold | font-weight: 700 | font-size: 12-14px | color: #555555
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
-                        Verwendung: Fett geschriebene Credits, Markenerwähnungen, "Powered by"-Texte, betonte Footer-Elemente
+                        Usage: Bold credits, brand mentions, 'Powered by' texts, emphasized footer elements
                       </p>
                     </div>
                   </div>
 
-                  {/* Hero Gesamtbeispiel */}
+                  {/* Hero Complete Example */}
                   <div className="mb-16">
-                    <h3 className="text-2xl font-semibold text-gray-900 mb-8">🎯 Hero-Bereich Gesamtbeispiel</h3>
-                    <p className="text-gray-600 mb-6">Praktische Anwendung aller Typografie-Elemente aus der Startseite:</p>
+                    <h3 className="text-2xl font-semibold text-gray-900 mb-8">🎯 Hero Section Complete Example</h3>
+                    <p className="text-gray-600 mb-6">Practical application of all typography elements from the homepage:</p>
                     
                      <div className="p-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-lg text-white">
                        {/* H1 Hero Überschrift */}
@@ -1029,9 +1029,9 @@ const Styleguide = () => {
                        </div>
                      </div>
 
-                    {/* Technische Spezifikationen des Hero-Beispiels */}
+                    {/* Technical specifications of the Hero example */}
                     <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                      <h4 className="font-semibold text-gray-900 mb-3">🔧 Verwendete Typografie-Elemente:</h4>
+                      <h4 className="font-semibold text-gray-900 mb-3">🔧 Used typography elements:</h4>
                       <div className="grid md:grid-cols-2 gap-4 text-sm">
                          <div>
                            <p className="font-mono text-xs text-gray-600">H1 Hero Title:</p>
@@ -1041,45 +1041,45 @@ const Styleguide = () => {
                            <p className="font-mono text-xs text-gray-600">H1 "Made by" (Fett):</p>
                            <p className="font-mono text-xs text-gray-800">Roboto Medium | 500 | 60-96px | #ffffff</p>
                          </div>
-                        <div>
-                          <p className="font-mono text-xs text-gray-600">Hero Beschreibung:</p>
-                          <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 20px | rgba(255,255,255,0.9)</p>
-                        </div>
+                         <div>
+                           <p className="font-mono text-xs text-gray-600">Hero Description:</p>
+                           <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 20px | rgba(255,255,255,0.9)</p>
+                         </div>
                         <div>
                           <p className="font-mono text-xs text-gray-600">Button Text:</p>
                           <p className="font-mono text-xs text-gray-800">Roboto Medium | 500 | 16px | #ffffff</p>
                         </div>
-                        <div>
-                          <p className="font-mono text-xs text-gray-600">Statistik Zahlen:</p>
-                          <p className="font-mono text-xs text-gray-800">Roboto Medium | 500 | 24px | #ffffff</p>
-                        </div>
-                        <div>
-                          <p className="font-mono text-xs text-gray-600">Statistik Labels:</p>
-                          <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 14px | rgba(255,255,255,0.8)</p>
-                        </div>
+                         <div>
+                           <p className="font-mono text-xs text-gray-600">Statistics Numbers:</p>
+                           <p className="font-mono text-xs text-gray-800">Roboto Medium | 500 | 24px | #ffffff</p>
+                         </div>
+                         <div>
+                           <p className="font-mono text-xs text-gray-600">Statistics Labels:</p>
+                           <p className="font-mono text-xs text-gray-800">Roboto Light | 300 | 14px | rgba(255,255,255,0.8)</p>
+                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Verwendungsrichtlinien */}
+                  {/* Usage Guidelines */}
                   <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h4 className="text-lg font-semibold text-blue-900 mb-4">📋 Verwendungsrichtlinien</h4>
+                    <h4 className="text-lg font-semibold text-blue-900 mb-4">📋 Usage Guidelines</h4>
                     <ul className="space-y-3 text-sm text-blue-800">
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 font-bold">•</span>
-                        <span><strong>Konsistenz:</strong> Verwenden Sie immer die definierten Schriftgrößen und -gewichte für eine einheitliche Erscheinung</span>
+                        <span><strong>Consistency:</strong> Always use defined font sizes and weights for a uniform appearance</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 font-bold">•</span>
-                        <span><strong>Kontrast:</strong> Achten Sie auf ausreichenden Farbkontrast für beste Lesbarkeit</span>
+                        <span><strong>Contrast:</strong> Ensure sufficient color contrast for best readability</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 font-bold">•</span>
-                        <span><strong>Hierarchie:</strong> H1 → H2 → H3 → Body Text folgt der visuellen Wichtigkeit</span>
+                        <span><strong>Hierarchy:</strong> H1 → H2 → H3 → Body Text follows visual importance</span>
                       </li>
                       <li className="flex items-start gap-2">
                         <span className="text-blue-600 font-bold">•</span>
-                        <span><strong>Zeilenhöhe:</strong> Verwenden Sie angemessene Zeilenhöhen (1.1-1.6) für bessere Lesbarkeit</span>
+                        <span><strong>Line Height:</strong> Use appropriate line heights (1.1-1.6) for better readability</span>
                       </li>
                     </ul>
                   </div>
@@ -1102,7 +1102,7 @@ const Styleguide = () => {
                           </div>
                           <div className="flex-1">
                             <span style={{ fontFamily: 'Roboto', fontWeight: 100, fontSize: '24px' }}>Headlines</span>
-                            <p className="text-xs text-gray-500 mt-1">Für große Überschriften und Hero-Bereiche</p>
+                            <p className="text-xs text-gray-500 mt-1">For large headlines and hero areas</p>
                           </div>
                         </div>
                         
@@ -1112,8 +1112,8 @@ const Styleguide = () => {
                             <p className="text-sm text-gray-500">Weight: 400</p>
                           </div>
                           <div className="flex-1">
-                            <span style={{ fontFamily: 'Roboto', fontWeight: 400, fontSize: '16px' }}>Fließtext</span>
-                            <p className="text-xs text-gray-500 mt-1">Für Body-Text und allgemeine Inhalte</p>
+                            <span style={{ fontFamily: 'Roboto', fontWeight: 400, fontSize: '16px' }}>Body text</span>
+                            <p className="text-xs text-gray-500 mt-1">For body text and general content</p>
                           </div>
                         </div>
                         
@@ -1123,8 +1123,8 @@ const Styleguide = () => {
                             <p className="text-sm text-gray-500">Weight: 700</p>
                           </div>
                           <div className="flex-1">
-                            <span style={{ fontFamily: 'Roboto', fontWeight: 700, fontSize: '16px' }}>Hervorhebungen, Buttons</span>
-                            <p className="text-xs text-gray-500 mt-1">Für Buttons, wichtige Texte und Akzente</p>
+                            <span style={{ fontFamily: 'Roboto', fontWeight: 700, fontSize: '16px' }}>Highlights, Buttons</span>
+                            <p className="text-xs text-gray-500 mt-1">For buttons, important texts and accents</p>
                           </div>
                         </div>
                       </div>
