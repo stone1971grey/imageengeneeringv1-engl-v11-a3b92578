@@ -637,20 +637,20 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 3: Consulting */}
-                        <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                        <div className="space-y-4 flex-1 p-4 rounded-lg" style={{ backgroundColor: '#74952a' }}>
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-white">
                             <Lightbulb className="h-6 w-6" />
                             Consulting
                           </h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-200 transition-colors cursor-pointer">
                             <BarChart3 className="h-5 w-5" />
                             <a href="#">Project Consulting</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-200 transition-colors cursor-pointer">
                             <CheckCircle className="h-5 w-5" />
                             <a href="#">Quality Assurance</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-200 transition-colors cursor-pointer">
                             <Briefcase className="h-5 w-5" />
                             <a href="#">Implementation Support</a>
                           </div>
