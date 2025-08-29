@@ -240,7 +240,7 @@ const Automotive = () => {
                 
                 <div className="text-center">
                   <Button 
-                    variant="contact"
+                    variant="technical"
                     size="lg"
                     className="group"
                   >
