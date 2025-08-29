@@ -617,20 +617,20 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Technical Services */}
-                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
+                        <div className="space-y-4 flex-1 pr-6 border-r border-border bg-gray-800 p-4 rounded-lg">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-white">
                             <Wrench className="h-6 w-6" />
                             Technical Services
                           </h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-300 transition-colors cursor-pointer">
                             <Settings className="h-5 w-5" />
                             <a href="#">Custom Solutions</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-300 transition-colors cursor-pointer">
                             <Wrench className="h-5 w-5" />
                             <a href="#">Technical Support</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-300 transition-colors cursor-pointer">
                             <Target className="h-5 w-5" />
                             <a href="#">Calibration Services</a>
                           </div>
