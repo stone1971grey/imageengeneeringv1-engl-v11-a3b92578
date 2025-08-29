@@ -669,9 +669,9 @@ const Styleguide = () => {
                     </div>
                   </div>
 
-                  {/* H2 Überschriften */}
+                  {/* H2 Headlines */}
                   <div className="mb-12">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-6">H2 Hauptüberschriften</h4>
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">H2 Main Headlines</h4>
                     
                     <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
                       <h2 style={{ 
@@ -682,20 +682,20 @@ const Styleguide = () => {
                         lineHeight: '1.2',
                         margin: 0
                       }}>
-                        Präzise Bildanalyse für Ihre Anforderungen
+                        Precise Image Analysis for Your Requirements
                       </h2>
                       <div className="mt-4 text-xs text-gray-500 font-mono">
                         font-family: Roboto Bold | font-weight: 700 | font-size: 32px | color: #222222
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
-                        Verwendung: Hauptsektionen, wichtige Inhaltsblöcke, Kategorien-Überschriften
+                        Usage: Main sections, important content blocks, category headlines
                       </p>
                     </div>
                   </div>
 
-                  {/* H3 Unterüberschriften */}
+                  {/* H3 Subheadings */}
                   <div className="mb-12">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-6">H3 Unterüberschriften</h4>
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">H3 Subheadings</h4>
                     
                     <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
                       <h3 style={{ 
@@ -706,20 +706,20 @@ const Styleguide = () => {
                         lineHeight: '1.3',
                         margin: 0
                       }}>
-                        Technische Spezifikationen und Features
+                        Technical Specifications and Features
                       </h3>
                       <div className="mt-4 text-xs text-gray-500 font-mono">
                         font-family: Roboto Regular | font-weight: 400 | font-size: 24px | color: #222222
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
-                        Verwendung: Unterabschnitte, Feature-Listen, Produktdetails
+                        Usage: Subsections, feature lists, product details
                       </p>
                     </div>
                   </div>
 
                   {/* Body Text */}
                   <div className="mb-12">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Body Text / Fließtext</h4>
+                    <h4 className="text-xl font-semibold text-gray-900 mb-6">Body Text</h4>
                     
                     <div className="p-6 bg-white border border-gray-200 rounded-lg">
                       <p style={{ 
@@ -730,15 +730,15 @@ const Styleguide = () => {
                         lineHeight: '1.6',
                         margin: 0
                       }}>
-                        Unsere fortschrittlichen Computer-Vision-Lösungen bieten präzise Bildanalyse für industrielle Anwendungen. 
-                        Mit modernster Technologie und jahrelanger Expertise entwickeln wir maßgeschneiderte Systeme für Ihre 
-                        spezifischen Anforderungen in der Qualitätskontrolle und Bildverarbeitung.
+                        Our advanced computer vision solutions provide precise image analysis for industrial applications. 
+                        With cutting-edge technology and years of expertise, we develop customized systems for your 
+                        specific requirements in quality control and image processing.
                       </p>
                       <div className="mt-4 text-xs text-gray-500 font-mono">
                         font-family: Roboto Regular | font-weight: 400 | font-size: 16px | color: #555555
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
-                        Verwendung: Haupttext, Beschreibungen, Artikel-Inhalte, längere Textpassagen
+                        Usage: Main text, descriptions, article content, longer text passages
                       </p>
                     </div>
                   </div>
@@ -778,7 +778,7 @@ const Styleguide = () => {
                         font-family: Roboto Regular/Semibold | font-weight: 400/600 | font-size: 14-16px | color: #ffffff
                       </div>
                       <p className="text-sm text-gray-400 mt-3">
-                        Verwendung: Hauptnavigation, Dropdown-Menüs, Footer-Links
+                        Usage: Main navigation, dropdown menus, footer links
                       </p>
                     </div>
                   </div>
