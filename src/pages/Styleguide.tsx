@@ -391,6 +391,31 @@ const Styleguide = () => {
                     </div>
                   </div>
                 </div>
+                
+                {/* Navigation Background Colors */}
+                <div className="mb-12">
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Navigation Background Colors</h3>
+                  
+                  <div className="grid gap-6">
+                    {/* Header & Footer */}
+                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                      <div className="w-32">
+                        <p className="font-medium text-gray-900">Header & Footer</p>
+                        <p className="text-sm text-gray-500">Navigation Background</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                          style={{ backgroundColor: '#4B4A4A' }}
+                        ></div>
+                        <div>
+                          <p className="font-mono text-sm text-gray-900">#4B4A4A</p>
+                          <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Base Colors */}
                 <div className="mb-12">
