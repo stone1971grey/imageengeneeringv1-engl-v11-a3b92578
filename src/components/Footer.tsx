@@ -17,7 +17,7 @@ const Footer = () => {
   const isEventsPage = location.pathname === '/events';
 
   return (
-    <footer id="footer" className="bg-[#4B4A4A] border-t border-border">
+    <footer id="footer" className="bg-[#4B4A4A] border-t border-[#4B4A4A]">
       {/* Vision CTA Section */}
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -51,7 +51,7 @@ const Footer = () => {
       </div>
 
       {/* Contact & Team Quote Section */}
-      <div className="border-t border-border bg-[#4B4A4A]">
+      <div className="border-t border-[#4B4A4A] bg-[#4B4A4A]">
         <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left Column - Contact */}
@@ -138,7 +138,7 @@ const Footer = () => {
           </div>
 
           {/* Right Column - Team Quote */}
-          <div className="bg-card border border-border rounded-lg p-8">
+          <div className="bg-[#4B4A4A] border border-[#4B4A4A] rounded-lg p-8">
             <div className="flex flex-col md:flex-row items-start gap-6">
               <div className="flex-shrink-0">
                  <img 
@@ -211,7 +211,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Section - Footer Menu */}
-      <div className="border-t border-border bg-[#4B4A4A]">
+      <div className="border-t border-[#4B4A4A] bg-[#4B4A4A]">
         <div className="container mx-auto px-6 py-6">
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">
