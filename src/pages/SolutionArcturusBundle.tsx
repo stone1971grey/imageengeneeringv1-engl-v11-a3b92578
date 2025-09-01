@@ -254,38 +254,38 @@ const SolutionArcturusBundle = () => {
         <nav className="sticky top-[195px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
-               <div className="flex flex-wrap gap-6 justify-center text-lg">
-                 <a href="#overview" className="text-[#4A90E2] hover:text-white hover:bg-[#4A90E2] px-3 py-2 rounded-md font-medium transition-all duration-300 scroll-smooth" 
+              <div className="flex flex-wrap gap-6 justify-center text-lg">
+                 <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Complete Solution</a>
-                  <a href="#architecture" className="text-[#4A90E2] hover:text-white hover:bg-[#4A90E2] px-3 py-2 rounded-md font-medium transition-all duration-300 scroll-smooth"
+                  <a href="#architecture" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>System Architecture</a>
-                  <a href="#benefits" className="text-[#4A90E2] hover:text-white hover:bg-[#4A90E2] px-3 py-2 rounded-md font-medium transition-all duration-300 scroll-smooth"
+                  <a href="#benefits" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Why Test Bundle</a>
-                  <a href="#applications" className="text-[#4A90E2] hover:text-white hover:bg-[#4A90E2] px-3 py-2 rounded-md font-medium transition-all duration-300 scroll-smooth"
+                  <a href="#applications" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Application Areas</a>
-                  <a href="#comparison" className="text-[#4A90E2] hover:text-white hover:bg-[#4A90E2] px-3 py-2 rounded-md font-medium transition-all duration-300 scroll-smooth"
+                  <a href="#comparison" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('comparison')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Comparison</a>
-                 <a href="#faq" className="text-[#4A90E2] hover:text-white hover:bg-[#4A90E2] px-3 py-2 rounded-md font-medium transition-all duration-300 scroll-smooth"
+                 <a href="#faq" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
                    onClick={(e) => {
                      e.preventDefault();
                      document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                    }}>FAQ</a>
-               </div>
+              </div>
             </div>
           </div>
         </nav>
