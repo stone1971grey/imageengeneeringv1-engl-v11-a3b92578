@@ -484,7 +484,7 @@ export default function Downloads() {
 
         <main className="relative z-0">
         {/* Hero */}
-        <section className="bg-white">
+        <section className="bg-gray-50">
           <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-16">
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl font-medium mb-4 text-gray-900">
