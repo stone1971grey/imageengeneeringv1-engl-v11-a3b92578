@@ -96,7 +96,7 @@ const EngineersSlider = () => {
 
   return (
     <section 
-      className="py-24 bg-muted"
+      className="py-24 bg-[#242424]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
