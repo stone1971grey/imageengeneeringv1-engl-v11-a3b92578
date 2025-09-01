@@ -527,7 +527,43 @@ const Styleguide = () => {
                             <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
                           </div>
                        </div>
-                    </div>
+                     </div>
+
+                     {/* News Section Background */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">News Section</p>
+                         <p className="text-sm text-gray-500">News Background</p>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#373737' }}
+                          ></div>
+                          <div>
+                            <p className="font-mono text-sm text-gray-900">#373737</p>
+                            <p className="text-xs text-gray-500">Background color for news section</p>
+                          </div>
+                       </div>
+                     </div>
+
+                     {/* Engineers/Testimonial Section Background */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Engineers Section</p>
+                         <p className="text-sm text-gray-500">Testimonial Background</p>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#242424' }}
+                          ></div>
+                          <div>
+                            <p className="font-mono text-sm text-gray-900">#242424</p>
+                            <p className="text-xs text-gray-500">Background color for "Speak with Our Engineers" section</p>
+                          </div>
+                       </div>
+                     </div>
                   </div>
                 </div>
               </section>
