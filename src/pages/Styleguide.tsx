@@ -61,10 +61,11 @@ const Styleguide = () => {
                   <div className="grid gap-8">
                     {/* Default Variant */}
                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Default</p>
-                        <p className="text-sm text-gray-500">Primary action</p>
-                      </div>
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Default</p>
+                         <p className="text-sm text-gray-500">Primary action</p>
+                         <p className="text-xs text-gray-400 font-mono">#22C3F7</p>
+                       </div>
                       <Button variant="default">
                         Primary Button
                         <ArrowRight className="ml-2 h-4 w-4" />
