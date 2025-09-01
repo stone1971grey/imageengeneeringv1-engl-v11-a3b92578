@@ -17,7 +17,7 @@ const Footer = () => {
   const isEventsPage = location.pathname === '/events';
 
   return (
-    <footer id="footer" className="bg-background/80 backdrop-blur-md border-t border-border">
+    <footer id="footer" className="bg-background/60 backdrop-blur-md border-t border-border">
       {/* Vision CTA Section */}
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -51,7 +51,7 @@ const Footer = () => {
       </div>
 
       {/* Contact & Team Quote Section */}
-      <div className="border-t border-border bg-background/80 backdrop-blur-md">
+      <div className="border-t border-border bg-background/60 backdrop-blur-md">
         <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left Column - Contact */}
@@ -211,7 +211,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Section - Footer Menu */}
-      <div className="border-t border-border bg-background/80 backdrop-blur-md">
+      <div className="border-t border-border bg-background/60 backdrop-blur-md">
         <div className="container mx-auto px-6 py-6">
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">
