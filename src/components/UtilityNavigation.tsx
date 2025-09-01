@@ -5,7 +5,7 @@ const UtilityNavigation = () => {
   return (
     <div className="flex items-center gap-4">
       <IntelligentSearchBar />
-      <Button variant="default" className="bg-gradient-primary hover:bg-white hover:text-black transition-all duration-300 text-lg">
+      <Button variant="default" className="bg-[#4A90E2] hover:bg-white/20 hover:text-white transition-all duration-300 text-lg text-white">
         Contact
       </Button>
     </div>

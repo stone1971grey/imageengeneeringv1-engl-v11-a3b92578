@@ -223,7 +223,7 @@ const IntelligentSearchBar = () => {
   return (
     <div ref={searchRef} className="relative">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#4A90E2]/70" />
         <Input
           ref={inputRef}
           type="text"
@@ -231,14 +231,14 @@ const IntelligentSearchBar = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          className="pl-10 pr-10 w-80 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white focus:text-black focus:placeholder:text-muted-foreground"
+          className="pl-10 pr-10 w-80 bg-white/10 border-white/20 text-[#4A90E2] placeholder:text-[#4A90E2]/60 focus:bg-white focus:text-black focus:placeholder:text-muted-foreground hover:bg-white/20 transition-all duration-300"
         />
         {query && (
           <Button
             variant="ghost"
             size="sm"
             onClick={handleClear}
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-white/20"
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-white/20 text-[#4A90E2]"
           >
             <X className="h-3 w-3" />
           </Button>
