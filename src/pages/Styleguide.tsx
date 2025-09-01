@@ -16,16 +16,16 @@ const Styleguide = () => {
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                <div className="flex flex-wrap gap-6 justify-center text-lg">
-                 <a href="#buttons" className="text-[#4A90E2] hover:text-[#4A90E2]/80 font-medium transition-colors">
+                 <a href="#buttons" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
                    Buttons
                  </a>
-                 <a href="#colors" className="text-[#4A90E2] hover:text-[#4A90E2]/80 font-medium transition-colors">
+                 <a href="#colors" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
                    Colors
                  </a>
-                 <a href="#background-colors" className="text-[#4A90E2] hover:text-[#4A90E2]/80 font-medium transition-colors">
+                 <a href="#background-colors" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
                    Background Colors
                  </a>
-                 <a href="#typography" className="text-[#4A90E2] hover:text-[#4A90E2]/80 font-medium transition-colors">
+                 <a href="#typography" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
                    Typography
                  </a>
               </div>
