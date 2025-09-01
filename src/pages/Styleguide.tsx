@@ -517,16 +517,16 @@ const Styleguide = () => {
                         <p className="font-medium text-gray-900">Header & Footer</p>
                         <p className="text-sm text-gray-500">Navigation Background</p>
                       </div>
-                      <div className="flex items-center gap-4">
-                         <div 
+                       <div className="flex items-center gap-4">
+                          <div 
                            className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
-                           style={{ backgroundColor: '#3D7BA2' }}
-                         ></div>
-                         <div>
-                           <p className="font-mono text-sm text-gray-900">#3D7BA2</p>
-                           <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
-                         </div>
-                      </div>
+                           style={{ backgroundColor: '#4B4A4A' }}
+                          ></div>
+                          <div>
+                            <p className="font-mono text-sm text-gray-900">#4B4A4A</p>
+                            <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
+                          </div>
+                       </div>
                     </div>
                   </div>
                 </div>
