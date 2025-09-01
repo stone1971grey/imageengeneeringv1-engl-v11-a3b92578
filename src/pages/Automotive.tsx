@@ -169,7 +169,7 @@ const Automotive = () => {
       <div id="applications-start" className="h-20 -mb-20"></div>
 
       {/* Applications Overview */}
-      <section id="applications" className="py-20 bg-gray-50">
+      <section id="applications" className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">

@@ -103,7 +103,7 @@ const ChartFinder = () => {
   });
 
   return (
-    <section className="py-24 bg-gray-50 font-roboto">
+    <section className="py-24 bg-white font-roboto">
       <div className="container mx-auto px-6">
         
         {/* Header */}
