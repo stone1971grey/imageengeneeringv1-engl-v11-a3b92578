@@ -91,7 +91,7 @@ const Industries = () => {
                 <div className="relative mb-6">
                   <div className="w-20 h-20 md:w-24 md:h-24 bg-[#74952a]/10 rounded-full flex items-center justify-center border-2 border-[#74952a]/20 shadow-lg hover:shadow-xl hover:bg-[#74952a] hover:border-[#74952a] transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105 cursor-pointer">
                     <IconComponent 
-                      size={28} 
+                      size={36} 
                       className="text-[#74952a] group-hover:scale-125 transition-all duration-300" 
                       strokeWidth={1.8}
                     />
