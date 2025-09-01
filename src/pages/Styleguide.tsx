@@ -89,7 +89,7 @@ const Styleguide = () => {
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Contact</p>
                          <p className="text-sm text-gray-500">Contact actions</p>
-                         <p className="text-xs text-gray-400 font-mono">#4A90E2</p>
+                         <p className="text-xs text-gray-400 font-mono">#3D7BA2</p>
                        </div>
                        <Button variant="contact">
                          Contact Sales
