@@ -519,10 +519,10 @@ const Styleguide = () => {
                       <div className="flex items-center gap-4">
                         <div 
                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
-                          style={{ backgroundColor: '#4A90E2' }}
+                          style={{ backgroundColor: '#4B4A4A' }}
                         ></div>
                         <div>
-                          <p className="font-mono text-sm text-gray-900">#4A90E2</p>
+                          <p className="font-mono text-sm text-gray-900">#4B4A4A</p>
                           <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
                         </div>
                       </div>
