@@ -582,6 +582,78 @@ const Styleguide = () => {
                           </div>
                        </div>
                      </div>
+
+                     {/* Product Matrix Light Background */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Product Matrix</p>
+                         <p className="text-sm text-gray-500">Light Background</p>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#F7F9FB' }}
+                          ></div>
+                          <div>
+                            <p className="font-mono text-sm text-gray-900">#F7F9FB</p>
+                            <p className="text-xs text-gray-500">Background color for product matrix and light sections</p>
+                          </div>
+                       </div>
+                     </div>
+
+                     {/* Navigation Dropdown Background */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Navigation Dropdown</p>
+                         <p className="text-sm text-gray-500">Menu Background</p>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#f3f3f3' }}
+                          ></div>
+                          <div>
+                            <p className="font-mono text-sm text-gray-900">#f3f3f3</p>
+                            <p className="text-xs text-gray-500">Background color for navigation dropdown menus</p>
+                          </div>
+                       </div>
+                     </div>
+
+                     {/* ChartFinder & General Light Gray */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Light Gray Sections</p>
+                         <p className="text-sm text-gray-500">bg-gray-50</p>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#f9fafb' }}
+                          ></div>
+                          <div>
+                            <p className="font-mono text-sm text-gray-900">#f9fafb</p>
+                            <p className="text-xs text-gray-500">Tailwind bg-gray-50 for ChartFinder, ProductFAQ, etc.</p>
+                          </div>
+                       </div>
+                     </div>
+
+                     {/* Benefits/Features Background */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Benefits Sections</p>
+                         <p className="text-sm text-gray-500">bg-gray-100</p>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#f3f4f6' }}
+                          ></div>
+                          <div>
+                            <p className="font-mono text-sm text-gray-900">#f3f4f6</p>
+                            <p className="text-xs text-gray-500">Tailwind bg-gray-100 for benefits and feature sections</p>
+                          </div>
+                       </div>
+                     </div>
                   </div>
                 </div>
               </section>
