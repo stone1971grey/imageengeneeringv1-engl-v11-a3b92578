@@ -6,8 +6,7 @@ import {
   Shield, 
   Cog, 
   Stethoscope, 
-  ScanLine, 
-  FlaskConical 
+  ScanLine
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -53,11 +52,6 @@ const Industries = () => {
       icon: ScanLine,
       name: "Scanning & Archiving",
       description: "Quality assurance in digitization of documents, books, photos"
-    },
-    {
-      icon: FlaskConical,
-      name: "iQ‑Lab Testing",
-      description: "Independent laboratory services for numerous industries (e.g. Mobile, Automotive)"
     }
   ];
 
@@ -76,7 +70,7 @@ const Industries = () => {
         </div>
 
         {/* Industry Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 md:gap-12 max-w-5xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-6xl mx-auto">
           {industries.map((industry, index) => {
             const IconComponent = industry.icon;
             const content = (
