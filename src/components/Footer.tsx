@@ -51,7 +51,7 @@ const Footer = () => {
       </div>
 
       {/* Contact & Team Quote Section */}
-      <div className="border-t border-border bg-muted/30">
+      <div className="border-t border-border" style={{ backgroundColor: 'hsl(220, 20%, 6%)' }}>
         <div className="container mx-auto px-6 py-16">
         <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {/* Left Column - Contact */}
@@ -211,7 +211,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Section - Footer Menu */}
-      <div className="border-t border-border bg-muted/30">
+      <div className="border-t border-border" style={{ backgroundColor: 'hsl(220, 20%, 6%)' }}>
         <div className="container mx-auto px-6 py-6">
           <div className="text-center space-y-4">
             <p className="text-sm text-muted-foreground">
