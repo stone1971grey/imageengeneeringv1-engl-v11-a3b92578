@@ -208,7 +208,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-[#4A90E2] border-b border-[#4A90E2]">
+    <nav className="fixed top-0 w-full z-50 bg-[#4B4A4A] border-b border-[#4B4A4A]">
       {/* Utility Navigation */}
       <div className="container mx-auto px-6 pt-5 pb-2">
         <div className="flex justify-end">
