@@ -407,14 +407,14 @@ const Styleguide = () => {
                         <p className="text-sm text-gray-500">Navigation Background</p>
                       </div>
                       <div className="flex items-center gap-4">
-                        <div 
-                          className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
-                          style={{ backgroundColor: '#4B4A4A' }}
-                        ></div>
-                        <div>
-                          <p className="font-mono text-sm text-gray-900">#4B4A4A</p>
-                          <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
-                        </div>
+                         <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#4A90E2' }}
+                         ></div>
+                         <div>
+                           <p className="font-mono text-sm text-gray-900">#4A90E2</p>
+                           <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
+                         </div>
                       </div>
                     </div>
                   </div>
@@ -517,14 +517,14 @@ const Styleguide = () => {
                         <p className="text-sm text-gray-500">Navigation Background</p>
                       </div>
                       <div className="flex items-center gap-4">
-                        <div 
-                          className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
-                          style={{ backgroundColor: '#4B4A4A' }}
-                        ></div>
-                        <div>
-                          <p className="font-mono text-sm text-gray-900">#4B4A4A</p>
-                          <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
-                        </div>
+                         <div 
+                           className="w-16 h-16 rounded-lg border border-gray-300 shadow-sm" 
+                           style={{ backgroundColor: '#4A90E2' }}
+                         ></div>
+                         <div>
+                           <p className="font-mono text-sm text-gray-900">#4A90E2</p>
+                           <p className="text-xs text-gray-500">Background color for header navigation and footer sections</p>
+                         </div>
                       </div>
                     </div>
                   </div>
