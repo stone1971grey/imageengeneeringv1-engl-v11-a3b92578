@@ -231,7 +231,7 @@ const Automotive = () => {
       {/* camPAS Testing Section */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100">
               <div className="text-center mb-12">
                 <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
