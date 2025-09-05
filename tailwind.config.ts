@@ -98,6 +98,14 @@ export default {
 					button: 'hsl(var(--training-button))',
 					bg: 'hsl(var(--training-bg))'
 				},
+				decision: {
+					button: 'hsl(var(--decision-button))',
+					'icon-bg': 'hsl(var(--decision-icon-bg))'
+				},
+				academia: {
+					button: 'hsl(var(--academia-button))',
+					'icon-bg': 'hsl(var(--academia-icon-bg))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
