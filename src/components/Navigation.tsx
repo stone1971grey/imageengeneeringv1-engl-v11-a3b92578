@@ -601,8 +601,7 @@ const Navigation = () => {
                       <div className="flex gap-6 p-6">
                         {/* Column 1: Training & Education */}
                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <GraduationCap className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Training & Education
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
@@ -621,8 +620,7 @@ const Navigation = () => {
 
                         {/* Column 2: Technical Services */}
                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Wrench className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Technical Services
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
@@ -641,8 +639,7 @@ const Navigation = () => {
 
                         {/* Column 3: Consulting */}
                         <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Lightbulb className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Consulting
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
