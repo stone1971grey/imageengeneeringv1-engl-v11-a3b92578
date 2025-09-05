@@ -349,7 +349,7 @@ const Styleguide = () => {
                 </p>
               </div>
               
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                 {applications.map((app, index) => {
                   const IconComponent = app.icon;
                   const getIconColors = (iconType: string) => {
