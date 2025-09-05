@@ -27,22 +27,26 @@ const Automotive = () => {
     {
       title: "Camera Testing for ADAS Systems",
       description: "Comprehensive validation of driver assistance cameras for safety compliance",
-      icon: Camera
+      icon: Camera,
+      iconType: "camera"
     },
     {
       title: "High-End Sensor Testing",
       description: "Precision LED lighting for testing demanding sensor systems and components",
-      icon: TestTube
+      icon: TestTube,
+      iconType: "testing"
     },
     {
       title: "HDR Scene Creation",
       description: "Advanced lighting control for creating High Dynamic Range test scenarios",
-      icon: Monitor
+      icon: Monitor,
+      iconType: "performance"
     },
     {
       title: "Low-Light Performance Testing",
       description: "Critical validation for night driving and challenging lighting conditions",
-      icon: Camera
+      icon: Camera,
+      iconType: "camera"
     }
   ];
 
@@ -185,14 +189,28 @@ const Automotive = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {applications.map((app, index) => {
               const IconComponent = app.icon;
+              const getIconColors = (iconType: string) => {
+                switch (iconType) {
+                  case 'camera':
+                    return { bg: 'bg-icon-camera', fg: 'text-icon-camera-fg' };
+                  case 'testing':
+                    return { bg: 'bg-icon-testing', fg: 'text-icon-testing-fg' };
+                  case 'performance':
+                    return { bg: 'bg-icon-performance', fg: 'text-icon-performance-fg' };
+                  default:
+                    return { bg: 'bg-icon-general', fg: 'text-icon-general-fg' };
+                }
+              };
+              const colors = getIconColors(app.iconType);
+              
               return (
                 <div 
                   key={index}
                   className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]"
                 >
-                  {/* Large Icon at top */}
-                  <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center mb-6">
-                    <IconComponent className="w-10 h-10 text-gray-600" />
+                  {/* Large Icon at top - 70x70px round */}
+                  <div className={`w-[70px] h-[70px] rounded-full ${colors.bg} flex items-center justify-center mb-6`}>
+                    <IconComponent className={`w-8 h-8 ${colors.fg}`} />
                   </div>
                   
                   {/* Title */}

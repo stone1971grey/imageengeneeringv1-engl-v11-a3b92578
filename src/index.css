@@ -69,6 +69,16 @@ All colors MUST be HSL.
     --downloads-border: 220 6% 92%;
     --downloads-hover: 220 3% 96%;
 
+    /* Icon background tokens - 30% saturation */
+    --icon-camera: 215 30% 85%;
+    --icon-camera-fg: 215 100% 45%;
+    --icon-testing: 261 25% 85%;
+    --icon-testing-fg: 261 83% 50%;
+    --icon-performance: 193 28% 85%;
+    --icon-performance-fg: 193 93% 45%;
+    --icon-general: 220 18% 85%;
+    --icon-general-fg: 220 60% 45%;
+
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;

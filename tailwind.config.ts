@@ -79,6 +79,16 @@ export default {
 					border: 'hsl(var(--downloads-border))',
 					hover: 'hsl(var(--downloads-hover))'
 				},
+				icon: {
+					camera: 'hsl(var(--icon-camera))',
+					'camera-fg': 'hsl(var(--icon-camera-fg))',
+					testing: 'hsl(var(--icon-testing))',
+					'testing-fg': 'hsl(var(--icon-testing-fg))',
+					performance: 'hsl(var(--icon-performance))',
+					'performance-fg': 'hsl(var(--icon-performance-fg))',
+					general: 'hsl(var(--icon-general))',
+					'general-fg': 'hsl(var(--icon-general-fg))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
