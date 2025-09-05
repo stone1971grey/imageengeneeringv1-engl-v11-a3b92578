@@ -273,72 +273,70 @@ const Automotive = () => {
             </div>
 
             {/* IEEE-P2020 Product Bundle Section */}
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-                <h4 className="text-2xl font-bold text-gray-900 mb-6">IEEE-P2020 Product Package</h4>
-                
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  <a href="https://sagroups.ieee.org/2020/" className="hover:underline" style={{ color: '#577eb4' }}>IEEE-P2020</a> establishes an internationally recognized standard for automotive and ADAS applications. This standard addresses the fundamental KPIs that contribute to the image quality of automotive camera systems. Unlike most camera industries, automotive and ADAS applications are unique because they directly affect consumer safety.
-                </p>
+            <h4 className="text-2xl font-bold text-gray-900 mb-6">IEEE-P2020 Product Package</h4>
+            
+            <p className="text-lg text-gray-700 leading-relaxed mb-6">
+              <a href="https://sagroups.ieee.org/2020/" className="hover:underline" style={{ color: '#577eb4' }}>IEEE-P2020</a> establishes an internationally recognized standard for automotive and ADAS applications. This standard addresses the fundamental KPIs that contribute to the image quality of automotive camera systems. Unlike most camera industries, automotive and ADAS applications are unique because they directly affect consumer safety.
+            </p>
 
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  During the development of the standard, it became clear that new metrics must be established to account for the unique environments in which autonomous driving systems must operate. Direct sunlight, dense fog, low light, flickering lights and heavy pedestrian traffic are just some of the environments in which ADAS systems operate. The new KPIs to address these testing challenges include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (MMP - Flicker), Contrast Signal-to-Noise Ratio (CSNR) and High Dynamic Range (HDR), among others.
-                </p>
+            <p className="text-lg text-gray-700 leading-relaxed mb-6">
+              During the development of the standard, it became clear that new metrics must be established to account for the unique environments in which autonomous driving systems must operate. Direct sunlight, dense fog, low light, flickering lights and heavy pedestrian traffic are just some of the environments in which ADAS systems operate. The new KPIs to address these testing challenges include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (MMP - Flicker), Contrast Signal-to-Noise Ratio (CSNR) and High Dynamic Range (HDR), among others.
+            </p>
 
-                <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                  These KPIs require new testing methods and equipment. We have developed many of our newer camera testing devices based on the testing procedures described in the standard and offer a product package for those who want to start with IEEE-P2020 measurements today.
-                </p>
+            <p className="text-lg text-gray-700 leading-relaxed mb-8">
+              These KPIs require new testing methods and equipment. We have developed many of our newer camera testing devices based on the testing procedures described in the standard and offer a product package for those who want to start with IEEE-P2020 measurements today.
+            </p>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  {/* Vega Light Source */}
-                  <div className="bg-gray-50 rounded-xl p-6">
-                    <h5 className="text-lg font-bold text-gray-900 mb-3">Vega High-Intensity Light Source</h5>
-                     <p className="text-lg text-gray-600 leading-relaxed">
-                       A high-intensity light source based on DC technology with extremely high stability for measuring cameras with very short exposure times.
-                     </p>
-                  </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* Vega Light Source */}
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h5 className="text-lg font-bold text-gray-900 mb-3">Vega High-Intensity Light Source</h5>
+                 <p className="text-lg text-gray-600 leading-relaxed">
+                   A high-intensity light source based on DC technology with extremely high stability for measuring cameras with very short exposure times.
+                 </p>
+              </div>
 
-                  {/* TE294 Test Chart */}
-                  <div className="bg-gray-50 rounded-xl p-6">
-                    <h5 className="text-lg font-bold text-gray-900 mb-3">Vega Test Chart (TE294)</h5>
-                     <p className="text-lg text-gray-600 leading-relaxed">
-                       A unique grayscale test chart with 36 fields and 10:1 contrast for high-precision measurements of automotive camera systems.
-                     </p>
-                  </div>
+              {/* TE294 Test Chart */}
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h5 className="text-lg font-bold text-gray-900 mb-3">Vega Test Chart (TE294)</h5>
+                 <p className="text-lg text-gray-600 leading-relaxed">
+                   A unique grayscale test chart with 36 fields and 10:1 contrast for high-precision measurements of automotive camera systems.
+                 </p>
+              </div>
 
-                  {/* VLS Software */}
-                  <div className="bg-gray-50 rounded-xl p-6">
-                    <h5 className="text-lg font-bold text-gray-900 mb-3">VLS Software</h5>
-                     <p className="text-lg text-gray-600 leading-relaxed">
-                       Evaluation software that supports CTA, MMP and CSNR measurements and evaluations for versatile lighting system testing.
-                     </p>
-                  </div>
+              {/* VLS Software */}
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h5 className="text-lg font-bold text-gray-900 mb-3">VLS Software</h5>
+                 <p className="text-lg text-gray-600 leading-relaxed">
+                   Evaluation software that supports CTA, MMP and CSNR measurements and evaluations for versatile lighting system testing.
+                 </p>
+              </div>
 
-                  {/* Vega API */}
-                  <div className="bg-gray-50 rounded-xl p-6">
-                    <h5 className="text-lg font-bold text-gray-900 mb-3">Vega API</h5>
-                     <p className="text-lg text-gray-600 leading-relaxed">
-                       Flexible workflows with C++-based API that provides C interfaces and Python example scripts for complete integration flexibility.
-                     </p>
-                  </div>
-                </div>
+              {/* Vega API */}
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h5 className="text-lg font-bold text-gray-900 mb-3">Vega API</h5>
+                 <p className="text-lg text-gray-600 leading-relaxed">
+                   Flexible workflows with C++-based API that provides C interfaces and Python example scripts for complete integration flexibility.
+                 </p>
+              </div>
+            </div>
 
-                <div className="bg-blue-50 rounded-xl p-6">
-                   <p className="text-lg text-gray-700 mb-4">
-                     <strong>Important Note:</strong> This package includes one Vega device, one controller and one test chart. Additional Vega devices and charts can be purchased separately (one controller can control up to seven Vega devices).
-                   </p>
-                  <div className="text-center">
-                    <Link to="#footer">
-                      <Button 
-                        variant="contact"
-                        size="lg"
-                        className="px-8 py-3 text-lg"
-                      >
-                        Contact Sales for IEEE-P2020 Package
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+            <div className="bg-blue-50 rounded-xl p-6 mb-12">
+               <p className="text-lg text-gray-700 mb-4">
+                 <strong>Important Note:</strong> This package includes one Vega device, one controller and one test chart. Additional Vega devices and charts can be purchased separately (one controller can control up to seven Vega devices).
+               </p>
+              <div className="text-center">
+                <Link to="#footer">
+                  <Button 
+                    variant="contact"
+                    size="lg"
+                    className="px-8 py-3 text-lg"
+                  >
+                    Contact Sales for IEEE-P2020 Package
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
