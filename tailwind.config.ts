@@ -89,6 +89,10 @@ export default {
 					general: 'hsl(var(--icon-general))',
 					'general-fg': 'hsl(var(--icon-general-fg))'
 				},
+				automotive: {
+					button: 'hsl(var(--automotive-button))',
+					'icon-bg': 'hsl(var(--automotive-icon-bg))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

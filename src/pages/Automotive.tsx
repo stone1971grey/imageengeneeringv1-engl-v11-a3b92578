@@ -190,16 +190,7 @@ const Automotive = () => {
             {applications.map((app, index) => {
               const IconComponent = app.icon;
               const getIconColors = (iconType: string) => {
-                switch (iconType) {
-                  case 'camera':
-                    return { bg: 'bg-icon-camera', fg: 'text-icon-camera-fg' };
-                  case 'testing':
-                    return { bg: 'bg-icon-testing', fg: 'text-icon-testing-fg' };
-                  case 'performance':
-                    return { bg: 'bg-icon-performance', fg: 'text-icon-performance-fg' };
-                  default:
-                    return { bg: 'bg-icon-general', fg: 'text-icon-general-fg' };
-                }
+                return { bg: 'bg-automotive-icon-bg', fg: 'text-automotive-icon-bg' };
               };
               const colors = getIconColors(app.iconType);
               
@@ -225,8 +216,8 @@ const Automotive = () => {
                   
                   {/* CTA Button */}
                   <Button 
-                    variant="default"
-                    className="w-full bg-gray-800 hover:bg-gray-900 text-white"
+                    className="w-full text-white hover:opacity-90"
+                    style={{ backgroundColor: 'hsl(77, 56%, 37%)' }}
                   >
                     Learn More
                   </Button>
