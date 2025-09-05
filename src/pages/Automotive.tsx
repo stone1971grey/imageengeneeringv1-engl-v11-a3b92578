@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Camera, TestTube, Monitor, Play, Car } from "lucide-react";
+import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
@@ -44,8 +44,8 @@ const Automotive = () => {
     },
     {
       title: "Low-Light Performance Testing",
-      description: "Critical validation for night driving and challenging lighting conditions",
-      icon: Camera,
+      description: "Professional LED lighting systems and uniform light sources for stable low-light testing environments",
+      icon: Lightbulb,
       iconType: "camera"
     }
   ];
