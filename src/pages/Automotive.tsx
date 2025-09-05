@@ -248,9 +248,6 @@ const Automotive = () => {
                 </p>
               </div>
 
-              {/* Interactive Manufacturer/Supplier Showcase */}
-              <ManufacturerSupplierShowcase />
-
               {/* What tests are included */}
               <div className="bg-blue-50 rounded-2xl p-8">
                 <h4 className="text-2xl font-bold text-gray-900 mb-6">What tests are included in camPAS?</h4>
@@ -345,6 +342,15 @@ const Automotive = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Manufacturer/Supplier Showcase - separate section */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="max-w-7xl mx-auto">
+            <ManufacturerSupplierShowcase />
           </div>
         </div>
       </section>
