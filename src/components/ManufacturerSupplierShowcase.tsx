@@ -24,10 +24,7 @@ const ManufacturerSupplierShowcase = () => {
           
           {/* Manufacturer Section */}
           <div className="p-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Building className="w-8 h-8 text-blue-600" />
-              <h3 className="text-2xl font-bold text-gray-900">Manufacturer</h3>
-            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Manufacturer</h3>
             <p className="text-gray-700 leading-relaxed mb-6">
               OEMs benefit from objective testing through neutral third parties for informed sensor selection and customized camPAS tests.
             </p>
@@ -43,10 +40,7 @@ const ManufacturerSupplierShowcase = () => {
 
           {/* Supplier Section */}
           <div className="p-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Cog className="w-8 h-8 text-teal-600" />
-              <h3 className="text-2xl font-bold text-gray-900">Tier 1/2 Supplier</h3>
-            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Tier 1/2 Supplier</h3>
             <p className="text-gray-700 leading-relaxed mb-6">
               Tier-1/2 suppliers validate components before delivery and optimize image quality proactively through neutral third-party consulting.
             </p>
