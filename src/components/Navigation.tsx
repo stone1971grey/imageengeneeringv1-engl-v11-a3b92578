@@ -384,12 +384,14 @@ const Navigation = () => {
                       
                        {/* Solution-Finder CTA */}
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                        <div className="flex items-center justify-center transition-colors cursor-pointer">
-                          <Button variant="decision" className="w-full">
-                            <Search className="h-5 w-5 mr-3" />
-                            <span className="text-lg font-medium">Need Help Choosing? → Start Solution Finder</span>
-                          </Button>
-                        </div>
+                        <Link to="/industries">
+                          <div className="flex items-center justify-center transition-colors cursor-pointer">
+                            <Button variant="decision" className="w-full">
+                              <Search className="h-5 w-5 mr-3" />
+                              <span className="text-lg font-medium">Need Help Choosing? → Start Solution Finder</span>
+                            </Button>
+                          </div>
+                        </Link>
                       </div>
                       
                       {/* Image and description section */}
