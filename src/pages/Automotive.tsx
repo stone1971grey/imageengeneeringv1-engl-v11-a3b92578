@@ -335,52 +335,76 @@ const Automotive = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-            {products.map((product, index) => (
-              <Card 
-                key={index}
-                className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col"
-              >
-                <CardContent className="p-0 flex flex-col flex-1">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
-                    <img 
-                      src={product.image}
-                      alt={product.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#577eb4]">
-                      {product.title}
-                    </h3>
-                    <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
-                      {product.description}
-                    </p>
-                    {product.link ? (
-                      <Link to={product.link}>
-                        <Button 
-                          variant="decision"
-                          size="lg"
-                          className="w-full group"
-                        >
-                          Learn More
-                          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button 
-                        variant="decision"
-                        size="lg"
-                        className="w-full group"
-                      >
-                        Learn More
-                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+             {products.map((product, index) => (
+               <Card 
+                 key={index}
+                 className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
+                   product.title === "Arcturus" 
+                     ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
+                     : ""
+                 }`}
+               >
+                 <CardContent className="p-0 flex flex-col flex-1">
+                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                     <img 
+                       src={product.image}
+                       alt={product.title}
+                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                     />
+                     {product.title === "Arcturus" && (
+                       <div className="absolute top-2 right-2">
+                         <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                           ACTIVE
+                         </span>
+                       </div>
+                     )}
+                   </div>
+                   <div className="p-6 flex flex-col flex-1">
+                     <h3 className={`text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] ${
+                       product.title === "Arcturus" 
+                         ? "text-green-700" 
+                         : "text-gray-900"
+                     }`}>
+                       {product.title}
+                       {product.title === "Arcturus" && (
+                         <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
+                           CLICKABLE
+                         </span>
+                       )}
+                     </h3>
+                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                       {product.description}
+                     </p>
+                     {product.link ? (
+                       <Link to={product.link}>
+                         <Button 
+                           variant="decision"
+                           size="lg"
+                           className={`w-full group ${
+                             product.title === "Arcturus" 
+                               ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                               : ""
+                           }`}
+                         >
+                           Learn More
+                           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                         </Button>
+                       </Link>
+                     ) : (
+                       <Button 
+                         variant="decision"
+                         size="lg"
+                         className="w-full group"
+                       >
+                         Learn More
+                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                       </Button>
+                     )}
+                   </div>
+                 </CardContent>
+               </Card>
+             ))}
           </div>
         </div>
       </section>
