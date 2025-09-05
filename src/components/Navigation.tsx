@@ -600,60 +600,60 @@ const Navigation = () => {
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       <div className="flex gap-6 p-6">
                         {/* Column 1: Training & Education */}
-                        <div className="space-y-4 flex-1 pr-6 bg-orange-400 p-4 rounded-lg">
+                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <GraduationCap className="h-6 w-6" />
                             Training & Education
                           </h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-800 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Video className="h-5 w-5" />
                             <a href="#">Professional Training</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-800 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <BookOpen className="h-5 w-5" />
                             <a href="#">Workshops</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-800 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Users className="h-5 w-5" />
                             <a href="#">Certification Programs</a>
                           </div>
                         </div>
 
                         {/* Column 2: Technical Services */}
-                        <div className="space-y-4 flex-1 pr-6 bg-gray-800 p-4 rounded-lg">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-white">
+                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Wrench className="h-6 w-6" />
                             Technical Services
                           </h4>
-                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-300 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Settings className="h-5 w-5" />
                             <a href="#">Custom Solutions</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-300 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Wrench className="h-5 w-5" />
                             <a href="#">Technical Support</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-300 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Target className="h-5 w-5" />
                             <a href="#">Calibration Services</a>
                           </div>
                         </div>
 
                         {/* Column 3: Consulting */}
-                        <div className="space-y-4 flex-1 p-4 rounded-lg" style={{ backgroundColor: '#74952a' }}>
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-white">
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
                             <Lightbulb className="h-6 w-6" />
                             Consulting
                           </h4>
-                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-200 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <BarChart3 className="h-5 w-5" />
                             <a href="#">Project Consulting</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-200 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <CheckCircle className="h-5 w-5" />
                             <a href="#">Quality Assurance</a>
                           </div>
-                          <div className="flex items-center gap-3 text-lg text-white hover:text-blue-200 transition-colors cursor-pointer">
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                             <Briefcase className="h-5 w-5" />
                             <a href="#">Implementation Support</a>
                           </div>
