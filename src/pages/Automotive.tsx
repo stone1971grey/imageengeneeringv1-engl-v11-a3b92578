@@ -289,7 +289,7 @@ const Automotive = () => {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               {/* Vega Light Source */}
-              <div className="bg-gray-50 rounded-xl p-6">
+              <div className="bg-automotive-tests-bg rounded-xl p-6">
                 <h5 className="text-lg font-bold text-gray-900 mb-3">Vega High-Intensity Light Source</h5>
                  <p className="text-lg text-gray-600 leading-relaxed">
                    A high-intensity light source based on DC technology with extremely high stability for measuring cameras with very short exposure times.
@@ -297,7 +297,7 @@ const Automotive = () => {
               </div>
 
               {/* TE294 Test Chart */}
-              <div className="bg-gray-50 rounded-xl p-6">
+              <div className="bg-automotive-tests-bg rounded-xl p-6">
                 <h5 className="text-lg font-bold text-gray-900 mb-3">Vega Test Chart (TE294)</h5>
                  <p className="text-lg text-gray-600 leading-relaxed">
                    A unique grayscale test chart with 36 fields and 10:1 contrast for high-precision measurements of automotive camera systems.
@@ -305,7 +305,7 @@ const Automotive = () => {
               </div>
 
               {/* VLS Software */}
-              <div className="bg-gray-50 rounded-xl p-6">
+              <div className="bg-automotive-tests-bg rounded-xl p-6">
                 <h5 className="text-lg font-bold text-gray-900 mb-3">VLS Software</h5>
                  <p className="text-lg text-gray-600 leading-relaxed">
                    Evaluation software that supports CTA, MMP and CSNR measurements and evaluations for versatile lighting system testing.
@@ -313,7 +313,7 @@ const Automotive = () => {
               </div>
 
               {/* Vega API */}
-              <div className="bg-gray-50 rounded-xl p-6">
+              <div className="bg-automotive-tests-bg rounded-xl p-6">
                 <h5 className="text-lg font-bold text-gray-900 mb-3">Vega API</h5>
                  <p className="text-lg text-gray-600 leading-relaxed">
                    Flexible workflows with C++-based API that provides C interfaces and Python example scripts for complete integration flexibility.
