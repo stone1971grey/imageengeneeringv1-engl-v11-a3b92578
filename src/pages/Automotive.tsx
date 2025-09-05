@@ -179,7 +179,9 @@ const Automotive = () => {
               Essential testing solutions for automotive camera systems
             </p>
           </div>
+        </div>
 
+        <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {applications.map((app, index) => {
               const IconComponent = app.icon;
@@ -215,8 +217,10 @@ const Automotive = () => {
             })}
           </div>
         </div>
+      </section>
 
-        {/* camPAS Testing Section */}
+      {/* camPAS Testing Section */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-6 mt-20">
           <div className="max-w-6xl mx-auto">
             <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100">
