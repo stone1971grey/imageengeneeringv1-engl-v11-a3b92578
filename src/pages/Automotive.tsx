@@ -39,7 +39,7 @@ const Automotive = () => {
     {
       title: "Software",
       description: "Advanced software solutions for image analysis, calibration and automated quality control",
-      icon: Code,
+      icon: Monitor,
       iconType: "performance"
     },
     {
