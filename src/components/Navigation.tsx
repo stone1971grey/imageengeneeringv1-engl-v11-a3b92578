@@ -447,8 +447,7 @@ const Navigation = () => {
                       <div className="flex gap-8 p-6">
                         {/* Left Column: Product Groups */}
                         <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Package className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Product Groups
                           </h4>
                           <Link
