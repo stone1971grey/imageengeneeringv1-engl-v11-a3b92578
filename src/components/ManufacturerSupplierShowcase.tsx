@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Building, Cog, ArrowRight, CheckCircle, Search, FileCheck, Camera } from "lucide-react";
+import { Building, Cog, ArrowRight, CheckCircle, Search, FileCheck, Camera, GraduationCap } from "lucide-react";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
 
@@ -19,54 +19,84 @@ const ManufacturerSupplierShowcase = () => {
           </p>
         </div>
 
-        {/* Three Column Layout */}
+        {/* Three Column Layout - Main Applications Style */}
         <div className="grid lg:grid-cols-3 gap-8">
           
           {/* Manufacturer Section */}
-          <div className="p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Manufacturer</h3>
-            <p className="text-gray-700 leading-relaxed mb-6">
+          <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
+            {/* Icon Background */}
+            <div className="w-[70px] h-[70px] rounded-full bg-automotive-icon-bg flex items-center justify-center mb-6">
+              <Building className="w-8 h-8 text-black" />
+            </div>
+            
+            {/* Title */}
+            <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
+              Manufacturer
+            </h3>
+            
+            {/* Description */}
+            <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">
               OEMs benefit from objective testing through neutral third parties for informed sensor selection and customized camPAS tests.
             </p>
+            
+            {/* CTA Button */}
             <Button 
-              variant="decision"
-              size="lg"
-              className="w-full group"
+              className="w-full text-white hover:opacity-90"
+              style={{ backgroundColor: 'hsl(77, 56%, 37%)' }}
             >
-              Learn More About Manufacturer Solutions
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Learn More
             </Button>
           </div>
 
           {/* Supplier Section */}
-          <div className="p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Tier 1/2 Supplier</h3>
-            <p className="text-gray-700 leading-relaxed mb-6">
+          <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
+            {/* Icon Background */}
+            <div className="w-[70px] h-[70px] rounded-full bg-automotive-icon-bg flex items-center justify-center mb-6">
+              <Cog className="w-8 h-8 text-black" />
+            </div>
+            
+            {/* Title */}
+            <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
+              Tier 1/2 Supplier
+            </h3>
+            
+            {/* Description */}
+            <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">
               Tier-1/2 suppliers validate components before delivery and optimize image quality proactively through neutral third-party consulting.
             </p>
+            
+            {/* CTA Button */}
             <Button 
-              variant="decision"
-              size="lg"
-              className="w-full group"
+              className="w-full text-white hover:opacity-90"
+              style={{ backgroundColor: 'hsl(77, 56%, 37%)' }}
             >
-              Learn More About Supplier Solutions
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Learn More
             </Button>
           </div>
 
           {/* Training Section */}
-          <div className="p-8 bg-training-bg rounded-lg">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Professional Training</h3>
-            <p className="text-gray-700 leading-relaxed mb-6">
+          <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
+            {/* Icon Background */}
+            <div className="w-[70px] h-[70px] rounded-full bg-training-bg flex items-center justify-center mb-6">
+              <GraduationCap className="w-8 h-8 text-black" />
+            </div>
+            
+            {/* Title */}
+            <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
+              Professional Training
+            </h3>
+            
+            {/* Description */}
+            <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">
               Comprehensive training programs and professional consultation services for automotive camera testing expertise and best practices.
             </p>
+            
+            {/* CTA Button */}
             <Button 
-              size="lg"
-              className="w-full text-white hover:opacity-90 group"
+              className="w-full text-white hover:opacity-90"
               style={{ backgroundColor: 'hsl(45, 85%, 35%)' }}
             >
-              Explore Training Programs
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              Learn More
             </Button>
           </div>
         </div>
