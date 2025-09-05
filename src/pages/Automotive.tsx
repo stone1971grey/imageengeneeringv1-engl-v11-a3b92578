@@ -186,17 +186,30 @@ const Automotive = () => {
               return (
                 <div 
                   key={index}
-                  className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100"
+                  className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]"
                 >
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style={{ backgroundColor: '#577eb4' + '1A' }}>
-                    <IconComponent className="w-6 h-6" style={{ color: '#577eb4' }} />
+                  {/* Large Icon at top */}
+                  <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center mb-6">
+                    <IconComponent className="w-10 h-10 text-gray-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
+                  
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
                     {app.title}
                   </h3>
-                  <p className="text-lg text-gray-600 leading-relaxed">
+                  
+                  {/* Description */}
+                  <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">
                     {app.description}
                   </p>
+                  
+                  {/* CTA Button */}
+                  <Button 
+                    variant="default"
+                    className="w-full bg-gray-800 hover:bg-gray-900 text-white"
+                  >
+                    Learn More
+                  </Button>
                 </div>
               );
             })}
