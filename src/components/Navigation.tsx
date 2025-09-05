@@ -730,10 +730,10 @@ const Navigation = () => {
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <NavigationMenuLink asChild>
                           <Link to="/downloads" className="w-full">
-                            <Button variant="technical" className="w-full bg-blue-100 border-2 border-blue-300 hover:bg-blue-200">
+                            <Button variant="technical" className="w-full" style={{ backgroundColor: '#22C3F7', borderColor: '#22C3F7', color: 'white' }}>
                               <Microscope className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">Explore Image Quality Resources</span>
-                              <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">ACTIVE</span>
+                              <span className="ml-2 text-xs bg-white text-blue-700 px-2 py-1 rounded font-bold">ACTIVE</span>
                             </Button>
                           </Link>
                         </NavigationMenuLink>
