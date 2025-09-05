@@ -994,115 +994,92 @@ const SolutionArcturusBundle = () => {
         />
         </section>
 
-        {/* Downloads Section */}
-        <section id="downloads" className="bg-scandi-white py-16 scroll-mt-[265px]">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Downloads & Documentation
-            </h2>
-            <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mx-auto">
-              Download technical specifications, data sheets and software documentation.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Arcturus LED System Downloads */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 bg-[#577eb4]/10 rounded-full flex items-center justify-center">
-                    <Zap className="h-8 w-8 text-[#577eb4]" />
-                  </div>
+        {/* Related Downloads */}
+        <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[280px]">
+          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Related Downloads</h2>
+          <div className="grid md:grid-cols-4 gap-6">
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FileText className="text-[#3D7BA2]" size={32} />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900">
-                  Arcturus LED System
-                </CardTitle>
-                <CardDescription className="text-gray-600">
-                  Technical documentation and specifications
-                </CardDescription>
+                <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (DE)</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="text-center">
+                <CardDescription className="text-[#555] mb-4">
+                  Complete German datasheet with technical specifications
+                </CardDescription>
                 <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
+                  variant="technical"
+                  onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Arcturus_Lightsource-Datenblatt.pdf')}
                 >
-                  <FileText className="mr-3 h-4 w-4" />
-                  Data Sheet (PDF)
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
-                >
-                  <Download className="mr-3 h-4 w-4" />
-                  Technical Specifications
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
-                >
-                  <Settings className="mr-3 h-4 w-4" />
-                  Installation Guide
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
-                >
-                  <Package className="mr-3 h-4 w-4" />
-                  API Documentation
+                  <Download className="w-4 h-4 mr-2" />
+                  PDF Download
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Vega Software Suite Downloads */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 bg-[#577eb4]/10 rounded-full flex items-center justify-center">
-                    <Monitor className="h-8 w-8 text-[#577eb4]" />
-                  </div>
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FileText className="text-[#3D7BA2]" size={32} />
                 </div>
-                <CardTitle className="text-xl font-bold text-gray-900">
-                  Vega Software Suite
-                </CardTitle>
-                <CardDescription className="text-gray-600">
-                  Software downloads and user manuals
-                </CardDescription>
+                <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (EN)</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="text-center">
+                <CardDescription className="text-[#555] mb-4">
+                  Complete English datasheet with technical specifications
+                </CardDescription>
                 <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
+                  variant="technical"
+                  onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Arcturus_Lightsource-Datasheet.pdf')}
                 >
-                  <Download className="mr-3 h-4 w-4" />
-                  Vega Demo Version
+                  <Download className="w-4 h-4 mr-2" />
+                  PDF Download
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Monitor className="text-[#3D7BA2]" size={32} />
+                </div>
+                <CardTitle className="text-[#2D2D2D] text-lg">Vega Software Manual</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <CardDescription className="text-[#555] mb-4">
+                  Software documentation and user guide
+                </CardDescription>
                 <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
+                  variant="technical"
                 >
-                  <FileText className="mr-3 h-4 w-4" />
-                  User Manual (PDF)
+                  <Download className="w-4 h-4 mr-2" />
+                  PDF Download
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BarChart3 className="text-[#3D7BA2]" size={32} />
+                </div>
+                <CardTitle className="text-[#2D2D2D] text-lg">Test Charts Guide</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <CardDescription className="text-[#555] mb-4">
+                  Test chart specifications and application guide
+                </CardDescription>
                 <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
+                  variant="technical"
                 >
-                  <Settings className="mr-3 h-4 w-4" />
-                  Python API Guide
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262]"
-                >
-                  <BarChart3 className="mr-3 h-4 w-4" />
-                  Example Reports
+                  <Download className="w-4 h-4 mr-2" />
+                  PDF Download
                 </Button>
               </CardContent>
             </Card>
           </div>
-
-        </div>
         </section>
       </div>
       <Footer />
