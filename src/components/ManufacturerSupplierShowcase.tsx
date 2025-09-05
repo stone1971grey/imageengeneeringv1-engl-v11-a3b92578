@@ -23,7 +23,7 @@ const ManufacturerSupplierShowcase = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           
           {/* Manufacturer Section */}
-          <div className="bg-gray-50 rounded-lg p-8">
+          <div className="p-8">
             <div className="flex items-center gap-3 mb-4">
               <Building className="w-8 h-8 text-blue-600" />
               <h3 className="text-2xl font-bold text-gray-900">Manufacturer</h3>
@@ -42,7 +42,7 @@ const ManufacturerSupplierShowcase = () => {
           </div>
 
           {/* Supplier Section */}
-          <div className="bg-gray-50 rounded-lg p-8">
+          <div className="p-8">
             <div className="flex items-center gap-3 mb-4">
               <Cog className="w-8 h-8 text-teal-600" />
               <h3 className="text-2xl font-bold text-gray-900">Tier 1/2 Supplier</h3>
