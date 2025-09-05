@@ -262,12 +262,13 @@ const Navigation = () => {
                           </div>
                           <Link 
                             to="/automotive"
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
                             onMouseEnter={() => setHoveredIndustry("Automotive & ADAS")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
                             <Car className="h-5 w-5" />
                             <span>Automotive & ADAS</span>
+                            <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
@@ -337,21 +338,23 @@ const Navigation = () => {
                           <div className="space-y-2">
                             <Link 
                               to="/automotive"
-                              className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
+                              className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
                               onMouseEnter={() => setHoveredSolution("ADAS Testing / Automotive Vision")}
                               onMouseLeave={() => setHoveredSolution(null)}
                             >
                               <CheckCircle className="h-5 w-5" />
                               <span>ADAS Testing / Automotive Vision</span>
+                              <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
                             </Link>
                             <div className="ml-8">
                               <Link 
                                 to="/solution/arcturus-bundle"
-                                className="flex items-center gap-3 text-base text-gray-700 hover:text-blue-400 transition-colors"
+                                className="flex items-center gap-3 text-base text-gray-700 hover:text-blue-400 transition-colors bg-blue-100 p-2 rounded-md border-2 border-blue-300 ml-8"
                                 onMouseEnter={() => setHoveredSolution("Arcturus HDR Test Bundle")}
                                 onMouseLeave={() => setHoveredSolution(null)}
                               >
                                 <span>→ Arcturus HDR Test Bundle</span>
+                                <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">ACTIVE</span>
                               </Link>
                             </div>
                           </div>
