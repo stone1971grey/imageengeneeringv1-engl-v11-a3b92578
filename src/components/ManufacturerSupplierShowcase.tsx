@@ -93,7 +93,7 @@ const ManufacturerSupplierShowcase = () => {
             
             {/* CTA Button */}
             <Button 
-              className="w-full bg-training-button text-white hover:opacity-90"
+              className="w-full bg-training-button text-black hover:opacity-90"
             >
               Learn More
             </Button>
