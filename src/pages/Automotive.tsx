@@ -232,49 +232,48 @@ const Automotive = () => {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-3xl p-12 shadow-sm border border-gray-100">
-              <div className="text-center mb-12">
-                <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                  camPAS - Camera Performance for Automotive Systems
-                </h3>
-                <p className="text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
-                  The camPAS (Camera Performance for Automotive Systems) test is a uniquely developed image quality performance test for camera image quality and sensor systems in the automotive industry. We offer camPAS for customers who need independent and objective test results from a neutral third party to support their development decisions.
-                </p>
-              </div>
+            <div className="text-center mb-12">
+              <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                camPAS - Camera Performance for Automotive Systems
+              </h3>
+              <p className="text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
+                The camPAS (Camera Performance for Automotive Systems) test is a uniquely developed image quality performance test for camera image quality and sensor systems in the automotive industry. We offer camPAS for customers who need independent and objective test results from a neutral third party to support their development decisions.
+              </p>
+            </div>
 
-              <div className="mb-12">
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Current working groups, e.g. <a href="https://sagroups.ieee.org/2020/" className="hover:underline" style={{ color: '#577eb4' }}>IEEE-P2020</a>, are working on an internationally recognized image quality testing standard for automotive camera systems. The publication of IEEE-P2020 is expected by the end of 2024. Currently, there are no industry-wide testing standards. The development of the camPAS test arose from supporting our customers in finding and creating test methods that deliver unbiased results. As an active member of IEEE-P2020, we can directly implement the latest automotive camera testing methods and procedures from the standard to keep camPAS relevant and current.
-                </p>
-              </div>
+            <div className="mb-12">
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Current working groups, e.g. <a href="https://sagroups.ieee.org/2020/" className="hover:underline" style={{ color: '#577eb4' }}>IEEE-P2020</a>, are working on an internationally recognized image quality testing standard for automotive camera systems. The publication of IEEE-P2020 is expected by the end of 2024. Currently, there are no industry-wide testing standards. The development of the camPAS test arose from supporting our customers in finding and creating test methods that deliver unbiased results. As an active member of IEEE-P2020, we can directly implement the latest automotive camera testing methods and procedures from the standard to keep camPAS relevant and current.
+              </p>
+            </div>
 
-              {/* What tests are included */}
-              <div className="bg-blue-50 rounded-2xl p-8">
-                <h4 className="text-2xl font-bold text-gray-900 mb-6">What tests are included in camPAS?</h4>
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  The difference between a camPAS test and a standard test method is the ability to fully customize the camPAS test to customer specifications. We evaluate camera systems based on various image quality KPIs or use tests to analyze sensor smoothness or error susceptibility.
-                </p>
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  Some of the most common image quality KPIs we test include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (Flicker), High Dynamic Range (HDR), visual assessment of low-light performance, etc. These tests are performed using the latest techniques (as described in IEEE-P2020) and equipment to ensure the highest results.
-                </p>
-                <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                  It is important to note that these KPIs are just examples and we test an extensive range of KPIs for camera and sensor systems. camPAS tests are not pre-made tests and instead require consultation with our test lab to ensure we design a test that meets customer requirements.
-                </p>
-                
-                <div className="text-center">
-                  <Button 
-                    variant="technical"
-                    size="lg"
-                    className="group"
-                  >
-                    Contact iQ-Lab for camPAS Consultation
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
+            {/* What tests are included */}
+            <div className="bg-blue-50 rounded-2xl p-8 mb-12">
+              <h4 className="text-2xl font-bold text-gray-900 mb-6">What tests are included in camPAS?</h4>
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                The difference between a camPAS test and a standard test method is the ability to fully customize the camPAS test to customer specifications. We evaluate camera systems based on various image quality KPIs or use tests to analyze sensor smoothness or error susceptibility.
+              </p>
+              <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                Some of the most common image quality KPIs we test include Contrast Transfer Accuracy (CTA), Modulated Light Reduction Probability (Flicker), High Dynamic Range (HDR), visual assessment of low-light performance, etc. These tests are performed using the latest techniques (as described in IEEE-P2020) and equipment to ensure the highest results.
+              </p>
+              <p className="text-lg text-gray-700 leading-relaxed mb-8">
+                It is important to note that these KPIs are just examples and we test an extensive range of KPIs for camera and sensor systems. camPAS tests are not pre-made tests and instead require consultation with our test lab to ensure we design a test that meets customer requirements.
+              </p>
+              
+              <div className="text-center">
+                <Button 
+                  variant="technical"
+                  size="lg"
+                  className="group"
+                >
+                  Contact iQ-Lab for camPAS Consultation
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
               </div>
+            </div>
 
-              {/* IEEE-P2020 Product Bundle Section */}
-              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 mt-12">
+            {/* IEEE-P2020 Product Bundle Section */}
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                 <h4 className="text-2xl font-bold text-gray-900 mb-6">IEEE-P2020 Product Package</h4>
                 
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -340,7 +339,6 @@ const Automotive = () => {
                     </Link>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
