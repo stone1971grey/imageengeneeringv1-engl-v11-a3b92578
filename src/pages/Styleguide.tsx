@@ -143,6 +143,19 @@ const Styleguide = () => {
                          <ArrowRight className="ml-2 h-4 w-4" />
                        </Button>
                      </div>
+                     
+                     {/* Academia Variant */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Academia</p>
+                         <p className="text-sm text-gray-500">Training & Education</p>
+                         <p className="text-xs text-gray-400 font-mono">#F8BF04</p>
+                       </div>
+                       <Button className="bg-academia-button text-black hover:opacity-90">
+                         Professional Training
+                         <ArrowRight className="ml-2 h-4 w-4" />
+                       </Button>
+                     </div>
                     
                      {/* Contact Variant */}
                      <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
@@ -490,6 +503,47 @@ const Styleguide = () => {
                 <h2 className="text-3xl font-bold text-gray-900 mb-12">🎨 Company Colors</h2>
                 <p className="text-lg text-gray-600 mb-8">Complete color palette from CSS variables for Image Engineering</p>
                 
+                {/* Icon Backgrounds */}
+                <div className="mb-12">
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-8">Icon Backgrounds</h3>
+                  
+                  <div className="grid gap-6">
+                    {/* Decision Icon Background */}
+                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                      <div className="w-32">
+                        <p className="font-medium text-gray-900">Decision Icons</p>
+                        <p className="text-sm text-gray-500">30% Saturation</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-16 h-16 rounded-full border border-gray-300 shadow-sm bg-decision-icon-bg"
+                        ></div>
+                        <div>
+                          <p className="font-mono text-sm text-gray-900">hsl(77, 30%, 75%)</p>
+                          <p className="text-xs text-gray-500">Based on #74952a with 30% saturation</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Academia Icon Background */}
+                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                      <div className="w-32">
+                        <p className="font-medium text-gray-900">Academia Icons</p>
+                        <p className="text-sm text-gray-500">60% Saturation</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div 
+                          className="w-16 h-16 rounded-full border border-gray-300 shadow-sm bg-academia-icon-bg"
+                        ></div>
+                        <div>
+                          <p className="font-mono text-sm text-gray-900">hsl(45, 60%, 85%)</p>
+                          <p className="text-xs text-gray-500">Based on #F8BF04 with 60% saturation</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Company Colors */}
                 <div className="mb-12">
                   <h3 className="text-2xl font-semibold text-gray-900 mb-8">Main Colors</h3>

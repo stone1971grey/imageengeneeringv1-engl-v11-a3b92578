@@ -85,6 +85,12 @@ All colors MUST be HSL.
     --automotive-tests-bg: 77 30% 90%;
     --training-button: 45 95% 49%;
     --training-bg: 45 60% 85%;
+    
+    /* Button variants */
+    --decision-button: 77 56% 37%;
+    --decision-icon-bg: 77 30% 75%;
+    --academia-button: 45 95% 49%;
+    --academia-icon-bg: 45 60% 85%;
 
     --radius: 0.5rem;
 
