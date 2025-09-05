@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Camera, TestTube, Monitor, Play } from "lucide-react";
+import { ArrowRight, Camera, TestTube, Monitor, Play, Car } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
@@ -27,7 +27,7 @@ const Automotive = () => {
     {
       title: "Camera Testing for ADAS Systems",
       description: "Comprehensive validation of driver assistance cameras for safety compliance",
-      icon: Camera,
+      icon: Car,
       iconType: "camera"
     },
     {
@@ -210,7 +210,7 @@ const Automotive = () => {
                 >
                   {/* Large Icon at top - 70x70px round */}
                   <div className={`w-[70px] h-[70px] rounded-full ${colors.bg} flex items-center justify-center mb-6`}>
-                    <IconComponent className={`w-8 h-8 ${colors.fg}`} />
+                    <IconComponent className="w-8 h-8 text-black" />
                   </div>
                   
                   {/* Title */}
