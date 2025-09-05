@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X, Check, Quote } from "lucide-react";
+import { ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, CheckCircle, Lightbulb, Monitor, Package, Settings, Target, Expand, X, Check, Quote, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
@@ -1066,7 +1066,7 @@ const SolutionArcturusBundle = () => {
             <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow flex flex-col h-full">
               <CardHeader className="text-center flex-grow-0">
                 <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="text-[#3D7BA2]" size={32} />
+                  <Camera className="text-[#3D7BA2]" size={32} />
                 </div>
                 <CardTitle className="text-[#2D2D2D] text-lg">Test Charts Guide</CardTitle>
               </CardHeader>
