@@ -19,11 +19,11 @@ const ManufacturerSupplierShowcase = () => {
           </p>
         </div>
 
-        {/* Three Column Layout - Main Applications Style without white containers */}
+        {/* Three Column Layout - Main Applications Style */}
         <div className="grid lg:grid-cols-3 gap-8">
           
           {/* Manufacturer Section */}
-          <div className="flex flex-col items-center text-center min-h-[320px]">
+          <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
             {/* Icon Background */}
             <div className="w-[70px] h-[70px] rounded-full bg-automotive-icon-bg flex items-center justify-center mb-6">
               <Building className="w-8 h-8 text-black" />
@@ -49,7 +49,7 @@ const ManufacturerSupplierShowcase = () => {
           </div>
 
           {/* Supplier Section */}
-          <div className="flex flex-col items-center text-center min-h-[320px]">
+          <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
             {/* Icon Background */}
             <div className="w-[70px] h-[70px] rounded-full bg-automotive-icon-bg flex items-center justify-center mb-6">
               <Cog className="w-8 h-8 text-black" />
@@ -75,7 +75,7 @@ const ManufacturerSupplierShowcase = () => {
           </div>
 
           {/* Training Section */}
-          <div className="flex flex-col items-center text-center min-h-[320px]">
+          <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
             {/* Icon Background */}
             <div className="w-[70px] h-[70px] rounded-full bg-training-bg flex items-center justify-center mb-6">
               <GraduationCap className="w-8 h-8 text-black" />
