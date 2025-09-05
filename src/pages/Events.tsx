@@ -276,7 +276,7 @@ const Events = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-20">
+      <section className="relative pt-40 pb-16 lg:pt-48 lg:pb-20">
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70"></div>
         <div 
           className="absolute inset-0 bg-cover bg-center"
