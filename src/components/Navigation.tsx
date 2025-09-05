@@ -750,8 +750,7 @@ const Navigation = () => {
                       <div className="flex gap-8 p-6">
                         {/* Column 1: Company Information */}
                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Building2 className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Company Information
                           </h4>
                           <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
@@ -774,8 +773,7 @@ const Navigation = () => {
 
                         {/* Column 2: Business & Partnerships */}
                         <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Handshake className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Business & Partnerships
                           </h4>
                           <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-yellow-100 p-2 rounded-md border-2 border-yellow-300">
