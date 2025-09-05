@@ -480,7 +480,7 @@ export default function Downloads() {
       <Navigation />
 
       {/* Main content wrapper with top margin to clear fixed navigation */}
-      <div className="pt-[140px]">
+      <div className="pt-[240px]">
 
         <main className="relative z-0">
         {/* Hero */}
