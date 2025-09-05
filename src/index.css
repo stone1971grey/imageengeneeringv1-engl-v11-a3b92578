@@ -83,6 +83,8 @@ All colors MUST be HSL.
     --automotive-button: 77 56% 37%;
     --automotive-icon-bg: 77 30% 75%;
     --automotive-tests-bg: 77 30% 90%;
+    --training-button: 45 85% 35%;
+    --training-bg: 45 50% 85%;
 
     --radius: 0.5rem;
 

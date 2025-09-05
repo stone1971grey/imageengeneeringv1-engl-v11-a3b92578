@@ -94,6 +94,10 @@ export default {
 					'icon-bg': 'hsl(var(--automotive-icon-bg))',
 					'tests-bg': 'hsl(var(--automotive-tests-bg))'
 				},
+				training: {
+					button: 'hsl(var(--training-button))',
+					bg: 'hsl(var(--training-bg))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

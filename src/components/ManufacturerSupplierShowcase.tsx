@@ -19,8 +19,8 @@ const ManufacturerSupplierShowcase = () => {
           </p>
         </div>
 
-        {/* Simple Two Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        {/* Three Column Layout */}
+        <div className="grid lg:grid-cols-3 gap-8">
           
           {/* Manufacturer Section */}
           <div className="p-8">
@@ -50,6 +50,22 @@ const ManufacturerSupplierShowcase = () => {
               className="w-full group"
             >
               Learn More About Supplier Solutions
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
+
+          {/* Training Section */}
+          <div className="p-8 bg-training-bg rounded-lg">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Professional Training</h3>
+            <p className="text-gray-700 leading-relaxed mb-6">
+              Comprehensive training programs and professional consultation services for automotive camera testing expertise and best practices.
+            </p>
+            <Button 
+              size="lg"
+              className="w-full text-white hover:opacity-90 group"
+              style={{ backgroundColor: 'hsl(45, 85%, 35%)' }}
+            >
+              Explore Training Programs
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
