@@ -998,20 +998,21 @@ const SolutionArcturusBundle = () => {
         <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[280px]">
           <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Related Downloads</h2>
           <div className="grid md:grid-cols-4 gap-6">
-            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow flex flex-col h-full">
+              <CardHeader className="text-center flex-grow-0">
                 <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="text-[#3D7BA2]" size={32} />
                 </div>
                 <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (DE)</CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
+              <CardContent className="text-center flex flex-col justify-between flex-grow">
                 <CardDescription className="text-[#555] mb-4">
                   Complete German datasheet with technical specifications
                 </CardDescription>
                 <Button 
                   variant="technical"
                   onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Arcturus_Lightsource-Datenblatt.pdf')}
+                  className="mt-auto"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   PDF Download
@@ -1019,20 +1020,21 @@ const SolutionArcturusBundle = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow flex flex-col h-full">
+              <CardHeader className="text-center flex-grow-0">
                 <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FileText className="text-[#3D7BA2]" size={32} />
                 </div>
                 <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (EN)</CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
+              <CardContent className="text-center flex flex-col justify-between flex-grow">
                 <CardDescription className="text-[#555] mb-4">
                   Complete English datasheet with technical specifications
                 </CardDescription>
                 <Button 
                   variant="technical"
                   onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Arcturus_Lightsource-Datasheet.pdf')}
+                  className="mt-auto"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   PDF Download
@@ -1040,19 +1042,20 @@ const SolutionArcturusBundle = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow flex flex-col h-full">
+              <CardHeader className="text-center flex-grow-0">
                 <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Monitor className="text-[#3D7BA2]" size={32} />
                 </div>
                 <CardTitle className="text-[#2D2D2D] text-lg">Vega Software Manual</CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
+              <CardContent className="text-center flex flex-col justify-between flex-grow">
                 <CardDescription className="text-[#555] mb-4">
                   Software documentation and user guide
                 </CardDescription>
                 <Button 
                   variant="technical"
+                  className="mt-auto"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   PDF Download
@@ -1060,19 +1063,20 @@ const SolutionArcturusBundle = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center">
+            <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow flex flex-col h-full">
+              <CardHeader className="text-center flex-grow-0">
                 <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BarChart3 className="text-[#3D7BA2]" size={32} />
                 </div>
                 <CardTitle className="text-[#2D2D2D] text-lg">Test Charts Guide</CardTitle>
               </CardHeader>
-              <CardContent className="text-center">
+              <CardContent className="text-center flex flex-col justify-between flex-grow">
                 <CardDescription className="text-[#555] mb-4">
                   Test chart specifications and application guide
                 </CardDescription>
                 <Button 
                   variant="technical"
+                  className="mt-auto"
                 >
                   <Download className="w-4 h-4 mr-2" />
                   PDF Download
