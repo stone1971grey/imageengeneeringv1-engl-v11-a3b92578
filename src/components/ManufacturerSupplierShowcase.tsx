@@ -7,20 +7,20 @@ import suppliersImage from "@/assets/suppliers-image.png";
 
 const ManufacturerSupplierShowcase = () => {
   return (
-    <div className="py-12">
-      <div className="w-full px-6">
-        {/* Header */}
-        <div className="text-center mb-12">
+    <section className="py-8 bg-gray-50">
+      <div className="container mx-auto px-6">
+        <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             camPAS Testing Workflow
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Specialized testing solutions for the automotive supply chain
           </p>
         </div>
+      </div>
 
-        {/* Three Column Layout - Main Applications Style */}
-        <div className="grid lg:grid-cols-3 gap-8">
+      <div className="container mx-auto px-6">
+        <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           
           {/* Manufacturer Section */}
           <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
@@ -101,7 +101,7 @@ const ManufacturerSupplierShowcase = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
