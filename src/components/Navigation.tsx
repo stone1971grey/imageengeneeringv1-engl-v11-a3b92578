@@ -240,8 +240,7 @@ const Navigation = () => {
                         <div className="flex gap-6 p-6">
                         {/* Left Column: Industries */}
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Building2 className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Industries
                           </h4>
                           <div 
@@ -323,8 +322,7 @@ const Navigation = () => {
                         
                         {/* Right Column: Popular Applications */}
                           <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 flex items-center gap-2 text-lg text-black">
-                            <Target className="h-6 w-6" />
+                          <h4 className="font-semibold mb-3 text-lg text-black">
                             Popular Applications
                           </h4>
                           <div 
