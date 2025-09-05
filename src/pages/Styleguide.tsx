@@ -332,55 +332,53 @@ const Styleguide = () => {
                 <div className="mb-16">
                   <h3 className="text-2xl font-semibold text-gray-900 mb-8">4-Tile Layout (Main Applications)</h3>
                   <div className="bg-gray-50 p-8 rounded-lg">
-                    <div className="container mx-auto">
-                      <div className="text-center mb-16">
-                        <h4 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                          Main Applications
-                        </h4>
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                          Essential testing solutions for automotive camera systems
-                        </p>
-                      </div>
-                      
-                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                        {applications.map((app, index) => {
-                          const IconComponent = app.icon;
-                          const getIconColors = (iconType: string) => {
-                            return { bg: 'bg-automotive-icon-bg', fg: 'text-automotive-icon-bg' };
-                          };
-                          const colors = getIconColors(app.iconType);
-                          
-                          return (
-                            <div 
-                              key={index}
-                              className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]"
-                            >
-                              {/* Large Icon at top - 70x70px round */}
-                              <div className={`w-[70px] h-[70px] rounded-full ${colors.bg} flex items-center justify-center mb-6`}>
-                                <IconComponent className="w-8 h-8 text-black" />
-                              </div>
-                              
-                              {/* Title */}
-                              <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
-                                {app.title}
-                              </h3>
-                              
-                              {/* Description */}
-                              <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">
-                                {app.description}
-                              </p>
-                              
-                              {/* CTA Button */}
-                              <Button 
-                                className="w-full text-white hover:opacity-90"
-                                style={{ backgroundColor: 'hsl(77, 56%, 37%)' }}
-                              >
-                                Learn More
-                              </Button>
+                    <div className="text-center mb-16">
+                      <h4 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                        Main Applications
+                      </h4>
+                      <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                        Essential testing solutions for automotive camera systems
+                      </p>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                      {applications.map((app, index) => {
+                        const IconComponent = app.icon;
+                        const getIconColors = (iconType: string) => {
+                          return { bg: 'bg-automotive-icon-bg', fg: 'text-automotive-icon-bg' };
+                        };
+                        const colors = getIconColors(app.iconType);
+                        
+                        return (
+                          <div 
+                            key={index}
+                            className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]"
+                          >
+                            {/* Large Icon at top - 70x70px round */}
+                            <div className={`w-[70px] h-[70px] rounded-full ${colors.bg} flex items-center justify-center mb-6`}>
+                              <IconComponent className="w-8 h-8 text-black" />
                             </div>
-                          );
-                        })}
-                      </div>
+                            
+                            {/* Title */}
+                            <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
+                              {app.title}
+                            </h3>
+                            
+                            {/* Description */}
+                            <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">
+                              {app.description}
+                            </p>
+                            
+                            {/* CTA Button */}
+                            <Button 
+                              className="w-full text-white hover:opacity-90"
+                              style={{ backgroundColor: 'hsl(77, 56%, 37%)' }}
+                            >
+                              Learn More
+                            </Button>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
