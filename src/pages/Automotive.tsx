@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb } from "lucide-react";
+import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb, Code } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
@@ -37,9 +37,9 @@ const Automotive = () => {
       iconType: "testing"
     },
     {
-      title: "HDR Scene Creation",
-      description: "Advanced lighting control for creating High Dynamic Range test scenarios",
-      icon: Monitor,
+      title: "Software",
+      description: "Advanced software solutions for image analysis, calibration and automated quality control",
+      icon: Code,
       iconType: "performance"
     },
     {
