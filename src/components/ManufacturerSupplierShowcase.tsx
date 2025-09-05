@@ -20,7 +20,7 @@ const ManufacturerSupplierShowcase = () => {
       </div>
 
       <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto" style={{ maxWidth: '1154px' }}>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           
           {/* Manufacturer Section */}
           <div className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]">
