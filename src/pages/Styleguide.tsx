@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Download, Settings, Trash2, ExternalLink, Play, Palette, Car, TestTube, Monitor, Lightbulb, Building, Cog, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
+import arcturusProduct from "@/assets/arcturus-main-product-new.png";
+import te42Image from "@/assets/te42-ll.jpg";
+import camspecsImage from "@/assets/camspecs-xl.png";
+import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
 
 const Styleguide = () => {
   const applications = [
@@ -30,6 +35,30 @@ const Styleguide = () => {
       description: "Professional LED lighting systems and uniform light sources for stable low-light testing environments",
       icon: Lightbulb,
       iconType: "camera"
+    }
+  ];
+
+  const products = [
+    {
+      title: "Arcturus",
+      description: "High-performance LED lighting for automotive testing, HDR scenes & high-end sensors",
+      image: arcturusProduct,
+      link: "/product/arcturus"
+    },
+    {
+      title: "TE42-LL",
+      description: "Low-light test chart for automotive camera validation",
+      image: te42Image
+    },
+    {
+      title: "camSPECS XL",
+      description: "Spectral sensitivity measurement system",
+      image: camspecsImage
+    },
+    {
+      title: "iQ-Analyzer-X",
+      description: "Image quality assessment software suite",
+      image: iqAnalyzerImage
     }
   ];
   return (
@@ -397,6 +426,95 @@ const Styleguide = () => {
               <h3 className="text-2xl font-semibold text-gray-900">3-Tile Layout (camPAS Testing Workflow)</h3>
             </div>
             <ManufacturerSupplierShowcase />
+          </div>
+          
+          {/* Recommended Products Tiles */}
+          <div className="mb-16">
+            <div className="container mx-auto px-6 mb-8">
+              <h3 className="text-2xl font-semibold text-gray-900">Product Tiles (Recommended Products)</h3>
+            </div>
+            <div className="bg-white py-8 px-6">
+              <div className="text-center mb-16">
+                <h4 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  Recommended Products
+                </h4>
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  Industry-leading tools for automotive camera testing
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                {products.map((product, index) => (
+                  <Card 
+                    key={index}
+                    className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
+                      product.title === "Arcturus" 
+                        ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
+                        : ""
+                    }`}
+                  >
+                    <CardContent className="p-0 flex flex-col flex-1">
+                      <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                        <img 
+                          src={product.image}
+                          alt={product.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {product.title === "Arcturus" && (
+                          <div className="absolute top-2 right-2">
+                            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                              ACTIVE
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6 flex flex-col flex-1">
+                        <h3 className={`text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] ${
+                          product.title === "Arcturus" 
+                            ? "text-green-700" 
+                            : "text-gray-900"
+                        }`}>
+                          {product.title}
+                          {product.title === "Arcturus" && (
+                            <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
+                              CLICKABLE
+                            </span>
+                          )}
+                        </h3>
+                        <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                          {product.description}
+                        </p>
+                        {product.link ? (
+                          <Link to={product.link}>
+                            <Button 
+                              variant="decision"
+                              size="lg"
+                              className={`w-full group ${
+                                product.title === "Arcturus" 
+                                  ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                                  : ""
+                              }`}
+                            >
+                              Learn More
+                              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Button 
+                            variant="decision"
+                            size="lg"
+                            className="w-full group"
+                          >
+                            Learn More
+                            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
         
