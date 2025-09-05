@@ -974,7 +974,7 @@ const SolutionArcturusBundle = () => {
                     </p>
                     <Button 
                       variant="outline" 
-                      className="w-full border-gray-200 hover:border-[#626262] hover:text-white hover:bg-[#626262] mt-auto"
+                      className="w-full border-[#F8BF04] text-[#F8BF04] hover:border-[#F8BF04] hover:text-black hover:bg-[#F8BF04] mt-auto"
                     >
                       Learn More
                     </Button>
