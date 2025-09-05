@@ -389,9 +389,10 @@ const Navigation = () => {
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <Link to="/industries">
                           <div className="flex items-center justify-center transition-colors cursor-pointer">
-                            <Button variant="decision" className="w-full">
+                            <Button variant="decision" className="w-full bg-green-100 border-2 border-green-300 hover:bg-green-200">
                               <Search className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">Need Help Choosing? → Start Solution Finder</span>
+                              <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
                             </Button>
                           </div>
                         </Link>
@@ -737,9 +738,10 @@ const Navigation = () => {
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <NavigationMenuLink asChild>
                           <Link to="/downloads" className="w-full">
-                            <Button variant="technical" className="w-full">
+                            <Button variant="technical" className="w-full bg-blue-100 border-2 border-blue-300 hover:bg-blue-200">
                               <Microscope className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">Explore Image Quality Resources</span>
+                              <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">ACTIVE</span>
                             </Button>
                           </Link>
                         </NavigationMenuLink>
@@ -784,9 +786,10 @@ const Navigation = () => {
                             <Handshake className="h-6 w-6" />
                             Business & Partnerships
                           </h4>
-                          <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                          <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-yellow-100 p-2 rounded-md border-2 border-yellow-300">
                             <Calendar className="h-5 w-5" />
                             <span>Events</span>
+                            <span className="ml-2 text-xs bg-yellow-500 text-white px-2 py-1 rounded">ACTIVE</span>
                           </Link>
                           <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                             <GraduationCap className="h-5 w-5" />
