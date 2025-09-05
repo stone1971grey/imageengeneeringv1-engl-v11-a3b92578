@@ -91,7 +91,8 @@ export default {
 				},
 				automotive: {
 					button: 'hsl(var(--automotive-button))',
-					'icon-bg': 'hsl(var(--automotive-icon-bg))'
+					'icon-bg': 'hsl(var(--automotive-icon-bg))',
+					'tests-bg': 'hsl(var(--automotive-tests-bg))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

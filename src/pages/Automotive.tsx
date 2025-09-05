@@ -248,7 +248,7 @@ const Automotive = () => {
             </div>
 
             {/* What tests are included */}
-            <div className="bg-blue-50 rounded-2xl p-8 mb-12">
+            <div className="bg-automotive-tests-bg rounded-2xl p-8 mb-12">
               <h4 className="text-2xl font-bold text-gray-900 mb-6">What tests are included in camPAS?</h4>
               <p className="text-lg text-gray-700 leading-relaxed mb-6">
                 The difference between a camPAS test and a standard test method is the ability to fully customize the camPAS test to customer specifications. We evaluate camera systems based on various image quality KPIs or use tests to analyze sensor smoothness or error susceptibility.
