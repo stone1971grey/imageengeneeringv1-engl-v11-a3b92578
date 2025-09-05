@@ -43,7 +43,7 @@ const Automotive = () => {
       iconType: "performance"
     },
     {
-      title: "Low-Light Performance Testing",
+      title: "Illumination Devices",
       description: "Professional LED lighting systems and uniform light sources for stable low-light testing environments",
       icon: Lightbulb,
       iconType: "camera"
