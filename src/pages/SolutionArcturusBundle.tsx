@@ -973,7 +973,8 @@ const SolutionArcturusBundle = () => {
                       Comprehensive training courses and certification for optimal system usage
                     </p>
                     <Button 
-                      className="bg-academia-button text-black hover:opacity-90 w-full mt-auto"
+                      variant="academia"
+                      className="w-full mt-auto"
                     >
                       Learn More
                     </Button>
