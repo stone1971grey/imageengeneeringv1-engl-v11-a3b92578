@@ -29,8 +29,8 @@ const Automotive = () => {
 
   const applications = [
     {
-      title: "[PLATZHALTER] Kamerasystem Validierung",
-      description: "[PLATZHALTER] Umfassende Validierung von Fahrerassistenzkameras für Sicherheitsstandards und ADAS-Funktionen",
+      title: "In-Cabin Performance Testing",
+      description: "Driver and occupant monitoring systems (DMS/OMS) use a variety of near-infrared (NIR) sensors combined with active illumination (e.g., LED) to enhance the safety and comfort of drivers and passengers.",
       icon: Eye,
       iconType: "vision"
     },
