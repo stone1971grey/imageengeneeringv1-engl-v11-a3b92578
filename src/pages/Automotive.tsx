@@ -7,6 +7,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
 import Footer from "@/components/Footer";
 import automotiveLab from "@/assets/automotive-lab.jpg";
+import automotiveHero from "@/assets/automotive-hero-new.jpg";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
@@ -143,7 +144,7 @@ const Automotive = () => {
             <div className="relative">
               <div className="relative overflow-hidden rounded-lg shadow-soft">
                 <img 
-                  src={automotiveLab}
+                  src={automotiveHero}
                   alt="Automotive camera testing laboratory"
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
