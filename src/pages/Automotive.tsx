@@ -142,7 +142,7 @@ const Automotive = () => {
 
             {/* Right Content - Video/Image - 3/5 */}
             <div className="lg:col-span-3 relative">
-              <div className="relative overflow-hidden rounded-lg shadow-soft">
+              <div className="relative overflow-hidden rounded-lg shadow-soft scale-90">
                 <img 
                   src={automotiveHero}
                   alt="Automotive camera testing laboratory"
