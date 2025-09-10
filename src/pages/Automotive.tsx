@@ -116,7 +116,7 @@ const Automotive = () => {
                     size="lg"
                     className="px-8 py-4 text-lg font-medium group"
                   >
-                    [PLATZHALTER] ADAS Lösungen Entdecken
+                    Discover Automotive Solutions
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
