@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb, Code } from "lucide-react";
+import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
@@ -14,62 +14,63 @@ import te42Image from "@/assets/te42-ll.jpg";
 import camspecsImage from "@/assets/camspecs-xl.png";
 import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
 
-// Automotive landing page component
+// Automotive & ADAS landing page component
 const Automotive = () => {
   const sections = [
     { id: 'introduction', label: 'Introduction' },
-    { id: 'applications', label: 'Use Cases' },
+    { id: 'applications', label: 'ADAS Applications' },
+    { id: 'standards', label: 'Standards & Testing' },
     { id: 'products', label: 'Products' },
     { id: 'contact', label: 'Contact' }
   ];
 
   const applications = [
     {
-      title: "Camera Testing for ADAS Systems",
-      description: "Comprehensive validation of driver assistance cameras for safety compliance",
-      icon: Car,
-      iconType: "camera"
+      title: "[PLATZHALTER] Kamerasystem Validierung",
+      description: "[PLATZHALTER] Umfassende Validierung von Fahrerassistenzkameras für Sicherheitsstandards und ADAS-Funktionen",
+      icon: Eye,
+      iconType: "vision"
     },
     {
-      title: "High-End Sensor Testing",
-      description: "Precision LED lighting for testing demanding sensor systems and components",
-      icon: TestTube,
+      title: "[PLATZHALTER] Sensor Performance Tests",
+      description: "[PLATZHALTER] Hochpräzise LED-Beleuchtung für anspruchsvolle Sensorsystem- und Komponententests",
+      icon: Shield,
       iconType: "testing"
     },
     {
-      title: "Software",
-      description: "Advanced software solutions for image analysis, calibration and automated quality control",
-      icon: Monitor,
-      iconType: "performance"
+      title: "[PLATZHALTER] KI-basierte Bildanalyse",
+      description: "[PLATZHALTER] Erweiterte KI-Software für Bildanalyse, Kalibrierung und automatisierte Qualitätskontrolle",
+      icon: Brain,
+      iconType: "ai"
     },
     {
-      title: "Illumination Devices",
-      description: "Professional LED lighting systems and uniform light sources for stable low-light testing environments",
-      icon: Lightbulb,
-      iconType: "camera"
+      title: "[PLATZHALTER] ADAS Beleuchtungssysteme",
+      description: "[PLATZHALTER] Professionelle LED-Beleuchtungssysteme für stabile Testumgebungen bei schwachem Licht",
+      icon: Zap,
+      iconType: "illumination"
     }
   ];
 
   const products = [
     {
-      title: "Arcturus",
-      description: "High-performance LED lighting for automotive testing, HDR scenes & high-end sensors",
+      title: "[PLATZHALTER] Arcturus ADAS",
+      description: "[PLATZHALTER] Hochleistungs-LED-Beleuchtung für ADAS-Tests, HDR-Szenen & High-End Sensoren",
       image: arcturusProduct,
       link: "/product/arcturus"
     },
     {
-      title: "TE42-LL",
-      description: "Low-light test chart for automotive camera validation",
+      title: "[PLATZHALTER] TE42-ADAS",
+      description: "[PLATZHALTER] Schwachlicht-Testtabelle für ADAS Kamera-Validierung",
       image: te42Image
     },
     {
-      title: "camSPECS XL",
-      description: "Spectral sensitivity measurement system",
+      title: "[PLATZHALTER] camSPECS ADAS",
+      description: "[PLATZHALTER] Spektrale Empfindlichkeitsmessung für ADAS-Systeme",
       image: camspecsImage
     },
     {
-      title: "iQ-Analyzer-X",
-      description: "Image quality assessment software suite",
+      title: "[PLATZHALTER] iQ-Analyzer ADAS",
+      description: "[PLATZHALTER] Bildqualitätsbewertungs-Software-Suite für autonome Fahrsysteme",
       image: iqAnalyzerImage
     }
   ];
@@ -79,7 +80,7 @@ const Automotive = () => {
       {/* Navigation */}
       <Navigation />
         <AnnouncementBanner 
-        message="Automotive Vision Excellence"
+        message="[PLATZHALTER] Automotive & ADAS Vision Excellence"
         ctaText="Learn More"
         ctaLink="#"
         icon="calendar"
@@ -98,25 +99,27 @@ const Automotive = () => {
             <div className="space-y-8 lg:pr-8">
               <div>
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
-                  Image Quality
+                  [PLATZHALTER]
                   <br />
-                  <span className="font-medium text-soft-blue">for the Road</span>
+                  Automotive &
+                  <br />
+                  <span className="font-medium text-soft-blue">ADAS Vision</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                  Precision-engineered camera testing solutions 
-                  for vehicle safety and innovation.
+                  [PLATZHALTER] Präzisions-engineered Kameratestlösungen 
+                  für Fahrzeugsicherheit und ADAS-Innovation.
                 </p>
               </div>
               
               <div className="pt-4">
-                <Link to="#applications-start">
+              <Link to="#applications-start">
                   <Button 
                     variant="decision"
                     size="lg"
                     className="px-8 py-4 text-lg font-medium group"
                   >
-                    Discover Automotive Solutions
+                    [PLATZHALTER] ADAS Lösungen Entdecken
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
@@ -126,15 +129,15 @@ const Automotive = () => {
               <div className="flex items-center space-x-12 pt-8">
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">99.9%</div>
-                  <div className="text-sm text-scandi-grey font-light">Accuracy</div>
+                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Genauigkeit</div>
                 </div>
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">50ms</div>
-                  <div className="text-sm text-scandi-grey font-light">Response</div>
+                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Reaktion</div>
                 </div>
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">100+</div>
-                  <div className="text-sm text-scandi-grey font-light">Projects</div>
+                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] ADAS Projekte</div>
                 </div>
               </div>
             </div>
@@ -177,10 +180,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Main Applications
+              [PLATZHALTER] ADAS Hauptanwendungen
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Essential testing solutions for automotive camera systems
+              [PLATZHALTER] Essenzielle Testlösungen für autonome Fahrerassistenzsysteme
             </p>
           </div>
         </div>
@@ -228,16 +231,16 @@ const Automotive = () => {
         </div>
       </section>
 
-      {/* camPAS Testing Section */}
+      {/* camADAS Testing Section */}
       <section className="py-12 bg-white">
         <div className="container mx-auto px-6">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                camPAS - Camera Performance for Automotive Systems
+                [PLATZHALTER] camADAS - Kameraperformance für Autonome Fahrerassistenzsysteme
               </h3>
               <p className="text-xl text-gray-600 leading-relaxed max-w-4xl mx-auto">
-                The camPAS (Camera Performance for Automotive Systems) test is a uniquely developed image quality performance test for camera image quality and sensor systems in the automotive industry. We offer camPAS for customers who need independent and objective test results from a neutral third party to support their development decisions.
+                [PLATZHALTER] Der camADAS (Camera Performance for Autonomous Driver Assistance Systems) Test ist ein einzigartig entwickelter Bildqualitäts-Performance-Test für Kamerasysteme in der ADAS-Industrie. Wir bieten camADAS für Kunden, die unabhängige und objektive Testergebnisse von einer neutralen dritten Partei benötigen.
               </p>
             </div>
 
@@ -356,10 +359,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Recommended Products
+              [PLATZHALTER] Empfohlene ADAS Produkte
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Industry-leading tools for automotive camera testing
+              [PLATZHALTER] Branchenführende Tools für ADAS-Kameratests
             </p>
           </div>
 
