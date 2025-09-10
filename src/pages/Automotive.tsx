@@ -286,6 +286,20 @@ const Automotive = () => {
       </section>
 
 
+      {/* camPAS Testing Workflow Section */}
+      <section id="standards" className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Automotive International Standards
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              A look at the crucial industry standards for automotive image quality performance testing and evaluation.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Manufacturer/Supplier Showcase - separate section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-6">
