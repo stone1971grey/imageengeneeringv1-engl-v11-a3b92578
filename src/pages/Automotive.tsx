@@ -149,102 +149,102 @@ const Automotive = () => {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
-                {/* Interactive Hotspots - Optimized positioning for visibility */}
+                {/* Interactive Hotspots - Fixed positioning for all 12 points */}
                 <div className="absolute inset-0">
-                  {/* Top row - left to right */}
-                  <div className="absolute top-[15%] left-[10%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  {/* Top row - 4 points */}
+                  <div className="absolute top-[12%] left-[15%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
                       <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
 
-                  <div className="absolute top-[10%] left-[35%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute top-[8%] left-[35%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Front-Kamera</h4>
                       <p className="text-sm text-gray-600">Front camera</p>
                     </div>
                   </div>
 
-                  <div className="absolute top-[8%] left-[55%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute top-[6%] left-[55%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren</h4>
                       <p className="text-sm text-gray-600">Ultra sonic sensor</p>
                     </div>
                   </div>
 
-                  <div className="absolute top-[12%] right-[10%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute top-[10%] left-[75%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute top-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
                       <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
 
-                  {/* Middle row - left to right */}
-                  <div className="absolute top-[35%] left-[8%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  {/* Middle row - 4 points */}
+                  <div className="absolute top-[35%] left-[12%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
                       <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
 
-                  <div className="absolute top-[25%] right-[8%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute top-[25%] left-[85%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute top-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren seitlich</h4>
                       <p className="text-sm text-gray-600">Side ultra sonic sensor</p>
                     </div>
                   </div>
 
-                  <div className="absolute top-[45%] right-[12%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute top-[45%] left-[82%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute top-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Mid-Range-Radar</h4>
                       <p className="text-sm text-gray-600">Mid range radar</p>
                     </div>
                   </div>
 
-                  <div className="absolute bottom-[35%] right-[8%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute bottom-6 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute top-[60%] left-[78%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute bottom-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
                       <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
 
-                  {/* Bottom row - left to right */}
-                  <div className="absolute bottom-[20%] left-[15%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  {/* Bottom row - 4 points */}
+                  <div className="absolute bottom-[25%] left-[18%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Long-Range-Radar</h4>
                       <p className="text-sm text-gray-600">Long range radar</p>
                     </div>
                   </div>
 
-                  <div className="absolute bottom-[25%] left-[28%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute bottom-[30%] left-[32%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren</h4>
                       <p className="text-sm text-gray-600">Ultra sonic sensors</p>
                     </div>
                   </div>
 
-                  <div className="absolute bottom-[18%] left-[50%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute bottom-[20%] left-[55%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren seitlich</h4>
                       <p className="text-sm text-gray-600">Side ultra sonic sensor</p>
                     </div>
                   </div>
 
-                  <div className="absolute bottom-[20%] right-[15%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute bottom-6 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  <div className="absolute bottom-[25%] left-[72%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                    <div className="absolute bottom-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Mid-Range-Radar</h4>
                       <p className="text-sm text-gray-600">Mid range radar</p>
                     </div>
