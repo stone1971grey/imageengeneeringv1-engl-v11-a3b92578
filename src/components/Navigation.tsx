@@ -323,7 +323,7 @@ const Navigation = () => {
                         {/* Right Column: Popular Applications */}
                           <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 text-lg text-black">
-                            In-Cabin Camera Testing
+                            Popular Applications
                           </h4>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
