@@ -140,24 +140,56 @@ const Automotive = () => {
               </div>
             </div>
 
-            {/* Right Content - Video/Image - 3/5 */}
+            {/* Right Content - Interactive Image Map - 3/5 */}
             <div className="lg:col-span-3 relative">
-              <div className="relative overflow-hidden rounded-lg shadow-soft scale-75">
+              <div className="relative overflow-hidden rounded-lg shadow-soft">
                 <img 
                   src={automotiveHero}
                   alt="Automotive camera testing laboratory"
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
-                {/* Video overlay simulation */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
-                
-                {/* Play button overlay for video feeling */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
-                    <Play className="h-6 w-6 text-white ml-1" fill="currentColor" />
+                {/* Interactive Hotspots */}
+                <div className="absolute inset-0">
+                  {/* Hotspot 1 - Camera System */}
+                  <div className="absolute top-[25%] left-[20%] group cursor-pointer">
+                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">ADAS Camera System</h4>
+                      <p className="text-sm text-gray-600">High-precision testing setup for automotive camera validation</p>
+                    </div>
+                  </div>
+
+                  {/* Hotspot 2 - LED Lighting */}
+                  <div className="absolute top-[40%] right-[25%] group cursor-pointer">
+                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Arcturus LED System</h4>
+                      <p className="text-sm text-gray-600">Professional LED lighting for consistent test conditions</p>
+                    </div>
+                  </div>
+
+                  {/* Hotspot 3 - Test Chart */}
+                  <div className="absolute bottom-[35%] left-[35%] group cursor-pointer">
+                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Test Chart System</h4>
+                      <p className="text-sm text-gray-600">Precision test patterns for image quality assessment</p>
+                    </div>
+                  </div>
+
+                  {/* Hotspot 4 - Control Station */}
+                  <div className="absolute top-[60%] right-[15%] group cursor-pointer">
+                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Control Station</h4>
+                      <p className="text-sm text-gray-600">Advanced software control and real-time analysis</p>
+                    </div>
                   </div>
                 </div>
+                
+                {/* Original video overlay simulation */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
               </div>
               
               {/* Floating stats */}
