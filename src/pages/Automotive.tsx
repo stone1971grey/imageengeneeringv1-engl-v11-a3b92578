@@ -336,7 +336,7 @@ const Automotive = () => {
             {/* ISO 19093 Standard */}
             <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
               <CardContent className="p-8 text-center h-full flex flex-col">
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
+                <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
                   <img src={isoStandardsLogo} alt="ISO Standards Logo" className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">ISO 19093</h3>
