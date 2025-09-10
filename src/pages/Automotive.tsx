@@ -202,11 +202,11 @@ const Automotive = () => {
                   <span className="text-white text-xs font-bold">5</span>
                 </div>
 
-                {/* Point 6 - Sode Ultra Sonic Sensor */}
+                {/* Point 6 - Side Ultra Sonic Sensor */}
                 <div 
                   className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
                   style={{ top: '55%', left: '25%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("6) sode ultra sonic sensor")}
+                  onMouseEnter={() => setHoveredPoint("6) side ultra sonic sensor")}
                   onMouseLeave={() => setHoveredPoint("Live Processing")}
                 >
                   <span className="text-white text-xs font-bold">6</span>
