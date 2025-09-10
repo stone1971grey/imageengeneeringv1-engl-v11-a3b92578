@@ -149,79 +149,95 @@ const Automotive = () => {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
-                {/* Interactive Hotspots - Positioned according to user specification */}
+                {/* Interactive Hotspots - Positioned based on user's numbered screenshot */}
                 <div className="absolute inset-0">
                   
-                  {/* Umgebungskamera (4x) - Kühlergrill, beide Außenspiegel, Heckscheibe */}
-                  {/* Kühlergrill */}
-                  <div className="absolute top-[45%] left-[42%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                  {/* 1) Front Camera - Marker 1 on windshield */}
+                  <div className="absolute top-[25%] left-[42%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">1</div>
+                    </div>
                     <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
+                      <h4 className="font-semibold text-gray-900 mb-1">Front Camera</h4>
+                      <p className="text-sm text-gray-600">Front camera system</p>
+                    </div>
+                  </div>
+
+                  {/* 2) 360° Environment Camera - Marker 2 (multiple positions) */}
+                  {/* Left side mirror */}
+                  <div className="absolute top-[32%] left-[15%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">2</div>
+                    </div>
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">360° Environment Camera</h4>
                       <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
                   
-                  {/* Linker Außenspiegel */}
-                  <div className="absolute top-[35%] left-[8%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
-                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
-                      <p className="text-sm text-gray-600">360° environment camera</p>
+                  {/* Right side */}
+                  <div className="absolute top-[40%] left-[85%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">2</div>
                     </div>
-                  </div>
-                  
-                  {/* Rechter Außenspiegel */}
-                  <div className="absolute top-[35%] left-[85%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
                     <div className="absolute top-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
+                      <h4 className="font-semibold text-gray-900 mb-1">360° Environment Camera</h4>
                       <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
                   
-                  {/* Heckscheibe */}
-                  <div className="absolute bottom-[20%] left-[42%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
+                  {/* Rear center */}
+                  <div className="absolute top-[62%] left-[42%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">2</div>
+                    </div>
                     <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
+                      <h4 className="font-semibold text-gray-900 mb-1">360° Environment Camera</h4>
                       <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
 
-                  {/* Front-Kamera - oben auf der Frontscheibe */}
-                  <div className="absolute top-[15%] left-[42%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
-                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Front-Kamera</h4>
-                      <p className="text-sm text-gray-600">Front camera</p>
+                  {/* 3) Ultra Sonic Sensors - Marker 3 on rear window */}
+                  <div className="absolute top-[15%] left-[75%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">3</div>
+                    </div>
+                    <div className="absolute top-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Ultra Sonic Sensors</h4>
+                      <p className="text-sm text-gray-600">Ultra sonic sensors</p>
                     </div>
                   </div>
 
-                  {/* Ultraschallsensoren seitlich - unter dem Frontlicht links */}
-                  <div className="absolute top-[50%] left-[15%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
-                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren seitlich</h4>
-                      <p className="text-sm text-gray-600">Side ultra sonic sensor</p>
+                  {/* 4) Long Range Radar - Marker 4 on front left */}
+                  <div className="absolute top-[70%] left-[25%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">4</div>
+                    </div>
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Long Range Radar</h4>
+                      <p className="text-sm text-gray-600">Long range radar</p>
                     </div>
                   </div>
 
-                  {/* Mid-Range-Radar - unter dem Frontlicht links */}
-                  <div className="absolute top-[55%] left-[15%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
-                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Mid-Range-Radar</h4>
+                  {/* 5) Mid Range Radar - Marker 5 on front bumper */}
+                  <div className="absolute top-[72%] left-[35%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">5</div>
+                    </div>
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Mid Range Radar</h4>
                       <p className="text-sm text-gray-600">Mid range radar</p>
                     </div>
                   </div>
 
-                  {/* Ultraschallsensoren - rechte hintere Ecke */}
-                  <div className="absolute bottom-[30%] left-[75%] group cursor-pointer">
-                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
-                    <div className="absolute bottom-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren</h4>
-                      <p className="text-sm text-gray-600">Ultra sonic sensors</p>
+                  {/* 6) Side Ultra Sonic Sensor - Marker 6 on right side */}
+                  <div className="absolute top-[55%] left-[90%] group cursor-pointer">
+                    <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#ef4444' }}>
+                      <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold">6</div>
+                    </div>
+                    <div className="absolute top-8 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Side Ultra Sonic Sensor</h4>
+                      <p className="text-sm text-gray-600">Side ultra sonic sensor</p>
                     </div>
                   </div>
                 </div>
