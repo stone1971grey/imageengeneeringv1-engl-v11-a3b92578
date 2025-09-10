@@ -344,17 +344,6 @@ const Navigation = () => {
                               <span>ADAS Testing / Automotive Vision</span>
                               <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
                             </Link>
-                            <div className="ml-8">
-                              <Link 
-                                to="/solution/arcturus-bundle"
-                                className="flex items-center gap-3 text-base text-gray-700 hover:text-blue-400 transition-colors bg-blue-100 p-2 rounded-md border-2 border-blue-300 ml-8"
-                                onMouseEnter={() => setHoveredSolution("Arcturus HDR Test Bundle")}
-                                onMouseLeave={() => setHoveredSolution(null)}
-                              >
-                                <span>→ Arcturus HDR Test Bundle</span>
-                                <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">ACTIVE</span>
-                              </Link>
-                            </div>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
