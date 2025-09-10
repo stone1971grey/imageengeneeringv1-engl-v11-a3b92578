@@ -267,7 +267,7 @@ const Automotive = () => {
                    </h3>
                    
                    {/* Description */}
-                   <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                   <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
                      {app.description}
                    </p>
                   
