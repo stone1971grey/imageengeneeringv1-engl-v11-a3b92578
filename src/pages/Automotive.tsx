@@ -261,13 +261,13 @@ const Automotive = () => {
                     <IconComponent className="w-8 h-8 text-black" />
                   </div>
                   
-                  {/* Title */}
-                  <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
-                    {app.title}
-                  </h3>
-                  
+                   {/* Title */}
+                   <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight flex-1">
+                     {app.title}
+                   </h3>
+                   
                    {/* Description */}
-                   <p className="text-xl text-gray-600 leading-relaxed mb-6 flex-1">
+                   <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
                      {app.description}
                    </p>
                   
