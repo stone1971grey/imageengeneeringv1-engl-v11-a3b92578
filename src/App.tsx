@@ -21,6 +21,7 @@ import Events from "./pages/Events";
 import Styleguide from "./pages/Styleguide";
 import IconsStyleguide from "./pages/IconsStyleguide";
 import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
+import ImageDownload from "./pages/ImageDownload";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/styleguide" element={<Styleguide />} />
           <Route path="/icons-styleguide" element={<IconsStyleguide />} />
           <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
+          <Route path="/image-download" element={<ImageDownload />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
