@@ -152,7 +152,8 @@ const Automotive = () => {
                 {/* Interactive Hotspots - Fixed positioning for all 12 points */}
                 <div className="absolute inset-0">
                   {/* Top row - 4 points */}
-                  <div className="absolute top-[12%] left-[15%] group cursor-pointer">
+                  {/* Umgebungskamera - Kühlergrill links */}
+                  <div className="absolute top-[45%] left-[20%] group cursor-pointer">
                     <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
                     <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
@@ -218,9 +219,10 @@ const Automotive = () => {
                   </div>
 
                   {/* Bottom row - 4 points */}
-                  <div className="absolute bottom-[25%] left-[18%] group cursor-pointer">
+                  {/* Long-Range-Radar - Kühlergrill rechts */}
+                  <div className="absolute top-[45%] left-[70%] group cursor-pointer">
                     <div className="w-6 h-6 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-300" style={{ backgroundColor: '#22C3F7' }}></div>
-                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       <h4 className="font-semibold text-gray-900 mb-1">Long-Range-Radar</h4>
                       <p className="text-sm text-gray-600">Long range radar</p>
                     </div>
