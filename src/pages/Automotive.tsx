@@ -99,16 +99,13 @@ const Automotive = () => {
             <div className="space-y-8 lg:pr-8">
               <div>
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
-                  [PLATZHALTER]
+                  Automotive
                   <br />
-                  Automotive &
-                  <br />
-                  <span className="font-medium text-soft-blue">ADAS Vision</span>
+                  <span className="font-medium text-soft-blue">Image Quality</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                  [PLATZHALTER] Präzisions-engineered Kameratestlösungen 
-                  für Fahrzeugsicherheit und ADAS-Innovation.
+                  Precision-engineered camera system test solutions for robust vehicle safety, performance and autonomy.
                 </p>
               </div>
               
