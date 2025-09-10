@@ -138,7 +138,7 @@ const Navigation = () => {
       description: "For camera manufacturers who need precise lighting systems and test charts.",
       subline: "Suitable for: Consumer & Professional Cameras"
     },
-    "ADAS Testing / Automotive Vision": {
+    "In-Cabin Performance Testing": {
       image: industryAutomotive,
       description: "For developers of driver assistance systems who need stable lighting conditions.",
       subline: "Suitable for: Automotive Labs, IEEE P2020"
@@ -337,11 +337,11 @@ const Navigation = () => {
                             <Link 
                               to="/automotive"
                               className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
-                              onMouseEnter={() => setHoveredSolution("ADAS Testing / Automotive Vision")}
+                              onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
                               onMouseLeave={() => setHoveredSolution(null)}
                             >
                               <CheckCircle className="h-5 w-5" />
-                              <span>ADAS Testing / Automotive Vision</span>
+                              <span>In-Cabin Performance Testing</span>
                               <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
                             </Link>
                           </div>
@@ -832,7 +832,7 @@ const Navigation = () => {
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3">
                                   <CheckCircle className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">ADAS Testing / Automotive Vision</span>
+                                  <span className="text-foreground">In-Cabin Performance Testing</span>
                                 </div>
                               </li>
                               <li>

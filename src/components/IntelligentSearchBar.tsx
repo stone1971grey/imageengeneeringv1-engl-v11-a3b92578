@@ -58,7 +58,7 @@ const IntelligentSearchBar = () => {
 
     // Solutions
     { id: 'solution-camera-validation', title: 'Camera Quality Validation', description: 'For camera manufacturers who need precise lighting systems', category: 'solution', url: '/products#camera-validation' },
-    { id: 'solution-adas', title: 'ADAS Testing / Automotive Vision', description: 'For developers of driver assistance systems', category: 'solution', url: '/automotive' },
+    { id: 'solution-adas', title: 'In-Cabin Performance Testing', description: 'For developers of driver assistance systems', category: 'solution', url: '/automotive' },
     { id: 'solution-smartphones', title: 'Test Environments for Smartphones & Displays', description: 'For OEMs and research in color reproduction', category: 'solution', url: '/products#smartphones' },
     { id: 'solution-medical', title: 'Microscopy & Medical Imaging', description: 'For medical technology & life sciences', category: 'solution', url: '/products#medical' },
     { id: 'solution-iso', title: 'ISO and IEEE Compliant Test Setups', description: 'For companies that need standards-compliant environments', category: 'solution', url: '/products#iso' },
