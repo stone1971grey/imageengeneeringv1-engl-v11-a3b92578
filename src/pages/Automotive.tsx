@@ -94,10 +94,10 @@ const Automotive = () => {
         
         {/* Hero Content */}
         <div id="hero-start" className="container mx-auto px-6 py-16 lg:py-20 pb-8 lg:pb-12">
-          <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
+          <div className="grid lg:grid-cols-5 gap-16 items-center min-h-[80vh]">
             
-            {/* Left Content */}
-            <div className="space-y-8 lg:pr-8">
+            {/* Left Content - 2/5 */}
+            <div className="lg:col-span-2 space-y-8 lg:pr-8">
               <div>
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
                   Automotive
@@ -140,8 +140,8 @@ const Automotive = () => {
               </div>
             </div>
 
-            {/* Right Content - Video/Image */}
-            <div className="relative">
+            {/* Right Content - Video/Image - 3/5 */}
+            <div className="lg:col-span-3 relative">
               <div className="relative overflow-hidden rounded-lg shadow-soft">
                 <img 
                   src={automotiveHero}
