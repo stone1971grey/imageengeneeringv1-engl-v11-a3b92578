@@ -149,54 +149,6 @@ const Automotive = () => {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
-                {/* Interactive Hotspots */}
-                {/* Point 1 - Front Camera */}
-                <div className="absolute top-[25%] left-[45%] group cursor-pointer">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black/80 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Front Camera
-                  </div>
-                </div>
-
-                {/* Point 2 - 360° Environment Camera */}
-                <div className="absolute top-[35%] right-[30%] group cursor-pointer">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black/80 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    360° Environment Camera
-                  </div>
-                </div>
-
-                {/* Point 3 - Ultra Sonic Sensors */}
-                <div className="absolute bottom-[30%] left-[35%] group cursor-pointer">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black/80 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Ultra Sonic Sensors
-                  </div>
-                </div>
-
-                {/* Point 4 - Long Range Radar */}
-                <div className="absolute top-[40%] left-[25%] group cursor-pointer">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black/80 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Long Range Radar
-                  </div>
-                </div>
-
-                {/* Point 5 - Mid Range Radar */}
-                <div className="absolute top-[50%] right-[25%] group cursor-pointer">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black/80 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Mid Range Radar
-                  </div>
-                </div>
-
-                {/* Point 6 - Side Ultra Sonic Sensor */}
-                <div className="absolute bottom-[40%] right-[35%] group cursor-pointer">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black/80 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                    Side Ultra Sonic Sensor
-                  </div>
-                </div>
                 
                 {/* Original video overlay simulation */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
