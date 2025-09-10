@@ -297,6 +297,57 @@ const Automotive = () => {
               A look at the crucial industry standards for automotive image quality performance testing and evaluation.
             </p>
           </div>
+
+          {/* Standards Tiles */}
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* IEEE P2020 Standard */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Code className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">IEEE P2020</h3>
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  International standard for automotive camera image quality metrics and testing procedures for ADAS applications.
+                </p>
+                <Button variant="outline" className="w-full">
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* ISO 26262 Standard */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">ISO 26262</h3>
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  Functional safety standard for automotive electrical and electronic systems, including camera-based ADAS.
+                </p>
+                <Button variant="outline" className="w-full">
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* EMVA 1288 Standard */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <TestTube className="w-8 h-8 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">EMVA 1288</h3>
+                <p className="text-gray-600 leading-relaxed mb-6">
+                  Standard for characterization and presentation of specification data for image sensors and cameras.
+                </p>
+                <Button variant="outline" className="w-full">
+                  Learn More
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
