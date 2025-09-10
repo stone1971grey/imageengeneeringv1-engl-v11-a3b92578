@@ -7,7 +7,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
 import Footer from "@/components/Footer";
 import automotiveLab from "@/assets/automotive-lab.jpg";
-import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
+import automotiveHero from "@/assets/automotive-hero-clean-new-numbers.jpg";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
