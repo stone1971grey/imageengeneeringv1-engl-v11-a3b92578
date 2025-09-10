@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain } from "lucide-react";
@@ -17,6 +18,7 @@ import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
 
 // Automotive & ADAS landing page component
 const Automotive = () => {
+  const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
   const sections = [
     { id: 'introduction', label: 'Introduction' },
     { id: 'applications', label: 'ADAS Applications' },
@@ -149,15 +151,75 @@ const Automotive = () => {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
+                {/* Interactive Hotspots */}
+                {/* Point 1 - Front Camera */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '35%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("1) front camera")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">1</span>
+                </div>
+
+                {/* Point 2 - 360° Environment Camera */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '25%', left: '45%', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("2) 360° environment camera")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">2</span>
+                </div>
+
+                {/* Point 3 - Ultra Sonic Sensors */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '65%', left: '35%', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("3) ultra sonic sensors")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">3</span>
+                </div>
+
+                {/* Point 4 - Long Range Radar */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '70%', left: '55%', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("4) long range radar")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">4</span>
+                </div>
+
+                {/* Point 5 - Mid Range Radar */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '45%', left: '65%', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("5) mid range radar")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">5</span>
+                </div>
+
+                {/* Point 6 - Side Ultra Sonic Sensor */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '55%', left: '25%', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("6) side ultra sonic sensor")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">6</span>
+                </div>
                 
                 {/* Original video overlay simulation */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
               </div>
               
-              {/* Floating stats */}
+              {/* Floating stats - now shows hover text */}
               <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
-                <div className="text-sm text-scandi-grey font-light mb-1">Live Processing</div>
-                <div className="text-2xl font-medium text-light-foreground">Active</div>
+                <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Live Processing" : "ADAS Component"}</div>
+                <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Active" : hoveredPoint}</div>
               </div>
             </div>
           </div>
