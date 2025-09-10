@@ -301,48 +301,48 @@ const Automotive = () => {
           {/* Standards Tiles */}
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* IEEE P2020 Standard */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-8 text-center">
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
+              <CardContent className="p-8 text-center h-full flex flex-col">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Code className="w-8 h-8 text-blue-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">IEEE-P2020</h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
+                <p className="text-gray-600 leading-relaxed mb-6 flex-1">
                   The first internationally recognized standard examines the factors contributing to the image quality of Advanced Driver Assistance Systems (ADAS) and outlines various test methods and tools.
                 </p>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full mt-auto">
                   Learn More
                 </Button>
               </CardContent>
             </Card>
 
             {/* EMVA 1288/ISO 24942 Standard */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-8 text-center">
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
+              <CardContent className="p-8 text-center h-full flex flex-col">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Camera className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">EMVA 1288/ISO 24942</h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
+                <p className="text-gray-600 leading-relaxed mb-6 flex-1">
                   EMVA 1288/ISO 24942 (same standard metrics) outlines threshold specifications and measurement methods for machine vision cameras, many of which are commonly used in automotive vehicles.
                 </p>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full mt-auto">
                   Learn More
                 </Button>
               </CardContent>
             </Card>
 
             {/* ISO 19093 Standard */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300">
-              <CardContent className="p-8 text-center">
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
+              <CardContent className="p-8 text-center h-full flex flex-col">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Lightbulb className="w-8 h-8 text-purple-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">ISO 19093</h3>
-                <p className="text-gray-600 leading-relaxed mb-6">
+                <p className="text-gray-600 leading-relaxed mb-6 flex-1">
                   ISO 19093 outlines measurement methods and metric thresholds for evaluating the performance of a camera system under various low-light conditions.
                 </p>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full mt-auto">
                   Learn More
                 </Button>
               </CardContent>
