@@ -7,7 +7,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
 import Footer from "@/components/Footer";
 import automotiveLab from "@/assets/automotive-lab.jpg";
-import automotiveHero from "@/assets/automotive-hero-new.jpg";
+import automotiveHero from "@/assets/automotive-hero-clean.jpg";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
@@ -149,41 +149,117 @@ const Automotive = () => {
                   className="w-full h-[500px] lg:h-[600px] object-cover"
                 />
                 
-                {/* Interactive Hotspots */}
+                {/* Interactive Hotspots - Based on original text positions */}
                 <div className="absolute inset-0">
-                  {/* Hotspot 1 - Camera System */}
-                  <div className="absolute top-[25%] left-[20%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">ADAS Camera System</h4>
-                      <p className="text-sm text-gray-600">High-precision testing setup for automotive camera validation</p>
+                  {/* Left side hotspots */}
+                  {/* Umgebungskamera 360° - top left */}
+                  <div className="absolute top-[20%] left-[5%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
+                      <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
 
-                  {/* Hotspot 2 - LED Lighting */}
-                  <div className="absolute top-[40%] right-[25%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Arcturus LED System</h4>
-                      <p className="text-sm text-gray-600">Professional LED lighting for consistent test conditions</p>
+                  {/* Umgebungskamera 360° - middle left */}
+                  <div className="absolute top-[35%] left-[8%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
+                      <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
 
-                  {/* Hotspot 3 - Test Chart */}
-                  <div className="absolute bottom-[35%] left-[35%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Test Chart System</h4>
-                      <p className="text-sm text-gray-600">Precision test patterns for image quality assessment</p>
+                  {/* Long-Range-Radar - bottom left */}
+                  <div className="absolute bottom-[15%] left-[10%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Long-Range-Radar</h4>
+                      <p className="text-sm text-gray-600">Long range radar</p>
                     </div>
                   </div>
 
-                  {/* Hotspot 4 - Control Station */}
-                  <div className="absolute top-[60%] right-[15%] group cursor-pointer">
-                    <div className="w-4 h-4 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
-                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      <h4 className="font-semibold text-gray-900 mb-1">Control Station</h4>
-                      <p className="text-sm text-gray-600">Advanced software control and real-time analysis</p>
+                  {/* Ultraschallsensoren - bottom middle left */}
+                  <div className="absolute bottom-[25%] left-[25%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren</h4>
+                      <p className="text-sm text-gray-600">Ultra sonic sensors</p>
+                    </div>
+                  </div>
+
+                  {/* Top middle hotspots */}
+                  {/* Front-Kamera - top middle */}
+                  <div className="absolute top-[12%] left-[42%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Front-Kamera</h4>
+                      <p className="text-sm text-gray-600">Front camera</p>
+                    </div>
+                  </div>
+
+                  {/* Ultraschallsensoren - top middle */}
+                  <div className="absolute top-[8%] left-[58%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren</h4>
+                      <p className="text-sm text-gray-600">Ultra sonic sensor</p>
+                    </div>
+                  </div>
+
+                  {/* Right side hotspots */}
+                  {/* Umgebungskamera 360° - top right */}
+                  <div className="absolute top-[12%] right-[8%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-4 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
+                      <p className="text-sm text-gray-600">360° environment camera</p>
+                    </div>
+                  </div>
+
+                  {/* Ultraschallsensoren seitlich - right top */}
+                  <div className="absolute top-[25%] right-[5%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-4 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren seitlich</h4>
+                      <p className="text-sm text-gray-600">Side ultra sonic sensor</p>
+                    </div>
+                  </div>
+
+                  {/* Mid-Range-Radar - right middle */}
+                  <div className="absolute top-[45%] right-[8%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute top-4 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Mid-Range-Radar</h4>
+                      <p className="text-sm text-gray-600">Mid range radar</p>
+                    </div>
+                  </div>
+
+                  {/* Bottom middle hotspots */}
+                  {/* Ultraschallsensoren seitlich - bottom middle */}
+                  <div className="absolute bottom-[20%] left-[55%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Ultraschallsensoren seitlich</h4>
+                      <p className="text-sm text-gray-600">Side ultra sonic sensor</p>
+                    </div>
+                  </div>
+
+                  {/* Mid-Range-Radar - bottom right */}
+                  <div className="absolute bottom-[15%] right-[12%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute bottom-4 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Mid-Range-Radar</h4>
+                      <p className="text-sm text-gray-600">Mid range radar</p>
+                    </div>
+                  </div>
+
+                  {/* Umgebungskamera 360° - bottom right */}
+                  <div className="absolute bottom-[30%] right-[5%] group cursor-pointer">
+                    <div className="w-3 h-3 bg-soft-blue rounded-full border-2 border-white shadow-lg animate-pulse hover:animate-none hover:scale-125 transition-all duration-300"></div>
+                    <div className="absolute bottom-4 right-0 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg min-w-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      <h4 className="font-semibold text-gray-900 mb-1">Umgebungskamera</h4>
+                      <p className="text-sm text-gray-600">360° environment camera</p>
                     </div>
                   </div>
                 </div>
