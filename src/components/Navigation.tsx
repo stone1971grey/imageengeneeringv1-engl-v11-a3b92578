@@ -519,6 +519,10 @@ const Navigation = () => {
                           {/* Measurement Devices subgroups */}
                           {hoveredProduct === "Measurement Devices" && (
                             <div className="space-y-2">
+                              <Link to="/product/arcturus" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer bg-blue-100 p-2 rounded-md border-2 border-blue-300">
+                                <span>Arcturus LED System</span>
+                                <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">FEATURED</span>
+                              </Link>
                               <Link to="/products/measurement/colorimeters" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Colorimeters</Link>
                               <Link to="/products/measurement/photometers" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Photometers</Link>
                               <Link to="/products/measurement/spectroradiometers" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Spectroradiometers</Link>
