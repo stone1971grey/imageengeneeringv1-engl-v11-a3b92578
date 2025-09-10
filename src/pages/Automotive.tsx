@@ -35,20 +35,20 @@ const Automotive = () => {
       iconType: "vision"
     },
     {
-      title: "[PLATZHALTER] Sensor Performance Tests",
-      description: "[PLATZHALTER] Hochpräzise LED-Beleuchtung für anspruchsvolle Sensorsystem- und Komponententests",
+      title: "ADAS Performance Testing",
+      description: "Advanced Driver Assistance Systems (ADAS) encompass a wide range of camera and sensor systems that support autonomous vehicle movements and provide driver caution notices.",
       icon: Shield,
       iconType: "testing"
     },
     {
-      title: "[PLATZHALTER] KI-basierte Bildanalyse",
-      description: "[PLATZHALTER] Erweiterte KI-Software für Bildanalyse, Kalibrierung und automatisierte Qualitätskontrolle",
+      title: "Geometric Camera Calibration",
+      description: "An essential measurement for ADAS applications that are required to detect and accurately map 3D objects in a moving scene and make adjustments based on those calculations.",
       icon: Brain,
       iconType: "ai"
     },
     {
-      title: "[PLATZHALTER] ADAS Beleuchtungssysteme",
-      description: "[PLATZHALTER] Professionelle LED-Beleuchtungssysteme für stabile Testumgebungen bei schwachem Licht",
+      title: "Climate-Controlled Testing",
+      description: "Incorporating various weather scenarios into automotive camera testing is crucial to understanding if these systems can still meet their performance thresholds in even the harshest weather conditions.",
       icon: Zap,
       iconType: "illumination"
     }
