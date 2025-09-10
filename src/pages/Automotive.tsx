@@ -262,7 +262,7 @@ const Automotive = () => {
                   </div>
                   
                    {/* Title */}
-                   <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight flex-1">
+                   <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight h-16 flex items-start">
                      {app.title}
                    </h3>
                    
