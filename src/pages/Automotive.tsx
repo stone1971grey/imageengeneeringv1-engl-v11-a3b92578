@@ -266,10 +266,10 @@ const Automotive = () => {
                     {app.title}
                   </h3>
                   
-                  {/* Description */}
-                  <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-1">
-                    {app.description}
-                  </p>
+                   {/* Description */}
+                   <p className="text-xl text-gray-600 leading-relaxed mb-6 flex-1">
+                     {app.description}
+                   </p>
                   
                   {/* CTA Button */}
                   <Button 
