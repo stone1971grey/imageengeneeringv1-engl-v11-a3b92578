@@ -147,12 +147,14 @@ const ProductLE7 = () => {
                 <div>
                         <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
                           LE7
-                          <br />
-                          <span className="font-medium text-accent-soft-blue">VIS-IR</span>
                         </h1>
                         
+                        <h2 className="text-2xl lg:text-3xl font-light text-accent-soft-blue mb-6">
+                          LE7-2x / LE7-4x / LE7-6x / LE7 VIS-IR / LE7-E
+                        </h2>
+                        
                         <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                          A uniform lightbox using iQ-LED technology for transparent test chart illumination. Generate custom spectra between 380 – 1050 nm for comprehensive VIS-IR range testing.
+                          A uniform lightbox using iQ-LED technology for transparent test chart illumination.
                         </p>
                 </div>
                 
