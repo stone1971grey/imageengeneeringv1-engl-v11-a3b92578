@@ -11,6 +11,9 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 import le7Product from "@/assets/le7-product.png";
 import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
+import vcxLogo from "@/assets/vcx-logo.png";
+import ieeeLogo from "@/assets/ieee-logo-standards.jpg";
+import isoLogo from "@/assets/iso-standards-logo-banner.jpg";
 
 const ProductLE7 = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -261,8 +264,28 @@ const ProductLE7 = () => {
                   </div>
                 </div>
                 <div className="hidden lg:block">
-                  <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center">
-                    <Shield className="w-16 h-16 text-slate-700" />
+                  <div className="grid grid-cols-1 gap-6">
+                    <div className="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-3">
+                      <img 
+                        src={vcxLogo} 
+                        alt="VCX Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-3">
+                      <img 
+                        src={ieeeLogo} 
+                        alt="IEEE Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-3">
+                      <img 
+                        src={isoLogo} 
+                        alt="ISO Standards Logo"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
