@@ -38,7 +38,7 @@ const Automotive = () => {
     { id: 4, label: "Long range radar", top: 63, left: 25 },
     { id: 5, label: "Mid range radar", top: 69, left: 34 },
     { id: 5, label: "Mid range radar", top: 65, left: 79 },
-    { id: 6, label: "Side ultra sonic sensor", top: 74, left: 36 },
+    { id: 6, label: "Side ultra sonic sensor", top: 73, left: 36 },
     { id: 6, label: "Side ultra sonic sensor", top: 62, left: 78 },
   ];
   const sections = [
