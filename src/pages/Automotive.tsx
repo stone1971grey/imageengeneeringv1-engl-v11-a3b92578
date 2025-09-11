@@ -523,7 +523,7 @@ const Automotive = () => {
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Professional Laboratory Installation</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Automotive Camera Test Services</h3>
               <p className="text-gray-600 leading-relaxed">
                 Welcome to our iQ-Lab, one of the world's largest independent camera test labs. We offer a wide range of tests for the automotive industry, including the camPAS (Camera Performance for Automotive Systems) test.
               </p>
