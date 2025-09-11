@@ -265,21 +265,21 @@ const ProductLE7 = () => {
                 </div>
                 <div className="hidden lg:block">
                   <div className="grid grid-cols-1 gap-6">
-                    <div className="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-3">
+                    <div className="w-28 h-28 bg-white rounded-lg flex items-center justify-center p-3">
                       <img 
                         src={vcxLogo} 
                         alt="VCX Logo"
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-3">
+                    <div className="w-28 h-28 bg-white rounded-lg flex items-center justify-center p-3">
                       <img 
                         src={ieeeLogo} 
                         alt="IEEE Logo"
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <div className="w-24 h-24 bg-white rounded-lg flex items-center justify-center p-3">
+                    <div className="w-28 h-28 bg-white rounded-lg flex items-center justify-center p-3">
                       <img 
                         src={isoLogo} 
                         alt="ISO Standards Logo"
