@@ -25,18 +25,18 @@ const Automotive = () => {
   const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
 
   const hotspotMarkers = [
-    { id: 1, label: "Front camera", top: 67, left: 48 },
-    { id: 2, label: "360° environment camera", top: 76, left: 41 },
-    { id: 2, label: "360° environment camera", top: 85, left: 55 },
-    { id: 2, label: "360° environment camera", top: 87, left: 24 },
-    { id: 2, label: "360° environment camera", top: 73, left: 78 },
-    { id: 3, label: "Ultra sonic sensors", top: 97, left: 34 },
-    { id: 3, label: "Ultra sonic sensors", top: 66, left: 68 },
-    { id: 4, label: "Long range radar", top: 90, left: 27 },
-    { id: 5, label: "Mid range radar", top: 94, left: 36 },
-    { id: 5, label: "Mid range radar", top: 83, left: 79 },
-    { id: 6, label: "Side ultra sonic sensor", top: 96, left: 37 },
-    { id: 6, label: "Side ultra sonic sensor", top: 80, left: 78 },
+    { id: 1, label: "Front camera", top: 55, left: 48 },
+    { id: 2, label: "360° environment camera", top: 64, left: 41 },
+    { id: 2, label: "360° environment camera", top: 73, left: 55 },
+    { id: 2, label: "360° environment camera", top: 75, left: 24 },
+    { id: 2, label: "360° environment camera", top: 61, left: 78 },
+    { id: 3, label: "Ultra sonic sensors", top: 85, left: 34 },
+    { id: 3, label: "Ultra sonic sensors", top: 54, left: 68 },
+    { id: 4, label: "Long range radar", top: 78, left: 27 },
+    { id: 5, label: "Mid range radar", top: 82, left: 36 },
+    { id: 5, label: "Mid range radar", top: 71, left: 79 },
+    { id: 6, label: "Side ultra sonic sensor", top: 84, left: 37 },
+    { id: 6, label: "Side ultra sonic sensor", top: 68, left: 78 },
   ];
   const sections = [
     { id: 'introduction', label: 'Introduction' },
