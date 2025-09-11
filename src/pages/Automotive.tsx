@@ -28,7 +28,7 @@ const Automotive = () => {
   const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
 
   const hotspotMarkers = [
-    { id: 1, label: "Front camera", top: 39, left: 48 },
+    { id: 1, label: "Front camera", top: 37, left: 48 },
     { id: 2, label: "360° environment camera", top: 58, left: 41 },
     { id: 2, label: "360° environment camera", top: 67, left: 55 },
     { id: 2, label: "360° environment camera", top: 69, left: 24 },
