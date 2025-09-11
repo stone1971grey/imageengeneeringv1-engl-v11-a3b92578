@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import ProductFAQ from "@/components/ProductFAQ";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 import le7Product from "@/assets/le7-product.png";
 import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
@@ -231,6 +232,14 @@ const ProductLE7 = () => {
               </div>
             </div>
           </div>
+          
+          {/* IBC Banner */}
+          <AnnouncementBanner 
+            message="Meet us at IBC 2025"
+            ctaText="Learn more"
+            ctaLink="#"
+            icon="calendar"
+          />
           
           {/* Key Benefits */}
           <div id="benefits" className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 scroll-mt-[280px]">
