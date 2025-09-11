@@ -13,6 +13,7 @@ import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
 import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation.jpg";
+import testLabServices from "@/assets/test-lab-services.jpg";
 import te42Image from "@/assets/te42-ll.jpg";
 import le7Image from "@/assets/le7-product.png";
 import te292Image from "@/assets/te292-vis-ir.png";
@@ -530,8 +531,8 @@ const Automotive = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="aspect-video relative">
               <img 
-                src={arcturusAutomotiveLab} 
-                alt="Typical Arcturus installation in automotive camera testing laboratory"
+                src={testLabServices} 
+                alt="Automotive Camera Test Services in iQ-Lab"
                 className="w-full h-full object-cover"
               />
             </div>
