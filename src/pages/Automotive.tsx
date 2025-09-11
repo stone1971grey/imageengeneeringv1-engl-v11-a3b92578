@@ -525,7 +525,10 @@ const Automotive = () => {
             <div className="p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Professional Laboratory Installation</h3>
               <p className="text-gray-600 leading-relaxed">
-                Typical Arcturus installation in an automotive camera testing laboratory, showing uniform lighting pattern across the test chart area with precise color reproduction capabilities. The setup demonstrates how Arcturus seamlessly integrates into existing testing environments for IEEE-P2020 compliant automotive camera testing.
+                Welcome to our iQ-Lab, one of the world's largest independent camera test labs. We offer a wide range of tests for the automotive industry, including the camPAS (Camera Performance for Automotive Systems) test.
+              </p>
+              <p className="text-gray-600 leading-relaxed mt-4">
+                The camPAS test was developed for clients who need independent and objective test results from a neutral third-party to support their development decisions. camPAS, like most of our testing services, can be tailored to meet your specific KPI requirements. Don't hesitate to reach out to our iQ-Lab team to discuss your requirements and all of our test services.
               </p>
             </div>
           </div>
