@@ -203,6 +203,35 @@ const ProductLE7 = () => {
             </div>
           </div>
           
+          {/* Product Description Section */}
+          <div className="bg-scandi-white py-16">
+            <div className="container mx-auto px-6">
+              <div className="max-w-4xl mx-auto space-y-6 text-lg text-scandi-grey leading-relaxed">
+                <p>
+                  The LE7 is a uniform lightbox that uses iQ-LED technology to increase the effectiveness of image quality camera testing when using transparent test targets, including OECF and color targets.
+                </p>
+                <p>
+                  Light sources equipped with iQ-LED light modules can generate a custom spectrum to replicate various light sources in a camera test lab environment. As with our other iQ-LED products, the LE7 uses 20 LED channels to emulate almost any light spectrum from bright sunlight to darker lowlight.
+                </p>
+                <p>
+                  The LE7 contains two, four, or six iQ-LED modules* and is based on the principle of an integrating sphere to provide &gt; 97% uniformity of the active chart area.
+                </p>
+                <p>
+                  This product uses a mini-spectrometer with a spectral range of 350 – 860 to ensure better spectral resolution and higher sensitivity.
+                </p>
+                <p>
+                  iQ-LED control software is provided with the LE7. Version 3.2.0 and above gives you the capability to control individual modules. Controlling modules individually provides the opportunity for a more extensive intensity range.
+                </p>
+                <p>
+                  An iQ-LED API is also available as a separate option for integration into your design.
+                </p>
+                <p className="text-sm text-scandi-grey/80 italic">
+                  *Please note, we may be able to upgrade your existing LE7 V2 without having to order a whole new device (not guaranteed). Please contact our sales team for details.
+                </p>
+              </div>
+            </div>
+          </div>
+          
           {/* Key Benefits */}
           <div id="benefits" className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 scroll-mt-[280px]">
             <div className="container mx-auto px-4">
