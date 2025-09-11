@@ -430,10 +430,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              [PLATZHALTER] Empfohlene ADAS Produkte
+              Key Products
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              [PLATZHALTER] Branchenführende Tools für ADAS-Kameratests
+              Industry-leading tools for automotive image quality performance testing
             </p>
           </div>
 
