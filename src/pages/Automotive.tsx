@@ -155,61 +155,121 @@ const Automotive = () => {
                 />
                 
                 {/* Interactive Hotspots */}
-                {/* Point 1 - Front Camera */}
+                {/* Point 1 - X: 386, Y: 695 */}
                 <div 
                   className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '35%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("1) front camera")}
+                  style={{ top: '695px', left: '386px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("1) sensor point")}
                   onMouseLeave={() => setHoveredPoint("Live Processing")}
                 >
                   <span className="text-white text-xs font-bold">1</span>
                 </div>
 
-                {/* Point 2 - 360° Environment Camera */}
+                {/* Point 2 - X: 326, Y: 681 */}
                 <div 
                   className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '25%', left: '45%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("2) 360° environment camera")}
+                  style={{ top: '681px', left: '326px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("2) sensor point")}
                   onMouseLeave={() => setHoveredPoint("Live Processing")}
                 >
                   <span className="text-white text-xs font-bold">2</span>
                 </div>
 
-                {/* Point 3 - Ultra Sonic Sensors */}
+                {/* Point 2 - X: 436, Y: 766 */}
                 <div 
                   className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '65%', left: '35%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("3) ultra sonic sensors")}
+                  style={{ top: '766px', left: '436px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("2) sensor point")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">2</span>
+                </div>
+
+                {/* Point 2 - X: 195, Y: 785 */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '785px', left: '195px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("2) sensor point")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">2</span>
+                </div>
+
+                {/* Point 2 - X: 624, Y: 658 */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '658px', left: '624px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("2) sensor point")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">2</span>
+                </div>
+
+                {/* Point 3 - X: 275, Y: 872 */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '872px', left: '275px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("3) sensor point")}
                   onMouseLeave={() => setHoveredPoint("Live Processing")}
                 >
                   <span className="text-white text-xs font-bold">3</span>
                 </div>
 
-                {/* Point 4 - Long Range Radar */}
+                {/* Point 3 - X: 547, Y: 598 */}
                 <div 
                   className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '70%', left: '55%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("4) long range radar")}
+                  style={{ top: '598px', left: '547px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("3) sensor point")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">3</span>
+                </div>
+
+                {/* Point 4 - X: 214, Y: 808 */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '808px', left: '214px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("4) sensor point")}
                   onMouseLeave={() => setHoveredPoint("Live Processing")}
                 >
                   <span className="text-white text-xs font-bold">4</span>
                 </div>
 
-                {/* Point 5 - Mir Range Radar */}
+                {/* Point 5 - X: 288, Y: 846 */}
                 <div 
                   className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '45%', left: '65%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("5) mir range radar")}
+                  style={{ top: '846px', left: '288px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("5) sensor point")}
                   onMouseLeave={() => setHoveredPoint("Live Processing")}
                 >
                   <span className="text-white text-xs font-bold">5</span>
                 </div>
 
-                {/* Point 6 - Side Ultra Sonic Sensor */}
+                {/* Point 5 - X: 635, Y: 743 */}
                 <div 
                   className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '55%', left: '25%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("6) side ultra sonic sensor")}
+                  style={{ top: '743px', left: '635px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("5) sensor point")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">5</span>
+                </div>
+
+                {/* Point 6 - X: 297, Y: 861 */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '861px', left: '297px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("6) sensor point")}
+                  onMouseLeave={() => setHoveredPoint("Live Processing")}
+                >
+                  <span className="text-white text-xs font-bold">6</span>
+                </div>
+
+                {/* Point 6 - X: 626, Y: 724 */}
+                <div 
+                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                  style={{ top: '724px', left: '626px', transform: 'translate(-50%, -50%)' }}
+                  onMouseEnter={() => setHoveredPoint("6) sensor point")}
                   onMouseLeave={() => setHoveredPoint("Live Processing")}
                 >
                   <span className="text-white text-xs font-bold">6</span>
