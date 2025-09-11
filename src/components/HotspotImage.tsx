@@ -67,19 +67,6 @@ export default function HotspotImage({
             {/* Number inside the dot */}
             <span className="pointer-events-none">{m.id}</span>
 
-            {/* Tooltip */}
-            <span
-              className={[
-                "absolute left-1/2 top-[115%] -translate-x-1/2 whitespace-nowrap",
-                "rounded-md bg-white text-gray-800 text-[13px] px-2.5 py-1",
-                "shadow-md border border-gray-200",
-                active === m.id ? "opacity-100 scale-100" : "opacity-0 scale-95",
-                "transition-all duration-150 origin-top",
-              ].join(" ")}
-              role="tooltip"
-            >
-              {m.label}
-            </span>
           </button>
         ))}
       </div>
