@@ -203,10 +203,10 @@ const ProductLE7 = () => {
             </div>
           </div>
           
-          {/* Product Description Section */}
+          {/* Product Description Section - Full Viewport Width */}
           <div className="bg-scandi-white py-16">
-            <div className="container mx-auto px-6">
-              <div className="max-w-4xl mx-auto space-y-6 text-lg text-scandi-grey leading-relaxed">
+            <div className="w-full px-6 lg:px-16 xl:px-24">
+              <div className="max-w-none space-y-6 text-lg text-scandi-grey leading-relaxed">
                 <p>
                   The LE7 is a uniform lightbox that uses iQ-LED technology to increase the effectiveness of image quality camera testing when using transparent test targets, including OECF and color targets.
                 </p>
