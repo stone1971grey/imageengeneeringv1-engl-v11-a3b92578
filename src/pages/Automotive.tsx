@@ -98,6 +98,16 @@ const Automotive = () => {
       title: "iQ-Climate Chamber",
       description: "Temperature-controlled camera testing in the comfort of a camera test lab.",
       image: iqAnalyzerImage
+    },
+    {
+      title: "TE292 VIS-IR",
+      description: "A test chart for spectral sensitivity measurements and color calibrations in the VIS-IR range.",
+      image: te42Image
+    },
+    {
+      title: "iQ-Analyzer-X",
+      description: "Advanced software for evaluating the performance of various image quality factors.",
+      image: iqAnalyzerImage
     }
   ];
 
@@ -437,16 +447,16 @@ const Automotive = () => {
             </p>
           </div>
 
-           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
              {products.map((product, index) => (
-               <Card 
-                 key={index}
-                 className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
-                   product.title === "Arcturus" 
-                     ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
-                     : ""
-                 }`}
-               >
+                <Card 
+                  key={index}
+                  className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
+                    product.title === "Arcturus" 
+                      ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
+                      : ""
+                  }`}
+                >
                  <CardContent className="p-0 flex flex-col flex-1">
                    <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                      <img 
