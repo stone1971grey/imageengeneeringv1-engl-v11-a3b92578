@@ -5,7 +5,6 @@ import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shie
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
-import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
 import Footer from "@/components/Footer";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
@@ -424,14 +423,6 @@ const Automotive = () => {
         </div>
       </section>
 
-      {/* Manufacturer/Supplier Showcase - separate section */}
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="max-w-7xl mx-auto">
-            <ManufacturerSupplierShowcase />
-          </div>
-        </div>
-      </section>
 
       {/* Recommended Products */}
       <section id="products" className="py-20 bg-white">
