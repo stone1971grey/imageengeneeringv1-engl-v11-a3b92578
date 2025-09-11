@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, Download, FileText, BarChart3, Zap, Shield, Eye, Lightbulb, Monitor, ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, Lightbulb, Monitor, ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
@@ -161,10 +161,16 @@ const ProductLE7 = () => {
                 <div className="pt-4">
                   <Button 
                     size="lg"
-                    className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    className="bg-[#74952a] hover:bg-[#5f7a22] text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    onClick={() => {
+                      const footer = document.querySelector('footer');
+                      if (footer) {
+                        footer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
                   >
                     Contact Sales
-                    <ArrowLeft className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </div>
