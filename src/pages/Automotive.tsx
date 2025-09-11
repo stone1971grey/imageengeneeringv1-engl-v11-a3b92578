@@ -12,6 +12,7 @@ import HotspotImage from "@/components/HotspotImage";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
+import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation.jpg";
 import te42Image from "@/assets/te42-ll.jpg";
 import camspecsImage from "@/assets/camspecs-xl.png";
 import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
@@ -506,6 +507,27 @@ const Automotive = () => {
                  </CardContent>
                </Card>
              ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Professional Laboratory Installation */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="aspect-video relative">
+              <img 
+                src={arcturusAutomotiveLab} 
+                alt="Typical Arcturus installation in automotive camera testing laboratory"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Professional Laboratory Installation</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Typical Arcturus installation in an automotive camera testing laboratory, showing uniform lighting pattern across the test chart area with precise color reproduction capabilities. The setup demonstrates how Arcturus seamlessly integrates into existing testing environments for IEEE-P2020 compliant automotive camera testing.
+              </p>
+            </div>
           </div>
         </div>
       </section>
