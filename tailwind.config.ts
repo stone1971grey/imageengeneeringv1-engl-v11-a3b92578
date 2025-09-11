@@ -106,6 +106,9 @@ export default {
 					button: 'hsl(var(--academia-button))',
 					'icon-bg': 'hsl(var(--academia-icon-bg))'
 				},
+				hotspot: {
+					primary: 'hsl(var(--hotspot-primary))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

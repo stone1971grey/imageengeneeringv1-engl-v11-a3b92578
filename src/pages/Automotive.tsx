@@ -185,7 +185,7 @@ const Automotive = () => {
                 src={automotiveHero}
                 alt="Automotive camera testing laboratory"
                 markers={hotspotMarkers}
-                dotColor="bg-blue-500"
+                dotColor="bg-hotspot-primary"
                 onHoverChange={(label) => setHoveredPoint(label || "Live Processing")}
               />
               
