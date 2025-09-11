@@ -33,7 +33,7 @@ const Automotive = () => {
     { id: 2, label: "360° environment camera", top: 67, left: 55 },
     { id: 2, label: "360° environment camera", top: 57, left: 23 },
     { id: 2, label: "360° environment camera", top: 55, left: 78 },
-    { id: 3, label: "Ultra sonic sensors", top: 79, left: 34 },
+    { id: 3, label: "Ultra sonic sensors", top: 75, left: 33 },
     { id: 3, label: "Ultra sonic sensors", top: 48, left: 68 },
     { id: 4, label: "Long range radar", top: 63, left: 25 },
     { id: 5, label: "Mid range radar", top: 76, left: 36 },
