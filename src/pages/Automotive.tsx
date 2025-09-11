@@ -30,7 +30,7 @@ const Automotive = () => {
   const hotspotMarkers = [
     { id: 1, label: "Front camera", top: 37, left: 48 },
     { id: 2, label: "360° environment camera", top: 36, left: 39 },
-    { id: 2, label: "360° environment camera", top: 67, left: 55 },
+    { id: 2, label: "360° environment camera", top: 54, left: 53 },
     { id: 2, label: "360° environment camera", top: 57, left: 23 },
     { id: 2, label: "360° environment camera", top: 55, left: 78 },
     { id: 3, label: "Ultra sonic sensors", top: 75, left: 33 },
