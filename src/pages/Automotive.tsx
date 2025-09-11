@@ -14,6 +14,7 @@ import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
 import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation.jpg";
 import te42Image from "@/assets/te42-ll.jpg";
+import le7Image from "@/assets/le7-product.png";
 import te292Image from "@/assets/te292-vis-ir.png";
 import camspecsImage from "@/assets/geocal-product.jpg";
 import iqAnalyzerImage from "@/assets/iq-analyzer-new.png";
@@ -89,7 +90,7 @@ const Automotive = () => {
     {
       title: "LE7 VIS-IR",
       description: "A uniform light source for testing cameras in the near-infrared (NIR) range.",
-      image: te42Image
+      image: le7Image
     },
     {
       title: "GEOCAL",
