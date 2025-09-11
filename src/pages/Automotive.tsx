@@ -306,6 +306,104 @@ const Automotive = () => {
         </div>
       </section>
 
+      {/* Automotive Camera Test Solutions - Full Width 2x2 Grid */}
+      <section className="py-20 bg-gray-50">
+        <div className="w-full px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Automotive Camera Test Solutions
+            </h2>
+            <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+              We offer a wide range of test solutions for all of the most crucial
+              automotive camera applications and performance metrics.
+            </p>
+          </div>
+
+          {/* 2x2 Grid - Full Viewport Width */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
+            {/* In-Cabin Testing */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <CardContent className="p-0">
+                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                  <img 
+                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    alt="In-Cabin Testing Setup"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: '0% 0%', transform: 'scale(2) translate(-25%, -25%)' }}
+                  />
+                </div>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">In-Cabin Testing</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Text Box - See Word Doc
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* ADAS Performance Testing */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <CardContent className="p-0">
+                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                  <img 
+                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    alt="ADAS Performance Testing Setup"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: '100% 0%', transform: 'scale(2) translate(-25%, -25%)' }}
+                  />
+                </div>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">ADAS Performance Testing</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Text Box - See Word Doc
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Geometric Calibration */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <CardContent className="p-0">
+                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                  <img 
+                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    alt="Geometric Calibration Setup"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: '0% 100%', transform: 'scale(2) translate(-25%, -75%)' }}
+                  />
+                </div>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Geometric Calibration</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Text Box - See Word Doc
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Climate-Controlled Testing */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+              <CardContent className="p-0">
+                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                  <img 
+                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    alt="Climate-Controlled Testing Setup"
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: '100% 100%', transform: 'scale(2) translate(-25%, -75%)' }}
+                  />
+                </div>
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Climate-Controlled Testing</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    Text Box - See Word Doc
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Manufacturer/Supplier Showcase - separate section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-6">
