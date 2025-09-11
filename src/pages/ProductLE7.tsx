@@ -233,33 +233,23 @@ const ProductLE7 = () => {
             </div>
           </div>
           
-          {/* IBC 2025 Banner Section */}
+          {/* International Standards & Certifications Banner Section */}
           <section className="bg-gradient-to-r from-slate-800 to-slate-900 py-16">
             <div className="container mx-auto px-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-                    Meet us at IBC 2025
+                    International Standards & Certifications
                   </h2>
-                  <p className="text-xl text-slate-300 mb-6 max-w-2xl">
-                    Schedule a meeting with us at IBC 2025 to get a customized introduction on how we can help you optimize your media operations and stay ahead of change.
+                  <p className="text-xl text-slate-300 mb-8 max-w-3xl">
+                    Our solutions are tested and validated according to globally recognized standards, including ISO (image quality, noise, low-light), IEEE-P2020, and VCX benchmarks for phone and webcam performance.
                   </p>
-                  <div className="flex items-center gap-6 text-slate-400 mb-8">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-5 w-5" />
-                      <span>September 12-15, 2025</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-5 w-5" />
-                      <span>Amsterdam, Netherlands</span>
-                    </div>
-                  </div>
                   <div className="flex gap-4">
                     <Button 
                       size="lg"
                       className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-medium"
                     >
-                      Schedule Appointment
+                      View Standards
                     </Button>
                     <Button 
                       size="lg"
@@ -272,11 +262,7 @@ const ProductLE7 = () => {
                 </div>
                 <div className="hidden lg:block">
                   <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center">
-                    <img 
-                      src="/assets/ibc.png" 
-                      alt="IBC Logo"
-                      className="w-20 h-20 object-contain"
-                    />
+                    <Shield className="w-16 h-16 text-slate-700" />
                   </div>
                 </div>
               </div>
