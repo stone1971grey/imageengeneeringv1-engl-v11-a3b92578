@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, Lightbulb, Monitor, ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, Lightbulb, Monitor, ChevronLeft, ChevronRight, Expand, X, Calendar, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
@@ -233,13 +233,55 @@ const ProductLE7 = () => {
             </div>
           </div>
           
-          {/* IBC Banner */}
-          <AnnouncementBanner 
-            message="Meet us at IBC 2025"
-            ctaText="Learn more"
-            ctaLink="#"
-            icon="calendar"
-          />
+          {/* IBC 2025 Banner Section */}
+          <section className="bg-gradient-to-r from-slate-800 to-slate-900 py-16">
+            <div className="container mx-auto px-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+                    Meet us at IBC 2025
+                  </h2>
+                  <p className="text-xl text-slate-300 mb-6 max-w-2xl">
+                    Schedule a meeting with us at IBC 2025 to get a customized introduction on how we can help you optimize your media operations and stay ahead of change.
+                  </p>
+                  <div className="flex items-center gap-6 text-slate-400 mb-8">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5" />
+                      <span>September 12-15, 2025</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      <span>Amsterdam, Netherlands</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <Button 
+                      size="lg"
+                      className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-medium"
+                    >
+                      Schedule Appointment
+                    </Button>
+                    <Button 
+                      size="lg"
+                      variant="outline"
+                      className="border-slate-400 text-slate-300 hover:bg-slate-700 hover:text-white px-8 py-3 text-lg font-medium"
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                </div>
+                <div className="hidden lg:block">
+                  <div className="w-32 h-32 bg-white rounded-full flex items-center justify-center">
+                    <img 
+                      src="/assets/ibc.png" 
+                      alt="IBC Logo"
+                      className="w-20 h-20 object-contain"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
           
           {/* Key Benefits */}
           <div id="benefits" className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 scroll-mt-[280px]">
