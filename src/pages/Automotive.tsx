@@ -79,24 +79,24 @@ const Automotive = () => {
 
   const products = [
     {
-      title: "[PLATZHALTER] Arcturus ADAS",
-      description: "[PLATZHALTER] Hochleistungs-LED-Beleuchtung für ADAS-Tests, HDR-Szenen & High-End Sensoren",
+      title: "Arcturus",
+      description: "A high-intensity light source with unmatched stability and consistency.",
       image: arcturusProduct,
       link: "/product/arcturus"
     },
     {
-      title: "[PLATZHALTER] TE42-ADAS",
-      description: "[PLATZHALTER] Schwachlicht-Testtabelle für ADAS Kamera-Validierung",
+      title: "LE7 VIS-IR",
+      description: "A uniform light source for testing cameras in the near-infrared (NIR) range.",
       image: te42Image
     },
     {
-      title: "[PLATZHALTER] camSPECS ADAS",
-      description: "[PLATZHALTER] Spektrale Empfindlichkeitsmessung für ADAS-Systeme",
+      title: "GEOCAL",
+      description: "Geometric calibrations using a compact device that generates a grid of light spots originating from infinity.",
       image: camspecsImage
     },
     {
-      title: "[PLATZHALTER] iQ-Analyzer ADAS",
-      description: "[PLATZHALTER] Bildqualitätsbewertungs-Software-Suite für autonome Fahrsysteme",
+      title: "iQ-Climate Chamber",
+      description: "Temperature-controlled camera testing in the comfort of a camera test lab.",
       image: iqAnalyzerImage
     }
   ];
