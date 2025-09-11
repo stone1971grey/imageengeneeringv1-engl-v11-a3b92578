@@ -16,7 +16,7 @@ import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation
 import te42Image from "@/assets/te42-ll.jpg";
 import te292Image from "@/assets/te292-vis-ir.png";
 import camspecsImage from "@/assets/camspecs-xl.png";
-import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
+import iqAnalyzerImage from "@/assets/iq-analyzer-new.png";
 import emvaLogo from "@/assets/emva-logo.jpg";
 import isoStandardsLogo from "@/assets/iso-standards-logo-new.jpg";
 import ieeeLogo from "@/assets/ieee-logo.jpg";
