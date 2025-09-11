@@ -8,8 +8,9 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import ManufacturerSupplierShowcase from "@/components/ManufacturerSupplierShowcase";
 import Footer from "@/components/Footer";
 import automotiveLab from "@/assets/automotive-lab.jpg";
-import automotiveHero from "@/assets/automotive-hero-clean-new-numbers.jpg";
+import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import manufacturersImage from "@/assets/manufacturers-image.png";
+import HotspotImage from "@/components/HotspotImage";
 import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
 import te42Image from "@/assets/te42-ll.jpg";
@@ -21,7 +22,14 @@ import ieeeLogo from "@/assets/ieee-logo.jpg";
 
 // Automotive & ADAS landing page component
 const Automotive = () => {
-  const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
+  const markers = [
+    { id: 1, label: "Front camera",                 top: 37, left: 49 },
+    { id: 2, label: "360° environment camera",      top: 24, left: 63 },
+    { id: 3, label: "Ultra sonic sensors",          top: 18, left: 71 },
+    { id: 4, label: "Long range radar",             top: 50, left: 33.5 },
+    { id: 5, label: "Mid range radar",              top: 62, left: 66.5 },
+    { id: 6, label: "Side ultra sonic sensor",      top: 65, left: 73.2 },
+  ];
   const sections = [
     { id: 'introduction', label: 'Introduction' },
     { id: 'applications', label: 'ADAS Applications' },
@@ -148,81 +156,12 @@ const Automotive = () => {
             {/* Right Content - Interactive Image Map - 3/5 */}
             <div className="lg:col-span-3 relative">
               <div className="relative overflow-hidden rounded-lg shadow-soft">
-                <img 
+                <HotspotImage
                   src={automotiveHero}
-                  alt="Automotive camera testing laboratory"
-                  className="w-full h-[500px] lg:h-[600px] object-cover"
+                  alt="Automotive sensors coverage"
+                  markers={markers}
+                  dotColor="bg-blue-500"
                 />
-                
-                {/* Interactive Hotspots */}
-                {/* Point 1 - Front Camera */}
-                <div 
-                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '35%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("1) front camera")}
-                  onMouseLeave={() => setHoveredPoint("Live Processing")}
-                >
-                  <span className="text-white text-xs font-bold">1</span>
-                </div>
-
-                {/* Point 2 - 360° Environment Camera */}
-                <div 
-                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '25%', left: '45%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("2) 360° environment camera")}
-                  onMouseLeave={() => setHoveredPoint("Live Processing")}
-                >
-                  <span className="text-white text-xs font-bold">2</span>
-                </div>
-
-                {/* Point 3 - Ultra Sonic Sensors */}
-                <div 
-                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '65%', left: '35%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("3) ultra sonic sensors")}
-                  onMouseLeave={() => setHoveredPoint("Live Processing")}
-                >
-                  <span className="text-white text-xs font-bold">3</span>
-                </div>
-
-                {/* Point 4 - Long Range Radar */}
-                <div 
-                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '70%', left: '55%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("4) long range radar")}
-                  onMouseLeave={() => setHoveredPoint("Live Processing")}
-                >
-                  <span className="text-white text-xs font-bold">4</span>
-                </div>
-
-                {/* Point 5 - Mir Range Radar */}
-                <div 
-                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '45%', left: '65%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("5) mir range radar")}
-                  onMouseLeave={() => setHoveredPoint("Live Processing")}
-                >
-                  <span className="text-white text-xs font-bold">5</span>
-                </div>
-
-                {/* Point 6 - Side Ultra Sonic Sensor */}
-                <div 
-                  className="absolute w-6 h-6 bg-blue-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                  style={{ top: '55%', left: '25%', transform: 'translate(-50%, -50%)' }}
-                  onMouseEnter={() => setHoveredPoint("6) side ultra sonic sensor")}
-                  onMouseLeave={() => setHoveredPoint("Live Processing")}
-                >
-                  <span className="text-white text-xs font-bold">6</span>
-                </div>
-                
-                {/* Original video overlay simulation */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
-              </div>
-              
-              {/* Floating stats - now shows hover text */}
-              <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
-                <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Live Processing" : "ADAS Component"}</div>
-                <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Active" : hoveredPoint}</div>
               </div>
             </div>
           </div>
