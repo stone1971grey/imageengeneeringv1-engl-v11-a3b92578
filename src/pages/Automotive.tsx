@@ -19,6 +19,10 @@ import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
 import emvaLogo from "@/assets/emva-logo.jpg";
 import isoStandardsLogo from "@/assets/iso-standards-logo-new.jpg";
 import ieeeLogo from "@/assets/ieee-logo.jpg";
+import solutionsInCabin from "@/assets/solutions-in-cabin.png";
+import solutionsAdas from "@/assets/solutions-adas.png";
+import solutionsGeometric from "@/assets/solutions-geometric-calibration.jpg";
+import solutionsClimate from "@/assets/solutions-climate-control.png";
 
 // Automotive & ADAS landing page component
 const Automotive = () => {
@@ -326,10 +330,9 @@ const Automotive = () => {
               <CardContent className="p-0">
                 <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
                   <img 
-                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    src={solutionsInCabin}
                     alt="In-Cabin Testing Setup"
                     className="w-full h-full object-cover"
-                    style={{ objectPosition: '0% 0%', transform: 'scale(2) translate(-25%, -25%)' }}
                   />
                 </div>
                 <div className="p-8">
@@ -351,10 +354,9 @@ const Automotive = () => {
               <CardContent className="p-0">
                 <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
                   <img 
-                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    src={solutionsAdas}
                     alt="ADAS Performance Testing Setup"
                     className="w-full h-full object-cover"
-                    style={{ objectPosition: '100% 0%', transform: 'scale(2) translate(-25%, -25%)' }}
                   />
                 </div>
                 <div className="p-8">
@@ -376,10 +378,9 @@ const Automotive = () => {
               <CardContent className="p-0">
                 <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
                   <img 
-                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    src={solutionsGeometric}
                     alt="Geometric Calibration Setup"
                     className="w-full h-full object-cover"
-                    style={{ objectPosition: '0% 100%', transform: 'scale(2) translate(-25%, -75%)' }}
                   />
                 </div>
                 <div className="p-8">
@@ -401,10 +402,9 @@ const Automotive = () => {
               <CardContent className="p-0">
                 <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
                   <img 
-                    src="/lovable-uploads/5506376a-ea7b-4a18-a179-57a3a3d8c1cb.png"
+                    src={solutionsClimate}
                     alt="Climate-Controlled Testing Setup"
                     className="w-full h-full object-cover"
-                    style={{ objectPosition: '100% 100%', transform: 'scale(2) translate(-25%, -75%)' }}
                   />
                 </div>
                 <div className="p-8">
