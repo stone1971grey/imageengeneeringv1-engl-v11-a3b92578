@@ -14,6 +14,7 @@ import suppliersImage from "@/assets/suppliers-image.png";
 import arcturusProduct from "@/assets/arcturus-main-product-new.png";
 import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation.jpg";
 import te42Image from "@/assets/te42-ll.jpg";
+import te292Image from "@/assets/te292-vis-ir.png";
 import camspecsImage from "@/assets/camspecs-xl.png";
 import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
 import emvaLogo from "@/assets/emva-logo.jpg";
@@ -102,7 +103,7 @@ const Automotive = () => {
     {
       title: "TE292 VIS-IR",
       description: "A test chart for spectral sensitivity measurements and color calibrations in the VIS-IR range.",
-      image: te42Image
+      image: te292Image
     },
     {
       title: "iQ-Analyzer-X",
