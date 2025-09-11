@@ -91,7 +91,8 @@ const Automotive = () => {
     {
       title: "LE7 VIS-IR",
       description: "A uniform light source for testing cameras in the near-infrared (NIR) range.",
-      image: le7Image
+      image: le7Image,
+      link: "/product/le7"
     },
     {
       title: "GEOCAL",
@@ -453,14 +454,16 @@ const Automotive = () => {
 
            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
              {products.map((product, index) => (
-                <Card 
-                  key={index}
-                  className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
-                    product.title === "Arcturus" 
-                      ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
-                      : ""
-                  }`}
-                >
+                 <Card 
+                   key={index}
+                   className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
+                     product.title === "Arcturus" 
+                       ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
+                       : product.title === "LE7 VIS-IR"
+                       ? "bg-blue-100 border-4 border-blue-300 shadow-lg ring-4 ring-blue-200"
+                       : ""
+                   }`}
+                 >
                  <CardContent className="p-0 flex flex-col flex-1">
                    <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                      <img 
@@ -468,27 +471,41 @@ const Automotive = () => {
                        alt={product.title}
                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                      />
-                     {product.title === "Arcturus" && (
-                       <div className="absolute top-2 right-2">
-                         <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                           ACTIVE
-                         </span>
-                       </div>
-                     )}
+                      {product.title === "Arcturus" && (
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                            ACTIVE
+                          </span>
+                        </div>
+                      )}
+                      {product.title === "LE7 VIS-IR" && (
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                            ACTIVE
+                          </span>
+                        </div>
+                      )}
                    </div>
                    <div className="p-6 flex flex-col flex-1">
-                     <h3 className={`text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] ${
-                       product.title === "Arcturus" 
-                         ? "text-green-700" 
-                         : "text-gray-900"
-                     }`}>
-                       {product.title}
-                       {product.title === "Arcturus" && (
-                         <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
-                           CLICKABLE
-                         </span>
-                       )}
-                     </h3>
+                      <h3 className={`text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] ${
+                        product.title === "Arcturus" 
+                          ? "text-green-700" 
+                          : product.title === "LE7 VIS-IR"
+                          ? "text-blue-700"
+                          : "text-gray-900"
+                      }`}>
+                        {product.title}
+                        {product.title === "Arcturus" && (
+                          <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
+                            CLICKABLE
+                          </span>
+                        )}
+                        {product.title === "LE7 VIS-IR" && (
+                          <span className="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">
+                            CLICKABLE
+                          </span>
+                        )}
+                      </h3>
                      <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
                        {product.description}
                      </p>
