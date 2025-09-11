@@ -15,7 +15,8 @@ import arcturusProduct from "@/assets/arcturus-main-product-new.png";
 import te42Image from "@/assets/te42-ll.jpg";
 import camspecsImage from "@/assets/camspecs-xl.png";
 import iqAnalyzerImage from "@/assets/iq-analyzer-x.png";
-import isoStandardsLogo from "@/assets/iso-standards-logo.png";
+import emvaLogo from "@/assets/emva-logo.jpg";
+import isoStandardsLogo from "@/assets/iso-standards-logo-new.jpg";
 
 // Automotive & ADAS landing page component
 const Automotive = () => {
@@ -304,8 +305,8 @@ const Automotive = () => {
             {/* IEEE P2020 Standard */}
             <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
               <CardContent className="p-8 text-center h-full flex flex-col">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Code className="w-8 h-8 text-blue-600" />
+                <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
+                  <img src={emvaLogo} alt="EMVA Logo" className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">IEEE-P2020</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
@@ -320,8 +321,8 @@ const Automotive = () => {
             {/* EMVA 1288/ISO 24942 Standard */}
             <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
               <CardContent className="p-8 text-center h-full flex flex-col">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Camera className="w-8 h-8 text-green-600" />
+                <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
+                  <img src={emvaLogo} alt="EMVA Logo" className="w-full h-full object-contain" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-4">EMVA 1288/ISO 24942</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
