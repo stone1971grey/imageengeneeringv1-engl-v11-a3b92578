@@ -17,6 +17,7 @@ import te42Image from "@/assets/te42-ll.jpg";
 import te292Image from "@/assets/te292-vis-ir.png";
 import camspecsImage from "@/assets/geocal-product.jpg";
 import iqAnalyzerImage from "@/assets/iq-analyzer-new.png";
+import climateImage from "@/assets/climate-chamber.png";
 import emvaLogo from "@/assets/emva-logo.jpg";
 import isoStandardsLogo from "@/assets/iso-standards-logo-new.jpg";
 import ieeeLogo from "@/assets/ieee-logo.jpg";
@@ -98,7 +99,7 @@ const Automotive = () => {
     {
       title: "iQ-Climate Chamber",
       description: "Temperature-controlled camera testing in the comfort of a camera test lab.",
-      image: iqAnalyzerImage
+      image: climateImage
     },
     {
       title: "TE292 VIS-IR",
