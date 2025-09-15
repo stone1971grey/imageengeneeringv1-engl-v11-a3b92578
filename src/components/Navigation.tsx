@@ -664,53 +664,6 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Products & Solutions</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-[9999]">
-                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
-                      <div className="flex gap-6 p-6">
-                        {/* Left Column: Product Categories */}
-                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 text-lg text-black">Product Categories</h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Camera className="h-5 w-5" />
-                            <span>Test Charts</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Zap className="h-5 w-5" />
-                            <span>Illumination Devices</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Wrench className="h-5 w-5" />
-                            <span>Measurement Devices</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Monitor className="h-5 w-5" />
-                            <span>Software</span>
-                          </div>
-                        </div>
-                        
-                        {/* Right Column: Solution Packages */}
-                        <div className="space-y-4 flex-1">
-                          <h4 className="font-semibold mb-3 text-lg text-black">Solution Packages</h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Lightbulb className="h-5 w-5" />
-                            <span>Arcturus HDR Test Bundle</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Puzzle className="h-5 w-5" />
-                            <span>Complete Testing Solution</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Target className="h-5 w-5" />
-                            <span>Camera Calibration Package</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
