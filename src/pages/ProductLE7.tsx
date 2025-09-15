@@ -213,37 +213,82 @@ const ProductLE7 = () => {
         <section className="w-full bg-gradient-to-br from-slate-50 to-blue-50 py-20">
           <div className="w-full">
             <div className="container mx-auto px-6 lg:px-8">
-              <div className="max-w-6xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-lg p-12 lg:p-16 space-y-8">
-                  <div className="text-center mb-12">
-                    <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
-                      iQ-LED Technology Excellence
-                    </h2>
-                    <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 mx-auto rounded-full"></div>
-                  </div>
-                  
-                  <div className="prose prose-lg prose-gray max-w-none space-y-6 text-lg text-gray-700 leading-relaxed">
-                    <p className="text-xl leading-relaxed">
-                      The LE7 is a uniform lightbox that uses iQ-LED technology to increase the effectiveness of image quality camera testing when using transparent test targets, including OECF and color targets.
-                    </p>
-                    <p>
-                      Light sources equipped with iQ-LED light modules can generate a custom spectrum to replicate various light sources in a camera test lab environment. As with our other iQ-LED products, the LE7 uses 20 LED channels to emulate almost any light spectrum from bright sunlight to darker lowlight.
-                    </p>
-                    <p>
-                      The LE7 contains two, four, or six iQ-LED modules* and is based on the principle of an integrating sphere to provide &gt; 97% uniformity of the active chart area.
-                    </p>
-                    <p>
-                      This product uses a mini-spectrometer with a spectral range of 350 – 860 to ensure better spectral resolution and higher sensitivity.
-                    </p>
-                    <p>
-                      iQ-LED control software is provided with the LE7. Version 3.2.0 and above gives you the capability to control individual modules. Controlling modules individually provides the opportunity for a more extensive intensity range.
-                    </p>
-                    <p>
-                      An iQ-LED API is also available as a separate option for integration into your design.
-                    </p>
-                    <p className="text-base text-gray-600 italic bg-gray-50 p-4 rounded-lg border-l-4 border-cyan-400">
-                      *Please note, we may be able to upgrade your existing LE7 V2 without having to order a whole new device (not guaranteed). Please contact our sales team for details.
-                    </p>
+              <div className="w-full max-w-7xl mx-auto">
+                <div className="bg-white rounded-2xl shadow-lg p-8 lg:p-12">
+                  {/* Grid Layout: Text left, Image right */}
+                  <div className="grid lg:grid-cols-2 gap-12 items-start">
+                    {/* Left Column - Text Content */}
+                    <div className="space-y-8">
+                      <div>
+                        <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6 text-left">
+                          iQ-LED Technology Excellence
+                        </h2>
+                        <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"></div>
+                      </div>
+                      
+                      <div className="prose prose-lg prose-gray max-w-none space-y-6 text-lg text-gray-700 leading-relaxed text-left">
+                        <p className="text-xl leading-relaxed">
+                          The LE7 is a uniform lightbox that uses iQ-LED technology to increase the effectiveness of image quality camera testing when using transparent test targets, including OECF and color targets.
+                        </p>
+                        <p>
+                          Light sources equipped with iQ-LED light modules can generate a custom spectrum to replicate various light sources in a camera test lab environment. As with our other iQ-LED products, the LE7 uses 20 LED channels to emulate almost any light spectrum from bright sunlight to darker lowlight.
+                        </p>
+                        <p>
+                          The LE7 contains two, four, or six iQ-LED modules* and is based on the principle of an integrating sphere to provide &gt; 97% uniformity of the active chart area.
+                        </p>
+                        <p>
+                          This product uses a mini-spectrometer with a spectral range of 350 – 860 to ensure better spectral resolution and higher sensitivity.
+                        </p>
+                        <p>
+                          iQ-LED control software is provided with the LE7. Version 3.2.0 and above gives you the capability to control individual modules. Controlling modules individually provides the opportunity for a more extensive intensity range.
+                        </p>
+                        <p>
+                          An iQ-LED API is also available as a separate option for integration into your design.
+                        </p>
+                        <p className="text-base text-gray-600 italic bg-gray-50 p-4 rounded-lg border-l-4 border-cyan-400">
+                          *Please note, we may be able to upgrade your existing LE7 V2 without having to order a whole new device (not guaranteed). Please contact our sales team for details.
+                        </p>
+                      </div>
+                      
+                      {/* Contact Button */}
+                      <div className="pt-6">
+                        <Button 
+                          size="lg"
+                          className="bg-[#74952a] hover:bg-[#5f7a22] text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                          onClick={() => {
+                            const footer = document.querySelector('footer');
+                            if (footer) {
+                              footer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }}
+                        >
+                          Contact Sales
+                          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Right Column - Product Image */}
+                    <div className="relative">
+                      <div className="relative overflow-hidden rounded-lg shadow-soft">
+                        <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
+                        
+                        <img 
+                          src={le7Product} 
+                          alt="LE7 VIS-IR LED System"
+                          className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10"
+                        />
+                        
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-20"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
+                      </div>
+                      
+                      {/* Floating feature highlight */}
+                      <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-lg shadow-soft border border-gray-200 z-40">
+                        <div className="text-sm text-gray-500 font-light mb-1">Spectral Range</div>
+                        <div className="text-2xl font-medium text-gray-800">380-1050nm</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
