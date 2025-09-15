@@ -775,26 +775,26 @@ const Navigation = () => {
                       {(hoveredProduct || hoveredSolution) && (
                         <div className="border-t border-border p-6 bg-white">
                           <div className="flex gap-6 items-center max-w-4xl">
-                            <div className="w-64 h-40 rounded-lg overflow-hidden shadow-md bg-gray-100 flex-shrink-0">
-                              <img 
-                                src={hoveredProduct ? productData[hoveredProduct]?.image : solutionPackages[hoveredSolution]?.image} 
+                             <div className="w-64 h-40 rounded-lg overflow-hidden shadow-md bg-gray-100 flex-shrink-0">
+                               <img 
+                                src={hoveredProduct ? productData[hoveredProduct]?.image : (hoveredSolution && solutionPackages[hoveredSolution]) ? solutionPackages[hoveredSolution].image : ""} 
                                 alt={hoveredProduct || hoveredSolution || ""} 
                                 className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="text-xl font-bold text-black mb-2">
-                                {hoveredProduct || hoveredSolution}
-                              </h3>
-                              <p className="text-gray-700 text-base leading-relaxed mb-2">
-                                {hoveredProduct ? productData[hoveredProduct]?.description : solutionPackages[hoveredSolution]?.description}
-                              </p>
-                              {(hoveredProduct ? productData[hoveredProduct]?.subline : solutionPackages[hoveredSolution]?.subline) && (
-                                <p className="text-sm text-blue-600 font-medium">
-                                  {hoveredProduct ? productData[hoveredProduct]?.subline : solutionPackages[hoveredSolution]?.subline}
-                                </p>
-                              )}
-                            </div>
+                               />
+                             </div>
+                             <div className="flex-1">
+                               <h3 className="text-xl font-bold text-black mb-2">
+                                 {hoveredProduct || hoveredSolution}
+                               </h3>
+                               <p className="text-gray-700 text-base leading-relaxed mb-2">
+                                 {hoveredProduct ? productData[hoveredProduct]?.description : (hoveredSolution && solutionPackages[hoveredSolution]) ? solutionPackages[hoveredSolution].description : ""}
+                               </p>
+                               {((hoveredProduct && productData[hoveredProduct]?.subline) || (hoveredSolution && solutionPackages[hoveredSolution]?.subline)) && (
+                                 <p className="text-sm text-blue-600 font-medium">
+                                   {hoveredProduct ? productData[hoveredProduct]?.subline : (hoveredSolution && solutionPackages[hoveredSolution]) ? solutionPackages[hoveredSolution].subline : ""}
+                                 </p>
+                               )}
+                             </div>
                           </div>
                         </div>
                       )}
