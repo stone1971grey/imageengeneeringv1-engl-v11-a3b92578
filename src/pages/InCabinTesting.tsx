@@ -264,7 +264,7 @@ const InCabinTesting = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
               
               {/* LE7 VIS-IR */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full bg-blue-100 border-4 border-blue-300 shadow-lg ring-4 ring-blue-200">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
@@ -274,7 +274,7 @@ const InCabinTesting = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-blue-700">
+                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
                       LE7 VIS-IR
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
