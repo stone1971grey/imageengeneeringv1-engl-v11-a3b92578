@@ -384,7 +384,7 @@ const InCabinTesting = () => {
 
             {/* Bottom row - 1 product with consistent height structure */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full min-h-[500px]">
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
