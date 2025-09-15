@@ -260,12 +260,12 @@ const InCabinTesting = () => {
           </div>
 
           <div className="space-y-8">
-            {/* Top row - 4 products */}
+            {/* Top row - 4 products with equal heights */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
               
               {/* LE7 VIS-IR */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col bg-blue-100 border-4 border-blue-300 shadow-lg ring-4 ring-blue-200">
-                <CardContent className="p-0 flex flex-col flex-1">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full bg-blue-100 border-4 border-blue-300 shadow-lg ring-4 ring-blue-200">
+                <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
                       src="/src/assets/le7-product.png"
@@ -303,8 +303,8 @@ const InCabinTesting = () => {
               </Card>
 
               {/* iQ-Flatlight VIS-IR */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
-                <CardContent className="p-0 flex flex-col flex-1">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
+                <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
                       src="/src/assets/iq-led-illumination.png"
@@ -332,8 +332,8 @@ const InCabinTesting = () => {
               </Card>
 
               {/* LED-Panel IR */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
-                <CardContent className="p-0 flex flex-col flex-1">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
+                <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
                       src="/src/assets/iq-led-illumination.png"
@@ -361,8 +361,8 @@ const InCabinTesting = () => {
               </Card>
 
               {/* TE292 VIS-IR */}
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
-                <CardContent className="p-0 flex flex-col flex-1">
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
+                <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
                       src="/src/assets/te292-vis-ir.png"
@@ -390,37 +390,35 @@ const InCabinTesting = () => {
               </Card>
             </div>
 
-            {/* Bottom row - 1 product left-aligned with forced same height */}
+            {/* Bottom row - 1 product with consistent height structure */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-              <div className="flex">
-                <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col w-full" style={{ minHeight: '474px' }}>
-                  <CardContent className="p-0 flex flex-col flex-1 h-full">
-                    <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
-                      <img 
-                        src="/src/assets/iq-analyzer-x.png"
-                        alt="iQ-Analyzer-X"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-6 flex flex-col flex-1">
-                      <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
-                        iQ-Analyzer-X
-                      </h3>
-                      <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
-                        Advanced software for evaluating the performance of various image quality factors.
-                      </p>
-                      <Button 
-                        variant="decision"
-                        size="lg"
-                        className="w-full group"
-                      >
-                        Learn More
-                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
+                <CardContent className="p-0 h-full flex flex-col">
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                    <img 
+                      src="/src/assets/iq-analyzer-x.png"
+                      alt="iQ-Analyzer-X"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                      iQ-Analyzer-X
+                    </h3>
+                    <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                      Advanced software for evaluating the performance of various image quality factors.
+                    </p>
+                    <Button 
+                      variant="decision"
+                      size="lg"
+                      className="w-full group"
+                    >
+                      Learn More
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
