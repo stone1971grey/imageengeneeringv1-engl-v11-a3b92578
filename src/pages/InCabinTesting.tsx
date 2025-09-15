@@ -46,10 +46,10 @@ const InCabinTesting = () => {
           </div>
           
           <div className="container mx-auto px-6 py-16 lg:py-24 pt-32 relative z-10">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="grid lg:grid-cols-5 gap-16 items-center">
               
-              {/* Left Content */}
-              <div className="space-y-8">
+              {/* Left Content - 2/5 */}
+              <div className="lg:col-span-2 space-y-8">
                 <div>
                   <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
                     In-Cabin
@@ -65,7 +65,8 @@ const InCabinTesting = () => {
                 <div className="pt-4">
                   <Button 
                     size="lg"
-                    className="bg-green-600 hover:bg-green-700 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    style={{ backgroundColor: '#74952a' }}
                   >
                     Find Your Solution
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -73,8 +74,8 @@ const InCabinTesting = () => {
                 </div>
               </div>
 
-              {/* Right Product Image */}
-              <div className="relative">
+              {/* Right Product Image - 3/5 */}
+              <div className="lg:col-span-3 relative">
                 <div className="relative overflow-hidden rounded-lg shadow-soft">
                   {/* Animated glow effect behind image */}
                   <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
