@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Car, Eye, Shield, CheckCircle, Zap, Target } from "lucide-react";
 import inCabinHero from "@/assets/in-cabin-hero.png";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Link } from "react-router-dom";
 
 const InCabinTesting = () => {
   return (
@@ -235,6 +237,185 @@ const InCabinTesting = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* In-Cabin Products and Solutions */}
+      <section className="py-20 bg-gray-50 scroll-mt-[280px]">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              In-Cabin Products and Solutions
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Industry-leading tools and solutions for in-cabin performance testing
+            </p>
+          </div>
+
+          <div className="mb-12">
+            <p className="text-gray-700 leading-relaxed text-lg max-w-6xl mx-auto text-center">
+              Ensuring that in-cabin camera and sensor systems function in low-light or almost no-light scenarios requires using near-infrared (NIR) systems. Most systems use internal illumination up to 850 (visible) or 940 nm (not visible). We recommend testing these systems using illumination and measurement devices to measure and generate an illumination spectrum up to 940 nm.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
+            
+            {/* LE7 VIS-IR */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col bg-blue-100 border-4 border-blue-300 shadow-lg ring-4 ring-blue-200">
+              <CardContent className="p-0 flex flex-col flex-1">
+                <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <img 
+                    src="/src/assets/le7-product.png"
+                    alt="LE7 VIS-IR"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                      ACTIVE
+                    </span>
+                  </div>
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-blue-700">
+                    LE7 VIS-IR
+                    <span className="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">
+                      CLICKABLE
+                    </span>
+                  </h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                    A uniform light source for testing cameras with transparent test targets in the NIR range.
+                  </p>
+                  <Link to="/product/le7">
+                    <Button 
+                      variant="decision"
+                      size="lg"
+                      className="w-full group"
+                    >
+                      Learn More
+                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* iQ-Flatlight VIS-IR */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
+              <CardContent className="p-0 flex flex-col flex-1">
+                <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <img 
+                    src="/src/assets/iq-led-illumination.png"
+                    alt="iQ-Flatlight VIS-IR"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    iQ-Flatlight VIS-IR
+                  </h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                    A uniform light source for testing cameras with reflective test targets in the NIR range.
+                  </p>
+                  <Button 
+                    variant="decision"
+                    size="lg"
+                    className="w-full group"
+                  >
+                    Learn More
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* LED-Panel IR */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
+              <CardContent className="p-0 flex flex-col flex-1">
+                <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <img 
+                    src="/src/assets/iq-led-illumination.png"
+                    alt="LED-Panel IR"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    LED-Panel IR
+                  </h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                    A timing measurement device for measuring the essential timing parameters of camera systems, including those in the NIR range.
+                  </p>
+                  <Button 
+                    variant="decision"
+                    size="lg"
+                    className="w-full group"
+                  >
+                    Learn More
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* TE292 VIS-IR */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
+              <CardContent className="p-0 flex flex-col flex-1">
+                <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <img 
+                    src="/src/assets/te292-vis-ir.png"
+                    alt="TE292 VIS-IR"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    TE292 VIS-IR
+                  </h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                    A test chart for spectral sensitivity measurements and color calibrations in the NIR range.
+                  </p>
+                  <Button 
+                    variant="decision"
+                    size="lg"
+                    className="w-full group"
+                  >
+                    Learn More
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* iQ-Analyzer-X */}
+            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
+              <CardContent className="p-0 flex flex-col flex-1">
+                <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <img 
+                    src="/src/assets/iq-analyzer-x.png"
+                    alt="iQ-Analyzer-X"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-1">
+                  <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    iQ-Analyzer-X
+                  </h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                    Advanced software for evaluating the performance of various image quality factors.
+                  </p>
+                  <Button 
+                    variant="decision"
+                    size="lg"
+                    className="w-full group"
+                  >
+                    Learn More
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
           </div>
         </div>
       </section>
