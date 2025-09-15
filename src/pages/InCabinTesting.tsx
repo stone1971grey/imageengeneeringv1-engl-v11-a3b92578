@@ -109,7 +109,7 @@ const InCabinTesting = () => {
         {/* In-Cabin Overview Section */}
         <section id="systems" className="py-16 bg-gray-50 scroll-mt-[280px]">
         <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-full mx-auto">
             <div className="bg-white rounded-lg p-8 shadow-sm mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">In-Cabin Overview</h2>
               <p className="text-lg text-gray-600 mb-6 font-medium">
@@ -162,7 +162,7 @@ const InCabinTesting = () => {
         {/* In-Cabin KPIs Section */}
         <section id="kpis" className="py-16 bg-white scroll-mt-[280px]">
         <div className="container mx-auto px-6">
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-full mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">In-Cabin KPIs</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
