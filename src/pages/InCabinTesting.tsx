@@ -1,42 +1,109 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Car, Eye, Shield, CheckCircle, Zap, Target } from "lucide-react";
 import inCabinHero from "@/assets/in-cabin-hero.png";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const InCabinTesting = () => {
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="py-16 lg:py-24">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-6">
-                In-Cabin Performance Testing
-              </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Advanced testing solutions for in-cabin monitoring systems, ensuring optimal performance and safety in automotive environments.
-              </p>
-              <Button 
-                size="lg"
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
-              >
-                Find Your Solution
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
-            <div className="lg:pl-8">
-              <img 
-                src={inCabinHero}
-                alt="In-Cabin Testing Introduction"
-                className="w-full h-auto rounded-lg shadow-lg"
-              />
+    <div className="min-h-screen bg-[#F7F9FB]">
+      <Navigation />
+      
+      {/* Main content wrapper with top margin to clear fixed navigation */}
+      <div className="pt-[140px]">
+        {/* Quick Navigation */}
+        <nav className="sticky top-[195px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+              <div className="flex flex-wrap gap-6 justify-center text-lg">
+                <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}>Overview</a>
+                <a href="#systems" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('systems')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}>Systems</a>
+                <a href="#kpis" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('kpis')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}>KPIs</a>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </nav>
 
-      {/* In-Cabin Overview Section */}
-      <section className="py-16 bg-gray-50">
+        {/* Hero Section */}
+        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[280px] relative overflow-hidden">
+          {/* Animated background light effects */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/10 to-soft-blue/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+          </div>
+          
+          <div className="container mx-auto px-6 py-16 lg:py-24 pt-32 relative z-10">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              
+              {/* Left Content */}
+              <div className="space-y-8">
+                <div>
+                  <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
+                    In-Cabin
+                    <br />
+                    <span className="font-medium text-accent-soft-blue">Performance Testing</span>
+                  </h1>
+                  
+                  <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+                    Advanced testing solutions for in-cabin monitoring systems, ensuring optimal performance and safety in automotive environments.
+                  </p>
+                </div>
+                
+                <div className="pt-4">
+                  <Button 
+                    size="lg"
+                    className="bg-green-600 hover:bg-green-700 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                  >
+                    Find Your Solution
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right Product Image */}
+              <div className="relative">
+                <div className="relative overflow-hidden rounded-lg shadow-soft">
+                  {/* Animated glow effect behind image */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
+                  
+                  <img 
+                    src={inCabinHero} 
+                    alt="In-Cabin Testing Introduction"
+                    className="w-full h-[500px] lg:h-[600px] object-cover bg-white relative z-10"
+                  />
+                  
+                  {/* Subtle overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-20"></div>
+                  
+                  {/* Moving light beam effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
+                </div>
+                
+                {/* Floating feature highlight */}
+                <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
+                  <div className="text-sm text-scandi-grey font-light mb-1">DMS/OMS</div>
+                  <div className="text-2xl font-medium text-light-foreground">EU GSR Ready</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* In-Cabin Overview Section */}
+        <section id="systems" className="py-16 bg-gray-50 scroll-mt-[280px]">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
             <div className="bg-white rounded-lg p-8 shadow-sm mb-8">
@@ -88,8 +155,8 @@ const InCabinTesting = () => {
         </div>
       </section>
 
-      {/* In-Cabin KPIs Section */}
-      <section className="py-16 bg-white">
+        {/* In-Cabin KPIs Section */}
+        <section id="kpis" className="py-16 bg-white scroll-mt-[280px]">
         <div className="container mx-auto px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
@@ -169,6 +236,9 @@ const InCabinTesting = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
+      </div>
     </div>
   );
 };
