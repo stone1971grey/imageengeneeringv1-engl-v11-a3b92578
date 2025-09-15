@@ -272,11 +272,6 @@ const InCabinTesting = () => {
                       alt="LE7 VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-2 right-2">
-                      <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                        ACTIVE
-                      </span>
-                    </div>
                   </div>
                   <div className="p-6 flex flex-col flex-1">
                     <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-blue-700">
