@@ -268,7 +268,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/le7-product.png"
+                      src="/src/assets/kpi-image.png"
                       alt="LE7 VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
