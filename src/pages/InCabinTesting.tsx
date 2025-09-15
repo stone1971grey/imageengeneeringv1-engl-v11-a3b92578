@@ -390,9 +390,9 @@ const InCabinTesting = () => {
               </Card>
             </div>
 
-            {/* Bottom row - 1 product centered */}
-            <div className="flex justify-center max-w-7xl mx-auto">
-              <div className="w-full max-w-sm">
+            {/* Bottom row - 1 product left-aligned */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              <div className="">
                 <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col">
                   <CardContent className="p-0 flex flex-col flex-1">
                     <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
