@@ -335,7 +335,7 @@ const Navigation = () => {
                           </div>
                           <div className="space-y-2">
                             <Link 
-                              to="/automotive"
+                              to="/in-cabin-testing"
                               className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
                               onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
                               onMouseLeave={() => setHoveredSolution(null)}
