@@ -276,9 +276,6 @@ const InCabinTesting = () => {
                   <div className="p-6 flex flex-col flex-1">
                     <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-blue-700">
                       LE7 VIS-IR
-                      <span className="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">
-                        CLICKABLE
-                      </span>
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
                       A uniform light source for testing cameras with transparent test targets in the NIR range.
