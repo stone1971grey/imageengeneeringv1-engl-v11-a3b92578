@@ -1,0 +1,176 @@
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import inCabinHero from "@/assets/in-cabin-hero.png";
+
+const InCabinTesting = () => {
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="py-16 lg:py-24">
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                In-Cabin Performance Testing
+              </h1>
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                Advanced testing solutions for in-cabin monitoring systems, ensuring optimal performance and safety in automotive environments.
+              </p>
+              <Button 
+                size="lg"
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
+              >
+                Find Your Solution
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+            <div className="lg:pl-8">
+              <img 
+                src={inCabinHero}
+                alt="In-Cabin Testing Introduction"
+                className="w-full h-auto rounded-lg shadow-lg"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* In-Cabin Overview Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-white rounded-lg p-8 shadow-sm mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">In-Cabin Overview</h2>
+              <p className="text-lg text-gray-600 mb-6 font-medium">
+                An in-depth look at the emergence of in-cabin systems in the automotive industry.
+              </p>
+              
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">Overview</h3>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                As the automotive industry continues its path toward full automation, one area of focus has become the in-cabin monitoring systems, often referred to as driver and occupant monitoring systems (DMS/OMS). These systems use cameras and sensors to enhance the safety and comfort of drivers and passengers.
+              </p>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                In-cabin systems are responsible for monitoring the vehicle's interior and the driver's response to the driving environment. So, they often need to work in sync with the exterior systems to ensure the driver makes proper adjustments as the conditions dictate. They can also further reduce human error accidents by focusing on the driver's alertness and making adjustments when necessary, e.g., slowing down the car due to drowsiness in the driver. In-cabin systems have seen so much positive improvement in the last few years that the European Union's General Safety Regulation (GSR) has begun mandating that all new cars from 2024 must implement DMS systems.
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                As these systems continue to become indispensable to road safety, manufacturers must have access to the proper calibration and characterization solutions during the development process to ensure the highest level of image quality performance and safety.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-8 shadow-sm">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4">What do In-Cabin systems monitor?</h3>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                In-cabin systems monitor drivers' and passengers' behavior and facial cues by capturing videos and images. They mostly use near-infrared (NIR) sensors combined with active illumination (e.g., LED or VCSEL) to ensure accuracy in very low-light conditions. NIR sensors are preferred as they do not need to rely on a visible light source that would be noticeable to the driver and passengers. Captured results are then fed into embedded software to analyze the car's interior.
+              </p>
+              <p className="text-gray-700 mb-4 leading-relaxed">
+                Many of the aspects that in-cabin systems monitor fall into the area of machine vision, including:
+              </p>
+              <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-6">
+                <li>Driver facial expressions to assess distraction or unsafe emotional states</li>
+                <li>Driver eye openness for drowsiness detection</li>
+                <li>Driver gaze, e.g., looking down at a phone</li>
+                <li>Driver's hand positions on the steering wheel</li>
+                <li>Occupant presence and seatbelt usage</li>
+                <li>Detection of children and proper child safety, e.g., child seats</li>
+                <li>Size and posture of occupants to optimize airbag deployment</li>
+              </ul>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                These in-cabin systems can make real-time assessments and adjustments (or recommendations) using machine vision learning algorithms when necessary.
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                When the car drives autonomously, these systems can also focus on human vision applications, such as webcam conferences or selfie-taking. A combination of RGB and IR camera systems could potentially be used to ensure proper functionality.
+              </p>
+              <p className="text-gray-700 leading-relaxed mt-6">
+                All told, these systems can significantly improve safety by detecting distraction and fatigue in the driver and optimizing safety features to enhance the safety of all occupants in the event of an accident. In addition, in-cabin cameras can improve user experience by personalizing commands and controlling various aspects of the driving experience.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* In-Cabin KPIs Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">In-Cabin KPIs</h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                The Key Performance Indicators that are crucial to understanding the performance of an in-cabin system
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              <p className="text-gray-700 mb-8 leading-relaxed">
+                As the reliance on in-cabin systems continues to grow, these systems must be rigorously tested during the development stages to ensure optimal performance and safety. Several image quality factors should be evaluated when testing their systems, including:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Resolution (SFR)</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Camera resolution describes a camera's ability to reproduce a scene's fine details. One way to determine resolution performance is by measuring the spatial frequency response (SFR). These SFRs will produce a range of spatial frequencies on scale from 0% (a complete loss of scene information) to 100% (a perfect scene reproduction without data loss).
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    Resolution performance is crucial to determining the number of pixels per eye we have. It ensures enough detail is preserved, even in low-light settings, for determining eye movements and analyzing other driver and passenger facial cues. ISO 12233 outlines test methods that can be utilized for resolution measurements.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Distortion</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Image distortion occurs when an image's straight lines appear to curve unnaturally. It is often the result of the lens's geometry. Distortion can be seen as a variation of the reproduction scale over the field. As a result, the same object is smaller in the image corner than in the image center. So, if the algorithm needs, e.g., 15 pixels per eye to work properly, this might work for the center but not for the corners.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    ISO 17850 offers test methods for local geometric distortion measurements. In addition, our GEOCAL device provides geometric camera calibrations. It creates a grid of light spots originating from infinity for distortion measurements.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Dynamic Range (OECF)</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Dynamic range is the maximum contrast a digital camera system can capture from its maximum output level (saturation) down to an even signal-to-noise ratio. A camera system's dynamic range is determined by obtaining the OECF (opto-electronic conversion function), which describes how a camera converts varying light levels (optical input) into electronic signals (digital output).
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    Dynamic range performance is essential for in-cabin systems, as these systems must be able to perform in low-light or even almost no-light scenarios when analyzing, e.g., facial expressions. ISO 14524 outlines test methods for obtaining the OECF for dynamic range measurements.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Noise (SNR)</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Noise describes the presence of artifacts in the image that do not originate from the original scene content. The noise level is determined using the signal-to-noise ratio, which plots the amount of noise compared to the desired signal. Using the SNR can help reduce the noise in low-light environments. However, noise mustn't be lowered to the point where the signal is no longer clear. Often, a little noise is necessary, especially in low-light environments.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    In-cabin systems must ensure a balanced SNR to detect the correct contrasts and signals in a low-light cabin. ISO 15739 describes test methods for determining a camera system's noise levels.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Color Accuracy</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Color accuracy describes the camera's ability to separate and reproduce colors in a scene. To measure color performance, a camera system must be calibrated based on a particular color space, such as sRGB. Correcting white balance is also a crucial aspect of color accuracy.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    Color is primarily relevant for human vision applications, as machine vision relies on NIR camera systems and does not see color. RGB camera systems must, therefore, be properly color-calibrated to ensure color accuracy.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Timing Accuracy</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Camera systems rely heavily on timing parameters to capture real-time scenes, particularly moving scenes. Frame rate, shutter speed, and autofocus are vital timing parameters that should be tested to ensure the system is not misinterpreting a scene due to movement or motion blur.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed mt-4">
+                    Even though in-cabin systems monitor people sitting, they are still moving around—especially important is monitoring the driver's head movements—and the camera system must be able to compensate for these movements and motion blurs.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default InCabinTesting;
