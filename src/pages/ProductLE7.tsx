@@ -424,42 +424,144 @@ const ProductLE7 = () => {
               </p>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
-                      <th className="px-6 py-4 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">Specification</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Spectral Range</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">380 - 1050 nm (VIS-IR)</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Light Technology</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">iQ-LED with custom spectral control</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Uniformity</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">&gt;95% across illumination area</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Control Interface</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">USB/Ethernet with software control</td>
-                    </tr>
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Power Supply</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">DC powered, flicker-free operation</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Chart Compatibility</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Transparent charts, camSPECS plates</td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div className="max-w-7xl mx-auto">
+              <div className="bg-gray-50 rounded-xl overflow-hidden shadow-soft">
+                <div className="overflow-x-auto">
+                  {/* Header */}
+                  <div className="grid grid-cols-6 bg-gradient-to-r from-[#577eb4] to-[#4a6b9a] text-white min-w-[800px]">
+                    <div className="p-4 text-center font-semibold text-lg">
+                      Criterion
+                    </div>
+                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                      LE7-2x
+                    </div>
+                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                      LE7-4x
+                    </div>
+                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                      LE7-6x
+                    </div>
+                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                      LE7 VIS-IR
+                    </div>
+                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                      LE7-E
+                    </div>
+                  </div>
+                  
+                  {/* Specification Rows */}
+                  <div className="divide-y divide-gray-200">
+                    {/* Light Sources */}
+                    <div className="grid grid-cols-6 bg-white min-w-[800px]">
+                      <div className="p-6 font-medium text-gray-900 border-r border-gray-200">
+                        Light Sources
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">2x iQ-LED</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">4x iQ-LED</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">6x iQ-LED</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">2x iQ-LED / 4x iQ-LED VIS-IR</span>
+                      </div>
+                      <div className="p-6">
+                        <span className="text-gray-800">5x iQ-LED / 1x iQ-LED + 1.9 ND filter</span>
+                      </div>
+                    </div>
+
+                    {/* Intensity */}
+                    <div className="grid grid-cols-6 bg-gray-50 min-w-[800px]">
+                      <div className="p-6 font-medium text-gray-900 border-r border-gray-200">
+                        Intensity
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">Controlled via 4000 steps per channel and 32 kHz PWM (switchable to 1000 steps with 128 kHz)</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">Controlled via 4000 steps per channel and 32 kHz PWM (switchable to 1000 steps with 128 kHz)</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">Controlled via 4000 steps per channel and 32 kHz PWM (switchable to 1000 steps with 128 kHz)</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">Controlled via 4000 steps per channel and 32 kHz PWM (switchable to 1000 steps with 128 kHz)</span>
+                      </div>
+                      <div className="p-6">
+                        <span className="text-gray-800 text-sm leading-relaxed">Controlled via 4000 steps per channel and 32 kHz PWM (switchable to 1000 steps with 128 kHz)</span>
+                      </div>
+                    </div>
+
+                    {/* Spectral Range */}
+                    <div className="grid grid-cols-6 bg-white min-w-[800px]">
+                      <div className="p-6 font-medium text-gray-900 border-r border-gray-200">
+                        Spectral Range
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">380-820 nm</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">380-820 nm</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">380-820 nm</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">380-1050 nm</span>
+                      </div>
+                      <div className="p-6">
+                        <span className="text-gray-800">380-820 nm</span>
+                      </div>
+                    </div>
+
+                    {/* Uniformity */}
+                    <div className="grid grid-cols-6 bg-gray-50 min-w-[800px]">
+                      <div className="p-6 font-medium text-gray-900 border-r border-gray-200">
+                        Uniformity
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">97% for active chart area, 280 x 157.5 mm / 96% for full output window, 290 x 220 mm</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">97% for active chart area, 280 x 157.5 mm / 96% for full output window</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">97% for active chart area, 280 x 157.5 mm / 96% for full output window</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800 text-sm leading-relaxed">97% for active chart area, 280 x 157.5 mm / 96% for full output window</span>
+                      </div>
+                      <div className="p-6">
+                        <span className="text-gray-800 text-sm leading-relaxed">97% for active chart area, 280 x 157.5 mm / 96% for full output window</span>
+                      </div>
+                    </div>
+
+                    {/* Max/Min Illumination values */}
+                    <div className="grid grid-cols-6 bg-white min-w-[800px]">
+                      <div className="p-6 font-medium text-gray-900 border-r border-gray-200">
+                        Max/Min Illumination values
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">25 – 8000 lx</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">100 – 16,000 lx</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">25 – 24,000 lx</span>
+                      </div>
+                      <div className="p-6 border-r border-gray-200">
+                        <span className="text-gray-800">25 – 8000 lx</span>
+                      </div>
+                      <div className="p-6">
+                        <span className="text-gray-800">0.25 – 20,000 lx</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
