@@ -583,56 +583,56 @@ const ProductLE7 = () => {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
-                    <FileText className="w-8 h-8 text-blue-600" />
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
+                <CardContent className="p-6 text-center flex-1 flex flex-col">
+                  <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-200 transition-colors">
+                    <FileText className="w-10 h-10 text-blue-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">LE7 Datasheet</h3>
-                  <p className="text-sm text-gray-600 mb-4">Technical specifications and performance data</p>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">LE7 Datasheet</h3>
+                  <p className="text-sm text-gray-600 mb-6 flex-1">Technical specifications and performance data</p>
+                  <Button variant="outline" size="sm" className="w-full mt-auto">
                     <Download className="w-4 h-4 mr-2" />
                     PDF Download
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
-                    <FileText className="w-8 h-8 text-green-600" />
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
+                <CardContent className="p-6 text-center flex-1 flex flex-col">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-colors">
+                    <FileText className="w-10 h-10 text-green-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">User Manual</h3>
-                  <p className="text-sm text-gray-600 mb-4">Complete setup and operation guide</p>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">User Manual</h3>
+                  <p className="text-sm text-gray-600 mb-6 flex-1">Complete setup and operation guide</p>
+                  <Button variant="outline" size="sm" className="w-full mt-auto">
                     <Download className="w-4 h-4 mr-2" />
                     PDF Download
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
-                    <FileText className="w-8 h-8 text-purple-600" />
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
+                <CardContent className="p-6 text-center flex-1 flex flex-col">
+                  <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-200 transition-colors">
+                    <FileText className="w-10 h-10 text-purple-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Application Note</h3>
-                  <p className="text-sm text-gray-600 mb-4">NIR testing best practices and guidelines</p>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Application Note</h3>
+                  <p className="text-sm text-gray-600 mb-6 flex-1">NIR testing best practices and guidelines</p>
+                  <Button variant="outline" size="sm" className="w-full mt-auto">
                     <Download className="w-4 h-4 mr-2" />
                     PDF Download
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer">
-                <CardContent className="p-6 text-center">
-                  <div className="w-16 h-16 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
-                    <FileText className="w-8 h-8 text-orange-600" />
+              <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
+                <CardContent className="p-6 text-center flex-1 flex flex-col">
+                  <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-orange-200 transition-colors">
+                    <FileText className="w-10 h-10 text-orange-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Software Guide</h3>
-                  <p className="text-sm text-gray-600 mb-4">Control software installation and usage</p>
-                  <Button variant="outline" size="sm" className="w-full">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Software Guide</h3>
+                  <p className="text-sm text-gray-600 mb-6 flex-1">Control software installation and usage</p>
+                  <Button variant="outline" size="sm" className="w-full mt-auto">
                     <Download className="w-4 h-4 mr-2" />
                     PDF Download
                   </Button>
