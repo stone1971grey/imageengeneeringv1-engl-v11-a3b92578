@@ -281,6 +281,7 @@ const InCabinTesting = () => {
                       src={kpiImage}
                       alt="LE7 VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      style={{ objectPosition: 'right center' }}
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
