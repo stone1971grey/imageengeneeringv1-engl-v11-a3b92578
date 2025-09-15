@@ -23,22 +23,22 @@ const InCabinTesting = () => {
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                 <div className="flex flex-wrap gap-6 justify-center text-lg">
-                  <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth" 
+                  <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2" 
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Overview</a>
-                  <a href="#systems" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#systems" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('systems')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Systems</a>
-                  <a href="#kpis" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#kpis" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('kpis')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>KPIs</a>
-                  <a href="#products" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#products" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -95,7 +95,7 @@ const InCabinTesting = () => {
                   <img 
                     src={inCabinHero} 
                     alt="In-Cabin Testing Introduction"
-                    className="w-full h-[500px] lg:h-[600px] object-cover bg-white relative z-10"
+                    className="w-full min-h-[500px] lg:h-[600px] object-cover bg-white relative z-10"
                     style={{ objectPosition: '-80px center' }}
                   />
                   
