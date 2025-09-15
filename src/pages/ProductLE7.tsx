@@ -42,20 +42,12 @@ const ProductLE7 = () => {
 
   const faqData = [
     {
-      question: "What spectral range does the LE7 cover?",
-      answer: "The LE7 VIS-IR covers the visible and near-infrared spectrum from 380nm to 1050nm, making it ideal for automotive camera testing including NIR sensors used in in-cabin monitoring systems."
+      question: "Can I use the LE7 also in other positions, for example, with the output window facing downwards?",
+      answer: "Yes, the LE7 can also be operated lying down or on the side, but you should then make sure that the side with the housing fan is on top or at least is not blocked."
     },
     {
-      question: "How uniform is the light distribution?",
-      answer: "The LE7 provides exceptional uniformity across the entire illumination area, ensuring consistent test conditions for accurate spectral sensitivity measurements and color calibrations."
-    },
-    {
-      question: "Is the LE7 compatible with existing test charts?",
-      answer: "Yes, the LE7 is designed to work with transparent test charts including camSPECS plates optimized for NIR range measurements and various ISO and IEEE standard test charts."
-    },
-    {
-      question: "What makes iQ-LED technology special?",
-      answer: "iQ-LED technology allows you to generate custom spectra with precise control over wavelength and intensity, enabling comprehensive testing across the entire VIS-IR range."
+      question: "How do you measure the uniformity of LE7?",
+      answer: "For the Uniformity measurement, our TE291 test chart is applied. In each quadrant of the TE291, the luminance is measured with a Class L luminance meter. The uniformity is then calculated as: Uniformity = Lmin/Lmax"
     }
   ];
 
