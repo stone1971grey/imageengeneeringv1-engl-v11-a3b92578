@@ -2,6 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Car, Eye, Shield, CheckCircle, Zap, Target } from "lucide-react";
 import inCabinHero from "@/assets/in-cabin-hero.png";
+import kpiImage from "@/assets/kpi-image.png";
+import iqFlatlightNew from "@/assets/iq-flatlight-new.png";
+import ledPanelNew from "@/assets/led-panel-new.png";
+import te292New from "@/assets/te292-new.png";
+import iqAnalyzerNew from "@/assets/iq-analyzer-new.png";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
@@ -268,7 +273,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/kpi-image.png"
+                      src={kpiImage}
                       alt="LE7 VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -299,7 +304,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/iq-flatlight-new.png"
+                      src={iqFlatlightNew}
                       alt="iQ-Flatlight VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -328,7 +333,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/led-panel-new.png"
+                      src={ledPanelNew}
                       alt="LED-Panel IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -357,7 +362,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/te292-new.png"
+                      src={te292New}
                       alt="TE292 VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -388,7 +393,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/iq-analyzer-new.png"
+                      src={iqAnalyzerNew}
                       alt="iQ-Analyzer-X"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
