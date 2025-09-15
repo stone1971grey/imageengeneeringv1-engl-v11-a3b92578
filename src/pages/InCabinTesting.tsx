@@ -276,7 +276,7 @@ const InCabinTesting = () => {
               {/* LE7 VIS-IR */}
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
                 <CardContent className="p-0 h-full flex flex-col">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <div className="h-[200px] bg-gray-100 overflow-hidden relative">
                     <img 
                       src={kpiImage}
                       alt="LE7 VIS-IR"
@@ -308,7 +308,7 @@ const InCabinTesting = () => {
               {/* iQ-Flatlight VIS-IR */}
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
                 <CardContent className="p-0 h-full flex flex-col">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <div className="h-[200px] bg-gray-100 overflow-hidden relative">
                     <img 
                       src={iqFlatlightNew}
                       alt="iQ-Flatlight VIS-IR"
@@ -337,7 +337,7 @@ const InCabinTesting = () => {
               {/* LED-Panel IR */}
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
                 <CardContent className="p-0 h-full flex flex-col">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <div className="h-[200px] bg-gray-100 overflow-hidden relative">
                     <img 
                       src={ledPanelNew}
                       alt="LED-Panel IR"
@@ -366,7 +366,7 @@ const InCabinTesting = () => {
               {/* TE292 VIS-IR */}
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full">
                 <CardContent className="p-0 h-full flex flex-col">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <div className="h-[200px] bg-gray-100 overflow-hidden relative">
                     <img 
                       src={te292New}
                       alt="TE292 VIS-IR"
@@ -397,7 +397,7 @@ const InCabinTesting = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden h-full min-h-[500px]">
                 <CardContent className="p-0 h-full flex flex-col">
-                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                  <div className="h-[200px] bg-gray-100 overflow-hidden relative">
                     <img 
                       src={iqAnalyzerNew}
                       alt="iQ-Analyzer-X"
