@@ -299,7 +299,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/iq-led-illumination.png"
+                      src="/src/assets/iq-flatlight-new.png"
                       alt="iQ-Flatlight VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -328,7 +328,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/iq-led-illumination.png"
+                      src="/src/assets/led-panel-new.png"
                       alt="LED-Panel IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -357,7 +357,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/te292-vis-ir.png"
+                      src="/src/assets/te292-new.png"
                       alt="TE292 VIS-IR"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -388,7 +388,7 @@ const InCabinTesting = () => {
                 <CardContent className="p-0 h-full flex flex-col">
                   <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                     <img 
-                      src="/src/assets/iq-analyzer-x.png"
+                      src="/src/assets/iq-analyzer-new.png"
                       alt="iQ-Analyzer-X"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
