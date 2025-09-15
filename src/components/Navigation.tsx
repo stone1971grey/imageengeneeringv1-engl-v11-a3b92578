@@ -664,6 +664,145 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Products & Solutions</NavigationMenuTrigger>
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
+                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
+                      <div className="flex gap-6 p-6">
+                        {/* Left Column: Product Categories */}
+                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                          <h4 className="font-semibold mb-3 text-lg text-black">
+                            Product Categories
+                          </h4>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Test Charts")}
+                            onMouseLeave={() => setHoveredProduct(null)}
+                          >
+                            <Camera className="h-5 w-5" />
+                            <span>Test Charts</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Illumination Devices")}
+                            onMouseLeave={() => setHoveredProduct(null)}
+                          >
+                            <Zap className="h-5 w-5" />
+                            <span>Illumination Devices</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Measurement Devices")}
+                            onMouseLeave={() => setHoveredProduct(null)}
+                          >
+                            <Wrench className="h-5 w-5" />
+                            <span>Measurement Devices</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Software")}
+                            onMouseLeave={() => setHoveredProduct(null)}
+                          >
+                            <Monitor className="h-5 w-5" />
+                            <span>Software</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Accessories")}
+                            onMouseLeave={() => setHoveredProduct(null)}
+                          >
+                            <Package className="h-5 w-5" />
+                            <span>Accessories</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredProduct("Services")}
+                            onMouseLeave={() => setHoveredProduct(null)}
+                          >
+                            <Settings className="h-5 w-5" />
+                            <span>Services</span>
+                          </div>
+                        </div>
+                        
+                        {/* Right Column: Solution Packages */}
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 text-lg text-black">
+                            Solution Packages
+                          </h4>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Arcturus HDR Test Bundle")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <Lightbulb className="h-5 w-5" />
+                            <span>Arcturus HDR Test Bundle</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Arcturus LED + Vega Software + Test Charts")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <Puzzle className="h-5 w-5" />
+                            <span>Complete Testing Solution</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Camera Calibration Package")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <Target className="h-5 w-5" />
+                            <span>Camera Calibration Package</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Laboratory Complete Solution")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <FlaskConical className="h-5 w-5" />
+                            <span>Laboratory Complete Solution</span>
+                          </div>
+                          <div 
+                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            onMouseEnter={() => setHoveredSolution("Spectral Measurement & Analysis Set")}
+                            onMouseLeave={() => setHoveredSolution(null)}
+                          >
+                            <BarChart3 className="h-5 w-5" />
+                            <span>Spectral Analysis Set</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Image preview section */}
+                      {(hoveredProduct || hoveredSolution) && (
+                        <div className="border-t border-border p-6 bg-white">
+                          <div className="flex gap-6 items-center max-w-4xl">
+                            <div className="w-64 h-40 rounded-lg overflow-hidden shadow-md bg-gray-100 flex-shrink-0">
+                              <img 
+                                src={hoveredProduct ? productData[hoveredProduct]?.image : solutionPackages[hoveredSolution]?.image} 
+                                alt={hoveredProduct || hoveredSolution || ""} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-black mb-2">
+                                {hoveredProduct || hoveredSolution}
+                              </h3>
+                              <p className="text-gray-700 text-base leading-relaxed mb-2">
+                                {hoveredProduct ? productData[hoveredProduct]?.description : solutionPackages[hoveredSolution]?.description}
+                              </p>
+                              {(hoveredProduct ? productData[hoveredProduct]?.subline : solutionPackages[hoveredSolution]?.subline) && (
+                                <p className="text-sm text-blue-600 font-medium">
+                                  {hoveredProduct ? productData[hoveredProduct]?.subline : solutionPackages[hoveredSolution]?.subline}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
