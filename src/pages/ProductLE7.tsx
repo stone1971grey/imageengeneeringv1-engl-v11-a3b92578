@@ -30,8 +30,8 @@ const ProductLE7 = () => {
     },
     {
       src: le7IntroductionReal,
-      title: "LE7 Introduction",
-      description: "Professional introduction to the LE7 LED system capabilities"
+      title: "",
+      description: ""
     },
     {
       src: le7SupportReal,
