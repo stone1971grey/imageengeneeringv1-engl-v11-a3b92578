@@ -44,11 +44,6 @@ const ProductLE7 = () => {
       description: "Watch the LE7 system in action and learn about its features",
       isVideo: true,
       videoUrl: "https://www.youtube.com/watch?v=TD2uEh29xEg&list=PLJjsQ3JGKsD5Ov_58ysryrL3PW71jY-Wf"
-    },
-    {
-      src: arcturusRealisticLab,
-      title: "Laboratory Setup",
-      description: "Complete testing environment with LE7 integration"
     }
   ];
 
