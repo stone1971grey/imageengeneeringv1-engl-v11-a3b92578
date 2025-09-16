@@ -11,6 +11,9 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 import le7Product from "@/assets/le7-product.png";
 import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
+import le7Gallery1 from "@/assets/le7-gallery-1.jpg";
+import le7Gallery2 from "@/assets/le7-gallery-2.jpg";
+import le7Gallery3 from "@/assets/le7-gallery-3.jpg";
 import vcxLogo from "@/assets/vcx-logo.png";
 import ieeeLogo from "@/assets/ieee-logo-standards.jpg";
 import isoLogo from "@/assets/iso-standards-logo-banner.jpg";
@@ -24,6 +27,21 @@ const ProductLE7 = () => {
       src: le7Product,
       title: "LE7 VIS-IR LED System",
       description: "Uniform lightbox using iQ-LED technology for transparent test chart illumination"
+    },
+    {
+      src: le7Gallery1,
+      title: "Professional LED Equipment",
+      description: "High-precision LED lighting system in laboratory environment"
+    },
+    {
+      src: le7Gallery2,
+      title: "Control Interface",
+      description: "Advanced control panel with digital displays and precision controls"
+    },
+    {
+      src: le7Gallery3,
+      title: "System in Operation",
+      description: "LE7 system illuminating test charts for image quality testing"
     },
     {
       src: arcturusRealisticLab,
@@ -171,16 +189,16 @@ const ProductLE7 = () => {
                 </div>
               </div>
 
-              {/* Right Product Image */}
+              {/* Right Product Image Gallery */}
               <div className="relative">
-                <div className="relative overflow-hidden rounded-lg shadow-soft">
+                <div className="relative overflow-hidden rounded-lg shadow-soft group cursor-pointer" onClick={() => setIsModalOpen(true)}>
                   {/* Animated glow effect behind image */}
                   <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
                   
                   <img 
-                    src={le7Product} 
-                    alt="LE7 VIS-IR LED System"
-                    className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10"
+                    src={productImages[currentImageIndex].src} 
+                    alt={productImages[currentImageIndex].title}
+                    className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
                   />
                   
                   {/* Subtle overlay */}
@@ -188,6 +206,44 @@ const ProductLE7 = () => {
                   
                   {/* Moving light beam effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
+                  
+                  {/* Expand Icon Overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center z-40">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3 shadow-lg">
+                      <Expand className="w-6 h-6 text-light-foreground" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Thumbnail Navigation */}
+                <div className="flex justify-center gap-3 mt-4">
+                  {productImages.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`relative aspect-[4/3] w-16 lg:w-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                        currentImageIndex === index 
+                          ? 'border-accent-soft-blue shadow-md' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <img 
+                        src={image.src} 
+                        alt={image.title}
+                        className="w-full h-full object-contain bg-white"
+                      />
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Image Description */}
+                <div className="text-center mt-4">
+                  <h4 className="font-medium text-light-foreground mb-1 text-sm lg:text-base">
+                    {productImages[currentImageIndex].title}
+                  </h4>
+                  <p className="text-xs lg:text-sm text-scandi-grey">
+                    {productImages[currentImageIndex].description}
+                  </p>
                 </div>
                 
                 {/* Floating feature highlight */}
@@ -626,6 +682,52 @@ const ProductLE7 = () => {
       </div>
 
       <Footer />
+      
+      {/* Image Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-4xl w-full p-0 bg-white">
+          <div className="relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 z-50 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-all duration-200"
+            >
+              <X className="w-5 h-5 text-gray-600" />
+            </button>
+            
+            <div className="relative group">
+              <img 
+                src={productImages[currentImageIndex].src} 
+                alt={productImages[currentImageIndex].title}
+                className="w-full max-h-[80vh] object-contain bg-white"
+              />
+              
+              {/* Navigation Arrows */}
+              <button 
+                onClick={prevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-200"
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-600" />
+              </button>
+              
+              <button 
+                onClick={nextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-3 shadow-lg transition-all duration-200"
+              >
+                <ChevronRight className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
+            
+            <div className="p-6 text-center">
+              <h4 className="font-semibold text-lg text-gray-900 mb-2">
+                {productImages[currentImageIndex].title}
+              </h4>
+              <p className="text-gray-600">
+                {productImages[currentImageIndex].description}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
