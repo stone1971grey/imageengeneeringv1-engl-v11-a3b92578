@@ -35,8 +35,8 @@ const ProductLE7 = () => {
     },
     {
       src: le7SupportReal,
-      title: "LE7 Support System",
-      description: "Complete support structure and mounting solution for the LE7"
+      title: "",
+      description: ""
     },
     {
       src: le7VideoThumbnail,
