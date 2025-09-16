@@ -25,8 +25,8 @@ const ProductLE7 = () => {
   const productImages = [
     {
       src: le7Product,
-      title: "LE7 VIS-IR LED System",
-      description: "Uniform lightbox using iQ-LED technology for transparent test chart illumination"
+      title: "",
+      description: ""
     },
     {
       src: le7IntroductionReal,
@@ -40,8 +40,8 @@ const ProductLE7 = () => {
     },
     {
       src: le7VideoThumbnail,
-      title: "LE7 Video Demonstration",
-      description: "Watch the LE7 system in action and learn about its features",
+      title: "",
+      description: "",
       isVideo: true,
       videoUrl: "https://www.youtube.com/watch?v=TD2uEh29xEg&list=PLJjsQ3JGKsD5Ov_58ysryrL3PW71jY-Wf"
     }
