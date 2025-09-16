@@ -298,9 +298,9 @@ const ProductLE7 = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Zap className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximum Uniformity</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximum Illuminance</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Exceptional light uniformity across the entire illumination area for consistent and reliable test results.
+                    Up to 1 Mcd/m² - more than enough intensity to challenge even the most sensitive image sensors.
                   </p>
                 </div>
                 
@@ -310,7 +310,7 @@ const ProductLE7 = () => {
                   </div>
                   <h3 className="text-xl font-bold text-gray-800 mb-4">Flicker-Free</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    DC-powered LED technology ensures flicker-free operation for accurate spectral sensitivity measurements.
+                    DC-powered LED technology ensures flicker-free operation for consistent, reliable test results.
                   </p>
                 </div>
                 
@@ -318,9 +318,9 @@ const ProductLE7 = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Eye className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Wide Spectrum Range</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">High Stability</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Covers both visible (380-700nm) and near-infrared (700-1050nm) ranges for comprehensive camera testing.
+                    Extremely high stability and consistency for reproducible test conditions and accurate measurements.
                   </p>
                 </div>
                 
@@ -328,9 +328,9 @@ const ProductLE7 = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Lightbulb className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">True HDR Gammas</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">True HDR Scenes</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Supports various HDR configurations and gamma settings for modern automotive camera systems.
+                    Create true HDR scenes in combination with other Vega devices for comprehensive test scenarios.
                   </p>
                 </div>
                 
@@ -340,7 +340,7 @@ const ProductLE7 = () => {
                   </div>
                   <h3 className="text-xl font-bold text-gray-800 mb-4">Flexible Control</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Precise software control for custom spectral compositions and intensity levels.
+                    Control via UI software, API and Python scripts for Windows and Linux systems.
                   </p>
                 </div>
                 
@@ -348,9 +348,9 @@ const ProductLE7 = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <BarChart3 className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">High Stability</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Wide Dynamic Range</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Long-term stability and repeatability for consistent measurement conditions over time.
+                    Change intensity across a wide dynamic range with constant spectral properties.
                   </p>
                 </div>
               </div>
