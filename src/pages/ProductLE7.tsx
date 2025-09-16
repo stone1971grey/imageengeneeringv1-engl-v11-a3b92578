@@ -11,9 +11,9 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 
 import le7Product from "@/assets/le7-product.png";
 import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
-import le7Gallery1 from "@/assets/le7-gallery-1.jpg";
-import le7Gallery2 from "@/assets/le7-gallery-2.jpg";
-import le7Gallery3 from "@/assets/le7-gallery-3.jpg";
+import le7SupportReal from "@/assets/le7-support-real.png";
+import le7IntroductionReal from "@/assets/le7-introduction-real.png";
+import le7VideoThumbnail from "@/assets/le7-video-thumbnail.jpg";
 import vcxLogo from "@/assets/vcx-logo.png";
 import ieeeLogo from "@/assets/ieee-logo-standards.jpg";
 import isoLogo from "@/assets/iso-standards-logo-banner.jpg";
@@ -29,19 +29,21 @@ const ProductLE7 = () => {
       description: "Uniform lightbox using iQ-LED technology for transparent test chart illumination"
     },
     {
-      src: le7Gallery1,
-      title: "Professional LED Equipment",
-      description: "High-precision LED lighting system in laboratory environment"
+      src: le7IntroductionReal,
+      title: "LE7 Introduction",
+      description: "Professional introduction to the LE7 LED system capabilities"
     },
     {
-      src: le7Gallery2,
-      title: "Control Interface",
-      description: "Advanced control panel with digital displays and precision controls"
+      src: le7SupportReal,
+      title: "LE7 Support System",
+      description: "Complete support structure and mounting solution for the LE7"
     },
     {
-      src: le7Gallery3,
-      title: "System in Operation",
-      description: "LE7 system illuminating test charts for image quality testing"
+      src: le7VideoThumbnail,
+      title: "LE7 Video Demonstration",
+      description: "Watch the LE7 system in action and learn about its features",
+      isVideo: true,
+      videoUrl: "https://www.youtube.com/watch?v=TD2uEh29xEg&list=PLJjsQ3JGKsD5Ov_58ysryrL3PW71jY-Wf"
     },
     {
       src: arcturusRealisticLab,
@@ -191,7 +193,14 @@ const ProductLE7 = () => {
 
               {/* Right Product Image Gallery */}
               <div className="relative">
-                <div className="relative overflow-hidden rounded-lg shadow-soft group cursor-pointer" onClick={() => setIsModalOpen(true)}>
+                <div className="relative overflow-hidden rounded-lg shadow-soft group cursor-pointer" onClick={() => {
+                  const currentImage = productImages[currentImageIndex];
+                  if (currentImage.isVideo) {
+                    window.open(currentImage.videoUrl, '_blank');
+                  } else {
+                    setIsModalOpen(true);
+                  }
+                }}>
                   {/* Animated glow effect behind image */}
                   <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
                   
@@ -201,18 +210,31 @@ const ProductLE7 = () => {
                     className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
                   />
                   
+                  {/* Video Play Button Overlay */}
+                  {productImages[currentImageIndex].isVideo && (
+                    <div className="absolute inset-0 flex items-center justify-center z-30">
+                      <div className="bg-red-600 rounded-full p-6 shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-0 h-0 border-l-[30px] border-l-white border-t-[18px] border-t-transparent border-b-[18px] border-b-transparent ml-2"></div>
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Subtle overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-20"></div>
                   
-                  {/* Moving light beam effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
+                  {/* Moving light beam effect (only for non-video images) */}
+                  {!productImages[currentImageIndex].isVideo && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
+                  )}
                   
-                  {/* Expand Icon Overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center z-40">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3 shadow-lg">
-                      <Expand className="w-6 h-6 text-light-foreground" />
+                  {/* Expand Icon Overlay (only for non-video images) */}
+                  {!productImages[currentImageIndex].isVideo && (
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center z-40">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3 shadow-lg">
+                        <Expand className="w-6 h-6 text-light-foreground" />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 
                 {/* Thumbnail Navigation */}
@@ -232,6 +254,15 @@ const ProductLE7 = () => {
                         alt={image.title}
                         className="w-full h-full object-contain bg-white"
                       />
+                      
+                      {/* Video Play Button for Thumbnail */}
+                      {image.isVideo && (
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                          <div className="bg-red-600 rounded-full p-1">
+                            <div className="w-0 h-0 border-l-[8px] border-l-white border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent ml-0.5"></div>
+                          </div>
+                        </div>
+                      )}
                     </button>
                   ))}
                 </div>
