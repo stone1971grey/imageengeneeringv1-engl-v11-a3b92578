@@ -264,12 +264,16 @@ const ProductLE7 = () => {
                 
                 {/* Image Description */}
                 <div className="text-center mt-4">
-                  <h4 className="font-medium text-light-foreground mb-1 text-sm lg:text-base">
-                    {productImages[currentImageIndex].title}
-                  </h4>
-                  <p className="text-xs lg:text-sm text-scandi-grey">
-                    {productImages[currentImageIndex].description}
-                  </p>
+                  {productImages[currentImageIndex].title && (
+                    <h4 className="font-medium text-light-foreground mb-1 text-sm lg:text-base">
+                      {productImages[currentImageIndex].title}
+                    </h4>
+                  )}
+                  {productImages[currentImageIndex].description && (
+                    <p className="text-xs lg:text-sm text-scandi-grey">
+                      {productImages[currentImageIndex].description}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -738,12 +742,16 @@ const ProductLE7 = () => {
             </div>
             
             <div className="p-6 text-center">
-              <h4 className="font-semibold text-lg text-gray-900 mb-2">
-                {productImages[currentImageIndex].title}
-              </h4>
-              <p className="text-gray-600">
-                {productImages[currentImageIndex].description}
-              </p>
+              {productImages[currentImageIndex].title && (
+                <h4 className="font-semibold text-lg text-gray-900 mb-2">
+                  {productImages[currentImageIndex].title}
+                </h4>
+              )}
+              {productImages[currentImageIndex].description && (
+                <p className="text-gray-600">
+                  {productImages[currentImageIndex].description}
+                </p>
+              )}
             </div>
           </div>
         </DialogContent>
