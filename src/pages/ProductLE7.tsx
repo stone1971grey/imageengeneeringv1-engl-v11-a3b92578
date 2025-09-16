@@ -245,12 +245,6 @@ const ProductLE7 = () => {
                     {productImages[currentImageIndex].description}
                   </p>
                 </div>
-                
-                {/* Floating feature highlight */}
-                <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
-                  <div className="text-sm text-scandi-grey font-light mb-1">Spectral Range</div>
-                  <div className="text-2xl font-medium text-light-foreground">380-1050nm</div>
-                </div>
               </div>
             </div>
           </div>
