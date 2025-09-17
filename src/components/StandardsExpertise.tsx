@@ -171,7 +171,7 @@ const StandardsExpertise = () => {
                 isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}>
                 {standards.map((standard) => (
-                  <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0 flex flex-col">
+                  <Card key={standard.id} className="h-[220px] hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0 flex flex-col">
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg font-semibold text-black">
                         {standard.title}
