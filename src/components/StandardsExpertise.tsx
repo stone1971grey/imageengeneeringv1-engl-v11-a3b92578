@@ -189,9 +189,7 @@ const StandardsExpertise = () => {
                         </div>
                         
                         <div className="flex items-center text-lg">
-                          <div className={`w-2 h-2 rounded-full mr-2 ${
-                            standard.statusType === 'active' ? 'bg-blue-500' : 'bg-green-500'
-                          }`} />
+                          <div className={`w-2 h-2 rounded-full mr-2 bg-black`} />
                           <span className={`font-medium text-black ${
                             standard.statusType === 'active' ? '' : ''
                           }`}>
