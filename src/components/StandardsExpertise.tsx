@@ -156,7 +156,7 @@ const StandardsExpertise = () => {
             </CollapsibleTrigger>
           </div>
 
-          <CollapsibleContent className="overflow-hidden transition-all duration-300 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <CollapsibleContent className="overflow-hidden transition-all duration-500 ease-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="pt-8">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-black mb-2">
@@ -169,7 +169,7 @@ const StandardsExpertise = () => {
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {standards.map((standard) => (
-                  <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300">
+                  <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100">
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg font-semibold text-black">
                         {standard.title}
