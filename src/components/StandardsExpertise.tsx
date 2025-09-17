@@ -130,8 +130,8 @@ const StandardsExpertise = () => {
                    />
                  </div>
                  <div className="space-y-1">
-                   <h4 className="font-semibold text-foreground text-base">{org.name}</h4>
-                   <p className="text-sm text-muted-foreground max-w-[140px] leading-tight">{org.fullName}</p>
+                   <h4 className="font-semibold text-foreground text-lg">{org.name}</h4>
+                   <p className="text-lg text-muted-foreground max-w-[140px] leading-tight">{org.fullName}</p>
                  </div>
                </div>
              ))}
