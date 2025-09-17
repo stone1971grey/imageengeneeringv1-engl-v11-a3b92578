@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import ieeeLogo from "@/assets/logo-ieee.png";
-import iecLogo from "@/assets/logo-iec.png";
-import isoLogo from "@/assets/logo-iso.jpg";
-import emvaLogo from "@/assets/logo-emva.jpg";
+import ieeeLogo from "@/assets/logo-ieee-new.jpg";
+import iecLogo from "@/assets/logo-iec-new.jpg";
+import isoLogo from "@/assets/logo-iso-new.jpg";
+import emvaLogo from "@/assets/logo-emva-new.jpg";
 
 const StandardsExpertise = () => {
   const [isExpanded, setIsExpanded] = useState(false);
