@@ -15,18 +15,22 @@ const StandardsExpertise = () => {
   const organizations = [
     {
       name: "IEEE",
+      fullName: "Institute of Electrical and Electronics Engineers",
       logo: ieeeLogo
     },
     {
       name: "ISO",
+      fullName: "International Organization for Standardization",
       logo: isoLogo
     },
     {
       name: "IEC",
+      fullName: "International Electrotechnical Commission",
       logo: iecLogo
     },
     {
       name: "EMVA",
+      fullName: "European Machine Vision Association",
       logo: emvaLogo
     }
   ];
@@ -113,20 +117,24 @@ const StandardsExpertise = () => {
         {/* Logo Row */}
         <div className="mb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center max-w-4xl mx-auto">
-            {organizations.map((org, index) => (
-              <div
-                key={index}
-                className="group cursor-pointer transition-all duration-300 hover:scale-105"
-              >
-                <div className="w-[100px] h-[100px] flex items-center justify-center p-4 bg-card rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
-                  <img
-                    src={org.logo}
-                    alt={org.name}
-                    className="max-w-full max-h-full object-contain"
-                  />
-                </div>
-              </div>
-            ))}
+             {organizations.map((org, index) => (
+               <div
+                 key={index}
+                 className="group cursor-pointer transition-all duration-300 hover:scale-105 text-center"
+               >
+                 <div className="w-[100px] h-[100px] flex items-center justify-center p-4 bg-card rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mx-auto mb-3">
+                   <img
+                     src={org.logo}
+                     alt={org.name}
+                     className="max-w-full max-h-full object-contain"
+                   />
+                 </div>
+                 <div className="space-y-1">
+                   <h4 className="font-semibold text-foreground text-sm">{org.name}</h4>
+                   <p className="text-xs text-muted-foreground max-w-[140px] leading-tight">{org.fullName}</p>
+                 </div>
+               </div>
+             ))}
           </div>
         </div>
 
