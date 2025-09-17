@@ -144,6 +144,7 @@ const StandardsExpertise = () => {
             <CollapsibleTrigger asChild>
               <Button 
                 variant="decision"
+                size="lg"
                 className="group"
               >
                 {isExpanded ? "Hide Standards" : "See all Standards"}
