@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Camera, Car, Monitor, Cog } from "lucide-react";
 import { useState } from "react";
 import ieeeLogo from "@/assets/logo-ieee-new.jpg";
 import iecLogo from "@/assets/logo-iec-new.jpg";
@@ -86,18 +86,18 @@ const StandardsExpertise = () => {
     }
   ];
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryIcon = (category: string) => {
     switch (category) {
       case "Automotive":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return <Car className="h-5 w-5 text-blue-600" />;
       case "Photography":
-        return "bg-green-100 text-green-700 border-green-200";
+        return <Camera className="h-5 w-5 text-green-600" />;
       case "Color Science":
-        return "bg-purple-100 text-purple-700 border-purple-200";
+        return <Monitor className="h-5 w-5 text-purple-600" />;
       case "Machine Vision":
-        return "bg-orange-100 text-orange-700 border-orange-200";
+        return <Cog className="h-5 w-5 text-orange-600" />;
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return <Monitor className="h-5 w-5 text-gray-600" />;
     }
   };
 
@@ -183,12 +183,10 @@ const StandardsExpertise = () => {
                       </p>
                       
                       <div className="flex items-center justify-between">
-                        <Badge 
-                          variant="outline" 
-                          className={`text-lg font-medium border ${getCategoryColor(standard.category)}`}
-                        >
-                          {standard.category}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          {getCategoryIcon(standard.category)}
+                          <span className="text-lg font-medium text-gray-700">{standard.category}</span>
+                        </div>
                         
                         <div className="flex items-center text-lg">
                           <div className={`w-2 h-2 rounded-full mr-2 ${
