@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import ieeeLogo from "@/assets/logo-ieee-new.jpg";
 import iecLogo from "@/assets/logo-iec-new.jpg";
@@ -147,16 +147,14 @@ const StandardsExpertise = () => {
                 className="group"
               >
                 {isExpanded ? "Hide Standards" : "See all Standards"}
-                {isExpanded ? (
-                  <ChevronUp className="ml-2 h-4 w-4 transition-transform duration-300" />
-                ) : (
-                  <ChevronDown className="ml-2 h-4 w-4 transition-transform duration-300" />
-                )}
+                <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ease-in-out ${
+                  isExpanded ? 'rotate-180' : 'rotate-0'
+                }`} />
               </Button>
             </CollapsibleTrigger>
           </div>
 
-          <CollapsibleContent className="overflow-hidden transition-all duration-700 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <CollapsibleContent className="overflow-hidden transition-all duration-400 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="pt-8">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-black mb-2">
