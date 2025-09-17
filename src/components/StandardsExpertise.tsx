@@ -156,7 +156,7 @@ const StandardsExpertise = () => {
             </CollapsibleTrigger>
           </div>
 
-          <CollapsibleContent className="overflow-hidden transition-all duration-500 ease-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <CollapsibleContent className="overflow-hidden transition-all duration-700 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="pt-8">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-black mb-2">
