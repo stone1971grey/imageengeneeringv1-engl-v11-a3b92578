@@ -147,16 +147,18 @@ const StandardsExpertise = () => {
                 className="group"
               >
                 {isExpanded ? "Hide Standards" : "See all Standards"}
-                <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-500 ease-in-out ${
+                <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                   isExpanded ? 'rotate-180' : 'rotate-0'
                 }`} />
               </Button>
             </CollapsibleTrigger>
           </div>
 
-          <CollapsibleContent className="overflow-hidden transition-all duration-[600ms] ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <div className="pt-8 transition-opacity duration-[600ms] ease-in-out">
-              <div className="text-center mb-8 opacity-0 animate-[fade-in_600ms_ease-in-out_200ms_forwards]">
+          <CollapsibleContent className="overflow-hidden transition-all duration-[550ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-1 data-[state=closed]:duration-500 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-1 data-[state=open]:duration-550">
+            <div className="pt-8 transition-opacity duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]">
+              <div className={`text-center mb-8 transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
+                isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+              }`}>
                 <h3 className="text-2xl font-bold text-black mb-2">
                   Supported Standards
                 </h3>
@@ -165,7 +167,9 @@ const StandardsExpertise = () => {
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto opacity-0 animate-[fade-in_600ms_ease-in-out_300ms_forwards]">
+              <div className={`grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] delay-75 ${
+                isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}>
                 {standards.map((standard) => (
                   <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100">
                     <CardHeader className="pb-4">
