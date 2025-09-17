@@ -145,7 +145,7 @@ const StandardsExpertise = () => {
               <Button 
                 variant="decision"
                 size="lg"
-                className="group"
+                className="group px-12"
               >
                 {isExpanded ? "Hide Standards" : "See all Standards"}
                 <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
