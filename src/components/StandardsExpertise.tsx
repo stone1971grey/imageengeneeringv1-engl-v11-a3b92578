@@ -159,10 +159,10 @@ const StandardsExpertise = () => {
               <div className={`text-center mb-8 transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
                 isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
               }`}>
-                <h3 className="text-2xl font-bold text-black mb-2">
+                <h3 className="text-lg font-bold text-black mb-2">
                   Supported Standards
                 </h3>
-                <p className="text-gray-700">
+                <p className="text-lg text-gray-700">
                   Our testing procedures are based on internationally recognized standards
                 </p>
               </div>
@@ -171,26 +171,26 @@ const StandardsExpertise = () => {
                 isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}>
                 {standards.map((standard) => (
-                  <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100">
+                  <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0">
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg font-semibold text-black">
                         {standard.title}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <p className="text-sm text-gray-700 leading-relaxed">
+                      <p className="text-lg text-gray-700 leading-relaxed">
                         {standard.description}
                       </p>
                       
                       <div className="flex items-center justify-between">
                         <Badge 
                           variant="outline" 
-                          className={`text-xs font-medium border ${getCategoryColor(standard.category)}`}
+                          className={`text-lg font-medium border ${getCategoryColor(standard.category)}`}
                         >
                           {standard.category}
                         </Badge>
                         
-                        <div className="flex items-center text-sm">
+                        <div className="flex items-center text-lg">
                           <div className={`w-2 h-2 rounded-full mr-2 ${
                             standard.statusType === 'active' ? 'bg-blue-500' : 'bg-green-500'
                           }`} />
