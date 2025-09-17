@@ -147,16 +147,16 @@ const StandardsExpertise = () => {
                 className="group"
               >
                 {isExpanded ? "Hide Standards" : "See all Standards"}
-                <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ease-in-out ${
+                <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-500 ease-in-out ${
                   isExpanded ? 'rotate-180' : 'rotate-0'
                 }`} />
               </Button>
             </CollapsibleTrigger>
           </div>
 
-          <CollapsibleContent className="overflow-hidden transition-all duration-400 ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-            <div className="pt-8">
-              <div className="text-center mb-8">
+          <CollapsibleContent className="overflow-hidden transition-all duration-[600ms] ease-in-out data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+            <div className="pt-8 transition-opacity duration-[600ms] ease-in-out">
+              <div className="text-center mb-8 opacity-0 animate-[fade-in_600ms_ease-in-out_200ms_forwards]">
                 <h3 className="text-2xl font-bold text-black mb-2">
                   Supported Standards
                 </h3>
@@ -165,7 +165,7 @@ const StandardsExpertise = () => {
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto opacity-0 animate-[fade-in_600ms_ease-in-out_300ms_forwards]">
                 {standards.map((standard) => (
                   <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100">
                     <CardHeader className="pb-4">
