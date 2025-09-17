@@ -118,7 +118,7 @@ const StandardsExpertise = () => {
                 key={index}
                 className="group cursor-pointer transition-all duration-300 hover:scale-105"
               >
-                <div className="w-[140px] h-[100px] flex items-center justify-center p-6 bg-card rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="w-[100px] h-[100px] flex items-center justify-center p-4 bg-card rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
                   <img
                     src={org.logo}
                     alt={org.name}
