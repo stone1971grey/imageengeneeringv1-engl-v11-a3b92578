@@ -89,13 +89,13 @@ const StandardsExpertise = () => {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "Automotive":
-        return <Car className="h-5 w-5 text-blue-600" />;
+        return <Car className="h-5 w-5 text-gray-600" />;
       case "Photography":
-        return <Camera className="h-5 w-5 text-green-600" />;
+        return <Camera className="h-5 w-5 text-gray-600" />;
       case "Color Science":
-        return <Monitor className="h-5 w-5 text-purple-600" />;
+        return <Monitor className="h-5 w-5 text-gray-600" />;
       case "Machine Vision":
-        return <Cog className="h-5 w-5 text-orange-600" />;
+        return <Cog className="h-5 w-5 text-gray-600" />;
       default:
         return <Monitor className="h-5 w-5 text-gray-600" />;
     }
@@ -171,29 +171,29 @@ const StandardsExpertise = () => {
                 isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}>
                 {standards.map((standard) => (
-                  <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0">
+                  <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0 flex flex-col">
                     <CardHeader className="pb-4">
                       <CardTitle className="text-lg font-semibold text-black">
                         {standard.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <p className="text-lg text-gray-700 leading-relaxed">
+                    <CardContent className="space-y-4 flex-1 flex flex-col">
+                      <p className="text-lg text-gray-700 leading-relaxed flex-1">
                         {standard.description}
                       </p>
                       
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mt-auto pt-4">
                         <div className="flex items-center gap-2">
                           {getCategoryIcon(standard.category)}
-                          <span className="text-lg font-medium text-gray-700">{standard.category}</span>
+                          <span className="text-lg font-medium text-black">{standard.category}</span>
                         </div>
                         
                         <div className="flex items-center text-lg">
                           <div className={`w-2 h-2 rounded-full mr-2 ${
                             standard.statusType === 'active' ? 'bg-blue-500' : 'bg-green-500'
                           }`} />
-                          <span className={`font-medium ${
-                            standard.statusType === 'active' ? 'text-blue-700' : 'text-green-700'
+                          <span className={`font-medium text-black ${
+                            standard.statusType === 'active' ? '' : ''
                           }`}>
                             {standard.status}
                           </span>
