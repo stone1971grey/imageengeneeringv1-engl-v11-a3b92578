@@ -102,14 +102,14 @@ const StandardsExpertise = () => {
   };
 
   return (
-    <section className="py-16 bg-[#373737]">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
             Shaping Global Standards
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-black max-w-3xl mx-auto leading-relaxed">
             We actively shape and comply with the world's leading image quality standards.
           </p>
         </div>
@@ -122,7 +122,7 @@ const StandardsExpertise = () => {
                  key={index}
                  className="group cursor-pointer transition-all duration-300 hover:scale-105 text-center"
                >
-                 <div className="w-[100px] h-[100px] flex items-center justify-center p-4 bg-[#373737] border border-[#373737] rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mx-auto mb-3">
+                 <div className="w-[100px] h-[100px] flex items-center justify-center p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mx-auto mb-3">
                    <img
                      src={org.logo}
                      alt={org.name}
@@ -130,8 +130,8 @@ const StandardsExpertise = () => {
                    />
                  </div>
                  <div className="space-y-1">
-                   <h4 className="font-semibold text-foreground text-lg">{org.name}</h4>
-                   <p className="text-lg text-muted-foreground max-w-[140px] leading-tight">{org.fullName}</p>
+                    <h4 className="font-semibold text-black text-lg">{org.name}</h4>
+                    <p className="text-lg text-gray-700 max-w-[140px] leading-tight">{org.fullName}</p>
                  </div>
                </div>
              ))}
@@ -159,10 +159,10 @@ const StandardsExpertise = () => {
           <CollapsibleContent className="overflow-hidden transition-all duration-300 data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="pt-8">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-foreground mb-2">
+                <h3 className="text-2xl font-bold text-black mb-2">
                   Supported Standards
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-gray-700">
                   Our testing procedures are based on internationally recognized standards
                 </p>
               </div>
@@ -171,12 +171,12 @@ const StandardsExpertise = () => {
                 {standards.map((standard) => (
                   <Card key={standard.id} className="h-full hover:shadow-md transition-shadow duration-300">
                     <CardHeader className="pb-4">
-                      <CardTitle className="text-lg font-semibold text-foreground">
+                      <CardTitle className="text-lg font-semibold text-black">
                         {standard.title}
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="text-sm text-gray-700 leading-relaxed">
                         {standard.description}
                       </p>
                       
