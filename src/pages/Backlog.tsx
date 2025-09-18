@@ -6,7 +6,8 @@ const Backlog = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="pt-[180px] pb-16">
+      <div aria-hidden="true" className="block h-[180px] md:h-[180px] lg:h-[180px]" />
+      <div className="pb-16">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-center mb-8">Backlog</h1>
