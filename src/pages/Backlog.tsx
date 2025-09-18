@@ -12,6 +12,21 @@ const Backlog = () => {
     {
       question: "How do you measure the uniformity of LE7?",
       answer: "For the Uniformity measurement, our TE291 test chart is applied. In each quadrant of the TE291, the luminance is measured with a Class L luminance meter. The uniformity is then calculated as: Uniformity = Lmin/Lmax"
+    },
+    {
+      question: "How do you calculate the color temperature deviation for the LE7?",
+      answer: "The color temperature deviation is calculated using the formula: Δuv = √[(u' - u'BBL)² + (v' - v'BBL)²] where u' and v' are the CIE 1976 chromaticity coordinates of the measured white point, and u'BBL and v'BBL are the coordinates of the blackbody locus at the target color temperature. For precise measurements, we recommend keeping Δuv < 0.006 for optimal performance."
+    },
+    {
+      question: "What does the LE7 setup look like in a professional testing environment?",
+      answer: `The LE7 integrates seamlessly into professional testing workflows. Here's a typical setup configuration:
+      
+      <div class="my-4">
+        <img src="/src/assets/arcturus-setup-vega-laptop.jpg" alt="LE7 Professional Testing Setup" class="w-full max-w-2xl mx-auto rounded-lg shadow-md" />
+        <p class="text-sm text-gray-600 text-center mt-2">LE7 VIS-IR in a complete testing environment with laptop integration</p>
+      </div>
+      
+      The setup typically includes the LE7 light source, measurement equipment, and our Vega software for comprehensive analysis and control.`
     }
   ];
 
