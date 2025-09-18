@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import EngineersSlider from "@/components/EngineersSlider";
 import ProductFAQ from "@/components/ProductFAQ";
 import Footer from "@/components/Footer";
+import le7TestlaborImage from "@/assets/le7-testlabor.jpg";
 
 const Backlog = () => {
   const faqData = [
@@ -22,7 +23,7 @@ const Backlog = () => {
       answer: `The LE7 integrates seamlessly into professional testing workflows. Here's a typical setup configuration:
       
       <div class="my-4">
-        <img src="/src/assets/le7-testlabor.jpg" alt="LE7 Professional Testing Setup" class="w-full max-w-2xl mx-auto rounded-lg shadow-md" />
+        <img src="${le7TestlaborImage}" alt="LE7 Professional Testing Setup" class="w-full max-w-2xl mx-auto rounded-lg shadow-md" />
         <p class="text-sm text-gray-600 text-center mt-2">LE7 VIS-IR in a complete testing environment with laptop integration</p>
       </div>
       

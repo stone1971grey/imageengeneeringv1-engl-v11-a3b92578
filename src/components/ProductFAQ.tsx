@@ -82,7 +82,7 @@ const ProductFAQ: React.FC<ProductFAQProps> = ({
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-lg text-gray-600 leading-relaxed">
-                  {faq.answer}
+                  <div dangerouslySetInnerHTML={{ __html: faq.answer }} />
                 </AccordionContent>
               </AccordionItem>
             ))}
