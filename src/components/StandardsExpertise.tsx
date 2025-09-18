@@ -172,18 +172,18 @@ const StandardsExpertise = () => {
                 isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}>
                 {standards.map((standard) => (
-                  <Card key={standard.id} className="h-[220px] hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0 flex flex-col">
-                    <CardHeader className="pb-4">
+                <Card key={standard.id} className="h-[220px] hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0 flex flex-col">
+                    <CardHeader className="pb-4 flex-shrink-0">
                       <CardTitle className="text-lg font-semibold text-black">
                         {standard.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4 flex-1 flex flex-col">
-                      <p className="text-lg text-gray-700 leading-relaxed flex-1">
+                    <CardContent className="flex-1 flex flex-col justify-between">
+                      <p className="text-lg text-gray-700 leading-relaxed">
                         {standard.description}
                       </p>
                       
-                      <div className="flex items-center justify-between mt-auto pt-4">
+                      <div className="flex items-center justify-between pt-4">
                         <div className="flex items-center gap-2">
                           {getCategoryIcon(standard.category)}
                           <span className="text-lg font-medium text-black">{standard.category}</span>
