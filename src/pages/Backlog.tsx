@@ -4,9 +4,8 @@ import Footer from "@/components/Footer";
 
 const Backlog = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background page-backlog">
       <Navigation />
-      <div aria-hidden="true" className="block h-[180px] md:h-[180px] lg:h-[180px]" />
       <div className="pb-16">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">

@@ -182,4 +182,14 @@ All colors MUST be HSL.
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* Nur Backlog – Abstand für Content */
+  .page-backlog {
+    padding-top: 280px !important;
+  }
+
+  /* Bessere Anker/Scroll-Positionen bei Sprüngen */
+  .page-backlog :is(h1, h2, h3, [id]) {
+    scroll-margin-top: 280px;
+  }
 }
