@@ -16,7 +16,7 @@ const Backlog = () => {
     },
     {
       question: "How do you calculate the color temperature deviation for the LE7?",
-      answer: "The color temperature deviation is calculated using the formula: Δuv = √[(u' - u'BBL)² + (v' - v'BBL)²] where u' and v' are the CIE 1976 chromaticity coordinates of the measured white point, and u'BBL and v'BBL are the coordinates of the blackbody locus at the target color temperature. For precise measurements, we recommend keeping Δuv < 0.006 for optimal performance."
+      answer: "The color temperature deviation is calculated using the formula: <strong>Δuv = √[(u' - u'BBL)² + (v' - v'BBL)²]</strong> where u' and v' are the CIE 1976 chromaticity coordinates of the measured white point, and u'BBL and v'BBL are the coordinates of the blackbody locus at the target color temperature. For precise measurements, we recommend keeping Δuv < 0.006 for optimal performance."
     },
     {
       question: "What does the LE7 setup look like in a professional testing environment?",
