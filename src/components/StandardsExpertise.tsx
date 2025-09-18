@@ -110,7 +110,7 @@ const StandardsExpertise = () => {
             Shaping Global Standards
           </h2>
           <p className="text-lg text-black max-w-3xl mx-auto leading-relaxed">
-            We actively shape and comply with the world's leading image quality standards.
+            Our engineers actively participate in the development of the most crucial international standards for image quality testing.
           </p>
         </div>
 
