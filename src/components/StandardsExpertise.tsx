@@ -118,22 +118,18 @@ const StandardsExpertise = () => {
         <div className="mb-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center max-w-4xl mx-auto">
              {organizations.map((org, index) => (
-               <div
-                 key={index}
-                 className="group cursor-pointer transition-all duration-300 hover:scale-105 text-center"
-               >
-                 <div className="w-[100px] h-[100px] flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 mx-auto mb-3">
-                   <img
-                     src={org.logo}
-                     alt={org.name}
-                     className="max-w-full max-h-full object-contain"
-                   />
-                 </div>
-                 <div className="space-y-1">
-                    <h4 className="font-semibold text-black text-lg">{org.name}</h4>
-                    <p className="text-lg text-gray-700 max-w-[140px] leading-tight">{org.fullName}</p>
-                 </div>
-               </div>
+                <div
+                  key={index}
+                  className="group cursor-pointer transition-all duration-300 hover:scale-105"
+                >
+                  <div className="w-[100px] h-[100px] flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300">
+                    <img
+                      src={org.logo}
+                      alt={org.name}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                </div>
              ))}
           </div>
         </div>
