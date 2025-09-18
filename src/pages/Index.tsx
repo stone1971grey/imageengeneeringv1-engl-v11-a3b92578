@@ -3,7 +3,6 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Hero from "@/components/Hero";
 import Industries from "@/components/Industries";
 import NewsSection from "@/components/NewsSection";
-import EngineersSlider from "@/components/EngineersSlider";
 import StandardsExpertise from "@/components/StandardsExpertise";
 import Footer from "@/components/Footer";
 
@@ -20,7 +19,6 @@ const Index = () => {
       <Hero />
       <Industries />
       <NewsSection />
-      <EngineersSlider />
       <StandardsExpertise />
       <Footer />
     </div>

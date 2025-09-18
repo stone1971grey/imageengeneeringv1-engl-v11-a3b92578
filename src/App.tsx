@@ -15,6 +15,7 @@ import ProductArcturus from "./pages/ProductArcturus";
 import ProductLE7 from "./pages/ProductLE7";
 import SolutionArcturusBundle from "./pages/SolutionArcturusBundle";
 import HiddenSegments from "./pages/HiddenSegments";
+import Backlog from "./pages/Backlog";
 import Charts from "./pages/Charts";
 import ChartDetail from "./pages/ChartDetail";
 import Cart from "./pages/Cart";
@@ -46,7 +47,8 @@ const App = () => (
            <Route path="/product/arcturus" element={<ProductArcturus />} />
            <Route path="/product/le7" element={<ProductLE7 />} />
            <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
-          <Route path="/hidden-segments" element={<HiddenSegments />} />
+           <Route path="/hidden-segments" element={<HiddenSegments />} />
+           <Route path="/backlog" element={<Backlog />} />
           <Route path="/products/charts" element={<Charts />} />
           <Route path="/products/charts/:slug" element={<ChartDetail />} />
           <Route path="/cart" element={<Cart />} />
