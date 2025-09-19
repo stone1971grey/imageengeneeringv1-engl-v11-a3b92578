@@ -13,7 +13,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger, Drawer
 import { Search, Filter, ShoppingCart, FileText, X, Menu, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { charts, categories, applications, standards, materials, formats } from "@/data/charts";
-import precisionTestingHero from "@/assets/automotive-lab.jpg";
+import precisionTestingHero from "@/assets/le7-testlabor.jpg";
 
 const Charts = () => {
   const [searchQuery, setSearchQuery] = useState("");
