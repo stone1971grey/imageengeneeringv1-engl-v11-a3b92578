@@ -267,58 +267,76 @@ const Charts = () => {
 
       {/* Hero Section */}
       <section className="relative min-h-screen overflow-hidden">
+        {/* Hero Background Image with Ken Burns Effect */}
         <div className="absolute inset-0 animate-fade-in">
           <img 
-            src={precisionTestingHero} 
-            alt="Testcharts für präzise Bildqualitätsmessungen" 
+            src={precisionTestingHero}
+            alt="Test Charts für präzise Bildqualitätsmessungen"
             className="w-full h-full object-cover animate-ken-burns"
           />
           <div className="absolute inset-0 bg-black/15"></div>
+          {/* Left fade overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
         </div>
-
+        
+        {/* Navigation Spacer */}
         <div className="h-16"></div>
         
-        <div className="relative z-10 container mx-auto px-6 py-24 lg:py-32">
-          <div className="max-w-4xl">
-
-            <div className="mb-8">
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-32 pt-32">
-              Test Charts – Precision
-              <br />
-              <span className="font-medium text-white">for Every Application</span>
-            </h1>
+        {/* Hero Content */}
+        <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10">
+          <div className="flex items-center justify-start min-h-[80vh]">
             
-            <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl">
-              Our comprehensive selection of test charts for all camera and image quality testing – from low-light to ultra-HD.
-            </p>
-            </div>
+            {/* Left-aligned Content */}
+            <div className="text-left space-y-8 max-w-4xl">
+              <div>
+                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6">
+                  Test Charts
+                  <br />
+                  <span className="font-medium">for Every Application</span>
+                </h1>
+                
+                <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
+                  Our comprehensive selection of test charts for all camera and image quality testing – from low-light to ultra-HD.
+                </p>
+              </div>
+              
+              <div className="pt-4 flex gap-4">
+                <Button 
+                  size="lg"
+                  variant="contact"
+                  className="text-white border-0 px-12 py-4 group"
+                  onClick={scrollToCharts}
+                >
+                  Explore All Charts
+                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+                
+                <Button 
+                  size="lg"
+                  variant="decision"
+                  className="text-white border-0 px-12 py-4"
+                  onClick={scrollToFooterExpert}
+                >
+                  Request Consultation
+                </Button>
+              </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                onClick={scrollToCharts}
-                variant="decision"
-                className="text-white px-8 group"
-              >
-                Explore All Charts
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              <Button 
-                size="lg" 
-                onClick={scrollToFooterExpert}
-                variant="contact"
-                className="text-white px-8 group"
-              >
-                Request Consultation
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              {/* Minimal stats */}
+              <div className="flex items-center justify-start space-x-12 pt-8">
+                <div>
+                  <div className="text-2xl font-medium text-white">200+</div>
+                  <div className="text-sm text-white/80 font-light">Test Chart Variants</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-medium text-white">0.01%</div>
+                  <div className="text-sm text-white/80 font-light">Measurement Tolerance</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-medium text-white">15+</div>
+                  <div className="text-sm text-white/80 font-light">Years of Experience</div>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-[#74952a]/40 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-[#74952a]/60 rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </section>
