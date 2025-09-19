@@ -22,6 +22,7 @@ const buttonVariants = cva(
         contact: "bg-[#3D7BA2] text-white hover:bg-[#2f6385] shadow-lg hover:shadow-xl transition-all duration-300",
         technical: "bg-gray-900 text-white hover:bg-[#626262] hover:text-white transition-all duration-300",
         academia: "bg-[hsl(45,95%,49%)] text-black hover:bg-[hsl(45,95%,65%)] shadow-soft hover:shadow-lg transition-all duration-300",
+        explore: "bg-[hsl(var(--explore-button))] text-black hover:bg-[hsl(58,60%,75%)] shadow-soft hover:shadow-lg transition-all duration-300",
       },
       size: {
         default: "h-10 px-4 py-2",

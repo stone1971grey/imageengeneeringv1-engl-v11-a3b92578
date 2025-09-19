@@ -95,6 +95,9 @@ All colors MUST be HSL.
     
     /* Hotspot color */
     --hotspot-primary: 205 45% 44%;
+    
+    /* Custom explore button */
+    --explore-button: 58 60% 69%;
 
     --radius: 0.5rem;
 

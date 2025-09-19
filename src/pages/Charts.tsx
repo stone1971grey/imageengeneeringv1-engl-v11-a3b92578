@@ -303,8 +303,8 @@ const Charts = () => {
               <div className="pt-4 flex gap-4">
                 <Button 
                   size="lg"
-                  variant="contact"
-                  className="text-white border-0 px-12 py-4 group"
+                  variant="explore"
+                  className="border-0 px-12 py-4 group"
                   onClick={scrollToCharts}
                 >
                   Explore All Charts
