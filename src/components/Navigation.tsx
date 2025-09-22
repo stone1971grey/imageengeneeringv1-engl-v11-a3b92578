@@ -326,7 +326,7 @@ const Navigation = () => {
                             Popular Applications
                           </h4>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
@@ -336,7 +336,7 @@ const Navigation = () => {
                           <div className="space-y-2">
                             <Link 
                               to="/in-cabin-testing"
-                              className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
+                              className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
                               onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
                               onMouseLeave={() => setHoveredSolution(null)}
                             >
@@ -346,7 +346,7 @@ const Navigation = () => {
                             </Link>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
@@ -354,7 +354,7 @@ const Navigation = () => {
                             <span>Test Environments for Smartphones & Displays</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
@@ -362,7 +362,7 @@ const Navigation = () => {
                             <span>Microscopy & Medical Imaging</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
@@ -441,42 +441,42 @@ const Navigation = () => {
                           </h4>
                           <Link
                             to="/products/charts"
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors"
                             onMouseEnter={() => setHoveredProduct("Test Charts")}
                           >
                             <Target className="h-5 w-5" />
                             <span>Test Charts</span>
                           </Link>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Illumination Devices")}
                           >
                             <Lightbulb className="h-5 w-5" />
                             <span>Illumination Devices</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Measurement Devices")}
                           >
                             <Camera className="h-5 w-5" />
                             <span>Measurement Devices</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Software")}
                           >
                             <Monitor className="h-5 w-5" />
                             <span>Software</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Accessories")}
                           >
                             <Puzzle className="h-5 w-5" />
                             <span>Accessories</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Services")}
                           >
                             <GraduationCap className="h-5 w-5" />
@@ -502,30 +502,30 @@ const Navigation = () => {
                           {/* Test Charts subgroups */}
                           {hoveredProduct === "Test Charts" && (
                             <div className="space-y-2">
-                              <Link to="/products/charts/multipurpose" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Multipurpose</Link>
-                              <Link to="/products/charts/reflective" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Reflective</Link>
-                              <Link to="/products/charts/transparent" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Transparent</Link>
-                              <Link to="/products/charts/hdr" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">HDR Testing</Link>
+                              <Link to="/products/charts/multipurpose" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Multipurpose</Link>
+                              <Link to="/products/charts/reflective" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Reflective</Link>
+                              <Link to="/products/charts/transparent" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Transparent</Link>
+                              <Link to="/products/charts/hdr" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">HDR Testing</Link>
                             </div>
                           )}
                           {/* Illumination Devices subgroups */}
                           {hoveredProduct === "Illumination Devices" && (
                             <div className="space-y-2">
-                              <Link to="/products/illumination/led" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">LED Illumination</Link>
-                              <Link to="/products/illumination/uniform" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Uniform Light Sources</Link>
-                              <Link to="/products/illumination/specialized" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Specialized Lighting</Link>
+                              <Link to="/products/illumination/led" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">LED Illumination</Link>
+                              <Link to="/products/illumination/uniform" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Uniform Light Sources</Link>
+                              <Link to="/products/illumination/specialized" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Specialized Lighting</Link>
                             </div>
                           )}
                           {/* Measurement Devices subgroups */}
                           {hoveredProduct === "Measurement Devices" && (
                             <div className="space-y-2">
-                              <Link to="/product/arcturus" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer bg-blue-100 p-2 rounded-md border-2 border-blue-300">
+                              <Link to="/product/arcturus" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-[#d9c409] bg-opacity-10 p-2 rounded-md border-2 border-[#d9c409]">
                                 <span>Arcturus LED System</span>
-                                <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">FEATURED</span>
+                                <span className="ml-2 text-xs bg-[#d9c409] text-black px-2 py-1 rounded">FEATURED</span>
                               </Link>
-                              <Link to="/products/measurement/colorimeters" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Colorimeters</Link>
-                              <Link to="/products/measurement/photometers" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Photometers</Link>
-                              <Link to="/products/measurement/spectroradiometers" className="block text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">Spectroradiometers</Link>
+                              <Link to="/products/measurement/colorimeters" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Colorimeters</Link>
+                              <Link to="/products/measurement/photometers" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Photometers</Link>
+                              <Link to="/products/measurement/spectroradiometers" className="block text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">Spectroradiometers</Link>
                             </div>
                           )}
                           {/* Software subgroups */}
