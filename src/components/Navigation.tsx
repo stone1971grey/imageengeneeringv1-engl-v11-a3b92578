@@ -238,9 +238,9 @@ const Navigation = () => {
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[750px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
-                        <div className="flex gap-6 p-6">
+                         <div className="flex p-6">
                         {/* Left Column: Industries */}
-                          <div className="space-y-4 w-[300px] pr-6 border-r border-border">
+                          <div className="space-y-4 w-[300px] pr-3 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Industries
                           </h4>
@@ -322,7 +322,7 @@ const Navigation = () => {
                         
                         
                         {/* Right Column: Popular Applications */}
-                          <div className="space-y-4 w-[300px]">
+                          <div className="space-y-4 w-[300px] pl-3">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Popular Applications
                           </h4>
