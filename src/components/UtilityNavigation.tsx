@@ -7,7 +7,7 @@ const UtilityNavigation = () => {
       <IntelligentSearchBar />
       <Button 
         variant="default" 
-        className="bg-[#22C3F7] hover:bg-white hover:text-[#22C3F7] text-black border border-[#22C3F7] hover:border-[#22C3F7] transition-all duration-300 text-lg px-6 py-2"
+        className="bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 text-lg px-6 py-2"
       >
         Contact
       </Button>
