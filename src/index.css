@@ -186,3 +186,9 @@ All colors MUST be HSL.
     overflow: hidden;
   }
 }
+
+/* Navigation flyout positioning */
+nav ul > li:nth-last-child(-n + 2) .flyout {
+  left: auto !important;
+  right: 0 !important;
+}
