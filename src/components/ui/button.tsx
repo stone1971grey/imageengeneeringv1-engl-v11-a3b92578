@@ -18,11 +18,11 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-[#626262] hover:text-white",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        decision: "bg-[#103e7c] text-white hover:bg-[#0d3369] shadow-soft hover:shadow-lg transition-all duration-300",
+        decision: "bg-[#d9c409] text-black hover:bg-[#c4b108] shadow-soft hover:shadow-lg transition-all duration-300",
         contact: "bg-[#3D7BA2] text-white hover:bg-[#2f6385] shadow-lg hover:shadow-xl transition-all duration-300",
         technical: "bg-gray-900 text-white hover:bg-[#626262] hover:text-white transition-all duration-300",
         academia: "bg-[hsl(45,95%,49%)] text-black hover:bg-[hsl(45,95%,65%)] shadow-soft hover:shadow-lg transition-all duration-300",
-        explore: "bg-[#d9c409] text-black hover:bg-[#c4b108] shadow-soft hover:shadow-lg transition-all duration-300",
+        explore: "bg-[#103e7c] text-white hover:bg-[#0d3369] shadow-soft hover:shadow-lg transition-all duration-300",
       },
       size: {
         default: "h-10 px-4 py-2",
