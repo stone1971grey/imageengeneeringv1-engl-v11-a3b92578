@@ -187,8 +187,16 @@ All colors MUST be HSL.
   }
 }
 
-/* Navigation flyout positioning */
-nav ul > li:nth-last-child(-n + 2) .flyout {
+/* Navigation flyout positioning - Radix specific */
+[data-radix-navigation-menu-content] {
   left: auto !important;
-  right: 0 !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  margin-left: 50% !important;
+}
+
+/* Override viewport positioning */
+[data-radix-navigation-menu-viewport] {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
 }
