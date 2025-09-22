@@ -203,17 +203,14 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#4B4A4A] border-b border-[#4B4A4A]">
-      {/* Utility Navigation */}
-      <div className="container mx-auto px-6 pt-5 pb-2">
-        <div className="flex items-center justify-end">
-          <div className="hidden lg:flex"> {/* Remove mr-4, SimpleDropdown already has mx-4 */}
-            <UtilityNavigation />
-          </div>
-        </div>
-      </div>
-      
-      {/* Main Navigation */}
+      {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
+        {/* Top row - Utility Navigation */}
+        <div className="hidden lg:flex justify-end pt-2 pb-2">
+          <UtilityNavigation />
+        </div>
+        
+        {/* Main row - Logo and Navigation */}
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img 

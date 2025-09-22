@@ -3,7 +3,7 @@ import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 
 const UtilityNavigation = () => {
   return (
-    <div className="flex items-center gap-4 mr-4"> {/* Add mr-4 to match Company button spacing */}
+    <div className="flex items-center gap-4"> {/* Remove mr-4 since it's now in the same container */}
       <IntelligentSearchBar />
       <Button 
         variant="default" 
