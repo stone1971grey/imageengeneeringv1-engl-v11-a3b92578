@@ -186,17 +186,3 @@ All colors MUST be HSL.
     overflow: hidden;
   }
 }
-
-/* Navigation flyout positioning - Each flyout under its trigger */
-[data-radix-navigation-menu-content] {
-  left: 0 !important;
-  right: auto !important;
-  transform: none !important;
-  margin-left: 0 !important;
-}
-
-/* Reset viewport positioning */
-[data-radix-navigation-menu-viewport] {
-  left: 0 !important;
-  transform: none !important;
-}
