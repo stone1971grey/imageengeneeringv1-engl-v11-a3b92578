@@ -24,7 +24,7 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
       </Button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-lg shadow-xl border border-gray-200">
+        <div className="absolute top-full left-0 mt-2 z-[9999] bg-white rounded-lg shadow-xl border border-gray-200 p-[20px]">
           {children}
         </div>
       )}
