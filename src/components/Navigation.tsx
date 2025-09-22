@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText, Phone, MapPin, Calendar, Briefcase, Handshake, Leaf, Recycle, ShieldCheck, ChevronRight } from "lucide-react";
 import { BadgeCheck, Sprout } from "lucide-react";
+import { CustomTargetIcon } from "./CustomTargetIcon";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
@@ -330,27 +331,27 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CheckCircle className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Camera Quality Validation</span>
                           </div>
                           <div className="space-y-2">
-                            <Link 
-                              to="/in-cabin-testing"
-                              className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
-                              onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
-                              onMouseLeave={() => setHoveredSolution(null)}
-                            >
-                              <CheckCircle className="h-5 w-5" />
-                              <span>In-Cabin Performance Testing</span>
-                              <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
-                            </Link>
+                              <Link 
+                                to="/in-cabin-testing"
+                                className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
+                                onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
+                                onMouseLeave={() => setHoveredSolution(null)}
+                              >
+                                <CustomTargetIcon className="h-5 w-5" />
+                                <span>In-Cabin Performance Testing</span>
+                                <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
+                              </Link>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CheckCircle className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Test Environments for Smartphones & Displays</span>
                           </div>
                           <div 
@@ -358,7 +359,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CheckCircle className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Microscopy & Medical Imaging</span>
                           </div>
                           <div 
@@ -366,7 +367,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CheckCircle className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>ISO and IEEE Compliant Test Setups</span>
                           </div>
                         </div>
