@@ -667,8 +667,8 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4 relative">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] transform -translate-x-full">
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50 left-auto right-0 origin-top-right">
+                    <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
                         <div className="flex gap-6 p-6">
                         {/* Column 1: Technical Resources */}
                           <div className="space-y-4 flex-1 pr-6 border-r border-border">
@@ -739,8 +739,8 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4 relative">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Company</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] transform -translate-x-full">
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50 left-auto right-0 origin-top-right">
+                    <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
                       {/* Main grid */}
                       <div className="flex gap-8 p-6">
                         {/* Column 1: Company Information */}

@@ -188,7 +188,7 @@ All colors MUST be HSL.
 }
 
 /* Navigation flyout positioning */
-nav ul > li:nth-last-child(-n + 2) [data-radix-navigation-menu-content] {
+nav ul > li:nth-last-child(-n + 2) .flyout {
   left: auto !important;
   right: 0 !important;
 }
