@@ -339,44 +339,44 @@ const ProductLE7 = () => {
               <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Key Benefits of LE7</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximum Illuminance</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">iQ-LED Light Source</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Up to 1 Mcd/m² - more than enough intensity to challenge even the most sensitive image sensors.
+                    The LE7 is a uniform lightbox that uses iQ-LED technology to generate custom spectra for more accurate and flexible camera testing.
                   </p>
                 </div>
                 
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flicker-Free</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Multiple Variants</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    DC-powered LED technology ensures flicker-free operation for consistent, reliable test results.
+                    Choose from variants that include 2x, 4x, or 6x iQ-LED modules. Using more modules increases your minimum and maximum illumination values.
                   </p>
                 </div>
                 
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">High Stability</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Spectral Range</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Extremely high stability and consistency for reproducible test conditions and accurate measurements.
+                    The LE7 has a spectral range of 380-820 nm and a range of 380-1050 nm for the LE7 VIS-IR variant. A mini spectrometer is delivered with the product. <span className="text-sm">**An LE7 Basic variant is available for delivery without a spectrometer to reduce costs if desired. Up to 40 preconfigured illuminants based on your requirements will be programmed into the LE7 before delivery.</span>
                   </p>
                 </div>
                 
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">True HDR Scenes</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">NIR Testing</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Create true HDR scenes in combination with other Vega devices for comprehensive test scenarios.
+                    The LE7 VIS-IR variant uses two standard iQ-LED modules and four iQ-LED IR modules that expand the spectral range for camera testing in the near-infrared (NIR) range.
                   </p>
                 </div>
                 
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flexible Control</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Extended Dynamic Range</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Control via UI software, API and Python scripts for Windows and Linux systems.
+                    The LE7-E variant can create a dynamic range of up to 1:100.00 to expand testing in low-light scenarios.
                   </p>
                 </div>
                 
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Wide Dynamic Range</h3>
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Color Calibrations</h3>
                   <p className="text-gray-600 leading-relaxed">
-                    Change intensity across a wide dynamic range with constant spectral properties.
+                    Using the LE7 with the TE292 camSPECS plate test chart allows you to perform camera color calibrations using the power of iQ-LED technology to increase accuracy.
                   </p>
                 </div>
               </div>
