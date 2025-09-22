@@ -368,12 +368,12 @@ const Charts = () => {
             <Button
               variant="outline"
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className="flex items-center gap-2 border-gray-300 hover:bg-gray-50 h-10 px-4"
+              className="flex items-center gap-2 border-[#103e7c] text-[#103e7c] hover:bg-[#103e7c] hover:text-white h-10 px-4"
             >
               <Filter className="w-4 h-4" />
               {filtersOpen ? 'Hide Filter' : 'Show Filter'}
               {activeFiltersCount > 0 && (
-                <Badge variant="secondary" className="ml-1 bg-[#3464e3] text-white">
+                <Badge variant="secondary" className="ml-1 bg-[#103e7c] text-white">
                   {activeFiltersCount}
                 </Badge>
               )}
