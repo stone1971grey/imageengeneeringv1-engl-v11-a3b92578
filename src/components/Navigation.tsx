@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText, Phone, MapPin, Calendar, Briefcase, Handshake, Leaf, Recycle, ShieldCheck, ChevronRight, ChevronDown } from "lucide-react";
 import { BadgeCheck, Sprout } from "lucide-react";
 import { CustomTargetIcon } from "./CustomTargetIcon";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie.png";
 import UtilityNavigation from "@/components/UtilityNavigation";
@@ -28,67 +28,12 @@ import technology2025 from "@/assets/technology-2025.png";
 import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
 import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
 
-interface DropdownState {
-  findSolution: boolean;
-  products: boolean;
-  services: boolean;
-  imageQuality: boolean;
-  company: boolean;
-}
-
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [hoveredSolution, setHoveredSolution] = useState<string | null>(null);
-  const [dropdowns, setDropdowns] = useState<DropdownState>({
-    findSolution: false,
-    products: false,
-    services: false,
-    imageQuality: false,
-    company: false
-  });
-
-  const dropdownRefs = {
-    findSolution: useRef<HTMLDivElement>(null),
-    products: useRef<HTMLDivElement>(null),
-    services: useRef<HTMLDivElement>(null),
-    imageQuality: useRef<HTMLDivElement>(null),
-    company: useRef<HTMLDivElement>(null)
-  };
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const isClickingOnDropdown = Object.values(dropdownRefs).some(ref => 
-        ref.current && ref.current.contains(event.target as Node)
-      );
-      
-      if (!isClickingOnDropdown) {
-        setDropdowns({
-          findSolution: false,
-          products: false,
-          services: false,
-          imageQuality: false,
-          company: false
-        });
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const toggleDropdown = (dropdown: keyof DropdownState) => {
-    setDropdowns(prev => ({
-      findSolution: false,
-      products: false,
-      services: false,
-      imageQuality: false,
-      company: false,
-      [dropdown]: !prev[dropdown]
-    }));
-  };
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   // Preload all images for faster hover experience
   useEffect(() => {
@@ -279,443 +224,428 @@ const Navigation = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center">
-            <div className="flex items-center gap-x-8 relative">
+            <div className="flex items-center gap-x-8">
               
               {/* Find Your Solution Dropdown */}
-              <div className="relative" ref={dropdownRefs.findSolution}>
-                <button
-                  onClick={() => toggleDropdown('findSolution')}
-                  className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
-                >
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('findSolution')}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">
                   Find Your Solution
-                  <ChevronDown className={`h-4 w-4 transition-transform ${dropdowns.findSolution ? 'rotate-180' : ''}`} />
+                  <ChevronDown className="h-4 w-4" />
                 </button>
                 
-                {dropdowns.findSolution && (
-                  <div className="absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-50 p-5">
-                    <div className="flex gap-6 w-[650px] bg-[#f3f3f3] p-6">
-                      {/* Left Column: Industries */}
-                      <div className="w-[300px] pr-4 border-r border-border">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Industries</h4>
-                        <div className="space-y-3">
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Photography")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Camera className="h-5 w-5" />
-                            <span>Photography</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Smartphone className="h-5 w-5" />
-                            <span>Mobile Phones</span>
-                          </div>
-                          <Link 
-                            to="/automotive"
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
-                            onMouseEnter={() => setHoveredIndustry("Automotive & ADAS")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Car className="h-5 w-5" />
-                            <span>Automotive & ADAS</span>
-                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                          </Link>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Broadcast & HDTV")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Tv className="h-5 w-5" />
-                            <span>Broadcast & HDTV</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Security / Surveillance")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Shield className="h-5 w-5" />
-                            <span>Security / Surveillance</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Machine Vision")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Cog className="h-5 w-5" />
-                            <span>Machine Vision</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <Stethoscope className="h-5 w-5" />
-                            <span>Medical / Endoscopy</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("Scanning & Archiving")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <ScanLine className="h-5 w-5" />
-                            <span>Scanning & Archiving</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredIndustry("iQ‑Lab Testing")}
-                            onMouseLeave={() => setHoveredIndustry(null)}
-                          >
-                            <FlaskConical className="h-5 w-5" />
-                            <span>iQ‑Lab Testing</span>
-                          </div>
+                <div className={`absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-[100] p-5 transition-all duration-200 ${activeDropdown === 'findSolution' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                  <div className="flex gap-6 w-[650px] bg-[#f3f3f3] p-6">
+                    {/* Left Column: Industries */}
+                    <div className="w-[300px] pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-3 text-lg text-black">Industries</h4>
+                      <div className="space-y-3">
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Photography")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <Camera className="h-5 w-5" />
+                          <span>Photography</span>
                         </div>
-                      </div>
-                      
-                      {/* Right Column: Popular Applications */}
-                      <div className="w-[300px] pl-4">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Popular Applications</h4>
-                        <div className="space-y-3">
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                            <span>Camera Quality Validation</span>
-                          </div>
-                          <Link 
-                            to="/in-cabin-testing"
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
-                            onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                            <span>In-Cabin Performance Testing</span>
-                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                          </Link>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                            <span>Test Environments for Smartphones & Displays</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                            <span>Microscopy & Medical Imaging</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
-                            onMouseLeave={() => setHoveredSolution(null)}
-                          >
-                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                            <span>ISO and IEEE Compliant Test Setups</span>
-                          </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <Smartphone className="h-5 w-5" />
+                          <span>Mobile Phones</span>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Right side preview image */}
-                    <div className="absolute top-0 left-full ml-4 w-[200px] h-[250px] bg-white shadow-lg border">
-                      {(hoveredIndustry || hoveredSolution) && (
-                        <div className="p-4 h-full flex flex-col">
-                          <img
-                            src={hoveredIndustry ? industryData[hoveredIndustry as keyof typeof industryData]?.image : solutionData[hoveredSolution as keyof typeof solutionData]?.image}
-                            alt={hoveredIndustry || hoveredSolution || ''}
-                            className="w-full h-32 object-cover rounded mb-3"
-                          />
-                          <h5 className="font-medium text-sm mb-2 text-black">
-                            {hoveredIndustry || hoveredSolution}
-                          </h5>
-                          <p className="text-xs text-gray-600 flex-1">
-                            {hoveredIndustry ? industryData[hoveredIndustry as keyof typeof industryData]?.description : solutionData[hoveredSolution as keyof typeof solutionData]?.description}
-                          </p>
+                        <Link 
+                          to="/automotive"
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
+                          onMouseEnter={() => setHoveredIndustry("Automotive & ADAS")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <Car className="h-5 w-5" />
+                          <span>Automotive & ADAS</span>
+                          <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                        </Link>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Broadcast & HDTV")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <Tv className="h-5 w-5" />
+                          <span>Broadcast & HDTV</span>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Products Dropdown */}
-              <div className="relative" ref={dropdownRefs.products}>
-                <button
-                  onClick={() => toggleDropdown('products')}
-                  className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
-                >
-                  Products
-                  <ChevronDown className={`h-4 w-4 transition-transform ${dropdowns.products ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {dropdowns.products && (
-                  <div className="absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-50 p-5">
-                    <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
-                      {/* Products grid */}
-                      <div className="grid grid-cols-2 gap-8 w-full">
-                        {/* Left Column */}
-                        <div className="space-y-4">
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Test Charts")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <Target className="h-5 w-5" />
-                            <span>Test Charts</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Illumination Devices")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <Lightbulb className="h-5 w-5" />
-                            <span>Illumination Devices</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Measurement Devices")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <BarChart3 className="h-5 w-5" />
-                            <span>Measurement Devices</span>
-                          </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Security / Surveillance")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <Shield className="h-5 w-5" />
+                          <span>Security / Surveillance</span>
                         </div>
-                        
-                        {/* Right Column */}
-                        <div className="space-y-4">
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Software")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <Monitor className="h-5 w-5" />
-                            <span>Software</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Accessories")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <Package className="h-5 w-5" />
-                            <span>Accessories</span>
-                          </div>
-                          <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                            onMouseEnter={() => setHoveredProduct("Services")}
-                            onMouseLeave={() => setHoveredProduct(null)}
-                          >
-                            <Settings className="h-5 w-5" />
-                            <span>Services</span>
-                          </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Machine Vision")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <Cog className="h-5 w-5" />
+                          <span>Machine Vision</span>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Right side preview image */}
-                    <div className="absolute top-0 left-full ml-4 w-[200px] h-[250px] bg-white shadow-lg border">
-                      {hoveredProduct && (
-                        <div className="p-4 h-full flex flex-col">
-                          <img
-                            src={productData[hoveredProduct as keyof typeof productData]?.image}
-                            alt={hoveredProduct}
-                            className="w-full h-32 object-cover rounded mb-3"
-                          />
-                          <h5 className="font-medium text-sm mb-2 text-black">
-                            {hoveredProduct}
-                          </h5>
-                          <p className="text-xs text-gray-600 flex-1">
-                            {productData[hoveredProduct as keyof typeof productData]?.description}
-                          </p>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <Stethoscope className="h-5 w-5" />
+                          <span>Medical / Endoscopy</span>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Services Dropdown */}
-              <div className="relative" ref={dropdownRefs.services}>
-                <button
-                  onClick={() => toggleDropdown('services')}
-                  className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
-                >
-                  Services
-                  <ChevronDown className={`h-4 w-4 transition-transform ${dropdowns.services ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {dropdowns.services && (
-                  <div className="absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-50 p-5">
-                    <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
-                      {/* Services content - simplified for now */}
-                      <div className="space-y-4 w-full">
-                        <h4 className="font-semibold text-lg text-black mb-4">Our Services</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <GraduationCap className="h-5 w-5" />
-                            <span>Training & Education</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Search className="h-5 w-5" />
-                            <span>Consulting Services</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Wrench className="h-5 w-5" />
-                            <span>Technical Support</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Puzzle className="h-5 w-5" />
-                            <span>Custom Solutions</span>
-                          </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Scanning & Archiving")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <ScanLine className="h-5 w-5" />
+                          <span>Scanning & Archiving</span>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Image Quality Dropdown */}
-              <div className="relative" ref={dropdownRefs.imageQuality}>
-                <button
-                  onClick={() => toggleDropdown('imageQuality')}
-                  className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
-                >
-                  Image Quality
-                  <ChevronDown className={`h-4 w-4 transition-transform ${dropdowns.imageQuality ? 'rotate-180' : ''}`} />
-                </button>
-                
-                {dropdowns.imageQuality && (
-                  <div className="absolute top-full right-0 mt-2 bg-white border-0 shadow-lg z-50 p-5">
-                    <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
-                      {/* Technical Resources */}
-                      <div className="w-[300px] pr-4 border-r border-border">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Technical Resources</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <FlaskConical className="h-4 w-4" />
-                            <span>IQ-Lab</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <BarChart3 className="h-4 w-4" />
-                            <span>Image quality factors</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <FileText className="h-4 w-4" />
-                            <span>Blog</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <MessageCircle className="h-4 w-4" />
-                            <span>Newsletter</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <ShieldCheck className="h-4 w-4" />
-                            <span>International standards</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Training & Resources */}
-                      <div className="w-[300px] pl-4">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Training & Resources</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Cpu className="h-4 w-4" />
-                            <span>IE Technology</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Calendar className="h-4 w-4" />
-                            <span>Webinar schedule</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Video className="h-4 w-4" />
-                            <span>Video Archive</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <BookOpen className="h-4 w-4" />
-                            <span>Whitepapers</span>
-                          </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("iQ‑Lab Testing")}
+                          onMouseLeave={() => setHoveredIndustry(null)}
+                        >
+                          <FlaskConical className="h-5 w-5" />
+                          <span>iQ‑Lab Testing</span>
                         </div>
                       </div>
                     </div>
                     
-                    {/* CTA Button */}
-                    <div className="mt-4 px-6">
-                      <button className="bg-[#0066cc] text-white px-6 py-3 rounded-md font-medium hover:bg-[#0052a3] transition-colors w-full flex items-center justify-center gap-2">
-                        <Search className="h-4 w-4" />
-                        Explore Image Quality Resources
-                        <span className="bg-[#004d99] text-white text-xs px-2 py-1 rounded ml-2">ACTIVE</span>
-                      </button>
+                    {/* Right Column: Popular Applications */}
+                    <div className="w-[300px] pl-4">
+                      <h4 className="font-semibold mb-3 text-lg text-black">Popular Applications</h4>
+                      <div className="space-y-3">
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
+                          onMouseLeave={() => setHoveredSolution(null)}
+                        >
+                          <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
+                          <span>Camera Quality Validation</span>
+                        </div>
+                        <Link 
+                          to="/in-cabin-testing"
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
+                          onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
+                          onMouseLeave={() => setHoveredSolution(null)}
+                        >
+                          <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
+                          <span>In-Cabin Performance Testing</span>
+                          <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                        </Link>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
+                          onMouseLeave={() => setHoveredSolution(null)}
+                        >
+                          <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
+                          <span>Test Environments for Smartphones & Displays</span>
+                        </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
+                          onMouseLeave={() => setHoveredSolution(null)}
+                        >
+                          <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
+                          <span>Microscopy & Medical Imaging</span>
+                        </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
+                          onMouseLeave={() => setHoveredSolution(null)}
+                        >
+                          <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
+                          <span>ISO and IEEE Compliant Test Setups</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                )}
+
+                  {/* Right side preview image */}
+                  <div className="absolute top-0 left-full ml-4 w-[200px] h-[250px] bg-white shadow-lg border">
+                    {(hoveredIndustry || hoveredSolution) && (
+                      <div className="p-4 h-full flex flex-col">
+                        <img
+                          src={hoveredIndustry ? industryData[hoveredIndustry as keyof typeof industryData]?.image : solutionData[hoveredSolution as keyof typeof solutionData]?.image}
+                          alt={hoveredIndustry || hoveredSolution || ''}
+                          className="w-full h-32 object-cover rounded mb-3"
+                        />
+                        <h5 className="font-medium text-sm mb-2 text-black">
+                          {hoveredIndustry || hoveredSolution}
+                        </h5>
+                        <p className="text-xs text-gray-600 flex-1">
+                          {hoveredIndustry ? industryData[hoveredIndustry as keyof typeof industryData]?.description : solutionData[hoveredSolution as keyof typeof solutionData]?.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {/* Company Dropdown */}
-              <div className="relative" ref={dropdownRefs.company}>
-                <button
-                  onClick={() => toggleDropdown('company')}
-                  className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
-                >
-                  Company
-                  <ChevronDown className={`h-4 w-4 transition-transform ${dropdowns.company ? 'rotate-180' : ''}`} />
+              {/* Products Dropdown */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('products')}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">
+                  Products
+                  <ChevronDown className="h-4 w-4" />
                 </button>
                 
-                {dropdowns.company && (
-                  <div className="absolute top-full right-0 mt-2 bg-white border-0 shadow-lg z-50 p-5">
-                    <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
-                      {/* Company Information */}
-                      <div className="w-[300px] pr-4 border-r border-border">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Company Information</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Info className="h-4 w-4" />
-                            <span>About Image Engineering</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Users className="h-4 w-4" />
-                            <span>Team</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Building className="h-4 w-4" />
-                            <span>Subsidiaries/Resellers</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Sprout className="h-4 w-4" />
-                            <span>Nynomic Group</span>
-                          </div>
+                <div className={`absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-[100] p-5 transition-all duration-200 ${activeDropdown === 'products' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                  <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
+                    <div className="grid grid-cols-2 gap-8 w-full">
+                      <div className="space-y-4">
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct("Test Charts")}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          <Target className="h-5 w-5" />
+                          <span>Test Charts</span>
+                        </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct("Illumination Devices")}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          <Lightbulb className="h-5 w-5" />
+                          <span>Illumination Devices</span>
+                        </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct("Measurement Devices")}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          <BarChart3 className="h-5 w-5" />
+                          <span>Measurement Devices</span>
                         </div>
                       </div>
-
-                      {/* Business & Partnerships */}
-                      <div className="w-[300px] pl-4">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300">
-                            <Calendar className="h-4 w-4" />
-                            <span>Events</span>
-                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Briefcase className="h-4 w-4" />
-                            <span>Careers</span>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                            <Handshake className="h-4 w-4" />
-                            <span>Partnerships</span>
-                          </div>
+                      
+                      <div className="space-y-4">
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct("Software")}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          <Monitor className="h-5 w-5" />
+                          <span>Software</span>
+                        </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct("Accessories")}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          <Package className="h-5 w-5" />
+                          <span>Accessories</span>
+                        </div>
+                        <div 
+                          className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredProduct("Services")}
+                          onMouseLeave={() => setHoveredProduct(null)}
+                        >
+                          <Settings className="h-5 w-5" />
+                          <span>Services</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                )}
+
+                  <div className="absolute top-0 left-full ml-4 w-[200px] h-[250px] bg-white shadow-lg border">
+                    {hoveredProduct && (
+                      <div className="p-4 h-full flex flex-col">
+                        <img
+                          src={productData[hoveredProduct as keyof typeof productData]?.image}
+                          alt={hoveredProduct}
+                          className="w-full h-32 object-cover rounded mb-3"
+                        />
+                        <h5 className="font-medium text-sm mb-2 text-black">
+                          {hoveredProduct}
+                        </h5>
+                        <p className="text-xs text-gray-600 flex-1">
+                          {productData[hoveredProduct as keyof typeof productData]?.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Services Dropdown */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('services')}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">
+                  Services
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                
+                <div className={`absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-[100] p-5 transition-all duration-200 ${activeDropdown === 'services' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                  <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
+                    <div className="space-y-4 w-full">
+                      <h4 className="font-semibold text-lg text-black mb-4">Our Services</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <GraduationCap className="h-5 w-5" />
+                          <span>Training & Education</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Search className="h-5 w-5" />
+                          <span>Consulting Services</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Wrench className="h-5 w-5" />
+                          <span>Technical Support</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Puzzle className="h-5 w-5" />
+                          <span>Custom Solutions</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Image Quality Dropdown - RIGHT ALIGNED */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('imageQuality')}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">
+                  Image Quality
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                
+                <div className={`absolute top-full right-0 mt-2 bg-white border-0 shadow-lg z-[100] p-5 transition-all duration-200 ${activeDropdown === 'imageQuality' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                  <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
+                    <div className="w-[300px] pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-3 text-lg text-black">Technical Resources</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <FlaskConical className="h-4 w-4" />
+                          <span>IQ-Lab</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <BarChart3 className="h-4 w-4" />
+                          <span>Image quality factors</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <FileText className="h-4 w-4" />
+                          <span>Blog</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <MessageCircle className="h-4 w-4" />
+                          <span>Newsletter</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <ShieldCheck className="h-4 w-4" />
+                          <span>International standards</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-[300px] pl-4">
+                      <h4 className="font-semibold mb-3 text-lg text-black">Training & Resources</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Cpu className="h-4 w-4" />
+                          <span>IE Technology</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Calendar className="h-4 w-4" />
+                          <span>Webinar schedule</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Video className="h-4 w-4" />
+                          <span>Video Archive</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <BookOpen className="h-4 w-4" />
+                          <span>Whitepapers</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 px-6">
+                    <button className="bg-[#0066cc] text-white px-6 py-3 rounded-md font-medium hover:bg-[#0052a3] transition-colors w-full flex items-center justify-center gap-2">
+                      <Search className="h-4 w-4" />
+                      Explore Image Quality Resources
+                      <span className="bg-[#004d99] text-white text-xs px-2 py-1 rounded ml-2">ACTIVE</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Company Dropdown - RIGHT ALIGNED */}
+              <div 
+                className="relative group"
+                onMouseEnter={() => setActiveDropdown('company')}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button className="flex items-center gap-1 px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">
+                  Company
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                
+                <div className={`absolute top-full right-0 mt-2 bg-white border-0 shadow-lg z-[100] p-5 transition-all duration-200 ${activeDropdown === 'company' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                  <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
+                    <div className="w-[300px] pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-3 text-lg text-black">Company Information</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Info className="h-4 w-4" />
+                          <span>About Image Engineering</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Users className="h-4 w-4" />
+                          <span>Team</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Building className="h-4 w-4" />
+                          <span>Subsidiaries/Resellers</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Sprout className="h-4 w-4" />
+                          <span>Nynomic Group</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-[300px] pl-4">
+                      <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300">
+                          <Calendar className="h-4 w-4" />
+                          <span>Events</span>
+                          <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Briefcase className="h-4 w-4" />
+                          <span>Careers</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                          <Handshake className="h-4 w-4" />
+                          <span>Partnerships</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
             </div>
