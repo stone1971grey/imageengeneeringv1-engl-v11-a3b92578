@@ -432,7 +432,7 @@ const Navigation = () => {
                     className="bg-white p-[20px] border-0 shadow-lg z-50"
                     onMouseLeave={() => setHoveredProduct(null)}
                   >
-                    <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
+                    <div className="flex flex-col gap-2 w-[600px] bg-[#f3f3f3]">
                       {/* Main navigation grid - Two column layout */}
                       <div className="flex gap-8 p-6">
                         {/* Left Column: Product Groups */}
@@ -592,10 +592,10 @@ const Navigation = () => {
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Services</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
-                      <div className="flex gap-6 p-6">
+                    <div className="flex flex-col gap-2 w-[950px] bg-[#f3f3f3]">
+                      <div className="flex gap-0 p-6">
                         {/* Column 1: Training & Education */}
-                        <div className="space-y-4 w-[300px] pr-6 border-r border-border">
+                        <div className="space-y-4 w-[300px] pr-3 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Training & Education
                           </h4>
@@ -614,7 +614,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Technical Services */}
-                        <div className="space-y-4 w-[300px] pr-6 border-r border-border">
+                        <div className="space-y-4 w-[300px] px-3 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Technical Services
                           </h4>
@@ -633,7 +633,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 3: Consulting */}
-                        <div className="space-y-4 w-[300px]">
+                        <div className="space-y-4 w-[300px] pl-3">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Consulting
                           </h4>
@@ -668,10 +668,10 @@ const Navigation = () => {
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
-                        <div className="flex gap-6 p-6">
+                    <div className="flex flex-col gap-2 w-[650px] bg-[#f3f3f3]">
+                        <div className="flex gap-0 p-6">
                         {/* Column 1: Technical Resources */}
-                          <div className="space-y-4 w-[300px] pr-6 border-r border-border">
+                          <div className="space-y-4 w-[300px] pr-3 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Technical Resources
                           </h4>
@@ -698,7 +698,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Training & Resources */}
-                          <div className="space-y-4 w-[300px]">
+                          <div className="space-y-4 w-[300px] pl-3">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Training & Resources
                           </h4>
@@ -740,11 +740,11 @@ const Navigation = () => {
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Company</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
+                    <div className="flex flex-col gap-2 w-[650px] bg-[#f3f3f3]">
                       {/* Main grid */}
-                      <div className="flex gap-8 p-6">
+                      <div className="flex gap-0 p-6">
                         {/* Column 1: Company Information */}
-                         <div className="space-y-4 w-[300px] pr-6 border-r border-border">
+                         <div className="space-y-4 w-[300px] pr-3 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Company Information
                           </h4>
@@ -767,7 +767,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Business & Partnerships */}
-                        <div className="space-y-4 w-[300px]">
+                        <div className="space-y-4 w-[300px] pl-3">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Business & Partnerships
                           </h4>
