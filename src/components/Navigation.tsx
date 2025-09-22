@@ -442,11 +442,12 @@ const Navigation = () => {
                           </h4>
                           <Link
                             to="/products/charts"
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
                             onMouseEnter={() => setHoveredProduct("Test Charts")}
                           >
                             <Target className="h-5 w-5" />
                             <span>Test Charts</span>
+                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
@@ -770,7 +771,7 @@ const Navigation = () => {
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Business & Partnerships
                           </h4>
-                          <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-yellow-100 p-2 rounded-md border-2 border-yellow-300">
+                          <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300">
                             <Calendar className="h-5 w-5" />
                             <span>Events</span>
                             <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
