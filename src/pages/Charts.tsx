@@ -594,7 +594,7 @@ const Charts = () => {
                 </div>
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between mb-2">
-                    <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                    <CardTitle className="text-lg transition-colors group-hover:text-[#d9c409]">
                       {chart.title}
                     </CardTitle>
                     <span className="text-xs text-muted-foreground font-mono">{chart.sku}</span>
@@ -621,9 +621,9 @@ const Charts = () => {
                   {/* Price */}
                   <div className="mb-4">
                     {chart.price_mode === 'rfq' ? (
-                      <span className="text-lg font-semibold text-muted-foreground">On Request</span>
+                      <span className="text-lg font-semibold text-white transition-colors group-hover:text-[#d9c409]">On Request</span>
                     ) : chart.price_from ? (
-                    <span className="text-lg font-semibold text-primary">
+                    <span className="text-lg font-semibold text-white transition-colors group-hover:text-[#d9c409]">
                       from {chart.price_from}€
                     </span>
                     ) : null}
