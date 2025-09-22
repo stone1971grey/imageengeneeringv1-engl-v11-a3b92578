@@ -314,7 +314,7 @@ const Charts = () => {
                 <Button 
                   size="lg"
                   variant="decision"
-                  className="text-white border-0 px-12 py-4"
+                  className="text-black border-0 px-12 py-4"
                   onClick={scrollToFooterExpert}
                 >
                   Request Consultation
