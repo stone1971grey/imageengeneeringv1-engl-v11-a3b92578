@@ -233,7 +233,7 @@ const Navigation = () => {
             <NavigationMenu>
               <NavigationMenuList className="gap-x-8">
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Find Your Solution</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Find Your Solution</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
@@ -425,7 +425,7 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <Link to="/products">
-                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Products</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Products</NavigationMenuTrigger>
                   </Link>
                   <NavigationMenuContent 
                     className="bg-white p-[20px] border-0 shadow-lg z-50"
@@ -588,7 +588,7 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Services</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Services</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       <div className="flex gap-6 p-6">
@@ -664,7 +664,7 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                         <div className="flex gap-6 p-6">
@@ -736,7 +736,7 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#E0F2FE] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Company</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Company</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
                     <div className="flex flex-col gap-2 w-[800px] bg-[#f3f3f3]">
                       {/* Main grid */}
