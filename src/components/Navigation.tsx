@@ -238,7 +238,7 @@ const Navigation = () => {
                 </button>
                 
                 <div className={`absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-[100] p-5 transition-all duration-200 ${activeDropdown === 'findSolution' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                  <div className="flex gap-6 bg-[#f3f3f3] p-6">
+                  <div className="flex gap-6 w-[650px] bg-[#f3f3f3] p-6">
                     {/* Left Column: Industries */}
                     <div className="w-[300px] pr-4 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Industries</h4>
@@ -403,7 +403,7 @@ const Navigation = () => {
                 </button>
                 
                 <div className={`absolute top-full left-0 mt-2 bg-white border-0 shadow-lg z-[100] p-5 transition-all duration-200 ${activeDropdown === 'products' ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                  <div className="flex gap-6 bg-[#f3f3f3] p-6">
+                  <div className="flex gap-6 w-[620px] bg-[#f3f3f3] p-6">
                     <div className="grid grid-cols-2 gap-8 w-full">
                       <div className="space-y-4">
                         <div 
