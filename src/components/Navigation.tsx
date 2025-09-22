@@ -206,7 +206,7 @@ const Navigation = () => {
       {/* Utility Navigation */}
       <div className="container mx-auto px-6 pt-5 pb-2">
         <div className="flex items-center justify-end">
-          <div className="hidden lg:flex mr-4"> {/* Same margin as Company button */}
+          <div className="hidden lg:flex"> {/* Remove mr-4, SimpleDropdown already has mx-4 */}
             <UtilityNavigation />
           </div>
         </div>
