@@ -34,7 +34,7 @@ const Footer = () => {
               : 'Ready to Transform Your Vision?'
           }
         </h2>
-        <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+        <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
           {isChartsPage 
             ? 'Our experts help you select the right test charts for your specific requirements. Benefit from our years of experience in image quality analysis.'
             : isSolutionBundlePage
@@ -83,7 +83,7 @@ const Footer = () => {
                     : 'Speak with Us.'
                 }
               </h2>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-white leading-relaxed">
                 {isChartsPage 
                   ? 'Our test chart experts are happy to advise you on selecting the optimal charts for your image quality measurements and support you in configuring your test systems.'
                   : isSolutionBundlePage
@@ -159,7 +159,7 @@ const Footer = () => {
                  />
               </div>
               <div className="flex-1">
-                <blockquote className="text-lg text-foreground leading-relaxed mb-4">
+                <blockquote className="text-lg text-white leading-relaxed mb-4">
                   {isChartsPage 
                     ? '"Precise test charts are the foundation of every serious image quality analysis. With over 15 years of experience, I help you find the perfect charts for your measurements."'
                     : isSolutionBundlePage
@@ -173,8 +173,8 @@ const Footer = () => {
                       : '"What excites me every day is the direct impact of our work on image quality worldwide. Whether in smartphones or vehicle cameras – our solutions make the difference."'
                   }
                 </blockquote>
-                <cite className="text-muted-foreground not-italic">
-                  <div className="font-semibold text-foreground">
+                <cite className="text-white not-italic">
+                  <div className="font-semibold text-white">
                     {isChartsPage 
                       ? 'Markus Weber' 
                       : isSolutionBundlePage 
@@ -214,23 +214,23 @@ const Footer = () => {
       <div className="border-t border-[#4B4A4A] bg-[#4B4A4A]">
         <div className="container mx-auto px-6 py-6">
           <div className="text-center space-y-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white">
               © Image Engineering GmbH & Co. KG – Member of the Nynomic Group
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="#" className="text-white hover:text-white transition-colors">
                 Legal Notice
               </a>
-              <span className="text-muted-foreground">•</span>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <span className="text-white">•</span>
+              <a href="#" className="text-white hover:text-white transition-colors">
                 Privacy Policy
               </a>
-              <span className="text-muted-foreground">•</span>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <span className="text-white">•</span>
+              <a href="#" className="text-white hover:text-white transition-colors">
                 Terms & Conditions
               </a>
-              <span className="text-muted-foreground">•</span>
-              <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
+              <span className="text-white">•</span>
+              <a href="#" className="text-white hover:text-white transition-colors">
                 Recycling & Disposal
               </a>
             </div>
