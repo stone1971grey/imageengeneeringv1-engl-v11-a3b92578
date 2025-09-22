@@ -268,7 +268,7 @@ const Navigation = () => {
                           >
                             <Car className="h-5 w-5" />
                             <span>Automotive & ADAS</span>
-                            <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
+                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                           </Link>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
@@ -343,7 +343,7 @@ const Navigation = () => {
                               >
                                 <CustomTargetIcon className="h-5 w-5" />
                                 <span>In-Cabin Performance Testing</span>
-                                <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
+                                <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                               </Link>
                           </div>
                           <div 
@@ -380,7 +380,7 @@ const Navigation = () => {
                             <Button variant="decision" className="w-full" style={{ backgroundColor: '#103e7c', borderColor: '#103e7c', color: 'white' }}>
                               <Search className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">Need Help Choosing? → Start Solution Finder</span>
-                              <span className="ml-2 text-xs bg-white text-green-700 px-2 py-1 rounded font-bold">ACTIVE</span>
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
                             </Button>
                           </div>
                         </Link>
@@ -727,7 +727,7 @@ const Navigation = () => {
                             <Button variant="technical" className="w-full" style={{ backgroundColor: '#103e7c', borderColor: '#103e7c', color: 'white' }}>
                               <Microscope className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">Explore Image Quality Resources</span>
-                              <span className="ml-2 text-xs bg-white text-blue-700 px-2 py-1 rounded font-bold">ACTIVE</span>
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
                             </Button>
                           </Link>
                         </NavigationMenuLink>
@@ -773,7 +773,7 @@ const Navigation = () => {
                           <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-yellow-100 p-2 rounded-md border-2 border-yellow-300">
                             <Calendar className="h-5 w-5" />
                             <span>Events</span>
-                            <span className="ml-2 text-xs bg-yellow-500 text-white px-2 py-1 rounded">ACTIVE</span>
+                            <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                           </Link>
                           <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                             <GraduationCap className="h-5 w-5" />
