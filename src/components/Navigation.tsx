@@ -331,7 +331,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CustomTargetIcon className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
                             <span>Camera Quality Validation</span>
                           </div>
                           <div className="space-y-2">
@@ -341,7 +341,7 @@ const Navigation = () => {
                                 onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
                                 onMouseLeave={() => setHoveredSolution(null)}
                               >
-                                <CustomTargetIcon className="h-5 w-5" />
+                                <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
                                 <span>In-Cabin Performance Testing</span>
                                 <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                               </Link>
@@ -351,7 +351,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CustomTargetIcon className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
                             <span>Test Environments for Smartphones & Displays</span>
                           </div>
                           <div 
@@ -359,7 +359,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CustomTargetIcon className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
                             <span>Microscopy & Medical Imaging</span>
                           </div>
                           <div 
@@ -367,7 +367,7 @@ const Navigation = () => {
                             onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
                             onMouseLeave={() => setHoveredSolution(null)}
                           >
-                            <CustomTargetIcon className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
                             <span>ISO and IEEE Compliant Test Setups</span>
                           </div>
                         </div>
