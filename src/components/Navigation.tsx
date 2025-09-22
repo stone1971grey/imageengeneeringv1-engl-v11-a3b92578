@@ -600,15 +600,15 @@ const Navigation = () => {
                             Training & Education
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Video className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Professional Training</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <BookOpen className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Workshops</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Users className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Certification Programs</a>
                           </div>
                         </div>
@@ -619,15 +619,15 @@ const Navigation = () => {
                             Technical Services
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Settings className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Custom Solutions</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Wrench className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Technical Support</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Target className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Calibration Services</a>
                           </div>
                         </div>
@@ -638,15 +638,15 @@ const Navigation = () => {
                             Consulting
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <BarChart3 className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Project Consulting</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <CheckCircle className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Quality Assurance</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Briefcase className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Implementation Support</a>
                           </div>
                         </div>
@@ -676,23 +676,23 @@ const Navigation = () => {
                             Technical Resources
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <FlaskConical className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">IQ-Lab</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <BarChart3 className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Image quality factors</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <FileText className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Blog</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <ScrollText className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Newsletter</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <BadgeCheck className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">International standards</a>
                           </div>
                         </div>
@@ -703,19 +703,19 @@ const Navigation = () => {
                             Training & Resources
                           </h4>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Cpu className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">IE Technology</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Calendar className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Webinar schedule</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <Video className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Video Archive</a>
                           </div>
                           <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <BookOpen className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <a href="#">Whitepapers</a>
                           </div>
                         </div>
@@ -749,19 +749,19 @@ const Navigation = () => {
                             Company Information
                           </h4>
                           <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                            <Info className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>About Image Engineering</span>
                           </Link>
                           <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                            <Users className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Team</span>
                           </Link>
                           <Link to="/subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                            <Building className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Subsidiaries/Resellers</span>
                           </Link>
                           <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                            <Briefcase className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Nynomic Group</span>
                           </Link>
                         </div>
@@ -772,16 +772,16 @@ const Navigation = () => {
                             Business & Partnerships
                           </h4>
                           <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300">
-                            <Calendar className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Events</span>
                             <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                           </Link>
                           <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                            <GraduationCap className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Careers</span>
                           </Link>
                           <Link to="/partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                            <Handshake className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Partnerships</span>
                           </Link>
                         </div>
