@@ -631,7 +631,7 @@ const Charts = () => {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <Button asChild className="flex-1" style={{ backgroundColor: '#3464e3', color: 'white' }}>
+                    <Button asChild className="flex-1" style={{ backgroundColor: '#103e7c', color: 'white' }}>
                       <Link to={`/products/charts/${chart.slug}`}>
                         <FileText className="w-4 h-4 mr-2" />
                         Details
@@ -640,7 +640,7 @@ const Charts = () => {
                     <Button 
                       variant={chart.price_mode === 'rfq' ? 'outline' : 'secondary'}
                       className="flex-1"
-                      style={chart.price_mode !== 'rfq' ? { backgroundColor: '#3464e3', color: 'white' } : {}}
+                      style={chart.price_mode !== 'rfq' ? { backgroundColor: '#d9c409', color: 'black' } : { backgroundColor: '#d9c409', color: 'black', border: '1px solid #d9c409' }}
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       {chart.price_mode === 'rfq' ? 'Request Quote' : 'Add to Cart'}
