@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, ArrowRight, Download, FileText, BarChart3, Zap, Shield, Eye, Lightbulb, Monitor, ChevronLeft, ChevronRight, Expand, X, Calendar, MapPin } from "lucide-react";
+import { ArrowLeft, Download, FileText, BarChart3, Zap, Shield, Eye, Lightbulb, Monitor, ChevronLeft, ChevronRight, Expand, X, Calendar, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
@@ -173,8 +173,7 @@ const ProductLE7 = () => {
                       }
                     }}
                   >
-                    Contact Sales
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                     Contact Sales
                   </Button>
                 </div>
               </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain } from "lucide-react";
+import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
@@ -158,7 +158,6 @@ const Automotive = () => {
                     className="px-8 py-4 text-lg font-medium group"
                   >
                     Discover Automotive Solutions
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
               </div>
@@ -520,8 +519,7 @@ const Automotive = () => {
                                : ""
                            }`}
                          >
-                           Learn More
-                           <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                            Learn More
                          </Button>
                        </Link>
                      ) : (
@@ -530,8 +528,7 @@ const Automotive = () => {
                          size="lg"
                          className="w-full group"
                        >
-                         Learn More
-                         <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                          Learn More
                        </Button>
                      )}
                    </div>

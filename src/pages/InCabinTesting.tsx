@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Car, Eye, Shield, CheckCircle, Zap, Target } from "lucide-react";
+import { Car, Eye, Shield, CheckCircle, Zap, Target } from "lucide-react";
 import inCabinHero from "@/assets/in-cabin-hero.png";
 import kpiImage from "@/assets/kpi-image.png";
 import iqFlatlightNew from "@/assets/iq-flatlight-new.png";
@@ -80,8 +80,7 @@ const InCabinTesting = () => {
                     className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
                     style={{ backgroundColor: '#74952a' }}
                   >
-                    Find Your Solution
-                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                     Find Your Solution
                   </Button>
                 </div>
               </div>
@@ -297,8 +296,7 @@ const InCabinTesting = () => {
                         size="lg"
                         className="w-full group"
                       >
-                        Learn More
-                        <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                         Learn More
                       </Button>
                     </Link>
                   </div>
@@ -327,8 +325,7 @@ const InCabinTesting = () => {
                       size="lg"
                       className="w-full group"
                     >
-                      Learn More
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                       Learn More
                     </Button>
                   </div>
                 </CardContent>
@@ -356,8 +353,7 @@ const InCabinTesting = () => {
                       size="lg"
                       className="w-full group"
                     >
-                      Learn More
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                       Learn More
                     </Button>
                   </div>
                 </CardContent>
@@ -385,8 +381,7 @@ const InCabinTesting = () => {
                       size="lg"
                       className="w-full group"
                     >
-                      Learn More
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                       Learn More
                     </Button>
                   </div>
                 </CardContent>
@@ -416,8 +411,7 @@ const InCabinTesting = () => {
                       size="lg"
                       className="w-full group"
                     >
-                      Learn More
-                      <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                       Learn More
                     </Button>
                   </div>
                 </CardContent>

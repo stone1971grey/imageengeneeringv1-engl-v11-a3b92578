@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
 
 const Hero = () => {
@@ -47,7 +47,6 @@ const Hero = () => {
                 onClick={() => window.location.href = '/products/charts'}
               >
                 Discover Charts
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
               
               <Button 
