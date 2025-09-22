@@ -314,7 +314,8 @@ const Charts = () => {
                 <Button 
                   size="lg"
                   variant="decision"
-                  className="text-black border-0 px-12 py-4"
+                  className="border-0 px-12 py-4"
+                  style={{ backgroundColor: '#d9c409', color: 'black' }}
                   onClick={scrollToFooterExpert}
                 >
                   Request Consultation
