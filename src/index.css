@@ -187,16 +187,16 @@ All colors MUST be HSL.
   }
 }
 
-/* Navigation flyout positioning - Radix specific */
+/* Navigation flyout positioning - Each flyout under its trigger */
 [data-radix-navigation-menu-content] {
-  left: auto !important;
+  left: 0 !important;
   right: auto !important;
-  transform: translateX(-50%) !important;
-  margin-left: 50% !important;
+  transform: none !important;
+  margin-left: 0 !important;
 }
 
-/* Override viewport positioning */
+/* Reset viewport positioning */
 [data-radix-navigation-menu-viewport] {
-  left: 50% !important;
-  transform: translateX(-50%) !important;
+  left: 0 !important;
+  transform: none !important;
 }
