@@ -236,11 +236,11 @@ const Navigation = () => {
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Find Your Solution</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[750px] bg-[#f3f3f3]">
+                    <div className="flex flex-col gap-2 w-[650px] bg-[#f3f3f3]">
                       {/* Main navigation grid */}
-                         <div className="flex p-6">
+                         <div className="flex gap-0 p-6">
                         {/* Left Column: Industries */}
-                          <div className="space-y-4 w-[300px] pr-3 border-r border-border">
+                          <div className="space-y-4 w-[300px] pr-4 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Industries
                           </h4>
@@ -322,7 +322,7 @@ const Navigation = () => {
                         
                         
                         {/* Right Column: Popular Applications */}
-                          <div className="space-y-4 w-[300px] pl-3">
+                          <div className="space-y-4 w-[300px] pl-4">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Popular Applications
                           </h4>
