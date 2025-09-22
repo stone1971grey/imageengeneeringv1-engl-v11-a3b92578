@@ -240,7 +240,7 @@ const Navigation = () => {
                       {/* Main navigation grid */}
                         <div className="flex gap-6 p-6">
                         {/* Left Column: Industries */}
-                          <div className="space-y-4 w-[300px] pr-6 border-r border-border">
+                          <div className="space-y-4 w-[300px]">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Industries
                           </h4>
