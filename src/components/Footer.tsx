@@ -102,21 +102,21 @@ const Footer = () => {
             <div className="space-y-4">              
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 text-primary mr-3" />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
                   <span className="text-foreground">Phone (DE): +49 2273 99 99 1-0</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 text-primary mr-3" />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
                   <span className="text-foreground">Phone (USA): +1 408 386 1496</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 text-primary mr-3" />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
                   <span className="text-foreground">Phone (China): +86 158 8961 9096</span>
                 </div>
               </div>
               
               <div className="flex items-center">
-                <Clock className="h-5 w-5 text-primary mr-3" />
+                <Clock className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
                 <span className="text-foreground">Office Hours: Mon–Fri, 9–5 PM (CET)</span>
               </div>
             </div>
