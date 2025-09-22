@@ -226,7 +226,7 @@ const Navigation = () => {
           <div className="hidden lg:flex items-center flex-row gap-x-8">
             <div className="flex items-center gap-x-8">
               <SimpleDropdown trigger="Find Your Solution">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
+                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Industries */}
@@ -364,7 +364,7 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger="Products">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
+                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Product Categories</h4>
@@ -447,7 +447,7 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger="Test Lab">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
+                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Technical Services</h4>
@@ -494,7 +494,7 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger="Training & Events">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
+                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1">
                       <h4 className="font-semibold mb-3 text-lg text-black">Training & Education</h4>
@@ -525,7 +525,7 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger="Image Quality">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
+                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Technical Resources</h4>
@@ -585,7 +585,7 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger="Company">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
+                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-8 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Company Information</h4>
