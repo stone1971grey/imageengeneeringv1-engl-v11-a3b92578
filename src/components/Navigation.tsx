@@ -376,7 +376,7 @@ const Navigation = () => {
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <Link to="/industries">
                           <div className="flex items-center justify-center transition-colors cursor-pointer">
-                            <Button variant="decision" className="w-full" style={{ backgroundColor: '#74952a', borderColor: '#74952a', color: 'white' }}>
+                            <Button variant="decision" className="w-full" style={{ backgroundColor: '#103e7c', borderColor: '#103e7c', color: 'white' }}>
                               <Search className="h-5 w-5 mr-3" />
                               <span className="text-lg font-medium">Need Help Choosing? → Start Solution Finder</span>
                               <span className="ml-2 text-xs bg-white text-green-700 px-2 py-1 rounded font-bold">ACTIVE</span>
