@@ -368,7 +368,7 @@ const Charts = () => {
             <Button
               variant="outline"
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className="flex items-center gap-2 border-[#103e7c] text-[#103e7c] hover:bg-[#103e7c] hover:text-white h-10 px-4"
+              className="flex items-center gap-2 bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3369] hover:text-white h-10 px-4"
             >
               <Filter className="w-4 h-4" />
               {filtersOpen ? 'Hide Filter' : 'Show Filter'}
