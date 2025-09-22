@@ -203,14 +203,9 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#4B4A4A] border-b border-[#4B4A4A]">
-      {/* Main Navigation with integrated Utility Navigation */}
+      {/* Main Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
-        {/* Top row - Utility Navigation */}
-        <div className="hidden lg:flex justify-end pt-2 pb-2">
-          <UtilityNavigation />
-        </div>
-        
-        {/* Main row - Logo and Navigation */}
+        {/* Logo and Navigation in one row */}
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
@@ -221,8 +216,9 @@ const Navigation = () => {
             />
           </Link>
           
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center flex-row gap-x-8 relative">
+          {/* Combined Navigation and Utility */}
+          <div className="hidden lg:flex items-center gap-x-8">
+            {/* Main Navigation Items */}
             <div className="flex items-center gap-x-8 relative">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
@@ -624,8 +620,11 @@ const Navigation = () => {
                     </div>
                   </div>
                 </div>
-              </SimpleDropdown>
+               </SimpleDropdown>
             </div>
+            
+            {/* Utility Navigation */}
+            <UtilityNavigation />
           </div>
 
           {/* Mobile menu button */}
