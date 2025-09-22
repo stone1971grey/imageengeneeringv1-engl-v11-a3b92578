@@ -590,30 +590,11 @@ const Navigation = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem className="mx-4">
-                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Services</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Test Lab</NavigationMenuTrigger>
                   <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
-                    <div className="flex flex-col gap-2 w-[900px] max-w-[90vw] bg-[#f3f3f3]">
+                    <div className="flex flex-col gap-2 w-[800px] max-w-[90vw] bg-[#f3f3f3]">
                       <div className="flex gap-6 p-6">
-                        {/* Column 1: Training & Education */}
-                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                          <h4 className="font-semibold mb-3 text-lg text-black">
-                            Training & Education
-                          </h4>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <CustomTargetIcon className="h-5 w-5" />
-                            <a href="#">Professional Training</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <CustomTargetIcon className="h-5 w-5" />
-                            <a href="#">Workshops</a>
-                          </div>
-                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                            <CustomTargetIcon className="h-5 w-5" />
-                            <a href="#">Certification Programs</a>
-                          </div>
-                        </div>
-
-                        {/* Column 2: Technical Services */}
+                        {/* Column 1: Technical Services */}
                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Technical Services
@@ -632,7 +613,7 @@ const Navigation = () => {
                           </div>
                         </div>
 
-                        {/* Column 3: Consulting */}
+                        {/* Column 2: Consulting */}
                         <div className="space-y-4 flex-1">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Consulting
@@ -656,10 +637,48 @@ const Navigation = () => {
                       <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                         <div className="flex items-center justify-center transition-colors cursor-pointer">
                           <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
-                            <Phone className="h-5 w-5 mr-3" />
-                            <span className="text-lg font-medium">Contact Our Service Team</span>
+                            <FlaskConical className="h-5 w-5 mr-3" />
+                            <span className="text-lg font-medium">Contact Our Lab Team</span>
                           </Button>
                         </div>
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem className="mx-4">
+                  <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Training & Events</NavigationMenuTrigger>
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50">
+                    <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3]">
+                      <div className="flex gap-6 p-6">
+                        {/* Training & Education */}
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 text-lg text-black">
+                            Training & Education
+                          </h4>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <a href="#">Professional Training</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <a href="#">Workshops</a>
+                          </div>
+                          <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <a href="#">Certification Programs</a>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* CTA Button */}
+                      <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
+                        <Link to="/events">
+                          <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                            <GraduationCap className="h-5 w-5 mr-3" />
+                            <span className="text-lg font-medium">View Training & Events</span>
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </NavigationMenuContent>
