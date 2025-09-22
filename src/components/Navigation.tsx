@@ -493,7 +493,7 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger="Training & Events">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
+                <div className="flex flex-col gap-2 w-[400px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1">
                       <h4 className="font-semibold mb-3 text-lg text-black">Training & Education</h4>
