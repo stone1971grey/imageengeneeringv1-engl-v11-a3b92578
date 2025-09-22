@@ -240,7 +240,7 @@ const Navigation = () => {
                       {/* Main navigation grid */}
                         <div className="flex gap-6 p-6">
                         {/* Left Column: Industries */}
-                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                          <div className="space-y-4 w-[300px] pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Industries
                           </h4>
@@ -322,7 +322,7 @@ const Navigation = () => {
                         
                         
                         {/* Right Column: Popular Applications */}
-                          <div className="space-y-4 flex-1">
+                          <div className="space-y-4 w-[300px]">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Popular Applications
                           </h4>
@@ -436,7 +436,7 @@ const Navigation = () => {
                       {/* Main navigation grid - Two column layout */}
                       <div className="flex gap-8 p-6">
                         {/* Left Column: Product Groups */}
-                        <div className="space-y-4 flex-1">
+                        <div className="space-y-4 w-[300px]">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Product Groups
                           </h4>
@@ -488,7 +488,7 @@ const Navigation = () => {
                         
                         {/* Right Column: Subgroups (placeholder for now) */}
                         <div 
-                          className="space-y-4 flex-1"
+                          className="space-y-4 w-[300px]"
                           onMouseEnter={() => {
                             // Keep current hovered product when entering subgroups area
                           }}
@@ -595,7 +595,7 @@ const Navigation = () => {
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                       <div className="flex gap-6 p-6">
                         {/* Column 1: Training & Education */}
-                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                        <div className="space-y-4 w-[300px] pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Training & Education
                           </h4>
@@ -614,7 +614,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Technical Services */}
-                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                        <div className="space-y-4 w-[300px] pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Technical Services
                           </h4>
@@ -633,7 +633,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 3: Consulting */}
-                        <div className="space-y-4 flex-1">
+                        <div className="space-y-4 w-[300px]">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Consulting
                           </h4>
@@ -671,7 +671,7 @@ const Navigation = () => {
                     <div className="flex flex-col gap-2 w-[1000px] bg-[#f3f3f3]">
                         <div className="flex gap-6 p-6">
                         {/* Column 1: Technical Resources */}
-                          <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                          <div className="space-y-4 w-[300px] pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Technical Resources
                           </h4>
@@ -698,7 +698,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Training & Resources */}
-                          <div className="space-y-4 flex-1">
+                          <div className="space-y-4 w-[300px]">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Training & Resources
                           </h4>
@@ -744,7 +744,7 @@ const Navigation = () => {
                       {/* Main grid */}
                       <div className="flex gap-8 p-6">
                         {/* Column 1: Company Information */}
-                         <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                         <div className="space-y-4 w-[300px] pr-6 border-r border-border">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Company Information
                           </h4>
@@ -767,7 +767,7 @@ const Navigation = () => {
                         </div>
 
                         {/* Column 2: Business & Partnerships */}
-                        <div className="space-y-4 flex-1">
+                        <div className="space-y-4 w-[300px]">
                           <h4 className="font-semibold mb-3 text-lg text-black">
                             Business & Partnerships
                           </h4>
