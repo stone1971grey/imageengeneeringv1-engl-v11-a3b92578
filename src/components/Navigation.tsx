@@ -205,8 +205,11 @@ const Navigation = () => {
     <nav className="fixed top-0 w-full z-50 bg-[#4B4A4A] border-b border-[#4B4A4A]">
       {/* Utility Navigation */}
       <div className="container mx-auto px-6 pt-5 pb-2">
-        <div className="flex justify-end">
-          <UtilityNavigation />
+        <div className="flex items-center justify-between">
+          <div></div> {/* Empty div for spacing */}
+          <div className="hidden lg:flex">
+            <UtilityNavigation />
+          </div>
         </div>
       </div>
       
