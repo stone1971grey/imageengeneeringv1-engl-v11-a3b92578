@@ -445,7 +445,7 @@ const Navigation = () => {
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
                             onMouseEnter={() => setHoveredProduct("Test Charts")}
                           >
-                            <Target className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Test Charts</span>
                             <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                           </Link>
@@ -453,7 +453,7 @@ const Navigation = () => {
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Illumination Devices")}
                           >
-                            <Lightbulb className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Illumination Devices</span>
                           </div>
                           <div 
@@ -474,7 +474,7 @@ const Navigation = () => {
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Accessories")}
                           >
-                            <Puzzle className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Accessories</span>
                           </div>
                           <div 
