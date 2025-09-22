@@ -460,14 +460,14 @@ const Navigation = () => {
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Measurement Devices")}
                           >
-                            <Camera className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Measurement Devices</span>
                           </div>
                           <div 
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Software")}
                           >
-                            <Monitor className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Software</span>
                           </div>
                           <div 
@@ -481,7 +481,7 @@ const Navigation = () => {
                             className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredProduct("Services")}
                           >
-                            <GraduationCap className="h-5 w-5" />
+                            <CustomTargetIcon className="h-5 w-5" />
                             <span>Services</span>
                           </div>
                         </div>
