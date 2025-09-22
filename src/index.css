@@ -202,6 +202,37 @@ nav [data-radix-navigation-menu-content] {
   position: relative !important;
 }
 
+/* Specific flyout positioning by class */
+.flyout-solution {
+  left: 0 !important;
+  transform: translateX(0) !important;
+}
+
+.flyout-products {
+  left: 0 !important;
+  transform: translateX(0) !important;
+}
+
+.flyout-testlab {
+  left: 0 !important;
+  transform: translateX(0) !important;
+}
+
+.flyout-training {
+  left: 0 !important;
+  transform: translateX(0) !important;
+}
+
+.flyout-quality {
+  left: 0 !important;
+  transform: translateX(0) !important;
+}
+
+.flyout-company {
+  left: 0 !important;
+  transform: translateX(0) !important;
+}
+
 /* Individual menu item positioning - each flyout under its trigger */
 nav [data-radix-navigation-menu-list] > li:first-child [data-radix-navigation-menu-content] {
   left: 0 !important;
