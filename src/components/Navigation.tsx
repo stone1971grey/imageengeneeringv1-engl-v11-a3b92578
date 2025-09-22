@@ -667,7 +667,7 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Image Quality</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50 ml-auto">
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50" style={{ marginLeft: '200px' }}>
                     <div className="flex flex-col gap-2 w-[620px] bg-[#f3f3f3]">
                         <div className="flex gap-0 p-6">
                         {/* Column 1: Technical Resources */}
@@ -739,9 +739,8 @@ const Navigation = () => {
 
                 <NavigationMenuItem className="mx-4">
                   <NavigationMenuTrigger className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto">Company</NavigationMenuTrigger>
-                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50 ml-auto">
-                    <div className="flex justify-end">
-                      <div className="flex flex-col gap-2 w-[620px] bg-[#f3f3f3]">
+                  <NavigationMenuContent className="bg-white p-[20px] border-0 shadow-lg z-50" style={{ marginLeft: '400px' }}>
+                    <div className="flex flex-col gap-2 w-[620px] bg-[#f3f3f3]">
                       {/* Main grid */}
                       <div className="flex gap-0 p-6">
                         {/* Column 1: Company Information */}
@@ -785,10 +784,9 @@ const Navigation = () => {
                             <CustomTargetIcon className="h-5 w-5" />
                             <span>Partnerships</span>
                           </Link>
-                        </div>
-                      </div>
-                      </div>
-                    </div>
+                         </div>
+                       </div>
+                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
               </NavigationMenuList>
