@@ -244,7 +244,7 @@ const Navigation = () => {
                             Industries
                           </h4>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("Photography")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -252,7 +252,7 @@ const Navigation = () => {
                             <span>Photography</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -261,7 +261,7 @@ const Navigation = () => {
                           </div>
                           <Link 
                             to="/automotive"
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
                             onMouseEnter={() => setHoveredIndustry("Automotive & ADAS")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -270,7 +270,7 @@ const Navigation = () => {
                             <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded">ACTIVE</span>
                           </Link>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("Broadcast & HDTV")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -278,7 +278,7 @@ const Navigation = () => {
                             <span>Broadcast & HDTV</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("Security / Surveillance")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -286,7 +286,7 @@ const Navigation = () => {
                             <span>Security / Surveillance</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("Machine Vision")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -294,7 +294,7 @@ const Navigation = () => {
                             <span>Machine Vision</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -302,7 +302,7 @@ const Navigation = () => {
                             <span>Medical / Endoscopy</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("Scanning & Archiving")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
@@ -310,7 +310,7 @@ const Navigation = () => {
                             <span>Scanning & Archiving</span>
                           </div>
                           <div 
-                            className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                             onMouseEnter={() => setHoveredIndustry("iQ‑Lab Testing")}
                             onMouseLeave={() => setHoveredIndustry(null)}
                           >
