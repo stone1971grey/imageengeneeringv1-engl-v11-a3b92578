@@ -206,7 +206,7 @@ const Navigation = () => {
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
         {/* Main row - Logo and combined Navigation */}
-        <div className="flex items-end justify-between">
+        <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
               src={logoIE} 
