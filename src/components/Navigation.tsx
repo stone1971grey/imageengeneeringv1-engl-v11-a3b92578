@@ -206,8 +206,10 @@ const Navigation = () => {
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
         {/* Top row - Utility Navigation */}
-        <div className="hidden lg:flex justify-end pt-2 pb-2">
-          <UtilityNavigation />
+        <div className="hidden lg:block pt-2 pb-2">
+          <div className="flex justify-end">
+            <UtilityNavigation />
+          </div>
         </div>
         
         {/* Main row - Logo and Navigation */}
@@ -221,9 +223,9 @@ const Navigation = () => {
             />
           </Link>
           
-          {/* Desktop Navigation - positioned to align right edge with utility nav */}
-          <div className="hidden lg:flex items-center flex-row gap-x-4 relative">
-            <div className="flex items-center gap-x-4 relative">
+          {/* Desktop Navigation - aligned with utility nav right edge */}
+          <div className="hidden lg:block">
+            <div className="flex items-center gap-x-4 relative justify-end">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
