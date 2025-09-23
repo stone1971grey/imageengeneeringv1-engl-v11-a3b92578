@@ -26,11 +26,15 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
       </Button>
       
       {isOpen && (
-        <div className={`absolute top-full mt-2 z-[9999] bg-white rounded-lg shadow-xl border border-gray-200 p-[20px] ${
-          isRightAligned ? 'left-auto right-0 origin-top-right' : 'left-0'
-        }`}>
-          {children}
-        </div>
+        <>
+          {/* Invisible bridge to prevent hover gaps */}
+          <div className="absolute top-full w-full h-2 z-[9999]" />
+          <div className={`absolute top-full z-[9999] bg-white rounded-lg shadow-xl border border-gray-200 p-[20px] ${
+            isRightAligned ? 'left-auto right-0 origin-top-right' : 'left-0'
+          }`}>
+            {children}
+          </div>
+        </>
       )}
     </div>
   );
