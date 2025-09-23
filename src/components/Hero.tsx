@@ -4,7 +4,7 @@ import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen overflow-hidden -mt-10">
+    <section className="relative min-h-screen overflow-hidden -mt-11">
       {/* Hero Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 animate-fade-in">
         <img 
