@@ -18,7 +18,7 @@ const Hero = () => {
       </div>
       
       {/* Hero Content */}
-      <div className="container mx-auto px-6 pt-24 lg:pt-32 pb-16 lg:pb-24 relative z-10">
+      <div className="container mx-auto px-6 pt-14 lg:pt-20 pb-16 lg:pb-24 relative z-10">
         <div className="flex items-center justify-start min-h-[80vh]">
           
           {/* Left-aligned Content */}

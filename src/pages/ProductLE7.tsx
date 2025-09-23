@@ -93,7 +93,7 @@ const ProductLE7 = () => {
       <Navigation />
       
       {/* Main content wrapper with top margin to clear fixed navigation */}
-      <div className="pt-24">
+      <div className="pt-14">
         {/* Quick Navigation */}
         <nav className="sticky top-24 z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
