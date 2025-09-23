@@ -203,10 +203,15 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-[#4B4A4A] border-b border-[#4B4A4A]">
-      {/* Navigation Container */}
+      {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
+        {/* Top row - Utility Navigation */}
+        <div className="hidden lg:flex justify-end pt-2 pb-2">
+          <UtilityNavigation />
+        </div>
+        
+        {/* Main row - Logo and Navigation */}
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
               src={logoIE} 
@@ -216,93 +221,9 @@ const Navigation = () => {
             />
           </Link>
           
-          {/* Right side navigation stack */}
-          <div className="hidden lg:flex flex-col items-end gap-2">
-            {/* Utility Navigation on top */}
-            <UtilityNavigation />
-            
-            {/* Main Navigation below, aligned to right edge */}
-            <div className="flex items-center gap-x-4">
-              <SimpleDropdown trigger="Products">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-6 p-6">
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Product Categories</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Test Charts</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Illumination Devices</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Measurement Devices</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Software</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SimpleDropdown>
-
-              <SimpleDropdown trigger="Test Lab">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-6 p-6">
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Lab Services</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Camera Testing</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Mobile Testing</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SimpleDropdown>
-
-              <SimpleDropdown trigger="Training & Events">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-6 p-6">
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Training & Events</h4>
-                      <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Events</span>
-                      </Link>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Training Programs</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SimpleDropdown>
-
-              <SimpleDropdown trigger="Image Quality">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-6 p-6">
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Image Quality Solutions</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Analysis Tools</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Standards Compliance</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </SimpleDropdown>
-
+          {/* Desktop Navigation - positioned to align right edge with utility nav */}
+          <div className="hidden lg:flex items-center flex-row gap-x-4 relative">
+            <div className="flex items-center gap-x-4 relative">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
