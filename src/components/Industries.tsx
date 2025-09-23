@@ -81,18 +81,18 @@ const Industries = () => {
                   animation: 'slide-in-up 0.6s ease-out both'
                 }}
               >
-                {/* Icon Circle - Image Engineering grün */}
+                {/* Icon Circle - IE Blue Styling */}
                 <div className="relative mb-6">
-                  <div className="w-20 h-20 md:w-24 md:h-24 bg-[#74952a]/10 rounded-full flex items-center justify-center border-2 border-[#74952a]/20 shadow-lg hover:shadow-xl hover:bg-[#74952a] hover:border-[#74952a] transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105 cursor-pointer">
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-[#103e7c]/10 rounded-full flex items-center justify-center border-2 border-[#103e7c]/20 shadow-lg hover:shadow-xl hover:bg-[#103e7c]/20 hover:border-[#103e7c]/40 transition-all duration-500 ease-out hover:-translate-y-1 hover:scale-105 cursor-pointer">
                     <IconComponent 
                       size={36} 
-                      className="text-[#74952a] group-hover:scale-125 transition-all duration-300" 
+                      className="text-[#103e7c]/70 group-hover:text-[#103e7c] group-hover:scale-125 transition-all duration-300" 
                       strokeWidth={1.8}
                     />
                   </div>
                   
-                  {/* Image Engineering grün Glow-Effekt */}
-                  <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 bg-[#74952a] rounded-full opacity-0 hover:opacity-20 transition-opacity duration-500 blur-xl" />
+                  {/* IE Blue Glow-Effekt */}
+                  <div className="absolute inset-0 w-20 h-20 md:w-24 md:h-24 bg-[#103e7c] rounded-full opacity-0 hover:opacity-15 transition-opacity duration-500 blur-xl" />
                 </div>
 
                 {/* Text Content - warme Farbtöne */}
