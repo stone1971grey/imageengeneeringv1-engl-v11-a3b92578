@@ -34,35 +34,33 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <GlobalPasswordGate>
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/inside-lab" element={<InsideLab />} />
-          <Route path="/industries" element={<Industries />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/automotive" element={<Automotive />} />
-          <Route path="/downloads" element={<Downloads />} />
-           <Route path="/product/arcturus" element={<ProductArcturus />} />
-           <Route path="/product/le7" element={<ProductLE7 />} />
-           <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
-           <Route path="/hidden-segments" element={<HiddenSegments />} />
-           <Route path="/backlog" element={<Backlog />} />
-          <Route path="/products/charts" element={<Charts />} />
-          <Route path="/products/charts/:slug" element={<ChartDetail />} />
-          <Route path="/cart" element={<Cart />} />
-           <Route path="/events" element={<Events />} />
-           <Route path="/in-cabin-testing" element={<InCabinTesting />} />
-           <Route path="/styleguide" element={<Styleguide />} />
-          <Route path="/icons-styleguide" element={<IconsStyleguide />} />
-          <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
-          <Route path="/image-download" element={<ImageDownload />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </GlobalPasswordGate>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/inside-lab" element={<InsideLab />} />
+        <Route path="/industries" element={<Industries />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/automotive" element={<Automotive />} />
+        <Route path="/downloads" element={<Downloads />} />
+         <Route path="/product/arcturus" element={<ProductArcturus />} />
+         <Route path="/product/le7" element={<ProductLE7 />} />
+         <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
+         <Route path="/hidden-segments" element={<HiddenSegments />} />
+         <Route path="/backlog" element={<Backlog />} />
+        <Route path="/products/charts" element={<Charts />} />
+        <Route path="/products/charts/:slug" element={<ChartDetail />} />
+        <Route path="/cart" element={<Cart />} />
+         <Route path="/events" element={<Events />} />
+         <Route path="/in-cabin-testing" element={<InCabinTesting />} />
+         <Route path="/styleguide" element={<Styleguide />} />
+        <Route path="/icons-styleguide" element={<IconsStyleguide />} />
+        <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
+        <Route path="/image-download" element={<ImageDownload />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
