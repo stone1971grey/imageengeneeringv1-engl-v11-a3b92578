@@ -5,9 +5,10 @@ import { Globe } from "lucide-react";
 import { useState } from "react";
 
 const UtilityNavigation = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState("de");
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
 
   const languages = [
+    { code: "en", label: "English", flag: "🇺🇸" },
     { code: "de", label: "Deutsch", flag: "🇩🇪" },
     { code: "zh", label: "中文", flag: "🇨🇳" },
     { code: "ja", label: "日本語", flag: "🇯🇵" },
