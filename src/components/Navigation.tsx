@@ -224,7 +224,7 @@ const Navigation = () => {
             </div>
             
             {/* Main Navigation */}
-            <div className="flex items-center gap-x-4 relative justify-end">
+            <div className="flex items-center gap-x-4 relative justify-end mr-4">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
