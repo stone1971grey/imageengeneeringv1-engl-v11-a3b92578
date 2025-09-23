@@ -10,7 +10,8 @@ const Hero = () => {
         <img 
           src={precisionTestingHero}
           alt="Precision Engineering Process"
-          className="w-full h-full object-cover animate-ken-burns transform -translate-y-10"
+          className="w-full h-full object-cover animate-ken-burns"
+          style={{ transform: 'translateY(-40px)' }}
         />
         <div className="absolute inset-0 bg-black/15"></div>
         {/* Left fade overlay */}
