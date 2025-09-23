@@ -219,7 +219,7 @@ const Navigation = () => {
           {/* Combined Navigation Block - both utility and main nav as one unit */}
           <div className="hidden lg:block">
             {/* Utility Navigation */}
-            <div className="flex justify-end pb-2">
+            <div className="flex justify-end pb-4">
               <UtilityNavigation />
             </div>
             
