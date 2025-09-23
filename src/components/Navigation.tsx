@@ -205,15 +205,8 @@ const Navigation = () => {
     <nav className="fixed top-0 w-full z-50 bg-[#4B4A4A] border-b border-[#4B4A4A]">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
-        {/* Top row - Utility Navigation */}
-        <div className="hidden lg:block pt-2 pb-2">
-          <div className="flex justify-end">
-            <UtilityNavigation />
-          </div>
-        </div>
-        
-        {/* Main row - Logo and Navigation */}
-        <div className="flex items-center justify-between">
+        {/* Main row - Logo and combined Navigation */}
+        <div className="flex items-end justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
               src={logoIE} 
@@ -223,8 +216,14 @@ const Navigation = () => {
             />
           </Link>
           
-          {/* Desktop Navigation - aligned with utility nav right edge */}
+          {/* Combined Navigation Block - both utility and main nav as one unit */}
           <div className="hidden lg:block">
+            {/* Utility Navigation */}
+            <div className="flex justify-end pb-2">
+              <UtilityNavigation />
+            </div>
+            
+            {/* Main Navigation */}
             <div className="flex items-center gap-x-4 relative justify-end">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
