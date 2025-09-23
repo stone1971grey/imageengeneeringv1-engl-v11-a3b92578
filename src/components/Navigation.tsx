@@ -583,7 +583,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger="Company">
+              <SimpleDropdown trigger="Company" className="right-aligned">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-8 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
