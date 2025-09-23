@@ -21,7 +21,7 @@ const UtilityNavigation = () => {
       
       {/* Language Selector */}
       <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-        <SelectTrigger className="w-[140px] bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300">
+        <SelectTrigger className="w-[140px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
           <div className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
             <SelectValue placeholder="Language" />
