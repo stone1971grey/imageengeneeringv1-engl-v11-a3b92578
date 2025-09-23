@@ -222,7 +222,7 @@ const Navigation = () => {
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center flex-row gap-x-4 relative">
+          <div className="hidden lg:flex items-center flex-row gap-x-4 relative ml-auto">
             <div className="flex items-center gap-x-4 relative">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
