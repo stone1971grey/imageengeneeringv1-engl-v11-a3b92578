@@ -239,13 +239,13 @@ const Automotive = () => {
                      {app.description}
                    </p>
                   
-                  {/* CTA Button */}
-                  <Button 
-                    className="w-full text-white hover:opacity-90"
-                    style={{ backgroundColor: 'hsl(77, 56%, 37%)' }}
-                  >
-                    Learn More
-                  </Button>
+                   {/* CTA Button */}
+                   <Button 
+                     className="w-full text-white hover:opacity-90"
+                     style={{ backgroundColor: '#103e7c' }}
+                   >
+                     Learn More
+                   </Button>
                 </div>
               );
             })}
