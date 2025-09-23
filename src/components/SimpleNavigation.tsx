@@ -9,6 +9,8 @@ interface SimpleDropdownProps {
 
 export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  
+  const isRightAligned = className.includes('right-aligned');
 
   return (
     <div 
@@ -24,7 +26,9 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
       </Button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 z-[9999] bg-white rounded-lg shadow-xl border border-gray-200 p-[20px]">
+        <div className={`absolute top-full mt-2 z-[9999] bg-white rounded-lg shadow-xl border border-gray-200 p-[20px] ${
+          isRightAligned ? 'left-auto right-0 origin-top-right' : 'left-0'
+        }`}>
           {children}
         </div>
       )}
