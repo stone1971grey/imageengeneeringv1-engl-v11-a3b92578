@@ -4,14 +4,13 @@ import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen overflow-hidden">
+    <section className="relative min-h-screen overflow-hidden -mt-10">
       {/* Hero Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 animate-fade-in">
         <img 
           src={precisionTestingHero}
           alt="Precision Engineering Process"
           className="w-full h-full object-cover animate-ken-burns"
-          style={{ transform: 'translateY(-40px)' }}
         />
         <div className="absolute inset-0 bg-black/15"></div>
         {/* Left fade overlay */}
