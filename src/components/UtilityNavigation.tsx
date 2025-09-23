@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Globe } from "lucide-react";
 import { useState } from "react";
 
 const UtilityNavigation = () => {
@@ -22,10 +21,7 @@ const UtilityNavigation = () => {
       {/* Language Selector */}
       <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
         <SelectTrigger className="w-[140px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
-          <div className="flex items-center gap-2">
-            <Globe className="h-4 w-4" />
-            <SelectValue placeholder="Language" />
-          </div>
+          <SelectValue placeholder="Language" />
         </SelectTrigger>
         <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
           {languages.map((lang) => (
