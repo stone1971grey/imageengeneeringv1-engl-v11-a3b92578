@@ -4,7 +4,7 @@ import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen overflow-hidden -mt-4">
+    <section className="relative min-h-screen overflow-hidden">
       {/* Hero Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 animate-fade-in">
         <img 
@@ -17,8 +17,11 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
       </div>
       
+      {/* Navigation Spacer */}
+      <div className="h-16"></div>
+      
       {/* Hero Content */}
-      <div className="container mx-auto px-6 pt-6 pb-16 lg:pb-24 relative z-10">
+      <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10">
         <div className="flex items-center justify-start min-h-[80vh]">
           
           {/* Left-aligned Content */}
