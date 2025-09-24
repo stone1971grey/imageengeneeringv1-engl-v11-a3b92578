@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import GlobalPasswordGate from "@/components/GlobalPasswordGate";
 import Index from "./pages/Index";
@@ -48,7 +48,7 @@ const App = () => (
          <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
          <Route path="/backlog" element={<Backlog />} />
-        <Route path="/charts" element={<Charts />} />
+        <Route path="/charts" element={<Navigate to="/products/charts" replace />} />
         <Route path="/products/charts" element={<Charts />} />
         <Route path="/products/charts/:slug" element={<ChartDetail />} />
         <Route path="/cart" element={<Cart />} />
