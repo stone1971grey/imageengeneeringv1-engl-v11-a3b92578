@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Send, Mail, Phone, MapPin } from "lucide-react";
-import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
+import industriesHero from "@/assets/industries-hero.jpg";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -45,7 +45,7 @@ const Contact = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url(${precisionTestingHero})`
+            backgroundImage: `url(${industriesHero})`
           }}
         />
         <div className="relative container mx-auto px-6">
