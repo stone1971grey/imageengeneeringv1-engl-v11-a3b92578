@@ -607,6 +607,10 @@ const Navigation = () => {
                         <CustomTargetIcon className="h-5 w-5" />
                         <span>Nynomic Group</span>
                       </Link>
+                      <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                        <FileText className="h-5 w-5" />
+                        <span>News</span>
+                      </Link>
                     </div>
 
                     <div className="space-y-4 flex-1">
