@@ -268,7 +268,7 @@ const Charts = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen overflow-hidden">
         {/* Hero Background Image with Ken Burns Effect */}
-        <div className="absolute inset-0 animate-fade-in">
+        <div className="absolute inset-0 animate-fade-in" style={{ transform: 'translateY(-47px)' }}>
           <img 
             src={precisionTestingHero}
             alt="Test Charts für präzise Bildqualitätsmessungen"
