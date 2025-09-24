@@ -204,7 +204,7 @@ const Navigation = () => {
   return (
     <nav className="fixed top-4 left-4 right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
-      <div className="container mx-auto px-6 py-3 xl:py-6">
+      <div className="container mx-auto px-6 py-3 lg:py-6">
         {/* Main row - Logo and combined Navigation */}
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
@@ -217,7 +217,7 @@ const Navigation = () => {
           </Link>
           
           {/* Combined Navigation Block - both utility and main nav as one unit */}
-          <div className="hidden xl:block">
+          <div className="hidden lg:block">
             {/* Utility Navigation */}
             <div className="flex justify-end pb-4">
               <UtilityNavigation />
@@ -627,7 +627,7 @@ const Navigation = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="xl:hidden">
+          <div className="lg:hidden">
             <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X size={20} /> : <Menu size={20} />}
             </Button>
@@ -635,7 +635,7 @@ const Navigation = () => {
         </div>
 
         {/* Mobile Navigation - Drawer with Accordions */}
-        <div className="xl:hidden">
+        <div className="lg:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetContent side="right" className="w-full sm:max-w-sm p-0">
               <div className="h-full overflow-y-auto">
