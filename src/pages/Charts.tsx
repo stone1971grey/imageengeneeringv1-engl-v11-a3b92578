@@ -266,14 +266,13 @@ const Charts = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen overflow-hidden">
+      <section className="relative min-h-screen overflow-hidden -mt-[47px]">
         {/* Hero Background Image with Ken Burns Effect */}
         <div className="absolute inset-0 animate-fade-in">
           <img 
             src={precisionTestingHero}
             alt="Test Charts für präzise Bildqualitätsmessungen"
             className="w-full h-full object-cover animate-ken-burns"
-            style={{ transform: 'translateY(-47px)' }}
           />
           <div className="absolute inset-0 bg-black/15"></div>
           {/* Left fade overlay */}
