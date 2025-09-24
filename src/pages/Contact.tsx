@@ -204,16 +204,16 @@ const Contact = () => {
                       <SelectTrigger className="h-12 text-base bg-[#103e7c] text-white border-0 rounded-md focus:ring-2 focus:ring-primary font-medium hover:bg-[#0d3369]">
                         <SelectValue placeholder="Select an option ..." />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg">
-                        <SelectItem value="test-charts">Test Charts & Targets</SelectItem>
-                        <SelectItem value="measurement-devices">Measurement Devices</SelectItem>
-                        <SelectItem value="illumination">Illumination Systems</SelectItem>
-                        <SelectItem value="software">Software Solutions</SelectItem>
-                        <SelectItem value="consulting">Consulting & Training</SelectItem>
-                        <SelectItem value="custom-solution">Custom Solution</SelectItem>
-                        <SelectItem value="partnership">Partnership Inquiry</SelectItem>
-                        <SelectItem value="support">Technical Support</SelectItem>
-                      </SelectContent>
+                       <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                         <SelectItem value="test-charts" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Test Charts & Targets</SelectItem>
+                         <SelectItem value="measurement-devices" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Measurement Devices</SelectItem>
+                         <SelectItem value="illumination" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Illumination Systems</SelectItem>
+                         <SelectItem value="software" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Software Solutions</SelectItem>
+                         <SelectItem value="consulting" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Consulting & Training</SelectItem>
+                         <SelectItem value="custom-solution" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Custom Solution</SelectItem>
+                         <SelectItem value="partnership" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Partnership Inquiry</SelectItem>
+                         <SelectItem value="support" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100">Technical Support</SelectItem>
+                       </SelectContent>
                     </Select>
                   </div>
 
