@@ -48,6 +48,7 @@ const App = () => (
          <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
          <Route path="/backlog" element={<Backlog />} />
+        <Route path="/charts" element={<Charts />} />
         <Route path="/products/charts" element={<Charts />} />
         <Route path="/products/charts/:slug" element={<ChartDetail />} />
         <Route path="/cart" element={<Cart />} />
