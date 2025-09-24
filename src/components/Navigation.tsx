@@ -641,176 +641,124 @@ const Navigation = () => {
               <div className="h-full overflow-y-auto">
                 <nav className="px-4 pt-6 pb-28">
                   <Accordion type="single" collapsible className="space-y-0">
-                    {/* Ihre Lösung finden */}
+                    
+                    {/* Find Your Solution */}
                     <AccordionItem value="solutions">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
                           <Search className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Ihre Lösung finden</span>
+                          <span className="text-foreground">Find Your Solution</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-4 pt-2">
-                          {/* Typische Anwendungen */}
+                          
+                          {/* Industries */}
                           <div>
+                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Industries</h4>
                             <ul className="space-y-1">
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CheckCircle className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Kamera-Qualitätsvalidierung</span>
+                                  <Camera className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Photography</span>
                                 </div>
                               </li>
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CheckCircle className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">In-Cabin Performance Testing</span>
+                                  <Smartphone className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Mobile Phones</span>
+                                </div>
+                              </li>
+                              <li>
+                                <Link to="/automotive" className="min-h-12 px-4 flex items-center gap-3 py-3 bg-green-100 rounded-md border-2 border-green-300">
+                                  <Car className="w-5 h-5 shrink-0 text-green-600" />
+                                  <span className="text-green-800">Automotive & ADAS</span>
+                                  <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                                </Link>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <Tv className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Broadcast & HDTV</span>
                                 </div>
                               </li>
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CheckCircle className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Testumgebungen für Smartphones & Displays</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CheckCircle className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Mikroskopie & Medizinische Bildgebung</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CheckCircle className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">ISO und IEEE konforme Test-Setups</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                          <Separator />
-                          {/* Lösungspakete */}
-                          <div>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Zap className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Arcturus HDR Test Bundle</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Settings className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Kamera-Kalibrierungs-Paket</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Microscope className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Labor-Komplettlösung</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <BarChart3 className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Spektrale Mess- & Analyse-Set</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                          <Separator />
-                          {/* Zielgruppen */}
-                          <div>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Building className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Hersteller</span>
+                                  <Shield className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Security / Surveillance</span>
                                 </div>
                               </li>
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3">
                                   <Cog className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Zulieferer</span>
+                                  <span className="text-foreground">Machine Vision</span>
                                 </div>
                               </li>
                               <li>
                                 <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Forschungseinrichtungen</span>
+                                  <Stethoscope className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Medical / Endoscopy</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <ScanLine className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Scanning & Archiving</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <FlaskConical className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">iQ‑Lab Testing</span>
                                 </div>
                               </li>
                             </ul>
                           </div>
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">Lösungsfinder starten</Button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    {/* Industries */}
-                    <AccordionItem value="industries">
-                      <AccordionTrigger className="px-4 py-3 text-base">
-                        <div className="flex items-center gap-3">
-                          <Building2 className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Industries</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-2 pt-2">
-                          <ul className="space-y-1">
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <Camera className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Photography</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <Smartphone className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Mobile Phones</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/automotive" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <Car className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Automotive & ADAS</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <Tv className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Broadcast & HDTV</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <Shield className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Security / Surveillance</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <Cog className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Machine Vision</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <Stethoscope className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Medical / Endoscopy</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <ScanLine className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">Scanning & Archiving</span>
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="/industries" className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                <FlaskConical className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                <span className="text-foreground">iQ‑Lab Testing</span>
-                              </Link>
-                            </li>
-                          </ul>
+                          
+                          <Separator />
+                          
+                          {/* Popular Applications */}
+                          <div>
+                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Popular Applications</h4>
+                            <ul className="space-y-1">
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Camera Quality Validation</span>
+                                </div>
+                              </li>
+                              <li>
+                                <Link to="/in-cabin-testing" className="min-h-12 px-4 flex items-center gap-3 py-3 bg-green-100 rounded-md border-2 border-green-300">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-green-600" />
+                                  <span className="text-green-800">In-Cabin Performance Testing</span>
+                                  <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                                </Link>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Test Environments for Smartphones & Displays</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Microscopy & Medical Imaging</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">ISO and IEEE Compliant Test Setups</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
+                            <Search className="h-5 w-5 mr-3" />
+                            Find Your Perfect Solution
+                          </Button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -824,99 +772,147 @@ const Navigation = () => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="space-y-2 pt-2">
-                          <ul className="space-y-1">
-                            <li>
-                              <Link to="/products/charts" className="min-h-12 px-4 flex items-center gap-3 py-3 hover:bg-accent rounded-md transition-colors"><Target className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Charts</span></Link>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Camera className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Equipment</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Monitor className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Software</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Package className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Product Bundles</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Solutions</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Puzzle className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Accessories</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Cpu className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technology</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Training</span></div>
-                            </li>
-                          </ul>
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">Inside the Lab – Real Test Setups</Button>
+                        <div className="space-y-4 pt-2">
+                          <div>
+                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Product Categories</h4>
+                            <ul className="space-y-1">
+                              <li>
+                                <Link to="/charts" className="min-h-12 px-4 flex items-center gap-3 py-3 bg-green-100 rounded-md border-2 border-green-300">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-green-600" />
+                                  <span className="text-green-800">Test Charts</span>
+                                  <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                                </Link>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Illumination Devices</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <Monitor className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Measurement Devices</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <Cpu className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Software</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <Package className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Accessories</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Services</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
+                            <FlaskConical className="h-5 w-5 mr-3" />
+                            Contact Our Lab Team
+                          </Button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Resources */}
-                    <AccordionItem value="resources">
+                    {/* Training & Events */}
+                    <AccordionItem value="training">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
-                          <Download className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Resources</span>
+                          <GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" />
+                          <span className="text-foreground">Training & Events</span>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="space-y-4 pt-2">
                           <div>
-                            <h4 className="font-medium mb-2 px-4">Downloads</h4>
+                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Training & Education</h4>
                             <ul className="space-y-1">
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Package className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Software</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Professional Training</span>
+                                </div>
                               </li>
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><FileText className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Documentation</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Webinars & Workshops</span>
+                                </div>
                               </li>
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><BookOpen className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">White Papers</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Certification Programs</span>
+                                </div>
                               </li>
                             </ul>
                           </div>
-                          <Separator />
+                          
+                          <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300 block">
+                            <Button className="w-full h-12 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825] flex items-center justify-center">
+                              <GraduationCap className="h-5 w-5 mr-3" />
+                              <span>View Training & Events</span>
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                            </Button>
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Image Quality */}
+                    <AccordionItem value="image-quality">
+                      <AccordionTrigger className="px-4 py-3 text-base">
+                        <div className="flex items-center gap-3">
+                          <Target className="w-5 h-5 shrink-0 text-muted-foreground" />
+                          <span className="text-foreground">Image Quality</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-4 pt-2">
                           <div>
-                            <h4 className="font-medium mb-2 px-4">Support & Help</h4>
+                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Testing Services</h4>
                             <ul className="space-y-1">
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Knowledge Base</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Professional Testing Services</span>
+                                </div>
                               </li>
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Wrench className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Technical Support</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Custom Calibration</span>
+                                </div>
                               </li>
                               <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Users className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Community</span></div>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Consulting & Analysis</span>
+                                </div>
                               </li>
                             </ul>
                           </div>
-                          <Separator />
-                          <div>
-                            <h4 className="font-medium mb-2 px-4">Additional Resources</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Video className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Tutorials & Video Guides</span></div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Link2 className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">API Documentation</span></div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3"><ScrollText className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Release Notes</span></div>
-                              </li>
-                            </ul>
-                          </div>
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">To Download Center →</Button>
+                          
+                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
+                            <Target className="h-5 w-5 mr-3" />
+                            Get Testing Quote
+                          </Button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
 
                     {/* Company */}
-                    <AccordionItem value="about">
+                    <AccordionItem value="company">
                       <AccordionTrigger className="px-4 py-3 text-base">
                         <div className="flex items-center gap-3">
                           <Building2 className="w-5 h-5 shrink-0 text-muted-foreground" />
@@ -924,41 +920,85 @@ const Navigation = () => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="pt-2">
-                          <ul className="space-y-1">
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Info className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">About Image Engineering</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Users className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Team</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Building className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Subsidiaries/Resellers</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Briefcase className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Nynomic Group</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Calendar className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Events</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Careers</span></div>
-                            </li>
-                            <li>
-                              <div className="min-h-12 px-4 flex items-center gap-3 py-3"><Handshake className="w-5 h-5 shrink-0 text-muted-foreground" /><span className="text-foreground">Partnerships</span></div>
-                            </li>
-                          </ul>
+                        <div className="space-y-4 pt-2">
+                          <div>
+                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">About Us</h4>
+                            <ul className="space-y-1">
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Our Story</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Team & Expertise</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Quality & Standards</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Subsidiaries/Resellers</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Nynomic Group</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <Separator />
+                          
+                          <div>
+                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Business & Partnerships</h4>
+                            <ul className="space-y-1">
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Careers</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Partnerships</span>
+                                </div>
+                              </li>
+                              <li>
+                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
+                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">Sustainability</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          
+                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
+                            <Building2 className="h-5 w-5 mr-3" />
+                            Learn More About Us
+                          </Button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
+
                   </Accordion>
                 </nav>
 
-                {/* Sticky Kontakt Button */}
+                {/* Sticky Contact Button */}
                 <div className="sticky bottom-0 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 pb-[env(safe-area-inset-bottom)] pt-3 border-t">
                   <Link to="/contact">
-                    <Button className="w-full h-12 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90">
-                      Kontakt
+                    <Button className="w-full h-12 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
+                      Contact
                     </Button>
                   </Link>
                 </div>
