@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Send, Mail, Phone, MapPin } from "lucide-react";
+import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -37,19 +39,50 @@ const Contact = () => {
     <div className="min-h-screen bg-white">
       <Navigation />
 
-      {/* Clean Header */}
-      <section className="py-16 bg-white border-b border-gray-100">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold mb-4 text-gray-900">
-              Contact Our Sales Engineer
+      {/* Hero Section */}
+      <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70"></div>
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${precisionTestingHero})`
+          }}
+        />
+        <div className="relative container mx-auto px-6">
+          <div className="max-w-4xl">
+            <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
+              Get Expert Consultation
             </h1>
-            <p className="text-lg text-gray-600">
-              To contact our sales engineer directly, please fill out the following contact form.
+            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
+              Connect with our imaging specialists and discover the perfect testing solution for your project requirements.
             </p>
-            <p className="text-sm text-gray-500 mt-3">
-              * = Mandatory field
-            </p>
+            
+            {/* Contact Info Cards */}
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
+                <CardContent className="p-4 text-center">
+                  <Mail className="h-6 w-6 mx-auto mb-2 text-primary" />
+                  <h3 className="font-semibold text-sm">Email Response</h3>
+                  <p className="text-xs text-muted-foreground">Within 24 hours</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
+                <CardContent className="p-4 text-center">
+                  <Phone className="h-6 w-6 mx-auto mb-2 text-primary" />
+                  <h3 className="font-semibold text-sm">Direct Call</h3>
+                  <p className="text-xs text-muted-foreground">Mo-Fr, 9:00-18:00</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
+                <CardContent className="p-4 text-center">
+                  <MapPin className="h-6 w-6 mx-auto mb-2 text-primary" />
+                  <h3 className="font-semibold text-sm">Expert Team</h3>
+                  <p className="text-xs text-muted-foreground">Leipzig, Germany</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
@@ -58,42 +91,50 @@ const Contact = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold mb-4 text-gray-900">Contact Form</h2>
+              <p className="text-base text-gray-600 mb-2">
+                To contact our sales engineer directly, please fill out the following contact form.
+              </p>
+              <p className="text-sm text-gray-500">* = Mandatory field</p>
+            </div>
+            
             <Card className="bg-white border border-gray-200 rounded-lg shadow-sm">
               <CardContent className="p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-8">
                   
                   <div className="mb-6">
-                    <p className="text-sm text-gray-600 mb-4">Request is created by:</p>
+                    <p className="text-base font-medium text-gray-700 mb-6">Request is created by:</p>
                   </div>
 
                   {/* Name and Country Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <Label htmlFor="firstName" className="text-sm font-medium text-gray-700 mb-2 block">First Name*</Label>
+                      <Label htmlFor="firstName" className="text-base font-medium text-gray-700 mb-3 block">First Name*</Label>
                       <Input
                         id="firstName"
                         value={formData.firstName}
                         onChange={(e) => handleInputChange('firstName', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="lastName" className="text-sm font-medium text-gray-700 mb-2 block">Last Name*</Label>
+                      <Label htmlFor="lastName" className="text-base font-medium text-gray-700 mb-3 block">Last Name*</Label>
                       <Input
                         id="lastName"
                         value={formData.lastName}
                         onChange={(e) => handleInputChange('lastName', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="country" className="text-sm font-medium text-gray-700 mb-2 block">Country*</Label>
+                      <Label htmlFor="country" className="text-base font-medium text-gray-700 mb-3 block">Country*</Label>
                       <Select onValueChange={(value) => handleInputChange('country', value)} required>
-                        <SelectTrigger className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary">
+                        <SelectTrigger className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary">
                           <SelectValue placeholder="" />
                         </SelectTrigger>
                         <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg">
@@ -111,73 +152,73 @@ const Contact = () => {
                   </div>
 
                   {/* Address Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <Label htmlFor="street" className="text-sm font-medium text-gray-700 mb-2 block">Street/Number:</Label>
+                      <Label htmlFor="street" className="text-base font-medium text-gray-700 mb-3 block">Street/Number:</Label>
                       <Input
                         id="street"
                         value={formData.street}
                         onChange={(e) => handleInputChange('street', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="postcode" className="text-sm font-medium text-gray-700 mb-2 block">Postcode:</Label>
+                      <Label htmlFor="postcode" className="text-base font-medium text-gray-700 mb-3 block">Postcode:</Label>
                       <Input
                         id="postcode"
                         value={formData.postcode}
                         onChange={(e) => handleInputChange('postcode', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                     </div>
                     <div>
-                      <Label htmlFor="city" className="text-sm font-medium text-gray-700 mb-2 block">City:</Label>
+                      <Label htmlFor="city" className="text-base font-medium text-gray-700 mb-3 block">City:</Label>
                       <Input
                         id="city"
                         value={formData.city}
                         onChange={(e) => handleInputChange('city', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                     </div>
                   </div>
 
                   {/* Contact Details Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                      <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-2 block">Email*</Label>
+                      <Label htmlFor="email" className="text-base font-medium text-gray-700 mb-3 block">Email*</Label>
                       <Input
                         id="email"
                         type="email"
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-2 block">Phone*</Label>
+                      <Label htmlFor="phone" className="text-base font-medium text-gray-700 mb-3 block">Phone*</Label>
                       <Input
                         id="phone"
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="company" className="text-sm font-medium text-gray-700 mb-2 block">Company*</Label>
+                      <Label htmlFor="company" className="text-base font-medium text-gray-700 mb-3 block">Company*</Label>
                       <Input
                         id="company"
                         value={formData.company}
                         onChange={(e) => handleInputChange('company', e.target.value)}
                         placeholder=""
-                        className="h-10 bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
                         required
                       />
                     </div>
@@ -185,9 +226,9 @@ const Contact = () => {
 
                   {/* Product Interest */}
                   <div>
-                    <Label htmlFor="subject" className="text-sm font-medium text-gray-700 mb-2 block">Which products are you interested in?*</Label>
+                    <Label htmlFor="subject" className="text-base font-medium text-gray-700 mb-3 block">Which products are you interested in?*</Label>
                     <Select onValueChange={(value) => handleInputChange('subject', value)} required>
-                      <SelectTrigger className="h-10 bg-primary text-white border-0 rounded-md focus:ring-2 focus:ring-primary">
+                      <SelectTrigger className="h-12 text-base bg-primary text-black border-0 rounded-md focus:ring-2 focus:ring-primary font-medium">
                         <SelectValue placeholder="Select an option ..." />
                       </SelectTrigger>
                       <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg">
@@ -205,30 +246,31 @@ const Contact = () => {
 
                   {/* Message */}
                   <div>
-                    <Label htmlFor="message" className="text-sm font-medium text-gray-700 mb-2 block">Your message:</Label>
+                    <Label htmlFor="message" className="text-base font-medium text-gray-700 mb-3 block">Your message:</Label>
                     <Textarea
                       id="message"
                       value={formData.message}
                       onChange={(e) => handleInputChange('message', e.target.value)}
                       placeholder="Please insert here"
-                      className="min-h-[120px] bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary resize-none"
+                      className="min-h-[140px] text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary resize-none"
                       required
                     />
                   </div>
 
                   {/* Attachment */}
                   <div>
-                    <Label className="text-sm font-medium text-gray-700 mb-2 block">Do you have an attachment?</Label>
-                    <p className="text-xs text-gray-500">You can attach files after submitting the form or send them via email.</p>
+                    <Label className="text-base font-medium text-gray-700 mb-3 block">Do you have an attachment?</Label>
+                    <p className="text-sm text-gray-500">You can attach files after submitting the form or send them via email.</p>
                   </div>
 
                   {/* Submit Button */}
-                  <div className="pt-4">
+                  <div className="pt-6">
                     <Button 
                       type="submit"
-                      className="bg-primary hover:bg-primary/90 text-white px-8 py-2 rounded-md font-medium transition-colors"
+                      className="bg-primary hover:bg-primary/90 text-black px-10 py-4 text-base rounded-md font-medium transition-colors group"
                     >
                       Submit
+                      <Send className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>
                 </form>
