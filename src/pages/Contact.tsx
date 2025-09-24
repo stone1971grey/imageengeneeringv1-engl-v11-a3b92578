@@ -50,8 +50,9 @@ const Contact = () => {
         />
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl">
-            <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-              Get Expert Consultation
+            <h1 className="text-4xl lg:text-6xl mb-6">
+              <span className="text-foreground font-normal">Get Expert</span><br />
+              <span className="text-foreground font-bold">Consultation</span>
             </h1>
             <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
               Connect with our imaging specialists and discover the perfect testing solution for your project requirements.
