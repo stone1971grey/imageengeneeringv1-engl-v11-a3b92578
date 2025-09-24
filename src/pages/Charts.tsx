@@ -273,6 +273,7 @@ const Charts = () => {
             src={precisionTestingHero}
             alt="Test Charts für präzise Bildqualitätsmessungen"
             className="w-full h-full object-cover animate-ken-burns"
+            style={{ transform: 'translateY(-47px)' }}
           />
           <div className="absolute inset-0 bg-black/15"></div>
           {/* Left fade overlay */}
