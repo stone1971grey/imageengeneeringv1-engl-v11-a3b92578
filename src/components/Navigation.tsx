@@ -515,10 +515,11 @@ const Navigation = () => {
                   </div>
 
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <Link to="/events">
+                    <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300">
                       <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
                         <GraduationCap className="h-5 w-5 mr-3" />
                         <span className="text-lg font-medium">View Training & Events</span>
+                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
                       </Button>
                     </Link>
                   </div>
@@ -610,11 +611,6 @@ const Navigation = () => {
 
                     <div className="space-y-4 flex-1">
                       <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                      <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Events</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                      </Link>
                       <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                         <CustomTargetIcon className="h-5 w-5" />
                         <span>Careers</span>
