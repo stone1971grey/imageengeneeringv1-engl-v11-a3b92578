@@ -41,7 +41,7 @@ const Contact = () => {
 
       {/* Hero Section */}
       <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
