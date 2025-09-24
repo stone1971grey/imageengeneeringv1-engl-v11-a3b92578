@@ -56,33 +56,6 @@ const Contact = () => {
             <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
               Connect with our imaging specialists and discover the perfect testing solution for your project requirements.
             </p>
-            
-            {/* Contact Info Cards */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
-                <CardContent className="p-4 text-center">
-                  <Mail className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <h3 className="font-semibold text-sm">Email Response</h3>
-                  <p className="text-xs text-muted-foreground">Within 24 hours</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
-                <CardContent className="p-4 text-center">
-                  <Phone className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <h3 className="font-semibold text-sm">Direct Call</h3>
-                  <p className="text-xs text-muted-foreground">Mo-Fr, 9:00-18:00</p>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
-                <CardContent className="p-4 text-center">
-                  <MapPin className="h-6 w-6 mx-auto mb-2 text-primary" />
-                  <h3 className="font-semibold text-sm">Expert Team</h3>
-                  <p className="text-xs text-muted-foreground">Leipzig, Germany</p>
-                </CardContent>
-              </Card>
-            </div>
           </div>
         </div>
       </section>
