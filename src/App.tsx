@@ -22,6 +22,7 @@ import Cart from "./pages/Cart";
 import Events from "./pages/Events";
 import InCabinTesting from "./pages/InCabinTesting";
 import Contact from "./pages/Contact";
+import News from "./pages/News";
 import Styleguide from "./pages/Styleguide";
 import IconsStyleguide from "./pages/IconsStyleguide";
 import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
@@ -56,6 +57,7 @@ const App = () => (
          <Route path="/events" element={<Events />} />
          <Route path="/in-cabin-testing" element={<InCabinTesting />} />
          <Route path="/contact" element={<Contact />} />
+         <Route path="/news" element={<News />} />
          <Route path="/styleguide" element={<Styleguide />} />
         <Route path="/icons-styleguide" element={<IconsStyleguide />} />
         <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />

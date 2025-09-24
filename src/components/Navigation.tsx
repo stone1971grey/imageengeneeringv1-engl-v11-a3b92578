@@ -954,6 +954,12 @@ const Navigation = () => {
                                   <span className="text-foreground">Nynomic Group</span>
                                 </div>
                               </li>
+                              <li>
+                                <Link to="/news" className="min-h-12 px-4 flex items-center gap-3 py-3 hover:bg-gray-100 transition-colors">
+                                  <FileText className="w-5 h-5 shrink-0 text-muted-foreground" />
+                                  <span className="text-foreground">News</span>
+                                </Link>
+                              </li>
                             </ul>
                           </div>
                           
