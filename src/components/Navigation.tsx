@@ -140,11 +140,10 @@ const Navigation = () => {
       image: iqAnalyzerIntro,
       description: "Advanced software solutions for image analysis, calibration and automated quality control",
       subgroups: [
-        { name: "iQ-Analyzer Pro", link: "#", featured: true },
-        { name: "Vega Software", link: "#" },
-        { name: "Color Analysis Suite", link: "#" },
-        { name: "HDR Analysis Tools", link: "#" },
-        { name: "Calibration Software", link: "#" }
+        { name: "iQ-Analyzer-X", link: "#", featured: true },
+        { name: "Control APIs", link: "#" },
+        { name: "iQ-Luminance", link: "#" },
+        { name: "All Software & APIs", link: "#" }
       ]
     },
     "Product Accessories": {
