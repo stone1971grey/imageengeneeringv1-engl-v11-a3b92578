@@ -8,37 +8,42 @@ const StickyLogo = () => {
   const logoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Create invisible markers to detect sections
-    const heroMarker = document.createElement('div');
-    heroMarker.id = 'hero-marker';
-    heroMarker.style.position = 'absolute';
-    heroMarker.style.top = '900px';
-    heroMarker.style.height = '1px';
-    heroMarker.style.width = '1px';
-    heroMarker.style.pointerEvents = 'none';
-    document.body.appendChild(heroMarker);
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.target.id === 'hero-marker') {
-            // When hero marker is visible, we're still in hero (dark background)
-            // When it's not visible, we're past hero (light background)
-            setIsDarkLogo(!entry.isIntersecting);
+          // When viewport top is past 600px (end of hero), switch to dark logo
+          const rect = entry.boundingClientRect;
+          const scrollY = window.scrollY;
+          
+          if (scrollY > 600) {
+            setIsDarkLogo(true);
+          } else {
+            setIsDarkLogo(false);
           }
         });
       },
       {
-        rootMargin: '-100px 0px 0px 0px', // Trigger slightly before the exact point
+        rootMargin: '0px',
         threshold: 0
       }
     );
 
-    observer.observe(heroMarker);
+    // Create a scroll listener for more precise control
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      // Switch to dark logo when scrolled past 600px
+      setIsDarkLogo(scrollY > 600);
+    };
+
+    // Initial check
+    handleScroll();
+    
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       observer.disconnect();
-      document.body.removeChild(heroMarker);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
