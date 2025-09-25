@@ -22,7 +22,7 @@ const UtilityNavigation = () => {
       
       {/* Language Selector */}
       <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-        <SelectTrigger className="w-[80px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
+        <SelectTrigger className="w-[60px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
           <SelectValue placeholder="EN" />
         </SelectTrigger>
         <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
@@ -32,10 +32,7 @@ const UtilityNavigation = () => {
               value={lang.code}
               className="flex items-center gap-2 hover:bg-gray-100 cursor-pointer text-black"
             >
-              <div className="flex items-center gap-2">
-                <span className="text-sm">{lang.flag}</span>
-                <span>{lang.label}</span>
-              </div>
+              <span>{lang.label}</span>
             </SelectItem>
           ))}
         </SelectContent>
@@ -44,7 +41,7 @@ const UtilityNavigation = () => {
       <Link to="/contact">
         <Button 
           variant="default" 
-          className="w-[80px] h-10 bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 flex items-center justify-center"
+          className="w-[60px] h-10 bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 flex items-center justify-center"
         >
           <MessageCircle className="h-5 w-5" />
         </Button>
