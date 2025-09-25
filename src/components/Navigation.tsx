@@ -568,70 +568,57 @@ const Navigation = () => {
 
             <SimpleDropdown trigger="Company" className="right-aligned">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-8 p-6">
-                      <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Company Information</h4>
-                        <Link to="/about-ie" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>About IE</span>
-                        </Link>
-                        <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>About us</span>
-                        </Link>
-                        <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Team</span>
-                        </Link>
-                        <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Nynomic Group</span>
-                        </Link>
-                        <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Visit Us</span>
-                        </Link>
-                        <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Careers</span>
-                        </Link>
-                        <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <FileText className="h-5 w-5" />
-                          <span>News</span>
-                        </Link>
-                      </div>
-
-                      <div className="space-y-4 flex-1">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                        <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Resellers & Subsidiaries</span>
-                        </Link>
-                        <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Strategic Partnerships</span>
-                        </Link>
-                        <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Group Memberships</span>
-                        </Link>
-                        <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>ISO 9001</span>
-                        </Link>
-                      </div>
-                   </div>
-                 </div>
+                   <div className="flex gap-8 p-6">
+                       <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                         <h4 className="font-semibold mb-3 text-lg text-black">Company Information</h4>
+                         <Link to="/about-ie" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>About IE</span>
+                         </Link>
+                         <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>About us</span>
+                         </Link>
+                         <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Team</span>
+                         </Link>
+                         <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Nynomic Group</span>
+                         </Link>
+                         <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Visit us</span>
+                         </Link>
+                         <Link to="/sustainability" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Sustainability</span>
+                         </Link>
+                         <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Careers</span>
+                         </Link>
+                       </div>
+                       
+                       <div className="space-y-4 flex-1">
+                         <h4 className="font-semibold mb-3 text-lg text-black">Standards & Expertise</h4>
+                         <Link to="/ieee-standards" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>IEEE P2020</span>
+                         </Link>
+                         <Link to="/emva-standards" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>EMVA 1288</span>
+                         </Link>
+                         <Link to="/iso-standards" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>ISO 9001</span>
+                         </Link>
+                       </div>
+                    </div>
+                  </div>
                 </SimpleDropdown>
-
-            <Link to="/downloads">
-              <Button 
-                variant="ghost"
-                className="px-3 py-2 rounded-md text-base font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
-              >
-                Downloads
-              </Button>
-            </Link>
           </div>
           
           {/* Utility Navigation - moved to right */}
