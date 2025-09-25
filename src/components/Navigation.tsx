@@ -103,12 +103,13 @@ const Navigation = () => {
       image: "/images/custom-chart.png",
       description: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options",
       subgroups: [
-        { name: "Reflective Charts", link: "/charts", active: true },
-        { name: "Transmissive Charts", link: "#", featured: true },
-        { name: "HDR Charts", link: "#" },
-        { name: "Color Charts", link: "#" },
-        { name: "Resolution Charts", link: "#" },
-        { name: "Custom Charts", link: "#" }
+        { name: "iQ-Analyzer-X", link: "#", featured: true },
+        { name: "Multipurpose", link: "#" },
+        { name: "Image Quality Factor", link: "#" },
+        { name: "Infrared (VIS-IR)", link: "#" },
+        { name: "Reflective", link: "/charts", active: true },
+        { name: "Transparent", link: "#" },
+        { name: "See All Charts", link: "/charts" }
       ]
     },
     "Illumination Devices": {
