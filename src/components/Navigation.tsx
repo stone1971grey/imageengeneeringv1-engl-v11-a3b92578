@@ -57,43 +57,103 @@ const Navigation = () => {
     preloadImages();
   }, []);
 
-  // Industry data mapping
+  // Industry data mapping with subgroups
   const industryData = {
-    "Photography": {
-      image: industryPhotography,
-      description: "Digital cameras for professional and amateur applications"
-    },
-    "Mobile Phones": {
-      image: industryMobile,
-      description: "Image quality testing according to VCX standards"
-    },
-    "Automotive & ADAS": {
+    "Automotive": {
       image: industryAutomotive,
-      description: "Camera systems in vehicles, driver assistance and autonomous driving"
+      description: "Camera systems in vehicles, driver assistance and autonomous driving",
+      subgroups: [
+        { name: "ADAS Testing", link: "/automotive" },
+        { name: "In-Cabin Monitoring", link: "/in-cabin-testing" },
+        { name: "Rear View Cameras", link: "#" },
+        { name: "360° Surround View", link: "#" },
+        { name: "Driver Monitoring", link: "#" },
+        { name: "All Automotive Solutions", link: "/automotive" }
+      ]
     },
-    "Broadcast & HDTV": {
-      image: industryBroadcast,
-      description: "Video transmission, TV cameras, color-accurate reproduction"
-    },
-    "Security / Surveillance": {
+    "Security & Surveillance": {
       image: industrySecurity,
-      description: "CCTV systems, video surveillance"
+      description: "CCTV systems, video surveillance",
+      subgroups: [
+        { name: "IP Cameras", link: "#" },
+        { name: "Night Vision", link: "#" },
+        { name: "Wide Dynamic Range", link: "#" },
+        { name: "Thermal Imaging", link: "#" },
+        { name: "Analytics Quality", link: "#" },
+        { name: "All Security Solutions", link: "#" }
+      ]
+    },
+    "Mobile Phone": {
+      image: industryMobile,
+      description: "Image quality testing according to VCX standards",
+      subgroups: [
+        { name: "VCX Testing", link: "#" },
+        { name: "Multi-Camera Systems", link: "#" },
+        { name: "Low Light Performance", link: "#" },
+        { name: "HDR Imaging", link: "#" },
+        { name: "Portrait Mode", link: "#" },
+        { name: "All Mobile Solutions", link: "#" }
+      ]
+    },
+    "Web Camera": {
+      image: industryBroadcast,
+      description: "Web cameras for video conferencing and streaming applications",
+      subgroups: [
+        { name: "Video Conferencing", link: "#" },
+        { name: "Streaming Quality", link: "#" },
+        { name: "Auto Focus Testing", link: "#" },
+        { name: "Color Accuracy", link: "#" },
+        { name: "Low Light Performance", link: "#" },
+        { name: "All Web Camera Solutions", link: "#" }
+      ]
     },
     "Machine Vision": {
       image: industryMachineVision,
-      description: "Camera systems for inspection, robotics, quality control"
+      description: "Camera systems for inspection, robotics, quality control",
+      subgroups: [
+        { name: "Industrial Inspection", link: "#" },
+        { name: "Robotics Vision", link: "#" },
+        { name: "Quality Control", link: "#" },
+        { name: "Defect Detection", link: "#" },
+        { name: "Measurement Systems", link: "#" },
+        { name: "All Machine Vision Solutions", link: "#" }
+      ]
     },
-    "Medical / Endoscopy": {
+    "Medical & Endoscopy": {
       image: industryMedical,
-      description: "Image quality in medical imaging and diagnostic systems"
+      description: "Image quality in medical imaging and diagnostic systems",
+      subgroups: [
+        { name: "Endoscopic Imaging", link: "#" },
+        { name: "Surgical Cameras", link: "#" },
+        { name: "Diagnostic Imaging", link: "#" },
+        { name: "Microscopy", link: "#" },
+        { name: "Color Accuracy", link: "#" },
+        { name: "All Medical Solutions", link: "#" }
+      ]
     },
-    "Scanning & Archiving": {
+    "Scanners & Archiving": {
       image: industryScanning,
-      description: "Quality assurance in digitization of documents, books, photos"
+      description: "Quality assurance in digitization of documents, books, photos",
+      subgroups: [
+        { name: "Document Scanning", link: "#" },
+        { name: "Photo Digitization", link: "#" },
+        { name: "Book Scanning", link: "#" },
+        { name: "Archive Quality", link: "#" },
+        { name: "Color Fidelity", link: "#" },
+        { name: "All Scanning Solutions", link: "#" }
+      ]
     },
-    "iQ‑Lab Testing": {
-      image: industryLabTesting,
-      description: "Independent laboratory services for numerous industries (e.g. Mobile, Automotive)"
+    "Photo & Video": {
+      image: industryPhotography,
+      description: "Digital cameras for professional and amateur applications",
+      subgroups: [
+        { name: "Professional Cameras", link: "#" },
+        { name: "Consumer Cameras", link: "#" },
+        { name: "Video Production", link: "#" },
+        { name: "Color Grading", link: "#" },
+        { name: "HDR Video", link: "#" },
+        { name: "All Photo & Video Solutions", link: "#" }
+      ]
     }
   };
 
@@ -245,105 +305,92 @@ const Navigation = () => {
           {/* Main Navigation - moved to left */}
           <div className="hidden lg:flex items-center gap-8">
             <SimpleDropdown trigger="Your Solution">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  {/* Main navigation grid */}
+                <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
+                     onMouseLeave={() => setHoveredIndustry(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Industries */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Industries</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Photography")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
-                        <Camera className="h-5 w-5" />
-                        <span>Photography</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Mobile Phones")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
-                        <Smartphone className="h-5 w-5" />
-                        <span>Mobile Phones</span>
-                      </div>
-                      <Link to="/automotive" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
-                        onMouseEnter={() => setHoveredIndustry("Automotive & ADAS")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                        onMouseEnter={() => setHoveredIndustry("Automotive")}>
                         <Car className="h-5 w-5" />
-                        <span>Automotive & ADAS</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                      </Link>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Broadcast & HDTV")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
-                        <Tv className="h-5 w-5" />
-                        <span>Broadcast & HDTV</span>
+                        <span>Automotive</span>
+                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
                       </div>
+                      
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Security / Surveillance")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
+                        onMouseEnter={() => setHoveredIndustry("Security & Surveillance")}>
                         <Shield className="h-5 w-5" />
-                        <span>Security / Surveillance</span>
+                        <span>Security & Surveillance</span>
                       </div>
+                      
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Machine Vision")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
+                        onMouseEnter={() => setHoveredIndustry("Mobile Phone")}>
+                        <Smartphone className="h-5 w-5" />
+                        <span>Mobile Phone</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredIndustry("Web Camera")}>
+                        <Camera className="h-5 w-5" />
+                        <span>Web Camera</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
                         <Cog className="h-5 w-5" />
                         <span>Machine Vision</span>
                       </div>
+                      
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Medical / Endoscopy")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
+                        onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
                         <Stethoscope className="h-5 w-5" />
-                        <span>Medical / Endoscopy</span>
+                        <span>Medical & Endoscopy</span>
                       </div>
+                      
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Scanning & Archiving")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
+                        onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
                         <ScanLine className="h-5 w-5" />
-                        <span>Scanning & Archiving</span>
+                        <span>Scanners & Archiving</span>
                       </div>
+                      
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("iQ‑Lab Testing")}
-                        onMouseLeave={() => setHoveredIndustry(null)}>
-                        <FlaskConical className="h-5 w-5" />
-                        <span>iQ‑Lab Testing</span>
+                        onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
+                        <Camera className="h-5 w-5" />
+                        <span>Photo & Video</span>
                       </div>
                     </div>
                     
-                    {/* Right Column: Popular Applications */}
+                    {/* Right Column: Applications */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Popular Applications</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredSolution("Camera Quality Validation")}
-                        onMouseLeave={() => setHoveredSolution(null)}>
-                        <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                        <span>Camera Quality Validation</span>
-                      </div>
-                      <div className="space-y-2">
-                        <Link to="/in-cabin-testing" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
-                          onMouseEnter={() => setHoveredSolution("In-Cabin Performance Testing")}
-                          onMouseLeave={() => setHoveredSolution(null)}>
-                          <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                          <span>In-Cabin Performance Testing</span>
-                          <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                        </Link>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredSolution("Test Environments for Smartphones & Displays")}
-                        onMouseLeave={() => setHoveredSolution(null)}>
-                        <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                        <span>Test Environments for Smartphones & Displays</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredSolution("Microscopy & Medical Imaging")}
-                        onMouseLeave={() => setHoveredSolution(null)}>
-                        <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                        <span>Microscopy & Medical Imaging</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredSolution("ISO and IEEE Compliant Test Setups")}
-                        onMouseLeave={() => setHoveredSolution(null)}>
-                        <CustomTargetIcon className="h-5 w-5 flex-shrink-0" />
-                        <span>ISO and IEEE Compliant Test Setups</span>
-                      </div>
+                      <h4 className="font-semibold mb-3 text-lg text-black">
+                        {hoveredIndustry ? `${hoveredIndustry} - Applications` : "Applications"}
+                      </h4>
+                      
+                      {/* Conditional Rendering of Applications */}
+                      {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
+                        <div className="space-y-3">
+                          {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
+                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
+                              <ChevronRight className="h-4 w-4" />
+                              {application.link === "#" ? (
+                                <span>{application.name}</span>
+                              ) : (
+                                <Link to={application.link}>{application.name}</Link>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Default state when no industry is hovered */}
+                      {!hoveredIndustry && (
+                        <div className="text-gray-500 text-center py-8">
+                          <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>Hover over an industry to see applications</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -355,26 +402,20 @@ const Navigation = () => {
                     </Button>
                   </div>
                   
-                  {/* Image sections */}
-                  {(hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData]) && (
+                  {/* Image Rollover under Flyout */}
+                  {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
                     <div className="bg-[#f3f3f3] p-4">
-                      <div className="flex items-center gap-6 p-4 bg-white rounded">
-                        <img src={industryData[hoveredIndustry as keyof typeof industryData].image} alt={hoveredIndustry} className="w-[190px] h-[190px] object-cover rounded" />
+                      <div className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-sm">
+                        <img 
+                          src={industryData[hoveredIndustry as keyof typeof industryData].image} 
+                          alt={hoveredIndustry} 
+                          className="w-[190px] h-[190px] object-cover rounded-lg" 
+                        />
                         <div className="text-black">
-                          <h4 className="font-semibold text-xl">{hoveredIndustry}</h4>
-                          <p className="text-lg text-gray-600">{industryData[hoveredIndustry as keyof typeof industryData].description}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {(hoveredSolution && solutionData[hoveredSolution as keyof typeof solutionData]) && (
-                    <div className="bg-[#f3f3f3] p-4">
-                      <div className="flex items-center gap-6 p-4 bg-white rounded">
-                        <img src={solutionData[hoveredSolution as keyof typeof solutionData].image} alt={hoveredSolution} className="w-[190px] h-[190px] object-cover rounded" />
-                        <div className="text-black">
-                          <h4 className="font-semibold text-xl">{hoveredSolution}</h4>
-                          <p className="text-lg text-gray-600">{solutionData[hoveredSolution as keyof typeof solutionData].description}</p>
-                          <p className="text-md text-[#d9c409] font-medium">{solutionData[hoveredSolution as keyof typeof solutionData].subline}</p>
+                          <h4 className="font-semibold text-xl mb-2">{hoveredIndustry}</h4>
+                          <p className="text-lg text-gray-600 leading-relaxed">
+                            {industryData[hoveredIndustry as keyof typeof industryData].description}
+                          </p>
                         </div>
                       </div>
                     </div>
