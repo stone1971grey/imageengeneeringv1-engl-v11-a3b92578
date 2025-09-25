@@ -64,7 +64,7 @@ const Navigation = () => {
       description: "Camera systems in vehicles, driver assistance and autonomous driving",
       subgroups: [
         { name: "Advanced Driver Assistance Systems (ADAS)", link: "/automotive" },
-        { name: "In-Cabin Testing", link: "/in-cabin-testing" },
+        { name: "In-Cabin Testing", link: "/in-cabin-testing", active: true },
         { name: "IEEE-P2020 Testing", link: "#" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "Near-Infrared (NIR)", link: "#" },
@@ -361,16 +361,19 @@ const Navigation = () => {
                       {/* Conditional Rendering of Applications */}
                       {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
                         <div className="space-y-3">
-                          {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
-                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
-                              <ChevronRight className="h-4 w-4" />
-                              {application.link === "#" ? (
-                                <span>{application.name}</span>
-                              ) : (
-                                <Link to={application.link}>{application.name}</Link>
-                              )}
-                            </div>
-                          ))}
+                           {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
+                             <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
+                               <ChevronRight className="h-4 w-4" />
+                               {application.link === "#" ? (
+                                 <span>{application.name}</span>
+                               ) : (
+                                 <Link to={application.link}>{application.name}</Link>
+                               )}
+                               {(application as any).active && (
+                                 <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                               )}
+                             </div>
+                           ))}
                         </div>
                       )}
                       
