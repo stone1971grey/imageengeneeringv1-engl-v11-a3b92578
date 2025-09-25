@@ -8,42 +8,82 @@ const StickyLogo = () => {
   const logoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          // When viewport top is past 600px (end of hero), switch to dark logo
-          const rect = entry.boundingClientRect;
-          const scrollY = window.scrollY;
-          
-          if (scrollY > 600) {
-            setIsDarkLogo(true);
-          } else {
-            setIsDarkLogo(false);
-          }
-        });
-      },
-      {
-        rootMargin: '0px',
-        threshold: 0
+    const detectBackgroundColor = () => {
+      if (!logoRef.current) return;
+      
+      const logoRect = logoRef.current.getBoundingClientRect();
+      const centerX = logoRect.left + logoRect.width / 2;
+      const centerY = logoRect.top + logoRect.height / 2;
+      
+      // Get the element underneath the logo center
+      const elementBelow = document.elementFromPoint(centerX, centerY);
+      
+      if (elementBelow) {
+        const computedStyle = window.getComputedStyle(elementBelow);
+        const backgroundColor = computedStyle.backgroundColor;
+        
+        // Check if we're over a dark background
+        const isDarkBackground = isDarkColor(backgroundColor) || 
+                                isElementInDarkSection(elementBelow);
+        
+        // Use white logo for dark backgrounds, black logo for light backgrounds
+        setIsDarkLogo(!isDarkBackground);
       }
-    );
-
-    // Create a scroll listener for more precise control
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      // Switch to dark logo when scrolled past 600px
-      setIsDarkLogo(scrollY > 600);
     };
 
-    // Initial check
-    handleScroll();
+    const isDarkColor = (color: string): boolean => {
+      // Handle rgb/rgba colors
+      if (color.includes('rgb')) {
+        const matches = color.match(/\d+/g);
+        if (matches && matches.length >= 3) {
+          const r = parseInt(matches[0]);
+          const g = parseInt(matches[1]);
+          const b = parseInt(matches[2]);
+          // Calculate luminance
+          const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+          return luminance < 0.5;
+        }
+      }
+      return false;
+    };
+
+    const isElementInDarkSection = (element: Element): boolean => {
+      // Check if element or its parents have dark backgrounds
+      let current = element;
+      while (current && current !== document.body) {
+        const style = window.getComputedStyle(current);
+        const bgColor = style.backgroundColor;
+        
+        // Check for specific dark background classes/colors
+        if (bgColor.includes('rgb(55, 55, 55)') || // #373737 from NewsSection
+            bgColor.includes('rgba(55, 55, 55') ||
+            current.classList.contains('bg-[#373737]') ||
+            isDarkColor(bgColor)) {
+          return true;
+        }
+        current = current.parentElement as Element;
+      }
+      return false;
+    };
+
+    // Debounce function for performance
+    let timeoutId: NodeJS.Timeout;
+    const debouncedDetection = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(detectBackgroundColor, 10);
+    };
+
+    // Initial detection
+    detectBackgroundColor();
     
-    // Add scroll listener
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Listen for scroll events
+    window.addEventListener('scroll', debouncedDetection, { passive: true });
+    window.addEventListener('resize', debouncedDetection, { passive: true });
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeoutId);
+      window.removeEventListener('scroll', debouncedDetection);
+      window.removeEventListener('resize', debouncedDetection);
     };
   }, []);
 
