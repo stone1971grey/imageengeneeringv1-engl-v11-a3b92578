@@ -97,31 +97,74 @@ const Navigation = () => {
     }
   };
 
-  // Product data mapping
+  // Product data mapping with subgroups
   const productData = {
     "Test Charts": {
       image: "/images/custom-chart.png",
-      description: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options"
+      description: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options",
+      subgroups: [
+        { name: "Reflective Charts", link: "/charts", active: true },
+        { name: "Transmissive Charts", link: "#", featured: true },
+        { name: "HDR Charts", link: "#" },
+        { name: "Color Charts", link: "#" },
+        { name: "Resolution Charts", link: "#" },
+        { name: "Custom Charts", link: "#" }
+      ]
     },
     "Illumination Devices": {
       image: iqLedIllumination,
-      description: "Professional LED lighting systems and uniform light sources for stable testing environments"
+      description: "Professional LED lighting systems and uniform light sources for stable testing environments",
+      subgroups: [
+        { name: "Arcturus LED", link: "/product-arcturus", featured: true },
+        { name: "LE7 Uniform Light", link: "/product-le7" },
+        { name: "Flat Light Systems", link: "#" },
+        { name: "Spectral Illumination", link: "#" },
+        { name: "Multi-Zone LED", link: "#" }
+      ]
     },
     "Measurement Devices": {
       image: arcturusMainProduct,
-      description: "Precision colorimeters, photometers and spectroradiometers for accurate optical measurements"
+      description: "Precision colorimeters, photometers and spectroradiometers for accurate optical measurements",
+      subgroups: [
+        { name: "iQ-Analyzer X", link: "#", featured: true },
+        { name: "Spectroradiometers", link: "#" },
+        { name: "Colorimeters", link: "#" },
+        { name: "Photometers", link: "#" },
+        { name: "Calibration Tools", link: "#" }
+      ]
     },
     "Software": {
       image: iqAnalyzerIntro,
-      description: "Advanced software solutions for image analysis, calibration and automated quality control"
+      description: "Advanced software solutions for image analysis, calibration and automated quality control",
+      subgroups: [
+        { name: "iQ-Analyzer Pro", link: "#", featured: true },
+        { name: "Vega Software", link: "#" },
+        { name: "Color Analysis Suite", link: "#" },
+        { name: "HDR Analysis Tools", link: "#" },
+        { name: "Calibration Software", link: "#" }
+      ]
     },
     "Accessories": {
       image: "/images/chart-case.png",
-      description: "Professional accessories including mounting systems, cables, connectors and protective cases"
+      description: "Professional accessories including mounting systems, cables, connectors and protective cases",
+      subgroups: [
+        { name: "Mounting Systems", link: "#" },
+        { name: "Protective Cases", link: "#" },
+        { name: "Cables & Connectors", link: "#" },
+        { name: "Tripods & Stands", link: "#" },
+        { name: "Filters & Lenses", link: "#" }
+      ]
     },
     "Services": {
       image: trainingMobileTesting,
-      description: "Comprehensive training, support, custom solutions and professional consultation services"
+      description: "Comprehensive training, support, custom solutions and professional consultation services",
+      subgroups: [
+        { name: "Custom Solutions", link: "#" },
+        { name: "Technical Support", link: "#" },
+        { name: "Training Programs", link: "#" },
+        { name: "Calibration Services", link: "#" },
+        { name: "Consulting", link: "#" }
+      ]
     }
   };
 
@@ -348,82 +391,119 @@ const Navigation = () => {
             </SimpleDropdown>
 
             <SimpleDropdown trigger="Products">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
+                <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
+                     onMouseLeave={() => setHoveredProduct(null)}>
                   <div className="flex gap-6 p-6">
+                    {/* Left Column: Product Groups */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Product Categories</h4>
-                      <Link to="/charts" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
-                        onMouseEnter={() => setHoveredProduct("Test Charts")}
-                        onMouseLeave={() => setHoveredProduct(null)}>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Product Groups</h4>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                        onMouseEnter={() => setHoveredProduct("Test Charts")}>
                         <CustomTargetIcon className="h-5 w-5" />
                         <span>Test Charts</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                      </Link>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Illumination Devices")}
-                        onMouseLeave={() => setHoveredProduct(null)}>
+                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredProduct("Illumination Devices")}>
                         <Lightbulb className="h-5 w-5" />
-                        <a href="#">Illumination Devices</a>
+                        <span>Illumination Devices</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Measurement Devices")}
-                        onMouseLeave={() => setHoveredProduct(null)}>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredProduct("Measurement Devices")}>
                         <Monitor className="h-5 w-5" />
-                        <a href="#">Measurement Devices</a>
+                        <span>Measurement Devices</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Software")}
-                        onMouseLeave={() => setHoveredProduct(null)}>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredProduct("Software")}>
                         <Cpu className="h-5 w-5" />
-                        <a href="#">Software</a>
+                        <span>Software</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Accessories")}
-                        onMouseLeave={() => setHoveredProduct(null)}>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredProduct("Accessories")}>
                         <Package className="h-5 w-5" />
-                        <a href="#">Accessories</a>
+                        <span>Accessories</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredProduct("Services")}>
+                        <Wrench className="h-5 w-5" />
+                        <span>Services</span>
                       </div>
                     </div>
                     
+                    {/* Right Column: Subgroups */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Featured Products</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <Link to="/product-arcturus">Arcturus LED</Link>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">iQ-Analyzer X</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <Link to="/product-le7">LE7</Link>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">TE292 VIS+IR</a>
-                      </div>
+                      <h4 className="font-semibold mb-3 text-lg text-black">
+                        {hoveredProduct ? `${hoveredProduct} - Subgroups` : "Subgroups"}
+                      </h4>
+                      
+                      {/* Conditional Rendering of Subgroups */}
+                      {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
+                        <div className="space-y-3">
+                          {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
+                            <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer ${
+                              subgroup.active 
+                                ? 'text-black bg-green-100 p-2 rounded-md border-2 border-green-300' 
+                                : subgroup.featured
+                                ? 'text-black hover:text-[#d9c409] bg-yellow-50 p-2 rounded-md border border-yellow-200'
+                                : 'text-black hover:text-[#d9c409]'
+                            }`}>
+                              <ChevronRight className="h-4 w-4" />
+                              {subgroup.link === "#" ? (
+                                <span>{subgroup.name}</span>
+                              ) : (
+                                <Link to={subgroup.link}>{subgroup.name}</Link>
+                              )}
+                              {subgroup.active && (
+                                <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                              )}
+                              {subgroup.featured && !subgroup.active && (
+                                <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded font-semibold">FEATURED</span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Default state when no product is hovered */}
+                      {!hoveredProduct && (
+                        <div className="text-gray-500 text-center py-8">
+                          <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>Hover over a product group to see subgroups</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
+                  {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Link to="/inside-lab">
-                      <div className="flex items-center justify-center transition-colors cursor-pointer">
-                        <Button variant="technical" className="w-full">
-                          <Microscope className="h-5 w-5 mr-3" />
-                          <span className="text-lg font-medium">Inside the Testing Lab</span>
-                        </Button>
-                      </div>
+                      <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                        <Microscope className="h-5 w-5 mr-3" />
+                        <span className="text-lg font-medium">Inside the Testing Lab</span>
+                      </Button>
                     </Link>
                   </div>
                   
+                  {/* Image Rollover under Flyout */}
                   {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
                     <div className="bg-[#f3f3f3] p-4">
-                      <div className="flex items-center gap-6 p-4 bg-white rounded">
-                        <img src={productData[hoveredProduct as keyof typeof productData].image} alt={hoveredProduct} className="w-[190px] h-[190px] object-cover rounded" />
+                      <div className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-sm">
+                        <img 
+                          src={productData[hoveredProduct as keyof typeof productData].image} 
+                          alt={hoveredProduct} 
+                          className="w-[190px] h-[190px] object-cover rounded-lg" 
+                        />
                         <div className="text-black">
-                          <h4 className="font-semibold text-xl">{hoveredProduct}</h4>
-                          <p className="text-lg text-gray-600">{productData[hoveredProduct as keyof typeof productData].description}</p>
+                          <h4 className="font-semibold text-xl mb-2">{hoveredProduct}</h4>
+                          <p className="text-lg text-gray-600 leading-relaxed">
+                            {productData[hoveredProduct as keyof typeof productData].description}
+                          </p>
                         </div>
                       </div>
                     </div>
