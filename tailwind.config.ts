@@ -110,8 +110,6 @@ export default {
 				hotspot: {
 					primary: 'hsl(var(--hotspot-primary))'
 				},
-				'ie-dark-blue': 'hsl(var(--ie-dark-blue))',
-				'explore-button': 'hsl(var(--explore-button))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

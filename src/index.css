@@ -96,9 +96,6 @@ All colors MUST be HSL.
     /* Hotspot color */
     --hotspot-primary: 205 45% 44%;
     
-    /* IE Dark Blue for bold text */
-    --ie-dark-blue: 220 65% 29%;
-
     /* Custom explore button */
     --explore-button: 58 60% 69%;
 

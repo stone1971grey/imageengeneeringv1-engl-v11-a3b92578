@@ -300,7 +300,7 @@ const Navigation = () => {
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Industries */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Industries</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Industries</h4>
                       
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                          onMouseEnter={() => setHoveredIndustry("Automotive")}>
@@ -354,7 +354,7 @@ const Navigation = () => {
                     
                     {/* Right Column: Applications */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">
+                      <h4 className="font-semibold mb-3 text-lg text-black">
                         {hoveredIndustry ? `${hoveredIndustry} - Applications` : "Applications"}
                       </h4>
                       
@@ -422,7 +422,7 @@ const Navigation = () => {
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Product Groups */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Product Groups</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Product Groups</h4>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                         onMouseEnter={() => setHoveredProduct("Test Charts")}>
@@ -458,7 +458,7 @@ const Navigation = () => {
                     
                     {/* Right Column: Subgroups */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">
+                      <h4 className="font-semibold mb-3 text-lg text-black">
                         {hoveredProduct ? `${hoveredProduct} - Subgroups` : "Subgroups"}
                       </h4>
                       
@@ -523,7 +523,7 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Technical Services</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Technical Services</h4>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">Custom Solutions</a>
@@ -539,7 +539,7 @@ const Navigation = () => {
                     </div>
 
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Consulting</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Consulting</h4>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">Project Consulting</a>
@@ -570,7 +570,7 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[315px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-6 p-6">
                      <div className="space-y-4 flex-1">
-                        <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Resources</h4>
+                       <h4 className="font-semibold mb-3 text-lg text-black">Resources</h4>
                        <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                          <CustomTargetIcon className="h-5 w-5" />
                          <a href="#">Webinars</a>
@@ -606,7 +606,7 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Resources</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Resources</h4>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">Image Quality Factors</a>
@@ -626,7 +626,7 @@ const Navigation = () => {
                     </div>
 
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Publications</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Publications</h4>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">Conference Papers</a>
@@ -658,7 +658,7 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-8 p-6">
                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                         <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Company Information</h4>
+                         <h4 className="font-semibold mb-3 text-lg text-black">Company Information</h4>
                          <Link to="/about-ie" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>About IE</span>
@@ -690,7 +690,7 @@ const Navigation = () => {
                        </div>
                        
                        <div className="space-y-4 flex-1">
-                         <h4 className="font-semibold mb-3 text-lg text-ie-dark-blue">Standards & Expertise</h4>
+                         <h4 className="font-semibold mb-3 text-lg text-black">Standards & Expertise</h4>
                          <Link to="/ieee-standards" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>IEEE P2020</span>
