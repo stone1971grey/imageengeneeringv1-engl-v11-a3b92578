@@ -14,7 +14,7 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
 
   return (
     <div 
-      className={`relative -mx-1 ${className}`}
+      className={`relative ${className}`}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
