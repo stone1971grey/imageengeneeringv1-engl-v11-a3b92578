@@ -8,11 +8,11 @@ const UtilityNavigation = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
 
   const languages = [
-    { code: "en", label: "English", flag: "🇺🇸" },
-    { code: "de", label: "Deutsch", flag: "🇩🇪" },
-    { code: "zh", label: "中文", flag: "🇨🇳" },
-    { code: "ja", label: "日本語", flag: "🇯🇵" },
-    { code: "ko", label: "한국어", flag: "🇰🇷" }
+    { code: "en", label: "English", flag: "🇺🇸", short: "EN" },
+    { code: "de", label: "Deutsch", flag: "🇩🇪", short: "D" },
+    { code: "zh", label: "中文", flag: "🇨🇳", short: "CN" },
+    { code: "ja", label: "日本語", flag: "🇯🇵", short: "JP" },
+    { code: "ko", label: "한국어", flag: "🇰🇷", short: "KR" }
   ];
 
   return (
@@ -21,8 +21,10 @@ const UtilityNavigation = () => {
       
       {/* Language Selector */}
       <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-        <SelectTrigger className="w-[140px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
-          <SelectValue placeholder="Language" />
+        <SelectTrigger className="w-[50px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
+          <SelectValue>
+            {languages.find(lang => lang.code === selectedLanguage)?.short || "EN"}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
           {languages.map((lang) => (
