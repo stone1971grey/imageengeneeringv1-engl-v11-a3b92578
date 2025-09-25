@@ -116,11 +116,12 @@ const Navigation = () => {
       image: iqLedIllumination,
       description: "Professional LED lighting systems and uniform light sources for stable testing environments",
       subgroups: [
-        { name: "Arcturus LED", link: "/product-arcturus", featured: true },
-        { name: "LE7 Uniform Light", link: "/product-le7" },
-        { name: "Flat Light Systems", link: "#" },
-        { name: "Spectral Illumination", link: "#" },
-        { name: "Multi-Zone LED", link: "#" }
+        { name: "iQ-LED", link: "#", featured: true },
+        { name: "IEEE-P2020", link: "#" },
+        { name: "Production Line Calibration", link: "#" },
+        { name: "Flicker (PWM/MMP)", link: "#" },
+        { name: "Test Chart Illumination", link: "#" },
+        { name: "All Light Sources", link: "#" }
       ]
     },
     "Measurement Devices": {
