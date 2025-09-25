@@ -3,6 +3,7 @@ import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { MessageCircle } from "lucide-react";
 
 const UtilityNavigation = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
@@ -45,9 +46,9 @@ const UtilityNavigation = () => {
       <Link to="/contact">
         <Button 
           variant="default" 
-          className="bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 text-lg px-6 py-2"
+          className="w-[50px] bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 flex items-center justify-center p-2"
         >
-          Contact
+          <MessageCircle className="h-5 w-5" />
         </Button>
       </Link>
     </div>
