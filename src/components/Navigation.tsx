@@ -550,18 +550,18 @@ const Navigation = () => {
                     </div>
 
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Training & Resources</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Publications</h4>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Webinar schedule</a>
+                        <a href="#">Conference Papers</a>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                        <CustomTargetIcon className="h-5 w-5" />
+                        <a href="#">White Papers & Theses</a>
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">Video Archive</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Whitepapers</a>
                       </div>
                     </div>
                   </div>
