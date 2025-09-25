@@ -209,7 +209,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between w-full">
           {/* Main Navigation - moved to left */}
           <div className="hidden lg:flex items-center gap-x-1">
-            <SimpleDropdown trigger="Find Your Solution">
+            <SimpleDropdown trigger="Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
                   <div className="flex gap-6 p-6">
