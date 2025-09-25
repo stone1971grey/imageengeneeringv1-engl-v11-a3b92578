@@ -73,7 +73,7 @@ const IndustrySection = () => {
       <div className="container mx-auto px-4 relative">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             We Serve Your{" "}
             <span className="text-[#74952a] relative">
               Industry
@@ -108,7 +108,7 @@ const IndustrySection = () => {
 
                 {/* Content */}
                 <div className="text-center flex-grow flex flex-col justify-center">
-                  <h3 className="text-xl font-bold text-ie-dark-blue mb-3 group-hover:text-[#74952a] transition-colors duration-300">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#74952a] transition-colors duration-300">
                     {industry.title}
                   </h3>
                   <p className="text-gray-600 text-sm leading-relaxed">
@@ -160,7 +160,7 @@ const IndustrySection = () => {
 
                   {/* Content */}
                   <div className="text-center flex-grow flex flex-col justify-center">
-                    <h3 className="text-xl font-bold text-ie-dark-blue mb-3 group-hover:text-[#74952a] transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#74952a] transition-colors duration-300">
                       {industry.title}
                     </h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
