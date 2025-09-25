@@ -204,19 +204,17 @@ const Navigation = () => {
   return (
     <nav className="fixed top-4 left-[320px] right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
-      <div className="container mx-auto px-6 py-3 lg:py-6">
-        {/* Main row - Navigation only (logo moved to sticky position) */}
+      <div className="container mx-auto px-6 py-2">
+        {/* Single row - utility and main nav aligned */}
         <div className="flex items-center justify-end">
           
-          {/* Combined Navigation Block - both utility and main nav as one unit */}
-          <div className="hidden lg:block">
-            {/* Utility Navigation */}
-            <div className="flex justify-end pb-4">
-              <UtilityNavigation />
-            </div>
+          {/* Combined Navigation Block - utility and main nav in one line */}
+          <div className="hidden lg:flex items-center gap-8">
+            {/* Utility Navigation inline */}
+            <UtilityNavigation />
             
             {/* Main Navigation */}
-            <div className="flex items-center gap-x-4 relative justify-end -mr-4">
+            <div className="flex items-center gap-x-2 relative -mr-4">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
@@ -630,7 +628,7 @@ const Navigation = () => {
                       </div>
                    </div>
                  </div>
-               </SimpleDropdown>
+                </SimpleDropdown>
             </div>
           </div>
 
