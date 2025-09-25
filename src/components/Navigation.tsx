@@ -202,20 +202,14 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-4 left-[320px] right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
+    <nav className="fixed top-8 left-4 right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-2">
         {/* Single row - utility and main nav aligned */}
-        <div className="flex items-center justify-end">
-          
-          {/* Combined Navigation Block - utility and main nav in one line */}
-          <div className="hidden lg:flex items-center gap-8">
-            {/* Utility Navigation inline */}
-            <UtilityNavigation />
-            
-            {/* Main Navigation */}
-            <div className="flex items-center gap-x-2 relative -mr-4">
-              <SimpleDropdown trigger="Find Your Solution">
+        <div className="flex items-center justify-between">
+          {/* Main Navigation - moved to left */}
+          <div className="hidden lg:flex items-center gap-x-1">
+            <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
                   <div className="flex gap-6 p-6">
@@ -351,9 +345,9 @@ const Navigation = () => {
                     </div>
                   )}
                 </div>
-              </SimpleDropdown>
+            </SimpleDropdown>
 
-              <SimpleDropdown trigger="Products">
+            <SimpleDropdown trigger="Products">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
@@ -570,9 +564,9 @@ const Navigation = () => {
                     </Link>
                   </div>
                 </div>
-              </SimpleDropdown>
+            </SimpleDropdown>
 
-              <SimpleDropdown trigger="Company" className="right-aligned">
+            <SimpleDropdown trigger="Company" className="right-aligned">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-8 p-6">
                       <div className="space-y-4 flex-1 pr-6 border-r border-border">
@@ -629,7 +623,20 @@ const Navigation = () => {
                    </div>
                  </div>
                 </SimpleDropdown>
-            </div>
+
+            <Link to="/downloads">
+              <Button 
+                variant="ghost"
+                className="px-3 py-2 rounded-md text-base font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
+              >
+                Downloads
+              </Button>
+            </Link>
+          </div>
+          
+          {/* Utility Navigation - moved to right */}
+          <div className="hidden lg:block">
+            <UtilityNavigation />
           </div>
 
           {/* Mobile menu button */}
