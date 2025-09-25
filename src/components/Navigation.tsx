@@ -615,15 +615,23 @@ const Navigation = () => {
 
                       <div className="space-y-4 flex-1">
                         <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                        <Link to="/partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                        <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                           <CustomTargetIcon className="h-5 w-5" />
-                          <span>Partnerships</span>
+                          <span>Resellers & Subsidiaries</span>
                         </Link>
-                        <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <FileText className="h-5 w-5" />
-                          <span>News</span>
+                        <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                          <CustomTargetIcon className="h-5 w-5" />
+                          <span>Strategic Partnerships</span>
                         </Link>
-                       </div>
+                        <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                          <CustomTargetIcon className="h-5 w-5" />
+                          <span>Group Memberships</span>
+                        </Link>
+                        <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                          <CustomTargetIcon className="h-5 w-5" />
+                          <span>ISO 9001</span>
+                        </Link>
+                      </div>
                    </div>
                  </div>
                </SimpleDropdown>
