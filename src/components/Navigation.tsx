@@ -496,23 +496,27 @@ const Navigation = () => {
 
               <SimpleDropdown trigger="Training & Events" className="right-aligned">
                 <div className="flex flex-col gap-2 w-[315px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-6 p-6">
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Training & Education</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Professional Training</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Workshops</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Certification Programs</a>
-                      </div>
-                    </div>
-                  </div>
+                   <div className="flex gap-6 p-6">
+                     <div className="space-y-4 flex-1">
+                       <h4 className="font-semibold mb-3 text-lg text-black">Resources</h4>
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <a href="#">Webinars</a>
+                       </div>
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <a href="#">On-Site Training</a>
+                       </div>
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <Link to="/inside-lab">Visit our Test Lab</Link>
+                       </div>
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <a href="#">Event Schedule</a>
+                       </div>
+                     </div>
+                   </div>
 
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300">
