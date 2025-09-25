@@ -128,11 +128,12 @@ const Navigation = () => {
       image: arcturusMainProduct,
       description: "Precision colorimeters, photometers and spectroradiometers for accurate optical measurements",
       subgroups: [
-        { name: "iQ-Analyzer X", link: "#", featured: true },
-        { name: "Spectroradiometers", link: "#" },
-        { name: "Colorimeters", link: "#" },
-        { name: "Photometers", link: "#" },
-        { name: "Calibration Tools", link: "#" }
+        { name: "Geometric Calibration", link: "#", featured: true },
+        { name: "Timing Performance", link: "#" },
+        { name: "Climate-Controlled", link: "#" },
+        { name: "Machine Vision", link: "#" },
+        { name: "Spectral Sensitivity", link: "#" },
+        { name: "All Measurement Devices", link: "#" }
       ]
     },
     "Software & APIs": {
