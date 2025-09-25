@@ -28,7 +28,7 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
       {isOpen && (
         <>
           {/* Invisible bridge to prevent hover gaps */}
-          <div className="absolute top-full w-full h-2 z-[9999]" />
+          <div className="absolute top-full w-full h-4 z-[9999]" />
           <div className={`absolute top-full mt-4 z-[9999] bg-white rounded-lg shadow-xl border border-gray-200 p-[20px] ${
             isRightAligned ? 'left-auto right-0 origin-top-right' : 'left-0'
           }`}>
