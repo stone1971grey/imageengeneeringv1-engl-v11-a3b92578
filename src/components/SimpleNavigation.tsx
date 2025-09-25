@@ -14,13 +14,13 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
 
   return (
     <div 
-      className={`relative mx-2 ${className}`}
+      className={`relative mx-4 ${className}`}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
       <Button 
         variant="ghost"
-        className="px-4 py-2 rounded-md text-base font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
+        className="px-4 py-2 rounded-md text-lg font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
       >
         {trigger}
       </Button>

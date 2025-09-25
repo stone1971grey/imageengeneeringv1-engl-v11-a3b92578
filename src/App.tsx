@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
-import Layout from "@/components/Layout";
+import StickyLogo from "@/components/StickyLogo";
 import GlobalPasswordGate from "@/components/GlobalPasswordGate";
 import Index from "./pages/Index";
 import InsideLab from "./pages/InsideLab";
@@ -39,32 +39,33 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <StickyLogo />
         <Routes>
-        <Route path="/" element={<Layout><Index /></Layout>} />
-        <Route path="/inside-lab" element={<Layout><InsideLab /></Layout>} />
-        <Route path="/industries" element={<Layout><Industries /></Layout>} />
-        <Route path="/products" element={<Layout><Products /></Layout>} />
-        <Route path="/automotive" element={<Layout><Automotive /></Layout>} />
-        <Route path="/downloads" element={<Layout><Downloads /></Layout>} />
-         <Route path="/product/arcturus" element={<Layout><ProductArcturus /></Layout>} />
-         <Route path="/product/le7" element={<Layout><ProductLE7 /></Layout>} />
-         <Route path="/solution/arcturus-bundle" element={<Layout><SolutionArcturusBundle /></Layout>} />
-         <Route path="/hidden-segments" element={<Layout><HiddenSegments /></Layout>} />
-         <Route path="/backlog" element={<Layout><Backlog /></Layout>} />
+        <Route path="/" element={<Index />} />
+        <Route path="/inside-lab" element={<InsideLab />} />
+        <Route path="/industries" element={<Industries />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/automotive" element={<Automotive />} />
+        <Route path="/downloads" element={<Downloads />} />
+         <Route path="/product/arcturus" element={<ProductArcturus />} />
+         <Route path="/product/le7" element={<ProductLE7 />} />
+         <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
+         <Route path="/hidden-segments" element={<HiddenSegments />} />
+         <Route path="/backlog" element={<Backlog />} />
         <Route path="/charts" element={<Navigate to="/products/charts" replace />} />
-        <Route path="/products/charts" element={<Layout><Charts /></Layout>} />
-        <Route path="/products/charts/:slug" element={<Layout><ChartDetail /></Layout>} />
-        <Route path="/cart" element={<Layout><Cart /></Layout>} />
-         <Route path="/events" element={<Layout><Events /></Layout>} />
-         <Route path="/in-cabin-testing" element={<Layout><InCabinTesting /></Layout>} />
-         <Route path="/contact" element={<Layout><Contact /></Layout>} />
-         <Route path="/news" element={<Layout><News /></Layout>} />
-         <Route path="/styleguide" element={<Layout><Styleguide /></Layout>} />
-        <Route path="/icons-styleguide" element={<Layout><IconsStyleguide /></Layout>} />
-        <Route path="/comprehensive-styleguide" element={<Layout><ComprehensiveStyleguide /></Layout>} />
-        <Route path="/image-download" element={<Layout><ImageDownload /></Layout>} />
+        <Route path="/products/charts" element={<Charts />} />
+        <Route path="/products/charts/:slug" element={<ChartDetail />} />
+        <Route path="/cart" element={<Cart />} />
+         <Route path="/events" element={<Events />} />
+         <Route path="/in-cabin-testing" element={<InCabinTesting />} />
+         <Route path="/contact" element={<Contact />} />
+         <Route path="/news" element={<News />} />
+         <Route path="/styleguide" element={<Styleguide />} />
+        <Route path="/icons-styleguide" element={<IconsStyleguide />} />
+        <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
+        <Route path="/image-download" element={<ImageDownload />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<Layout><NotFound /></Layout>} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

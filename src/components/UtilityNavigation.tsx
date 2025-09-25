@@ -3,17 +3,16 @@ import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { MessageCircle } from "lucide-react";
 
 const UtilityNavigation = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
 
   const languages = [
-    { code: "en", label: "English", flag: "🇺🇸", short: "EN" },
-    { code: "de", label: "Deutsch", flag: "🇩🇪", short: "D" },
-    { code: "zh", label: "中文", flag: "🇨🇳", short: "CN" },
-    { code: "ja", label: "日本語", flag: "🇯🇵", short: "JP" },
-    { code: "ko", label: "한국어", flag: "🇰🇷", short: "KR" }
+    { code: "en", label: "English", flag: "🇺🇸" },
+    { code: "de", label: "Deutsch", flag: "🇩🇪" },
+    { code: "zh", label: "中文", flag: "🇨🇳" },
+    { code: "ja", label: "日本語", flag: "🇯🇵" },
+    { code: "ko", label: "한국어", flag: "🇰🇷" }
   ];
 
   return (
@@ -22,10 +21,8 @@ const UtilityNavigation = () => {
       
       {/* Language Selector */}
       <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-        <SelectTrigger className="w-[60px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
-          <SelectValue>
-            {languages.find(lang => lang.code === selectedLanguage)?.short || "EN"}
-          </SelectValue>
+        <SelectTrigger className="w-[140px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
+          <SelectValue placeholder="Language" />
         </SelectTrigger>
         <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
           {languages.map((lang) => (
@@ -46,9 +43,9 @@ const UtilityNavigation = () => {
       <Link to="/contact">
         <Button 
           variant="default" 
-          className="w-[50px] bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 flex items-center justify-center p-2"
+          className="bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 text-lg px-6 py-2"
         >
-          <MessageCircle className="h-5 w-5" />
+          Contact
         </Button>
       </Link>
     </div>
