@@ -205,16 +205,8 @@ const Navigation = () => {
     <nav className="fixed top-4 left-4 right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
-        {/* Main row - Logo and combined Navigation */}
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-            <img 
-              src={logoIE} 
-              alt="Image Engineering" 
-              className="h-[60px] xl:h-[60px] w-auto max-w-[300px] object-contain" 
-              style={{ width: '300px' }}
-            />
-          </Link>
+        {/* Main row - Navigation only (logo moved to sticky position) */}
+        <div className="flex items-center justify-end">
           
           {/* Combined Navigation Block - both utility and main nav as one unit */}
           <div className="hidden lg:block">
