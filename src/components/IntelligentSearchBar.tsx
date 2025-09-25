@@ -231,7 +231,7 @@ const IntelligentSearchBar = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          className="pl-10 pr-10 w-48 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white focus:text-black focus:placeholder:text-muted-foreground"
+          className="pl-10 pr-10 w-36 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white focus:text-black focus:placeholder:text-muted-foreground"
         />
         {query && (
           <Button
