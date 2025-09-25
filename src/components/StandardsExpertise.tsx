@@ -106,7 +106,7 @@ const StandardsExpertise = () => {
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
             Shaping Global Standards
           </h2>
           <p className="text-lg text-black max-w-3xl mx-auto leading-relaxed">
@@ -156,7 +156,7 @@ const StandardsExpertise = () => {
               <div className={`text-center mb-8 transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] ${
                 isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
               }`}>
-                <h3 className="text-lg font-bold text-black mb-2">
+                <h3 className="text-lg font-bold text-ie-dark-blue mb-2">
                   Supported Standards
                 </h3>
                 <p className="text-lg text-gray-700">
@@ -170,7 +170,7 @@ const StandardsExpertise = () => {
                 {standards.map((standard) => (
                 <Card key={standard.id} className="h-[220px] hover:shadow-md transition-shadow duration-300 bg-gray-100 border-0 flex flex-col">
                     <CardHeader className="pb-4 flex-shrink-0">
-                      <CardTitle className="text-lg font-semibold text-black">
+                      <CardTitle className="text-lg font-semibold text-ie-dark-blue">
                         {standard.title}
                       </CardTitle>
                     </CardHeader>
@@ -182,12 +182,12 @@ const StandardsExpertise = () => {
                       <div className="flex items-center justify-between pt-4">
                         <div className="flex items-center gap-2">
                           {getCategoryIcon(standard.category)}
-                          <span className="text-lg font-medium text-black">{standard.category}</span>
+                          <span className="text-lg font-medium text-ie-dark-blue">{standard.category}</span>
                         </div>
                         
                         <div className="flex items-center text-lg">
                           <div className={`w-2 h-2 rounded-full mr-2 bg-black`} />
-                          <span className={`font-medium text-black ${
+                          <span className={`font-medium text-ie-dark-blue ${
                             standard.statusType === 'active' ? '' : ''
                           }`}>
                             {standard.status}

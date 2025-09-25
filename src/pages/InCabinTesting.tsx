@@ -66,7 +66,7 @@ const InCabinTesting = () => {
                   <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.9] tracking-tight mb-6" style={{ color: 'black' }}>
                     In-Cabin
                     <br />
-                    <span className="font-medium" style={{ color: '#3D7BA2' }}>Performance Testing</span>
+                    <span className="font-medium text-ie-dark-blue">Performance Testing</span>
                   </h1>
                   
                   <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">

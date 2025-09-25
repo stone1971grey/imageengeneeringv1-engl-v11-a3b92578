@@ -194,7 +194,7 @@ const Products = () => {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl md:text-5xl font-bold text-black mb-6 tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-bold text-ie-dark-blue mb-6 tracking-tight">
               Product Categories
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
