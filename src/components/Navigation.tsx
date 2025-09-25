@@ -287,7 +287,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-8 left-80 right-4 z-40 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
+    <nav className="fixed top-8 left-4 right-4 z-40 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="w-full px-6 py-2">
         {/* Single row - main nav left, utility right */}
