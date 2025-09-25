@@ -68,6 +68,7 @@ export default {
 				},
 				'accent-violet': 'hsl(var(--accent-violet))',
 				'accent-soft-blue': 'hsl(var(--accent-soft-blue))',
+				'soft-blue': 'hsl(var(--accent-soft-blue))',
 				scandi: {
 					grey: 'hsl(var(--scandi-grey))',
 					'light-grey': 'hsl(var(--scandi-light-grey))',
