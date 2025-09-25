@@ -1,11 +1,41 @@
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-white.png";
 
 const RegularNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDarkBackground, setIsDarkBackground] = useState(false);
+
+  useEffect(() => {
+    const detectBackground = () => {
+      // Check if we're on a light background by examining the navigation background
+      const navigation = document.querySelector('nav');
+      if (navigation) {
+        const bgColor = getComputedStyle(navigation).backgroundColor;
+        // If background is transparent or light, use dark logo
+        setIsDarkBackground(bgColor === 'rgba(0, 0, 0, 0)' || bgColor.includes('255'));
+      }
+    };
+
+    detectBackground();
+    
+    // Check on scroll and resize
+    window.addEventListener('scroll', detectBackground);
+    window.addEventListener('resize', detectBackground);
+    
+    return () => {
+      window.removeEventListener('scroll', detectBackground);
+      window.removeEventListener('resize', detectBackground);
+    };
+  }, []);
+
+  const getLogoClasses = () => {
+    const baseClasses = "h-12 md:h-16 w-auto max-w-[200px] object-contain";
+    // Always use dark logo for RegularNavigation (typically on light backgrounds)
+    return `${baseClasses} brightness-0 invert`;
+  };
 
   return (
     <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border py-12">
@@ -15,7 +45,7 @@ const RegularNavigation = () => {
             <img 
               src={logoIE} 
               alt="Image Engineering" 
-              className="h-12 md:h-16 w-auto max-w-[200px] object-contain brightness-0 invert" 
+              className={getLogoClasses()}
             />
           </Link>
           
