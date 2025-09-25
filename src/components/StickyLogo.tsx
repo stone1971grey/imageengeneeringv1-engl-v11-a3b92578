@@ -1,42 +1,19 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 import logoIE from "@/assets/logo-ie-white.png";
 
 const StickyLogo = () => {
-  const [showDarkLogo, setShowDarkLogo] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      // Switch at 800px scroll position
-      setShowDarkLogo(scrollY > 800);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <div className="fixed top-[2rem] left-4 z-50">
       <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-        {/* White Logo - visible on dark backgrounds */}
+        {/* White logo with dark shadow - works on all backgrounds */}
         <img 
           src={logoIE} 
           alt="Image Engineering" 
-          className={`h-[60px] w-auto max-w-[300px] object-contain absolute transition-opacity duration-500 ${
-            showDarkLogo ? 'opacity-0' : 'opacity-100'
-          }`}
-          style={{ width: '300px' }}
-        />
-        
-        {/* Dark Logo - visible on light backgrounds */}
-        <img 
-          src={logoIE} 
-          alt="Image Engineering" 
-          className={`h-[60px] w-auto max-w-[300px] object-contain brightness-0 invert transition-opacity duration-500 ${
-            showDarkLogo ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ width: '300px' }}
+          className="h-[60px] w-auto max-w-[300px] object-contain"
+          style={{ 
+            width: '300px',
+            filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8)) drop-shadow(-1px -1px 2px rgba(0,0,0,0.3))'
+          }}
         />
       </Link>
     </div>
