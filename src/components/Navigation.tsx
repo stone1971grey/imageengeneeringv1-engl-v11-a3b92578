@@ -63,96 +63,86 @@ const Navigation = () => {
       image: industryAutomotive,
       description: "Camera systems in vehicles, driver assistance and autonomous driving",
       subgroups: [
-        { name: "ADAS Testing", link: "/automotive" },
-        { name: "In-Cabin Monitoring", link: "/in-cabin-testing" },
-        { name: "Rear View Cameras", link: "#" },
-        { name: "360° Surround View", link: "#" },
-        { name: "Driver Monitoring", link: "#" },
-        { name: "All Automotive Solutions", link: "/automotive" }
+        { name: "Advanced Driver Assistance Systems (ADAS)", link: "/automotive" },
+        { name: "In-Cabin Testing", link: "/in-cabin-testing" },
+        { name: "IEEE-P2020 Testing", link: "#" },
+        { name: "High Dynamic Range (HDR)", link: "#" },
+        { name: "Near-Infrared (NIR)", link: "#" },
+        { name: "Geometric Calibration", link: "#" }
       ]
     },
     "Security & Surveillance": {
       image: industrySecurity,
       description: "CCTV systems, video surveillance",
       subgroups: [
-        { name: "IP Cameras", link: "#" },
-        { name: "Night Vision", link: "#" },
-        { name: "Wide Dynamic Range", link: "#" },
-        { name: "Thermal Imaging", link: "#" },
-        { name: "Analytics Quality", link: "#" },
-        { name: "All Security Solutions", link: "#" }
+        { name: "IEC 62676-5 Testing", link: "#" },
+        { name: "Low-light (ISO 19093)", link: "#" },
+        { name: "High Dynamic Range (HDR)", link: "#" },
+        { name: "ISP Tuning", link: "#" },
+        { name: "Spectral Sensitivities", link: "#" }
       ]
     },
     "Mobile Phone": {
       image: industryMobile,
       description: "Image quality testing according to VCX standards",
       subgroups: [
-        { name: "VCX Testing", link: "#" },
-        { name: "Multi-Camera Systems", link: "#" },
-        { name: "Low Light Performance", link: "#" },
-        { name: "HDR Imaging", link: "#" },
-        { name: "Portrait Mode", link: "#" },
-        { name: "All Mobile Solutions", link: "#" }
+        { name: "VCX PhoneCam", link: "#" },
+        { name: "Color Calibration", link: "#" },
+        { name: "Camera Stabilization", link: "#" },
+        { name: "ISP Tuning", link: "#" },
+        { name: "Timing Measurements", link: "#" }
       ]
     },
     "Web Camera": {
       image: industryBroadcast,
       description: "Web cameras for video conferencing and streaming applications",
       subgroups: [
-        { name: "Video Conferencing", link: "#" },
-        { name: "Streaming Quality", link: "#" },
-        { name: "Auto Focus Testing", link: "#" },
-        { name: "Color Accuracy", link: "#" },
-        { name: "Low Light Performance", link: "#" },
-        { name: "All Web Camera Solutions", link: "#" }
+        { name: "VCX WebCam", link: "#" },
+        { name: "ISP Tuning", link: "#" },
+        { name: "Color Calibration", link: "#" },
+        { name: "Timing Measurements", link: "#" }
       ]
     },
     "Machine Vision": {
       image: industryMachineVision,
       description: "Camera systems for inspection, robotics, quality control",
       subgroups: [
-        { name: "Industrial Inspection", link: "#" },
-        { name: "Robotics Vision", link: "#" },
-        { name: "Quality Control", link: "#" },
-        { name: "Defect Detection", link: "#" },
-        { name: "Measurement Systems", link: "#" },
-        { name: "All Machine Vision Solutions", link: "#" }
+        { name: "EMVA 1288 (ISO 24942)", link: "#" },
+        { name: "Production Line Calibration", link: "#" },
+        { name: "Lens Distortion", link: "#" },
+        { name: "Signal-to-Noise Ratio (SNR)", link: "#" }
       ]
     },
     "Medical & Endoscopy": {
       image: industryMedical,
       description: "Image quality in medical imaging and diagnostic systems",
       subgroups: [
-        { name: "Endoscopic Imaging", link: "#" },
-        { name: "Surgical Cameras", link: "#" },
-        { name: "Diagnostic Imaging", link: "#" },
-        { name: "Microscopy", link: "#" },
-        { name: "Color Accuracy", link: "#" },
-        { name: "All Medical Solutions", link: "#" }
+        { name: "Color Calibration", link: "#" },
+        { name: "Low-Light Testing", link: "#" },
+        { name: "Optical Distortion", link: "#" },
+        { name: "ISP Tuning", link: "#" },
+        { name: "Endoscopic Illumination", link: "#" }
       ]
     },
     "Scanners & Archiving": {
       image: industryScanning,
       description: "Quality assurance in digitization of documents, books, photos",
       subgroups: [
-        { name: "Document Scanning", link: "#" },
-        { name: "Photo Digitization", link: "#" },
-        { name: "Book Scanning", link: "#" },
-        { name: "Archive Quality", link: "#" },
-        { name: "Color Fidelity", link: "#" },
-        { name: "All Scanning Solutions", link: "#" }
+        { name: "ISO 21550", link: "#" },
+        { name: "Universal Test Target", link: "#" },
+        { name: "Multispectral Illumination", link: "#" },
+        { name: "Scanner Dynamic Range", link: "#" },
+        { name: "Spectral Sensitivities", link: "#" }
       ]
     },
     "Photo & Video": {
       image: industryPhotography,
       description: "Digital cameras for professional and amateur applications",
       subgroups: [
-        { name: "Professional Cameras", link: "#" },
-        { name: "Consumer Cameras", link: "#" },
-        { name: "Video Production", link: "#" },
-        { name: "Color Grading", link: "#" },
-        { name: "HDR Video", link: "#" },
-        { name: "All Photo & Video Solutions", link: "#" }
+        { name: "Broadcast & HDTV", link: "#" },
+        { name: "Spectral Sensitivities", link: "#" },
+        { name: "ISP Tuning", link: "#" },
+        { name: "iQ-LED Illumination", link: "#" }
       ]
     }
   };
