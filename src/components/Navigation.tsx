@@ -150,11 +150,12 @@ const Navigation = () => {
       image: "/images/chart-case.png",
       description: "Professional accessories including mounting systems, cables, connectors and protective cases",
       subgroups: [
-        { name: "Mounting Systems", link: "#" },
-        { name: "Protective Cases", link: "#" },
-        { name: "Cables & Connectors", link: "#" },
-        { name: "Tripods & Stands", link: "#" },
-        { name: "Filters & Lenses", link: "#" }
+        { name: "Storage & Transport", link: "#", featured: true },
+        { name: "Luxmeters", link: "#" },
+        { name: "Camera Alignment", link: "#" },
+        { name: "Test Chart Mounts", link: "#" },
+        { name: "VCX & Webcam", link: "#" },
+        { name: "All Accessories", link: "#" }
       ]
     }
   };
