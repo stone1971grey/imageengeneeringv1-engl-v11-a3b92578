@@ -133,7 +133,7 @@ const Navigation = () => {
         { name: "Calibration Tools", link: "#" }
       ]
     },
-    "Software": {
+    "Software & APIs": {
       image: iqAnalyzerIntro,
       description: "Advanced software solutions for image analysis, calibration and automated quality control",
       subgroups: [
@@ -144,7 +144,7 @@ const Navigation = () => {
         { name: "Calibration Software", link: "#" }
       ]
     },
-    "Accessories": {
+    "Product Accessories": {
       image: "/images/chart-case.png",
       description: "Professional accessories including mounting systems, cables, connectors and protective cases",
       subgroups: [
@@ -153,17 +153,6 @@ const Navigation = () => {
         { name: "Cables & Connectors", link: "#" },
         { name: "Tripods & Stands", link: "#" },
         { name: "Filters & Lenses", link: "#" }
-      ]
-    },
-    "Services": {
-      image: trainingMobileTesting,
-      description: "Comprehensive training, support, custom solutions and professional consultation services",
-      subgroups: [
-        { name: "Custom Solutions", link: "#" },
-        { name: "Technical Support", link: "#" },
-        { name: "Training Programs", link: "#" },
-        { name: "Calibration Services", link: "#" },
-        { name: "Consulting", link: "#" }
       ]
     }
   };
@@ -407,32 +396,26 @@ const Navigation = () => {
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Illumination Devices")}>
-                        <Lightbulb className="h-5 w-5" />
+                        <CustomTargetIcon className="h-5 w-5" />
                         <span>Illumination Devices</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Measurement Devices")}>
-                        <Monitor className="h-5 w-5" />
+                        <CustomTargetIcon className="h-5 w-5" />
                         <span>Measurement Devices</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Software")}>
-                        <Cpu className="h-5 w-5" />
-                        <span>Software</span>
+                        onMouseEnter={() => setHoveredProduct("Software & APIs")}>
+                        <CustomTargetIcon className="h-5 w-5" />
+                        <span>Software & APIs</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Accessories")}>
-                        <Package className="h-5 w-5" />
-                        <span>Accessories</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Services")}>
-                        <Wrench className="h-5 w-5" />
-                        <span>Services</span>
+                        onMouseEnter={() => setHoveredProduct("Product Accessories")}>
+                        <CustomTargetIcon className="h-5 w-5" />
+                        <span>Product Accessories</span>
                       </div>
                     </div>
                     
