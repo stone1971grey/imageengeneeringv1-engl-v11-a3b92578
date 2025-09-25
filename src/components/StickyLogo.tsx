@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import logoIE from "@/assets/logo-ie-white.png";
+import logoIEWhite from "@/assets/logo-ie-white.png";
+import logoIEBlack from "@/assets/logo-ie-black.png";
 
 const StickyLogo = () => {
   const [isDarkLogo, setIsDarkLogo] = useState(false);
@@ -45,11 +46,9 @@ const StickyLogo = () => {
     <div ref={logoRef} className="fixed top-[2rem] left-4 z-50">
       <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
         <img 
-          src={logoIE} 
+          src={isDarkLogo ? logoIEBlack : logoIEWhite} 
           alt="Image Engineering" 
-          className={`h-[60px] w-auto max-w-[300px] object-contain transition-all duration-300 ${
-            isDarkLogo ? 'brightness-0 invert' : ''
-          }`}
+          className="h-[60px] w-auto max-w-[300px] object-contain transition-all duration-300"
           style={{ width: '300px' }}
         />
       </Link>
