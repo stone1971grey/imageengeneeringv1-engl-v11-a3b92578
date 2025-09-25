@@ -6,37 +6,63 @@ const StickyLogo = () => {
   const [isOnLightSection, setIsOnLightSection] = useState(false);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const checkSection = () => {
-      const scrollY = window.scrollY;
+      // Clear any pending timeout
+      clearTimeout(timeoutId);
       
-      // Hero section is dark (0-1000px) - use white logo
-      // Other sections are light (>1000px) - use dark logo
-      const heroHeight = 1000;
-      
-      setIsOnLightSection(scrollY > heroHeight);
+      // Add debounce to prevent rapid switching
+      timeoutId = setTimeout(() => {
+        const scrollY = window.scrollY;
+        
+        // Debug: Log current scroll position
+        console.log('Scroll position:', scrollY);
+        
+        // More precise section detection based on actual content
+        const heroHeight = 950; // Adjusted to be more precise
+        const newState = scrollY > heroHeight;
+        
+        // Only update if state actually changed
+        if (newState !== isOnLightSection) {
+          console.log('Logo state changing to:', newState ? 'dark logo (light section)' : 'light logo (dark section)');
+          setIsOnLightSection(newState);
+        }
+      }, 100); // 100ms debounce
     };
 
-    // Initial check
-    checkSection();
+    // Initial check with delay to ensure page is loaded
+    setTimeout(checkSection, 300);
     
-    // Update on scroll
+    // Update on scroll with throttling
+    let ticking = false;
     const handleScroll = () => {
-      requestAnimationFrame(checkSection);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          checkSection();
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     
     window.addEventListener('scroll', handleScroll, { passive: true });
     
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(timeoutId);
+    };
+  }, [isOnLightSection]);
+
+  console.log('Current logo state:', isOnLightSection ? 'dark (inverted)' : 'light (normal)');
 
   return (
     <div className="fixed top-[2rem] left-4 z-50">
       <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-        {/* Show different logo based on section */}
         <img 
           src={logoIE} 
           alt="Image Engineering" 
-          className={`h-[60px] w-auto max-w-[300px] object-contain transition-all duration-500 ${
+          className={`h-[60px] w-auto max-w-[300px] object-contain transition-all duration-700 ${
             isOnLightSection 
               ? 'brightness-0 invert' // Dark logo on light sections
               : '' // White logo on dark sections (hero)
