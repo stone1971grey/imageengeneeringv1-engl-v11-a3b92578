@@ -201,7 +201,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-4 left-[320px] right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
+    <nav className="fixed top-8 left-[320px] right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-2">
         {/* Single row - utility and main nav aligned */}
