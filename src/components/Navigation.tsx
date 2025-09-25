@@ -202,7 +202,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-4 left-4 right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
+    <nav className="fixed top-4 left-[320px] right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-3 lg:py-6">
         {/* Main row - Navigation only (logo moved to sticky position) */}
