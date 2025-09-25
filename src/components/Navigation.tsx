@@ -103,11 +103,11 @@ const Navigation = () => {
       image: "/images/custom-chart.png",
       description: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options",
       subgroups: [
-        { name: "iQ-Analyzer-X", link: "#", featured: true },
+        { name: "iQ-Analyzer-X", link: "#" },
         { name: "Multipurpose", link: "#" },
         { name: "Image Quality Factor", link: "#" },
         { name: "Infrared (VIS-IR)", link: "#" },
-        { name: "Reflective", link: "/charts", active: true },
+        { name: "Reflective", link: "/charts" },
         { name: "Transparent", link: "#" },
         { name: "See All Charts", link: "/charts" }
       ]
@@ -116,7 +116,7 @@ const Navigation = () => {
       image: iqLedIllumination,
       description: "Professional LED lighting systems and uniform light sources for stable testing environments",
       subgroups: [
-        { name: "iQ-LED", link: "#", featured: true },
+        { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "Production Line Calibration", link: "#" },
         { name: "Flicker (PWM/MMP)", link: "#" },
@@ -128,7 +128,7 @@ const Navigation = () => {
       image: arcturusMainProduct,
       description: "Precision colorimeters, photometers and spectroradiometers for accurate optical measurements",
       subgroups: [
-        { name: "Geometric Calibration", link: "#", featured: true },
+        { name: "Geometric Calibration", link: "#" },
         { name: "Timing Performance", link: "#" },
         { name: "Climate-Controlled", link: "#" },
         { name: "Machine Vision", link: "#" },
@@ -140,7 +140,7 @@ const Navigation = () => {
       image: iqAnalyzerIntro,
       description: "Advanced software solutions for image analysis, calibration and automated quality control",
       subgroups: [
-        { name: "iQ-Analyzer-X", link: "#", featured: true },
+        { name: "iQ-Analyzer-X", link: "#" },
         { name: "Control APIs", link: "#" },
         { name: "iQ-Luminance", link: "#" },
         { name: "All Software & APIs", link: "#" }
@@ -150,7 +150,7 @@ const Navigation = () => {
       image: "/images/chart-case.png",
       description: "Professional accessories including mounting systems, cables, connectors and protective cases",
       subgroups: [
-        { name: "Storage & Transport", link: "#", featured: true },
+        { name: "Storage & Transport", link: "#" },
         { name: "Luxmeters", link: "#" },
         { name: "Camera Alignment", link: "#" },
         { name: "Test Chart Mounts", link: "#" },
@@ -432,24 +432,12 @@ const Navigation = () => {
                       {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
                         <div className="space-y-3">
                           {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
-                            <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer ${
-                              subgroup.active 
-                                ? 'text-black bg-green-100 p-2 rounded-md border-2 border-green-300' 
-                                : subgroup.featured
-                                ? 'text-black hover:text-[#d9c409] bg-yellow-50 p-2 rounded-md border border-yellow-200'
-                                : 'text-black hover:text-[#d9c409]'
-                            }`}>
+                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
                               <ChevronRight className="h-4 w-4" />
                               {subgroup.link === "#" ? (
                                 <span>{subgroup.name}</span>
                               ) : (
                                 <Link to={subgroup.link}>{subgroup.name}</Link>
-                              )}
-                              {subgroup.active && (
-                                <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
-                              )}
-                              {subgroup.featured && !subgroup.active && (
-                                <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded font-semibold">FEATURED</span>
                               )}
                             </div>
                           ))}
