@@ -204,16 +204,12 @@ const Navigation = () => {
     <nav className="fixed top-8 left-[320px] right-4 z-50 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="container mx-auto px-6 py-2">
-        {/* Single row - utility and main nav aligned */}
-        <div className="flex items-center justify-end">
+        {/* Single row - utility and main nav separated */}
+        <div className="flex items-center justify-between w-full">
           
-          {/* Combined Navigation Block - utility and main nav in one line */}
-          <div className="hidden lg:flex items-center gap-8">
-            {/* Utility Navigation inline */}
-            <UtilityNavigation />
-            
-            {/* Main Navigation */}
-            <div className="flex items-center gap-x-1 relative -mr-4">
+          {/* Main Navigation on the left */}
+          <div className="hidden lg:flex items-center gap-x-1">
+            <div className="flex items-center gap-x-1">
               <SimpleDropdown trigger="Find Your Solution">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   {/* Main navigation grid */}
@@ -337,14 +333,15 @@ const Navigation = () => {
                       </div>
                     </div>
                   )}
+
                   {(hoveredSolution && solutionData[hoveredSolution as keyof typeof solutionData]) && (
                     <div className="bg-[#f3f3f3] p-4">
                       <div className="flex items-center gap-6 p-4 bg-white rounded">
                         <img src={solutionData[hoveredSolution as keyof typeof solutionData].image} alt={hoveredSolution} className="w-[190px] h-[190px] object-cover rounded" />
                         <div className="text-black">
                           <h4 className="font-semibold text-xl">{hoveredSolution}</h4>
-                          <p className="text-lg text-gray-600">{solutionData[hoveredSolution as keyof typeof solutionData].description}</p>
-                          <p className="text-md text-[#d9c409] font-medium">{solutionData[hoveredSolution as keyof typeof solutionData].subline}</p>
+                          <p className="text-lg text-gray-600 mb-2">{solutionData[hoveredSolution as keyof typeof solutionData].description}</p>
+                          <p className="text-sm text-[#d9c409] font-medium">{solutionData[hoveredSolution as keyof typeof solutionData].subline}</p>
                         </div>
                       </div>
                     </div>
@@ -355,74 +352,80 @@ const Navigation = () => {
               <SimpleDropdown trigger="Products">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
+                    {/* Left Column */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Product Categories</h4>
-                      <Link to="/charts" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Test Charts")}
                         onMouseLeave={() => setHoveredProduct(null)}>
                         <CustomTargetIcon className="h-5 w-5" />
                         <span>Test Charts</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                      </Link>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Illumination Devices")}
                         onMouseLeave={() => setHoveredProduct(null)}>
                         <Lightbulb className="h-5 w-5" />
-                        <a href="#">Illumination Devices</a>
+                        <span>Illumination Devices</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Measurement Devices")}
                         onMouseLeave={() => setHoveredProduct(null)}>
                         <Monitor className="h-5 w-5" />
-                        <a href="#">Measurement Devices</a>
+                        <span>Measurement Devices</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Software")}
                         onMouseLeave={() => setHoveredProduct(null)}>
                         <Cpu className="h-5 w-5" />
-                        <a href="#">Software</a>
+                        <span>Software</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Accessories")}
                         onMouseLeave={() => setHoveredProduct(null)}>
                         <Package className="h-5 w-5" />
-                        <a href="#">Accessories</a>
+                        <span>Accessories</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredProduct("Services")}
+                        onMouseLeave={() => setHoveredProduct(null)}>
+                        <Wrench className="h-5 w-5" />
+                        <span>Services</span>
                       </div>
                     </div>
-                    
+
+                    {/* Right Column */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Featured Products</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <Link to="/product-arcturus">Arcturus LED</Link>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Solution Packages</h4>
+                      <Link to="/solution-arcturus-bundle" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors bg-green-100 p-2 rounded-md border-2 border-green-300 cursor-pointer">
+                        <Puzzle className="h-5 w-5" />
+                        <span>Arcturus HDR Test Bundle</span>
+                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                      </Link>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Puzzle className="h-5 w-5" />
+                        <span>Camera Calibration Package</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">iQ-Analyzer X</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Puzzle className="h-5 w-5" />
+                        <span>Laboratory Complete Solution</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <Link to="/product-le7">LE7</Link>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">TE292 VIS+IR</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Puzzle className="h-5 w-5" />
+                        <span>Spectral Measurement & Analysis Set</span>
                       </div>
                     </div>
                   </div>
 
+                  {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <Link to="/inside-lab">
-                      <div className="flex items-center justify-center transition-colors cursor-pointer">
-                        <Button variant="technical" className="w-full">
-                          <Microscope className="h-5 w-5 mr-3" />
-                          <span className="text-lg font-medium">Inside the Testing Lab</span>
-                        </Button>
-                      </div>
-                    </Link>
+                    <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                      <Package className="h-5 w-5 mr-3" />
+                      <span className="text-lg font-medium">Explore All Products</span>
+                    </Button>
                   </div>
-                  
-                  {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
+
+                  {/* Image sections */}
+                  {(hoveredProduct && productData[hoveredProduct as keyof typeof productData]) && (
                     <div className="bg-[#f3f3f3] p-4">
                       <div className="flex items-center gap-6 p-4 bg-white rounded">
                         <img src={productData[hoveredProduct as keyof typeof productData].image} alt={hoveredProduct} className="w-[190px] h-[190px] object-cover rounded" />
@@ -436,199 +439,193 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger="Test Lab">
+              <SimpleDropdown trigger="Services">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
+                    {/* Left Column */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Technical Services</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Custom Solutions</a>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Training & Consultation</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <GraduationCap className="h-5 w-5" />
+                        <span>Professional Training</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Technical Support</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Users className="h-5 w-5" />
+                        <span>Technical Consultation</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Calibration Services</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Building className="h-5 w-5" />
+                        <span>On-site Support</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Settings className="h-5 w-5" />
+                        <span>Custom Solutions</span>
                       </div>
                     </div>
 
+                    {/* Right Column */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Consulting</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Project Consulting</a>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Technical Resources</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <FileText className="h-5 w-5" />
+                        <span>Documentation</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Quality Assurance</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <BookOpen className="h-5 w-5" />
+                        <span>Knowledge Base</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Implementation Support</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Video className="h-5 w-5" />
+                        <span>Video Tutorials</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Link2 className="h-5 w-5" />
+                        <span>API Documentation</span>
                       </div>
                     </div>
                   </div>
 
+                  {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <div className="flex items-center justify-center transition-colors cursor-pointer">
-                      <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
-                        <FlaskConical className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">Contact Our Lab Team</span>
-                      </Button>
-                    </div>
+                    <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                      <Wrench className="h-5 w-5 mr-3" />
+                      <span className="text-lg font-medium">Get Support</span>
+                    </Button>
                   </div>
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger="Training & Events" className="right-aligned">
-                <div className="flex flex-col gap-2 w-[315px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                   <div className="flex gap-6 p-6">
-                     <div className="space-y-4 flex-1">
-                       <h4 className="font-semibold mb-3 text-lg text-black">Resources</h4>
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">Webinars</a>
-                       </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">On-Site Training</a>
-                       </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <Link to="/inside-lab">Visit our Test Lab</Link>
-                       </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">Event Schedule</a>
-                       </div>
-                     </div>
-                   </div>
-
-                  <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300">
-                      <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
-                        <GraduationCap className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">View Training & Events</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </SimpleDropdown>
-
-              <SimpleDropdown trigger="Image Quality" className="right-aligned">
+              <SimpleDropdown trigger="Target Groups">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
+                    {/* Left Column */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Resources</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Image Quality Factors</a>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Industry Segments</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Building2 className="h-5 w-5" />
+                        <span>Manufacturers</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Blog</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Handshake className="h-5 w-5" />
+                        <span>Suppliers</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">International Standards</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">IE Technology</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <GraduationCap className="h-5 w-5" />
+                        <span>Research Institutions</span>
                       </div>
                     </div>
 
+                    {/* Right Column */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Publications</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Conference Papers</a>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Expertise Areas</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Microscope className="h-5 w-5" />
+                        <span>R&D Departments</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">White Papers & Theses</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <CheckCircle className="h-5 w-5" />
+                        <span>Quality Assurance</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Video Archive</a>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <BarChart3 className="h-5 w-5" />
+                        <span>Test Laboratories</span>
                       </div>
                     </div>
                   </div>
 
+                  {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <Link to="/downloads" className="w-full">
-                      <Button variant="technical" className="w-full" style={{ backgroundColor: '#103e7c', borderColor: '#103e7c', color: 'white' }}>
-                        <Microscope className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">Explore Image Quality Resources</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
-                      </Button>
-                    </Link>
+                    <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                      <Target className="h-5 w-5 mr-3" />
+                      <span className="text-lg font-medium">Find Your Category</span>
+                    </Button>
                   </div>
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger="Company" className="right-aligned">
+              <SimpleDropdown trigger="Company">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-8 p-6">
-                      <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Company Information</h4>
-                        <Link to="/about-ie" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>About IE</span>
-                        </Link>
-                        <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>About us</span>
-                        </Link>
-                        <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Team</span>
-                        </Link>
-                        <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Nynomic Group</span>
-                        </Link>
-                        <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Visit Us</span>
-                        </Link>
-                        <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Careers</span>
-                        </Link>
-                        <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <FileText className="h-5 w-5" />
-                          <span>News</span>
-                        </Link>
+                  <div className="flex gap-6 p-6">
+                    {/* Left Column */}
+                    <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                      <h4 className="font-semibold mb-3 text-lg text-black">About Image Engineering</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Building2 className="h-5 w-5" />
+                        <span>Company Profile</span>
                       </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Users className="h-5 w-5" />
+                        <span>Team</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Briefcase className="h-5 w-5" />
+                        <span>Careers</span>
+                      </div>
+                      <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <ScrollText className="h-5 w-5" />
+                        <span>News & Press</span>
+                      </Link>
+                    </div>
 
-                      <div className="space-y-4 flex-1">
-                        <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                        <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Resellers & Subsidiaries</span>
-                        </Link>
-                        <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Strategic Partnerships</span>
-                        </Link>
-                        <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>Group Memberships</span>
-                        </Link>
-                        <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                          <CustomTargetIcon className="h-5 w-5" />
-                          <span>ISO 9001</span>
-                        </Link>
+                    {/* Right Column */}
+                    <div className="space-y-4 flex-1">
+                      <h4 className="font-semibold mb-3 text-lg text-black">Contact & Events</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Phone className="h-5 w-5" />
+                        <span>Contact Information</span>
                       </div>
-                   </div>
-                 </div>
-                </SimpleDropdown>
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <MapPin className="h-5 w-5" />
+                        <span>Locations</span>
+                      </div>
+                      <Link to="/events" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Calendar className="h-5 w-5" />
+                        <span>Events & Trade Shows</span>
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* Sustainability Section */}
+                  <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 mx-6 rounded-lg">
+                    <h4 className="font-semibold mb-3 text-lg text-black flex items-center gap-2">
+                      <Leaf className="h-5 w-5 text-green-600" />
+                      Sustainability & Responsibility
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex items-center gap-2 text-sm text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Recycle className="h-4 w-4 text-green-600" />
+                        <span>Environmental Policy</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <ShieldCheck className="h-4 w-4 text-blue-600" />
+                        <span>Quality Standards</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <Sprout className="h-4 w-4 text-green-600" />
+                        <span>Green Manufacturing</span>
+                      </div>
+                      <Link to="/hidden-segments" className="flex items-center gap-2 text-sm text-black hover:text-[#d9c409] transition-colors cursor-pointer">
+                        <CustomTargetIcon className="h-4 w-4" />
+                        <span>ISO 9001</span>
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
+                    <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                      <Info className="h-5 w-5 mr-3" />
+                      <span className="text-lg font-medium">Learn More About Us</span>
+                    </Button>
+                  </div>
+                </div>
+              </SimpleDropdown>
             </div>
+          </div>
+          
+          {/* Utility Navigation on the right */}
+          <div className="hidden lg:flex">
+            <UtilityNavigation />
           </div>
 
           {/* Mobile menu button */}
