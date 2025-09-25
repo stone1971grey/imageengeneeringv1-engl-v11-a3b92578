@@ -57,7 +57,7 @@ const ProductArcturus = () => {
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
         {/* Quick Navigation */}
-        <nav className="sticky top-[195px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+        <nav className="sticky top-[120px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
@@ -97,7 +97,7 @@ const ProductArcturus = () => {
         </nav>
 
         {/* Hero Section */}
-        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[280px] relative overflow-hidden">
+        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[205px] relative overflow-hidden">
           {/* Animated background light effects */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
@@ -162,7 +162,7 @@ const ProductArcturus = () => {
           </div>
           
           {/* Main Benefits */}
-          <div id="benefits" className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 scroll-mt-[280px]">
+          <div id="benefits" className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 scroll-mt-[205px]">
             <div className="container mx-auto px-4">
               <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Key Benefits of Arcturus</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -268,7 +268,7 @@ const ProductArcturus = () => {
       </section>
 
       {/* Detailed Specifications */}
-      <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[280px]">
+      <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[205px]">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
           <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Detailed Specifications</h2>
           <div className="overflow-x-auto">
@@ -757,7 +757,7 @@ const ProductArcturus = () => {
       </section>
 
       {/* Related Downloads */}
-      <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[280px]">
+      <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[205px]">
         <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Related Downloads</h2>
         <div className="grid md:grid-cols-4 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">

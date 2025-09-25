@@ -19,7 +19,7 @@ const InCabinTesting = () => {
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
         {/* Quick Navigation */}
-        <nav className="sticky top-[195px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+        <nav className="sticky top-[120px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                 <div className="flex flex-wrap gap-6 justify-center text-lg">
@@ -49,7 +49,7 @@ const InCabinTesting = () => {
         </nav>
 
         {/* Hero Section */}
-        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[280px] relative overflow-hidden">
+        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[205px] relative overflow-hidden">
           {/* Animated background light effects */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
@@ -116,7 +116,7 @@ const InCabinTesting = () => {
         </section>
 
         {/* In-Cabin Overview Section */}
-        <section id="systems" className="py-16 bg-gray-50 scroll-mt-[280px]">
+        <section id="systems" className="py-16 bg-gray-50 scroll-mt-[205px]">
         <div className="container mx-auto px-6">
           <div className="max-w-full mx-auto">
             <div className="bg-white rounded-lg p-8 shadow-sm mb-8">
@@ -169,7 +169,7 @@ const InCabinTesting = () => {
       </section>
 
         {/* In-Cabin KPIs Section */}
-        <section id="kpis" className="py-16 bg-white scroll-mt-[280px]">
+        <section id="kpis" className="py-16 bg-white scroll-mt-[205px]">
         <div className="container mx-auto px-6">
           <div className="max-w-full mx-auto">
             <div className="text-center mb-12">
@@ -251,7 +251,7 @@ const InCabinTesting = () => {
       </section>
 
       {/* In-Cabin Products and Solutions */}
-      <section id="products" className="py-20 bg-gray-50 scroll-mt-[280px]">
+      <section id="products" className="py-20 bg-gray-50 scroll-mt-[205px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
