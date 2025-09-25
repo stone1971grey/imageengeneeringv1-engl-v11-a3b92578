@@ -10,7 +10,7 @@ const ManufacturerSupplierShowcase = () => {
     <section className="py-8 bg-gray-50">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
             camPAS Testing Workflow
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -30,7 +30,7 @@ const ManufacturerSupplierShowcase = () => {
             </div>
             
             {/* Title */}
-            <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
+            <h3 className="text-lg font-bold text-ie-dark-blue mb-4 leading-tight flex-1">
               Manufacturer
             </h3>
             
@@ -56,7 +56,7 @@ const ManufacturerSupplierShowcase = () => {
             </div>
             
             {/* Title */}
-            <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
+            <h3 className="text-lg font-bold text-ie-dark-blue mb-4 leading-tight flex-1">
               Tier 1/2 Supplier
             </h3>
             
@@ -82,7 +82,7 @@ const ManufacturerSupplierShowcase = () => {
             </div>
             
             {/* Title */}
-            <h3 className="text-lg font-bold text-gray-900 mb-4 leading-tight flex-1">
+            <h3 className="text-lg font-bold text-ie-dark-blue mb-4 leading-tight flex-1">
               Professional Training
             </h3>
             

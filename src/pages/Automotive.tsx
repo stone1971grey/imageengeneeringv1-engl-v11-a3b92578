@@ -142,7 +142,7 @@ const Automotive = () => {
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
                   Automotive
                   <br />
-                  <span className="font-medium text-soft-blue">Image Quality</span>
+                  <span className="font-medium text-ie-dark-blue">Image Quality</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
@@ -206,7 +206,7 @@ const Automotive = () => {
       <section id="applications" className="py-8 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
               Main Applications
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -230,7 +230,7 @@ const Automotive = () => {
                   </div>
                   
                    {/* Title */}
-                   <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight h-16 flex items-start">
+                   <h3 className="text-xl font-bold text-ie-dark-blue mb-4 leading-tight h-16 flex items-start">
                      {app.title}
                    </h3>
                    
@@ -258,7 +258,7 @@ const Automotive = () => {
       <section id="standards" className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
               Automotive International Standards
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -274,7 +274,7 @@ const Automotive = () => {
                 <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
                   <img src={ieeeLogo} alt="IEEE Logo" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">IEEE-P2020</h3>
+                <h3 className="text-xl font-bold text-ie-dark-blue mb-4">IEEE-P2020</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
                   The first internationally recognized standard examines the factors contributing to the image quality of Advanced Driver Assistance Systems (ADAS) and outlines various test methods and tools.
                 </p>
@@ -290,7 +290,7 @@ const Automotive = () => {
                 <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
                   <img src={emvaLogo} alt="EMVA Logo" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">EMVA 1288/ISO 24942</h3>
+                <h3 className="text-xl font-bold text-ie-dark-blue mb-4">EMVA 1288/ISO 24942</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
                   EMVA 1288/ISO 24942 (same standard metrics) outlines threshold specifications and measurement methods for machine vision cameras, many of which are commonly used in automotive vehicles.
                 </p>
@@ -306,7 +306,7 @@ const Automotive = () => {
                 <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
                   <img src={isoStandardsLogo} alt="ISO Standards Logo" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">ISO 19093</h3>
+                <h3 className="text-xl font-bold text-ie-dark-blue mb-4">ISO 19093</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
                   ISO 19093 outlines measurement methods and metric thresholds for evaluating the performance of a camera system under various low-light conditions.
                 </p>
@@ -323,7 +323,7 @@ const Automotive = () => {
       <section className="py-20 bg-gray-50">
         <div className="w-full px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
               Automotive Camera Test Solutions
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
@@ -345,7 +345,7 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">In-Cabin Testing</h3>
+                  <h3 className="text-2xl font-bold text-ie-dark-blue mb-4">In-Cabin Testing</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
                       In-Cabin systems are primarily tasked with observing the comfort and safety of the driver and passengers. These systems typically work with NIR (near-infrared) sensors combined with active illumination (e.g., LED or VCSEL) to ensure accuracy in very low-light conditions.
@@ -369,7 +369,7 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">ADAS Performance Testing</h3>
+                  <h3 className="text-2xl font-bold text-ie-dark-blue mb-4">ADAS Performance Testing</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
                       Advanced Driver Assistance Systems (ADAS) refer to the camera and sensor systems that assist drivers with various movement adjustments and safety warnings. These systems require a broad range of test methods and metrics to evaluate to ensure high performance and safety. Our test solutions closely follow the test method guidelines established in the IEEE-P2020 standard for ADAS image quality performance.
@@ -393,7 +393,7 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Geometric Calibration</h3>
+                  <h3 className="text-2xl font-bold text-ie-dark-blue mb-4">Geometric Calibration</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
                       Geometric calibration refers to the ability of a camera to detect and accurately map 3D objects in a moving scene. In automotive applications, distances to objects are calculated based on the measured geometrical characteristics of the camera or a stereo camera pair. Proper geometric calibration of automotive camera systems is essential to ensure high performance and safety.
@@ -417,7 +417,7 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Climate-Controlled Testing</h3>
+                  <h3 className="text-2xl font-bold text-ie-dark-blue mb-4">Climate-Controlled Testing</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
                       One of the fundamental requirements of ADAS applications is their ability to function properly in any weather scenario. If these systems fail to meet their minimum performance threshold requirements due to conditions like dense fog or pouring rain, safety could be compromised. Therefore, testing ADAS applications in changing weather environments is essential.
@@ -438,7 +438,7 @@ const Automotive = () => {
       <section id="products" className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
               Key Products
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -546,7 +546,7 @@ const Automotive = () => {
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Automotive Camera Test Services</h3>
+              <h3 className="text-xl font-semibold text-ie-dark-blue mb-3">Automotive Camera Test Services</h3>
               <p className="text-gray-600 leading-relaxed">
                 Welcome to our iQ-Lab, one of the world's largest independent camera test labs. We offer a wide range of tests for the automotive industry, including the camPAS (Camera Performance for Automotive Systems) test.
               </p>

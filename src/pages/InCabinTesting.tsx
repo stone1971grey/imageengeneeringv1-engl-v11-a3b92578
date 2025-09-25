@@ -120,12 +120,12 @@ const InCabinTesting = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-full mx-auto">
             <div className="bg-white rounded-lg p-8 shadow-sm mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">In-Cabin Overview</h2>
+              <h2 className="text-3xl font-bold text-ie-dark-blue mb-4">In-Cabin Overview</h2>
               <p className="text-lg text-gray-600 mb-6 font-medium">
                 An in-depth look at the emergence of in-cabin systems in the automotive industry.
               </p>
               
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">Overview</h3>
+              <h3 className="text-2xl font-semibold text-ie-dark-blue mb-4">Overview</h3>
               <p className="text-gray-700 mb-6 leading-relaxed">
                 As the automotive industry continues its path toward full automation, one area of focus has become the in-cabin monitoring systems, often referred to as driver and occupant monitoring systems (DMS/OMS). These systems use cameras and sensors to enhance the safety and comfort of drivers and passengers.
               </p>
@@ -138,7 +138,7 @@ const InCabinTesting = () => {
             </div>
 
             <div className="bg-white rounded-lg p-8 shadow-sm">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-4">What do In-Cabin systems monitor?</h3>
+              <h3 className="text-2xl font-semibold text-ie-dark-blue mb-4">What do In-Cabin systems monitor?</h3>
               <p className="text-gray-700 mb-6 leading-relaxed">
                 In-cabin systems monitor drivers' and passengers' behavior and facial cues by capturing videos and images. They mostly use near-infrared (NIR) sensors combined with active illumination (e.g., LED or VCSEL) to ensure accuracy in very low-light conditions. NIR sensors are preferred as they do not need to rely on a visible light source that would be noticeable to the driver and passengers. Captured results are then fed into embedded software to analyze the car's interior.
               </p>
@@ -173,7 +173,7 @@ const InCabinTesting = () => {
         <div className="container mx-auto px-6">
           <div className="max-w-full mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">In-Cabin KPIs</h2>
+              <h2 className="text-3xl font-bold text-ie-dark-blue mb-4">In-Cabin KPIs</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
                 The Key Performance Indicators that are crucial to understanding the performance of an in-cabin system
               </p>
@@ -186,7 +186,7 @@ const InCabinTesting = () => {
 
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Resolution (SFR)</h3>
+                  <h3 className="text-xl font-semibold text-ie-dark-blue mb-3">Resolution (SFR)</h3>
                   <p className="text-gray-700 leading-relaxed">
                     Camera resolution describes a camera's ability to reproduce a scene's fine details. One way to determine resolution performance is by measuring the spatial frequency response (SFR). These SFRs will produce a range of spatial frequencies on scale from 0% (a complete loss of scene information) to 100% (a perfect scene reproduction without data loss).
                   </p>
@@ -196,7 +196,7 @@ const InCabinTesting = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Distortion</h3>
+                  <h3 className="text-xl font-semibold text-ie-dark-blue mb-3">Distortion</h3>
                   <p className="text-gray-700 leading-relaxed">
                     Image distortion occurs when an image's straight lines appear to curve unnaturally. It is often the result of the lens's geometry. Distortion can be seen as a variation of the reproduction scale over the field. As a result, the same object is smaller in the image corner than in the image center. So, if the algorithm needs, e.g., 15 pixels per eye to work properly, this might work for the center but not for the corners.
                   </p>
@@ -206,7 +206,7 @@ const InCabinTesting = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Dynamic Range (OECF)</h3>
+                  <h3 className="text-xl font-semibold text-ie-dark-blue mb-3">Dynamic Range (OECF)</h3>
                   <p className="text-gray-700 leading-relaxed">
                     Dynamic range is the maximum contrast a digital camera system can capture from its maximum output level (saturation) down to an even signal-to-noise ratio. A camera system's dynamic range is determined by obtaining the OECF (opto-electronic conversion function), which describes how a camera converts varying light levels (optical input) into electronic signals (digital output).
                   </p>
@@ -216,7 +216,7 @@ const InCabinTesting = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Noise (SNR)</h3>
+                  <h3 className="text-xl font-semibold text-ie-dark-blue mb-3">Noise (SNR)</h3>
                   <p className="text-gray-700 leading-relaxed">
                     Noise describes the presence of artifacts in the image that do not originate from the original scene content. The noise level is determined using the signal-to-noise ratio, which plots the amount of noise compared to the desired signal. Using the SNR can help reduce the noise in low-light environments. However, noise mustn't be lowered to the point where the signal is no longer clear. Often, a little noise is necessary, especially in low-light environments.
                   </p>
@@ -226,7 +226,7 @@ const InCabinTesting = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Color Accuracy</h3>
+                  <h3 className="text-xl font-semibold text-ie-dark-blue mb-3">Color Accuracy</h3>
                   <p className="text-gray-700 leading-relaxed">
                     Color accuracy describes the camera's ability to separate and reproduce colors in a scene. To measure color performance, a camera system must be calibrated based on a particular color space, such as sRGB. Correcting white balance is also a crucial aspect of color accuracy.
                   </p>
@@ -236,7 +236,7 @@ const InCabinTesting = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Timing Accuracy</h3>
+                  <h3 className="text-xl font-semibold text-ie-dark-blue mb-3">Timing Accuracy</h3>
                   <p className="text-gray-700 leading-relaxed">
                     Camera systems rely heavily on timing parameters to capture real-time scenes, particularly moving scenes. Frame rate, shutter speed, and autofocus are vital timing parameters that should be tested to ensure the system is not misinterpreting a scene due to movement or motion blur.
                   </p>
@@ -254,7 +254,7 @@ const InCabinTesting = () => {
       <section id="products" className="py-20 bg-gray-50 scroll-mt-[205px]">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-ie-dark-blue mb-4">
               In-Cabin Products and Solutions
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -284,7 +284,7 @@ const InCabinTesting = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-ie-dark-blue">
                       LE7 VIS-IR
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
@@ -314,7 +314,7 @@ const InCabinTesting = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-ie-dark-blue">
                       iQ-Flatlight VIS-IR
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
@@ -342,7 +342,7 @@ const InCabinTesting = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-ie-dark-blue">
                       LED-Panel IR
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
@@ -370,7 +370,7 @@ const InCabinTesting = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-ie-dark-blue">
                       TE292 VIS-IR
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
@@ -400,7 +400,7 @@ const InCabinTesting = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-gray-900">
+                    <h3 className="text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] text-ie-dark-blue">
                       iQ-Analyzer-X
                     </h3>
                     <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">

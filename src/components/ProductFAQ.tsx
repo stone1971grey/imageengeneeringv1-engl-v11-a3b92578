@@ -67,7 +67,7 @@ const ProductFAQ: React.FC<ProductFAQProps> = ({
     <section className="py-16">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
+          <h2 className="text-3xl font-bold text-center mb-12 text-ie-dark-blue">
             {title}
           </h2>
           
@@ -78,7 +78,7 @@ const ProductFAQ: React.FC<ProductFAQProps> = ({
                 value={`item-${index}`}
                 className="bg-white rounded-lg border border-gray-200 shadow-sm"
               >
-                <AccordionTrigger className="px-6 py-4 text-left font-medium text-lg text-gray-900 hover:text-blue-600 transition-colors">
+                <AccordionTrigger className="px-6 py-4 text-left font-medium text-lg text-ie-dark-blue hover:text-blue-600 transition-colors">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-lg text-gray-600 leading-relaxed">

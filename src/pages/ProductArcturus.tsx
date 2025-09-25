@@ -164,13 +164,13 @@ const ProductArcturus = () => {
           {/* Main Benefits */}
           <div id="benefits" className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 scroll-mt-[205px]">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Key Benefits of Arcturus</h2>
+              <h2 className="text-3xl font-bold text-ie-dark-blue mb-12 text-center">Key Benefits of Arcturus</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Zap className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximum Illuminance</h3>
+                  <h3 className="text-xl font-bold text-ie-dark-blue mb-4">Maximum Illuminance</h3>
                   <p className="text-gray-600 leading-relaxed">
                     Up to 1 Mcd/m² - more than enough intensity to challenge even the most sensitive image sensors.
                   </p>
@@ -180,7 +180,7 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Shield className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flicker-Free</h3>
+                  <h3 className="text-xl font-bold text-ie-dark-blue mb-4">Flicker-Free</h3>
                   <p className="text-gray-600 leading-relaxed">
                     DC-powered LED technology ensures flicker-free operation for consistent, reliable test results.
                   </p>
@@ -190,7 +190,7 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Eye className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">High Stability</h3>
+                  <h3 className="text-xl font-bold text-ie-dark-blue mb-4">High Stability</h3>
                   <p className="text-gray-600 leading-relaxed">
                     Extremely high stability and consistency for reproducible test conditions and accurate measurements.
                   </p>
@@ -200,7 +200,7 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <BarChart3 className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">True HDR Scenes</h3>
+                  <h3 className="text-xl font-bold text-ie-dark-blue mb-4">True HDR Scenes</h3>
                   <p className="text-gray-600 leading-relaxed">
                     Create true HDR scenes in combination with other Vega devices for comprehensive test scenarios.
                   </p>
@@ -210,7 +210,7 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <ArrowLeft className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Wide Dynamic Range</h3>
+                  <h3 className="text-xl font-bold text-ie-dark-blue mb-4">Wide Dynamic Range</h3>
                   <p className="text-gray-600 leading-relaxed">
                     Change intensity across a wide dynamic range with constant spectral properties.
                   </p>
@@ -220,7 +220,7 @@ const ProductArcturus = () => {
                   <div className="w-16 h-16 bg-cyan-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Smartphone className="text-cyan-500" size={32} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flexible Control</h3>
+                  <h3 className="text-xl font-bold text-ie-dark-blue mb-4">Flexible Control</h3>
                   <p className="text-gray-600 leading-relaxed">
                     Control via UI software, API and Python scripts for Windows and Linux systems.
                   </p>
