@@ -16,7 +16,11 @@ interface SearchResult {
   excerpt?: string;
 }
 
-const IntelligentSearchBar = () => {
+interface SearchBarProps {
+  variant?: 'desktop' | 'mobile';
+}
+
+const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -223,7 +227,7 @@ const IntelligentSearchBar = () => {
   return (
     <div ref={searchRef} className="relative">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${variant === 'mobile' ? 'text-gray-500' : 'text-muted-foreground'}`} />
         <Input
           ref={inputRef}
           type="text"
@@ -231,7 +235,10 @@ const IntelligentSearchBar = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          className="pl-10 pr-10 w-36 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white focus:text-black focus:placeholder:text-muted-foreground"
+          className={variant === 'mobile' 
+            ? "pl-10 pr-10 w-full bg-gray-100 border-gray-300 text-black placeholder:text-gray-500 focus:bg-white focus:border-gray-400"
+            : "pl-10 pr-10 w-36 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white focus:text-black focus:placeholder:text-muted-foreground"
+          }
         />
         {query && (
           <Button

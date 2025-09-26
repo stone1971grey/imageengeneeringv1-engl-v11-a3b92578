@@ -974,7 +974,7 @@ const Navigation = () => {
                     <div className="flex items-center gap-4">
                       {/* Search Bar */}
                       <div className="flex-1">
-                        <IntelligentSearchBar />
+                        <IntelligentSearchBar variant="mobile" />
                       </div>
                       
                       {/* Language Selector */}
