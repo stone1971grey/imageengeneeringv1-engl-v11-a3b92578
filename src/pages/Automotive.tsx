@@ -120,12 +120,6 @@ const Automotive = () => {
     <div className="min-h-screen bg-white">
       {/* Navigation */}
       <Navigation />
-        <AnnouncementBanner 
-        message="[PLATZHALTER] Automotive & ADAS Vision Excellence"
-        ctaText="Learn More"
-        ctaLink="#"
-        icon="calendar"
-      />
 
       {/* Hero Section - starts immediately after navigation */}
       <section id="introduction" className="min-h-screen bg-scandi-white font-roboto">
@@ -142,7 +136,7 @@ const Automotive = () => {
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
                   Automotive
                   <br />
-                  <span className="font-medium text-soft-blue">Image Quality</span>
+                  <span className="font-medium text-light-foreground">Image Quality</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
