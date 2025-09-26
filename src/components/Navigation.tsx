@@ -34,6 +34,7 @@ const Navigation = () => {
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [hoveredSolution, setHoveredSolution] = useState<string | null>(null);
+  const [hoveredTestService, setHoveredTestService] = useState<string | null>(null);
 
   // Preload all images for faster hover experience
   useEffect(() => {
@@ -286,6 +287,74 @@ const Navigation = () => {
     }
   };
 
+  // Test Services data mapping
+  const testServicesData = {
+    "Overview": {
+      image: industryLabTesting,
+      description: "Comprehensive introduction to our testing laboratory capabilities and methodologies",
+      services: [
+        { name: "Learn about the Lab", link: "/inside-lab" },
+        { name: "Testing Consultation", link: "#" }
+      ]
+    },
+    "Automotive": {
+      image: industryAutomotive,
+      description: "Specialized testing services for automotive camera systems and ADAS applications",
+      services: [
+        { name: "camPAS", link: "#" },
+        { name: "In-Cabin Testing", link: "/in-cabin-testing" },
+        { name: "HDR Testing", link: "#" },
+        { name: "Geometric Calibration", link: "#" },
+        { name: "Baseline Evaluations", link: "#" }
+      ]
+    },
+    "VCX": {
+      image: industryMobile,
+      description: "VCX testing protocols for mobile devices and webcam applications",
+      services: [
+        { name: "VCX - PhoneCam", link: "#" },
+        { name: "VCX - WebCam", link: "#" },
+        { name: "Color Characterizations", link: "#" },
+        { name: "Baseline Evaluations", link: "#" }
+      ]
+    },
+    "Image Quality": {
+      image: industryPhotography,
+      description: "Comprehensive image quality analysis and measurement services",
+      services: [
+        { name: "Resolution & Texture Loss", link: "#" },
+        { name: "Dynamic Range (OECF)", link: "#" },
+        { name: "Lens Distortion", link: "#" },
+        { name: "Image Shading & Flare", link: "#" },
+        { name: "Color Accuracy", link: "#" }
+      ]
+    },
+    "Standardized": {
+      image: industryLabTesting,
+      description: "Testing services according to international standards and protocols",
+      services: [
+        { name: "IEEE-P2020 (ADAS)", link: "#" },
+        { name: "VCX (Mobile/Webcam)", link: "#" },
+        { name: "IEC 62676-5 (Security)", link: "#" },
+        { name: "EMVA 1288 (Machine Vision)", link: "#" },
+        { name: "ISO 12233 (SFR)", link: "#" }
+      ]
+    },
+    "Specialized/Custom": {
+      image: industryMedical,
+      description: "Custom testing solutions and specialized measurement services",
+      services: [
+        { name: "Baseline Evaluations", link: "#" },
+        { name: "Proof of Concepts", link: "#" },
+        { name: "Luminance Calibrations", link: "#" },
+        { name: "Sample-to-Sample Deviations", link: "#" },
+        { name: "Development Validation Tests", link: "#" },
+        { name: "Temperature-Controlled", link: "#" },
+        { name: "Underwater Tests", link: "#" }
+      ]
+    }
+  };
+
   return (
     <nav className="fixed top-8 left-4 right-4 z-40 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
@@ -520,49 +589,110 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger="Test Lab">
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
+                <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
+                     onMouseLeave={() => setHoveredTestService(null)}>
                   <div className="flex gap-6 p-6">
+                    {/* Left Column: Service Categories */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Technical Services</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Custom Solutions</a>
+                      <h4 className="font-semibold mb-3 text-lg text-black">Test Services</h4>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredTestService("Overview")}>
+                        <FlaskConical className="h-5 w-5" />
+                        <span>Overview</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Technical Support</a>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredTestService("Automotive")}>
+                        <Car className="h-5 w-5" />
+                        <span>Automotive</span>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Calibration Services</a>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredTestService("VCX")}>
+                        <Smartphone className="h-5 w-5" />
+                        <span>VCX</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredTestService("Image Quality")}>
+                        <Camera className="h-5 w-5" />
+                        <span>Image Quality</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredTestService("Standardized")}>
+                        <CheckCircle className="h-5 w-5" />
+                        <span>Standardized</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                        onMouseEnter={() => setHoveredTestService("Specialized/Custom")}>
+                        <Settings className="h-5 w-5" />
+                        <span>Specialized/Custom</span>
                       </div>
                     </div>
-
+                    
+                    {/* Right Column: Services */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Consulting</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Project Consulting</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Quality Assurance</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Implementation Support</a>
-                      </div>
+                      <h4 className="font-semibold mb-3 text-lg text-black">
+                        {hoveredTestService ? `${hoveredTestService} - Services` : "Services"}
+                      </h4>
+                      
+                      {/* Conditional Rendering of Services */}
+                      {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
+                        <div className="space-y-3">
+                          {testServicesData[hoveredTestService as keyof typeof testServicesData].services.map((service, index) => (
+                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
+                              <ChevronRight className="h-4 w-4" />
+                              {service.link === "#" ? (
+                                <span>{service.name}</span>
+                              ) : (
+                                <Link to={service.link}>{service.name}</Link>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Default state when no service category is hovered */}
+                      {!hoveredTestService && (
+                        <div className="text-gray-500 text-center py-8">
+                          <FlaskConical className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>Hover over a service category to see available tests</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
+                  {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <div className="flex items-center justify-center transition-colors cursor-pointer">
+                    <Link to="/inside-lab">
                       <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
                         <FlaskConical className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">Contact Our Lab Team</span>
+                        <span className="text-lg font-medium">Visit Our Testing Lab</span>
                       </Button>
-                    </div>
+                    </Link>
                   </div>
+                  
+                  {/* Image Rollover under Flyout */}
+                  {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
+                    <div className="bg-[#f3f3f3] p-4">
+                      <div className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-sm">
+                        <img 
+                          src={testServicesData[hoveredTestService as keyof typeof testServicesData].image} 
+                          alt={hoveredTestService} 
+                          className="w-[190px] h-[190px] object-cover rounded-lg" 
+                        />
+                        <div className="text-black">
+                          <h4 className="font-semibold text-xl mb-2">{hoveredTestService}</h4>
+                          <p className="text-lg text-gray-600 leading-relaxed">
+                            {testServicesData[hoveredTestService as keyof typeof testServicesData].description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </SimpleDropdown>
 
