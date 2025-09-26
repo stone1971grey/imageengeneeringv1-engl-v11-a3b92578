@@ -302,7 +302,7 @@ const Navigation = () => {
       description: "Specialized testing services for automotive camera systems and ADAS applications",
       services: [
         { name: "camPAS", link: "#" },
-        { name: "In-Cabin Testing", link: "/in-cabin-testing" },
+        { name: "In-Cabin Testing", link: "/in-cabin-testing", active: true },
         { name: "HDR Testing", link: "#" },
         { name: "Geometric Calibration", link: "#" },
         { name: "Baseline Evaluations", link: "#" }
@@ -643,12 +643,15 @@ const Navigation = () => {
                       {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
                         <div className="space-y-3">
                           {testServicesData[hoveredTestService as keyof typeof testServicesData].services.map((service, index) => (
-                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
+                            <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409] ${(service as any).active ? 'bg-green-100 p-2 rounded-md border-2 border-green-300' : ''}`}>
                               <ChevronRight className="h-4 w-4" />
                               {service.link === "#" ? (
                                 <span>{service.name}</span>
                               ) : (
                                 <Link to={service.link}>{service.name}</Link>
+                              )}
+                              {(service as any).active && (
+                                <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
                               )}
                             </div>
                           ))}
