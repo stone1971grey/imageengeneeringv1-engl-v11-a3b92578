@@ -74,15 +74,15 @@ const InCabinTesting = () => {
                   </p>
                 </div>
                 
-                <div className="pt-4">
-                  <Button 
-                    size="lg"
-                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#74952a' }}
-                  >
-                     Find Your Solution
-                  </Button>
-                </div>
+                 <div className="pt-4">
+                   <Button 
+                     size="lg"
+                     className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                     style={{ backgroundColor: '#103e7c' }}
+                   >
+                      Find Your Solution
+                   </Button>
+                 </div>
               </div>
 
               {/* Right Product Image - 3/5 */}
