@@ -1,4 +1,4 @@
-import Navigation from "@/components/Navigation";
+import NavigationMinimal from "@/components/NavigationBackup";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Hero from "@/components/Hero";
 import Industries from "@/components/Industries";
@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
+      <NavigationMinimal />
       <AnnouncementBanner 
         message="Visit us at IBC 2025"
         ctaText="Learn more"
