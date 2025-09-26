@@ -362,7 +362,7 @@ const Navigation = () => {
         {/* Single row - main nav left, utility right */}
         <div className="flex items-center justify-between w-full">
           {/* Main Navigation - moved to left */}
-          <div className="hidden xl:flex items-center gap-6 ml-[300px]">
+          <div className="hidden 2xl:flex items-center gap-6 ml-[300px]">
             <SimpleDropdown trigger="Your Solution">
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredIndustry(null)}>
@@ -839,12 +839,12 @@ const Navigation = () => {
           </div>
           
           {/* Utility Navigation - positioned at far right */}
-          <div className="hidden xl:flex ml-auto">
+          <div className="hidden 2xl:flex ml-auto">
             <UtilityNavigation />
           </div>
 
           {/* Mobile menu button - always on the right */}
-          <div className="xl:hidden ml-auto">
+          <div className="2xl:hidden ml-auto">
             <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X size={20} /> : <Menu size={20} />}
             </Button>
@@ -852,7 +852,7 @@ const Navigation = () => {
         </div>
 
         {/* Mobile Navigation - Drawer with Accordions */}
-        <div className="xl:hidden">
+        <div className="2xl:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetContent side="right" className="w-full sm:max-w-sm p-0">
               <div className="h-full overflow-y-auto">
