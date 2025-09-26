@@ -844,15 +844,15 @@ const Navigation = () => {
           </div>
 
           {/* Mobile menu button - always on the right */}
-          <div className="2xl:hidden ml-auto">
+          <div className="2xl:hidden ml-auto relative z-50">
             <button 
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center justify-center w-10 h-10 bg-[#d9c409] text-black rounded-md hover:bg-[#c5b008] transition-colors shadow-lg"
             >
               {isOpen ? (
-                <X size={20} className="stroke-2" />
+                <X size={22} className="stroke-[3]" />
               ) : (
-                <Menu size={20} className="stroke-2" />
+                <Menu size={22} className="stroke-[3]" />
               )}
             </button>
           </div>
@@ -862,9 +862,9 @@ const Navigation = () => {
         <div className="2xl:hidden relative">
           {isOpen && (
             <>
-              {/* Backdrop */}
+              {/* Backdrop - but exclude the button area */}
               <div 
-                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                className="fixed inset-0 bg-black/20 z-40"
                 onClick={() => setIsOpen(false)}
               />
               
