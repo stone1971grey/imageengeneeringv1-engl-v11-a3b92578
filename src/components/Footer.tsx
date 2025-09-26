@@ -219,7 +219,11 @@ const Footer = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <a href="#" className="text-white hover:text-white transition-colors">
-                Legal Notice
+                Terms & Conditions
+              </a>
+              <span className="text-white">•</span>
+              <a href="#" className="text-white hover:text-white transition-colors">
+                Imprint
               </a>
               <span className="text-white">•</span>
               <a href="#" className="text-white hover:text-white transition-colors">
@@ -227,11 +231,19 @@ const Footer = () => {
               </a>
               <span className="text-white">•</span>
               <a href="#" className="text-white hover:text-white transition-colors">
-                Terms & Conditions
+                Material Compliance Directive
               </a>
               <span className="text-white">•</span>
               <a href="#" className="text-white hover:text-white transition-colors">
-                Recycling & Disposal
+                Carbon Neutrality
+              </a>
+              <span className="text-white">•</span>
+              <a href="#" className="text-white hover:text-white transition-colors">
+                ESG - Sustainability
+              </a>
+              <span className="text-white">•</span>
+              <a href="#" className="text-white hover:text-white transition-colors">
+                Disposal & Recycling
               </a>
             </div>
           </div>
