@@ -863,20 +863,6 @@ const Navigation = () => {
               
               {/* Mobile Menu */}
               <div className="absolute top-full right-0 w-[760px] max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-2">
-                {/* Header with logo and close button */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                  <Link to="/" onClick={() => setIsOpen(false)}>
-                    <img 
-                      src={logoIE} 
-                      alt="Image Engineering" 
-                      className="h-8 w-auto brightness-0"
-                    />
-                  </Link>
-                  <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
-                    <X size={24} />
-                  </Button>
-                </div>
-
                 {/* Navigation content */}
                 <nav className="px-6 py-4">
                   <Accordion type="single" collapsible className="space-y-0">
