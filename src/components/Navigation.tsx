@@ -38,6 +38,20 @@ const Navigation = () => {
   const [hoveredSolution, setHoveredSolution] = useState<string | null>(null);
   const [hoveredTestService, setHoveredTestService] = useState<string | null>(null);
 
+  // Prevent background scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   // Preload all images for faster hover experience
   useEffect(() => {
     const preloadImages = () => {
