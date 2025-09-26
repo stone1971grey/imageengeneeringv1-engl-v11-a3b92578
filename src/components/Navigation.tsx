@@ -851,380 +851,129 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation - Drawer with Accordions */}
+        {/* Mobile Navigation - Sheet with simple accordion structure */}
         <div className="2xl:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetContent side="right" className="w-full sm:max-w-sm p-0">
+            <SheetContent side="right" className="w-full sm:max-w-md p-0 bg-white">
               <div className="h-full overflow-y-auto">
-                <nav className="px-4 pt-6 pb-28">
+                {/* Header with logo and close button */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                  <Link to="/" onClick={() => setIsOpen(false)}>
+                    <img 
+                      src={logoIE} 
+                      alt="Image Engineering" 
+                      className="h-8 w-auto brightness-0"
+                    />
+                  </Link>
+                  <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                    <X size={24} />
+                  </Button>
+                </div>
+
+                {/* Navigation content */}
+                <nav className="px-6 py-4">
                   <Accordion type="single" collapsible className="space-y-0">
                     
-                    {/* Find Your Solution */}
-                    <AccordionItem value="solutions">
-                      <AccordionTrigger className="px-4 py-3 text-base">
-                        <div className="flex items-center gap-3">
-                          <Search className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Find Your Solution</span>
-                        </div>
+                    {/* Your Solution */}
+                    <AccordionItem value="solutions" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
+                        Your Solution
                       </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-4 pt-2">
-                          
-                          {/* Industries */}
-                          <div>
-                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Industries</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Camera className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Photography</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Smartphone className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Mobile Phones</span>
-                                </div>
-                              </li>
-                              <li>
-                                <Link to="/automotive" className="min-h-12 px-4 flex items-center gap-3 py-3 bg-green-100 rounded-md border-2 border-green-300">
-                                  <Car className="w-5 h-5 shrink-0 text-green-600" />
-                                  <span className="text-green-800">Automotive & ADAS</span>
-                                  <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                                </Link>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Tv className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Broadcast & HDTV</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Shield className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Security / Surveillance</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Cog className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Machine Vision</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Stethoscope className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Medical / Endoscopy</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <ScanLine className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Scanning & Archiving</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <FlaskConical className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">iQ‑Lab Testing</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                          
-                          <Separator />
-                          
-                          {/* Popular Applications */}
-                          <div>
-                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Popular Applications</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Camera Quality Validation</span>
-                                </div>
-                              </li>
-                              <li>
-                                <Link to="/in-cabin-testing" className="min-h-12 px-4 flex items-center gap-3 py-3 bg-green-100 rounded-md border-2 border-green-300">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-green-600" />
-                                  <span className="text-green-800">In-Cabin Performance Testing</span>
-                                  <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                                </Link>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Test Environments for Smartphones & Displays</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Microscopy & Medical Imaging</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">ISO and IEEE Compliant Test Setups</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                          
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
-                            <Search className="h-5 w-5 mr-3" />
-                            Find Your Perfect Solution
-                          </Button>
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-3">
+                          <Link to="/automotive" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
+                            Automotive Testing
+                          </Link>
+                          <Link to="/in-cabin-testing" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
+                            In-Cabin Testing
+                          </Link>
+                          <div className="block py-2 text-gray-700">Machine Vision</div>
+                          <div className="block py-2 text-gray-700">Mobile & Webcam</div>
+                          <div className="block py-2 text-gray-700">Medical Imaging</div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
 
                     {/* Products */}
-                    <AccordionItem value="products">
-                      <AccordionTrigger className="px-4 py-3 text-base">
-                        <div className="flex items-center gap-3">
-                          <Package className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Products</span>
-                        </div>
+                    <AccordionItem value="products" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
+                        Products
                       </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-4 pt-2">
-                          <div>
-                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Product Categories</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                 <Link to="/products/charts" className="min-h-12 px-4 flex items-center gap-3 py-3 bg-green-100 rounded-md border-2 border-green-300">
-                                   <CustomTargetIcon className="w-5 h-5 shrink-0 text-green-600" />
-                                   <span className="text-green-800">Test Charts</span>
-                                   <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                                 </Link>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Lightbulb className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Illumination Devices</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Monitor className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Measurement Devices</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Cpu className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Software</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <Package className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Accessories</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Services</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                          
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
-                            <FlaskConical className="h-5 w-5 mr-3" />
-                            Contact Our Lab Team
-                          </Button>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    {/* Training & Events */}
-                    <AccordionItem value="training">
-                      <AccordionTrigger className="px-4 py-3 text-base">
-                        <div className="flex items-center gap-3">
-                          <GraduationCap className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Training & Events</span>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-4 pt-2">
-                          <div>
-                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Training & Education</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Professional Training</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Webinars & Workshops</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Certification Programs</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                          
-                          <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300 block">
-                            <Button className="w-full h-12 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825] flex items-center justify-center">
-                              <GraduationCap className="h-5 w-5 mr-3" />
-                              <span>View Training & Events</span>
-                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
-                            </Button>
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-3">
+                          <Link to="/charts" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
+                            Test Charts
                           </Link>
+                          <div className="block py-2 text-gray-700">Illumination Devices</div>
+                          <div className="block py-2 text-gray-700">Measurement Devices</div>
+                          <div className="block py-2 text-gray-700">Software & APIs</div>
+                          <div className="block py-2 text-gray-700">Accessories</div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Image Quality */}
-                    <AccordionItem value="image-quality">
-                      <AccordionTrigger className="px-4 py-3 text-base">
-                        <div className="flex items-center gap-3">
-                          <Target className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Image Quality</span>
-                        </div>
+                    {/* Test Services */}
+                    <AccordionItem value="test-services" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
+                        Test Services
                       </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-4 pt-2">
-                          <div>
-                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Testing Services</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Professional Testing Services</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Custom Calibration</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Consulting & Analysis</span>
-                                </div>
-                              </li>
-                            </ul>
-                          </div>
-                          
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
-                            <Target className="h-5 w-5 mr-3" />
-                            Get Testing Quote
-                          </Button>
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-3">
+                          <Link to="/inside-lab" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
+                            Our Lab
+                          </Link>
+                          <div className="block py-2 text-gray-700">Automotive Testing</div>
+                          <div className="block py-2 text-gray-700">VCX Testing</div>
+                          <div className="block py-2 text-gray-700">Image Quality Analysis</div>
+                          <div className="block py-2 text-gray-700">Custom Testing</div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Company */}
-                    <AccordionItem value="company">
-                      <AccordionTrigger className="px-4 py-3 text-base">
-                        <div className="flex items-center gap-3">
-                          <Building2 className="w-5 h-5 shrink-0 text-muted-foreground" />
-                          <span className="text-foreground">Company</span>
-                        </div>
+                    {/* Resources */}
+                    <AccordionItem value="resources" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
+                        Resources
                       </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="space-y-4 pt-2">
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-4">
                           <div>
-                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">About Us</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Our Story</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Team & Expertise</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Quality & Standards</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Subsidiaries/Resellers</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Nynomic Group</span>
-                                </div>
-                              </li>
-                              <li>
-                                <Link to="/news" className="min-h-12 px-4 flex items-center gap-3 py-3 hover:bg-gray-100 transition-colors">
-                                  <FileText className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">News</span>
-                                </Link>
-                              </li>
-                            </ul>
+                            <div className="font-medium text-gray-900 py-2">Downloads</div>
+                            <p className="text-sm text-gray-600 mb-3">Access technical documents, datasheets and software downloads.</p>
                           </div>
-                          
-                          <Separator />
-                          
                           <div>
-                            <h4 className="font-medium mb-2 px-4 text-sm text-muted-foreground">Business & Partnerships</h4>
-                            <ul className="space-y-1">
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Careers</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Partnerships</span>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="min-h-12 px-4 flex items-center gap-3 py-3">
-                                  <CustomTargetIcon className="w-5 h-5 shrink-0 text-muted-foreground" />
-                                  <span className="text-foreground">Sustainability</span>
-                                </div>
-                              </li>
-                            </ul>
+                            <Link to="/news" className="font-medium text-gray-900 py-2 block hover:text-gray-700" onClick={() => setIsOpen(false)}>
+                              News & Updates
+                            </Link>
+                            <p className="text-sm text-gray-600 mb-3">Stay informed about latest developments in image quality testing.</p>
                           </div>
-                          
-                          <Button className="w-full h-12 mt-4 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
-                            <Building2 className="h-5 w-5 mr-3" />
-                            Learn More About Us
-                          </Button>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
+
+                    {/* Training & Events - Simple item without accordion */}
+                    <div className="border-none">
+                      <Link to="/events" className="flex items-center justify-between px-0 py-4 text-lg font-medium text-gray-900 hover:text-gray-700" onClick={() => setIsOpen(false)}>
+                        Training & Events
+                      </Link>
+                    </div>
+
+                    {/* About */}
+                    <div className="border-none">
+                      <div className="px-0 py-4 text-lg font-medium text-gray-900">
+                        About
+                      </div>
+                    </div>
 
                   </Accordion>
-                </nav>
 
-                {/* Sticky Contact Button */}
-                <div className="sticky bottom-0 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 pb-[env(safe-area-inset-bottom)] pt-3 border-t">
-                  <Link to="/contact">
-                    <Button className="w-full h-12 rounded-lg bg-[#d9c409] text-black hover:bg-[#e5d825]">
-                      Contact
+                  {/* Contact Button */}
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <Button className="w-full h-12 bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                      Contact Us
                     </Button>
-                  </Link>
-                </div>
+                  </div>
+                </nav>
               </div>
             </SheetContent>
           </Sheet>
