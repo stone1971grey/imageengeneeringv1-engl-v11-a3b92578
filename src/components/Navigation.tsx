@@ -884,39 +884,177 @@ const Navigation = () => {
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-1">
                           <div className="font-medium text-gray-900 mb-2">Industries</div>
-                          <Link to="/automotive" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 bg-green-100 px-2 rounded-md" onClick={() => setIsOpen(false)}>
-                            <Car className="h-4 w-4" />
-                            <span>Automotive</span>
-                            <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
-                          </Link>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Shield className="h-4 w-4" />
-                            <span>Security & Surveillance</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Smartphone className="h-4 w-4" />
-                            <span>Mobile Phone</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Camera className="h-4 w-4" />
-                            <span>Web Camera</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Cog className="h-4 w-4" />
-                            <span>Machine Vision</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Stethoscope className="h-4 w-4" />
-                            <span>Medical & Endoscopy</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <ScanLine className="h-4 w-4" />
-                            <span>Scanners & Archiving</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Camera className="h-4 w-4" />
-                            <span>Photo & Video</span>
-                          </div>
+                          
+                          {/* Automotive with sub-applications */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="automotive" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-green-100 rounded-md">
+                                <div className="flex items-center gap-3">
+                                  <Car className="h-4 w-4" />
+                                  <span>Automotive</span>
+                                  <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <Link to="/automotive" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                    Advanced Driver Assistance Systems (ADAS)
+                                  </Link>
+                                  <Link to="/in-cabin-testing" className="block py-1 text-sm text-gray-600 hover:text-gray-800 bg-green-50 px-2 rounded" onClick={() => setIsOpen(false)}>
+                                    In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded">ACTIVE</span>
+                                  </Link>
+                                  <div className="block py-1 text-sm text-gray-600">IEEE-P2020 Testing</div>
+                                  <div className="block py-1 text-sm text-gray-600">High Dynamic Range (HDR)</div>
+                                  <div className="block py-1 text-sm text-gray-600">Near-Infrared (NIR)</div>
+                                  <div className="block py-1 text-sm text-gray-600">Geometric Calibration</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Security & Surveillance */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="security" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Shield className="h-4 w-4" />
+                                  <span>Security & Surveillance</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">IEC 62676-5 Testing</div>
+                                  <div className="block py-1 text-sm text-gray-600">Low-light (ISO 19093)</div>
+                                  <div className="block py-1 text-sm text-gray-600">High Dynamic Range (HDR)</div>
+                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivities</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Mobile Phone */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="mobile" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Smartphone className="h-4 w-4" />
+                                  <span>Mobile Phone</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">VCX PhoneCam</div>
+                                  <div className="block py-1 text-sm text-gray-600">Color Calibration</div>
+                                  <div className="block py-1 text-sm text-gray-600">Camera Stabilization</div>
+                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-1 text-sm text-gray-600">Timing Measurements</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Web Camera */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="webcam" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Camera className="h-4 w-4" />
+                                  <span>Web Camera</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">VCX WebCam</div>
+                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-1 text-sm text-gray-600">Color Calibration</div>
+                                  <div className="block py-1 text-sm text-gray-600">Timing Measurements</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Machine Vision */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="machine-vision" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Cog className="h-4 w-4" />
+                                  <span>Machine Vision</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">EMVA 1288 (ISO 24942)</div>
+                                  <div className="block py-1 text-sm text-gray-600">Production Line Calibration</div>
+                                  <div className="block py-1 text-sm text-gray-600">Lens Distortion</div>
+                                  <div className="block py-1 text-sm text-gray-600">Signal-to-Noise Ratio (SNR)</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Medical & Endoscopy */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="medical" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Stethoscope className="h-4 w-4" />
+                                  <span>Medical & Endoscopy</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">Color Calibration</div>
+                                  <div className="block py-1 text-sm text-gray-600">Low-Light Testing</div>
+                                  <div className="block py-1 text-sm text-gray-600">Optical Distortion</div>
+                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-1 text-sm text-gray-600">Endoscopic Illumination</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Scanners & Archiving */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="scanning" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <ScanLine className="h-4 w-4" />
+                                  <span>Scanners & Archiving</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">ISO 21550</div>
+                                  <div className="block py-1 text-sm text-gray-600">Universal Test Target</div>
+                                  <div className="block py-1 text-sm text-gray-600">Multispectral Illumination</div>
+                                  <div className="block py-1 text-sm text-gray-600">Scanner Dynamic Range</div>
+                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivities</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Photo & Video */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="photo-video" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Camera className="h-4 w-4" />
+                                  <span>Photo & Video</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">Broadcast & HDTV</div>
+                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivities</div>
+                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-1 text-sm text-gray-600">iQ-LED Illumination</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -929,27 +1067,120 @@ const Navigation = () => {
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-1">
                           <div className="font-medium text-gray-900 mb-2">Product Groups</div>
-                          <Link to="/charts" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 bg-green-100 px-2 rounded-md" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Test Charts</span>
-                            <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
-                          </Link>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Illumination Devices</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Measurement Devices</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Software & APIs</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Product Accessories</span>
-                          </div>
+                          
+                          {/* Test Charts with subgroups */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="test-charts" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-green-100 rounded-md">
+                                <div className="flex items-center gap-3">
+                                  <CustomTargetIcon className="h-4 w-4" />
+                                  <span>Test Charts</span>
+                                  <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">iQ-Analyzer-X</div>
+                                  <div className="block py-1 text-sm text-gray-600">Multipurpose</div>
+                                  <div className="block py-1 text-sm text-gray-600">Image Quality Factor</div>
+                                  <div className="block py-1 text-sm text-gray-600">Infrared (VIS-IR)</div>
+                                  <Link to="/charts" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                    Reflective
+                                  </Link>
+                                  <div className="block py-1 text-sm text-gray-600">Transparent</div>
+                                  <Link to="/charts" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                    See All Charts
+                                  </Link>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Illumination Devices */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="illumination" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <CustomTargetIcon className="h-4 w-4" />
+                                  <span>Illumination Devices</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">iQ-LED</div>
+                                  <div className="block py-1 text-sm text-gray-600">IEEE-P2020</div>
+                                  <div className="block py-1 text-sm text-gray-600">Production Line Calibration</div>
+                                  <div className="block py-1 text-sm text-gray-600">Flicker (PWM/MMP)</div>
+                                  <div className="block py-1 text-sm text-gray-600">Test Chart Illumination</div>
+                                  <div className="block py-1 text-sm text-gray-600">All Light Sources</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Measurement Devices */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="measurement" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <CustomTargetIcon className="h-4 w-4" />
+                                  <span>Measurement Devices</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">Geometric Calibration</div>
+                                  <div className="block py-1 text-sm text-gray-600">Timing Performance</div>
+                                  <div className="block py-1 text-sm text-gray-600">Climate-Controlled</div>
+                                  <div className="block py-1 text-sm text-gray-600">Machine Vision</div>
+                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivity</div>
+                                  <div className="block py-1 text-sm text-gray-600">All Measurement Devices</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Software & APIs */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="software" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <CustomTargetIcon className="h-4 w-4" />
+                                  <span>Software & APIs</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">iQ-Analyzer-X</div>
+                                  <div className="block py-1 text-sm text-gray-600">Control APIs</div>
+                                  <div className="block py-1 text-sm text-gray-600">iQ-Luminance</div>
+                                  <div className="block py-1 text-sm text-gray-600">All Software & APIs</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Product Accessories */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="accessories" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <CustomTargetIcon className="h-4 w-4" />
+                                  <span>Product Accessories</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">Storage & Transport</div>
+                                  <div className="block py-1 text-sm text-gray-600">Luxmeters</div>
+                                  <div className="block py-1 text-sm text-gray-600">Camera Alignment</div>
+                                  <div className="block py-1 text-sm text-gray-600">Test Chart Mounts</div>
+                                  <div className="block py-1 text-sm text-gray-600">VCX & Webcam</div>
+                                  <div className="block py-1 text-sm text-gray-600">All Accessories</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200">
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
@@ -970,30 +1201,134 @@ const Navigation = () => {
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-1">
                           <div className="font-medium text-gray-900 mb-2">Test Services</div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <FlaskConical className="h-4 w-4" />
-                            <span>Overview</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Car className="h-4 w-4" />
-                            <span>Automotive</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Smartphone className="h-4 w-4" />
-                            <span>VCX</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Camera className="h-4 w-4" />
-                            <span>Image Quality</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <CheckCircle className="h-4 w-4" />
-                            <span>Standardized</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
-                            <Settings className="h-4 w-4" />
-                            <span>Specialized/Custom</span>
-                          </div>
+                          
+                          {/* Overview */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="overview" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <FlaskConical className="h-4 w-4" />
+                                  <span>Overview</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <Link to="/inside-lab" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                    Learn about the Lab
+                                  </Link>
+                                  <div className="block py-1 text-sm text-gray-600">Testing Consultation</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Automotive */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="auto-test" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Car className="h-4 w-4" />
+                                  <span>Automotive</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">camPAS</div>
+                                  <Link to="/in-cabin-testing" className="block py-1 text-sm text-gray-600 hover:text-gray-800 bg-green-50 px-2 rounded" onClick={() => setIsOpen(false)}>
+                                    In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded">ACTIVE</span>
+                                  </Link>
+                                  <div className="block py-1 text-sm text-gray-600">HDR Testing</div>
+                                  <div className="block py-1 text-sm text-gray-600">Geometric Calibration</div>
+                                  <div className="block py-1 text-sm text-gray-600">Baseline Evaluations</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* VCX */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="vcx-test" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Smartphone className="h-4 w-4" />
+                                  <span>VCX</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">VCX - PhoneCam</div>
+                                  <div className="block py-1 text-sm text-gray-600">VCX - WebCam</div>
+                                  <div className="block py-1 text-sm text-gray-600">Color Characterizations</div>
+                                  <div className="block py-1 text-sm text-gray-600">Baseline Evaluations</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Image Quality */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="iq-test" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Camera className="h-4 w-4" />
+                                  <span>Image Quality</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">Resolution & Texture Loss</div>
+                                  <div className="block py-1 text-sm text-gray-600">Dynamic Range (OECF)</div>
+                                  <div className="block py-1 text-sm text-gray-600">Lens Distortion</div>
+                                  <div className="block py-1 text-sm text-gray-600">Image Shading & Flare</div>
+                                  <div className="block py-1 text-sm text-gray-600">Color Accuracy</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Standardized */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="standardized" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <CheckCircle className="h-4 w-4" />
+                                  <span>Standardized</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">IEEE-P2020 (ADAS)</div>
+                                  <div className="block py-1 text-sm text-gray-600">VCX (Mobile/Webcam)</div>
+                                  <div className="block py-1 text-sm text-gray-600">IEC 62676-5 (Security)</div>
+                                  <div className="block py-1 text-sm text-gray-600">EMVA 1288 (Machine Vision)</div>
+                                  <div className="block py-1 text-sm text-gray-600">ISO 12233 (SFR)</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                          
+                          {/* Specialized/Custom */}
+                          <Accordion type="single" collapsible className="ml-2">
+                            <AccordionItem value="custom" className="border-none">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline">
+                                <div className="flex items-center gap-3">
+                                  <Settings className="h-4 w-4" />
+                                  <span>Specialized/Custom</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2">
+                                <div className="space-y-2">
+                                  <div className="block py-1 text-sm text-gray-600">Baseline Evaluations</div>
+                                  <div className="block py-1 text-sm text-gray-600">Proof of Concepts</div>
+                                  <div className="block py-1 text-sm text-gray-600">Luminance Calibrations</div>
+                                  <div className="block py-1 text-sm text-gray-600">Sample-to-Sample Deviations</div>
+                                  <div className="block py-1 text-sm text-gray-600">Development Validation Tests</div>
+                                  <div className="block py-1 text-sm text-gray-600">Temperature-Controlled</div>
+                                  <div className="block py-1 text-sm text-gray-600">Underwater Tests</div>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200">
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
