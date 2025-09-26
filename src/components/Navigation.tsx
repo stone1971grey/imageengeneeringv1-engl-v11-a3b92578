@@ -845,8 +845,13 @@ const Navigation = () => {
 
           {/* Mobile menu button - always on the right */}
           <div className="2xl:hidden ml-auto">
-            <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
-              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-white hover:text-[#d9c409] hover:bg-white/10 p-2"
+            >
+              {isOpen ? <X size={28} className="stroke-2" /> : <Menu size={28} className="stroke-2" />}
             </Button>
           </div>
         </div>
