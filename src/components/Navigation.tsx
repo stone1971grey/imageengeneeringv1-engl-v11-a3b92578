@@ -845,14 +845,16 @@ const Navigation = () => {
 
           {/* Mobile menu button - always on the right */}
           <div className="2xl:hidden ml-auto">
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <button 
               onClick={() => setIsOpen(!isOpen)}
-              className="text-white border-white/30 hover:text-[#d9c409] hover:bg-white/20 hover:border-[#d9c409] p-3 bg-white/10"
+              className="flex items-center justify-center w-10 h-10 bg-[#d9c409] text-black rounded-md hover:bg-[#c5b008] transition-colors shadow-lg"
             >
-              {isOpen ? <X size={24} className="stroke-2" /> : <Menu size={24} className="stroke-2" />}
-            </Button>
+              {isOpen ? (
+                <X size={20} className="stroke-2" />
+              ) : (
+                <Menu size={20} className="stroke-2" />
+              )}
+            </button>
           </div>
         </div>
 
