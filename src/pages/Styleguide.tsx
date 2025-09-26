@@ -935,16 +935,16 @@ const Styleguide = () => {
                              <span style={{ fontSize: '24px', fontWeight: 300, color: '#ffffff' }}>Test Charts</span>
                            </td>
                          </tr>
-                         <tr>
-                           <td className="border border-gray-300 px-4 py-3">H1 Headlines (light BG)</td>
-                           <td className="border border-gray-300 px-4 py-3">Roboto Light</td>
-                           <td className="border border-gray-300 px-4 py-3">300</td>
-                           <td className="border border-gray-300 px-4 py-3">60px / 72px / 96px</td>
-                           <td className="border border-gray-300 px-4 py-3">#222222</td>
-                           <td className="border border-gray-300 px-4 py-3">
-                             <span style={{ fontSize: '24px', fontWeight: 300, color: '#222222' }}>Test Charts</span>
-                           </td>
-                         </tr>
+                          <tr>
+                            <td className="border border-gray-300 px-4 py-3">H1 Headlines (light BG)</td>
+                            <td className="border border-gray-300 px-4 py-3">Roboto Light</td>
+                            <td className="border border-gray-300 px-4 py-3">300</td>
+                            <td className="border border-gray-300 px-4 py-3">60px / 72px / 96px</td>
+                            <td className="border border-gray-300 px-4 py-3">#4a453f <br /><small className="text-xs text-gray-500">text-light-foreground</small></td>
+                            <td className="border border-gray-300 px-4 py-3">
+                              <span style={{ fontSize: '24px', fontWeight: 300, color: '#4a453f' }}>Test Charts</span>
+                            </td>
+                          </tr>
                         <tr>
                           <td className="border border-gray-300 px-4 py-3">H2 Headlines</td>
                           <td className="border border-gray-300 px-4 py-3">Roboto Bold</td>
