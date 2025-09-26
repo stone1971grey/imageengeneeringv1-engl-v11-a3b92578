@@ -149,11 +149,11 @@ const ProductLE7 = () => {
               {/* Left Content */}
               <div className="space-y-8">
                 <div>
-                        <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
+                        <h1 className="text-6xl lg:text-7xl xl:text-8xl font-bold text-light-foreground leading-[0.9] tracking-tight mb-6">
                           LE7
                         </h1>
                         
-                        <h2 className="text-2xl lg:text-3xl font-light text-accent-soft-blue mb-6">
+                        <h2 className="text-2xl lg:text-3xl font-light text-light-foreground mb-6">
                           LE7-2x / LE7-4x / LE7-6x / LE7 VIS-IR / LE7-E
                         </h2>
                         
@@ -165,7 +165,8 @@ const ProductLE7 = () => {
                 <div className="pt-4">
                   <Button 
                     size="lg"
-                    className="bg-[#74952a] hover:bg-[#5f7a22] text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    style={{ backgroundColor: '#103e7c' }}
                     onClick={() => {
                       const footer = document.querySelector('footer');
                       if (footer) {
