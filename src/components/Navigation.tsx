@@ -10,6 +10,8 @@ import { SimpleDropdown } from "./SimpleNavigation";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import IntelligentSearchBar from "@/components/IntelligentSearchBar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Import industry images
 import industryPhotography from "@/assets/industry-photography.jpg";
@@ -967,11 +969,45 @@ const Navigation = () => {
 
                   </Accordion>
 
-                  {/* Contact Button */}
+                  {/* Contact Button with Search and Language Picker */}
                   <div className="mt-8 pt-6 border-t border-gray-200">
-                    <Button className="w-full h-12 bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
-                      Contact Us
-                    </Button>
+                    {/* Search and Language Picker row */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="flex-1">
+                        <IntelligentSearchBar />
+                      </div>
+                      
+                      {/* Language Selector */}
+                      <Select value="en" onValueChange={() => {}}>
+                        <SelectTrigger className="w-[70px] bg-gray-100 border-gray-300 text-black hover:bg-gray-200 transition-colors">
+                          <SelectValue placeholder="EN" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                          <SelectItem value="en" className="hover:bg-gray-100 cursor-pointer text-black">
+                            🇺🇸 EN
+                          </SelectItem>
+                          <SelectItem value="de" className="hover:bg-gray-100 cursor-pointer text-black">
+                            🇩🇪 DE
+                          </SelectItem>
+                          <SelectItem value="zh" className="hover:bg-gray-100 cursor-pointer text-black">
+                            🇨🇳 ZH
+                          </SelectItem>
+                          <SelectItem value="ja" className="hover:bg-gray-100 cursor-pointer text-black">
+                            🇯🇵 JA
+                          </SelectItem>
+                          <SelectItem value="ko" className="hover:bg-gray-100 cursor-pointer text-black">
+                            🇰🇷 KO
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Contact Button */}
+                    <Link to="/contact" onClick={() => setIsOpen(false)}>
+                      <Button className="w-full h-12 bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                        Contact Us
+                      </Button>
+                    </Link>
                   </div>
                 </nav>
               </div>
