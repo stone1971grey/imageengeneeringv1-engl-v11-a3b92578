@@ -871,7 +871,7 @@ const Navigation = () => {
               />
               
               {/* Mobile Menu */}
-              <div className="absolute top-full right-0 w-[760px] max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-2">
+              <div className="absolute top-full right-0 w-full max-w-[800px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-2">
                 {/* Navigation content */}
                 <nav className="px-6 py-4">
                   <Accordion type="single" collapsible className="space-y-0">
