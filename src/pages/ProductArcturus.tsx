@@ -114,7 +114,7 @@ const ProductArcturus = () => {
                         <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
                           ARCTURUS
                           <br />
-                          <span className="font-medium text-accent-soft-blue">LED</span>
+                          <span className="font-medium text-light-foreground">LED</span>
                         </h1>
                         
                         <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
@@ -125,7 +125,8 @@ const ProductArcturus = () => {
                 <div className="pt-4">
                   <Button 
                     size="lg"
-                    className="bg-soft-blue hover:bg-soft-blue/90 text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    style={{ backgroundColor: '#103e7c' }}
                   >
                     Learn More
                     <ArrowLeft className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
