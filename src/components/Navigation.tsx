@@ -851,11 +851,18 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation - Sheet with simple accordion structure */}
-        <div className="2xl:hidden">
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetContent side="right" className="w-full sm:max-w-md p-0 bg-white">
-              <div className="h-full overflow-y-auto">
+        {/* Mobile Navigation - positioned below navbar, right-aligned, 760px width */}
+        <div className="2xl:hidden relative">
+          {isOpen && (
+            <>
+              {/* Backdrop */}
+              <div 
+                className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+                onClick={() => setIsOpen(false)}
+              />
+              
+              {/* Mobile Menu */}
+              <div className="absolute top-full right-0 w-[760px] max-w-[calc(100vw-2rem)] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-2">
                 {/* Header with logo and close button */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                   <Link to="/" onClick={() => setIsOpen(false)}>
@@ -975,8 +982,8 @@ const Navigation = () => {
                   </div>
                 </nav>
               </div>
-            </SheetContent>
-          </Sheet>
+            </>
+          )}
         </div>
       </div>
     </nav>
