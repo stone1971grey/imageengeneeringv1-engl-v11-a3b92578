@@ -788,9 +788,9 @@ const Navigation = () => {
             </SimpleDropdown>
 
             <SimpleDropdown trigger="Company" className="right-aligned">
-                <div className="flex flex-col gap-2 w-[300px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                   <div className="p-6">
-                       <div className="space-y-4">
+                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
+                   <div className="flex gap-8 p-6">
+                       <div className="space-y-4 flex-1 pr-6 border-r border-border">
                          <h4 className="font-semibold mb-3 text-lg text-black">About IE</h4>
                          <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
@@ -811,6 +811,26 @@ const Navigation = () => {
                          <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>Careers</span>
+                         </Link>
+                       </div>
+                       
+                       <div className="space-y-4 flex-1">
+                         <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
+                         <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Resellers & Subsidiaries</span>
+                         </Link>
+                         <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Strategic Partnerships</span>
+                         </Link>
+                         <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>Group Memberships</span>
+                         </Link>
+                         <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>ISO 9001</span>
                          </Link>
                        </div>
                     </div>
