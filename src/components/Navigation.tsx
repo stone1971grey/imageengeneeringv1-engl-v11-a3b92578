@@ -882,16 +882,41 @@ const Navigation = () => {
                         Your Solution
                       </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-3">
-                          <Link to="/automotive" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
-                            Automotive Testing
+                        <div className="space-y-1">
+                          <div className="font-medium text-gray-900 mb-2">Industries</div>
+                          <Link to="/automotive" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 bg-green-100 px-2 rounded-md" onClick={() => setIsOpen(false)}>
+                            <Car className="h-4 w-4" />
+                            <span>Automotive</span>
+                            <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
                           </Link>
-                          <Link to="/in-cabin-testing" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
-                            In-Cabin Testing
-                          </Link>
-                          <div className="block py-2 text-gray-700">Machine Vision</div>
-                          <div className="block py-2 text-gray-700">Mobile & Webcam</div>
-                          <div className="block py-2 text-gray-700">Medical Imaging</div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Shield className="h-4 w-4" />
+                            <span>Security & Surveillance</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Smartphone className="h-4 w-4" />
+                            <span>Mobile Phone</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Camera className="h-4 w-4" />
+                            <span>Web Camera</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Cog className="h-4 w-4" />
+                            <span>Machine Vision</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Stethoscope className="h-4 w-4" />
+                            <span>Medical & Endoscopy</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <ScanLine className="h-4 w-4" />
+                            <span>Scanners & Archiving</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Camera className="h-4 w-4" />
+                            <span>Photo & Video</span>
+                          </div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -902,70 +927,220 @@ const Navigation = () => {
                         Products
                       </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-3">
-                          <Link to="/charts" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
-                            Test Charts
+                        <div className="space-y-1">
+                          <div className="font-medium text-gray-900 mb-2">Product Groups</div>
+                          <Link to="/charts" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 bg-green-100 px-2 rounded-md" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Test Charts</span>
+                            <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
                           </Link>
-                          <div className="block py-2 text-gray-700">Illumination Devices</div>
-                          <div className="block py-2 text-gray-700">Measurement Devices</div>
-                          <div className="block py-2 text-gray-700">Software & APIs</div>
-                          <div className="block py-2 text-gray-700">Accessories</div>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    {/* Test Services */}
-                    <AccordionItem value="test-services" className="border-none">
-                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
-                        Test Services
-                      </AccordionTrigger>
-                      <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-3">
-                          <Link to="/inside-lab" className="block py-2 text-gray-700 hover:text-gray-900" onClick={() => setIsOpen(false)}>
-                            Our Lab
-                          </Link>
-                          <div className="block py-2 text-gray-700">Automotive Testing</div>
-                          <div className="block py-2 text-gray-700">VCX Testing</div>
-                          <div className="block py-2 text-gray-700">Image Quality Analysis</div>
-                          <div className="block py-2 text-gray-700">Custom Testing</div>
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-
-                    {/* Resources */}
-                    <AccordionItem value="resources" className="border-none">
-                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
-                        Resources
-                      </AccordionTrigger>
-                      <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-4">
-                          <div>
-                            <div className="font-medium text-gray-900 py-2">Downloads</div>
-                            <p className="text-sm text-gray-600 mb-3">Access technical documents, datasheets and software downloads.</p>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Illumination Devices</span>
                           </div>
-                          <div>
-                            <Link to="/news" className="font-medium text-gray-900 py-2 block hover:text-gray-700" onClick={() => setIsOpen(false)}>
-                              News & Updates
-                            </Link>
-                            <p className="text-sm text-gray-600 mb-3">Stay informed about latest developments in image quality testing.</p>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Measurement Devices</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Software & APIs</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Product Accessories</span>
                           </div>
                         </div>
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
+                            <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                              <Microscope className="h-4 w-4 mr-2" />
+                              Inside the Testing Lab
+                            </Button>
+                          </Link>
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Training & Events - Simple item without accordion */}
-                    <div className="border-none">
-                      <Link to="/events" className="flex items-center justify-between px-0 py-4 text-lg font-medium text-gray-900 hover:text-gray-700" onClick={() => setIsOpen(false)}>
+                    {/* Test Lab */}
+                    <AccordionItem value="test-lab" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
+                        Test Lab
+                      </AccordionTrigger>
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-1">
+                          <div className="font-medium text-gray-900 mb-2">Test Services</div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <FlaskConical className="h-4 w-4" />
+                            <span>Overview</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Car className="h-4 w-4" />
+                            <span>Automotive</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Smartphone className="h-4 w-4" />
+                            <span>VCX</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Camera className="h-4 w-4" />
+                            <span>Image Quality</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CheckCircle className="h-4 w-4" />
+                            <span>Standardized</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <Settings className="h-4 w-4" />
+                            <span>Specialized/Custom</span>
+                          </div>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
+                            <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                              <FlaskConical className="h-4 w-4 mr-2" />
+                              Visit Our Testing Lab
+                            </Button>
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Training & Events */}
+                    <AccordionItem value="training-events" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
                         Training & Events
-                      </Link>
-                    </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-1">
+                          <div className="font-medium text-gray-900 mb-2">Resources</div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Webinars</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>On-Site Training</span>
+                          </div>
+                          <Link to="/inside-lab" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Visit our Test Lab</span>
+                          </Link>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Event Schedule</span>
+                          </div>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <Link to="/events" onClick={() => setIsOpen(false)}>
+                            <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                              <GraduationCap className="h-4 w-4 mr-2" />
+                              View Training & Events
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                            </Button>
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
 
-                    {/* About */}
-                    <div className="border-none">
-                      <div className="px-0 py-4 text-lg font-medium text-gray-900">
-                        About
-                      </div>
-                    </div>
+                    {/* Image Quality */}
+                    <AccordionItem value="image-quality" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
+                        Image Quality
+                      </AccordionTrigger>
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-1">
+                          <div className="font-medium text-gray-900 mb-2">Resources</div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Image Quality Factors</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Blog</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>International Standards</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>IE Technology</span>
+                          </div>
+                          <div className="font-medium text-gray-900 mb-2 mt-4">Publications</div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Conference Papers</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>White Papers & Theses</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Video Archive</span>
+                          </div>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <Link to="/downloads" onClick={() => setIsOpen(false)}>
+                            <Button className="w-full bg-[#103e7c] text-white hover:bg-[#0d3468] rounded-lg font-medium">
+                              <Microscope className="h-4 w-4 mr-2" />
+                              Explore Image Quality Resources
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
+                            </Button>
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Company */}
+                    <AccordionItem value="company" className="border-none">
+                      <AccordionTrigger className="px-0 py-4 text-lg font-medium text-gray-900 hover:no-underline">
+                        Company
+                      </AccordionTrigger>
+                      <AccordionContent className="px-0 pb-4">
+                        <div className="space-y-1">
+                          <div className="font-medium text-gray-900 mb-2">About IE</div>
+                          <Link to="/about" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>About us</span>
+                          </Link>
+                          <Link to="/team" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Team</span>
+                          </Link>
+                          <Link to="/nynomic-group" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Nynomic Group</span>
+                          </Link>
+                          <Link to="/visit-us" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Visit Us</span>
+                          </Link>
+                          <Link to="/careers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Careers</span>
+                          </Link>
+                          <div className="font-medium text-gray-900 mb-2 mt-4">Business & Partnerships</div>
+                          <Link to="/resellers-subsidiaries" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Resellers & Subsidiaries</span>
+                          </Link>
+                          <Link to="/strategic-partnerships" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Strategic Partnerships</span>
+                          </Link>
+                          <Link to="/group-memberships" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>Group Memberships</span>
+                          </Link>
+                          <Link to="/iso-9001" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>ISO 9001</span>
+                          </Link>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
 
                   </Accordion>
 
