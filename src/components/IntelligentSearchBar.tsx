@@ -236,10 +236,10 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           className={variant === 'mobile' 
-            ? "pl-10 pr-10 w-full border-gray-300 text-white placeholder:text-white/70 focus:text-white focus:border-gray-400 focus:placeholder:text-white/70"
+            ? "pl-10 pr-10 w-full border-gray-300 text-white placeholder:text-white/70 focus:text-white focus:border-gray-400 focus:placeholder:text-white/70 !bg-[#606060]"
             : "pl-10 pr-10 w-36 bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white focus:text-black focus:placeholder:text-muted-foreground"
           }
-          style={variant === 'mobile' ? { backgroundColor: '#606060 !important' } : {}}
+          style={variant === 'mobile' ? { backgroundColor: '#606060' } : {}}
         />
         {query && (
           <Button
