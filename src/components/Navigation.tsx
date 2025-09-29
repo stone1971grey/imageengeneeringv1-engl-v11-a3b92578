@@ -931,7 +931,7 @@ const Navigation = () => {
                           {/* Security & Surveillance */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="security" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <Shield className="h-4 w-4" />
@@ -954,7 +954,7 @@ const Navigation = () => {
                           {/* Mobile Phone */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="mobile" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <Smartphone className="h-4 w-4" />
@@ -977,7 +977,7 @@ const Navigation = () => {
                           {/* Web Camera */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="webcam" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <Camera className="h-4 w-4" />
@@ -999,7 +999,7 @@ const Navigation = () => {
                           {/* Machine Vision */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="machine-vision" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <Cog className="h-4 w-4" />
@@ -1021,7 +1021,7 @@ const Navigation = () => {
                           {/* Medical & Endoscopy */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="medical" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <Stethoscope className="h-4 w-4" />
@@ -1044,7 +1044,7 @@ const Navigation = () => {
                           {/* Scanners & Archiving */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="scanning" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <ScanLine className="h-4 w-4" />
@@ -1067,7 +1067,7 @@ const Navigation = () => {
                           {/* Photo & Video */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="photo-video" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <Camera className="h-4 w-4" />
@@ -1131,7 +1131,7 @@ const Navigation = () => {
                           {/* Illumination Devices */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="illumination" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -1155,7 +1155,7 @@ const Navigation = () => {
                           {/* Measurement Devices */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="measurement" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -1179,7 +1179,7 @@ const Navigation = () => {
                           {/* Software & APIs */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="software" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -1201,7 +1201,7 @@ const Navigation = () => {
                           {/* Product Accessories */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="accessories" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -1245,7 +1245,7 @@ const Navigation = () => {
                           {/* Overview */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="overview" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <FlaskConical className="h-4 w-4" />
                                   <span>Overview</span>
@@ -1265,7 +1265,7 @@ const Navigation = () => {
                            {/* Automotive */}
                            <Accordion type="single" collapsible className="ml-2">
                              <AccordionItem value="auto-test" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                      <Car className="h-4 w-4" />
@@ -1290,7 +1290,7 @@ const Navigation = () => {
                           {/* VCX */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="vcx-test" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <Smartphone className="h-4 w-4" />
                                   <span>VCX</span>
@@ -1310,7 +1310,7 @@ const Navigation = () => {
                           {/* Image Quality */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="iq-test" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <Camera className="h-4 w-4" />
                                   <span>Image Quality</span>
@@ -1331,7 +1331,7 @@ const Navigation = () => {
                           {/* Standardized */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="standardized" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CheckCircle className="h-4 w-4" />
                                   <span>Standardized</span>
@@ -1352,7 +1352,7 @@ const Navigation = () => {
                           {/* Specialized/Custom */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="custom" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <Settings className="h-4 w-4" />
                                   <span>Specialized/Custom</span>
