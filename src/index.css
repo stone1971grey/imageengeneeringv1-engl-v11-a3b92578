@@ -185,6 +185,19 @@ All colors MUST be HSL.
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  
+  /* Smart Break - Responsive Text Wrapping Utility */
+  .smart-break-md {
+    @apply md:hidden;
+  }
+  
+  .smart-break-lg {
+    @apply lg:hidden;
+  }
+  
+  .smart-break-sm {
+    @apply sm:hidden;
+  }
 }
 
 /* BRUTE FORCE: Navigation flyout positioning */
