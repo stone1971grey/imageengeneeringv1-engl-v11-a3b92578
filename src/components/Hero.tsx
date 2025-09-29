@@ -34,9 +34,9 @@ const Hero = () => {
               </h1>
               
               <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
-                We develop and manufacture high-precision test charts
+                We develop and manufacture high-precision test charts for professional 
                 <br className="smart-break-md" />
-                for professional image quality testing. Order directly from our shop now.
+                image quality testing. Order directly from our shop now.
               </p>
             </div>
             
