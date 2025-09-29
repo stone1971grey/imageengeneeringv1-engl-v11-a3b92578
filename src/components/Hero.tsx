@@ -33,7 +33,7 @@ const Hero = () => {
                 <span className="font-medium">Made by Image<br className="md:hidden" /> Engineering</span>
               </h1>
               
-              <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
+              <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
                 We develop and manufacture high-precision test charts for professional image quality testing. 
                 Order directly from our shop now.
               </p>
