@@ -30,7 +30,7 @@ const Hero = () => {
               <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6">
                 Test Charts
                 <br />
-                <span className="font-medium">Made by Image Engineering</span>
+                <span className="font-medium">Made by Image<br className="sm:hidden" /> Engineering</span>
               </h1>
               
               <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
