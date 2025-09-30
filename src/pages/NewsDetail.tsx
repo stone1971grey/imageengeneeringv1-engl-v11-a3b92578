@@ -660,7 +660,7 @@ const NewsDetail = () => {
             {/* Navigation to other articles */}
             <div className="mt-12 pt-8 border-t border-gray-200">
               <Link to="/news">
-                <Button variant="outline" className="w-full md:w-auto">
+                <Button className="w-full md:w-auto bg-[#0f407b] text-white hover:bg-[#0d3468]">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   View all news articles
                 </Button>
