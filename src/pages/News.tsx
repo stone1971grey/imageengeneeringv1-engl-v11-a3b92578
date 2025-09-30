@@ -111,8 +111,8 @@ const News = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       {item.slug === 'geometric-camera-calibration' && (
-                        <div className="absolute top-3 right-3 bg-[#0f407b] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                          FEATURED
+                        <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                          ACTIVE
                         </div>
                       )}
                     </div>
