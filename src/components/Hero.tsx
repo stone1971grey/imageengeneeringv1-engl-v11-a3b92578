@@ -40,11 +40,11 @@ const Hero = () => {
               </p>
             </div>
             
-            <div className="pt-4 flex gap-4">
+            <div className="pt-4 flex flex-col md:flex-row gap-4">
               <Button 
                 size="lg"
                 variant="contact"
-                className="text-white border-0 px-12 py-4 group"
+                className="text-white border-0 px-12 py-4 group w-full md:w-auto"
                 onClick={() => window.location.href = '/products/charts'}
               >
                 Discover Charts
@@ -53,7 +53,7 @@ const Hero = () => {
               <Button 
                 size="lg"
                 variant="decision"
-                className="border-0 px-12 py-4"
+                className="border-0 px-12 py-4 w-full md:w-auto"
                 style={{ backgroundColor: '#d9c409', color: 'black' }}
                 onClick={() => {
                   const element = document.getElementById('trusted-industries');
