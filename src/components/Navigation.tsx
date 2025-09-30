@@ -1389,7 +1389,7 @@ const Navigation = () => {
                          Training & Events
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           <div className="font-medium text-gray-900 mb-2">Resources</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
@@ -1426,7 +1426,7 @@ const Navigation = () => {
                          Image Quality
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           <div className="font-medium text-gray-900 mb-2">Resources</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
@@ -1476,7 +1476,7 @@ const Navigation = () => {
                          Company
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-2">
+                        <div className="space-y-4">
                           <div className="font-medium text-gray-900 mb-2">About IE</div>
                           <Link to="/about" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
