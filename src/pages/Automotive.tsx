@@ -123,8 +123,8 @@ const Automotive = () => {
 
       {/* Hero Section - starts immediately after navigation */}
       <section id="introduction" className="min-h-screen bg-scandi-white font-roboto">
-        {/* Navigation Spacer - more space on mobile */}
-        <div className="h-32 md:h-16"></div>
+        {/* Navigation Spacer */}
+        <div className="h-16"></div>
         
         {/* Hero Content */}
         <div id="hero-start" className="container mx-auto px-6 py-16 lg:py-20 pb-8 lg:pb-12">
@@ -133,7 +133,7 @@ const Automotive = () => {
             {/* Left Content - 2/5 */}
             <div className="lg:col-span-2 space-y-8 lg:pr-8">
               <div>
-                <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
+                <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64 md:pt-64 pt-80">
                   Automotive
                   <br />
                   <span className="font-medium text-light-foreground">Image Quality</span>

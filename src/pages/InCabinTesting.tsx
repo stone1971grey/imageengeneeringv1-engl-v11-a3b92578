@@ -57,13 +57,13 @@ const InCabinTesting = () => {
             <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/10 to-soft-blue/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
           </div>
           
-          <div className="container mx-auto px-6 py-16 lg:py-24 pt-8 md:pt-32 relative z-10">
+          <div className="container mx-auto px-6 py-16 lg:py-24 pt-32 relative z-10">
             <div className="grid lg:grid-cols-5 gap-16 items-center">
               
               {/* Left Content - 2/5 */}
               <div className="lg:col-span-2 space-y-8">
                 <div>
-                  <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.9] tracking-tight mb-6 text-light-foreground">
+                  <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.9] tracking-tight mb-6 text-light-foreground mt-8 md:mt-0">
                     In-Cabin
                     <br />
                     <span className="font-medium text-light-foreground">Performance Testing</span>
