@@ -1470,7 +1470,8 @@ const Navigation = () => {
                           <Link to="/downloads" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#103e7c] text-white hover:bg-[#0d3468] rounded-lg font-medium">
                               <Microscope className="h-4 w-4 mr-2" />
-                              Explore Image Quality Resources
+                              <span className="hidden sm:inline">Explore Image Quality Resources</span>
+                              <span className="sm:hidden">Quality Resources</span>
                               <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
                             </Button>
                           </Link>
