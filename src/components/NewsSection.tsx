@@ -59,8 +59,8 @@ const NewsSection = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               {newsItems.map((item) => (
                 <CarouselItem key={item.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                  <Card className="h-full hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group">
-                    <CardContent className="p-0">
+                  <Card className="h-full hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group flex flex-col">
+                    <CardContent className="p-0 flex flex-col h-full">
                       <div className="aspect-video overflow-hidden rounded-t-lg">
                         <img
                           src={item.image}
@@ -68,18 +68,18 @@ const NewsSection = () => {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
-                      <div className="p-6">
+                      <div className="p-6 flex flex-col flex-1">
                         <div className="text-sm text-muted-foreground mb-2 font-medium">
                           {item.date}
                         </div>
                         <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 leading-tight">
                           {item.headline}
                         </h3>
-                        <p className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed">
+                        <p className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed flex-1">
                           {item.teaser}
                         </p>
                         <Button 
-                          className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300"
+                          className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300 mt-auto"
                         >
                           Read more
                         </Button>
