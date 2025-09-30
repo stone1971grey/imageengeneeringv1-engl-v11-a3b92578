@@ -1095,7 +1095,7 @@ const Navigation = () => {
                          Products
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           <div className="font-medium text-gray-900 mb-2">Product Groups</div>
                           
                           {/* Test Charts with subgroups */}
@@ -1239,7 +1239,7 @@ const Navigation = () => {
                          Test Lab
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                           <div className="font-medium text-gray-900 mb-2">Test Services</div>
                           
                           {/* Overview */}
