@@ -140,7 +140,7 @@ const Footer = () => {
           {/* Right Column - Team Quote */}
           <div className="bg-[#4B4A4A] border border-[#4B4A4A] rounded-lg p-8">
             <div className="flex flex-col md:flex-row items-start gap-6">
-              <div className="flex-shrink-0">
+              <div className="flex-shrink-0 mx-auto md:mx-0">
                  <img 
                    src={isChartsPage ? teamMarkus : isSolutionBundlePage ? teamStefan : isAutomotivePage ? teamAnna : isArcturusPage ? teamThomas : isEventsPage ? trainingInstructor : teamLaura}
                     alt={isChartsPage 
@@ -158,7 +158,7 @@ const Footer = () => {
                    className="w-[150px] h-[150px] rounded-full object-cover"
                  />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 text-center md:text-left">
                 <blockquote className="text-lg text-white leading-relaxed mb-4">
                   {isChartsPage 
                     ? '"Precise test charts are the foundation of every serious image quality analysis. With over 15 years of experience, I help you find the perfect charts for your measurements."'
