@@ -456,9 +456,16 @@ const NewsDetail = () => {
             </h1>
 
             {/* Article Teaser */}
-            <p className="text-xl text-gray-600 mb-12 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               {article.teaser}
             </p>
+
+            {/* Subtitle for Geometric Calibration */}
+            {slug === 'geometric-camera-calibration' && (
+              <h2 className="text-2xl font-semibold text-gray-800 mb-12">
+                A Comparison with Currently Established Geometric Calibration Methods
+              </h2>
+            )}
 
             {/* Featured Image */}
             <div className="mb-12 rounded-lg overflow-hidden shadow-lg">
