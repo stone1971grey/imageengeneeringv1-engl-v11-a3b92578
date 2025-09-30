@@ -1086,7 +1086,7 @@ const Navigation = () => {
                             </AccordionItem>
                           </Accordion>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/industries" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
                               <Target className="h-4 w-4 mr-2" />
@@ -1230,7 +1230,7 @@ const Navigation = () => {
                             </AccordionItem>
                           </Accordion>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium">
                               <Microscope className="h-4 w-4 mr-2" />
@@ -1380,7 +1380,7 @@ const Navigation = () => {
                             </AccordionItem>
                           </Accordion>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
                               <FlaskConical className="h-4 w-4 mr-2" />
@@ -1416,7 +1416,7 @@ const Navigation = () => {
                             <span>Event Schedule</span>
                           </div>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/events" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
                               <GraduationCap className="h-4 w-4 mr-2" />
@@ -1466,7 +1466,7 @@ const Navigation = () => {
                             <span>Video Archive</span>
                           </div>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-gray-200">
+                        <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/downloads" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#103e7c] text-white hover:bg-[#0d3468] rounded-lg font-medium">
                               <Microscope className="h-4 w-4 mr-2" />
