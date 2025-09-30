@@ -64,14 +64,21 @@ const NewsSection = () => {
             <CarouselContent className="-ml-2 md:-ml-4">
               {newsItems.map((item) => (
                 <CarouselItem key={item.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                  <Card className="h-full hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group flex flex-col">
+                  <Card className={`h-full hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group flex flex-col ${
+                    item.slug === 'geometric-camera-calibration' ? 'ring-2 ring-[#0f407b] shadow-lg' : ''
+                  }`}>
                     <CardContent className="p-0 flex flex-col h-full">
-                      <div className="aspect-video overflow-hidden rounded-t-lg">
+                      <div className="aspect-video overflow-hidden rounded-t-lg relative">
                         <img
                           src={item.image}
                           alt={item.headline}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
+                        {item.slug === 'geometric-camera-calibration' && (
+                          <div className="absolute top-3 right-3 bg-[#0f407b] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                            FEATURED
+                          </div>
+                        )}
                       </div>
                       <div className="p-6 flex flex-col flex-1">
                         <div className="text-sm text-muted-foreground mb-2 font-medium">
