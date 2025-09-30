@@ -892,9 +892,9 @@ const Navigation = () => {
                     
                     {/* Your Solution */}
                     <AccordionItem value="solutions" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
-                         Your Solution
-                       </AccordionTrigger>
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#d9c409] data-[state=open]:text-black">
+                          Your Solution
+                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-1">
                           <div className="font-medium text-gray-900 py-3 mb-2">Industries</div>
@@ -1099,9 +1099,9 @@ const Navigation = () => {
 
                     {/* Products */}
                     <AccordionItem value="products" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
-                         Products
-                       </AccordionTrigger>
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#d9c409] data-[state=open]:text-black">
+                          Products
+                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-2">
                           <div className="font-medium text-gray-900 py-3 mb-2">Product Groups</div>
@@ -1243,9 +1243,9 @@ const Navigation = () => {
 
                     {/* Test Lab */}
                     <AccordionItem value="test-lab" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
-                         Test Lab
-                       </AccordionTrigger>
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#d9c409] data-[state=open]:text-black">
+                          Test Lab
+                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-2">
                           <div className="font-medium text-gray-900 py-3 mb-2">Test Services</div>
@@ -1393,9 +1393,9 @@ const Navigation = () => {
 
                     {/* Training & Events */}
                     <AccordionItem value="training-events" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
-                         Training & Events
-                       </AccordionTrigger>
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#d9c409] data-[state=open]:text-black">
+                          Training & Events
+                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
                           <div className="font-medium text-gray-900 py-3 mb-2">Resources</div>
@@ -1430,9 +1430,9 @@ const Navigation = () => {
 
                     {/* Image Quality */}
                     <AccordionItem value="image-quality" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
-                         Image Quality
-                       </AccordionTrigger>
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#d9c409] data-[state=open]:text-black">
+                          Image Quality
+                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
                           <div className="font-medium text-gray-900 py-3 mb-2">Resources</div>
@@ -1481,9 +1481,9 @@ const Navigation = () => {
 
                     {/* Company */}
                     <AccordionItem value="company" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2">
-                         Company
-                       </AccordionTrigger>
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#d9c409] data-[state=open]:text-black">
+                          Company
+                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
                           <div className="font-medium text-gray-900 py-3 mb-2">About IE</div>
