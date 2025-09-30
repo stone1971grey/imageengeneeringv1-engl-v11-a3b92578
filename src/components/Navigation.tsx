@@ -1247,7 +1247,7 @@ const Navigation = () => {
                             <AccordionItem value="overview" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <FlaskConical className="h-4 w-4" />
+                                  <CustomTargetIcon className="h-4 w-4" />
                                   <span>Overview</span>
                                 </div>
                               </AccordionTrigger>
@@ -1268,7 +1268,7 @@ const Navigation = () => {
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                     <Car className="h-4 w-4" />
+                                      <CustomTargetIcon className="h-4 w-4" />
                                      <span>Automotive</span>
                                    </Link>
                                  </div>
@@ -1292,7 +1292,7 @@ const Navigation = () => {
                             <AccordionItem value="vcx-test" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <Smartphone className="h-4 w-4" />
+                                  <CustomTargetIcon className="h-4 w-4" />
                                   <span>VCX</span>
                                 </div>
                               </AccordionTrigger>
@@ -1312,7 +1312,7 @@ const Navigation = () => {
                             <AccordionItem value="iq-test" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <Camera className="h-4 w-4" />
+                                  <CustomTargetIcon className="h-4 w-4" />
                                   <span>Image Quality</span>
                                 </div>
                               </AccordionTrigger>
@@ -1333,7 +1333,7 @@ const Navigation = () => {
                             <AccordionItem value="standardized" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <CheckCircle className="h-4 w-4" />
+                                  <CustomTargetIcon className="h-4 w-4" />
                                   <span>Standardized</span>
                                 </div>
                               </AccordionTrigger>
@@ -1354,7 +1354,7 @@ const Navigation = () => {
                             <AccordionItem value="custom" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <Settings className="h-4 w-4" />
+                                  <CustomTargetIcon className="h-4 w-4" />
                                   <span>Specialized/Custom</span>
                                 </div>
                               </AccordionTrigger>
