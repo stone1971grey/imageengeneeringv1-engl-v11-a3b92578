@@ -7,6 +7,16 @@ import emvaLogo from "@/assets/news-emva-1288-logo.png";
 import te300Image from "@/assets/news-te300.png";
 import iqAnalyzerImage from "@/assets/news-iq-analyzer-x.png";
 import geocalImage from "@/assets/news-geocal-xl.png";
+import geocalTable1 from "@/assets/news-geocal-table-1.png";
+import geocalTable2 from "@/assets/news-geocal-table-2.png";
+import geocalTable3 from "@/assets/news-geocal-table-3.png";
+import geocalCheckerboardCollage from "@/assets/news-geocal-checkerboard-collage.png";
+import geocalDistorted from "@/assets/news-geocal-distorted.png";
+import geocalUndistortedCheckerboard from "@/assets/news-geocal-undistorted-checkerboard.png";
+import geocalUndistortedGeocal from "@/assets/news-geocal-undistorted-geocal.png";
+import geocalSoftwareComparison from "@/assets/news-geocal-software-comparison.png";
+import geocalCheckerboardCalibration from "@/assets/news-geocal-checkerboard-calibration.png";
+import geocalGeocalCalibration from "@/assets/news-geocal-geocal-calibration.png";
 
 const newsArticles = {
   "geometric-camera-calibration": {
@@ -15,7 +25,18 @@ const newsArticles = {
     headline: "Geometric Camera Calibration",
     teaser: "GEOCAL offers a compact, laser-based solution for geometric calibration, improving accuracy compared to traditional checkerboard targets.",
     image: geocalImage,
-    images: [geocalImage],
+    images: {
+      'table-1': geocalTable1,
+      'table-2': geocalTable2,
+      'table-3': geocalTable3,
+      'checkerboard-collage': geocalCheckerboardCollage,
+      'distorted': geocalDistorted,
+      'undistorted-checkerboard': geocalUndistortedCheckerboard,
+      'undistorted-geocal': geocalUndistortedGeocal,
+      'software-comparison': geocalSoftwareComparison,
+      'checkerboard-calibration': geocalCheckerboardCalibration,
+      'geocal-calibration': geocalGeocalCalibration
+    },
     content: `
 ## Introduction
 
@@ -43,6 +64,8 @@ Even though GEOCAL only requires a single image for geometric calibration, we an
 
 As Phase One states the coefficients of the undistortion function, we cannot directly compare the distortion coefficients calculated by GEOCAL Software. Still, we can compare the acquired focal length and principal point.
 
+![table-1]
+
 We can see that the difference between both methods regarding focal length and principal point is small. In addition, the Root Mean Square Error (RMSE) value is a fraction of a pixel, which shows that the reprojected grid is very close to the actual detected grid. The RMSE represents the average offset from detected points to the reprojected points in pixels and is the most significant indicator for good geometric characterization.
 
 ## Camera 2
@@ -62,6 +85,8 @@ The data below is the camera and the applied hardware and software.
 ### Results
 
 We took four images, analyzed them with our GEOCAL software, and found that the focal point and focal length also showed little deviation. Again, the deviation between the methods is based on the average of all four GEOCAL measurements.
+
+![table-2]
 
 Having the focal length and the principal point correct, we got everything we need for the intrinsic camera matrix, which is crucial for valid undistortion. The distortion coefficients at that point in the development phase were not yet comparable.
 
@@ -90,19 +115,45 @@ The image seems to be underexposed, but this is a result of the small size of th
 
 The next step was to perform the OpenCV checkerboard calibration.
 
-To start the checkerboard calibration, we need at least ten images from a squared checkerboard pattern with a defined number of squares.
+To start the checkerboard calibration, we need at least ten images from a squared checkerboard pattern with a defined number of squares. These are the images we used:
+
+![checkerboard-collage]
 
 We used an example script from the OpenCV documentation for the checkerboard calibration.
 
 OpenCV correctly detected all points. The calibration took around 5 seconds with the GEOCAL software and 95 seconds with the OpenCV code on the same PC.
 
-After both calibrations, the intrinsic parameters and the distortion coefficients were calculated. These parameters are all we need to undistort the image of the TE251. We did the undistortion with the GEOCAL and Checkerboard parameters in Python using the OpenCV undistort() function.
+After both calibrations, the intrinsic parameters and the distortion coefficients looked like this:
+
+![table-3]
+
+These parameters are all we need to undistort the image of the TE251. We did the undistortion with the GEOCAL and Checkerboard parameters in Python using the OpenCV undistort() function. Here is our input image:
+
+![distorted]
+
+Images after applying undistort().
+
+<div class="grid grid-cols-2 gap-4">
+![undistorted-checkerboard]
+![undistorted-geocal]
+</div>
+
+Undistorted image using the checkerboard method (left) and the GEOCAL method (right).
 
 Visually slight differences are noticeable in the corners. We can get a better impression of the performance by measuring the remaining distortion in these undistorted images with iQ-Analyzer-X.
+
+![software-comparison]
 
 Both methods show Local Geometric Distortion (LGD) close to zero up to 70% of the field; above 70%, the GEOCAL performs better. The lines in the plot above represent the average LGD for a specific radius/field. Imagine it is the LGD of all detected crosses in the TE251 with the same radius. To learn more about the calculation of LGD, which is a part of ISO17850, visit our website library - distortion.
 
 The 2D plot provides a good overview of the distortion distribution over the entire image field. However, the alignment between the camera and the chart is a huge factor in the appearance of both plots.
+
+<div class="grid grid-cols-2 gap-4">
+![checkerboard-calibration]
+![geocal-calibration]
+</div>
+
+Test results of the checkerboard methods (left) and the GEOCAL method (right).
 
 Please note that we did not use the tangential coefficients in the GEOCAL calibration, while the Checkerboard calibration does apply them. We noticed that leaving out the tangential coefficients in this case leads to better results, visually and objectively.
 
@@ -367,6 +418,8 @@ const NewsDetail = () => {
     const elements: JSX.Element[] = [];
     let currentParagraph: string[] = [];
     let key = 0;
+    let inGrid = false;
+    let gridImages: string[] = [];
 
     const flushParagraph = () => {
       if (currentParagraph.length > 0) {
@@ -379,7 +432,68 @@ const NewsDetail = () => {
       }
     };
 
+    const renderImage = (imageKey: string) => {
+      const images = article.images as Record<string, string> | string[];
+      const imageSrc = Array.isArray(images) ? images[0] : images[imageKey];
+      
+      if (!imageSrc) return null;
+      
+      return (
+        <div key={key++} className="my-8 rounded-lg overflow-hidden shadow-lg">
+          <img 
+            src={imageSrc}
+            alt={imageKey}
+            className="w-full h-auto object-cover"
+          />
+        </div>
+      );
+    };
+
     lines.forEach((line, index) => {
+      // Handle grid start
+      if (line.includes('<div class="grid')) {
+        flushParagraph();
+        inGrid = true;
+        gridImages = [];
+        return;
+      }
+      
+      // Handle grid end
+      if (line.includes('</div>') && inGrid) {
+        const images = article.images as Record<string, string>;
+        elements.push(
+          <div key={key++} className="grid grid-cols-2 gap-4 my-8">
+            {gridImages.map((imgKey, idx) => (
+              <div key={idx} className="rounded-lg overflow-hidden shadow-lg">
+                <img 
+                  src={images[imgKey]}
+                  alt={imgKey}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            ))}
+          </div>
+        );
+        inGrid = false;
+        gridImages = [];
+        return;
+      }
+      
+      // Handle images
+      if (line.match(/^!\[(.+)\]$/)) {
+        const imageKey = line.match(/^!\[(.+)\]$/)?.[1];
+        if (imageKey) {
+          flushParagraph();
+          if (inGrid) {
+            gridImages.push(imageKey);
+          } else {
+            const imageElement = renderImage(imageKey);
+            if (imageElement) elements.push(imageElement);
+          }
+        }
+        return;
+      }
+
       if (line.startsWith('## ')) {
         flushParagraph();
         elements.push(
