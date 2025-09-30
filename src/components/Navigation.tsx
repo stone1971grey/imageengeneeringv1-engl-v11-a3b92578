@@ -1090,7 +1090,8 @@ const Navigation = () => {
                           <Link to="/industries" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
                               <Search className="h-4 w-4 mr-2" />
-                              Find Your Perfect Solution
+                              <span className="hidden sm:inline">Find Your Perfect Solution</span>
+                              <span className="sm:hidden">Your Perfect Solution</span>
                             </Button>
                           </Link>
                         </div>
