@@ -902,7 +902,7 @@ const Navigation = () => {
                           {/* Automotive with sub-applications */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="automotive" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-green-100 rounded-md">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                      <Car className="h-4 w-4" />
@@ -916,9 +916,9 @@ const Navigation = () => {
                                   <Link to="/automotive" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Advanced Driver Assistance Systems (ADAS)
                                   </Link>
-                                  <Link to="/in-cabin-testing" className="block py-1 text-sm text-gray-600 hover:text-gray-800 bg-green-50 px-2 rounded" onClick={() => setIsOpen(false)}>
-                                    In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded">ACTIVE</span>
-                                  </Link>
+                                   <Link to="/in-cabin-testing" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                     In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">ACTIVE</span>
+                                   </Link>
                                   <div className="block py-1 text-sm text-gray-600">IEEE-P2020 Testing</div>
                                   <div className="block py-1 text-sm text-gray-600">High Dynamic Range (HDR)</div>
                                   <div className="block py-1 text-sm text-gray-600">Near-Infrared (NIR)</div>
