@@ -647,8 +647,7 @@ const NewsDetail = () => {
                           {relatedArticle.teaser}
                         </p>
                         <Button 
-                          variant="outline" 
-                          className="mt-auto w-full border-[#0f407b] text-[#0f407b] hover:bg-[#0f407b] hover:text-white"
+                          className="mt-auto w-full bg-[#0f407b] text-white hover:bg-[#0d3468]"
                         >
                           Read more
                         </Button>
