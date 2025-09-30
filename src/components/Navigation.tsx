@@ -897,7 +897,7 @@ const Navigation = () => {
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-1">
-                          <div className="font-medium text-gray-900 mb-2">Industries</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">Industries</div>
                           
                           {/* Automotive with sub-applications */}
                           <Accordion type="single" collapsible className="ml-2">
@@ -1104,7 +1104,7 @@ const Navigation = () => {
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-2">
-                          <div className="font-medium text-gray-900 mb-2">Product Groups</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">Product Groups</div>
                           
                           {/* Test Charts with subgroups */}
                           <Accordion type="single" collapsible className="ml-2">
@@ -1248,7 +1248,7 @@ const Navigation = () => {
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-2">
-                          <div className="font-medium text-gray-900 mb-2">Test Services</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">Test Services</div>
                           
                           {/* Overview */}
                           <Accordion type="single" collapsible className="ml-2">
@@ -1398,7 +1398,7 @@ const Navigation = () => {
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
-                          <div className="font-medium text-gray-900 mb-2">Resources</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">Resources</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>Webinars</span>
@@ -1435,7 +1435,7 @@ const Navigation = () => {
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
-                          <div className="font-medium text-gray-900 mb-2">Resources</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">Resources</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>Image Quality Factors</span>
@@ -1452,7 +1452,7 @@ const Navigation = () => {
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>IE Technology</span>
                           </div>
-                          <div className="font-medium text-gray-900 mb-2 mt-4">Publications</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">Publications</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>Conference Papers</span>
@@ -1485,7 +1485,7 @@ const Navigation = () => {
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
-                          <div className="font-medium text-gray-900 mb-2">About IE</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">About IE</div>
                           <Link to="/about" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>About us</span>
@@ -1506,7 +1506,7 @@ const Navigation = () => {
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>Careers</span>
                           </Link>
-                          <div className="font-medium text-gray-900 mb-2 mt-4">Business & Partnerships</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">Business & Partnerships</div>
                           <Link to="/resellers-subsidiaries" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>Resellers & Subsidiaries</span>
