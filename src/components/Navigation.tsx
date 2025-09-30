@@ -1089,7 +1089,7 @@ const Navigation = () => {
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/industries" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
-                              <Target className="h-4 w-4 mr-2" />
+                              <Search className="h-4 w-4 mr-2" />
                               Find Your Perfect Solution
                             </Button>
                           </Link>
