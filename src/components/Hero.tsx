@@ -27,7 +27,7 @@ const Hero = () => {
           {/* Left-aligned Content */}
           <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0">
             <div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6">
+              <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6">
                 Test Charts
                 <br />
                 <span className="font-medium">Made by Image<br className="md:hidden" /> Engineering</span>
