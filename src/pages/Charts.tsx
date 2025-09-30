@@ -287,24 +287,24 @@ const Charts = () => {
           <div className="flex items-center justify-start min-h-[80vh]">
             
             {/* Left-aligned Content */}
-            <div className="text-left space-y-8 max-w-4xl">
+            <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0">
               <div>
-                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6">
+                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
                   Test Charts
                   <br />
-                  <span className="font-medium">for Every Application</span>
+                  <span className="font-medium">for Every<br className="md:hidden" /> Application</span>
                 </h1>
                 
-                <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
+                <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
                   Our comprehensive selection of test charts for all camera and image quality testing – from low-light to ultra-HD.
                 </p>
               </div>
               
-              <div className="pt-4 flex gap-4">
+              <div className="pt-4 flex flex-col md:flex-row gap-4">
                 <Button 
                   size="lg"
                   variant="explore"
-                  className="border-0 px-12 py-4 group"
+                  className="border-0 px-12 py-4 group w-full md:w-auto"
                   onClick={scrollToCharts}
                 >
                   Explore All Charts
@@ -314,7 +314,7 @@ const Charts = () => {
                 <Button 
                   size="lg"
                   variant="decision"
-                  className="border-0 px-12 py-4"
+                  className="border-0 px-12 py-4 w-full md:w-auto"
                   style={{ backgroundColor: '#d9c409', color: 'black' }}
                   onClick={scrollToFooterExpert}
                 >
@@ -323,7 +323,7 @@ const Charts = () => {
               </div>
 
               {/* Minimal stats */}
-              <div className="flex items-center justify-start space-x-12 pt-8">
+              <div className="flex flex-wrap items-center justify-start gap-6 md:space-x-12 md:gap-0 pt-8">
                 <div>
                   <div className="text-2xl font-medium text-white">200+</div>
                   <div className="text-sm text-white/80 font-light">Test Chart Variants</div>
@@ -347,13 +347,13 @@ const Charts = () => {
         <div className="container mx-auto px-6 py-1">
           {/* Header */}
           <div className="mb-2 mt-2">
-            <h2 className="text-2xl font-semibold text-[#000000] mb-1">Find and Sort Your Perfect Test Charts</h2>
-            <p className="text-gray-600 text-sm">Use our filters and search function for precise search results</p>
+            <h2 className="text-xl md:text-2xl font-semibold text-[#000000] mb-1">Find and Sort Your Perfect Test Charts</h2>
+            <p className="text-gray-600 text-xs md:text-sm">Use our filters and search function for precise search results</p>
           </div>
           
           {/* Search Bar and Filter Button - Same Row */}
-          <div className="flex gap-3 items-start mb-2">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row gap-3 items-start mb-2">
+            <div className="flex-1 w-full">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
                 <Input
@@ -369,7 +369,7 @@ const Charts = () => {
             <Button
               variant="outline"
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className="flex items-center gap-2 bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3369] hover:text-white h-10 px-4"
+              className="flex items-center gap-2 bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3369] hover:text-white h-10 px-4 w-full md:w-auto hidden md:flex"
             >
               <Filter className="w-4 h-4" />
               {filtersOpen ? 'Hide Filter' : 'Show Filter'}
