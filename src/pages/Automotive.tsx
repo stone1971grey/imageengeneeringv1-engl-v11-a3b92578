@@ -34,17 +34,17 @@ const Automotive = () => {
 
   const hotspotMarkers = [
     { id: 1, label: "Front camera", top: 37, left: 48 },
-    { id: 2, label: "360° environment camera", top: 28, left: 32 },
-    { id: 2, label: "360° environment camera", top: 58, left: 60 },
-    { id: 2, label: "360° environment camera", top: 68, left: 15 },
-    { id: 2, label: "360° environment camera", top: 24, left: 85 },
-    { id: 3, label: "Ultra sonic sensors", top: 82, left: 28 },
-    { id: 3, label: "Ultra sonic sensors", top: 15, left: 75 },
-    { id: 4, label: "Long range radar", top: 72, left: 18 },
-    { id: 5, label: "Mid range radar", top: 78, left: 30 },
-    { id: 5, label: "Mid range radar", top: 46, left: 87 },
-    { id: 6, label: "Side ultra sonic sensor", top: 85, left: 34 },
-    { id: 6, label: "Side ultra sonic sensor", top: 40, left: 82 },
+    { id: 2, label: "360° environment camera", top: 32, left: 36 },
+    { id: 2, label: "360° environment camera", top: 56, left: 56 },
+    { id: 2, label: "360° environment camera", top: 62, left: 18 },
+    { id: 2, label: "360° environment camera", top: 28, left: 82 },
+    { id: 3, label: "Ultra sonic sensors", top: 78, left: 30 },
+    { id: 3, label: "Ultra sonic sensors", top: 18, left: 72 },
+    { id: 4, label: "Long range radar", top: 68, left: 20 },
+    { id: 5, label: "Mid range radar", top: 74, left: 32 },
+    { id: 5, label: "Mid range radar", top: 48, left: 84 },
+    { id: 6, label: "Side ultra sonic sensor", top: 80, left: 35 },
+    { id: 6, label: "Side ultra sonic sensor", top: 42, left: 80 },
   ];
   const sections = [
     { id: 'introduction', label: 'Introduction' },
@@ -131,9 +131,9 @@ const Automotive = () => {
           <div className="grid lg:grid-cols-5 gap-16 items-center min-h-[80vh]">
             
             {/* Left Content - 2/5 */}
-            <div className="lg:col-span-2 space-y-8 lg:pr-8 order-2 lg:order-1">
+            <div className="lg:col-span-2 space-y-8 lg:pr-8">
               <div>
-                <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64 md:pt-64 pt-80 lg:pt-64">
+                <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64 md:pt-64 pt-80">
                   Automotive
                   <br />
                   <span className="font-medium text-light-foreground">Image Quality</span>
@@ -174,7 +174,7 @@ const Automotive = () => {
             </div>
 
             {/* Right Content - Interactive Image Map - 3/5 */}
-            <div className="lg:col-span-3 relative order-1 lg:order-2">
+            <div className="lg:col-span-3 relative">
               <HotspotImage
                 src={automotiveHero}
                 alt="Automotive camera testing laboratory"
@@ -184,7 +184,7 @@ const Automotive = () => {
               />
               
               {/* Floating stats - now shows hover text */}
-              <div className="hidden lg:block absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
+              <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
                 <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Live Processing" : "ADAS Component"}</div>
                 <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Active" : hoveredPoint}</div>
               </div>
