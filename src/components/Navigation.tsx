@@ -911,7 +911,7 @@ const Navigation = () => {
                                    </Link>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <Link to="/automotive" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Advanced Driver Assistance Systems (ADAS)
@@ -939,7 +939,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">IEC 62676-5 Testing</div>
                                   <div className="block py-2 text-sm text-gray-600">Low-light (ISO 19093)</div>
@@ -962,7 +962,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">VCX PhoneCam</div>
                                   <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
@@ -985,7 +985,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">VCX WebCam</div>
                                   <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
@@ -1007,7 +1007,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">EMVA 1288 (ISO 24942)</div>
                                   <div className="block py-2 text-sm text-gray-600">Production Line Calibration</div>
@@ -1029,7 +1029,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
                                   <div className="block py-2 text-sm text-gray-600">Low-Light Testing</div>
@@ -1052,7 +1052,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">ISO 21550</div>
                                   <div className="block py-2 text-sm text-gray-600">Universal Test Target</div>
@@ -1075,7 +1075,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Broadcast & HDTV</div>
                                   <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
@@ -1110,7 +1110,7 @@ const Navigation = () => {
                                    </Link>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
                                   <div className="block py-2 text-sm text-gray-600">Multipurpose</div>
@@ -1139,7 +1139,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">iQ-LED</div>
                                   <div className="block py-2 text-sm text-gray-600">IEEE-P2020</div>
@@ -1163,7 +1163,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
                                   <div className="block py-2 text-sm text-gray-600">Timing Performance</div>
@@ -1187,7 +1187,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
                                   <div className="block py-2 text-sm text-gray-600">Control APIs</div>
@@ -1209,7 +1209,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Storage & Transport</div>
                                   <div className="block py-2 text-sm text-gray-600">Luxmeters</div>
@@ -1251,7 +1251,7 @@ const Navigation = () => {
                                   <span>Overview</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <Link to="/inside-lab" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Learn about the Lab
@@ -1273,7 +1273,7 @@ const Navigation = () => {
                                    </Link>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">camPAS</div>
                                    <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
@@ -1296,7 +1296,7 @@ const Navigation = () => {
                                   <span>VCX</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">VCX - PhoneCam</div>
                                   <div className="block py-2 text-sm text-gray-600">VCX - WebCam</div>
@@ -1316,7 +1316,7 @@ const Navigation = () => {
                                   <span>Image Quality</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Resolution & Texture Loss</div>
                                   <div className="block py-2 text-sm text-gray-600">Dynamic Range (OECF)</div>
@@ -1337,7 +1337,7 @@ const Navigation = () => {
                                   <span>Standardized</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">IEEE-P2020 (ADAS)</div>
                                   <div className="block py-2 text-sm text-gray-600">VCX (Mobile/Webcam)</div>
@@ -1358,7 +1358,7 @@ const Navigation = () => {
                                   <span>Specialized/Custom</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2">
+                              <AccordionContent className="px-4 pb-2 bg-gray-50 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Baseline Evaluations</div>
                                   <div className="block py-2 text-sm text-gray-600">Proof of Concepts</div>
