@@ -50,7 +50,7 @@ export default function HotspotImage({
             type="button"
             className={[
               "group absolute z-10 grid place-items-center pointer-events-auto",
-              "w-7 h-7 rounded-full text-white text-[13px] font-semibold shadow-lg border-2 border-white",
+              "w-10 h-10 md:w-7 md:h-7 rounded-full text-white text-base md:text-[13px] font-semibold shadow-lg border-2 border-white",
               dotColor,
               "transform -translate-x-1/2 -translate-y-1/2",
               "hover:scale-110 transition-transform cursor-pointer",
