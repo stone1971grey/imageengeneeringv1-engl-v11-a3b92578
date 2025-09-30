@@ -808,6 +808,10 @@ const Navigation = () => {
                    <div className="flex gap-8 p-6">
                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
                          <h4 className="font-semibold mb-3 text-lg text-black">About IE</h4>
+                         <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                           <CustomTargetIcon className="h-5 w-5" />
+                           <span>News</span>
+                         </Link>
                          <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>About us</span>
@@ -1488,6 +1492,10 @@ const Navigation = () => {
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
                           <div className="font-medium text-gray-900 py-3 mb-2">About IE</div>
+                          <Link to="/news" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>News</span>
+                          </Link>
                           <Link to="/about" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>About us</span>
