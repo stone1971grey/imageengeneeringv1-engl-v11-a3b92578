@@ -136,7 +136,7 @@ const Styleguide = () => {
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Decision</p>
                          <p className="text-sm text-gray-500">Main CTA buttons</p>
-                         <p className="text-xs text-gray-400 font-mono">#74952a</p>
+                         <p className="text-xs text-gray-400 font-mono">#e0d62a</p>
                        </div>
                        <Button variant="decision">
                          Discover Charts
@@ -162,7 +162,7 @@ const Styleguide = () => {
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Contact</p>
                          <p className="text-sm text-gray-500">Contact actions</p>
-                         <p className="text-xs text-gray-400 font-mono">#3D7BA2</p>
+                         <p className="text-xs text-gray-400 font-mono">#0f407b</p>
                        </div>
                        <Button variant="contact">
                          Contact Sales
