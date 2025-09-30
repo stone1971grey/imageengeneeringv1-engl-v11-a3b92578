@@ -576,7 +576,7 @@ const Navigation = () => {
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Link to="/inside-lab">
-                      <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                      <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800">
                         <Microscope className="h-5 w-5 mr-3" />
                         <span className="text-lg font-medium">Inside the Testing Lab</span>
                       </Button>
@@ -1232,7 +1232,7 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200">
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                            <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium">
                               <Microscope className="h-4 w-4 mr-2" />
                               Inside the Testing Lab
                             </Button>
