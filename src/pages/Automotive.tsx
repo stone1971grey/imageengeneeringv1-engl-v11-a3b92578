@@ -123,8 +123,8 @@ const Automotive = () => {
 
       {/* Hero Section - starts immediately after navigation */}
       <section id="introduction" className="min-h-screen bg-scandi-white font-roboto">
-        {/* Navigation Spacer */}
-        <div className="h-16"></div>
+        {/* Navigation Spacer - more space on mobile */}
+        <div className="h-32 md:h-16"></div>
         
         {/* Hero Content */}
         <div id="hero-start" className="container mx-auto px-6 py-16 lg:py-20 pb-8 lg:pb-12">
