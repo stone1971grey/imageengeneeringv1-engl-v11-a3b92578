@@ -79,8 +79,7 @@ const NewsSection = () => {
                           {item.teaser}
                         </p>
                         <Button 
-                          variant="outline" 
-                          className="w-full group-hover:bg-[#0f407b] group-hover:text-white transition-colors duration-300"
+                          className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300"
                         >
                           Read more
                         </Button>
