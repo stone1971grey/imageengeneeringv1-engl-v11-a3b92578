@@ -616,6 +616,48 @@ const NewsDetail = () => {
               </div>
             </div>
 
+            {/* Related News Section */}
+            <div className="mt-16">
+              <h3 className="text-2xl font-bold text-gray-900 mb-8">Related News</h3>
+              <div className="grid md:grid-cols-2 gap-8">
+                {Object.entries(newsArticles)
+                  .filter(([key]) => key !== slug)
+                  .slice(0, 2)
+                  .map(([key, relatedArticle]) => (
+                    <Link 
+                      key={key}
+                      to={`/news/${key}`}
+                      className="group bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 flex flex-col h-full"
+                    >
+                      <div className="overflow-hidden">
+                        <img 
+                          src={relatedArticle.image}
+                          alt={relatedArticle.headline}
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-6 flex flex-col flex-grow">
+                        <div className="text-sm text-gray-500 mb-2 font-medium">
+                          {relatedArticle.date}
+                        </div>
+                        <h4 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#0f407b] transition-colors">
+                          {relatedArticle.headline}
+                        </h4>
+                        <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
+                          {relatedArticle.teaser}
+                        </p>
+                        <Button 
+                          variant="outline" 
+                          className="mt-auto w-full border-[#0f407b] text-[#0f407b] hover:bg-[#0f407b] hover:text-white"
+                        >
+                          Read more
+                        </Button>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
+            </div>
+
             {/* Navigation to other articles */}
             <div className="mt-12 pt-8 border-t border-gray-200">
               <Link to="/news">
