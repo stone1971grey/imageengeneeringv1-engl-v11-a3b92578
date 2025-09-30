@@ -913,16 +913,16 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <Link to="/automotive" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                  <Link to="/automotive" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Advanced Driver Assistance Systems (ADAS)
                                   </Link>
-                                   <Link to="/in-cabin-testing" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                   <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                      In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">ACTIVE</span>
                                    </Link>
-                                  <div className="block py-1 text-sm text-gray-600">IEEE-P2020 Testing</div>
-                                  <div className="block py-1 text-sm text-gray-600">High Dynamic Range (HDR)</div>
-                                  <div className="block py-1 text-sm text-gray-600">Near-Infrared (NIR)</div>
-                                  <div className="block py-1 text-sm text-gray-600">Geometric Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">IEEE-P2020 Testing</div>
+                                  <div className="block py-2 text-sm text-gray-600">High Dynamic Range (HDR)</div>
+                                  <div className="block py-2 text-sm text-gray-600">Near-Infrared (NIR)</div>
+                                  <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -941,11 +941,11 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">IEC 62676-5 Testing</div>
-                                  <div className="block py-1 text-sm text-gray-600">Low-light (ISO 19093)</div>
-                                  <div className="block py-1 text-sm text-gray-600">High Dynamic Range (HDR)</div>
-                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivities</div>
+                                  <div className="block py-2 text-sm text-gray-600">IEC 62676-5 Testing</div>
+                                  <div className="block py-2 text-sm text-gray-600">Low-light (ISO 19093)</div>
+                                  <div className="block py-2 text-sm text-gray-600">High Dynamic Range (HDR)</div>
+                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -964,11 +964,11 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">VCX PhoneCam</div>
-                                  <div className="block py-1 text-sm text-gray-600">Color Calibration</div>
-                                  <div className="block py-1 text-sm text-gray-600">Camera Stabilization</div>
-                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-1 text-sm text-gray-600">Timing Measurements</div>
+                                  <div className="block py-2 text-sm text-gray-600">VCX PhoneCam</div>
+                                  <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">Camera Stabilization</div>
+                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-2 text-sm text-gray-600">Timing Measurements</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -987,10 +987,10 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">VCX WebCam</div>
-                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-1 text-sm text-gray-600">Color Calibration</div>
-                                  <div className="block py-1 text-sm text-gray-600">Timing Measurements</div>
+                                  <div className="block py-2 text-sm text-gray-600">VCX WebCam</div>
+                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">Timing Measurements</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1009,10 +1009,10 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">EMVA 1288 (ISO 24942)</div>
-                                  <div className="block py-1 text-sm text-gray-600">Production Line Calibration</div>
-                                  <div className="block py-1 text-sm text-gray-600">Lens Distortion</div>
-                                  <div className="block py-1 text-sm text-gray-600">Signal-to-Noise Ratio (SNR)</div>
+                                  <div className="block py-2 text-sm text-gray-600">EMVA 1288 (ISO 24942)</div>
+                                  <div className="block py-2 text-sm text-gray-600">Production Line Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">Lens Distortion</div>
+                                  <div className="block py-2 text-sm text-gray-600">Signal-to-Noise Ratio (SNR)</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1031,11 +1031,11 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">Color Calibration</div>
-                                  <div className="block py-1 text-sm text-gray-600">Low-Light Testing</div>
-                                  <div className="block py-1 text-sm text-gray-600">Optical Distortion</div>
-                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-1 text-sm text-gray-600">Endoscopic Illumination</div>
+                                  <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">Low-Light Testing</div>
+                                  <div className="block py-2 text-sm text-gray-600">Optical Distortion</div>
+                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-2 text-sm text-gray-600">Endoscopic Illumination</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1054,11 +1054,11 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">ISO 21550</div>
-                                  <div className="block py-1 text-sm text-gray-600">Universal Test Target</div>
-                                  <div className="block py-1 text-sm text-gray-600">Multispectral Illumination</div>
-                                  <div className="block py-1 text-sm text-gray-600">Scanner Dynamic Range</div>
-                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivities</div>
+                                  <div className="block py-2 text-sm text-gray-600">ISO 21550</div>
+                                  <div className="block py-2 text-sm text-gray-600">Universal Test Target</div>
+                                  <div className="block py-2 text-sm text-gray-600">Multispectral Illumination</div>
+                                  <div className="block py-2 text-sm text-gray-600">Scanner Dynamic Range</div>
+                                  <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1077,10 +1077,10 @@ const Navigation = () => {
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">Broadcast & HDTV</div>
-                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivities</div>
-                                  <div className="block py-1 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-1 text-sm text-gray-600">iQ-LED Illumination</div>
+                                  <div className="block py-2 text-sm text-gray-600">Broadcast & HDTV</div>
+                                  <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
+                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
+                                  <div className="block py-2 text-sm text-gray-600">iQ-LED Illumination</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1112,15 +1112,15 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">iQ-Analyzer-X</div>
-                                  <div className="block py-1 text-sm text-gray-600">Multipurpose</div>
-                                  <div className="block py-1 text-sm text-gray-600">Image Quality Factor</div>
-                                  <div className="block py-1 text-sm text-gray-600">Infrared (VIS-IR)</div>
-                                  <Link to="/charts" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                  <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
+                                  <div className="block py-2 text-sm text-gray-600">Multipurpose</div>
+                                  <div className="block py-2 text-sm text-gray-600">Image Quality Factor</div>
+                                  <div className="block py-2 text-sm text-gray-600">Infrared (VIS-IR)</div>
+                                  <Link to="/charts" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Reflective
                                   </Link>
-                                  <div className="block py-1 text-sm text-gray-600">Transparent</div>
-                                  <Link to="/charts" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                  <div className="block py-2 text-sm text-gray-600">Transparent</div>
+                                  <Link to="/charts" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     See All Charts
                                   </Link>
                                 </div>
@@ -1141,12 +1141,12 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">iQ-LED</div>
-                                  <div className="block py-1 text-sm text-gray-600">IEEE-P2020</div>
-                                  <div className="block py-1 text-sm text-gray-600">Production Line Calibration</div>
-                                  <div className="block py-1 text-sm text-gray-600">Flicker (PWM/MMP)</div>
-                                  <div className="block py-1 text-sm text-gray-600">Test Chart Illumination</div>
-                                  <div className="block py-1 text-sm text-gray-600">All Light Sources</div>
+                                  <div className="block py-2 text-sm text-gray-600">iQ-LED</div>
+                                  <div className="block py-2 text-sm text-gray-600">IEEE-P2020</div>
+                                  <div className="block py-2 text-sm text-gray-600">Production Line Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">Flicker (PWM/MMP)</div>
+                                  <div className="block py-2 text-sm text-gray-600">Test Chart Illumination</div>
+                                  <div className="block py-2 text-sm text-gray-600">All Light Sources</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1165,12 +1165,12 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">Geometric Calibration</div>
-                                  <div className="block py-1 text-sm text-gray-600">Timing Performance</div>
-                                  <div className="block py-1 text-sm text-gray-600">Climate-Controlled</div>
-                                  <div className="block py-1 text-sm text-gray-600">Machine Vision</div>
-                                  <div className="block py-1 text-sm text-gray-600">Spectral Sensitivity</div>
-                                  <div className="block py-1 text-sm text-gray-600">All Measurement Devices</div>
+                                  <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">Timing Performance</div>
+                                  <div className="block py-2 text-sm text-gray-600">Climate-Controlled</div>
+                                  <div className="block py-2 text-sm text-gray-600">Machine Vision</div>
+                                  <div className="block py-2 text-sm text-gray-600">Spectral Sensitivity</div>
+                                  <div className="block py-2 text-sm text-gray-600">All Measurement Devices</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1189,10 +1189,10 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">iQ-Analyzer-X</div>
-                                  <div className="block py-1 text-sm text-gray-600">Control APIs</div>
-                                  <div className="block py-1 text-sm text-gray-600">iQ-Luminance</div>
-                                  <div className="block py-1 text-sm text-gray-600">All Software & APIs</div>
+                                  <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
+                                  <div className="block py-2 text-sm text-gray-600">Control APIs</div>
+                                  <div className="block py-2 text-sm text-gray-600">iQ-Luminance</div>
+                                  <div className="block py-2 text-sm text-gray-600">All Software & APIs</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1211,12 +1211,12 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">Storage & Transport</div>
-                                  <div className="block py-1 text-sm text-gray-600">Luxmeters</div>
-                                  <div className="block py-1 text-sm text-gray-600">Camera Alignment</div>
-                                  <div className="block py-1 text-sm text-gray-600">Test Chart Mounts</div>
-                                  <div className="block py-1 text-sm text-gray-600">VCX & Webcam</div>
-                                  <div className="block py-1 text-sm text-gray-600">All Accessories</div>
+                                  <div className="block py-2 text-sm text-gray-600">Storage & Transport</div>
+                                  <div className="block py-2 text-sm text-gray-600">Luxmeters</div>
+                                  <div className="block py-2 text-sm text-gray-600">Camera Alignment</div>
+                                  <div className="block py-2 text-sm text-gray-600">Test Chart Mounts</div>
+                                  <div className="block py-2 text-sm text-gray-600">VCX & Webcam</div>
+                                  <div className="block py-2 text-sm text-gray-600">All Accessories</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1253,10 +1253,10 @@ const Navigation = () => {
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <Link to="/inside-lab" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                  <Link to="/inside-lab" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Learn about the Lab
                                   </Link>
-                                  <div className="block py-1 text-sm text-gray-600">Testing Consultation</div>
+                                  <div className="block py-2 text-sm text-gray-600">Testing Consultation</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1275,13 +1275,13 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">camPAS</div>
-                                   <Link to="/in-cabin-testing" className="block py-1 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                  <div className="block py-2 text-sm text-gray-600">camPAS</div>
+                                   <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                      In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">ACTIVE</span>
                                    </Link>
-                                  <div className="block py-1 text-sm text-gray-600">HDR Testing</div>
-                                  <div className="block py-1 text-sm text-gray-600">Geometric Calibration</div>
-                                  <div className="block py-1 text-sm text-gray-600">Baseline Evaluations</div>
+                                  <div className="block py-2 text-sm text-gray-600">HDR Testing</div>
+                                  <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
+                                  <div className="block py-2 text-sm text-gray-600">Baseline Evaluations</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1298,10 +1298,10 @@ const Navigation = () => {
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">VCX - PhoneCam</div>
-                                  <div className="block py-1 text-sm text-gray-600">VCX - WebCam</div>
-                                  <div className="block py-1 text-sm text-gray-600">Color Characterizations</div>
-                                  <div className="block py-1 text-sm text-gray-600">Baseline Evaluations</div>
+                                  <div className="block py-2 text-sm text-gray-600">VCX - PhoneCam</div>
+                                  <div className="block py-2 text-sm text-gray-600">VCX - WebCam</div>
+                                  <div className="block py-2 text-sm text-gray-600">Color Characterizations</div>
+                                  <div className="block py-2 text-sm text-gray-600">Baseline Evaluations</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1318,11 +1318,11 @@ const Navigation = () => {
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">Resolution & Texture Loss</div>
-                                  <div className="block py-1 text-sm text-gray-600">Dynamic Range (OECF)</div>
-                                  <div className="block py-1 text-sm text-gray-600">Lens Distortion</div>
-                                  <div className="block py-1 text-sm text-gray-600">Image Shading & Flare</div>
-                                  <div className="block py-1 text-sm text-gray-600">Color Accuracy</div>
+                                  <div className="block py-2 text-sm text-gray-600">Resolution & Texture Loss</div>
+                                  <div className="block py-2 text-sm text-gray-600">Dynamic Range (OECF)</div>
+                                  <div className="block py-2 text-sm text-gray-600">Lens Distortion</div>
+                                  <div className="block py-2 text-sm text-gray-600">Image Shading & Flare</div>
+                                  <div className="block py-2 text-sm text-gray-600">Color Accuracy</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1339,11 +1339,11 @@ const Navigation = () => {
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">IEEE-P2020 (ADAS)</div>
-                                  <div className="block py-1 text-sm text-gray-600">VCX (Mobile/Webcam)</div>
-                                  <div className="block py-1 text-sm text-gray-600">IEC 62676-5 (Security)</div>
-                                  <div className="block py-1 text-sm text-gray-600">EMVA 1288 (Machine Vision)</div>
-                                  <div className="block py-1 text-sm text-gray-600">ISO 12233 (SFR)</div>
+                                  <div className="block py-2 text-sm text-gray-600">IEEE-P2020 (ADAS)</div>
+                                  <div className="block py-2 text-sm text-gray-600">VCX (Mobile/Webcam)</div>
+                                  <div className="block py-2 text-sm text-gray-600">IEC 62676-5 (Security)</div>
+                                  <div className="block py-2 text-sm text-gray-600">EMVA 1288 (Machine Vision)</div>
+                                  <div className="block py-2 text-sm text-gray-600">ISO 12233 (SFR)</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
@@ -1360,13 +1360,13 @@ const Navigation = () => {
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2">
                                 <div className="space-y-2">
-                                  <div className="block py-1 text-sm text-gray-600">Baseline Evaluations</div>
-                                  <div className="block py-1 text-sm text-gray-600">Proof of Concepts</div>
-                                  <div className="block py-1 text-sm text-gray-600">Luminance Calibrations</div>
-                                  <div className="block py-1 text-sm text-gray-600">Sample-to-Sample Deviations</div>
-                                  <div className="block py-1 text-sm text-gray-600">Development Validation Tests</div>
-                                  <div className="block py-1 text-sm text-gray-600">Temperature-Controlled</div>
-                                  <div className="block py-1 text-sm text-gray-600">Underwater Tests</div>
+                                  <div className="block py-2 text-sm text-gray-600">Baseline Evaluations</div>
+                                  <div className="block py-2 text-sm text-gray-600">Proof of Concepts</div>
+                                  <div className="block py-2 text-sm text-gray-600">Luminance Calibrations</div>
+                                  <div className="block py-2 text-sm text-gray-600">Sample-to-Sample Deviations</div>
+                                  <div className="block py-2 text-sm text-gray-600">Development Validation Tests</div>
+                                  <div className="block py-2 text-sm text-gray-600">Temperature-Controlled</div>
+                                  <div className="block py-2 text-sm text-gray-600">Underwater Tests</div>
                                 </div>
                               </AccordionContent>
                             </AccordionItem>
