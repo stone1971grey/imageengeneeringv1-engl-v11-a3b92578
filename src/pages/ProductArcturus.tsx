@@ -105,7 +105,7 @@ const ProductArcturus = () => {
             <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/10 to-soft-blue/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
           </div>
           
-          <div className="container mx-auto px-6 py-16 lg:py-24 pt-20 md:pt-32 relative z-10">
+          <div className="container mx-auto px-6 py-16 lg:py-24 pt-8 md:pt-32 relative z-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               
               {/* Left Content */}
