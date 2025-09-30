@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Link } from "react-router-dom";
 import emvaLogo from "@/assets/news-emva-1288-logo.png";
 import te300Image from "@/assets/news-te300.png";
 import iqAnalyzerImage from "@/assets/news-iq-analyzer-x.png";
@@ -9,6 +10,7 @@ import geocalImage from "@/assets/news-geocal-xl.png";
 const newsItems = [
   {
     id: 1,
+    slug: "emva-1288-iso-24942",
     date: "July 21, 2025",
     headline: "EMVA 1288 becoming ISO 24942",
     teaser: "Dietmar Wueller is leading the international effort to migrate EMVA 1288 into ISO 24942, enhancing global standards for image quality testing.",
@@ -16,6 +18,7 @@ const newsItems = [
   },
   {
     id: 2,
+    slug: "te300-skin-tone-chart",
     date: "June 20, 2025",
     headline: "TE300 – A new skin tone test chart",
     teaser: "Introducing the TE300 Skin Tone Checker: a modern tool for assessing skin tone accuracy in camera systems with real-world spectral data.",
@@ -23,6 +26,7 @@ const newsItems = [
   },
   {
     id: 3,
+    slug: "iq-analyzer-x-ai",
     date: "May 27, 2025",
     headline: "AI-powered image quality analysis software",
     teaser: "The iQ-Analyzer-X introduces advanced AI-powered tools for chart detection, automation, and video file analysis to streamline workflows.",
@@ -30,6 +34,7 @@ const newsItems = [
   },
   {
     id: 4,
+    slug: "geometric-camera-calibration",
     date: "July 21, 2025",
     headline: "Geometric Camera Calibration",
     teaser: "GEOCAL offers a compact, laser-based solution for geometric calibration, improving accuracy compared to traditional checkerboard targets.",
@@ -78,11 +83,13 @@ const NewsSection = () => {
                         <p className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed flex-1">
                           {item.teaser}
                         </p>
-                        <Button 
-                          className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300 mt-auto"
-                        >
-                          Read more
-                        </Button>
+                        <Link to={`/news/${item.slug}`} className="w-full block">
+                          <Button 
+                            className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300 mt-auto"
+                          >
+                            Read more
+                          </Button>
+                        </Link>
                       </div>
                     </CardContent>
                   </Card>
