@@ -442,7 +442,7 @@ const Navigation = () => {
                     {/* Right Column: Applications */}
                     <div className="space-y-4 flex-1">
                       <h4 className="font-semibold mb-3 text-lg text-black">
-                        {hoveredIndustry ? `${hoveredIndustry} - Applications` : "Applications"}
+                        {hoveredIndustry ? `${hoveredIndustry} - ${t('nav.applications')}` : t('nav.applications')}
                       </h4>
                       
                       {/* Conditional Rendering of Applications */}
@@ -468,7 +468,7 @@ const Navigation = () => {
                       {!hoveredIndustry && (
                         <div className="text-gray-500 text-center py-8">
                           <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>Hover over an industry to see applications</p>
+                          <p>{t('nav.hoverIndustry')}</p>
                         </div>
                       )}
                     </div>
@@ -478,7 +478,7 @@ const Navigation = () => {
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
                       <Search className="h-5 w-5 mr-3" />
-                      <span className="text-lg font-medium">Find Your Perfect Solution</span>
+                      <span className="text-lg font-medium">{t('nav.findSolution')}</span>
                     </Button>
                   </div>
                   
@@ -494,7 +494,14 @@ const Navigation = () => {
                         <div className="text-black">
                           <h4 className="font-semibold text-xl mb-2">{hoveredIndustry}</h4>
                           <p className="text-lg text-gray-600 leading-relaxed">
-                            {industryData[hoveredIndustry as keyof typeof industryData].description}
+                            {t(`nav.${hoveredIndustry === "Automotive" ? 'automotiveDesc' : 
+                                     hoveredIndustry === "Security & Surveillance" ? 'securityDesc' :
+                                     hoveredIndustry === "Mobile Phone" ? 'mobilePhoneDesc' :
+                                     hoveredIndustry === "Web Camera" ? 'webCameraDesc' :
+                                     hoveredIndustry === "Machine Vision" ? 'machineVisionDesc' :
+                                     hoveredIndustry === "Medical & Endoscopy" ? 'medicalDesc' :
+                                     hoveredIndustry === "Scanners & Archiving" ? 'scannersDesc' :
+                                     'photoVideoDesc'}`)}
                           </p>
                         </div>
                       </div>
@@ -597,7 +604,11 @@ const Navigation = () => {
                         <div className="text-black">
                           <h4 className="font-semibold text-xl mb-2">{hoveredProduct}</h4>
                           <p className="text-lg text-gray-600 leading-relaxed">
-                            {productData[hoveredProduct as keyof typeof productData].description}
+                            {t(`nav.${hoveredProduct === "Test Charts" ? 'testChartsDesc' :
+                                     hoveredProduct === "Illumination Devices" ? 'illuminationDesc' :
+                                     hoveredProduct === "Measurement Devices" ? 'measurementDesc' :
+                                     hoveredProduct === "Software & APIs" ? 'softwareDesc' :
+                                     'accessoriesDesc'}`)}
                           </p>
                         </div>
                       </div>
@@ -708,7 +719,12 @@ const Navigation = () => {
                         <div className="text-black">
                           <h4 className="font-semibold text-xl mb-2">{hoveredTestService}</h4>
                           <p className="text-lg text-gray-600 leading-relaxed">
-                            {testServicesData[hoveredTestService as keyof typeof testServicesData].description}
+                            {t(`nav.${hoveredTestService === "Overview" ? 'overviewDesc' :
+                                     hoveredTestService === "Automotive" ? 'automotiveServicesDesc' :
+                                     hoveredTestService === "VCX" ? 'vcxDesc' :
+                                     hoveredTestService === "Image Quality" ? 'imageQualityDesc' :
+                                     hoveredTestService === "Standardized" ? 'standardizedDesc' :
+                                     'specializedDesc'}`)}
                           </p>
                         </div>
                       </div>

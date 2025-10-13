@@ -116,7 +116,35 @@ const translations: Record<Language, any> = {
       ieTechnology: 'IE Technology',
       conferencePapers: 'Conference Papers',
       whitePapers: 'White Papers & Theses',
-      videoArchive: 'Video Archive'
+      videoArchive: 'Video Archive',
+      applications: 'Applications',
+      hoverIndustry: 'Hover over an industry to see applications',
+      findSolution: 'Find Your Perfect Solution',
+      
+      // Industry descriptions
+      automotiveDesc: 'Camera systems in vehicles, driver assistance and autonomous driving',
+      securityDesc: 'CCTV systems, video surveillance',
+      mobilePhoneDesc: 'Image quality testing according to VCX standards',
+      webCameraDesc: 'Web cameras for video conferencing and streaming applications',
+      machineVisionDesc: 'Camera systems for inspection, robotics, quality control',
+      medicalDesc: 'Image quality in medical imaging and diagnostic systems',
+      scannersDesc: 'Quality assurance in digitization of documents, books, photos',
+      photoVideoDesc: 'Digital cameras for professional and amateur applications',
+      
+      // Product descriptions
+      testChartsDesc: 'High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options',
+      illuminationDesc: 'Professional LED lighting systems and uniform light sources for stable testing environments',
+      measurementDesc: 'Precision colorimeters, photometers and spectroradiometers for accurate optical measurements',
+      softwareDesc: 'Advanced software solutions for image analysis, calibration and automated quality control',
+      accessoriesDesc: 'Professional accessories including mounting systems, cables, connectors and protective cases',
+      
+      // Test Services descriptions
+      overviewDesc: 'Comprehensive introduction to our testing laboratory capabilities and methodologies',
+      automotiveServicesDesc: 'Specialized testing services for automotive camera systems and ADAS applications',
+      vcxDesc: 'VCX testing protocols for mobile devices and webcam applications',
+      imageQualityDesc: 'Comprehensive image quality analysis and measurement services',
+      standardizedDesc: 'Testing services according to international standards and protocols',
+      specializedDesc: 'Custom testing solutions and specialized measurement services'
     },
     hero: {
       title: 'Test Charts',
@@ -256,7 +284,35 @@ const translations: Record<Language, any> = {
       ieTechnology: 'IE-Technologie',
       conferencePapers: 'Konferenzbeiträge',
       whitePapers: 'White Papers & Dissertationen',
-      videoArchive: 'Videoarchiv'
+      videoArchive: 'Videoarchiv',
+      applications: 'Anwendungen',
+      hoverIndustry: 'Bewegen Sie die Maus über eine Branche, um Anwendungen zu sehen',
+      findSolution: 'Finden Sie Ihre perfekte Lösung',
+      
+      // Industry descriptions
+      automotiveDesc: 'Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren',
+      securityDesc: 'CCTV-Systeme, Videoüberwachung',
+      mobilePhoneDesc: 'Bildqualitätstests nach VCX-Standards',
+      webCameraDesc: 'Webkameras für Videokonferenzen und Streaming-Anwendungen',
+      machineVisionDesc: 'Kamerasysteme für Inspektion, Robotik, Qualitätskontrolle',
+      medicalDesc: 'Bildqualität in medizinischer Bildgebung und Diagnosesystemen',
+      scannersDesc: 'Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos',
+      photoVideoDesc: 'Digitalkameras für professionelle und Amateur-Anwendungen',
+      
+      // Product descriptions
+      testChartsDesc: 'Hochpräzise Testmuster und Farbtafeln für umfassende Bildqualitätsanalyse einschließlich Mehrzweck-, Reflexions- und Transparentoptionen',
+      illuminationDesc: 'Professionelle LED-Beleuchtungssysteme und gleichmäßige Lichtquellen für stabile Testumgebungen',
+      measurementDesc: 'Präzisions-Kolorimeter, Photometer und Spektroradiometer für genaue optische Messungen',
+      softwareDesc: 'Fortschrittliche Softwarelösungen für Bildanalyse, Kalibrierung und automatisierte Qualitätskontrolle',
+      accessoriesDesc: 'Professionelles Zubehör einschließlich Montagesystemen, Kabeln, Steckverbindern und Schutzhüllen',
+      
+      // Test Services descriptions
+      overviewDesc: 'Umfassende Einführung in unsere Testlaborfähigkeiten und Methoden',
+      automotiveServicesDesc: 'Spezialisierte Testdienstleistungen für Automotive-Kamerasysteme und ADAS-Anwendungen',
+      vcxDesc: 'VCX-Testprotokolle für mobile Geräte und Webcam-Anwendungen',
+      imageQualityDesc: 'Umfassende Bildqualitätsanalyse und Messdienstleistungen',
+      standardizedDesc: 'Testdienstleistungen nach internationalen Standards und Protokollen',
+      specializedDesc: 'Maßgeschneiderte Testlösungen und spezialisierte Messdienstleistungen'
     },
     hero: {
       title: 'Testcharts',
@@ -396,7 +452,35 @@ const translations: Record<Language, any> = {
       ieTechnology: 'IE技术',
       conferencePapers: '会议论文',
       whitePapers: '白皮书与论文',
-      videoArchive: '视频档案'
+      videoArchive: '视频档案',
+      applications: '应用',
+      hoverIndustry: '将鼠标悬停在行业上以查看应用',
+      findSolution: '找到您的完美解决方案',
+      
+      // Industry descriptions
+      automotiveDesc: '车辆中的相机系统、驾驶辅助和自动驾驶',
+      securityDesc: '闭路电视系统、视频监控',
+      mobilePhoneDesc: '根据VCX标准进行图像质量测试',
+      webCameraDesc: '用于视频会议和流媒体应用的网络摄像头',
+      machineVisionDesc: '用于检查、机器人和质量控制的相机系统',
+      medicalDesc: '医学成像和诊断系统中的图像质量',
+      scannersDesc: '文档、书籍、照片数字化的质量保证',
+      photoVideoDesc: '专业和业余应用的数码相机',
+      
+      // Product descriptions
+      testChartsDesc: '高精度测试图案和色卡，用于综合图像质量分析，包括多用途、反射和透明选项',
+      illuminationDesc: '专业LED照明系统和均匀光源，用于稳定的测试环境',
+      measurementDesc: '精密色度计、光度计和光谱辐射计，用于准确的光学测量',
+      softwareDesc: '用于图像分析、校准和自动化质量控制的高级软件解决方案',
+      accessoriesDesc: '专业配件，包括安装系统、电缆、连接器和保护壳',
+      
+      // Test Services descriptions
+      overviewDesc: '全面介绍我们的测试实验室能力和方法',
+      automotiveServicesDesc: '汽车相机系统和ADAS应用的专业测试服务',
+      vcxDesc: '移动设备和网络摄像头应用的VCX测试协议',
+      imageQualityDesc: '综合图像质量分析和测量服务',
+      standardizedDesc: '根据国际标准和协议的测试服务',
+      specializedDesc: '定制测试解决方案和专业测量服务'
     },
     hero: {
       title: '测试图表',
@@ -536,7 +620,35 @@ const translations: Record<Language, any> = {
       ieTechnology: 'IE技術',
       conferencePapers: '会議論文',
       whitePapers: 'ホワイトペーパーと論文',
-      videoArchive: 'ビデオアーカイブ'
+      videoArchive: 'ビデオアーカイブ',
+      applications: 'アプリケーション',
+      hoverIndustry: '業界にカーソルを合わせると、アプリケーションが表示されます',
+      findSolution: '最適なソリューションを見つける',
+      
+      // Industry descriptions
+      automotiveDesc: '車両のカメラシステム、運転支援、自動運転',
+      securityDesc: 'CCTVシステム、ビデオ監視',
+      mobilePhoneDesc: 'VCX規格に準拠した画質テスト',
+      webCameraDesc: 'ビデオ会議とストリーミングアプリケーション用のウェブカメラ',
+      machineVisionDesc: '検査、ロボット、品質管理のためのカメラシステム',
+      medicalDesc: '医療画像と診断システムにおける画質',
+      scannersDesc: '文書、書籍、写真のデジタル化における品質保証',
+      photoVideoDesc: 'プロフェッショナルおよびアマチュア用途のデジタルカメラ',
+      
+      // Product descriptions
+      testChartsDesc: '多目的、反射、透明オプションを含む包括的な画質分析のための高精度テストパターンとカラーチャート',
+      illuminationDesc: '安定したテスト環境のためのプロフェッショナルLED照明システムと均一光源',
+      measurementDesc: '正確な光学測定のための精密色度計、測光計、分光放射計',
+      softwareDesc: '画像分析、校正、自動品質管理のための高度なソフトウェアソリューション',
+      accessoriesDesc: 'マウントシステム、ケーブル、コネクタ、保護ケースを含むプロフェッショナルアクセサリー',
+      
+      // Test Services descriptions
+      overviewDesc: '当社のテストラボの能力と方法論の包括的な紹介',
+      automotiveServicesDesc: '自動車カメラシステムとADASアプリケーションの専門テストサービス',
+      vcxDesc: 'モバイルデバイスとウェブカメラアプリケーションのVCXテストプロトコル',
+      imageQualityDesc: '包括的な画質分析と測定サービス',
+      standardizedDesc: '国際規格とプロトコルに準拠したテストサービス',
+      specializedDesc: 'カスタムテストソリューションと専門測定サービス'
     },
     hero: {
       title: 'テストチャート',
@@ -676,7 +788,35 @@ const translations: Record<Language, any> = {
       ieTechnology: 'IE 기술',
       conferencePapers: '회의 논문',
       whitePapers: '백서 및 논문',
-      videoArchive: '비디오 아카이브'
+      videoArchive: '비디오 아카이브',
+      applications: '애플리케이션',
+      hoverIndustry: '산업 위에 마우스를 올려 애플리케이션을 확인하세요',
+      findSolution: '완벽한 솔루션 찾기',
+      
+      // Industry descriptions
+      automotiveDesc: '차량의 카메라 시스템, 운전자 보조 및 자율 주행',
+      securityDesc: 'CCTV 시스템, 비디오 감시',
+      mobilePhoneDesc: 'VCX 표준에 따른 이미지 품질 테스트',
+      webCameraDesc: '화상 회의 및 스트리밍 애플리케이션용 웹 카메라',
+      machineVisionDesc: '검사, 로봇 공학, 품질 관리를 위한 카메라 시스템',
+      medicalDesc: '의료 영상 및 진단 시스템의 이미지 품질',
+      scannersDesc: '문서, 도서, 사진 디지털화의 품질 보증',
+      photoVideoDesc: '전문가 및 아마추어 애플리케이션용 디지털 카메라',
+      
+      // Product descriptions
+      testChartsDesc: '다목적, 반사 및 투명 옵션을 포함한 포괄적인 이미지 품질 분석을 위한 고정밀 테스트 패턴 및 컬러 차트',
+      illuminationDesc: '안정적인 테스트 환경을 위한 전문 LED 조명 시스템 및 균일한 광원',
+      measurementDesc: '정확한 광학 측정을 위한 정밀 색도계, 광도계 및 분광 방사계',
+      softwareDesc: '이미지 분석, 보정 및 자동화된 품질 관리를 위한 고급 소프트웨어 솔루션',
+      accessoriesDesc: '마운팅 시스템, 케이블, 커넥터 및 보호 케이스를 포함한 전문 액세서리',
+      
+      // Test Services descriptions
+      overviewDesc: '당사의 테스트 실험실 역량 및 방법론에 대한 포괄적인 소개',
+      automotiveServicesDesc: '자동차 카메라 시스템 및 ADAS 애플리케이션을 위한 전문 테스트 서비스',
+      vcxDesc: '모바일 장치 및 웹캠 애플리케이션을 위한 VCX 테스트 프로토콜',
+      imageQualityDesc: '포괄적인 이미지 품질 분석 및 측정 서비스',
+      standardizedDesc: '국제 표준 및 프로토콜에 따른 테스트 서비스',
+      specializedDesc: '맞춤형 테스트 솔루션 및 전문 측정 서비스'
     },
     hero: {
       title: '테스트 차트',
