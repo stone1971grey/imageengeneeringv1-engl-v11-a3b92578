@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/contexts/LanguageContext";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
@@ -30,6 +31,7 @@ import solutionsClimate from "@/assets/solutions-climate-control.png";
 
 // Automotive & ADAS landing page component
 const Automotive = () => {
+  const { t } = useLanguage();
   const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
 
   const hotspotMarkers = [
@@ -56,26 +58,26 @@ const Automotive = () => {
 
   const applications = [
     {
-      title: "In-Cabin Performance Testing",
-      description: "Driver and occupant monitoring systems (DMS/OMS) use a variety of near-infrared (NIR) sensors combined with active illumination (e.g., LED) to enhance the safety and comfort of drivers and passengers.",
+      titleKey: "automotive.applications.inCabin.title",
+      descriptionKey: "automotive.applications.inCabin.description",
       icon: Eye,
       iconType: "vision"
     },
     {
-      title: "ADAS Performance Testing",
-      description: "Advanced Driver Assistance Systems (ADAS) encompass a wide range of camera and sensor systems that support autonomous vehicle movements and provide driver caution notices.",
+      titleKey: "automotive.applications.adas.title",
+      descriptionKey: "automotive.applications.adas.description",
       icon: Shield,
       iconType: "testing"
     },
     {
-      title: "Geometric Camera Calibration",
-      description: "An essential measurement for ADAS applications that are required to detect and accurately map 3D objects in a moving scene and make adjustments based on those calculations.",
+      titleKey: "automotive.applications.geometric.title",
+      descriptionKey: "automotive.applications.geometric.description",
       icon: Brain,
       iconType: "ai"
     },
     {
-      title: "Climate-Controlled Testing",
-      description: "Incorporating various weather scenarios into automotive camera testing is crucial to understanding if these systems can still meet their performance thresholds in even the harshest weather conditions.",
+      titleKey: "automotive.applications.climate.title",
+      descriptionKey: "automotive.applications.climate.description",
       icon: Zap,
       iconType: "illumination"
     }
@@ -134,13 +136,13 @@ const Automotive = () => {
             <div className="lg:col-span-2 space-y-8 lg:pr-8">
               <div>
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64 md:pt-64 pt-80">
-                  Automotive
+                  {t('automotive.hero.title')}
                   <br />
-                  <span className="font-medium text-light-foreground">Image Quality</span>
+                  <span className="font-medium text-light-foreground">{t('automotive.hero.subtitle')}</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                  Precision-engineered camera system test solutions for robust vehicle safety, performance and autonomy.
+                  {t('automotive.hero.description')}
                 </p>
               </div>
               
@@ -151,7 +153,7 @@ const Automotive = () => {
                     size="lg"
                     className="px-8 py-4 text-lg font-medium group"
                   >
-                    Discover Automotive Solutions
+                    {t('automotive.hero.cta')}
                   </Button>
                 </Link>
               </div>
@@ -159,16 +161,16 @@ const Automotive = () => {
               {/* Minimal stats */}
               <div className="flex items-center space-x-12 pt-8">
                 <div>
-                  <div className="text-2xl font-medium text-light-foreground">99.9%</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Genauigkeit</div>
+                  <div className="text-2xl font-medium text-light-foreground">{t('automotive.hero.stat1Value')}</div>
+                  <div className="text-sm text-scandi-grey font-light">{t('automotive.hero.stat1Label')}</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-medium text-light-foreground">50ms</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Reaktion</div>
+                  <div className="text-2xl font-medium text-light-foreground">{t('automotive.hero.stat2Value')}</div>
+                  <div className="text-sm text-scandi-grey font-light">{t('automotive.hero.stat2Label')}</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-medium text-light-foreground">100+</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] ADAS Projekte</div>
+                  <div className="text-2xl font-medium text-light-foreground">{t('automotive.hero.stat3Value')}</div>
+                  <div className="text-sm text-scandi-grey font-light">{t('automotive.hero.stat3Label')}</div>
                 </div>
               </div>
             </div>
@@ -201,10 +203,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Main Applications
+              {t('automotive.applications.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Automotive camera systems cover a broad spectrum of applications that contribute to vehicle safety, comfort and performance.
+              {t('automotive.applications.subtitle')}
             </p>
           </div>
         </div>
@@ -225,12 +227,12 @@ const Automotive = () => {
                   
                    {/* Title */}
                    <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight h-16 flex items-start">
-                     {app.title}
+                     {t(app.titleKey)}
                    </h3>
                    
                    {/* Description */}
                    <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
-                     {app.description}
+                     {t(app.descriptionKey)}
                    </p>
                   
                    {/* CTA Button */}
@@ -238,7 +240,7 @@ const Automotive = () => {
                      className="w-full text-white hover:opacity-90"
                      style={{ backgroundColor: '#103e7c' }}
                    >
-                     Learn More
+                     {t('automotive.applications.learnMore')}
                    </Button>
                 </div>
               );
