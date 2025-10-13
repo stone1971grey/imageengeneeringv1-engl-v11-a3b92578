@@ -1107,11 +1107,11 @@ const Navigation = () => {
                     {/* Products */}
                     <AccordionItem value="products" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          Products
+                          {t('nav.products')}
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-2">
-                          <div className="font-medium text-gray-900 py-3 mb-2">Product Groups</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">{t('nav.productGroups')}</div>
                           
                           {/* Test Charts with subgroups */}
                           <Accordion type="single" collapsible className="ml-2">
@@ -1120,7 +1120,7 @@ const Navigation = () => {
                                  <div className="flex items-center justify-between w-full">
                                    <Link to="/charts" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                      <CustomTargetIcon className="h-4 w-4" />
-                                     <span>Test Charts</span>
+                                     <span>{t('nav.testCharts')}</span>
                                      <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
                                    </Link>
                                  </div>
@@ -1150,7 +1150,7 @@ const Navigation = () => {
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
-                                     <span>Illumination Devices</span>
+                                     <span>{t('nav.illumination')}</span>
                                    </div>
                                  </div>
                                </AccordionTrigger>
@@ -1174,7 +1174,7 @@ const Navigation = () => {
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
-                                     <span>Measurement Devices</span>
+                                     <span>{t('nav.measurement')}</span>
                                    </div>
                                  </div>
                                </AccordionTrigger>
@@ -1198,7 +1198,7 @@ const Navigation = () => {
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
-                                     <span>Software & APIs</span>
+                                     <span>{t('nav.software')}</span>
                                    </div>
                                  </div>
                                </AccordionTrigger>
@@ -1220,7 +1220,7 @@ const Navigation = () => {
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
-                                     <span>Product Accessories</span>
+                                     <span>{t('nav.accessories')}</span>
                                    </div>
                                  </div>
                                </AccordionTrigger>
@@ -1251,11 +1251,11 @@ const Navigation = () => {
                     {/* Test Lab */}
                     <AccordionItem value="test-lab" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          Test Lab
+                          {t('nav.testLab')}
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-2">
-                          <div className="font-medium text-gray-900 py-3 mb-2">Test Services</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">{t('nav.testServices')}</div>
                           
                           {/* Overview */}
                           <Accordion type="single" collapsible className="ml-2">
@@ -1263,7 +1263,7 @@ const Navigation = () => {
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
-                                  <span>Overview</span>
+                                  <span>{t('nav.overview')}</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -1284,7 +1284,7 @@ const Navigation = () => {
                                  <div className="flex items-center justify-between w-full">
                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <CustomTargetIcon className="h-4 w-4" />
-                                     <span>Automotive</span>
+                                     <span>{t('nav.automotive')}</span>
                                    </Link>
                                  </div>
                                </AccordionTrigger>
@@ -1308,7 +1308,7 @@ const Navigation = () => {
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
-                                  <span>VCX</span>
+                                  <span>{t('nav.vcx')}</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -1328,7 +1328,7 @@ const Navigation = () => {
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
-                                  <span>Image Quality</span>
+                                  <span>{t('nav.imageQuality')}</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -1349,7 +1349,7 @@ const Navigation = () => {
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
-                                  <span>Standardized</span>
+                                  <span>{t('nav.standardized')}</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -1370,7 +1370,7 @@ const Navigation = () => {
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
-                                  <span>Specialized/Custom</span>
+                                  <span>{t('nav.specializedCustom')}</span>
                                 </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -1391,7 +1391,7 @@ const Navigation = () => {
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
                               <FlaskConical className="h-4 w-4 mr-2" />
-                              Visit Our Testing Lab
+                              {t('nav.visitTestingLab')}
                             </Button>
                           </Link>
                         </div>
@@ -1438,47 +1438,47 @@ const Navigation = () => {
                     {/* Image Quality */}
                     <AccordionItem value="image-quality" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          Image Quality
+                          {t('nav.imageQuality')}
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
-                          <div className="font-medium text-gray-900 py-3 mb-2">Resources</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">{t('nav.resources')}</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Image Quality Factors</span>
+                            <span>{t('nav.imageQualityFactors')}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Blog</span>
+                            <span>{t('nav.blog')}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>International Standards</span>
+                            <span>{t('nav.internationalStandards')}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>IE Technology</span>
+                            <span>{t('nav.ieTechnology')}</span>
                           </div>
-                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">Publications</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">{t('nav.publications')}</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Conference Papers</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>White Papers & Theses</span>
+                            <span>{t('nav.conferencePapers')}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Video Archive</span>
+                            <span>{t('nav.whitePapers')}</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>{t('nav.videoArchive')}</span>
                           </div>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/downloads" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#103e7c] text-white hover:bg-[#0d3468] rounded-lg font-medium">
                               <Microscope className="h-4 w-4 mr-2" />
-                              <span className="hidden sm:inline">Explore Image Quality Resources</span>
-                              <span className="sm:hidden">Quality Resources</span>
+                              <span className="hidden sm:inline">{t('nav.exploreResources')}</span>
+                              <span className="sm:hidden">{t('nav.resources')}</span>
                               <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
                             </Button>
                           </Link>
