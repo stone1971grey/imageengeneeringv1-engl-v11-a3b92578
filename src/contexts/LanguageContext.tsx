@@ -878,6 +878,117 @@ const translations: Record<Language, any> = {
       carbon: '碳中和',
       esg: 'ESG - 可持续发展',
       disposal: '处置与回收'
+    },
+    automotive: {
+      hero: {
+        title: '汽车',
+        subtitle: '图像质量',
+        description: '为强大的车辆安全、性能和自主性而设计的精密工程相机系统测试解决方案。',
+        button: '探索汽车解决方案',
+        stat1: '精度',
+        stat2: '响应',
+        stat3: 'ADAS项目',
+        liveProcessing: '实时处理',
+        adasComponent: 'ADAS组件'
+      },
+      applications: {
+        title: '主要应用',
+        subtitle: '汽车相机系统涵盖广泛的应用，有助于车辆安全、舒适和性能。',
+        inCabin: {
+          title: '车内性能测试',
+          description: '驾驶员和乘员监控系统(DMS/OMS)使用各种近红外(NIR)传感器结合主动照明(如LED)来增强驾驶员和乘客的安全和舒适。'
+        },
+        adas: {
+          title: 'ADAS性能测试',
+          description: '高级驾驶辅助系统(ADAS)包括支持自动驾驶车辆移动并提供驾驶员警告通知的各种相机和传感器系统。'
+        },
+        geometric: {
+          title: '几何相机校准',
+          description: 'ADAS应用的基本测量，需要检测并准确映射移动场景中的3D物体，并基于这些计算进行调整。'
+        },
+        climate: {
+          title: '气候控制测试',
+          description: '将各种天气场景纳入汽车相机测试对于了解这些系统是否仍能在最恶劣的天气条件下满足性能阈值至关重要。'
+        },
+        learnMore: '了解更多'
+      },
+      standards: {
+        title: '汽车国际标准',
+        subtitle: '汽车图像质量性能测试和评估的关键行业标准概览。',
+        ieee: {
+          title: 'IEEE-P2020',
+          description: '首个国际公认的标准，检查影响高级驾驶辅助系统(ADAS)图像质量的因素，并概述各种测试方法和工具。'
+        },
+        emva: {
+          title: 'EMVA 1288/ISO 24942',
+          description: 'EMVA 1288/ISO 24942（相同的标准指标）概述了机器视觉相机的阈值规格和测量方法，其中许多常用于汽车车辆。'
+        },
+        iso: {
+          title: 'ISO 19093',
+          description: 'ISO 19093概述了评估相机系统在各种低光条件下性能的测量方法和指标阈值。'
+        },
+        learnMore: '了解更多'
+      },
+      solutions: {
+        title: '汽车相机测试解决方案',
+        subtitle: '我们为所有最关键的汽车相机应用和性能指标提供广泛的测试解决方案。',
+        inCabin: {
+          title: '车内测试',
+          description1: '车内系统主要负责观察驾驶员和乘客的舒适和安全。这些系统通常使用NIR（近红外）传感器结合主动照明（例如LED或VCSEL）来确保在极低光条件下的准确性。',
+          description2: '我们提供具有红外功能的广泛测试解决方案，包括使用iQ-LED技术的LE7 VIS-IR均匀光箱，允许您在380-1050nm之间生成自定义光谱。LE7可与透明测试图表（如camSPECS plate IR）一起使用，该图表针对NIR范围内的色彩校准和光谱灵敏度测量进行了优化。'
+        },
+        adas: {
+          title: 'ADAS性能测试',
+          description1: '高级驾驶辅助系统(ADAS)是指协助驾驶员进行各种移动调整和安全警告的相机和传感器系统。这些系统需要广泛的测试方法和指标来评估，以确保高性能和安全。我们的测试解决方案密切遵循IEEE-P2020标准中为ADAS图像质量性能建立的测试方法指南。',
+          description2: 'P2020标准中概述的一些关键性能指标(KPI)包括对比度指标——对比度传输精度(CTA)和对比度信噪比(CSNR)——动态范围和闪烁响应。这些KPI需要能够模拟ADAS系统经历的高强度的强大光源。我们提供多种光源，包括Vega和Arcturus，可以生成具有极高稳定性和一致性的动态测试场景。'
+        },
+        geometric: {
+          title: '几何校准',
+          description1: '几何校准是指相机检测并准确映射移动场景中3D物体的能力。在汽车应用中，基于测量的相机或立体相机对的几何特性计算到物体的距离。汽车相机系统的正确几何校准对于确保高性能和安全至关重要。',
+          description2: '传统的几何校准方法通常需要大量的实验室空间，结合众多的失真测试目标和中继透镜。虽然这些方法是有效的，但对于大多数没有空间的测试实验室来说并不实用。为了应对这一挑战，我们提供GEOCAL解决方案。GEOCAL是一种紧凑的设备，使用光束扩展激光和衍射光学元件(DOE)生成来自无穷远的光点网格。这些功能消除了对多个测试目标和中继透镜的需求，使其适合任何规模的实验室使用。'
+        },
+        climate: {
+          title: '气候控制测试',
+          description1: 'ADAS应用的基本要求之一是它们在任何天气场景中正常运行的能力。如果这些系统由于浓雾或倾盆大雨等条件而无法达到其最低性能阈值要求，安全性可能会受到损害。因此，在变化的天气环境中测试ADAS应用至关重要。',
+          description2: '为了进行天气测试，许多公司在各种天气条件下驾驶测试车辆并记录相机性能。然而，虽然在现实世界意义上是准确的，但由于天气和测试地点的不可预测性，这些测试通常缺乏可重复性和极端条件（例如极冷或极热）。为了应对这些挑战，我们提供iQ-Climate Chamber解决方案，使您能够在测试实验室的舒适环境中测试极端天气条件下的相机系统。'
+        }
+      },
+      products: {
+        title: '关键产品',
+        subtitle: '汽车图像质量性能测试的行业领先工具',
+        arcturus: {
+          title: 'Arcturus',
+          description: '具有无与伦比的稳定性和一致性的高强度光源。'
+        },
+        le7: {
+          title: 'LE7 VIS-IR',
+          description: '用于测试近红外(NIR)范围内相机的均匀光源。'
+        },
+        geocal: {
+          title: 'GEOCAL',
+          description: '使用紧凑设备进行几何校准，该设备生成来自无穷远的光点网格。'
+        },
+        climate: {
+          title: 'iQ-Climate Chamber',
+          description: '在相机测试实验室的舒适环境中进行温度控制的相机测试。'
+        },
+        te292: {
+          title: 'TE292 VIS-IR',
+          description: '用于VIS-IR范围内光谱灵敏度测量和色彩校准的测试图表。'
+        },
+        iqAnalyzer: {
+          title: 'iQ-Analyzer-X',
+          description: '用于评估各种图像质量因素性能的高级软件。'
+        },
+        active: '活跃',
+        clickable: '可点击',
+        learnMore: '了解更多'
+      },
+      testLab: {
+        title: '汽车相机测试服务',
+        description1: '欢迎来到我们的iQ-Lab，世界上最大的独立相机测试实验室之一。我们为汽车行业提供广泛的测试，包括camPAS（汽车系统相机性能）测试。',
+        description2: 'camPAS测试是为需要来自中立第三方的独立和客观测试结果以支持其开发决策的客户开发的。与我们的大多数测试服务一样，camPAS可以定制以满足您的特定KPI要求。请随时联系我们的iQ-Lab团队讨论您的要求和我们所有的测试服务。'
+      }
     }
   },
   ja: {
