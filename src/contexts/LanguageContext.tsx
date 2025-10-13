@@ -84,6 +84,7 @@ const translations: Record<Language, any> = {
       strategicPartnerships: 'Strategic Partnerships',
       groupMemberships: 'Group Memberships',
       iso9001: 'ISO 9001',
+      searchPlaceholder: 'Search...',
       
       yourSolution: 'Your Solution',
       industries: 'Industries',
@@ -358,6 +359,7 @@ const translations: Record<Language, any> = {
       strategicPartnerships: 'Strategische Partnerschaften',
       groupMemberships: 'Gruppenmitgliedschaften',
       iso9001: 'ISO 9001',
+      searchPlaceholder: 'Suchen...',
       
       yourSolution: 'Ihre Lösung',
       industries: 'Branchen',
@@ -632,6 +634,7 @@ const translations: Record<Language, any> = {
       strategicPartnerships: '战略合作伙伴',
       groupMemberships: '集团会员',
       iso9001: 'ISO 9001',
+      searchPlaceholder: '搜索...',
       
       yourSolution: '您的解决方案',
       industries: '行业',
@@ -906,6 +909,7 @@ const translations: Record<Language, any> = {
       strategicPartnerships: '戦略的パートナーシップ',
       groupMemberships: 'グループメンバーシップ',
       iso9001: 'ISO 9001',
+      searchPlaceholder: '検索...',
       
       yourSolution: 'あなたのソリューション',
       industries: '業界',
@@ -1180,6 +1184,7 @@ const translations: Record<Language, any> = {
       strategicPartnerships: '전략적 파트너십',
       groupMemberships: '그룹 회원',
       iso9001: 'ISO 9001',
+      searchPlaceholder: '검색...',
       
       yourSolution: '귀하의 솔루션',
       industries: '산업',

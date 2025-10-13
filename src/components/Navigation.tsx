@@ -1636,32 +1636,32 @@ const Navigation = () => {
                           </Link>
                           <Link to="/nynomic-group" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Nynomic Group</span>
+                            <span>{t('nav.nynomicGroup')}</span>
                           </Link>
                           <Link to="/visit-us" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Visit Us</span>
+                            <span>{t('nav.visitUs')}</span>
                           </Link>
                           <Link to="/careers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Careers</span>
+                            <span>{t('nav.careers')}</span>
                           </Link>
-                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">Business & Partnerships</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">{t('nav.businessPartnerships')}</div>
                           <Link to="/resellers-subsidiaries" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Resellers & Subsidiaries</span>
+                            <span>{t('nav.resellersSubsidiaries')}</span>
                           </Link>
                           <Link to="/strategic-partnerships" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Strategic Partnerships</span>
+                            <span>{t('nav.strategicPartnerships')}</span>
                           </Link>
                           <Link to="/group-memberships" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Group Memberships</span>
+                            <span>{t('nav.groupMemberships')}</span>
                           </Link>
                           <Link to="/iso-9001" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>ISO 9001</span>
+                            <span>{t('nav.iso9001')}</span>
                           </Link>
                         </div>
                       </AccordionContent>
