@@ -491,9 +491,18 @@ const Navigation = () => {
                           alt={hoveredIndustry} 
                           className="w-[190px] h-[190px] object-cover rounded-lg" 
                         />
-                        <div className="text-black">
-                          <h4 className="font-semibold text-xl mb-2">{hoveredIndustry}</h4>
-                          <p className="text-lg text-gray-600 leading-relaxed">
+                         <div className="text-black">
+                           <h4 className="font-semibold text-xl mb-2">
+                             {t(`nav.${hoveredIndustry === "Automotive" ? 'automotiveTitle' : 
+                                      hoveredIndustry === "Security & Surveillance" ? 'securityTitle' :
+                                      hoveredIndustry === "Mobile Phone" ? 'mobilePhoneTitle' :
+                                      hoveredIndustry === "Web Camera" ? 'webCameraTitle' :
+                                      hoveredIndustry === "Machine Vision" ? 'machineVisionTitle' :
+                                      hoveredIndustry === "Medical & Endoscopy" ? 'medicalTitle' :
+                                      hoveredIndustry === "Scanners & Archiving" ? 'scannersTitle' :
+                                      'photoVideoTitle'}`)}
+                           </h4>
+                           <p className="text-lg text-gray-600 leading-relaxed">
                             {t(`nav.${hoveredIndustry === "Automotive" ? 'automotiveDesc' : 
                                      hoveredIndustry === "Security & Surveillance" ? 'securityDesc' :
                                      hoveredIndustry === "Mobile Phone" ? 'mobilePhoneDesc' :
@@ -601,9 +610,15 @@ const Navigation = () => {
                           alt={hoveredProduct} 
                           className="w-[190px] h-[190px] object-cover rounded-lg" 
                         />
-                        <div className="text-black">
-                          <h4 className="font-semibold text-xl mb-2">{hoveredProduct}</h4>
-                          <p className="text-lg text-gray-600 leading-relaxed">
+                         <div className="text-black">
+                           <h4 className="font-semibold text-xl mb-2">
+                             {t(`nav.${hoveredProduct === "Test Charts" ? 'testChartsTitle' :
+                                      hoveredProduct === "Illumination Devices" ? 'illuminationTitle' :
+                                      hoveredProduct === "Measurement Devices" ? 'measurementTitle' :
+                                      hoveredProduct === "Software & APIs" ? 'softwareTitle' :
+                                      'accessoriesTitle'}`)}
+                           </h4>
+                           <p className="text-lg text-gray-600 leading-relaxed">
                             {t(`nav.${hoveredProduct === "Test Charts" ? 'testChartsDesc' :
                                      hoveredProduct === "Illumination Devices" ? 'illuminationDesc' :
                                      hoveredProduct === "Measurement Devices" ? 'measurementDesc' :
@@ -716,9 +731,16 @@ const Navigation = () => {
                           alt={hoveredTestService} 
                           className="w-[190px] h-[190px] object-cover rounded-lg" 
                         />
-                        <div className="text-black">
-                          <h4 className="font-semibold text-xl mb-2">{hoveredTestService}</h4>
-                          <p className="text-lg text-gray-600 leading-relaxed">
+                         <div className="text-black">
+                           <h4 className="font-semibold text-xl mb-2">
+                             {t(`nav.${hoveredTestService === "Overview" ? 'overviewTitle' :
+                                      hoveredTestService === "Automotive" ? 'automotiveTitle' :
+                                      hoveredTestService === "VCX" ? 'vcxTitle' :
+                                      hoveredTestService === "Image Quality" ? 'imageQualityTitle' :
+                                      hoveredTestService === "Standardized" ? 'standardizedTitle' :
+                                      'specializedTitle'}`)}
+                           </h4>
+                           <p className="text-lg text-gray-600 leading-relaxed">
                             {t(`nav.${hoveredTestService === "Overview" ? 'overviewDesc' :
                                      hoveredTestService === "Automotive" ? 'automotiveServicesDesc' :
                                      hoveredTestService === "VCX" ? 'vcxDesc' :
@@ -825,52 +847,52 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-8 p-6">
                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                         <h4 className="font-semibold mb-3 text-lg text-black">{t('nav.aboutIE')}</h4>
-                         <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>News</span>
-                         </Link>
-                         <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>About us</span>
-                         </Link>
-                         <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>Team</span>
-                         </Link>
-                         <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>Nynomic Group</span>
-                         </Link>
-                         <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>Visit Us</span>
-                         </Link>
-                         <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>Careers</span>
-                         </Link>
+                          <h4 className="font-semibold mb-3 text-lg text-black">{t('nav.aboutIE')}</h4>
+                          <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.news')}</span>
+                          </Link>
+                          <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.aboutUs')}</span>
+                          </Link>
+                          <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.team')}</span>
+                          </Link>
+                          <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.nynomicGroup')}</span>
+                          </Link>
+                          <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.visitUs')}</span>
+                          </Link>
+                          <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.careers')}</span>
+                          </Link>
                        </div>
                        
-                       <div className="space-y-4 flex-1">
-                         <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                         <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>Resellers & Subsidiaries</span>
-                         </Link>
-                         <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>Strategic Partnerships</span>
-                         </Link>
-                         <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>Group Memberships</span>
-                         </Link>
-                         <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>ISO 9001</span>
-                         </Link>
-                       </div>
+                        <div className="space-y-4 flex-1">
+                          <h4 className="font-semibold mb-3 text-lg text-black">{t('nav.businessPartnerships')}</h4>
+                          <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.resellersSubsidiaries')}</span>
+                          </Link>
+                          <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.strategicPartnerships')}</span>
+                          </Link>
+                          <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.groupMemberships')}</span>
+                          </Link>
+                          <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                            <CustomTargetIcon className="h-5 w-5" />
+                            <span>{t('nav.iso9001')}</span>
+                          </Link>
+                        </div>
                     </div>
                   </div>
                 </SimpleDropdown>
