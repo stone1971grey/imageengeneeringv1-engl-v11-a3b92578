@@ -16,14 +16,18 @@ const UtilityNavigation = () => {
     { code: "ko", label: "KO", flag: "🇰🇷" }
   ];
 
+  const currentLanguage = languages.find(lang => lang.code === language)?.label || "EN";
+
   return (
     <div className="flex items-center gap-4">
       <IntelligentSearchBar />
       
       {/* Language Selector */}
       <Select value={language} onValueChange={(val) => setLanguage(val as any)}>
-        <SelectTrigger className="w-[60px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
-          <SelectValue placeholder="EN" />
+        <SelectTrigger className="w-[70px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
+          <SelectValue>
+            {currentLanguage}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
           {languages.map((lang) => (
