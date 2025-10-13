@@ -1112,8 +1112,8 @@ const Navigation = () => {
                           <Link to="/industries" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
                               <Search className="h-4 w-4 mr-2" />
-                              <span className="hidden sm:inline">Find Your Perfect Solution</span>
-                              <span className="sm:hidden">Your Perfect Solution</span>
+                              <span className="hidden sm:inline">{t('nav.findSolution')}</span>
+                              <span className="sm:hidden">{t('nav.findSolution')}</span>
                             </Button>
                           </Link>
                         </div>
@@ -1143,16 +1143,16 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
                                 <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
-                                  <div className="block py-2 text-sm text-gray-600">Multipurpose</div>
-                                  <div className="block py-2 text-sm text-gray-600">Image Quality Factor</div>
-                                  <div className="block py-2 text-sm text-gray-600">Infrared (VIS-IR)</div>
+                                  <div className="block py-2 text-sm text-gray-600">{t('nav.iqAnalyzerX')}</div>
+                                  <div className="block py-2 text-sm text-gray-600">{t('nav.multipurpose')}</div>
+                                  <div className="block py-2 text-sm text-gray-600">{t('nav.imageQualityFactor')}</div>
+                                  <div className="block py-2 text-sm text-gray-600">{t('nav.infrared')}</div>
                                   <Link to="/charts" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                    Reflective
+                                    {t('nav.reflective')}
                                   </Link>
-                                  <div className="block py-2 text-sm text-gray-600">Transparent</div>
+                                  <div className="block py-2 text-sm text-gray-600">{t('nav.transparent')}</div>
                                   <Link to="/charts" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                    See All Charts
+                                    {t('nav.seeAllCharts')}
                                   </Link>
                                 </div>
                               </AccordionContent>
