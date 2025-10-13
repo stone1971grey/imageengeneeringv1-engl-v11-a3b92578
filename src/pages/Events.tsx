@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Calendar, MapPin, Clock, Globe, Filter, ArrowUpDown } from "lucide-react";
 
 // Import event images
@@ -177,7 +176,6 @@ const sampleEvents: Event[] = [
 ];
 
 const Events = () => {
-  const { t } = useLanguage();
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [countryFilter, setCountryFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("date-asc");
@@ -289,10 +287,10 @@ const Events = () => {
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl">
             <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-              {t('events.hero.title')}
+              Events & Training
             </h1>
             <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
-              {t('events.hero.subtitle')}
+              Our current training courses, workshops and events worldwide.
             </p>
             
             {/* Featured Event Banner */}
@@ -300,8 +298,8 @@ const Events = () => {
               <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
                 <CardContent className="p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div>
-                      <Badge className="mb-2">{t('events.hero.nextEvent')}</Badge>
+                    <div>
+                      <Badge className="mb-2">Next Event</Badge>
                       <h3 className="text-xl font-semibold mb-2">{featuredEvent.title}</h3>
                       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
@@ -319,7 +317,7 @@ const Events = () => {
                       </div>
                     </div>
                     <Button size="lg" asChild>
-                      <a href={featuredEvent.registrationUrl}>{t('events.hero.registerNow')}</a>
+                      <a href={featuredEvent.registrationUrl}>Register Now</a>
                     </Button>
                   </div>
                 </CardContent>
@@ -341,10 +339,10 @@ const Events = () => {
                   <SelectValue placeholder="Kategorie" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t('events.filters.allCategories')}</SelectItem>
-                  <SelectItem value="Schulung">{t('events.filters.training')}</SelectItem>
-                  <SelectItem value="Workshop">{t('events.filters.workshop')}</SelectItem>
-                  <SelectItem value="Messe">{t('events.filters.tradeFair')}</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="Schulung">Training</SelectItem>
+                  <SelectItem value="Workshop">Workshop</SelectItem>
+                  <SelectItem value="Messe">Trade Fair</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -354,7 +352,7 @@ const Events = () => {
                   <SelectValue placeholder="Land" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t('events.filters.allCountries')}</SelectItem>
+                  <SelectItem value="all">All Countries</SelectItem>
                   {countries.map(country => (
                     <SelectItem key={country} value={country}>{country}</SelectItem>
                   ))}
@@ -368,8 +366,8 @@ const Events = () => {
                 <SelectValue placeholder="Sortieren" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="date-asc">{t('events.filters.dateAsc')}</SelectItem>
-                <SelectItem value="date-desc">{t('events.filters.dateDesc')}</SelectItem>
+                <SelectItem value="date-asc">Date (ascending)</SelectItem>
+                <SelectItem value="date-desc">Date (descending)</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -377,8 +375,8 @@ const Events = () => {
           {/* Events Tabs */}
           <Tabs defaultValue="upcoming" className="w-full">
             <TabsList className="grid w-full grid-cols-2 max-w-md">
-              <TabsTrigger value="upcoming">{t('events.tabs.upcoming')}</TabsTrigger>
-              <TabsTrigger value="past">{t('events.tabs.past')}</TabsTrigger>
+              <TabsTrigger value="upcoming">Current Events</TabsTrigger>
+              <TabsTrigger value="past">Past Events</TabsTrigger>
             </TabsList>
 
             <TabsContent value="upcoming" className="mt-8">
@@ -392,9 +390,9 @@ const Events = () => {
                 <Card className="text-center py-12">
                   <CardContent>
                     <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-semibold mb-2">{t('events.noEvents.title')}</h3>
+                    <h3 className="text-lg font-semibold mb-2">No events found</h3>
                     <p className="text-muted-foreground">
-                      {t('events.noEvents.description')}
+                      No events were found with the current filters.
                     </p>
                   </CardContent>
                 </Card>
@@ -412,9 +410,9 @@ const Events = () => {
                 <Card className="text-center py-12">
                   <CardContent>
                     <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-semibold mb-2">{t('events.noEvents.title')}</h3>
+                    <h3 className="text-lg font-semibold mb-2">No past events</h3>
                     <p className="text-muted-foreground">
-                      {t('events.noEvents.noPast')}
+                      No past events have been archived yet.
                     </p>
                   </CardContent>
                 </Card>
