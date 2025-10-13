@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-white.png";
 import UtilityNavigation from "@/components/UtilityNavigation";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { SimpleDropdown } from "./SimpleNavigation";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
@@ -32,6 +33,7 @@ import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
 import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
 
 const Navigation = () => {
+  const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
@@ -1548,11 +1550,13 @@ const Navigation = () => {
                       </div>
                       
                       {/* Language Selector */}
-                      <Select value="en" onValueChange={() => {}}>
-                        <SelectTrigger className="w-[60px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
-                          <SelectValue placeholder="EN" />
+                      <Select value={language} onValueChange={(val) => setLanguage(val as any)}>
+                        <SelectTrigger className="w-[70px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
+                          <SelectValue>
+                            {language.toUpperCase()}
+                          </SelectValue>
                         </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-[100]" position="popper" sideOffset={5}>
                           <SelectItem value="en" className="flex items-center gap-2 hover:bg-gray-100 cursor-pointer text-black">
                             EN
                           </SelectItem>
