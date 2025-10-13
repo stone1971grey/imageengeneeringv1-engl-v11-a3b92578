@@ -2,11 +2,11 @@ import { Button } from "@/components/ui/button";
 import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { MessageCircle } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const UtilityNavigation = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const { language, setLanguage } = useLanguage();
 
   const languages = [
     { code: "en", label: "EN", flag: "🇺🇸" },
@@ -21,7 +21,7 @@ const UtilityNavigation = () => {
       <IntelligentSearchBar />
       
       {/* Language Selector */}
-      <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+      <Select value={language} onValueChange={(val) => setLanguage(val as any)}>
         <SelectTrigger className="w-[60px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
           <SelectValue placeholder="EN" />
         </SelectTrigger>
