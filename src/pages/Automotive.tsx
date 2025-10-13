@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/contexts/LanguageContext";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
@@ -30,7 +31,8 @@ import solutionsClimate from "@/assets/solutions-climate-control.png";
 
 // Automotive & ADAS landing page component
 const Automotive = () => {
-  const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
+  const { t } = useLanguage();
+  const [hoveredPoint, setHoveredPoint] = useState<string>(t('automotive.hero.liveProcessing'));
 
   const hotspotMarkers = [
     { id: 1, label: "Front camera", top: 37, left: 48 },
@@ -134,13 +136,13 @@ const Automotive = () => {
             <div className="lg:col-span-2 space-y-8 lg:pr-8">
               <div>
                 <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64 md:pt-64 pt-80">
-                  Automotive
+                  {t('automotive.hero.title')}
                   <br />
-                  <span className="font-medium text-light-foreground">Image Quality</span>
+                  <span className="font-medium text-light-foreground">{t('automotive.hero.subtitle')}</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
-                  Precision-engineered camera system test solutions for robust vehicle safety, performance and autonomy.
+                  {t('automotive.hero.description')}
                 </p>
               </div>
               
@@ -151,7 +153,7 @@ const Automotive = () => {
                     size="lg"
                     className="px-8 py-4 text-lg font-medium group"
                   >
-                    Discover Automotive Solutions
+                    {t('automotive.hero.cta')}
                   </Button>
                 </Link>
               </div>
@@ -160,15 +162,15 @@ const Automotive = () => {
               <div className="flex items-center space-x-12 pt-8">
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">99.9%</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Genauigkeit</div>
+                  <div className="text-sm text-scandi-grey font-light">{t('automotive.hero.stat1')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">50ms</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Reaktion</div>
+                  <div className="text-sm text-scandi-grey font-light">{t('automotive.hero.stat2')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-medium text-light-foreground">100+</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] ADAS Projekte</div>
+                  <div className="text-sm text-scandi-grey font-light">{t('automotive.hero.stat3')}</div>
                 </div>
               </div>
             </div>
@@ -185,8 +187,8 @@ const Automotive = () => {
               
               {/* Floating stats - now shows hover text */}
               <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
-                <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Live Processing" : "ADAS Component"}</div>
-                <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Active" : hoveredPoint}</div>
+                <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === t('automotive.hero.liveProcessing') ? t('automotive.hero.liveProcessing') : t('automotive.hero.adasComponent')}</div>
+                <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === t('automotive.hero.liveProcessing') ? "Active" : hoveredPoint}</div>
               </div>
             </div>
           </div>
