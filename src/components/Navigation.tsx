@@ -514,39 +514,39 @@ const Navigation = () => {
                        <Link to="/products/charts" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                          onMouseEnter={() => setHoveredProduct("Test Charts")}>
                          <CustomTargetIcon className="h-5 w-5" />
-                         <span>Test Charts</span>
-                         <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                         <span>{t('nav.testCharts')}</span>
+                         <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t('nav.active')}</span>
                        </Link>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Illumination Devices")}>
                         <CustomTargetIcon className="h-5 w-5" />
-                        <span>Illumination Devices</span>
+                        <span>{t('nav.illumination')}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Measurement Devices")}>
                         <CustomTargetIcon className="h-5 w-5" />
-                        <span>Measurement Devices</span>
+                        <span>{t('nav.measurement')}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Software & APIs")}>
                         <CustomTargetIcon className="h-5 w-5" />
-                        <span>Software & APIs</span>
+                        <span>{t('nav.software')}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredProduct("Product Accessories")}>
                         <CustomTargetIcon className="h-5 w-5" />
-                        <span>Product Accessories</span>
+                        <span>{t('nav.accessories')}</span>
                       </div>
                     </div>
                     
                     {/* Right Column: Subgroups */}
                     <div className="space-y-4 flex-1">
                       <h4 className="font-semibold mb-3 text-lg text-black">
-                        {hoveredProduct ? `${hoveredProduct} - Subgroups` : "Subgroups"}
+                        {hoveredProduct ? `${hoveredProduct} - ${t('nav.subgroups')}` : t('nav.subgroups')}
                       </h4>
                       
                       {/* Conditional Rendering of Subgroups */}
@@ -569,7 +569,7 @@ const Navigation = () => {
                       {!hoveredProduct && (
                         <div className="text-gray-500 text-center py-8">
                           <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>Hover over a product group to see subgroups</p>
+                          <p>{t('nav.hoverProductGroup')}</p>
                         </div>
                       )}
                     </div>
@@ -1121,7 +1121,7 @@ const Navigation = () => {
                                    <Link to="/charts" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                      <CustomTargetIcon className="h-4 w-4" />
                                      <span>{t('nav.testCharts')}</span>
-                                     <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                                     <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t('nav.active')}</span>
                                    </Link>
                                  </div>
                                </AccordionTrigger>
@@ -1291,8 +1291,8 @@ const Navigation = () => {
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">camPAS</div>
-                                   <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                     In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">ACTIVE</span>
+                                    <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                     In-Cabin Testing <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">{t('nav.active')}</span>
                                    </Link>
                                   <div className="block py-2 text-sm text-gray-600">HDR Testing</div>
                                   <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
