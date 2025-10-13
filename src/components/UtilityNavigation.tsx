@@ -29,7 +29,7 @@ const UtilityNavigation = () => {
             {currentLanguage}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+        <SelectContent className="bg-white border border-gray-200 shadow-lg z-[100]" position="popper" sideOffset={5}>
           {languages.map((lang) => (
             <SelectItem 
               key={lang.code} 
