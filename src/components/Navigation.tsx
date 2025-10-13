@@ -580,7 +580,7 @@ const Navigation = () => {
                     <Link to="/inside-lab">
                       <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800">
                         <Microscope className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">Inside the Testing Lab</span>
+                        <span className="text-lg font-medium">{t('nav.visitTestingLab')}</span>
                       </Button>
                     </Link>
                   </div>
@@ -1241,7 +1241,7 @@ const Navigation = () => {
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium">
                               <Microscope className="h-4 w-4 mr-2" />
-                              Inside the Testing Lab
+                              {t('nav.visitTestingLab')}
                             </Button>
                           </Link>
                         </div>
