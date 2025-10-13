@@ -58,26 +58,26 @@ const Automotive = () => {
 
   const applications = [
     {
-      title: "In-Cabin Performance Testing",
-      description: "Driver and occupant monitoring systems (DMS/OMS) use a variety of near-infrared (NIR) sensors combined with active illumination (e.g., LED) to enhance the safety and comfort of drivers and passengers.",
+      titleKey: "automotive.applications.inCabin.title",
+      descriptionKey: "automotive.applications.inCabin.description",
       icon: Eye,
       iconType: "vision"
     },
     {
-      title: "ADAS Performance Testing",
-      description: "Advanced Driver Assistance Systems (ADAS) encompass a wide range of camera and sensor systems that support autonomous vehicle movements and provide driver caution notices.",
+      titleKey: "automotive.applications.adas.title",
+      descriptionKey: "automotive.applications.adas.description",
       icon: Shield,
       iconType: "testing"
     },
     {
-      title: "Geometric Camera Calibration",
-      description: "An essential measurement for ADAS applications that are required to detect and accurately map 3D objects in a moving scene and make adjustments based on those calculations.",
+      titleKey: "automotive.applications.geometric.title",
+      descriptionKey: "automotive.applications.geometric.description",
       icon: Brain,
       iconType: "ai"
     },
     {
-      title: "Climate-Controlled Testing",
-      description: "Incorporating various weather scenarios into automotive camera testing is crucial to understanding if these systems can still meet their performance thresholds in even the harshest weather conditions.",
+      titleKey: "automotive.applications.climate.title",
+      descriptionKey: "automotive.applications.climate.description",
       icon: Zap,
       iconType: "illumination"
     }
@@ -85,35 +85,35 @@ const Automotive = () => {
 
   const products = [
     {
-      title: "Arcturus",
-      description: "A high-intensity light source with unmatched stability and consistency.",
+      titleKey: "automotive.products.arcturus.title",
+      descriptionKey: "automotive.products.arcturus.description",
       image: arcturusProduct,
       link: "/product/arcturus"
     },
     {
-      title: "LE7 VIS-IR",
-      description: "A uniform light source for testing cameras in the near-infrared (NIR) range.",
+      titleKey: "automotive.products.le7.title",
+      descriptionKey: "automotive.products.le7.description",
       image: le7Image,
       link: "/product/le7"
     },
     {
-      title: "GEOCAL",
-      description: "Geometric calibrations using a compact device that generates a grid of light spots originating from infinity.",
+      titleKey: "automotive.products.geocal.title",
+      descriptionKey: "automotive.products.geocal.description",
       image: camspecsImage
     },
     {
-      title: "iQ-Climate Chamber",
-      description: "Temperature-controlled camera testing in the comfort of a camera test lab.",
+      titleKey: "automotive.products.climate.title",
+      descriptionKey: "automotive.products.climate.description",
       image: climateImage
     },
     {
-      title: "TE292 VIS-IR",
-      description: "A test chart for spectral sensitivity measurements and color calibrations in the VIS-IR range.",
+      titleKey: "automotive.products.te292.title",
+      descriptionKey: "automotive.products.te292.description",
       image: te292Image
     },
     {
-      title: "iQ-Analyzer-X",
-      description: "Advanced software for evaluating the performance of various image quality factors.",
+      titleKey: "automotive.products.analyzer.title",
+      descriptionKey: "automotive.products.analyzer.description",
       image: iqAnalyzerImage
     }
   ];
@@ -203,10 +203,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Main Applications
+              {t('automotive.applications.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Automotive camera systems cover a broad spectrum of applications that contribute to vehicle safety, comfort and performance.
+              {t('automotive.applications.description')}
             </p>
           </div>
         </div>
@@ -227,12 +227,12 @@ const Automotive = () => {
                   
                    {/* Title */}
                    <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight h-16 flex items-start">
-                     {app.title}
+                     {t(app.titleKey)}
                    </h3>
                    
                    {/* Description */}
                    <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
-                     {app.description}
+                     {t(app.descriptionKey)}
                    </p>
                   
                    {/* CTA Button */}
@@ -240,7 +240,7 @@ const Automotive = () => {
                      className="w-full text-white hover:opacity-90"
                      style={{ backgroundColor: '#103e7c' }}
                    >
-                     Learn More
+                     {t('automotive.applications.learnMore')}
                    </Button>
                 </div>
               );
@@ -255,10 +255,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Automotive International Standards
+              {t('automotive.standards.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              A look at the crucial industry standards for automotive image quality performance testing and evaluation.
+              {t('automotive.standards.description')}
             </p>
           </div>
 
@@ -270,12 +270,12 @@ const Automotive = () => {
                 <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
                   <img src={ieeeLogo} alt="IEEE Logo" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">IEEE-P2020</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('automotive.standards.ieee.title')}</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
-                  The first internationally recognized standard examines the factors contributing to the image quality of Advanced Driver Assistance Systems (ADAS) and outlines various test methods and tools.
+                  {t('automotive.standards.ieee.description')}
                 </p>
                 <Button variant="outline" className="w-full mt-auto">
-                  Learn More
+                  {t('automotive.standards.learnMore')}
                 </Button>
               </CardContent>
             </Card>
@@ -286,12 +286,12 @@ const Automotive = () => {
                 <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
                   <img src={emvaLogo} alt="EMVA Logo" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">EMVA 1288/ISO 24942</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('automotive.standards.emva.title')}</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
-                  EMVA 1288/ISO 24942 (same standard metrics) outlines threshold specifications and measurement methods for machine vision cameras, many of which are commonly used in automotive vehicles.
+                  {t('automotive.standards.emva.description')}
                 </p>
                 <Button variant="outline" className="w-full mt-auto">
-                  Learn More
+                  {t('automotive.standards.learnMore')}
                 </Button>
               </CardContent>
             </Card>
@@ -302,12 +302,12 @@ const Automotive = () => {
                 <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
                   <img src={isoStandardsLogo} alt="ISO Standards Logo" className="w-full h-full object-contain" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">ISO 19093</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4">{t('automotive.standards.iso.title')}</h3>
                 <p className="text-gray-600 leading-relaxed mb-6 flex-1">
-                  ISO 19093 outlines measurement methods and metric thresholds for evaluating the performance of a camera system under various low-light conditions.
+                  {t('automotive.standards.iso.description')}
                 </p>
                 <Button variant="outline" className="w-full mt-auto">
-                  Learn More
+                  {t('automotive.standards.learnMore')}
                 </Button>
               </CardContent>
             </Card>
@@ -320,11 +320,10 @@ const Automotive = () => {
         <div className="w-full px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Automotive Camera Test Solutions
+              {t('automotive.solutions.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              We offer a wide range of test solutions for all of the most crucial
-              automotive camera applications and performance metrics.
+              {t('automotive.solutions.description')}
             </p>
           </div>
 
@@ -341,13 +340,13 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">In-Cabin Testing</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('automotive.solutions.inCabin.title')}</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
-                      In-Cabin systems are primarily tasked with observing the comfort and safety of the driver and passengers. These systems typically work with NIR (near-infrared) sensors combined with active illumination (e.g., LED or VCSEL) to ensure accuracy in very low-light conditions.
+                      {t('automotive.solutions.inCabin.paragraph1')}
                     </p>
                     <p>
-                      We offer a wide range of test solutions with IR capabilities, including the LE7 VIS-IR uniform lightbox, which uses iQ-LED technology, allowing you to generate custom spectra between 380 – 1050 nm. The LE7 can be used with transparent test charts such as the camSPECS plate IR, which is optimized for color calibrations and measuring spectral sensitivities in the NIR range.
+                      {t('automotive.solutions.inCabin.paragraph2')}
                     </p>
                   </div>
                 </div>
@@ -365,13 +364,13 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">ADAS Performance Testing</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('automotive.solutions.adas.title')}</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
-                      Advanced Driver Assistance Systems (ADAS) refer to the camera and sensor systems that assist drivers with various movement adjustments and safety warnings. These systems require a broad range of test methods and metrics to evaluate to ensure high performance and safety. Our test solutions closely follow the test method guidelines established in the IEEE-P2020 standard for ADAS image quality performance.
+                      {t('automotive.solutions.adas.paragraph1')}
                     </p>
                     <p>
-                      A few of the key performance indicators (KPIs) outlined in the P2020 standard include contrast indicators – contrast transfer accuracy (CTA) and contrast signal-to-noise ratio (CSNR) -, dynamic range, and flicker response. These KPIs require powerful light sources that can simulate the high intensities experienced by ADAS systems. We offer multiple light sources, including Vega and Arcturus, that can generate dynamic test scenes with extremely high stability and consistency.
+                      {t('automotive.solutions.adas.paragraph2')}
                     </p>
                   </div>
                 </div>
@@ -389,13 +388,13 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Geometric Calibration</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('automotive.solutions.geometric.title')}</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
-                      Geometric calibration refers to the ability of a camera to detect and accurately map 3D objects in a moving scene. In automotive applications, distances to objects are calculated based on the measured geometrical characteristics of the camera or a stereo camera pair. Proper geometric calibration of automotive camera systems is essential to ensure high performance and safety.
+                      {t('automotive.solutions.geometric.paragraph1')}
                     </p>
                     <p>
-                      Traditional geometric calibration methods typically require a vast amount of lab space combined with numerous distortion test targets and relay lenses. While these methods are functional, they are not very practical for most test labs that don&apos;t have space. To account for this challenge, we offer the GEOCAL solution. GEOCAL is a compact device that uses a beam expanded laser and diffractive optical element (DOE) to generate a grid of light spots originating from infinity. These features eliminate the need for multiple test targets and relay lenses, making them suitable for use in labs of any size.
+                      {t('automotive.solutions.geometric.paragraph2')}
                     </p>
                   </div>
                 </div>
@@ -413,13 +412,13 @@ const Automotive = () => {
                   />
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Climate-Controlled Testing</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('automotive.solutions.climate.title')}</h3>
                   <div className="text-gray-600 leading-relaxed space-y-4">
                     <p>
-                      One of the fundamental requirements of ADAS applications is their ability to function properly in any weather scenario. If these systems fail to meet their minimum performance threshold requirements due to conditions like dense fog or pouring rain, safety could be compromised. Therefore, testing ADAS applications in changing weather environments is essential.
+                      {t('automotive.solutions.climate.paragraph1')}
                     </p>
                     <p>
-                      To perform weather tests, many companies drive test vehicles in various weather conditions and record the camera performance. However, while accurate in a real-world sense, these tests usually lack repeatability and extreme conditions (e.g., extreme cold or heat) due to the unpredictability of the weather and test locations. To combat these challenges, we offer the iQ-Climate Chamber solution, which allows you to test a camera system in extreme weather conditions in the comfort of a test lab.
+                      {t('automotive.solutions.climate.paragraph2')}
                     </p>
                   </div>
                 </div>
@@ -435,10 +434,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Key Products
+              {t('automotive.products.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Industry-leading tools for automotive image quality performance testing
+              {t('automotive.products.description')}
             </p>
           </div>
 
@@ -447,9 +446,9 @@ const Automotive = () => {
                  <Card 
                    key={index}
                    className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
-                     product.title === "Arcturus" 
+                     t(product.titleKey) === t('automotive.products.arcturus.title')
                        ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
-                       : product.title === "LE7 VIS-IR"
+                       : t(product.titleKey) === t('automotive.products.le7.title')
                        ? "bg-blue-100 border-4 border-blue-300 shadow-lg ring-4 ring-blue-200"
                        : ""
                    }`}
@@ -458,46 +457,46 @@ const Automotive = () => {
                    <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
                      <img 
                        src={product.image}
-                       alt={product.title}
+                       alt={t(product.titleKey)}
                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                      />
-                      {product.title === "Arcturus" && (
+                      {t(product.titleKey) === t('automotive.products.arcturus.title') && (
                         <div className="absolute top-2 right-2">
                           <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                            ACTIVE
+                            {t('automotive.products.active')}
                           </span>
                         </div>
                       )}
-                      {product.title === "LE7 VIS-IR" && (
+                      {t(product.titleKey) === t('automotive.products.le7.title') && (
                         <div className="absolute top-2 right-2">
                           <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                            ACTIVE
+                            {t('automotive.products.active')}
                           </span>
                         </div>
                       )}
                    </div>
                    <div className="p-6 flex flex-col flex-1">
                       <h3 className={`text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] ${
-                        product.title === "Arcturus" 
+                        t(product.titleKey) === t('automotive.products.arcturus.title')
                           ? "text-green-700" 
-                          : product.title === "LE7 VIS-IR"
+                          : t(product.titleKey) === t('automotive.products.le7.title')
                           ? "text-blue-700"
                           : "text-gray-900"
                       }`}>
-                        {product.title}
-                        {product.title === "Arcturus" && (
+                        {t(product.titleKey)}
+                        {t(product.titleKey) === t('automotive.products.arcturus.title') && (
                           <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
-                            CLICKABLE
+                            {t('automotive.products.clickable')}
                           </span>
                         )}
-                        {product.title === "LE7 VIS-IR" && (
+                        {t(product.titleKey) === t('automotive.products.le7.title') && (
                           <span className="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">
-                            CLICKABLE
+                            {t('automotive.products.clickable')}
                           </span>
                         )}
                       </h3>
                      <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
-                       {product.description}
+                       {t(product.descriptionKey)}
                      </p>
                      {product.link ? (
                        <Link to={product.link}>
@@ -505,12 +504,12 @@ const Automotive = () => {
                            variant="decision"
                            size="lg"
                            className={`w-full group ${
-                             product.title === "Arcturus" 
+                             t(product.titleKey) === t('automotive.products.arcturus.title')
                                ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
                                : ""
                            }`}
                          >
-                            Learn More
+                            {t('automotive.products.learnMore')}
                          </Button>
                        </Link>
                      ) : (
@@ -519,7 +518,7 @@ const Automotive = () => {
                          size="lg"
                          className="w-full group"
                        >
-                          Learn More
+                          {t('automotive.products.learnMore')}
                        </Button>
                      )}
                    </div>
@@ -542,12 +541,12 @@ const Automotive = () => {
               />
             </div>
             <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Automotive Camera Test Services</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('automotive.testLab.title')}</h3>
               <p className="text-gray-600 leading-relaxed">
-                Welcome to our iQ-Lab, one of the world's largest independent camera test labs. We offer a wide range of tests for the automotive industry, including the camPAS (Camera Performance for Automotive Systems) test.
+                {t('automotive.testLab.paragraph1')}
               </p>
               <p className="text-gray-600 leading-relaxed mt-4">
-                The camPAS test was developed for clients who need independent and objective test results from a neutral third-party to support their development decisions. camPAS, like most of our testing services, can be tailored to meet your specific KPI requirements. Don't hesitate to reach out to our iQ-Lab team to discuss your requirements and all of our test services.
+                {t('automotive.testLab.paragraph2')}
               </p>
             </div>
           </div>
