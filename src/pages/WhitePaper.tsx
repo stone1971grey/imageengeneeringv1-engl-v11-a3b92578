@@ -328,16 +328,16 @@ const WhitePaper = () => {
                   </p>
                   
                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
                           name="firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>First Name *</FormLabel>
+                              <FormLabel className="text-base">First Name *</FormLabel>
                               <FormControl>
-                                <Input placeholder="John" {...field} />
+                                <Input placeholder="John" {...field} className="bg-muted text-foreground text-base" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -349,9 +349,9 @@ const WhitePaper = () => {
                           name="lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Last Name *</FormLabel>
+                              <FormLabel className="text-base">Last Name *</FormLabel>
                               <FormControl>
-                                <Input placeholder="Doe" {...field} />
+                                <Input placeholder="Doe" {...field} className="bg-muted text-foreground text-base" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -364,9 +364,9 @@ const WhitePaper = () => {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>E-Mail *</FormLabel>
+                            <FormLabel className="text-base">E-Mail *</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="john@company.com" {...field} />
+                              <Input type="email" placeholder="john@company.com" {...field} className="bg-muted text-foreground text-base" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -378,9 +378,9 @@ const WhitePaper = () => {
                         name="company"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Company *</FormLabel>
+                            <FormLabel className="text-base">Company *</FormLabel>
                             <FormControl>
-                              <Input placeholder="Your Company Inc." {...field} />
+                              <Input placeholder="Your Company Inc." {...field} className="bg-muted text-foreground text-base" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -392,9 +392,9 @@ const WhitePaper = () => {
                         name="position"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Position *</FormLabel>
+                            <FormLabel className="text-base">Position *</FormLabel>
                             <FormControl>
-                              <Input placeholder="e.g. Test Engineer" {...field} />
+                              <Input placeholder="e.g. Test Engineer" {...field} className="bg-muted text-foreground text-base" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -413,7 +413,7 @@ const WhitePaper = () => {
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                              <FormLabel>
+                              <FormLabel className="text-base">
                                 I agree to receive information about image quality testing and related topics via email. *
                               </FormLabel>
                               <FormMessage />
