@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { FileText, Download, CheckCircle2 } from "lucide-react";
+import { FileText, Download, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import whitepaperHero from "@/assets/whitepaper-hero.jpg";
 
@@ -408,18 +408,21 @@ const WhitePaper = () => {
                         name="consent"
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                className="border-[hsl(58,95%,45%)] data-[state=checked]:bg-[hsl(58,95%,45%)] data-[state=checked]:text-black"
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel className="text-base">
-                                I agree to receive information about image quality testing and related topics via email. *
-                              </FormLabel>
-                              <FormMessage />
+                            <AlertCircle className="h-5 w-5 text-[hsl(58,95%,45%)] flex-shrink-0 mt-0.5" />
+                            <div className="flex flex-row items-start space-x-3 space-y-0 flex-1">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-[hsl(58,95%,45%)] data-[state=checked]:bg-[hsl(58,95%,45%)] data-[state=checked]:text-black"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-base">
+                                  I agree to receive information about image quality testing and related topics via email. *
+                                </FormLabel>
+                                <FormMessage />
+                              </div>
                             </div>
                           </FormItem>
                         )}
