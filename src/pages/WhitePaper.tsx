@@ -412,6 +412,7 @@ const WhitePaper = () => {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
+                                className="border-[hsl(58,95%,45%)] data-[state=checked]:bg-[hsl(58,95%,45%)] data-[state=checked]:text-black"
                               />
                             </FormControl>
                             <div className="space-y-1 leading-none">
