@@ -544,7 +544,7 @@ const Navigation = () => {
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">White Papers & Theses</a>
+                        <Link to="/whitepaper">White Papers & Theses</Link>
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
