@@ -175,9 +175,6 @@ const WhitePaper = () => {
           <Badge variant={paper.featured ? "default" : "secondary"}>
             {paper.category}
           </Badge>
-          {paper.featured && (
-            <Badge className="bg-primary text-primary-foreground">Featured</Badge>
-          )}
         </div>
         <CardTitle className="text-xl leading-tight flex items-start gap-3">
           <FileText className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
@@ -236,7 +233,6 @@ const WhitePaper = () => {
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4">
                     <div>
-                      <Badge className="mb-2">Featured</Badge>
                       <h3 className="text-xl font-semibold mb-2">{featuredPaper.title}</h3>
                       <p className="text-base text-muted-foreground mb-2">
                         {featuredPaper.abstract}
