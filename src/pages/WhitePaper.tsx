@@ -373,33 +373,35 @@ const WhitePaper = () => {
                         )}
                       />
                       
-                      <FormField
-                        control={form.control}
-                        name="company"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base">Company *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="position"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base">Position *</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="company"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base">Company *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="position"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base">Position *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       
                       <FormField
                         control={form.control}
