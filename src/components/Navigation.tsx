@@ -12,6 +12,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Import industry images
 import industryPhotography from "@/assets/industry-photography.jpg";
@@ -32,6 +33,7 @@ import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
 import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
 
 const Navigation = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
@@ -379,61 +381,61 @@ const Navigation = () => {
         <div className="flex items-center justify-between w-full">
           {/* Main Navigation - moved to left */}
           <div className="hidden 2xl:flex items-center gap-6 ml-[300px]">
-            <SimpleDropdown trigger="Your Solution">
+            <SimpleDropdown trigger={t.nav.yourSolution}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredIndustry(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Industries */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Industries</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
                       
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                          onMouseEnter={() => setHoveredIndustry("Automotive")}>
                          <Car className="h-5 w-5" />
-                         <Link to="/automotive">Automotive</Link>
-                         <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                          <Link to="/automotive">{t.nav.automotive}</Link>
+                          <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                        </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredIndustry("Security & Surveillance")}>
                         <Shield className="h-5 w-5" />
-                        <span>Security & Surveillance</span>
+                         <span>{t.nav.securitySurveillance}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredIndustry("Mobile Phone")}>
                         <Smartphone className="h-5 w-5" />
-                        <span>Mobile Phone</span>
+                         <span>{t.nav.mobilePhone}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredIndustry("Web Camera")}>
                         <Camera className="h-5 w-5" />
-                        <span>Web Camera</span>
+                         <span>{t.nav.webCamera}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
                         <Cog className="h-5 w-5" />
-                        <span>Machine Vision</span>
+                         <span>{t.nav.machineVision}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
                         <Stethoscope className="h-5 w-5" />
-                        <span>Medical & Endoscopy</span>
+                         <span>{t.nav.medicalEndoscopy}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
                         <ScanLine className="h-5 w-5" />
-                        <span>Scanners & Archiving</span>
+                         <span>{t.nav.scannersArchiving}</span>
                       </div>
                       
                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
                         <Camera className="h-5 w-5" />
-                        <span>Photo & Video</span>
+                         <span>{t.nav.photoVideo}</span>
                       </div>
                     </div>
                     

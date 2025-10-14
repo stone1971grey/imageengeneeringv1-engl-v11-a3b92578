@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import precisionTestingHero from "@/assets/precision-testing-hero.jpg";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const Hero = () => {
+  const { t } = useTranslation();
   return (
     <section className="relative min-h-screen overflow-hidden -mt-12">
       {/* Hero Background Image with Ken Burns Effect */}
@@ -28,15 +30,13 @@ const Hero = () => {
           <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0">
             <div>
               <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
-                Test Charts
+                {t.hero.title}
                 <br />
-                <span className="font-medium">Made by Image<br className="md:hidden" /> Engineering</span>
+                <span className="font-medium">{t.hero.subtitle}</span>
               </h1>
               
               <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
-                We develop and manufacture high-precision test charts for professional 
-                <br className="smart-break-md" />
-                image quality testing. Order directly from our shop now.
+                {t.hero.description}
               </p>
             </div>
             
@@ -47,7 +47,7 @@ const Hero = () => {
                 className="text-white border-0 px-12 py-4 group w-full md:w-auto"
                 onClick={() => window.location.href = '/products/charts'}
               >
-                Discover Charts
+                {t.hero.discoverCharts}
               </Button>
               
               <Button 
@@ -62,7 +62,7 @@ const Hero = () => {
                   }
                 }}
               >
-                Trusted Across All Industries
+                {t.hero.trustedIndustries}
               </Button>
             </div>
 
@@ -70,15 +70,15 @@ const Hero = () => {
             <div className="flex items-center justify-start space-x-12 pt-8">
               <div>
                 <div className="text-2xl font-medium text-white">200+</div>
-                <div className="text-sm text-white/80 font-light">Test Chart Variants</div>
+                <div className="text-sm text-white/80 font-light">{t.hero.stat1}</div>
               </div>
               <div>
                 <div className="text-2xl font-medium text-white">0.01%</div>
-                <div className="text-sm text-white/80 font-light">Measurement Tolerance</div>
+                <div className="text-sm text-white/80 font-light">{t.hero.stat2}</div>
               </div>
               <div>
                 <div className="text-2xl font-medium text-white">15+</div>
-                <div className="text-sm text-white/80 font-light">Years of Experience</div>
+                <div className="text-sm text-white/80 font-light">{t.hero.stat3}</div>
               </div>
             </div>
           </div>

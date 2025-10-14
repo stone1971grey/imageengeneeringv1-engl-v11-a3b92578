@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ScrollToTop from "@/components/ScrollToTop";
 import StickyLogo from "@/components/StickyLogo";
 import GlobalPasswordGate from "@/components/GlobalPasswordGate";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import Index from "./pages/Index";
 import InsideLab from "./pages/InsideLab";
 import Industries from "./pages/Industries";
@@ -35,13 +36,14 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <StickyLogo />
-        <Routes>
+    <LanguageProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToTop />
+          <StickyLogo />
+          <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/inside-lab" element={<InsideLab />} />
         <Route path="/industries" element={<Industries />} />
@@ -68,9 +70,10 @@ const App = () => (
         <Route path="/image-download" element={<ImageDownload />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
