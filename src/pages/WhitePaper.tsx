@@ -16,10 +16,10 @@ import whitepaperHero from "@/assets/whitepaper-hero.jpg";
 
 // Form validation schema
 const downloadFormSchema = z.object({
-  name: z.string().min(2, { message: "Name muss mindestens 2 Zeichen lang sein" }),
-  email: z.string().email({ message: "Bitte geben Sie eine gültige E-Mail-Adresse ein" }),
-  company: z.string().min(2, { message: "Unternehmen muss mindestens 2 Zeichen lang sein" }),
-  position: z.string().min(2, { message: "Position muss mindestens 2 Zeichen lang sein" }),
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  email: z.string().email({ message: "Please enter a valid email address" }),
+  company: z.string().min(2, { message: "Company must be at least 2 characters" }),
+  position: z.string().min(2, { message: "Position must be at least 2 characters" }),
 });
 
 type DownloadFormValues = z.infer<typeof downloadFormSchema>;
@@ -165,7 +165,7 @@ const WhitePaper = () => {
     // Simulate download
     setTimeout(() => {
       setDownloadSuccess(true);
-      toast.success("White Paper wird heruntergeladen!");
+      toast.success("White Paper is being downloaded!");
       
       // Reset after 3 seconds
       setTimeout(() => {
@@ -195,9 +195,9 @@ const WhitePaper = () => {
           <span>{paper.title}</span>
         </CardTitle>
         <div className="flex gap-4 text-base text-muted-foreground">
-          <span>{paper.pages} Seiten</span>
+          <span>{paper.pages} Pages</span>
           <span>•</span>
-          <span>{new Date(paper.publishDate).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}</span>
+          <span>{new Date(paper.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 flex-1 flex flex-col">
@@ -211,7 +211,7 @@ const WhitePaper = () => {
             setSelectedPaper(paper);
           }}
         >
-          Mehr erfahren
+          Read More
         </Button>
       </CardContent>
     </Card>
@@ -238,7 +238,7 @@ const WhitePaper = () => {
               White Papers
             </h1>
             <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
-              Technische Expertise und Branchenwissen für Ihre Projekte. Laden Sie unsere umfassenden White Papers herunter.
+              Technical expertise and industry knowledge for your projects. Download our comprehensive white papers.
             </p>
             
             {/* Featured White Paper Banner */}
@@ -252,7 +252,7 @@ const WhitePaper = () => {
                         {featuredPaper.abstract}
                       </p>
                       <div className="flex gap-4 text-sm text-muted-foreground">
-                        <span>{featuredPaper.pages} Seiten</span>
+                        <span>{featuredPaper.pages} Pages</span>
                         <span>•</span>
                         <span>{featuredPaper.category}</span>
                       </div>
@@ -269,9 +269,9 @@ const WhitePaper = () => {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Verfügbare White Papers</h2>
+            <h2 className="text-3xl font-bold mb-4">Available White Papers</h2>
             <p className="text-muted-foreground max-w-2xl">
-              Unsere White Papers bieten tiefgehende Einblicke in Testmethoden, Standards und Best Practices für die Bildqualitätsmessung.
+              Our white papers provide in-depth insights into testing methodologies, standards, and best practices for image quality measurement.
             </p>
           </div>
           
@@ -292,12 +292,12 @@ const WhitePaper = () => {
                 <div className="flex items-center justify-between mb-4">
                   <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">{selectedPaper.category}</Badge>
                   <Button variant="ghost" onClick={() => setSelectedPaper(null)}>
-                    Schließen
+                    Close
                   </Button>
                 </div>
                 <CardTitle className="text-3xl">{selectedPaper.title}</CardTitle>
                 <CardDescription>
-                  {selectedPaper.pages} Seiten • Veröffentlicht {new Date(selectedPaper.publishDate).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
+                  {selectedPaper.pages} Pages • Published {new Date(selectedPaper.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -312,7 +312,7 @@ const WhitePaper = () => {
                   onClick={() => handleDownloadClick(selectedPaper)}
                 >
                   <Download className="h-5 w-5 mr-2" />
-                  White Paper jetzt herunterladen
+                  Download White Paper Now
                 </Button>
               </CardContent>
             </Card>
