@@ -149,12 +149,12 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                        <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                       <Link to="/automotive" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                           onMouseEnter={() => setHoveredIndustry("Automotive")}>
                           <Car className="h-5 w-5" />
-                          <Link to="/automotive">{t.nav.automotive}</Link>
+                          <span>{t.nav.automotive}</span>
                           <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
-                       </div>
+                       </Link>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Security & Surveillance")}>
@@ -217,7 +217,7 @@ const Navigation = () => {
                                  <Link to={application.link}>{application.name}</Link>
                                )}
                                {(application as any).active && (
-                                 <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                                  <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                                )}
                              </div>
                            ))}
