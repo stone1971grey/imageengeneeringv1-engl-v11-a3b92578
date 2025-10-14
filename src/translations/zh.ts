@@ -7,38 +7,19 @@ export const zh = {
     resources: "资源",
     about: "关于",
     testServices: "测试服务",
-    
-    // Industries
     automotive: "汽车",
-    automotiveDesc: "车辆摄像系统、驾驶辅助和自动驾驶",
     securitySurveillance: "安防监控",
-    securityDesc: "闭路电视系统、视频监控",
     mobilePhone: "移动手机",
-    mobileDesc: "根据VCX标准进行图像质量测试",
     webCamera: "网络摄像头",
-    webCameraDesc: "用于视频会议和流媒体应用的网络摄像头",
     machineVision: "机器视觉",
-    machineVisionDesc: "用于检测、机器人技术、质量控制的摄像系统",
     medicalEndoscopy: "医疗内窥镜",
-    medicalDesc: "医学成像和诊断系统中的图像质量",
     scannersArchiving: "扫描仪与归档",
-    scannersDesc: "文档、书籍、照片数字化的质量保证",
     photoVideo: "摄影与视频",
-    photoDesc: "专业和业余应用的数码相机",
-    
-    // Products
     testCharts: "测试图卡",
-    testChartsDesc: "用于全面图像质量分析的高精度测试图案和色卡，包括多用途、反射和透射选项",
     illuminationDevices: "照明设备",
-    illuminationDesc: "专业LED照明系统和均匀光源，用于稳定的测试环境",
     measurementDevices: "测量设备",
-    measurementDesc: "精密色度计、光度计和光谱辐射计，用于精确的光学测量",
     softwareApis: "软件与API",
-    softwareDesc: "用于图像分析、校准和自动化质量控制的高级软件解决方案",
     productAccessories: "产品配件",
-    accessoriesDesc: "专业配件，包括安装系统、线缆、连接器和保护箱",
-    
-    // Submenus
     adas: "高级驾驶辅助系统（ADAS）",
     inCabinTesting: "车内测试",
     ieeeP2020: "IEEE-P2020测试",
@@ -50,17 +31,12 @@ export const zh = {
     allMeasurementDevices: "所有测量设备",
     allSoftwareApis: "所有软件与API",
     allAccessories: "所有配件",
-    
-    // Resources
     news: "新闻",
     events: "活动",
     downloads: "下载",
-    
-    // About
     company: "公司",
     careers: "职业机会",
     contact: "联系我们",
-    
     active: "活跃"
   },
   
@@ -126,6 +102,31 @@ export const zh = {
     compliant: "符合标准"
   },
   
+  // Automotive Page
+  automotive: {
+    title: "汽车与ADAS测试",
+    subtitle: "汽车摄像系统和高级驾驶辅助系统的综合测试解决方案",
+    introduction: "简介",
+    applications: "ADAS应用",
+    standards: "标准与测试",
+    products: "产品",
+    inCabinTitle: "车内性能测试",
+    inCabinDesc: "驾驶员和乘员监控系统（DMS/OMS）使用各种近红外（NIR）传感器结合主动照明（例如LED）来增强驾驶员和乘客的安全性和舒适性。",
+    adasTitle: "ADAS性能测试",
+    adasDesc: "高级驾驶辅助系统（ADAS）包括广泛的摄像头和传感器系统，支持自动驾驶车辆运动并提供驾驶员警告通知。",
+    geoCalTitle: "几何相机校准",
+    geoCalDesc: "ADAS应用的重要测量，需要检测和准确映射移动场景中的3D对象，并根据这些计算进行调整。",
+    climateTitle: "温控测试",
+    climateDesc: "将各种天气场景纳入汽车摄像头测试对于了解这些系统是否能在最恶劣的天气条件下仍能满足其性能阈值至关重要。"
+  },
+  
+  // News Page
+  newsPage: {
+    title: "最新新闻与动态",
+    subtitle: "了解我们最新的产品、技术和行业见解",
+    readMore: "阅读更多"
+  },
+  
   // Footer
   footer: {
     tagline: "图像质量精密测试设备",
@@ -153,3 +154,4 @@ export const zh = {
     followUs: "关注我们"
   }
 };
+

@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useTranslation } from "@/hooks/useTranslation";
 import emvaLogo from "@/assets/news-emva-1288-logo.png";
 import te300Image from "@/assets/news-te300.png";
 import iqAnalyzerImage from "@/assets/news-iq-analyzer-x.png";
@@ -61,6 +62,8 @@ const newsItems = [
 ];
 
 const News = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -77,10 +80,10 @@ const News = () => {
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl">
             <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-              Latest News & Updates
+              {t.newsPage.title}
             </h1>
             <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
-              Stay informed about the latest developments in image quality testing technology and industry standards.
+              {t.newsPage.subtitle}
             </p>
           </div>
         </div>
@@ -130,7 +133,7 @@ const News = () => {
                         <Button 
                           className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300"
                         >
-                          Read more
+                          {t.newsPage.readMore}
                         </Button>
                       </Link>
                     </div>

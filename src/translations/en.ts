@@ -7,38 +7,19 @@ export const en = {
     resources: "Resources",
     about: "About",
     testServices: "Test Services",
-    
-    // Industries
     automotive: "Automotive",
-    automotiveDesc: "Camera systems in vehicles, driver assistance and autonomous driving",
     securitySurveillance: "Security & Surveillance",
-    securityDesc: "CCTV systems, video surveillance",
     mobilePhone: "Mobile Phone",
-    mobileDesc: "Image quality testing according to VCX standards",
     webCamera: "Web Camera",
-    webCameraDesc: "Web cameras for video conferencing and streaming applications",
     machineVision: "Machine Vision",
-    machineVisionDesc: "Camera systems for inspection, robotics, quality control",
     medicalEndoscopy: "Medical & Endoscopy",
-    medicalDesc: "Image quality in medical imaging and diagnostic systems",
     scannersArchiving: "Scanners & Archiving",
-    scannersDesc: "Quality assurance in digitization of documents, books, photos",
     photoVideo: "Photo & Video",
-    photoDesc: "Digital cameras for professional and amateur applications",
-    
-    // Products
     testCharts: "Test Charts",
-    testChartsDesc: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options",
     illuminationDevices: "Illumination Devices",
-    illuminationDesc: "Professional LED lighting systems and uniform light sources for stable testing environments",
     measurementDevices: "Measurement Devices",
-    measurementDesc: "Precision colorimeters, photometers and spectroradiometers for accurate optical measurements",
     softwareApis: "Software & APIs",
-    softwareDesc: "Advanced software solutions for image analysis, calibration and automated quality control",
     productAccessories: "Product Accessories",
-    accessoriesDesc: "Professional accessories including mounting systems, cables, connectors and protective cases",
-    
-    // Submenus
     adas: "Advanced Driver Assistance Systems (ADAS)",
     inCabinTesting: "In-Cabin Testing",
     ieeeP2020: "IEEE-P2020 Testing",
@@ -50,17 +31,12 @@ export const en = {
     allMeasurementDevices: "All Measurement Devices",
     allSoftwareApis: "All Software & APIs",
     allAccessories: "All Accessories",
-    
-    // Resources
     news: "News",
     events: "Events",
     downloads: "Downloads",
-    
-    // About
     company: "Company",
     careers: "Careers",
     contact: "Contact",
-    
     active: "ACTIVE"
   },
   
@@ -126,6 +102,31 @@ export const en = {
     compliant: "Compliant"
   },
   
+  // Automotive Page
+  automotive: {
+    title: "Automotive & ADAS Testing",
+    subtitle: "Comprehensive testing solutions for automotive camera systems and advanced driver assistance systems",
+    introduction: "Introduction",
+    applications: "ADAS Applications",
+    standards: "Standards & Testing",
+    products: "Products",
+    inCabinTitle: "In-Cabin Performance Testing",
+    inCabinDesc: "Driver and occupant monitoring systems (DMS/OMS) use a variety of near-infrared (NIR) sensors combined with active illumination (e.g., LED) to enhance the safety and comfort of drivers and passengers.",
+    adasTitle: "ADAS Performance Testing",
+    adasDesc: "Advanced Driver Assistance Systems (ADAS) encompass a wide range of camera and sensor systems that support autonomous vehicle movements and provide driver caution notices.",
+    geoCalTitle: "Geometric Camera Calibration",
+    geoCalDesc: "An essential measurement for ADAS applications that are required to detect and accurately map 3D objects in a moving scene and make adjustments based on those calculations.",
+    climateTitle: "Climate-Controlled Testing",
+    climateDesc: "Incorporating various weather scenarios into automotive camera testing is crucial to understanding if these systems can still meet their performance thresholds in even the harshest weather conditions."
+  },
+  
+  // News Page
+  newsPage: {
+    title: "Latest News & Updates",
+    subtitle: "Stay informed about our latest products, technologies, and industry insights",
+    readMore: "Read More"
+  },
+  
   // Footer
   footer: {
     tagline: "Precision Test Equipment for Image Quality",
@@ -153,3 +154,4 @@ export const en = {
     followUs: "Follow Us"
   }
 };
+
