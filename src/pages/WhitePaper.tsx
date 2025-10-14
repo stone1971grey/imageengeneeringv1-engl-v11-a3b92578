@@ -408,21 +408,20 @@ const WhitePaper = () => {
                         name="consent"
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                            <AlertCircle className="h-5 w-5 text-[hsl(58,95%,45%)] flex-shrink-0 mt-0.5" />
-                            <div className="flex flex-row items-start space-x-3 space-y-0 flex-1">
+                            <AlertCircle className="h-8 w-8 text-[hsl(58,95%,45%)] flex-shrink-0 mt-0.5" />
+                            <div className="space-y-1 leading-none flex-1">
+                              <FormLabel className="text-base cursor-pointer" onClick={() => field.onChange(!field.value)}>
+                                I agree to receive information about image quality testing and related topics via email. *
+                              </FormLabel>
                               <FormControl>
-                                <Checkbox
+                                <input 
+                                  type="checkbox" 
+                                  className="hidden" 
                                   checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="border-[hsl(58,95%,45%)] data-[state=checked]:bg-[hsl(58,95%,45%)] data-[state=checked]:text-black"
+                                  onChange={(e) => field.onChange(e.target.checked)}
                                 />
                               </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-base">
-                                  I agree to receive information about image quality testing and related topics via email. *
-                                </FormLabel>
-                                <FormMessage />
-                              </div>
+                              <FormMessage />
                             </div>
                           </FormItem>
                         )}
