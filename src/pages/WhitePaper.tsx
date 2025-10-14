@@ -302,7 +302,7 @@ const WhitePaper = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div 
-                  className="prose prose-sm max-w-none"
+                  className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-foreground prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4 prose-ul:my-4 prose-li:text-muted-foreground prose-li:leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: selectedPaper.fullDescription }}
                 />
                 
