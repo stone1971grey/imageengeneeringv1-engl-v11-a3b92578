@@ -234,7 +234,7 @@ const WhitePaper = () => {
             {featuredPaper && (
               <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
                 <CardContent className="p-6">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  <div className="flex flex-col gap-4">
                     <div>
                       <Badge className="mb-2">Featured</Badge>
                       <h3 className="text-xl font-semibold mb-2">{featuredPaper.title}</h3>
@@ -247,10 +247,6 @@ const WhitePaper = () => {
                         <span>{featuredPaper.category}</span>
                       </div>
                     </div>
-                    <Button size="lg" onClick={() => handleDownloadClick(featuredPaper)}>
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
