@@ -5,6 +5,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -16,10 +17,14 @@ import whitepaperHero from "@/assets/whitepaper-hero.jpg";
 
 // Form validation schema
 const downloadFormSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
+  firstName: z.string().min(2, { message: "First name must be at least 2 characters" }),
+  lastName: z.string().min(2, { message: "Last name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
   company: z.string().min(2, { message: "Company must be at least 2 characters" }),
   position: z.string().min(2, { message: "Position must be at least 2 characters" }),
+  consent: z.boolean().refine((val) => val === true, {
+    message: "You must agree to receive information",
+  }),
 });
 
 type DownloadFormValues = z.infer<typeof downloadFormSchema>;
@@ -153,10 +158,12 @@ const WhitePaper = () => {
   const form = useForm<DownloadFormValues>({
     resolver: zodResolver(downloadFormSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       company: "",
       position: "",
+      consent: false,
     },
   });
 
@@ -315,14 +322,113 @@ const WhitePaper = () => {
                   dangerouslySetInnerHTML={{ __html: selectedPaper.fullDescription }}
                 />
                 
-                <Button 
-                  size="lg" 
-                  className="w-full"
-                  onClick={() => handleDownloadClick(selectedPaper)}
-                >
-                  <Download className="h-5 w-5 mr-2" />
-                  Download White Paper Now
-                </Button>
+                <div className="pt-6 border-t border-border">
+                  <p className="text-lg font-semibold mb-6">
+                    Download now to learn how IEEE P2020 is shaping the future of automotive image quality – and why it is becoming the new global benchmark for vehicle vision.
+                  </p>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>First Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="John" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Last Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Doe" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>E-Mail *</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="john@company.com" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="company"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Company *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Your Company Inc." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="position"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Position *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. Test Engineer" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="consent"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                I agree to receive information about image quality testing and related topics via email. *
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button type="submit" size="lg" className="w-full">
+                        <Download className="h-5 w-5 mr-2" />
+                        Download White Paper Now
+                      </Button>
+                    </form>
+                  </Form>
+                </div>
               </CardContent>
             </Card>
           </div>
