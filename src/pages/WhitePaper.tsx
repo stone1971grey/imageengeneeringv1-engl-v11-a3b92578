@@ -359,19 +359,21 @@ const WhitePaper = () => {
                         />
                       </div>
                       
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-base">E-Mail *</FormLabel>
-                            <FormControl>
-                              <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base">E-Mail *</FormLabel>
+                              <FormControl>
+                                <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
