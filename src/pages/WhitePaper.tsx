@@ -12,7 +12,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { FileText, Download, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-import eventsHero from "@/assets/events-hero.jpg";
+import whitepaperHero from "@/assets/whitepaper-hero.jpg";
 
 // Form validation schema
 const downloadFormSchema = z.object({
@@ -316,7 +316,7 @@ const WhitePaper = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url(${eventsHero})`
+            backgroundImage: `url(${whitepaperHero})`
           }}
         />
         <div className="relative container mx-auto px-6">
