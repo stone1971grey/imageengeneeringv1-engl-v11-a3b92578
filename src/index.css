@@ -98,6 +98,10 @@ All colors MUST be HSL.
     
     /* Custom explore button */
     --explore-button: 58 60% 69%;
+    
+    /* Yellow accent for badges */
+    --yellow-accent: 58 95% 45%;
+    --yellow-accent-foreground: 0 0% 0%;
 
     --radius: 0.5rem;
 

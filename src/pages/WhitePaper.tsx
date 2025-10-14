@@ -172,12 +172,12 @@ const WhitePaper = () => {
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
-          <Badge variant={paper.featured ? "default" : "secondary"}>
+          <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">
             {paper.category}
           </Badge>
         </div>
         <CardTitle className="text-xl leading-tight flex items-start gap-3">
-          <FileText className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+          <FileText className="h-6 w-6 text-[hsl(58,95%,45%)] flex-shrink-0 mt-1" />
           <span>{paper.title}</span>
         </CardTitle>
         <div className="flex gap-4 text-base text-muted-foreground">
