@@ -148,6 +148,7 @@ const WhitePaper = () => {
   const [selectedPaper, setSelectedPaper] = useState<WhitePaper | null>(null);
   const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   const form = useForm<DownloadFormValues>({
     resolver: zodResolver(downloadFormSchema),
@@ -180,6 +181,14 @@ const WhitePaper = () => {
     setSelectedPaper(paper);
     setDownloadSuccess(false);
     setIsDownloadDialogOpen(true);
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedPaper(null);
+      setIsClosing(false);
+    }, 300); // Match animation duration
   };
 
   const WhitePaperCard = ({ paper }: { paper: WhitePaper }) => (
@@ -285,13 +294,13 @@ const WhitePaper = () => {
 
       {/* Selected Paper Detail */}
       {selectedPaper && !isDownloadDialogOpen && (
-        <section className="py-16 bg-muted/30 animate-fade-in">
+        <section className={`py-16 bg-muted/30 ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}>
           <div className="container mx-auto px-6">
-            <Card className="max-w-4xl mx-auto animate-scale-in">
+            <Card className={`max-w-4xl mx-auto ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
                   <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">{selectedPaper.category}</Badge>
-                  <Button variant="ghost" onClick={() => setSelectedPaper(null)}>
+                  <Button variant="ghost" onClick={handleClose}>
                     Close
                   </Button>
                 </div>
