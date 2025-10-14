@@ -147,56 +147,56 @@ const Navigation = () => {
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Industries */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
-                      
+                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
+                       
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
-                         onMouseEnter={() => setHoveredIndustry("Automotive")}>
-                         <Car className="h-5 w-5" />
+                          onMouseEnter={() => setHoveredIndustry("Automotive")}>
+                          <Car className="h-5 w-5" />
                           <Link to="/automotive">{t.nav.automotive}</Link>
                           <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                        </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Security & Surveillance")}>
-                        <Shield className="h-5 w-5" />
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredIndustry("Security & Surveillance")}>
+                         <Shield className="h-5 w-5" />
                          <span>{t.nav.securitySurveillance}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Mobile Phone")}>
-                        <Smartphone className="h-5 w-5" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredIndustry("Mobile Phone")}>
+                         <Smartphone className="h-5 w-5" />
                          <span>{t.nav.mobilePhone}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Web Camera")}>
-                        <Camera className="h-5 w-5" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredIndustry("Web Camera")}>
+                         <Camera className="h-5 w-5" />
                          <span>{t.nav.webCamera}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
-                        <Cog className="h-5 w-5" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
+                         <Cog className="h-5 w-5" />
                          <span>{t.nav.machineVision}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
-                        <Stethoscope className="h-5 w-5" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
+                         <Stethoscope className="h-5 w-5" />
                          <span>{t.nav.medicalEndoscopy}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
-                        <ScanLine className="h-5 w-5" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
+                         <ScanLine className="h-5 w-5" />
                          <span>{t.nav.scannersArchiving}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
-                        <Camera className="h-5 w-5" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
+                         <Camera className="h-5 w-5" />
                          <span>{t.nav.photoVideo}</span>
-                      </div>
+                       </div>
                     </div>
                     
                     {/* Right Column: Applications */}
@@ -263,44 +263,44 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger="Products">
+            <SimpleDropdown trigger={t.nav.products}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredProduct(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Product Groups */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Product Groups</h4>
-                      
+                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.products}</h4>
+                       
                        <Link to="/products/charts" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
-                         onMouseEnter={() => setHoveredProduct("Test Charts")}>
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <span>Test Charts</span>
-                         <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
+                          onMouseEnter={() => setHoveredProduct("Test Charts")}>
+                          <CustomTargetIcon className="h-5 w-5" />
+                          <span>{t.nav.testCharts}</span>
+                          <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                        </Link>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Illumination Devices")}>
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Illumination Devices</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Measurement Devices")}>
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Measurement Devices</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Software & APIs")}>
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Software & APIs</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredProduct("Product Accessories")}>
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <span>Product Accessories</span>
-                      </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredProduct("Illumination Devices")}>
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <span>{t.nav.illuminationDevices}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredProduct("Measurement Devices")}>
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <span>{t.nav.measurementDevices}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredProduct("Software & APIs")}>
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <span>{t.nav.softwareApis}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredProduct("Product Accessories")}>
+                         <CustomTargetIcon className="h-5 w-5" />
+                         <span>{t.nav.productAccessories}</span>
+                       </div>
                     </div>
                     
                     {/* Right Column: Subgroups */}
@@ -366,7 +366,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger="Test Lab">
+              <SimpleDropdown trigger={t.nav.testServices}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredTestService(null)}>
                   <div className="flex gap-6 p-6">
@@ -477,7 +477,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger="Training & Events" className="right-aligned">
+              <SimpleDropdown trigger={t.nav.resources} className="right-aligned">
                 <div className="flex flex-col gap-2 w-[315px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-6 p-6">
                      <div className="space-y-4 flex-1">
@@ -513,7 +513,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger="Image Quality" className="right-aligned">
+              <SimpleDropdown trigger={t.nav.about} className="right-aligned">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
@@ -565,7 +565,7 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger="Company" className="right-aligned">
+            <SimpleDropdown trigger={t.nav.company} className="right-aligned">
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-8 p-6">
                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
@@ -659,22 +659,22 @@ const Navigation = () => {
                     {/* Your Solution */}
                     <AccordionItem value="solutions" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          Your Solution
-                        </AccordionTrigger>
+                          {t.nav.yourSolution}
+                       </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-1">
-                          <div className="font-medium text-gray-900 py-3 mb-2">Industries</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.industries}</div>
                           
                           {/* Automotive with sub-applications */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="automotive" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                     <Car className="h-4 w-4" />
-                                     <span>Automotive</span>
-                                     <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
-                                   </Link>
+                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                      <Car className="h-4 w-4" />
+                                      <span>{t.nav.automotive}</span>
+                                      <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
+                                    </Link>
                                  </div>
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -699,10 +699,10 @@ const Navigation = () => {
                             <AccordionItem value="security" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                     <Shield className="h-4 w-4" />
-                                     <span>Security & Surveillance</span>
-                                   </div>
+                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                      <Shield className="h-4 w-4" />
+                                      <span>{t.nav.securitySurveillance}</span>
+                                    </div>
                                  </div>
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -722,10 +722,10 @@ const Navigation = () => {
                             <AccordionItem value="mobile" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                     <Smartphone className="h-4 w-4" />
-                                     <span>Mobile Phone</span>
-                                   </div>
+                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                      <Smartphone className="h-4 w-4" />
+                                      <span>{t.nav.mobilePhone}</span>
+                                    </div>
                                  </div>
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -745,10 +745,10 @@ const Navigation = () => {
                             <AccordionItem value="webcam" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                     <Camera className="h-4 w-4" />
-                                     <span>Web Camera</span>
-                                   </div>
+                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                      <Camera className="h-4 w-4" />
+                                      <span>{t.nav.webCamera}</span>
+                                    </div>
                                  </div>
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -767,10 +767,10 @@ const Navigation = () => {
                             <AccordionItem value="machine-vision" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                     <Cog className="h-4 w-4" />
-                                     <span>Machine Vision</span>
-                                   </div>
+                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                      <Cog className="h-4 w-4" />
+                                      <span>{t.nav.machineVision}</span>
+                                    </div>
                                  </div>
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -789,10 +789,10 @@ const Navigation = () => {
                             <AccordionItem value="medical" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                     <Stethoscope className="h-4 w-4" />
-                                     <span>Medical & Endoscopy</span>
-                                   </div>
+                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                      <Stethoscope className="h-4 w-4" />
+                                      <span>{t.nav.medicalEndoscopy}</span>
+                                    </div>
                                  </div>
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -812,10 +812,10 @@ const Navigation = () => {
                             <AccordionItem value="scanning" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                     <ScanLine className="h-4 w-4" />
-                                     <span>Scanners & Archiving</span>
-                                   </div>
+                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                      <ScanLine className="h-4 w-4" />
+                                      <span>{t.nav.scannersArchiving}</span>
+                                    </div>
                                  </div>
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
@@ -835,10 +835,10 @@ const Navigation = () => {
                             <AccordionItem value="photo-video" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                     <Camera className="h-4 w-4" />
-                                     <span>Photo & Video</span>
-                                   </div>
+                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                      <Camera className="h-4 w-4" />
+                                      <span>{t.nav.photoVideo}</span>
+                                    </div>
                                  </div>
                               </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
