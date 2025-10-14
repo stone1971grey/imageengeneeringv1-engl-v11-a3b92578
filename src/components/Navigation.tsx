@@ -13,6 +13,7 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/
 import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useNavigationData } from "@/hooks/useNavigationData";
 
 // Import industry images
 import industryPhotography from "@/assets/industry-photography.jpg";
@@ -34,6 +35,7 @@ import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
 
 const Navigation = () => {
   const { t } = useTranslation();
+  const navData = useNavigationData();
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
@@ -76,301 +78,59 @@ const Navigation = () => {
     preloadImages();
   }, []);
 
-  // Industry data mapping with subgroups
+  // Industry data mapping with subgroups - now using translated data
   const industryData = {
-    "Automotive": {
-      image: industryAutomotive,
-      description: "Camera systems in vehicles, driver assistance and autonomous driving",
-      subgroups: [
-        { name: "Advanced Driver Assistance Systems (ADAS)", link: "/automotive" },
-        { name: "In-Cabin Testing", link: "/in-cabin-testing", active: true },
-        { name: "IEEE-P2020 Testing", link: "#" },
-        { name: "High Dynamic Range (HDR)", link: "#" },
-        { name: "Near-Infrared (NIR)", link: "#" },
-        { name: "Geometric Calibration", link: "#" }
-      ]
-    },
-    "Security & Surveillance": {
-      image: industrySecurity,
-      description: "CCTV systems, video surveillance",
-      subgroups: [
-        { name: "IEC 62676-5 Testing", link: "#" },
-        { name: "Low-light (ISO 19093)", link: "#" },
-        { name: "High Dynamic Range (HDR)", link: "#" },
-        { name: "ISP Tuning", link: "#" },
-        { name: "Spectral Sensitivities", link: "#" }
-      ]
-    },
-    "Mobile Phone": {
-      image: industryMobile,
-      description: "Image quality testing according to VCX standards",
-      subgroups: [
-        { name: "VCX PhoneCam", link: "#" },
-        { name: "Color Calibration", link: "#" },
-        { name: "Camera Stabilization", link: "#" },
-        { name: "ISP Tuning", link: "#" },
-        { name: "Timing Measurements", link: "#" }
-      ]
-    },
-    "Web Camera": {
-      image: industryBroadcast,
-      description: "Web cameras for video conferencing and streaming applications",
-      subgroups: [
-        { name: "VCX WebCam", link: "#" },
-        { name: "ISP Tuning", link: "#" },
-        { name: "Color Calibration", link: "#" },
-        { name: "Timing Measurements", link: "#" }
-      ]
-    },
-    "Machine Vision": {
-      image: industryMachineVision,
-      description: "Camera systems for inspection, robotics, quality control",
-      subgroups: [
-        { name: "EMVA 1288 (ISO 24942)", link: "#" },
-        { name: "Production Line Calibration", link: "#" },
-        { name: "Lens Distortion", link: "#" },
-        { name: "Signal-to-Noise Ratio (SNR)", link: "#" }
-      ]
-    },
-    "Medical & Endoscopy": {
-      image: industryMedical,
-      description: "Image quality in medical imaging and diagnostic systems",
-      subgroups: [
-        { name: "Color Calibration", link: "#" },
-        { name: "Low-Light Testing", link: "#" },
-        { name: "Optical Distortion", link: "#" },
-        { name: "ISP Tuning", link: "#" },
-        { name: "Endoscopic Illumination", link: "#" }
-      ]
-    },
-    "Scanners & Archiving": {
-      image: industryScanning,
-      description: "Quality assurance in digitization of documents, books, photos",
-      subgroups: [
-        { name: "ISO 21550", link: "#" },
-        { name: "Universal Test Target", link: "#" },
-        { name: "Multispectral Illumination", link: "#" },
-        { name: "Scanner Dynamic Range", link: "#" },
-        { name: "Spectral Sensitivities", link: "#" }
-      ]
-    },
-    "Photo & Video": {
-      image: industryPhotography,
-      description: "Digital cameras for professional and amateur applications",
-      subgroups: [
-        { name: "Broadcast & HDTV", link: "#" },
-        { name: "Spectral Sensitivities", link: "#" },
-        { name: "ISP Tuning", link: "#" },
-        { name: "iQ-LED Illumination", link: "#" }
-      ]
-    }
+    "Automotive": { ...navData.industries["Automotive"], image: industryAutomotive },
+    "Security & Surveillance": { ...navData.industries["Security & Surveillance"], image: industrySecurity },
+    "Mobile Phone": { ...navData.industries["Mobile Phone"], image: industryMobile },
+    "Web Camera": { ...navData.industries["Web Camera"], image: industryBroadcast },
+    "Machine Vision": { ...navData.industries["Machine Vision"], image: industryMachineVision },
+    "Medical & Endoscopy": { ...navData.industries["Medical & Endoscopy"], image: industryMedical },
+    "Scanners & Archiving": { ...navData.industries["Scanners & Archiving"], image: industryScanning },
+    "Photo & Video": { ...navData.industries["Photo & Video"], image: industryPhotography }
   };
-
-  // Product data mapping with subgroups
+  
+  // Product data mapping with subgroups - now using translated data
   const productData = {
-    "Test Charts": {
-      image: "/images/custom-chart.png",
-      description: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options",
-      subgroups: [
-        { name: "iQ-Analyzer-X", link: "#" },
-        { name: "Multipurpose", link: "#" },
-        { name: "Image Quality Factor", link: "#" },
-        { name: "Infrared (VIS-IR)", link: "#" },
-        { name: "Reflective", link: "/charts" },
-        { name: "Transparent", link: "#" },
-        { name: "See All Charts", link: "/charts" }
-      ]
-    },
-    "Illumination Devices": {
-      image: iqLedIllumination,
-      description: "Professional LED lighting systems and uniform light sources for stable testing environments",
-      subgroups: [
-        { name: "iQ-LED", link: "#" },
-        { name: "IEEE-P2020", link: "#" },
-        { name: "Production Line Calibration", link: "#" },
-        { name: "Flicker (PWM/MMP)", link: "#" },
-        { name: "Test Chart Illumination", link: "#" },
-        { name: "All Light Sources", link: "#" }
-      ]
-    },
-    "Measurement Devices": {
-      image: arcturusMainProduct,
-      description: "Precision colorimeters, photometers and spectroradiometers for accurate optical measurements",
-      subgroups: [
-        { name: "Geometric Calibration", link: "#" },
-        { name: "Timing Performance", link: "#" },
-        { name: "Climate-Controlled", link: "#" },
-        { name: "Machine Vision", link: "#" },
-        { name: "Spectral Sensitivity", link: "#" },
-        { name: "All Measurement Devices", link: "#" }
-      ]
-    },
-    "Software & APIs": {
-      image: iqAnalyzerIntro,
-      description: "Advanced software solutions for image analysis, calibration and automated quality control",
-      subgroups: [
-        { name: "iQ-Analyzer-X", link: "#" },
-        { name: "Control APIs", link: "#" },
-        { name: "iQ-Luminance", link: "#" },
-        { name: "All Software & APIs", link: "#" }
-      ]
-    },
-    "Product Accessories": {
-      image: "/images/chart-case.png",
-      description: "Professional accessories including mounting systems, cables, connectors and protective cases",
-      subgroups: [
-        { name: "Storage & Transport", link: "#" },
-        { name: "Luxmeters", link: "#" },
-        { name: "Camera Alignment", link: "#" },
-        { name: "Test Chart Mounts", link: "#" },
-        { name: "VCX & Webcam", link: "#" },
-        { name: "All Accessories", link: "#" }
-      ]
-    }
+    "Test Charts": { ...navData.products["Test Charts"], image: "/images/custom-chart.png" },
+    "Illumination Devices": { ...navData.products["Illumination Devices"], image: iqLedIllumination },
+    "Measurement Devices": { ...navData.products["Measurement Devices"], image: arcturusMainProduct },
+    "Software & APIs": { ...navData.products["Software & APIs"], image: iqAnalyzerIntro },
+    "Product Accessories": { ...navData.products["Product Accessories"], image: "/images/chart-case.png" }
   };
-
-  // Solution data mapping  
+  
+  // Solution data mapping - now using translated data
   const solutionData = {
-    "Camera Quality Validation": {
-      image: industryPhotography,
-      description: "For camera manufacturers who need precise lighting systems and test charts.",
-      subline: "Suitable for: Consumer & Professional Cameras"
-    },
-    "In-Cabin Performance Testing": {
-      image: industryAutomotive,
-      description: "For developers of driver assistance systems who need stable lighting conditions.",
-      subline: "Suitable for: Automotive Labs, IEEE P2020"
-    },
-    "Test Environments for Smartphones & Displays": {
-      image: industryMobile,
-      description: "For OEMs and research in color reproduction and sharpness testing.",
-      subline: "Suitable for: Mobile Industry, VCX Testing"
-    },
-    "Microscopy & Medical Imaging": {
-      image: industryMedical,
-      description: "For medical technology & life sciences.",
-      subline: "Suitable for: Medical Devices, Endoscopy"
-    },
-    "ISO and IEEE Compliant Test Setups": {
-      image: industryLabTesting,
-      description: "For companies that need standards-compliant environments.",
-      subline: "Suitable for: Standards Compliance, Labs"
-    }
+    "Camera Quality Validation": { ...navData.solutions["Camera Quality Validation"], image: industryPhotography },
+    "In-Cabin Performance Testing": { ...navData.solutions["In-Cabin Performance Testing"], image: industryAutomotive },
+    "Test Environments for Smartphones & Displays": { ...navData.solutions["Test Environments for Smartphones & Displays"], image: industryMobile },
+    "Microscopy & Medical Imaging": { ...navData.solutions["Microscopy & Medical Imaging"], image: industryMedical },
+    "ISO and IEEE Compliant Test Setups": { ...navData.solutions["ISO and IEEE Compliant Test Setups"], image: industryLabTesting }
   };
 
   const solutionPackages = {
-    "Arcturus HDR Test Bundle": {
-      image: arcturusSetupVegaLaptop,
-      description: "HDR test bundle with Arcturus LED, Vega software and test charts – ideal for Automotive & Mobile.",
-      subline: "Complete package: Lighting + Software + Charts"
-    },
-    "Arcturus LED + Vega Software + Test Charts": {
-      image: arcturusMainProduct,
-      description: "Complete solution for lighting tests",
-      subline: "Hardware + Software + Charts Bundle"
-    },
-    "Camera Calibration Package": {
-      image: "/images/custom-chart.png",
-      description: "Lighting system, charts, software – specially for calibrated tests",
-      subline: "Complete calibration solution"
-    },
-    "Laboratory Complete Solution": {
-      image: industryLabTesting,
-      description: "For research institutions with hardware + analysis",
-      subline: "Complete research lab setup"
-    },
-    "Spectral Measurement & Analysis Set": {
-      image: iqAnalyzerIntro,
-      description: "Light source + evaluation + export functions",
-      subline: "Complete spectral analysis kit"
-    }
+    "Arcturus HDR Test Bundle": { ...navData.solutionPackages["Arcturus HDR Test Bundle"], image: arcturusSetupVegaLaptop },
+    "Arcturus LED + Vega Software + Test Charts": { ...navData.solutionPackages["Arcturus LED + Vega Software + Test Charts"], image: arcturusMainProduct },
+    "Camera Calibration Package": { ...navData.solutionPackages["Camera Calibration Package"], image: "/images/custom-chart.png" },
+    "Laboratory Complete Solution": { ...navData.solutionPackages["Laboratory Complete Solution"], image: industryLabTesting },
+    "Spectral Measurement & Analysis Set": { ...navData.solutionPackages["Spectral Measurement & Analysis Set"], image: iqAnalyzerIntro }
   };
-
-  // Target groups data mapping
+  
+  // Target groups data mapping - now using translated data
   const targetGroupsData = {
-    "Manufacturers": {
-      image: industryAutomotive,
-      description: "OEMs and device manufacturers who need image quality solutions for their product development",
-      subline: "For: Camera manufacturers, Automotive OEMs, Consumer Electronics"
-    },
-    "Suppliers": {
-      image: industryMachineVision,
-      description: "Tier-1 and Tier-2 suppliers who validate components and systems for their customers",
-      subline: "For: Automotive Suppliers, Sensor manufacturers, Component suppliers"
-    },
-    "Research Institutions": {
-      image: industryLabTesting,
-      description: "Universities and research institutes for scientific investigations and standards development",
-      subline: "For: Universities, Institutes, R&D departments"
-    }
+    "Manufacturers": { ...navData.targetGroups["Manufacturers"], image: industryAutomotive },
+    "Suppliers": { ...navData.targetGroups["Suppliers"], image: industryMachineVision },
+    "Research Institutions": { ...navData.targetGroups["Research Institutions"], image: industryLabTesting }
   };
-
-  // Test Services data mapping
+  
+  // Test Services data mapping - now using translated data
   const testServicesData = {
-    "Overview": {
-      image: industryLabTesting,
-      description: "Comprehensive introduction to our testing laboratory capabilities and methodologies",
-      services: [
-        { name: "Learn about the Lab", link: "/inside-lab" },
-        { name: "Testing Consultation", link: "#" }
-      ]
-    },
-    "Automotive": {
-      image: industryAutomotive,
-      description: "Specialized testing services for automotive camera systems and ADAS applications",
-      services: [
-        { name: "camPAS", link: "#" },
-        { name: "In-Cabin Testing", link: "/in-cabin-testing", active: true },
-        { name: "HDR Testing", link: "#" },
-        { name: "Geometric Calibration", link: "#" },
-        { name: "Baseline Evaluations", link: "#" }
-      ]
-    },
-    "VCX": {
-      image: industryMobile,
-      description: "VCX testing protocols for mobile devices and webcam applications",
-      services: [
-        { name: "VCX - PhoneCam", link: "#" },
-        { name: "VCX - WebCam", link: "#" },
-        { name: "Color Characterizations", link: "#" },
-        { name: "Baseline Evaluations", link: "#" }
-      ]
-    },
-    "Image Quality": {
-      image: industryPhotography,
-      description: "Comprehensive image quality analysis and measurement services",
-      services: [
-        { name: "Resolution & Texture Loss", link: "#" },
-        { name: "Dynamic Range (OECF)", link: "#" },
-        { name: "Lens Distortion", link: "#" },
-        { name: "Image Shading & Flare", link: "#" },
-        { name: "Color Accuracy", link: "#" }
-      ]
-    },
-    "Standardized": {
-      image: industryLabTesting,
-      description: "Testing services according to international standards and protocols",
-      services: [
-        { name: "IEEE-P2020 (ADAS)", link: "#" },
-        { name: "VCX (Mobile/Webcam)", link: "#" },
-        { name: "IEC 62676-5 (Security)", link: "#" },
-        { name: "EMVA 1288 (Machine Vision)", link: "#" },
-        { name: "ISO 12233 (SFR)", link: "#" }
-      ]
-    },
-    "Specialized/Custom": {
-      image: industryMedical,
-      description: "Custom testing solutions and specialized measurement services",
-      services: [
-        { name: "Baseline Evaluations", link: "#" },
-        { name: "Proof of Concepts", link: "#" },
-        { name: "Luminance Calibrations", link: "#" },
-        { name: "Sample-to-Sample Deviations", link: "#" },
-        { name: "Development Validation Tests", link: "#" },
-        { name: "Temperature-Controlled", link: "#" },
-        { name: "Underwater Tests", link: "#" }
-      ]
-    }
+    "Overview": { ...navData.testServices["Overview"], image: industryLabTesting },
+    "Automotive": { ...navData.testServices["Automotive"], image: industryAutomotive },
+    "VCX": { ...navData.testServices["VCX"], image: industryMobile },
+    "Image Quality": { ...navData.testServices["Image Quality"], image: industryPhotography },
+    "Standardized": { ...navData.testServices["Standardized"], image: industryLabTesting },
+    "Specialized/Custom": { ...navData.testServices["Specialized/Custom"], image: industryMedical }
   };
 
   return (
