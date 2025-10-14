@@ -48,11 +48,15 @@ const whitePapers: WhitePaper[] = [
     abstract: "Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance. The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap by defining the first unified framework for automotive image quality.",
     fullDescription: `
       <h3>How Well Do Vehicles Really "See"?</h3>
-      <p>Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance. The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap by defining the first unified framework for automotive image quality.</p>
+      
+      <p>Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance.</p>
+      
+      <p>The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap by defining the first unified framework for automotive image quality.</p>
       
       <p>Discover why traditional image quality standards from consumer electronics fail to meet the demanding conditions of vehicle cameras – and how P2020 introduces consistent KPIs, testing procedures, and evaluation models that ensure safety, reliability, and comparability across imaging systems.</p>
       
       <h3>What You'll Learn</h3>
+      
       <p>This white paper provides valuable insights for OEMs, suppliers, and technology decision-makers who want to understand:</p>
       <ul>
         <li>Where current standards fall short</li>
@@ -78,7 +82,10 @@ const whitePapers: WhitePaper[] = [
     abstract: "Comprehensive guide to printer quality testing and print longevity assessment. Learn industry-standard methodologies for evaluating printer performance and output quality.",
     fullDescription: `
       <h3>Introduction</h3>
-      <p>Printer testing and print life assessment are critical components of quality assurance in the printing industry. This white paper explores comprehensive testing methodologies and best practices.</p>
+      
+      <p>Printer testing and print life assessment are critical components of quality assurance in the printing industry.</p>
+      
+      <p>This white paper explores comprehensive testing methodologies and best practices.</p>
       
       <h3>Testing Approaches</h3>
       <ul>
@@ -91,9 +98,11 @@ const whitePapers: WhitePaper[] = [
       </ul>
       
       <h3>Industry Applications</h3>
+      
       <p>These testing methodologies are applicable across various sectors including commercial printing, photography, fine art reproduction, and document management systems.</p>
       
       <h3>Benefits</h3>
+      
       <p>Implementing these testing protocols ensures consistent output quality, extends equipment lifespan, and maintains customer satisfaction through reliable print performance.</p>
     `,
     downloadUrl: "#download-printer"
@@ -107,7 +116,10 @@ const whitePapers: WhitePaper[] = [
     abstract: "Advanced camera testing techniques for automotive, mobile, and industrial applications. Explore comprehensive testing methodologies for modern camera systems.",
     fullDescription: `
       <h3>Scope</h3>
-      <p>Modern camera systems require rigorous testing to ensure optimal performance across diverse applications. This white paper covers comprehensive testing approaches for various camera technologies.</p>
+      
+      <p>Modern camera systems require rigorous testing to ensure optimal performance across diverse applications.</p>
+      
+      <p>This white paper covers comprehensive testing approaches for various camera technologies.</p>
       
       <h3>Testing Categories</h3>
       <ul>
@@ -121,9 +133,11 @@ const whitePapers: WhitePaper[] = [
       </ul>
       
       <h3>Application Areas</h3>
+      
       <p>This white paper addresses testing requirements for automotive ADAS cameras, mobile phone cameras, security surveillance systems, and industrial machine vision applications.</p>
       
       <h3>Industry Standards</h3>
+      
       <p>We explore relevant standards including IEEE P2020, EMVA 1288, ISO 12233, and industry-specific testing protocols to ensure comprehensive quality assessment.</p>
     `,
     downloadUrl: "#download-camera"
