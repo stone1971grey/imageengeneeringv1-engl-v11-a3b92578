@@ -41,30 +41,30 @@ interface WhitePaper {
 const whitePapers: WhitePaper[] = [
   {
     id: "p2020",
-    title: "P2020 White Paper",
+    title: "How Well Do Vehicles Really \"See\"? – The IEEE P2020 Automotive Imaging White Paper",
     category: "Standards & Compliance",
     pages: 24,
     publishDate: "2024-01",
-    abstract: "Understanding IEEE P2020 Standard for Automotive System Image Quality. This comprehensive guide covers the fundamentals of automotive camera testing and compliance requirements.",
+    abstract: "Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance. The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap by defining the first unified framework for automotive image quality.",
     fullDescription: `
-      <h3>Overview</h3>
-      <p>The IEEE P2020 standard represents a groundbreaking framework for automotive image quality testing. This white paper provides an in-depth analysis of the standard's requirements, testing methodologies, and implementation strategies.</p>
+      <h3>How Well Do Vehicles Really "See"?</h3>
+      <p>Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance. The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap by defining the first unified framework for automotive image quality.</p>
       
-      <h3>Key Topics Covered</h3>
-      <ul>
-        <li>IEEE P2020 standard requirements and specifications</li>
-        <li>ADAS camera testing methodologies</li>
-        <li>Image quality metrics and KPIs</li>
-        <li>Test setup and environment configuration</li>
-        <li>Compliance verification procedures</li>
-        <li>Real-world implementation case studies</li>
-      </ul>
-      
-      <h3>Target Audience</h3>
-      <p>This white paper is designed for automotive engineers, test engineers, quality assurance professionals, and technical managers involved in ADAS development and testing.</p>
+      <p>Discover why traditional image quality standards from consumer electronics fail to meet the demanding conditions of vehicle cameras – and how P2020 introduces consistent KPIs, testing procedures, and evaluation models that ensure safety, reliability, and comparability across imaging systems.</p>
       
       <h3>What You'll Learn</h3>
-      <p>After reading this white paper, you will understand how to properly implement IEEE P2020 testing protocols, select appropriate test equipment, and interpret test results to ensure compliance with automotive industry standards.</p>
+      <p>This white paper provides valuable insights for OEMs, suppliers, and technology decision-makers who want to understand:</p>
+      <ul>
+        <li>Where current standards fall short</li>
+        <li>How LED flicker, HDR, fisheye optics, and temperature extremes affect image performance</li>
+        <li>Why standardized metrics are key to safer driver assistance and autonomous systems</li>
+      </ul>
+      
+      <h3>Why This Matters</h3>
+      <p>Download now to learn how IEEE P2020 is shaping the future of automotive image quality – and why it is becoming the new global benchmark for vehicle vision.</p>
+      
+      <h3>Target Audience</h3>
+      <p>This white paper is designed for automotive engineers, test engineers, quality assurance professionals, OEMs, suppliers, and technology decision-makers involved in ADAS development and testing.</p>
     `,
     downloadUrl: "#download-p2020",
     featured: true
