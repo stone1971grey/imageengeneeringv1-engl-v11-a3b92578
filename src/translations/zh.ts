@@ -127,6 +127,30 @@ export const zh = {
     readMore: "阅读更多"
   },
   
+  // White Paper Page
+  whitepaper: {
+    title: "白皮书",
+    subtitle: "为您的项目提供技术专业知识和行业知识。下载我们的综合白皮书。",
+    featured: "精选",
+    pages: "页",
+    category: "类别",
+    downloadNow: "立即下载",
+    learnMore: "了解更多",
+    available: "可用白皮书",
+    availableDesc: "我们的白皮书深入介绍了图像质量测量的测试方法、标准和最佳实践。",
+    formTitle: "白皮书下载",
+    formDesc: "请填写表格以下载",
+    name: "姓名",
+    email: "邮箱",
+    company: "公司",
+    position: "职位",
+    download: "下载",
+    downloadSuccess: "下载成功！",
+    downloading: "白皮书正在下载中...",
+    close: "关闭",
+    published: "发布于"
+  },
+  
   // Footer
   footer: {
     tagline: "图像质量精密测试设备",

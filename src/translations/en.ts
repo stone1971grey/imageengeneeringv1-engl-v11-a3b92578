@@ -127,6 +127,30 @@ export const en = {
     readMore: "Read More"
   },
   
+  // White Paper Page
+  whitepaper: {
+    title: "White Papers",
+    subtitle: "Technical expertise and industry knowledge for your projects. Download our comprehensive white papers.",
+    featured: "Featured",
+    pages: "Pages",
+    category: "Category",
+    downloadNow: "Download Now",
+    learnMore: "Learn More",
+    available: "Available White Papers",
+    availableDesc: "Our white papers provide in-depth insights into testing methods, standards, and best practices for image quality measurement.",
+    formTitle: "White Paper Download",
+    formDesc: "Please fill out the form to download",
+    name: "Name",
+    email: "Email",
+    company: "Company",
+    position: "Position",
+    download: "Download",
+    downloadSuccess: "Download Successful!",
+    downloading: "The white paper is being downloaded...",
+    close: "Close",
+    published: "Published"
+  },
+  
   // Footer
   footer: {
     tagline: "Precision Test Equipment for Image Quality",
