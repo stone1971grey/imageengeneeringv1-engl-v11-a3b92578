@@ -294,9 +294,9 @@ const WhitePaper = () => {
 
       {/* Selected Paper Detail */}
       {selectedPaper && !isDownloadDialogOpen && (
-        <section className={`py-16 bg-muted/30 ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}>
+        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
           <div className="container mx-auto px-6">
-            <Card className={`max-w-4xl mx-auto ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
+            <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
                   <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">{selectedPaper.category}</Badge>
