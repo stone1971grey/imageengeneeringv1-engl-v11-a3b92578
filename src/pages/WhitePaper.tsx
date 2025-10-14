@@ -285,9 +285,9 @@ const WhitePaper = () => {
 
       {/* Selected Paper Detail */}
       {selectedPaper && !isDownloadDialogOpen && (
-        <section className="py-16 bg-muted/30">
+        <section className="py-16 bg-muted/30 animate-fade-in">
           <div className="container mx-auto px-6">
-            <Card className="max-w-4xl mx-auto">
+            <Card className="max-w-4xl mx-auto animate-scale-in">
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
                   <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">{selectedPaper.category}</Badge>
