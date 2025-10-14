@@ -336,7 +336,7 @@ const WhitePaper = () => {
                     <div>
                       <Badge className="mb-2">Featured</Badge>
                       <h3 className="text-xl font-semibold mb-2">{featuredPaper.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">
+                      <p className="text-base text-muted-foreground mb-2">
                         {featuredPaper.abstract}
                       </p>
                       <div className="flex gap-4 text-sm text-muted-foreground">
