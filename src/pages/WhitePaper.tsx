@@ -194,112 +194,15 @@ const WhitePaper = () => {
           {paper.abstract}
         </CardDescription>
         
-        <div className="space-y-3">
-          <Button 
-            variant="outline" 
-            className="w-full"
-            onClick={() => {
-              setSelectedPaper(paper);
-            }}
-          >
-            Mehr erfahren
-          </Button>
-          
-          <Dialog open={isDownloadDialogOpen && selectedPaper?.id === paper.id} onOpenChange={setIsDownloadDialogOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                className="w-full"
-                onClick={() => handleDownloadClick(paper)}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download White Paper
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
-                <DialogTitle>White Paper Download</DialogTitle>
-                <DialogDescription>
-                  Bitte füllen Sie das Formular aus, um "{paper.title}" herunterzuladen.
-                </DialogDescription>
-              </DialogHeader>
-              
-              {!downloadSuccess ? (
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Max Mustermann" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>E-Mail *</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="max@firma.de" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="company"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Unternehmen *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Ihre Firma GmbH" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="position"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Position *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="z.B. Test Engineer" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <Button type="submit" className="w-full">
-                      <Download className="h-4 w-4 mr-2" />
-                      Jetzt herunterladen
-                    </Button>
-                  </form>
-                </Form>
-              ) : (
-                <div className="text-center py-8">
-                  <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Download erfolgreich!</h3>
-                  <p className="text-muted-foreground">
-                    Das White Paper wird heruntergeladen...
-                  </p>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Button 
+          variant="outline" 
+          className="w-full"
+          onClick={() => {
+            setSelectedPaper(paper);
+          }}
+        >
+          Mehr erfahren
+        </Button>
       </CardContent>
     </Card>
   );
