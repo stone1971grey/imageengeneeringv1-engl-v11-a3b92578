@@ -323,9 +323,20 @@ const WhitePaper = () => {
                 />
                 
                 <div className="pt-6 border-t border-border">
-                  <p className="text-lg font-semibold mb-6">
-                    Download now to learn how IEEE P2020 is shaping the future of automotive image quality – and why it is becoming the new global benchmark for vehicle vision.
-                  </p>
+                  <div className="space-y-4 mb-6">
+                    <p className="text-lg font-semibold">
+                      Download now to learn how IEEE P2020 is shaping the future of automotive image quality – and why it is becoming the new global benchmark for vehicle vision.
+                    </p>
+                    
+                    <p className="text-base text-muted-foreground">
+                      To receive access to the white paper, please enter your contact details and confirm your email address. 
+                      This verification step ensures that your download link is sent securely and that we comply with current data protection regulations (GDPR).
+                    </p>
+                    
+                    <p className="text-base text-muted-foreground">
+                      After confirming your email, you'll be redirected to the download page for the IEEE P2020 Automotive Imaging White Paper.
+                    </p>
+                  </div>
                   
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
@@ -430,7 +441,7 @@ const WhitePaper = () => {
                       
                       <Button type="submit" size="lg" className="w-full">
                         <Download className="h-5 w-5 mr-2" />
-                        Download White Paper Now
+                        Request Download Access
                       </Button>
                     </form>
                   </Form>
