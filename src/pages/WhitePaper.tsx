@@ -323,8 +323,11 @@ const WhitePaper = () => {
                 />
                 
                 <div className="pt-6 border-t border-border">
-                  <p className="text-lg font-semibold mb-6">
-                    Download now to learn how IEEE P2020 is shaping the future of automotive image quality – and why it is becoming the new global benchmark for vehicle vision.
+                  <p className="text-lg font-semibold mb-4">
+                    Ready to dive deeper into the topic?
+                  </p>
+                  <p className="text-base text-muted-foreground mb-6">
+                    To download this white paper, please fill out the form below. We'll send you the PDF directly to your email address. Your information will only be used to provide you with relevant content about image quality testing and related topics.
                   </p>
                   
                   <Form {...form}>
@@ -430,7 +433,7 @@ const WhitePaper = () => {
                       
                       <Button type="submit" size="lg" className="w-full">
                         <Download className="h-5 w-5 mr-2" />
-                        Download White Paper Now
+                        Request Download
                       </Button>
                     </form>
                   </Form>
