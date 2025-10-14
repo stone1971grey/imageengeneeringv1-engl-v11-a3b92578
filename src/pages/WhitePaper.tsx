@@ -407,11 +407,11 @@ const WhitePaper = () => {
                         control={form.control}
                         name="consent"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-start justify-between space-x-4 space-y-0">
-                            <div className="flex items-start space-x-3 flex-1">
-                              <AlertCircle className="h-8 w-8 text-[hsl(58,95%,45%)] flex-shrink-0 mt-0.5" />
+                          <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
+                            <div className="flex items-center space-x-3 flex-1">
+                              <AlertCircle className="h-8 w-8 text-[hsl(58,95%,45%)] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
-                                <FormLabel className="text-base">
+                                <FormLabel className="text-base leading-tight">
                                   I agree to receive information about image quality testing and related topics via email. *
                                 </FormLabel>
                                 <FormMessage />
