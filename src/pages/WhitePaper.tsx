@@ -318,7 +318,7 @@ const WhitePaper = () => {
             backgroundImage: `url(${whitepaperHero})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl">
             <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
