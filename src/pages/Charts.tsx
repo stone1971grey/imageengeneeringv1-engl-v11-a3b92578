@@ -266,7 +266,7 @@ const Charts = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen overflow-hidden -mt-12">
+      <section className="relative min-h-screen overflow-hidden -mt-[47px]">
         {/* Hero Background Image with Ken Burns Effect */}
         <div className="absolute inset-0 animate-fade-in">
           <img 

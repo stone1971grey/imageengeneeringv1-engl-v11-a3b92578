@@ -9,51 +9,49 @@ import {
   ScanLine
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const Industries = () => {
-  const { t } = useLanguage();
   const industries = [
     {
       icon: Camera,
-      name: t('industries.photography.name'),
-      description: t('industries.photography.description')
+      name: "Photography",
+      description: "Digital cameras for professional and amateur applications"
     },
     {
       icon: Smartphone,
-      name: t('industries.mobile.name'),
-      description: t('industries.mobile.description')
+      name: "Mobile Phones",
+      description: "Image quality testing according to VCX standards"
     },
     {
       icon: Car,
-      name: t('industries.automotive.name'),
-      description: t('industries.automotive.description'),
+      name: "Automotive & ADAS",
+      description: "Camera systems in vehicles, driver assistance and autonomous driving",
       link: "/automotive"
     },
     {
       icon: Tv,
-      name: t('industries.broadcast.name'),
-      description: t('industries.broadcast.description')
+      name: "Broadcast & HDTV",
+      description: "Video transmission, TV cameras, color-accurate reproduction"
     },
     {
       icon: Shield,
-      name: t('industries.security.name'),
-      description: t('industries.security.description')
+      name: "Security / Surveillance",
+      description: "CCTV systems, video surveillance"
     },
     {
       icon: Cog,
-      name: t('industries.machineVision.name'),
-      description: t('industries.machineVision.description')
+      name: "Machine Vision",
+      description: "Camera systems for inspection, robotics, quality control"
     },
     {
       icon: Stethoscope,
-      name: t('industries.medical.name'),
-      description: t('industries.medical.description')
+      name: "Medical / Endoscopy",
+      description: "Image quality in medical imaging and diagnostic systems"
     },
     {
       icon: ScanLine,
-      name: t('industries.scanning.name'),
-      description: t('industries.scanning.description')
+      name: "Scanning & Archiving",
+      description: "Quality assurance in digitization of documents, books, photos"
     }
   ];
 
@@ -63,10 +61,11 @@ const Industries = () => {
         {/* Header */}
         <div className="text-center mb-20">
           <h2 id="trusted-industries" className="text-4xl md:text-5xl font-bold text-light-foreground mb-6 tracking-tight scroll-mt-48">
-            {t('industries.title')}
+            Trusted Across All Industries
           </h2>
           <p className="text-xl text-light-muted max-w-2xl mx-auto font-light">
-            {t('industries.subtitle')}
+            Our advanced image processing solutions drive innovation 
+            across various sectors worldwide.
           </p>
         </div>
 

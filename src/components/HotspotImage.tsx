@@ -64,7 +64,9 @@ export default function HotspotImage({
             onBlur={handleMouseLeave}
             onClick={() => setActive((cur) => (cur === m.id ? null : m.id))}
           >
+            {/* Number inside the dot */}
             <span className="pointer-events-none">{m.id}</span>
+
           </button>
         ))}
       </div>

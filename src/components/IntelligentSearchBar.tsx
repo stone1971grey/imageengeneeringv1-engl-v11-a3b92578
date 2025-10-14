@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { charts } from "@/data/charts";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SearchResult {
   id: string;
@@ -22,7 +21,6 @@ interface SearchBarProps {
 }
 
 const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
-  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -233,7 +231,7 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
         <Input
           ref={inputRef}
           type="text"
-          placeholder={t('nav.searchPlaceholder')}
+          placeholder="Search..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}

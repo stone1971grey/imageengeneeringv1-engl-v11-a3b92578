@@ -8,10 +8,8 @@ import ieeeLogo from "@/assets/logo-ieee-new.jpg";
 import iecLogo from "@/assets/logo-iec-new.jpg";
 import isoLogo from "@/assets/logo-iso-new.jpg";
 import emvaLogo from "@/assets/logo-emva-new.jpg";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 const StandardsExpertise = () => {
-  const { t } = useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const organizations = [
@@ -109,10 +107,10 @@ const StandardsExpertise = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
-            {t('standards.title')}
+            Shaping Global Standards
           </h2>
           <p className="text-lg text-black max-w-3xl mx-auto leading-relaxed">
-            {t('standards.subtitle')}
+            Our engineers actively participate in the development of the most crucial international standards for image quality testing.
           </p>
         </div>
 
@@ -145,7 +143,7 @@ const StandardsExpertise = () => {
                 size="lg"
                 className="group w-[300px]"
               >
-                {isExpanded ? t('standards.hide') : t('standards.seeAll')}
+                {isExpanded ? "Hide Standards" : "See all Standards"}
                 <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
                   isExpanded ? 'rotate-180' : 'rotate-0'
                 }`} />
@@ -159,10 +157,10 @@ const StandardsExpertise = () => {
                 isExpanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
               }`}>
                 <h3 className="text-lg font-bold text-black mb-2">
-                  {t('standards.supported')}
+                  Supported Standards
                 </h3>
                 <p className="text-lg text-gray-700">
-                  {t('standards.supportedDesc')}
+                  Our testing procedures are based on internationally recognized standards
                 </p>
               </div>
 
