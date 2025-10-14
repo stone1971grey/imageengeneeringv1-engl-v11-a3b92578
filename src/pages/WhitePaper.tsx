@@ -195,7 +195,6 @@ const WhitePaper = () => {
         </CardDescription>
         
         <Button 
-          variant="outline" 
           className="w-full"
           onClick={() => {
             setSelectedPaper(paper);
