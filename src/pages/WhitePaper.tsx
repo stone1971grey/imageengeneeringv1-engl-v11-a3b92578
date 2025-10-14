@@ -276,7 +276,7 @@ const WhitePaper = () => {
             <Card className="max-w-4xl mx-auto">
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge>{selectedPaper.category}</Badge>
+                  <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">{selectedPaper.category}</Badge>
                   <Button variant="ghost" onClick={() => setSelectedPaper(null)}>
                     Schließen
                   </Button>
