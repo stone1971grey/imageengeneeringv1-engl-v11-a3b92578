@@ -337,7 +337,7 @@ const WhitePaper = () => {
                             <FormItem>
                               <FormLabel className="text-base">First Name *</FormLabel>
                               <FormControl>
-                                <Input placeholder="John" {...field} className="bg-muted text-foreground text-base" />
+                                <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -351,7 +351,7 @@ const WhitePaper = () => {
                             <FormItem>
                               <FormLabel className="text-base">Last Name *</FormLabel>
                               <FormControl>
-                                <Input placeholder="Doe" {...field} className="bg-muted text-foreground text-base" />
+                                <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -366,7 +366,7 @@ const WhitePaper = () => {
                           <FormItem>
                             <FormLabel className="text-base">E-Mail *</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="john@company.com" {...field} className="bg-muted text-foreground text-base" />
+                              <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -380,7 +380,7 @@ const WhitePaper = () => {
                           <FormItem>
                             <FormLabel className="text-base">Company *</FormLabel>
                             <FormControl>
-                              <Input placeholder="Your Company Inc." {...field} className="bg-muted text-foreground text-base" />
+                              <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -394,7 +394,7 @@ const WhitePaper = () => {
                           <FormItem>
                             <FormLabel className="text-base">Position *</FormLabel>
                             <FormControl>
-                              <Input placeholder="e.g. Test Engineer" {...field} className="bg-muted text-foreground text-base" />
+                              <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
