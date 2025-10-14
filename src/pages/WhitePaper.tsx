@@ -188,7 +188,7 @@ const WhitePaper = () => {
     setTimeout(() => {
       setSelectedPaper(null);
       setIsClosing(false);
-    }, 300); // Match animation duration
+    }, 500); // Increased duration for smoother close
   };
 
   const WhitePaperCard = ({ paper }: { paper: WhitePaper }) => (
