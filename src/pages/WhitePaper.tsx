@@ -183,14 +183,14 @@ const WhitePaper = () => {
           <FileText className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
           <span>{paper.title}</span>
         </CardTitle>
-        <div className="flex gap-4 text-sm text-muted-foreground">
+        <div className="flex gap-4 text-base text-muted-foreground">
           <span>{paper.pages} Seiten</span>
           <span>•</span>
           <span>{new Date(paper.publishDate).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}</span>
         </div>
       </CardHeader>
       <CardContent className="space-y-4 flex-1 flex flex-col">
-        <CardDescription className="text-sm leading-relaxed flex-1">
+        <CardDescription className="text-base leading-relaxed flex-1">
           {paper.abstract}
         </CardDescription>
         
