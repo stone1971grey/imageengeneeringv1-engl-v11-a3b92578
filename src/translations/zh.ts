@@ -148,7 +148,10 @@ export const zh = {
     downloadSuccess: "下载成功！",
     downloading: "白皮书正在下载中...",
     close: "关闭",
-    published: "发布于"
+    published: "发布于",
+    downloadIntro: "要访问白皮书，请输入您的联系信息并确认您的电子邮件地址。",
+    gdprCompliance: "此验证步骤可确保您的下载链接安全发送，并确保我们遵守当前的数据保护法规（GDPR）。",
+    redirectInfo: "确认电子邮件后，您将被重定向到IEEE P2020汽车成像白皮书的下载页面。"
   },
   
   // Footer

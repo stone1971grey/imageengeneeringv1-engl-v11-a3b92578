@@ -14,6 +14,7 @@ import Footer from "@/components/Footer";
 import { FileText, Download, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import whitepaperHero from "@/assets/whitepaper-hero.jpg";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Form validation schema
 const downloadFormSchema = z.object({
@@ -150,6 +151,7 @@ const whitePapers: WhitePaper[] = [
 ];
 
 const WhitePaper = () => {
+  const { t } = useTranslation();
   const [selectedPaper, setSelectedPaper] = useState<WhitePaper | null>(null);
   const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
@@ -210,11 +212,11 @@ const WhitePaper = () => {
           <FileText className="h-6 w-6 text-[hsl(58,95%,45%)] flex-shrink-0 mt-1" />
           <span>{paper.title}</span>
         </CardTitle>
-        <div className="flex gap-4 text-base text-muted-foreground">
-          <span>{paper.pages} Pages</span>
-          <span>•</span>
-          <span>{new Date(paper.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-        </div>
+          <div className="flex gap-4 text-base text-muted-foreground">
+            <span>{paper.pages} {t.whitepaper.pages}</span>
+            <span>•</span>
+            <span>{new Date(paper.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+          </div>
       </CardHeader>
       <CardContent className="space-y-4 flex-1 flex flex-col">
         <CardDescription className="text-base leading-relaxed flex-1">
@@ -227,7 +229,7 @@ const WhitePaper = () => {
             setSelectedPaper(paper);
           }}
         >
-          Read More
+          {t.whitepaper.learnMore}
         </Button>
       </CardContent>
     </Card>
@@ -325,16 +327,15 @@ const WhitePaper = () => {
                 <div className="pt-6 border-t border-border">
                   <div className="space-y-4 mb-6">
                     <p className="text-lg font-semibold">
-                      Download now to learn how IEEE P2020 is shaping the future of automotive image quality – and why it is becoming the new global benchmark for vehicle vision.
+                      {t.whitepaper.downloadNow}
                     </p>
                     
                     <p className="text-base text-muted-foreground">
-                      To receive access to the white paper, please enter your contact details and confirm your email address. 
-                      This verification step ensures that your download link is sent securely and that we comply with current data protection regulations (GDPR).
+                      {t.whitepaper.downloadIntro} {t.whitepaper.gdprCompliance}
                     </p>
                     
                     <p className="text-base text-muted-foreground">
-                      After confirming your email, you'll be redirected to the download page for the IEEE P2020 Automotive Imaging White Paper.
+                      {t.whitepaper.redirectInfo}
                     </p>
                   </div>
                   
@@ -441,7 +442,7 @@ const WhitePaper = () => {
                       
                       <Button type="submit" size="lg" className="w-full">
                         <Download className="h-5 w-5 mr-2" />
-                        Request Download Access
+                        {t.whitepaper.download}
                       </Button>
                     </form>
                   </Form>
