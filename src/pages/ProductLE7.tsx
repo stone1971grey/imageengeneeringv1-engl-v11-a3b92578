@@ -149,7 +149,7 @@ const ProductLE7 = () => {
               {/* Left Content */}
               <div className="space-y-8">
                 <div>
-                        <h1 className="text-6xl lg:text-7xl xl:text-8xl font-medium text-light-foreground leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
+                        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-medium text-light-foreground leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
                           LE7
                         </h1>
                         

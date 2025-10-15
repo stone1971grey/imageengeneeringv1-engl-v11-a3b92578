@@ -98,7 +98,7 @@ const Industries = () => {
             
             {/* Main Headline */}
             <div className="mb-8">
-              <h1 id="industries-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
+              <h1 id="industries-hero" className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
                 Precision Solutions
                 <br />
                 <span className="font-medium text-[#74952a]">for All Industries</span>

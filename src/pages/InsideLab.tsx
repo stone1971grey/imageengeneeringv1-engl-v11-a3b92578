@@ -144,7 +144,7 @@ const InsideLab = () => {
       <div className="bg-scandi-white py-16 lg:py-24">
         <div className="container mx-auto px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
               Inside the Lab
               <br />
               <span className="text-soft-blue">Real Test Setups in </span>

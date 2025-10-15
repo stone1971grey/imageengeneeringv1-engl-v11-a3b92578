@@ -289,7 +289,7 @@ const Charts = () => {
             {/* Left-aligned Content */}
             <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0">
               <div>
-                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
+                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
                   Test Charts
                   <br />
                   <span className="font-medium">for Every<br className="md:hidden" /> Application</span>

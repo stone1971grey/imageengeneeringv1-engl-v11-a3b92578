@@ -100,7 +100,7 @@ const Products = () => {
             
             {/* Main Headline */}
             <div className="mb-8">
-              <h1 id="products-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
+              <h1 id="products-hero" className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
                 Innovation in
                 <br />
                 <span className="font-medium text-blue-300">Image Technology</span>

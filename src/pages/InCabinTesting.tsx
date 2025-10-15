@@ -63,7 +63,7 @@ const InCabinTesting = () => {
               {/* Left Content - 2/5 */}
               <div className="lg:col-span-2 space-y-8">
                 <div>
-                  <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light leading-[0.9] tracking-tight mb-6 text-light-foreground mt-8 md:mt-0">
+                  <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-light-foreground mt-8 md:mt-0">
                     In-Cabin
                     <br />
                     <span className="font-medium text-light-foreground">Performance Testing</span>

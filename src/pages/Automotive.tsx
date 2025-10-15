@@ -133,7 +133,7 @@ const Automotive = () => {
             {/* Left Content - 2/5 */}
             <div className="lg:col-span-2 space-y-8 lg:pr-8">
               <div>
-                <h1 id="automotive-hero" className="text-6xl lg:text-7xl xl:text-8xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64 md:pt-64 pt-80">
+                <h1 id="automotive-hero" className="text-5xl lg:text-6xl xl:text-7xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 -mt-64 pt-64 md:pt-64 pt-80">
                   Automotive
                   <br />
                   <span className="font-medium text-light-foreground">Image Quality</span>
