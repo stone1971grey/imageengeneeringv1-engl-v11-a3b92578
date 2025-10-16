@@ -88,7 +88,7 @@ const StickyLogo = () => {
   }, []);
 
   return (
-    <div ref={logoRef} className="fixed top-8 left-4 z-50 h-[88px] flex items-center">
+    <div ref={logoRef} className="fixed top-[14px] left-4 z-50 h-[88px] flex items-center">
       <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
         <img 
           src={logoIEBlack} 
