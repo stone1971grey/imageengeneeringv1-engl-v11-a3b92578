@@ -1,5 +1,6 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { navigationDataEn } from '@/translations/navigationData';
+import { navigationDataDe } from '@/translations/navigationData.de';
 import { navigationDataZh } from '@/translations/navigationData.zh';
 
 export const useNavigationData = () => {
@@ -7,8 +8,8 @@ export const useNavigationData = () => {
   
   const navigationData = {
     en: navigationDataEn,
+    de: navigationDataDe,
     zh: navigationDataZh,
-    de: navigationDataEn, // Fallback
     ja: navigationDataEn, // Fallback
     ko: navigationDataEn  // Fallback
   };
