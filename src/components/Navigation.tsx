@@ -138,9 +138,10 @@ const Navigation = () => {
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="w-full px-6 py-6">
         {/* Single row - main nav left, utility right */}
-        <div className="flex items-center justify-between w-full">
-          {/* Main Navigation - moved to left */}
-          <div className="hidden 2xl:flex items-center gap-6 ml-[480px]">
+        <div className="flex items-center w-full gap-8">
+          <div className="flex-1"></div>
+          {/* Main Navigation - aligned with search */}
+          <div className="hidden 2xl:flex items-center gap-6">
             <SimpleDropdown trigger={t.nav.yourSolution}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredIndustry(null)}>
@@ -620,8 +621,8 @@ const Navigation = () => {
                 </SimpleDropdown>
           </div>
           
-          {/* Utility Navigation - positioned at far right */}
-          <div className="hidden 2xl:flex ml-auto">
+          {/* Utility Navigation - aligned with main nav */}
+          <div className="hidden 2xl:flex">
             <UtilityNavigation />
           </div>
 
