@@ -45,6 +45,7 @@ export const en = {
     title: "Image",
     subtitle: "Engineering",
     description: "We are the world's leader in image quality test equipment solutions",
+    findYourSolution: "Find Your Solution",
     discoverCharts: "Discover Charts",
     trustedIndustries: "Trusted Across All Industries",
     stat1: "Test Chart Variants",

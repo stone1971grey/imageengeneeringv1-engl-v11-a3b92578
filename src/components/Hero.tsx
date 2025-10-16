@@ -44,15 +44,6 @@ const Hero = () => {
             <div className="pt-4 flex flex-col md:flex-row gap-4">
               <Button 
                 size="lg"
-                variant="contact"
-                className="text-white border-0 px-12 py-4 group w-full md:w-auto"
-                onClick={() => window.location.href = '/products/charts'}
-              >
-                {t.hero.discoverCharts}
-              </Button>
-              
-              <Button 
-                size="lg"
                 variant="decision"
                 className="border-0 px-12 py-4 w-full md:w-auto"
                 style={{ backgroundColor: '#f5743a', color: 'white' }}
@@ -63,7 +54,7 @@ const Hero = () => {
                   }
                 }}
               >
-                {t.hero.trustedIndustries}
+                {t.hero.findYourSolution}
               </Button>
             </div>
           </div>

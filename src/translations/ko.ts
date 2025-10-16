@@ -45,6 +45,7 @@ export const ko = {
     title: "Image",
     subtitle: "Engineering",
     description: "우리는 이미지 품질 테스트 장비 솔루션의 세계적 리더입니다",
+    findYourSolution: "솔루션 찾기",
     discoverCharts: "차트 살펴보기",
     trustedIndustries: "모든 산업에서 신뢰받는",
     stat1: "테스트 차트 변형",

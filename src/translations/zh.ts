@@ -45,6 +45,7 @@ export const zh = {
     title: "Image",
     subtitle: "Engineering",
     description: "我们是全球图像质量测试设备解决方案的领导者",
+    findYourSolution: "找到您的解决方案",
     discoverCharts: "探索图卡",
     trustedIndustries: "值得所有行业信赖",
     stat1: "测试图卡变体",

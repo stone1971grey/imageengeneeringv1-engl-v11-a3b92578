@@ -45,6 +45,7 @@ export const de = {
     title: "Image",
     subtitle: "Engineering",
     description: "Wir sind der weltweit führende Anbieter von Bildqualitätstestgeräten",
+    findYourSolution: "Finden Sie Ihre Lösung",
     discoverCharts: "Charts entdecken",
     trustedIndustries: "Vertraut in allen Branchen",
     stat1: "Testchart-Varianten",

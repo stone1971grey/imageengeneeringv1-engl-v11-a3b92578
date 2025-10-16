@@ -45,6 +45,7 @@ export const ja = {
     title: "Image",
     subtitle: "Engineering",
     description: "私たちは画質テスト機器ソリューションの世界的リーダーです",
+    findYourSolution: "ソリューションを見つける",
     discoverCharts: "チャートを見る",
     trustedIndustries: "すべての業界で信頼されています",
     stat1: "テストチャートの種類",
