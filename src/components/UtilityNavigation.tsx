@@ -32,7 +32,9 @@ const UtilityNavigation = () => {
             <SelectItem 
               key={lang.code} 
               value={lang.code}
-              className="flex items-center justify-center hover:bg-gray-100 cursor-pointer text-black text-xl"
+              className={`flex items-center justify-center cursor-pointer text-xl [&>span:last-child]:hidden ${
+                lang.code === language ? 'bg-[#f5743a] text-white hover:bg-[#f5743a]' : 'text-black hover:bg-gray-100'
+              }`}
             >
               {lang.flag}
             </SelectItem>
