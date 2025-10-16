@@ -315,7 +315,7 @@ const Charts = () => {
                   size="lg"
                   variant="decision"
                   className="border-0 px-12 py-4 w-full md:w-auto"
-                  style={{ backgroundColor: '#d9c409', color: 'black' }}
+                  style={{ backgroundColor: '#f5743a', color: 'white' }}
                   onClick={scrollToFooterExpert}
                 >
                   Request Consultation
@@ -595,7 +595,7 @@ const Charts = () => {
                 </div>
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between mb-2">
-                    <CardTitle className="text-lg transition-colors group-hover:text-[#d9c409]">
+                    <CardTitle className="text-lg transition-colors group-hover:text-[#f5743a]">
                       {chart.title}
                     </CardTitle>
                     <span className="text-xs text-muted-foreground font-mono">{chart.sku}</span>
@@ -622,9 +622,9 @@ const Charts = () => {
                   {/* Price */}
                   <div className="mb-4">
                     {chart.price_mode === 'rfq' ? (
-                      <span className="text-lg font-semibold text-white transition-colors group-hover:text-[#d9c409]">On Request</span>
+                      <span className="text-lg font-semibold text-white transition-colors group-hover:text-[#f5743a]">On Request</span>
                     ) : chart.price_from ? (
-                    <span className="text-lg font-semibold text-white transition-colors group-hover:text-[#d9c409]">
+                    <span className="text-lg font-semibold text-white transition-colors group-hover:text-[#f5743a]">
                       from {chart.price_from}€
                     </span>
                     ) : null}
@@ -641,7 +641,7 @@ const Charts = () => {
                     <Button 
                       variant={chart.price_mode === 'rfq' ? 'outline' : 'secondary'}
                       className="flex-1"
-                      style={chart.price_mode !== 'rfq' ? { backgroundColor: '#d9c409', color: 'black' } : { backgroundColor: '#d9c409', color: 'black', border: '1px solid #d9c409' }}
+                      style={chart.price_mode !== 'rfq' ? { backgroundColor: '#f5743a', color: 'white' } : { backgroundColor: '#f5743a', color: 'white', border: '1px solid #f5743a' }}
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       {chart.price_mode === 'rfq' ? 'Request Quote' : 'Add to Cart'}

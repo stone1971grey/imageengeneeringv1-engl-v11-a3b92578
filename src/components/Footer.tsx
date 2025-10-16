@@ -102,26 +102,26 @@ const Footer = () => {
             <div className="space-y-4">              
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
                   <span className="text-foreground">Phone (DE): +49 2273 99 99 1-0</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
                   <span className="text-foreground">Phone (USA): +1 408 386 1496</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
                   <span className="text-foreground">Phone (China): +86 158 8961 9096</span>
                 </div>
               </div>
               
               <div className="flex items-center">
-                <Clock className="h-5 w-5 mr-3" style={{ color: '#d9c409' }} />
+                <Clock className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
                 <span className="text-foreground">Office Hours: Mon–Fri, 9–5 PM (CET)</span>
               </div>
             </div>
 
-            <Button className="bg-[#d9c409] hover:bg-[#c4b108] text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button className="bg-[#f5743a] hover:bg-[#e66428] text-white px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
               {isChartsPage 
                 ? 'Your Questions About Our Charts' 
                 : isSolutionBundlePage 

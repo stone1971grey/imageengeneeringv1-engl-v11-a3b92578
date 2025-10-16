@@ -136,7 +136,7 @@ const Styleguide = () => {
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Decision</p>
                          <p className="text-sm text-gray-500">Main CTA buttons</p>
-                         <p className="text-xs text-gray-400 font-mono">#e0d62a</p>
+                         <p className="text-xs text-gray-400 font-mono">#f5743a</p>
                        </div>
                        <Button variant="decision">
                          Discover Charts

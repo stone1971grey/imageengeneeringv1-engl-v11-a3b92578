@@ -41,7 +41,7 @@ const UtilityNavigation = () => {
       <Link to="/contact">
         <Button 
           variant="default" 
-          className="w-[60px] h-10 bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 flex items-center justify-center"
+          className="w-[60px] h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center"
         >
           <MessageCircle className="h-5 w-5" />
         </Button>

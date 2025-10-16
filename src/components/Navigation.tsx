@@ -150,50 +150,50 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                        <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
                        
-                       <Link to="/automotive" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                       <Link to="/automotive" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                           onMouseEnter={() => setHoveredIndustry("Automotive")}>
                           <Car className="h-5 w-5" />
                           <span>{t.nav.automotive}</span>
                           <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                        </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Security & Surveillance")}>
                          <Shield className="h-5 w-5" />
                          <span>{t.nav.securitySurveillance}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Mobile Phone")}>
                          <Smartphone className="h-5 w-5" />
                          <span>{t.nav.mobilePhone}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Web Camera")}>
                          <Camera className="h-5 w-5" />
                          <span>{t.nav.webCamera}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
                          <Cog className="h-5 w-5" />
                          <span>{t.nav.machineVision}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
                          <Stethoscope className="h-5 w-5" />
                          <span>{t.nav.medicalEndoscopy}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
                          <ScanLine className="h-5 w-5" />
                          <span>{t.nav.scannersArchiving}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
                          <Camera className="h-5 w-5" />
                          <span>{t.nav.photoVideo}</span>
@@ -210,7 +210,7 @@ const Navigation = () => {
                       {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
                         <div className="space-y-3">
                            {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
-                             <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
+                             <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a]">
                                <ChevronRight className="h-4 w-4" />
                                {application.link === "#" ? (
                                  <span>{application.name}</span>
@@ -237,7 +237,7 @@ const Navigation = () => {
 
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                    <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] hover:text-white">
                       <Search className="h-5 w-5 mr-3" />
                       <span className="text-lg font-medium">Find Your Perfect Solution</span>
                     </Button>
@@ -272,32 +272,32 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.products}</h4>
                        
-                       <Link to="/products/charts" className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                       <Link to="/products/charts" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                           onMouseEnter={() => setHoveredProduct("Test Charts")}>
                           <CustomTargetIcon className="h-5 w-5" />
                           <span>{t.nav.testCharts}</span>
                           <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                        </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredProduct("Illumination Devices")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.illuminationDevices}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredProduct("Measurement Devices")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.measurementDevices}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredProduct("Software & APIs")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.softwareApis}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredProduct("Product Accessories")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.productAccessories}</span>
@@ -314,7 +314,7 @@ const Navigation = () => {
                       {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
                         <div className="space-y-3">
                           {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
-                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409]">
+                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a]">
                               <ChevronRight className="h-4 w-4" />
                               {subgroup.link === "#" ? (
                                 <span>{subgroup.name}</span>
@@ -375,37 +375,37 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Test Services</h4>
                       
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredTestService("Overview")}>
                         <FlaskConical className="h-5 w-5" />
                         <span>Overview</span>
                       </div>
                       
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredTestService("Automotive")}>
                         <Car className="h-5 w-5" />
                         <span>Automotive</span>
                       </div>
                       
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredTestService("VCX")}>
                         <Smartphone className="h-5 w-5" />
                         <span>VCX</span>
                       </div>
                       
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredTestService("Image Quality")}>
                         <Camera className="h-5 w-5" />
                         <span>Image Quality</span>
                       </div>
                       
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredTestService("Standardized")}>
                         <CheckCircle className="h-5 w-5" />
                         <span>Standardized</span>
                       </div>
                       
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#d9c409] transition-colors cursor-pointer"
+                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                         onMouseEnter={() => setHoveredTestService("Specialized/Custom")}>
                         <Settings className="h-5 w-5" />
                         <span>Specialized/Custom</span>
@@ -422,7 +422,7 @@ const Navigation = () => {
                       {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
                         <div className="space-y-3">
                           {testServicesData[hoveredTestService as keyof typeof testServicesData].services.map((service, index) => (
-                            <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#d9c409] ${(service as any).active ? 'bg-green-100 p-2 rounded-md border-2 border-green-300' : ''}`}>
+                            <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a] ${(service as any).active ? 'bg-green-100 p-2 rounded-md border-2 border-green-300' : ''}`}>
                               <ChevronRight className="h-4 w-4" />
                               {service.link === "#" ? (
                                 <span>{service.name}</span>
@@ -450,7 +450,7 @@ const Navigation = () => {
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Link to="/inside-lab">
-                      <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                      <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] hover:text-white">
                         <FlaskConical className="h-5 w-5 mr-3" />
                         <span className="text-lg font-medium">Visit Our Testing Lab</span>
                       </Button>
@@ -504,7 +504,7 @@ const Navigation = () => {
 
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300">
-                      <Button variant="default" className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] hover:text-black">
+                      <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] hover:text-white">
                         <GraduationCap className="h-5 w-5 mr-3" />
                         <span className="text-lg font-medium">View Training & Events</span>
                         <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
@@ -630,7 +630,7 @@ const Navigation = () => {
           <div className="2xl:hidden ml-auto relative z-50">
             <button 
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-center w-10 h-10 bg-[#d9c409] text-black rounded-md hover:bg-[#c5b008] transition-colors shadow-lg"
+              className="flex items-center justify-center w-10 h-10 bg-[#f5743a] text-white rounded-md hover:bg-[#e66428] transition-colors shadow-lg"
             >
               {isOpen ? (
                 <X size={22} className="stroke-[3]" />
@@ -855,7 +855,7 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/industries" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                            <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
                               <Search className="h-4 w-4 mr-2" />
                               <span className="hidden sm:inline">Find Your Perfect Solution</span>
                               <span className="sm:hidden">Your Perfect Solution</span>
@@ -1150,7 +1150,7 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                            <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
                               <FlaskConical className="h-4 w-4 mr-2" />
                               Visit Our Testing Lab
                             </Button>
@@ -1186,7 +1186,7 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/events" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#d9c409] text-black hover:bg-[#e5d825] rounded-lg font-medium">
+                            <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
                               <GraduationCap className="h-4 w-4 mr-2" />
                               View Training & Events
                               <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
@@ -1336,7 +1336,7 @@ const Navigation = () => {
                       
                       {/* Contact Button */}
                       <Link to="/contact" onClick={() => setIsOpen(false)}>
-                        <Button className="w-[60px] h-10 bg-[#d9c409] hover:bg-[#c4b108] text-black border border-[#d9c409] hover:border-[#c4b108] transition-all duration-300 flex items-center justify-center">
+                        <Button className="w-[60px] h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center">
                           <MessageCircle className="h-5 w-5" />
                         </Button>
                       </Link>
