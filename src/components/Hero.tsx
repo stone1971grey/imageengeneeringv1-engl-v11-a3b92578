@@ -65,22 +65,6 @@ const Hero = () => {
                 {t.hero.trustedIndustries}
               </Button>
             </div>
-
-            {/* Minimal stats */}
-            <div className="flex items-center justify-start space-x-12 pt-8">
-              <div>
-                <div className="text-2xl font-medium text-white">200+</div>
-                <div className="text-sm text-white/80 font-light">{t.hero.stat1}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-medium text-white">0.01%</div>
-                <div className="text-sm text-white/80 font-light">{t.hero.stat2}</div>
-              </div>
-              <div>
-                <div className="text-2xl font-medium text-white">15+</div>
-                <div className="text-sm text-white/80 font-light">{t.hero.stat3}</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
