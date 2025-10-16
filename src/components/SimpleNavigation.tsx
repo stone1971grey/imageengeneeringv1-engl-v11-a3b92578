@@ -20,7 +20,7 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
     >
       <Button 
         variant="ghost"
-        className="px-3 py-2 rounded-md text-base font-medium text-white hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
+        className="px-3 py-2 rounded-md text-base font-medium text-black hover:bg-[#d9c409] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
       >
         {trigger}
       </Button>

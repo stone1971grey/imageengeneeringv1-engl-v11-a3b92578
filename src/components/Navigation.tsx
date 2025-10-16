@@ -4,7 +4,7 @@ import { BadgeCheck, Sprout } from "lucide-react";
 import { CustomTargetIcon } from "./CustomTargetIcon";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import logoIE from "@/assets/logo-ie-white.png";
+import logoIE from "@/assets/logo-ie-black.png";
 import UtilityNavigation from "@/components/UtilityNavigation";
 import { SimpleDropdown } from "./SimpleNavigation";
 import { Separator } from "@/components/ui/separator";
@@ -134,7 +134,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-8 left-4 right-4 z-40 bg-[#4B4A4A]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
+    <nav className="fixed top-8 left-4 right-4 z-40 bg-[#aeaeae]/95 backdrop-blur-sm rounded-xl shadow-lg border border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="w-full px-6 py-6">
         {/* Single row - main nav left, utility right */}
