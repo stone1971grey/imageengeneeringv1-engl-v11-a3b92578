@@ -22,7 +22,7 @@ const UtilityNavigation = () => {
       
       {/* Language Selector */}
       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
-        <SelectTrigger className="w-[60px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
+        <SelectTrigger className="w-[60px] bg-white border-black text-black hover:bg-gray-100 transition-all duration-300">
           <SelectValue>
             {languages.find(lang => lang.code === language)?.flag}
           </SelectValue>
