@@ -44,7 +44,7 @@ export const en = {
   hero: {
     title: "Image",
     subtitle: "Engineering",
-    description: "We develop and manufacture high-precision test charts for professional image quality testing. Order directly from our shop now.",
+    description: "We are the world's leader in image quality test equipment solutions",
     discoverCharts: "Discover Charts",
     trustedIndustries: "Trusted Across All Industries",
     stat1: "Test Chart Variants",

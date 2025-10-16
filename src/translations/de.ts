@@ -44,7 +44,7 @@ export const de = {
   hero: {
     title: "Image",
     subtitle: "Engineering",
-    description: "Wir entwickeln und fertigen hochpräzise Testcharts für professionelle Bildqualitätsprüfungen. Bestellen Sie jetzt direkt in unserem Shop.",
+    description: "Wir sind der weltweit führende Anbieter von Bildqualitätstestgeräten",
     discoverCharts: "Charts entdecken",
     trustedIndustries: "Vertraut in allen Branchen",
     stat1: "Testchart-Varianten",

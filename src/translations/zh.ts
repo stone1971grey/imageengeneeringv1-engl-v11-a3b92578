@@ -44,7 +44,7 @@ export const zh = {
   hero: {
     title: "Image",
     subtitle: "Engineering",
-    description: "我们开发和制造用于专业图像质量测试的高精度测试图卡。现在可直接从我们的商店订购。",
+    description: "我们是全球图像质量测试设备解决方案的领导者",
     discoverCharts: "探索图卡",
     trustedIndustries: "值得所有行业信赖",
     stat1: "测试图卡变体",
