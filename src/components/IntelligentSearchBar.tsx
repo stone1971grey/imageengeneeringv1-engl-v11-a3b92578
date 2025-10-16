@@ -237,7 +237,7 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
           onFocus={() => setIsOpen(true)}
           className={variant === 'mobile' 
             ? "pl-10 pr-10 w-full border-gray-300 text-white placeholder:text-white/70 focus:text-white focus:border-gray-400 focus:placeholder:text-white/70 !bg-[#606060]"
-            : "pl-10 pr-10 w-36 bg-white border-gray-300 text-black placeholder:text-black/70 focus:border-gray-400"
+            : "pl-10 pr-10 w-36 bg-white border border-gray-300 text-black placeholder:text-black/70 focus:border focus:border-gray-400 focus:ring-0 focus:ring-offset-0"
           }
           style={variant === 'mobile' ? { backgroundColor: '#606060' } : {}}
         />
