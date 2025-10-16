@@ -6,14 +6,14 @@ import { useTranslation } from "@/hooks/useTranslation";
 const Hero = () => {
   const { t } = useTranslation();
   return (
-    <section className="relative overflow-hidden -mt-12" style={{ height: 'calc(100vh - 120px)' }}>
+    <section className="relative overflow-hidden -mt-12" style={{ height: 'calc(100vh - 220px)' }}>
       {/* Hero Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 animate-fade-in">
         <img 
           src={precisionTestingHero}
           alt="Precision Engineering Process"
           className="w-full h-full object-cover animate-ken-burns"
-          style={{ objectPosition: 'center center', transform: 'scale(1.2)' }}
+          style={{ objectPosition: 'center center', transform: 'scale(1.3)' }}
         />
         <div className="absolute inset-0 bg-black/15"></div>
         {/* Left fade overlay */}
