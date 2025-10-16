@@ -42,8 +42,8 @@ export const ja = {
   
   // Hero Section
   hero: {
-    title: "テストチャート",
-    subtitle: "Image Engineering製",
+    title: "Image",
+    subtitle: "Engineering",
     description: "プロフェッショナルな画質テストのための高精度テストチャートを開発・製造しています。今すぐオンラインショップからご注文ください。",
     discoverCharts: "チャートを見る",
     trustedIndustries: "すべての業界で信頼されています",

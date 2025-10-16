@@ -42,8 +42,8 @@ export const zh = {
   
   // Hero Section
   hero: {
-    title: "测试图卡",
-    subtitle: "Image Engineering制造",
+    title: "Image",
+    subtitle: "Engineering",
     description: "我们开发和制造用于专业图像质量测试的高精度测试图卡。现在可直接从我们的商店订购。",
     discoverCharts: "探索图卡",
     trustedIndustries: "值得所有行业信赖",

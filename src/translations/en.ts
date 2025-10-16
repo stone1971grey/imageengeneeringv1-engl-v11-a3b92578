@@ -42,8 +42,8 @@ export const en = {
   
   // Hero Section
   hero: {
-    title: "Test Charts",
-    subtitle: "Made by Image Engineering",
+    title: "Image",
+    subtitle: "Engineering",
     description: "We develop and manufacture high-precision test charts for professional image quality testing. Order directly from our shop now.",
     discoverCharts: "Discover Charts",
     trustedIndustries: "Trusted Across All Industries",

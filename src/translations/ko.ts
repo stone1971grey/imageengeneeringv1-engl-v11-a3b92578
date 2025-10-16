@@ -42,8 +42,8 @@ export const ko = {
   
   // Hero Section
   hero: {
-    title: "테스트 차트",
-    subtitle: "Image Engineering 제작",
+    title: "Image",
+    subtitle: "Engineering",
     description: "전문적인 이미지 품질 테스트를 위한 고정밀 테스트 차트를 개발 및 제조합니다. 지금 온라인 샵에서 직접 주문하세요.",
     discoverCharts: "차트 살펴보기",
     trustedIndustries: "모든 산업에서 신뢰받는",

@@ -42,8 +42,8 @@ export const de = {
   
   // Hero Section
   hero: {
-    title: "Testcharts",
-    subtitle: "Made by Image Engineering",
+    title: "Image",
+    subtitle: "Engineering",
     description: "Wir entwickeln und fertigen hochpräzise Testcharts für professionelle Bildqualitätsprüfungen. Bestellen Sie jetzt direkt in unserem Shop.",
     discoverCharts: "Charts entdecken",
     trustedIndustries: "Vertraut in allen Branchen",
