@@ -140,7 +140,7 @@ const Navigation = () => {
         {/* Single row - main nav left, utility right */}
         <div className="flex items-center justify-between w-full">
           {/* Main Navigation - moved to left */}
-          <div className="hidden 2xl:flex items-center gap-6 ml-[300px]">
+          <div className="hidden 2xl:flex items-center gap-6 ml-[400px]">
             <SimpleDropdown trigger={t.nav.yourSolution}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredIndustry(null)}>
