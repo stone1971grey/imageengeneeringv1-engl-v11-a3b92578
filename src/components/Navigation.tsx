@@ -649,6 +649,58 @@ const Navigation = () => {
             <>
               {/* Mobile Menu */}
               <div className="absolute top-full right-0 w-full max-w-[800px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-[18px] max-h-[60vh] overflow-y-auto">
+                {/* Mobile Utility Navigation - Only for screens < 576px */}
+                <div className="px-6 pt-4 pb-2 block sm:hidden">
+                  {/* Search Bar - Full Width */}
+                  <div className="mb-3">
+                    <IntelligentSearchBar />
+                  </div>
+                  
+                  {/* Language Selector + Contact Button - Side by Side */}
+                  <div className="flex items-center gap-3">
+                    <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
+                      <SelectTrigger className="w-[70px] h-10 bg-white border border-gray-200 text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-0 focus:ring-0 focus:ring-offset-0">
+                        <SelectValue className="text-center w-full flex justify-center">
+                          {[
+                            { code: "en", label: "EN", flag: "🇺🇸" },
+                            { code: "de", label: "DE", flag: "🇩🇪" },
+                            { code: "zh", label: "ZH", flag: "🇨🇳" },
+                            { code: "ja", label: "JA", flag: "🇯🇵" },
+                            { code: "ko", label: "KO", flag: "🇰🇷" }
+                          ].find(lang => lang.code === language)?.flag}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
+                        {[
+                          { code: "en", label: "EN", flag: "🇺🇸" },
+                          { code: "de", label: "DE", flag: "🇩🇪" },
+                          { code: "zh", label: "ZH", flag: "🇨🇳" },
+                          { code: "ja", label: "JA", flag: "🇯🇵" },
+                          { code: "ko", label: "KO", flag: "🇰🇷" }
+                        ].map((lang) => (
+                          <SelectItem 
+                            key={lang.code} 
+                            value={lang.code}
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            {lang.flag}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Link to="/contact" className="flex-1" onClick={() => setIsOpen(false)}>
+                      <Button 
+                        variant="default" 
+                        className="w-full h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center px-6"
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Contact
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+                
                 {/* Navigation content */}
                 <nav className="px-6 py-4">
                   <Accordion type="single" collapsible className="space-y-0">
