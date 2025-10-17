@@ -558,7 +558,7 @@ const Navigation = () => {
 
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Link to="/downloads" className="w-full">
-                      <Button variant="technical" className="w-full" style={{ backgroundColor: '#103e7c', borderColor: '#103e7c', color: 'white' }}>
+                      <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57]">
                         <Microscope className="h-5 w-5 mr-3" />
                         <span className="text-lg font-medium">{t.nav.exploreImageQuality}</span>
                         <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
@@ -1284,7 +1284,7 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/downloads" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#103e7c] text-white hover:bg-[#0d3468] rounded-lg font-medium">
+                            <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
                               <Microscope className="h-4 w-4 mr-2" />
                               <span className="hidden sm:inline">{t.nav.exploreImageQuality}</span>
                               <span className="sm:hidden">Quality Resources</span>
