@@ -653,7 +653,7 @@ const Navigation = () => {
                     
                     {/* Your Solution */}
                     <AccordionItem value="solutions" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
                           {t.nav.yourSolution}
                        </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
@@ -663,7 +663,7 @@ const Navigation = () => {
                           {/* Automotive with sub-applications */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="automotive" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <Car className="h-4 w-4" />
@@ -672,7 +672,7 @@ const Navigation = () => {
                                     </Link>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <Link to="/automotive" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Advanced Driver Assistance Systems (ADAS)
@@ -692,7 +692,7 @@ const Navigation = () => {
                           {/* Security & Surveillance */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="security" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       <Shield className="h-4 w-4" />
@@ -700,7 +700,7 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">IEC 62676-5 Testing</div>
                                   <div className="block py-2 text-sm text-gray-600">Low-light (ISO 19093)</div>
@@ -715,7 +715,7 @@ const Navigation = () => {
                           {/* Mobile Phone */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="mobile" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       <Smartphone className="h-4 w-4" />
@@ -723,7 +723,7 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">VCX PhoneCam</div>
                                   <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
@@ -738,7 +738,7 @@ const Navigation = () => {
                           {/* Web Camera */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="webcam" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       <Camera className="h-4 w-4" />
@@ -746,7 +746,7 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">VCX WebCam</div>
                                   <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
@@ -760,7 +760,7 @@ const Navigation = () => {
                           {/* Machine Vision */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="machine-vision" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       <Cog className="h-4 w-4" />
@@ -768,7 +768,7 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">EMVA 1288 (ISO 24942)</div>
                                   <div className="block py-2 text-sm text-gray-600">Production Line Calibration</div>
@@ -782,7 +782,7 @@ const Navigation = () => {
                           {/* Medical & Endoscopy */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="medical" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       <Stethoscope className="h-4 w-4" />
@@ -790,7 +790,7 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
                                   <div className="block py-2 text-sm text-gray-600">Low-Light Testing</div>
@@ -805,7 +805,7 @@ const Navigation = () => {
                           {/* Scanners & Archiving */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="scanning" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       <ScanLine className="h-4 w-4" />
@@ -813,7 +813,7 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">ISO 21550</div>
                                   <div className="block py-2 text-sm text-gray-600">Universal Test Target</div>
@@ -828,15 +828,15 @@ const Navigation = () => {
                           {/* Photo & Video */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="photo-video" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                       <Camera className="h-4 w-4" />
                                       <span>{t.nav.photoVideo}</span>
                                     </div>
                                  </div>
-                              </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                               </AccordionTrigger>
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Broadcast & HDTV</div>
                                   <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
@@ -861,7 +861,7 @@ const Navigation = () => {
 
                     {/* Products */}
                     <AccordionItem value="products" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
                           Products
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
@@ -871,7 +871,7 @@ const Navigation = () => {
                           {/* Test Charts with subgroups */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="test-charts" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <Link to="/charts" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -880,7 +880,7 @@ const Navigation = () => {
                                    </Link>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
                                   <div className="block py-2 text-sm text-gray-600">Multipurpose</div>
@@ -901,7 +901,7 @@ const Navigation = () => {
                           {/* Illumination Devices */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="illumination" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -909,7 +909,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">iQ-LED</div>
                                   <div className="block py-2 text-sm text-gray-600">IEEE-P2020</div>
@@ -925,7 +925,7 @@ const Navigation = () => {
                           {/* Measurement Devices */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="measurement" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -933,7 +933,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
                                   <div className="block py-2 text-sm text-gray-600">Timing Performance</div>
@@ -949,7 +949,7 @@ const Navigation = () => {
                           {/* Software & APIs */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="software" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -957,7 +957,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
                                   <div className="block py-2 text-sm text-gray-600">Control APIs</div>
@@ -971,7 +971,7 @@ const Navigation = () => {
                           {/* Product Accessories */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="accessories" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
                                      <CustomTargetIcon className="h-4 w-4" />
@@ -979,7 +979,7 @@ const Navigation = () => {
                                    </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Storage & Transport</div>
                                   <div className="block py-2 text-sm text-gray-600">Luxmeters</div>
@@ -1005,7 +1005,7 @@ const Navigation = () => {
 
                     {/* Test Lab */}
                     <AccordionItem value="test-lab" className="border-none">
-                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
+                       <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
                           Test Lab
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
@@ -1015,13 +1015,13 @@ const Navigation = () => {
                           {/* Overview */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="overview" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
                                   <span>Overview</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <Link to="/inside-lab" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                     Learn about the Lab
@@ -1035,7 +1035,7 @@ const Navigation = () => {
                            {/* Automotive */}
                            <Accordion type="single" collapsible className="ml-2">
                              <AccordionItem value="auto-test" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <CustomTargetIcon className="h-4 w-4" />
@@ -1043,7 +1043,7 @@ const Navigation = () => {
                                    </Link>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">camPAS</div>
                                    <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
@@ -1060,13 +1060,13 @@ const Navigation = () => {
                           {/* VCX */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="vcx-test" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
                                   <span>VCX</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">VCX - PhoneCam</div>
                                   <div className="block py-2 text-sm text-gray-600">VCX - WebCam</div>
@@ -1080,13 +1080,13 @@ const Navigation = () => {
                           {/* Image Quality */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="iq-test" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
                                   <span>Image Quality</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Resolution & Texture Loss</div>
                                   <div className="block py-2 text-sm text-gray-600">Dynamic Range (OECF)</div>
@@ -1101,13 +1101,13 @@ const Navigation = () => {
                           {/* Standardized */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="standardized" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
                                   <span>Standardized</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">IEEE-P2020 (ADAS)</div>
                                   <div className="block py-2 text-sm text-gray-600">VCX (Mobile/Webcam)</div>
@@ -1122,13 +1122,13 @@ const Navigation = () => {
                           {/* Specialized/Custom */}
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="custom" className="border-none">
-                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-gray-200 rounded-lg mx-2 mb-2">
+                              <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
                                   <CustomTargetIcon className="h-4 w-4" />
                                   <span>Specialized/Custom</span>
                                 </div>
                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-gray-100 mx-2 rounded-lg">
+                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                 <div className="space-y-2">
                                   <div className="block py-2 text-sm text-gray-600">Baseline Evaluations</div>
                                   <div className="block py-2 text-sm text-gray-600">Proof of Concepts</div>
