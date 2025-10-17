@@ -37,7 +37,27 @@ export const en = {
     company: "Company",
     careers: "Careers",
     contact: "Contact",
-    active: "ACTIVE"
+    active: "ACTIVE",
+    trainingEvents: "Training & Events",
+    webinars: "Webinars",
+    onSiteTraining: "On-Site Training",
+    visitTestLab: "Visit our Test Lab",
+    eventSchedule: "Event Schedule",
+    viewTrainingEvents: "View Training & Events",
+    imageQuality: "Image Quality",
+    imageQualityFactors: "Image Quality Factors",
+    blog: "Blog",
+    internationalStandards: "International Standards",
+    ieTechnology: "IE Technology",
+    publications: "Publications",
+    conferencePapers: "Conference Papers",
+    whitePapersTheses: "White Papers & Theses",
+    videoArchive: "Video Archive",
+    exploreImageQuality: "Explore Image Quality Resources",
+    aboutIE: "About IE",
+    team: "Team",
+    nynomicGroup: "Nynomic Group",
+    aboutUs: "About us"
   },
   
   // Hero Section

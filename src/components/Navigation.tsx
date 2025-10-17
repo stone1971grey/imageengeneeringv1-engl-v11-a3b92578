@@ -1207,39 +1207,39 @@ const Navigation = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Training & Events */}
+                     {/* Training & Events */}
                     <AccordionItem value="training-events" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          Training & Events
+                          {t.nav.trainingEvents}
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
-                          <div className="font-medium text-gray-900 py-3 mb-2">Resources</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.resources}</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Webinars</span>
+                            <span>{t.nav.webinars}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>On-Site Training</span>
+                            <span>{t.nav.onSiteTraining}</span>
                           </div>
                           <Link to="/inside-lab" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Visit our Test Lab</span>
+                            <span>{t.nav.visitTestLab}</span>
                           </Link>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Event Schedule</span>
+                            <span>{t.nav.eventSchedule}</span>
                           </div>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                           <Link to="/events" onClick={() => setIsOpen(false)}>
-                             <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
-                               <GraduationCap className="h-4 w-4 mr-2" />
-                               View Training & Events
-                               <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{t.nav.active}</span>
-                             </Button>
-                           </Link>
+                          <Link to="/events" onClick={() => setIsOpen(false)}>
+                            <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
+                              <GraduationCap className="h-4 w-4 mr-2" />
+                              {t.nav.viewTrainingEvents}
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{t.nav.active}</span>
+                            </Button>
+                          </Link>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -1247,50 +1247,50 @@ const Navigation = () => {
                     {/* Image Quality */}
                     <AccordionItem value="image-quality" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          Image Quality
+                          {t.nav.imageQuality}
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
-                          <div className="font-medium text-gray-900 py-3 mb-2">Resources</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.resources}</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Image Quality Factors</span>
+                            <span>{t.nav.imageQualityFactors}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Blog</span>
+                            <span>{t.nav.blog}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>International Standards</span>
+                            <span>{t.nav.internationalStandards}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>IE Technology</span>
+                            <span>{t.nav.ieTechnology}</span>
                           </div>
-                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">Publications</div>
+                          <div className="font-medium text-gray-900 py-3 mb-2 mt-4">{t.nav.publications}</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Conference Papers</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>White Papers & Theses</span>
+                            <span>{t.nav.conferencePapers}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
                             <CustomTargetIcon className="h-4 w-4" />
-                            <span>Video Archive</span>
+                            <span>{t.nav.whitePapersTheses}</span>
+                          </div>
+                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                            <CustomTargetIcon className="h-4 w-4" />
+                            <span>{t.nav.videoArchive}</span>
                           </div>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                           <Link to="/downloads" onClick={() => setIsOpen(false)}>
-                             <Button className="w-full bg-[#103e7c] text-white hover:bg-[#0d3468] rounded-lg font-medium">
-                               <Microscope className="h-4 w-4 mr-2" />
-                               <span className="hidden sm:inline">Explore Image Quality Resources</span>
-                               <span className="sm:hidden">Quality Resources</span>
-                               <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
-                             </Button>
-                           </Link>
+                          <Link to="/downloads" onClick={() => setIsOpen(false)}>
+                            <Button className="w-full bg-[#103e7c] text-white hover:bg-[#0d3468] rounded-lg font-medium">
+                              <Microscope className="h-4 w-4 mr-2" />
+                              <span className="hidden sm:inline">{t.nav.exploreImageQuality}</span>
+                              <span className="sm:hidden">Quality Resources</span>
+                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
+                            </Button>
+                          </Link>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -1301,32 +1301,32 @@ const Navigation = () => {
                           {t.nav.company}
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
-                        <div className="space-y-4">
-                          <div className="font-medium text-gray-900 py-3 mb-2">About IE</div>
-                           <Link to="/news" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                         <div className="space-y-4">
+                           <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.aboutIE}</div>
+                            <Link to="/news" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                              <CustomTargetIcon className="h-4 w-4" />
+                              <span>{t.nav.news}</span>
+                            </Link>
+                           <Link to="/about" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                              <CustomTargetIcon className="h-4 w-4" />
-                             <span>{t.nav.news}</span>
+                             <span>{t.nav.aboutUs}</span>
                            </Link>
-                          <Link to="/about" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>About us</span>
-                          </Link>
-                          <Link to="/team" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Team</span>
-                          </Link>
-                          <Link to="/nynomic-group" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Nynomic Group</span>
-                          </Link>
-                          <Link to="/visit-us" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Visit Us</span>
-                          </Link>
-                          <Link to="/careers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
-                            <span>Careers</span>
-                          </Link>
+                           <Link to="/team" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             <CustomTargetIcon className="h-4 w-4" />
+                             <span>{t.nav.team}</span>
+                           </Link>
+                           <Link to="/nynomic-group" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             <CustomTargetIcon className="h-4 w-4" />
+                             <span>{t.nav.nynomicGroup}</span>
+                           </Link>
+                           <Link to="/visit-us" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             <CustomTargetIcon className="h-4 w-4" />
+                             <span>Visit Us</span>
+                           </Link>
+                           <Link to="/careers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             <CustomTargetIcon className="h-4 w-4" />
+                             <span>{t.nav.careers}</span>
+                           </Link>
                           <div className="font-medium text-gray-900 py-3 mb-2 mt-4">Business & Partnerships</div>
                           <Link to="/resellers-subsidiaries" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />

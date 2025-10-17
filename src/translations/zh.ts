@@ -37,7 +37,27 @@ export const zh = {
     company: "公司",
     careers: "职业机会",
     contact: "联系我们",
-    active: "活跃"
+    active: "活跃",
+    trainingEvents: "培训与活动",
+    webinars: "网络研讨会",
+    onSiteTraining: "现场培训",
+    visitTestLab: "参观测试实验室",
+    eventSchedule: "活动日程",
+    viewTrainingEvents: "查看培训与活动",
+    imageQuality: "图像质量",
+    imageQualityFactors: "图像质量因素",
+    blog: "博客",
+    internationalStandards: "国际标准",
+    ieTechnology: "IE技术",
+    publications: "出版物",
+    conferencePapers: "会议论文",
+    whitePapersTheses: "白皮书与论文",
+    videoArchive: "视频档案",
+    exploreImageQuality: "探索图像质量资源",
+    aboutIE: "关于IE",
+    team: "团队",
+    nynomicGroup: "Nynomic集团",
+    aboutUs: "关于我们"
   },
   
   // Hero Section

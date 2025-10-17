@@ -37,7 +37,27 @@ export const ko = {
     company: "회사 소개",
     careers: "채용",
     contact: "문의하기",
-    active: "활성"
+    active: "활성",
+    trainingEvents: "교육 및 이벤트",
+    webinars: "웨비나",
+    onSiteTraining: "현장 교육",
+    visitTestLab: "테스트 랩 방문",
+    eventSchedule: "이벤트 일정",
+    viewTrainingEvents: "교육 및 이벤트 보기",
+    imageQuality: "이미지 품질",
+    imageQualityFactors: "이미지 품질 요인",
+    blog: "블로그",
+    internationalStandards: "국제 표준",
+    ieTechnology: "IE 기술",
+    publications: "출판물",
+    conferencePapers: "학회 논문",
+    whitePapersTheses: "백서 및 논문",
+    videoArchive: "비디오 아카이브",
+    exploreImageQuality: "이미지 품질 리소스 탐색",
+    aboutIE: "IE 소개",
+    team: "팀",
+    nynomicGroup: "Nynomic 그룹",
+    aboutUs: "회사 소개"
   },
   
   // Hero Section

@@ -37,7 +37,27 @@ export const ja = {
     company: "会社情報",
     careers: "採用情報",
     contact: "お問い合わせ",
-    active: "アクティブ"
+    active: "アクティブ",
+    trainingEvents: "トレーニング・イベント",
+    webinars: "ウェビナー",
+    onSiteTraining: "現地トレーニング",
+    visitTestLab: "テストラボを見学",
+    eventSchedule: "イベントスケジュール",
+    viewTrainingEvents: "トレーニング・イベントを見る",
+    imageQuality: "画質",
+    imageQualityFactors: "画質要因",
+    blog: "ブログ",
+    internationalStandards: "国際規格",
+    ieTechnology: "IE技術",
+    publications: "出版物",
+    conferencePapers: "会議論文",
+    whitePapersTheses: "ホワイトペーパー・論文",
+    videoArchive: "ビデオアーカイブ",
+    exploreImageQuality: "画質リソースを探索",
+    aboutIE: "IEについて",
+    team: "チーム",
+    nynomicGroup: "Nynomic Group",
+    aboutUs: "会社概要"
   },
   
   // Hero Section
