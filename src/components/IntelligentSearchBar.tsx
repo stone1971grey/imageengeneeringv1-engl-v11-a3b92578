@@ -227,7 +227,7 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
   return (
     <div ref={searchRef} className={`relative ${variant === 'mobile' ? 'w-full' : ''}`}>
       <div className="relative">
-        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${variant === 'mobile' ? 'text-white' : 'text-black'}`} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black" />
         <Input
           ref={inputRef}
           type="text"
@@ -236,10 +236,9 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           className={variant === 'mobile' 
-            ? "pl-10 pr-10 w-full border-gray-300 text-white placeholder:text-white/70 focus:text-white focus:border-gray-400 focus:placeholder:text-white/70 !bg-[#606060]"
+            ? "pl-10 pr-10 w-full bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
             : "pl-10 pr-10 w-36 bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
           }
-          style={variant === 'mobile' ? { backgroundColor: '#606060' } : {}}
         />
         {query && (
           <Button
