@@ -1308,7 +1308,7 @@ const Navigation = () => {
                       
                       {/* Language Selector */}
                       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
-                        <SelectTrigger className="w-[70px] h-10 bg-white border-none text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-0 focus:ring-0 focus:ring-offset-0">
+                        <SelectTrigger className="w-[70px] h-10 bg-white border border-gray-300 text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-2 focus:ring-0 focus:ring-offset-0 rounded-md">
                           <SelectValue className="text-center w-full flex justify-center">
                             {language === "en" ? "🇺🇸" : language === "de" ? "🇩🇪" : language === "zh" ? "🇨🇳" : language === "ja" ? "🇯🇵" : "🇰🇷"}
                           </SelectValue>
