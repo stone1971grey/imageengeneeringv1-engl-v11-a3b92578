@@ -14,6 +14,7 @@ import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigationData } from "@/hooks/useNavigationData";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Import industry images
 import industryPhotography from "@/assets/industry-photography.jpg";
@@ -36,6 +37,7 @@ import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
 const Navigation = () => {
   const { t } = useTranslation();
   const navData = useNavigationData();
+  const { language, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
@@ -1301,37 +1303,57 @@ const Navigation = () => {
                     <div className="flex items-center gap-4">
                       {/* Search Bar */}
                       <div className="flex-1">
-                        <IntelligentSearchBar variant="mobile" />
+                        <IntelligentSearchBar />
                       </div>
                       
                       {/* Language Selector */}
-                      <Select value="en" onValueChange={() => {}}>
-                        <SelectTrigger className="w-[60px] bg-[#103e7c] border-[#103e7c] text-white hover:bg-[#0d3468] transition-all duration-300">
-                          <SelectValue placeholder="EN" />
+                      <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
+                        <SelectTrigger className="w-[70px] h-10 bg-white border-none text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-0 focus:ring-0 focus:ring-offset-0">
+                          <SelectValue className="text-center w-full flex justify-center">
+                            {language === "en" ? "🇺🇸" : language === "de" ? "🇩🇪" : language === "zh" ? "🇨🇳" : language === "ja" ? "🇯🇵" : "🇰🇷"}
+                          </SelectValue>
                         </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                          <SelectItem value="en" className="flex items-center gap-2 hover:bg-gray-100 cursor-pointer text-black">
-                            EN
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
+                          <SelectItem 
+                            value="en"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇺🇸
                           </SelectItem>
-                          <SelectItem value="de" className="flex items-center gap-2 hover:bg-gray-100 cursor-pointer text-black">
-                            DE
+                          <SelectItem 
+                            value="de"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇩🇪
                           </SelectItem>
-                          <SelectItem value="zh" className="flex items-center gap-2 hover:bg-gray-100 cursor-pointer text-black">
-                            ZH
+                          <SelectItem 
+                            value="zh"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇨🇳
                           </SelectItem>
-                          <SelectItem value="ja" className="flex items-center gap-2 hover:bg-gray-100 cursor-pointer text-black">
-                            JA
+                          <SelectItem 
+                            value="ja"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇯🇵
                           </SelectItem>
-                          <SelectItem value="ko" className="flex items-center gap-2 hover:bg-gray-100 cursor-pointer text-black">
-                            KO
+                          <SelectItem 
+                            value="ko"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇰🇷
                           </SelectItem>
                         </SelectContent>
                       </Select>
                       
                       {/* Contact Button */}
                       <Link to="/contact" onClick={() => setIsOpen(false)}>
-                        <Button className="w-[60px] h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center">
-                          <MessageCircle className="h-5 w-5" />
+                        <Button 
+                          variant="default" 
+                          className="h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center px-6"
+                        >
+                          Contact
                         </Button>
                       </Link>
                     </div>
