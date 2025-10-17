@@ -647,7 +647,7 @@ const Navigation = () => {
             <>
               {/* Backdrop - but exclude the button area */}
               <div 
-                className="fixed inset-0 bg-black/20 z-40"
+                className="fixed inset-0 bg-black/20 z-30"
                 onClick={() => setIsOpen(false)}
               />
               
