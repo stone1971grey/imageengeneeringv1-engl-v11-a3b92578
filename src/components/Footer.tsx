@@ -155,7 +155,7 @@ const Footer = () => {
                         ? "Training Specialist, Professional Instructor"
                         : "Laura Neumann, Head of Optical Systems"
                     }
-                   className="w-[150px] h-[150px] rounded-full object-cover"
+                   className="w-[150px] h-[150px] rounded-lg object-cover"
                  />
               </div>
               <div className="flex-1 text-center md:text-left">
