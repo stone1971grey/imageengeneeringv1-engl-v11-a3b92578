@@ -74,6 +74,9 @@ export default {
 					'light-grey': 'hsl(var(--scandi-light-grey))',
 					white: 'hsl(var(--scandi-white))'
 				},
+				nav: {
+					surface: 'hsl(var(--nav-surface))'
+				},
 				downloads: {
 					bg: 'hsl(var(--downloads-bg))',
 					text: 'hsl(var(--downloads-text))',
