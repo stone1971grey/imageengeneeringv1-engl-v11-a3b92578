@@ -94,11 +94,11 @@ const Industries = () => {
         
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-6 py-24 lg:py-32">
-          <div className="text-center max-w-5xl mx-auto">
+          <div className="text-center max-w-5xl mx-auto -mt-[50px]">
             
             {/* Main Headline */}
             <div className="mb-8">
-              <h1 id="industries-hero" className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 -mt-64 pt-64">
+              <h1 id="industries-hero" className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
                 Precision Solutions
                 <br />
                 <span className="font-medium text-[#74952a]">for All Industries</span>
