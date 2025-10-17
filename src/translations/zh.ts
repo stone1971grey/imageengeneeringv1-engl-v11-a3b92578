@@ -57,7 +57,17 @@ export const zh = {
     aboutIE: "关于IE",
     team: "团队",
     nynomicGroup: "Nynomic集团",
-    aboutUs: "关于我们"
+    aboutUs: "关于我们",
+    subgroups: "子组",
+    services: "服务",
+    hoverForSubgroups: "将鼠标悬停在产品组上以查看子组",
+    hoverForServices: "将鼠标悬停在服务类别上以查看可用测试",
+    insideTestingLab: "测试实验室内部",
+    visitTestingLab: "参观我们的测试实验室",
+    overview: "概述",
+    standardized: "标准化",
+    specializedCustom: "专业/定制",
+    visitUs: "访问我们"
   },
   
   // Hero Section

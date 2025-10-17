@@ -57,7 +57,17 @@ export const en = {
     aboutIE: "About IE",
     team: "Team",
     nynomicGroup: "Nynomic Group",
-    aboutUs: "About us"
+    aboutUs: "About us",
+    subgroups: "Subgroups",
+    services: "Services",
+    hoverForSubgroups: "Hover over a product group to see subgroups",
+    hoverForServices: "Hover over a service category to see available tests",
+    insideTestingLab: "Inside the Testing Lab",
+    visitTestingLab: "Visit Our Testing Lab",
+    overview: "Overview",
+    standardized: "Standardized",
+    specializedCustom: "Specialized/Custom",
+    visitUs: "Visit Us"
   },
   
   // Hero Section

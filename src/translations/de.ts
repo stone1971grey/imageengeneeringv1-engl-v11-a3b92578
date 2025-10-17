@@ -57,7 +57,17 @@ export const de = {
     aboutIE: "Über IE",
     team: "Team",
     nynomicGroup: "Nynomic Gruppe",
-    aboutUs: "Über uns"
+    aboutUs: "Über uns",
+    subgroups: "Untergruppen",
+    services: "Dienstleistungen",
+    hoverForSubgroups: "Bewegen Sie die Maus über eine Produktgruppe, um Untergruppen zu sehen",
+    hoverForServices: "Bewegen Sie die Maus über eine Dienstkategorie, um verfügbare Tests zu sehen",
+    insideTestingLab: "Im Testlabor",
+    visitTestingLab: "Besuchen Sie unser Testlabor",
+    overview: "Übersicht",
+    standardized: "Standardisiert",
+    specializedCustom: "Spezialisiert/Individuell",
+    visitUs: "Besuchen Sie uns"
   },
   
   // Hero Section

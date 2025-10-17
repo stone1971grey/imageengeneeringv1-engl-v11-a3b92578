@@ -57,7 +57,17 @@ export const ko = {
     aboutIE: "IE 소개",
     team: "팀",
     nynomicGroup: "Nynomic 그룹",
-    aboutUs: "회사 소개"
+    aboutUs: "회사 소개",
+    subgroups: "하위 그룹",
+    services: "서비스",
+    hoverForSubgroups: "제품 그룹 위에 마우스를 올려 하위 그룹을 확인하세요",
+    hoverForServices: "서비스 카테고리 위에 마우스를 올려 사용 가능한 테스트를 확인하세요",
+    insideTestingLab: "테스트 랩 내부",
+    visitTestingLab: "테스트 랩 방문",
+    overview: "개요",
+    standardized: "표준화",
+    specializedCustom: "전문/맞춤형",
+    visitUs: "방문"
   },
   
   // Hero Section

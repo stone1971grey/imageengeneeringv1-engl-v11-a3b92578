@@ -241,7 +241,7 @@ const Navigation = () => {
                   <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
                     <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] hover:text-white">
                       <Search className="h-5 w-5 mr-3" />
-                      <span className="text-lg font-medium">Find Your Perfect Solution</span>
+                      <span className="text-lg font-medium">{t.hero.findYourSolution}</span>
                     </Button>
                   </div>
                   
@@ -306,36 +306,36 @@ const Navigation = () => {
                        </div>
                     </div>
                     
-                    {/* Right Column: Subgroups */}
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">
-                        {hoveredProduct ? `${hoveredProduct} - Subgroups` : "Subgroups"}
-                      </h4>
-                      
-                      {/* Conditional Rendering of Subgroups */}
-                      {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
-                        <div className="space-y-3">
-                          {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
-                            <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a]">
-                              <ChevronRight className="h-4 w-4" />
-                              {subgroup.link === "#" ? (
-                                <span>{subgroup.name}</span>
-                              ) : (
-                                <Link to={subgroup.link}>{subgroup.name}</Link>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {/* Default state when no product is hovered */}
-                      {!hoveredProduct && (
-                        <div className="text-gray-500 text-center py-8">
-                          <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>Hover over a product group to see subgroups</p>
-                        </div>
-                      )}
-                    </div>
+                     {/* Right Column: Subgroups */}
+                     <div className="space-y-4 flex-1">
+                       <h4 className="font-semibold mb-3 text-lg text-black">
+                         {hoveredProduct ? `${hoveredProduct} - ${t.nav.subgroups}` : t.nav.subgroups}
+                       </h4>
+                       
+                       {/* Conditional Rendering of Subgroups */}
+                       {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
+                         <div className="space-y-3">
+                           {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
+                             <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a]">
+                               <ChevronRight className="h-4 w-4" />
+                               {subgroup.link === "#" ? (
+                                 <span>{subgroup.name}</span>
+                               ) : (
+                                 <Link to={subgroup.link}>{subgroup.name}</Link>
+                               )}
+                             </div>
+                           ))}
+                         </div>
+                       )}
+                       
+                       {/* Default state when no product is hovered */}
+                       {!hoveredProduct && (
+                         <div className="text-gray-500 text-center py-8">
+                           <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                           <p>{t.nav.hoverForSubgroups}</p>
+                         </div>
+                       )}
+                     </div>
                   </div>
 
                   {/* CTA Button */}
@@ -343,7 +343,7 @@ const Navigation = () => {
                     <Link to="/inside-lab">
                       <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800">
                         <Microscope className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">Inside the Testing Lab</span>
+                        <span className="text-lg font-medium">{t.nav.insideTestingLab}</span>
                       </Button>
                     </Link>
                   </div>
@@ -377,76 +377,76 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">Test Services</h4>
                       
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredTestService("Overview")}>
-                        <FlaskConical className="h-5 w-5" />
-                        <span>Overview</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredTestService("Automotive")}>
-                        <Car className="h-5 w-5" />
-                        <span>Automotive</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredTestService("VCX")}>
-                        <Smartphone className="h-5 w-5" />
-                        <span>VCX</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredTestService("Image Quality")}>
-                        <Camera className="h-5 w-5" />
-                        <span>Image Quality</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredTestService("Standardized")}>
-                        <CheckCircle className="h-5 w-5" />
-                        <span>Standardized</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
-                        onMouseEnter={() => setHoveredTestService("Specialized/Custom")}>
-                        <Settings className="h-5 w-5" />
-                        <span>Specialized/Custom</span>
-                      </div>
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredTestService("Overview")}>
+                         <FlaskConical className="h-5 w-5" />
+                         <span>{t.nav.overview}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredTestService("Automotive")}>
+                         <Car className="h-5 w-5" />
+                         <span>{t.nav.automotive}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredTestService("VCX")}>
+                         <Smartphone className="h-5 w-5" />
+                         <span>VCX</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredTestService("Image Quality")}>
+                         <Camera className="h-5 w-5" />
+                         <span>{t.nav.imageQuality}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredTestService("Standardized")}>
+                         <CheckCircle className="h-5 w-5" />
+                         <span>{t.nav.standardized}</span>
+                       </div>
+                       
+                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
+                         onMouseEnter={() => setHoveredTestService("Specialized/Custom")}>
+                         <Settings className="h-5 w-5" />
+                         <span>{t.nav.specializedCustom}</span>
+                       </div>
                     </div>
                     
-                    {/* Right Column: Services */}
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">
-                        {hoveredTestService ? `${hoveredTestService} - Services` : "Services"}
-                      </h4>
-                      
-                      {/* Conditional Rendering of Services */}
-                      {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
-                        <div className="space-y-3">
-                          {testServicesData[hoveredTestService as keyof typeof testServicesData].services.map((service, index) => (
-                            <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a] ${(service as any).active ? 'bg-green-100 p-2 rounded-md border-2 border-green-300' : ''}`}>
-                              <ChevronRight className="h-4 w-4" />
-                              {service.link === "#" ? (
-                                <span>{service.name}</span>
-                              ) : (
-                                <Link to={service.link}>{service.name}</Link>
-                              )}
-                              {(service as any).active && (
-                                <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">ACTIVE</span>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
-                      {/* Default state when no service category is hovered */}
-                      {!hoveredTestService && (
-                        <div className="text-gray-500 text-center py-8">
-                          <FlaskConical className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>Hover over a service category to see available tests</p>
-                        </div>
-                      )}
-                    </div>
+                     {/* Right Column: Services */}
+                     <div className="space-y-4 flex-1">
+                       <h4 className="font-semibold mb-3 text-lg text-black">
+                         {hoveredTestService ? `${hoveredTestService} - ${t.nav.services}` : t.nav.services}
+                       </h4>
+                       
+                       {/* Conditional Rendering of Services */}
+                       {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
+                         <div className="space-y-3">
+                           {testServicesData[hoveredTestService as keyof typeof testServicesData].services.map((service, index) => (
+                             <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a] ${(service as any).active ? 'bg-green-100 p-2 rounded-md border-2 border-green-300' : ''}`}>
+                               <ChevronRight className="h-4 w-4" />
+                               {service.link === "#" ? (
+                                 <span>{service.name}</span>
+                               ) : (
+                                 <Link to={service.link}>{service.name}</Link>
+                               )}
+                               {(service as any).active && (
+                                 <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
+                               )}
+                             </div>
+                           ))}
+                         </div>
+                       )}
+                       
+                       {/* Default state when no service category is hovered */}
+                       {!hoveredTestService && (
+                         <div className="text-gray-500 text-center py-8">
+                           <FlaskConical className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                           <p>{t.nav.hoverForServices}</p>
+                         </div>
+                       )}
+                     </div>
                   </div>
 
                   {/* CTA Button */}
@@ -454,7 +454,7 @@ const Navigation = () => {
                     <Link to="/inside-lab">
                       <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] hover:text-white">
                         <FlaskConical className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">Visit Our Testing Lab</span>
+                        <span className="text-lg font-medium">{t.nav.visitTestingLab}</span>
                       </Button>
                     </Link>
                   </div>
@@ -484,22 +484,22 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[315px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-6 p-6">
                      <div className="space-y-4 flex-1">
-                       <h4 className="font-semibold mb-3 text-lg text-black">Resources</h4>
+                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.resources}</h4>
                        <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                          <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">Webinars</a>
+                         <a href="#">{t.nav.webinars}</a>
                        </div>
                        <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                          <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">On-Site Training</a>
+                         <a href="#">{t.nav.onSiteTraining}</a>
                        </div>
                        <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                          <CustomTargetIcon className="h-5 w-5" />
-                         <Link to="/inside-lab">Visit our Test Lab</Link>
+                         <Link to="/inside-lab">{t.nav.visitTestLab}</Link>
                        </div>
                        <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                          <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">Event Schedule</a>
+                         <a href="#">{t.nav.eventSchedule}</a>
                        </div>
                      </div>
                    </div>
@@ -508,8 +508,8 @@ const Navigation = () => {
                     <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300">
                       <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] hover:text-white">
                         <GraduationCap className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">View Training & Events</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">ACTIVE</span>
+                        <span className="text-lg font-medium">{t.nav.viewTrainingEvents}</span>
+                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{t.nav.active}</span>
                       </Button>
                     </Link>
                   </div>
@@ -520,38 +520,38 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Resources</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.resources}</h4>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Image Quality Factors</a>
+                        <a href="#">{t.nav.imageQualityFactors}</a>
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Blog</a>
+                        <a href="#">{t.nav.blog}</a>
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">International Standards</a>
+                        <a href="#">{t.nav.internationalStandards}</a>
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">IE Technology</a>
+                        <a href="#">{t.nav.ieTechnology}</a>
                       </div>
                     </div>
 
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Publications</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.publications}</h4>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Conference Papers</a>
+                        <a href="#">{t.nav.conferencePapers}</a>
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <Link to="/whitepaper">White Papers & Theses</Link>
+                        <Link to="/whitepaper">{t.nav.whitePapersTheses}</Link>
                       </div>
                       <div className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors cursor-pointer">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">Video Archive</a>
+                        <a href="#">{t.nav.videoArchive}</a>
                       </div>
                     </div>
                   </div>
@@ -560,8 +560,8 @@ const Navigation = () => {
                     <Link to="/downloads" className="w-full">
                       <Button variant="technical" className="w-full" style={{ backgroundColor: '#103e7c', borderColor: '#103e7c', color: 'white' }}>
                         <Microscope className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">Explore Image Quality Resources</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
+                        <span className="text-lg font-medium">{t.nav.exploreImageQuality}</span>
+                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
                       </Button>
                     </Link>
                   </div>
@@ -572,30 +572,30 @@ const Navigation = () => {
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-8 p-6">
                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                         <h4 className="font-semibold mb-3 text-lg text-black">About IE</h4>
+                         <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.aboutIE}</h4>
                          <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
-                           <span>News</span>
+                           <span>{t.nav.news}</span>
                          </Link>
                          <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
-                           <span>About us</span>
+                           <span>{t.nav.aboutUs}</span>
                          </Link>
                          <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
-                           <span>Team</span>
+                           <span>{t.nav.team}</span>
                          </Link>
                          <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
-                           <span>Nynomic Group</span>
+                           <span>{t.nav.nynomicGroup}</span>
                          </Link>
                          <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
-                           <span>Visit Us</span>
+                           <span>{t.nav.visitUs}</span>
                          </Link>
                          <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
-                           <span>Careers</span>
+                           <span>{t.nav.careers}</span>
                          </Link>
                        </div>
                        

@@ -57,7 +57,17 @@ export const ja = {
     aboutIE: "IEについて",
     team: "チーム",
     nynomicGroup: "Nynomic Group",
-    aboutUs: "会社概要"
+    aboutUs: "会社概要",
+    subgroups: "サブグループ",
+    services: "サービス",
+    hoverForSubgroups: "製品グループにカーソルを合わせてサブグループを表示",
+    hoverForServices: "サービスカテゴリにカーソルを合わせて利用可能なテストを表示",
+    insideTestingLab: "テストラボ内",
+    visitTestingLab: "テストラボを訪問",
+    overview: "概要",
+    standardized: "標準化",
+    specializedCustom: "専門/カスタム",
+    visitUs: "訪問"
   },
   
   // Hero Section
