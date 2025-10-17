@@ -205,7 +205,7 @@ const Navigation = () => {
                      {/* Right Column: Applications */}
                      <div className="space-y-4 flex-1">
                        <h4 className="font-semibold mb-3 text-lg text-black">
-                         {hoveredIndustry ? `${hoveredIndustry} - ${t.nav.applications}` : t.nav.applications}
+                         {hoveredIndustry ? `${(t.nav as any)[hoveredIndustry] || hoveredIndustry} - ${t.nav.applications}` : t.nav.applications}
                        </h4>
                        
                        {/* Conditional Rendering of Applications */}
@@ -309,7 +309,7 @@ const Navigation = () => {
                      {/* Right Column: Subgroups */}
                      <div className="space-y-4 flex-1">
                        <h4 className="font-semibold mb-3 text-lg text-black">
-                         {hoveredProduct ? `${hoveredProduct} - ${t.nav.subgroups}` : t.nav.subgroups}
+                         {hoveredProduct ? `${(t.nav as any)[hoveredProduct] || hoveredProduct} - ${t.nav.subgroups}` : t.nav.subgroups}
                        </h4>
                        
                        {/* Conditional Rendering of Subgroups */}
@@ -375,7 +375,7 @@ const Navigation = () => {
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Service Categories */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">Test Services</h4>
+                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.testServices}</h4>
                       
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredTestService("Overview")}>
@@ -417,7 +417,7 @@ const Navigation = () => {
                      {/* Right Column: Services */}
                      <div className="space-y-4 flex-1">
                        <h4 className="font-semibold mb-3 text-lg text-black">
-                         {hoveredTestService ? `${hoveredTestService} - ${t.nav.services}` : t.nav.services}
+                         {hoveredTestService ? `${(t.nav as any)[hoveredTestService] || hoveredTestService} - ${t.nav.services}` : t.nav.services}
                        </h4>
                        
                        {/* Conditional Rendering of Services */}

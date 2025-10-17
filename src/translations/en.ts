@@ -69,7 +69,28 @@ export const en = {
     specializedCustom: "Specialized/Custom",
     visitUs: "Visit Us",
     applications: "Applications",
-    hoverForApplications: "Hover over an industry to see applications"
+    hoverForApplications: "Hover over an industry to see applications",
+    // Industry names for headers
+    "Automotive": "Automotive",
+    "Security & Surveillance": "Security & Surveillance",
+    "Mobile Phone": "Mobile Phone",
+    "Web Camera": "Web Camera",
+    "Machine Vision": "Machine Vision",
+    "Medical & Endoscopy": "Medical & Endoscopy",
+    "Scanners & Archiving": "Scanners & Archiving",
+    "Photo & Video": "Photo & Video",
+    // Product names for headers
+    "Test Charts": "Test Charts",
+    "Illumination Devices": "Illumination Devices",
+    "Measurement Devices": "Measurement Devices",
+    "Software & APIs": "Software & APIs",
+    "Product Accessories": "Product Accessories",
+    // Test Service names for headers
+    "Overview": "Overview",
+    "VCX": "VCX",
+    "Image Quality": "Image Quality",
+    "Standardized": "Standardized",
+    "Specialized/Custom": "Specialized/Custom"
   },
   
   // Hero Section

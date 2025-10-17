@@ -69,7 +69,28 @@ export const zh = {
     specializedCustom: "专业/定制",
     visitUs: "访问我们",
     applications: "应用",
-    hoverForApplications: "将鼠标悬停在行业上以查看应用"
+    hoverForApplications: "将鼠标悬停在行业上以查看应用",
+    // Industry names for headers
+    "Automotive": "汽车",
+    "Security & Surveillance": "安防监控",
+    "Mobile Phone": "移动手机",
+    "Web Camera": "网络摄像头",
+    "Machine Vision": "机器视觉",
+    "Medical & Endoscopy": "医疗内窥镜",
+    "Scanners & Archiving": "扫描仪与归档",
+    "Photo & Video": "摄影与视频",
+    // Product names for headers
+    "Test Charts": "测试图卡",
+    "Illumination Devices": "照明设备",
+    "Measurement Devices": "测量设备",
+    "Software & APIs": "软件与API",
+    "Product Accessories": "产品配件",
+    // Test Service names for headers
+    "Overview": "概述",
+    "VCX": "VCX",
+    "Image Quality": "图像质量",
+    "Standardized": "标准化",
+    "Specialized/Custom": "专业/定制"
   },
   
   // Hero Section

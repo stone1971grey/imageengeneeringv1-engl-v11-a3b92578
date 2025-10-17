@@ -69,7 +69,28 @@ export const ja = {
     specializedCustom: "専門/カスタム",
     visitUs: "訪問",
     applications: "アプリケーション",
-    hoverForApplications: "業界にカーソルを合わせてアプリケーションを表示"
+    hoverForApplications: "業界にカーソルを合わせてアプリケーションを表示",
+    // Industry names for headers
+    "Automotive": "自動車",
+    "Security & Surveillance": "セキュリティ・監視",
+    "Mobile Phone": "携帯電話",
+    "Web Camera": "ウェブカメラ",
+    "Machine Vision": "マシンビジョン",
+    "Medical & Endoscopy": "医療・内視鏡",
+    "Scanners & Archiving": "スキャナー・アーカイブ",
+    "Photo & Video": "写真・動画",
+    // Product names for headers
+    "Test Charts": "テストチャート",
+    "Illumination Devices": "照明装置",
+    "Measurement Devices": "測定装置",
+    "Software & APIs": "ソフトウェア・API",
+    "Product Accessories": "製品アクセサリー",
+    // Test Service names for headers
+    "Overview": "概要",
+    "VCX": "VCX",
+    "Image Quality": "画質",
+    "Standardized": "標準化",
+    "Specialized/Custom": "専門/カスタム"
   },
   
   // Hero Section

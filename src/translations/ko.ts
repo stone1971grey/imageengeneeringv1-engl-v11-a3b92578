@@ -69,7 +69,28 @@ export const ko = {
     specializedCustom: "전문/맞춤형",
     visitUs: "방문",
     applications: "애플리케이션",
-    hoverForApplications: "산업 위에 마우스를 올려 애플리케이션을 확인하세요"
+    hoverForApplications: "산업 위에 마우스를 올려 애플리케이션을 확인하세요",
+    // Industry names for headers
+    "Automotive": "자동차",
+    "Security & Surveillance": "보안 및 감시",
+    "Mobile Phone": "휴대전화",
+    "Web Camera": "웹 카메라",
+    "Machine Vision": "머신 비전",
+    "Medical & Endoscopy": "의료 및 내시경",
+    "Scanners & Archiving": "스캐너 및 아카이빙",
+    "Photo & Video": "사진 및 비디오",
+    // Product names for headers
+    "Test Charts": "테스트 차트",
+    "Illumination Devices": "조명 장치",
+    "Measurement Devices": "측정 장치",
+    "Software & APIs": "소프트웨어 및 API",
+    "Product Accessories": "제품 액세서리",
+    // Test Service names for headers
+    "Overview": "개요",
+    "VCX": "VCX",
+    "Image Quality": "이미지 품질",
+    "Standardized": "표준화",
+    "Specialized/Custom": "전문/맞춤형"
   },
   
   // Hero Section
