@@ -652,8 +652,8 @@ const Navigation = () => {
                 {/* Mobile Utility Navigation - Only for screens < 576px */}
                 <div className="px-6 pt-4 pb-2 block sm:hidden">
                   {/* Search Bar - Full Width */}
-                  <div className="mb-3">
-                    <IntelligentSearchBar />
+                  <div className="mb-3 w-full">
+                    <IntelligentSearchBar variant="mobile" />
                   </div>
                   
                   {/* Language Selector + Contact Button - Side by Side */}
@@ -1351,7 +1351,7 @@ const Navigation = () => {
                   </Accordion>
 
                   {/* Bottom section with Search, Language Picker and Contact Button */}
-                  <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="mt-8 pt-6 border-t border-gray-200 hidden sm:block">
                     <div className="flex items-center gap-4">
                       {/* Search Bar */}
                       <div className="flex-1">
