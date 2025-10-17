@@ -67,7 +67,9 @@ export const en = {
     overview: "Overview",
     standardized: "Standardized",
     specializedCustom: "Specialized/Custom",
-    visitUs: "Visit Us"
+    visitUs: "Visit Us",
+    applications: "Applications",
+    hoverForApplications: "Hover over an industry to see applications"
   },
   
   // Hero Section

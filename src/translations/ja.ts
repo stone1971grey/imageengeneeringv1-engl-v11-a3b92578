@@ -67,7 +67,9 @@ export const ja = {
     overview: "概要",
     standardized: "標準化",
     specializedCustom: "専門/カスタム",
-    visitUs: "訪問"
+    visitUs: "訪問",
+    applications: "アプリケーション",
+    hoverForApplications: "業界にカーソルを合わせてアプリケーションを表示"
   },
   
   // Hero Section

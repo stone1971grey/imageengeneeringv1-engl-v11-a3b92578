@@ -67,7 +67,9 @@ export const zh = {
     overview: "概述",
     standardized: "标准化",
     specializedCustom: "专业/定制",
-    visitUs: "访问我们"
+    visitUs: "访问我们",
+    applications: "应用",
+    hoverForApplications: "将鼠标悬停在行业上以查看应用"
   },
   
   // Hero Section

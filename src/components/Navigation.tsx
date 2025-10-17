@@ -202,39 +202,39 @@ const Navigation = () => {
                        </div>
                     </div>
                     
-                    {/* Right Column: Applications */}
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">
-                        {hoveredIndustry ? `${hoveredIndustry} - Applications` : "Applications"}
-                      </h4>
-                      
-                      {/* Conditional Rendering of Applications */}
-                      {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
-                        <div className="space-y-3">
-                           {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
-                             <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a]">
-                               <ChevronRight className="h-4 w-4" />
-                               {application.link === "#" ? (
-                                 <span>{application.name}</span>
-                               ) : (
-                                 <Link to={application.link}>{application.name}</Link>
-                               )}
-                               {(application as any).active && (
-                                  <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
-                               )}
-                             </div>
-                           ))}
-                        </div>
-                      )}
-                      
-                      {/* Default state when no industry is hovered */}
-                      {!hoveredIndustry && (
-                        <div className="text-gray-500 text-center py-8">
-                          <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>Hover over an industry to see applications</p>
-                        </div>
-                      )}
-                    </div>
+                     {/* Right Column: Applications */}
+                     <div className="space-y-4 flex-1">
+                       <h4 className="font-semibold mb-3 text-lg text-black">
+                         {hoveredIndustry ? `${hoveredIndustry} - ${t.nav.applications}` : t.nav.applications}
+                       </h4>
+                       
+                       {/* Conditional Rendering of Applications */}
+                       {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
+                         <div className="space-y-3">
+                            {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
+                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f5743a]">
+                                <ChevronRight className="h-4 w-4" />
+                                {application.link === "#" ? (
+                                  <span>{application.name}</span>
+                                ) : (
+                                  <Link to={application.link}>{application.name}</Link>
+                                )}
+                                {(application as any).active && (
+                                   <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
+                                )}
+                              </div>
+                            ))}
+                         </div>
+                       )}
+                       
+                       {/* Default state when no industry is hovered */}
+                       {!hoveredIndustry && (
+                         <div className="text-gray-500 text-center py-8">
+                           <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                           <p>{t.nav.hoverForApplications}</p>
+                         </div>
+                       )}
+                     </div>
                   </div>
 
                   {/* CTA Button */}

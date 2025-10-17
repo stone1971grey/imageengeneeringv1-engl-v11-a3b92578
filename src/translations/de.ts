@@ -67,7 +67,9 @@ export const de = {
     overview: "Übersicht",
     standardized: "Standardisiert",
     specializedCustom: "Spezialisiert/Individuell",
-    visitUs: "Besuchen Sie uns"
+    visitUs: "Besuchen Sie uns",
+    applications: "Anwendungen",
+    hoverForApplications: "Bewegen Sie die Maus über eine Branche, um Anwendungen zu sehen"
   },
   
   // Hero Section

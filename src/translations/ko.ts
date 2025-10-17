@@ -67,7 +67,9 @@ export const ko = {
     overview: "개요",
     standardized: "표준화",
     specializedCustom: "전문/맞춤형",
-    visitUs: "방문"
+    visitUs: "방문",
+    applications: "애플리케이션",
+    hoverForApplications: "산업 위에 마우스를 올려 애플리케이션을 확인하세요"
   },
   
   // Hero Section
