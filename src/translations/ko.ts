@@ -238,6 +238,98 @@ export const ko = {
     training: "교육",
     techSupport: "기술 지원",
     rights: "모든 권리 보유.",
-    followUs: "팔로우하기"
+    followUs: "팔로우하기",
+    copyright: "© Image Engineering GmbH & Co. KG – Nynomic 그룹 회원",
+    // CTA Headlines
+    cta: {
+      default: "비전을 변화시킬 준비가 되셨습니까?",
+      charts: "테스트 차트 상담?",
+      solution: "애플리케이션을 위한 맞춤형 솔루션 패키지",
+      automotive: "차세대 자동차 카메라 테스트 솔루션",
+      arcturus: "전문 LED 조명 테스트 솔루션",
+      events: "교육이 필요하신가요?"
+    },
+    // CTA Descriptions
+    ctaDesc: {
+      default: "당사의 이미지 엔지니어링 솔루션이 귀사의 비즈니스를 어떻게 혁신할 수 있는지 논의해 보겠습니다. 지금 전문가에게 문의하십시오.",
+      charts: "전문가가 특정 요구 사항에 적합한 테스트 차트 선택을 도와드립니다. 이미지 품질 분석 분야의 오랜 경험을 활용하십시오.",
+      solution: "완전한 테스트 솔루션 및 캘리브레이션 패키지의 혜택을 누리십시오. 귀하의 요구 사항에 완벽하게 맞는 맞춤형 솔루션을 개발합니다.",
+      automotive: "ADAS 카메라부터 운전자 보조 시스템까지 - 당사의 전문 자동차 테스트 솔루션은 최고의 안전 표준을 보장합니다. 자율 주행의 미래를 함께 만들어 갑시다.",
+      arcturus: "고성능 LED 시스템부터 정밀 광 제어까지 - Arcturus 전문가가 가장 까다로운 테스트 시나리오에 최적의 조명을 보장합니다. 최대 휘도가 비교할 수 없는 안정성과 만납니다.",
+      events: "가까운 곳에서 교육에 대해 팀에 문의하십시오. 숙련된 강사가 전 세계적으로 실습 워크숍과 세미나를 제공하며 최신 테스트 기술 및 업계 표준을 마스터하도록 돕습니다."
+    },
+    // Contact Headlines
+    contactHeadline: {
+      default: "질문이 있으신가요?",
+      charts: "테스트 차트에 대한 질문?",
+      solution: "맞춤형 솔루션 패키지를 찾고 계신가요?",
+      automotive: "자동차 카메라 테스트?",
+      arcturus: "LED 조명 시스템에 대한 질문?",
+      events: "교육 및 워크숍을 찾고 계신가요?"
+    },
+    contactSubline: {
+      default: "문의하세요.",
+      charts: "차트 전문가와 상담하세요.",
+      solution: "솔루션 전문가와 상담하세요.",
+      automotive: "자동차 전문가와 상담하세요.",
+      arcturus: "조명 전문가와 상담하세요.",
+      events: "교육 팀과 상담하세요."
+    },
+    // Contact Descriptions
+    contactDesc: {
+      default: "전문가가 귀하의 애플리케이션에 대한 개인 조언을 제공하거나 테스트 솔루션 계획을 지원합니다.",
+      charts: "테스트 차트 전문가가 이미지 품질 측정을 위한 최적의 차트 선택에 대해 조언하고 테스트 시스템 구성을 지원합니다.",
+      solution: "솔루션 전문가가 특정 요구 사항에 맞는 맞춤형 테스트 솔루션 및 캘리브레이션 패키지를 개발합니다. 컨설팅에서 구현까지 귀하를 지원합니다.",
+      automotive: "자동차 전문가가 차량 카메라, ADAS 시스템 및 자율 주행 기능에 대한 정밀한 테스트 절차를 개발합니다. IEEE-P2020 인증에서 맞춤형 테스트 프로토콜까지.",
+      arcturus: "조명 전문가가 테스트 요구 사항에 최적의 LED 조명 시스템을 설계합니다. 최대 휘도 구성에서 정밀 스펙트럼 제어까지 - Arcturus 시스템이 완벽한 결과를 제공하도록 보장합니다.",
+      events: "교육 전문가가 전 세계적으로 전문 워크숍, 세미나 및 실습 교육 세션을 조직합니다. 기본 카메라 테스트에서 고급 ADAS 인증까지 - 전문 지식을 직접 제공합니다."
+    },
+    // Contact Info
+    phoneDE: "전화(독일): +49 2273 99 99 1-0",
+    phoneUSA: "전화(미국): +1 408 386 1496",
+    phoneChina: "전화(중국): +86 158 8961 9096",
+    officeHours: "영업 시간: 월~금, 9~17시(중부 유럽 시간)",
+    // Buttons
+    button: {
+      default: "문의하기",
+      charts: "차트에 대한 질문",
+      solution: "상담 예약",
+      automotive: "상담 예약",
+      arcturus: "조명 상담 예약",
+      events: "교육 정보 요청"
+    },
+    // Team Quotes
+    teamQuote: {
+      default: "매일 저를 자극하는 것은 우리 작업이 전 세계 이미지 품질에 직접적인 영향을 미친다는 것입니다. 스마트폰이든 차량 카메라든 - 우리의 솔루션이 차이를 만듭니다.",
+      charts: "정밀한 테스트 차트는 모든 진지한 이미지 품질 분석의 기초입니다. 15년 이상의 경험으로 측정에 완벽한 차트를 찾도록 도와드립니다.",
+      solution: "테스트 솔루션 및 캘리브레이션 솔루션 전문가로서 매일 고객을 위한 맞춤형 패키지를 개발합니다. 각 솔루션은 고유하며 개별 요구 사항에 완벽하게 맞춰져 있습니다.",
+      automotive: "자동차 애플리케이션에서는 안전이 최우선입니다. 12년 이상의 차량 카메라 개발 경험으로 모든 테스트가 최고 업계 표준을 충족하도록 보장합니다.",
+      arcturus: "최대 휘도와 완벽한 안정성 - 그것이 Arcturus의 특징입니다. 18년 이상의 LED 기술 개발 경험으로 각 시스템이 센서에 필요한 정밀한 광 조건을 제공하도록 보장합니다.",
+      events: "교육은 테스트 기술의 잠재력을 최대한 발휘하는 열쇠입니다. 저는 전 세계적으로 200개 이상의 워크숍을 수행했으며 팀이 이미지 품질 테스트에 접근하는 방식을 변화시키는 지식을 공유하는 것을 즐깁니다."
+    },
+    teamName: {
+      default: "Laura Neumann",
+      charts: "Markus Weber",
+      solution: "Dr. Stefan Mueller",
+      automotive: "Dr. Anna Hoffmann",
+      arcturus: "Dr. Thomas Lichtner",
+      events: "Michael Training"
+    },
+    teamTitle: {
+      default: "광학 시스템 책임자",
+      charts: "기술 차트 전문가",
+      solution: "테스트 솔루션 및 캘리브레이션 전문가",
+      automotive: "자동차 비전 전문가 및 IEEE-P2020 전문가",
+      arcturus: "LED 조명 기술 전문가 및 Arcturus 전문가",
+      events: "교육 및 전문 개발 책임자"
+    },
+    // Legal Links
+    terms: "이용 약관",
+    imprint: "저작권 정보",
+    privacy: "개인정보 보호정책",
+    compliance: "재료 준수 지침",
+    carbon: "탄소 중립",
+    esg: "ESG - 지속 가능성",
+    disposal: "폐기 및 재활용"
   }
 };

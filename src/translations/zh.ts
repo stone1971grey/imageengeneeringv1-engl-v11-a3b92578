@@ -238,7 +238,99 @@ export const zh = {
     training: "培训",
     techSupport: "技术支持",
     rights: "版权所有。",
-    followUs: "关注我们"
+    followUs: "关注我们",
+    copyright: "© Image Engineering GmbH & Co. KG – Nynomic集团成员",
+    // CTA Headlines
+    cta: {
+      default: "准备好改变您的视野了吗？",
+      charts: "测试图咨询？",
+      solution: "为您的应用定制解决方案包",
+      automotive: "下一代汽车摄像头测试解决方案",
+      arcturus: "专业LED照明测试解决方案",
+      events: "需要培训吗？"
+    },
+    // CTA Descriptions
+    ctaDesc: {
+      default: "让我们讨论一下我们的图像工程解决方案如何彻底改变您的业务。立即联系我们的专家。",
+      charts: "我们的专家帮助您为特定需求选择正确的测试图。从我们在图像质量分析方面的多年经验中受益。",
+      solution: "从我们完整的测试解决方案和校准包中受益。我们开发完全适合您需求的定制解决方案。",
+      automotive: "从ADAS摄像头到驾驶员辅助系统 - 我们专业的汽车测试解决方案确保最高安全标准。让我们共同塑造自动驾驶的未来。",
+      arcturus: "从高性能LED系统到精确光控 - 我们的Arcturus专家确保您最苛刻测试场景的最佳照明。最大亮度满足无与伦比的稳定性。",
+      events: "向我们的团队咨询您附近的培训。我们经验丰富的培训师在全球范围内提供实践研讨会和研讨会，帮助您掌握最新的测试技术和行业标准。"
+    },
+    // Contact Headlines
+    contactHeadline: {
+      default: "有问题吗？",
+      charts: "关于测试图的问题？",
+      solution: "寻找定制解决方案包？",
+      automotive: "汽车摄像头测试？",
+      arcturus: "关于LED照明系统的问题？",
+      events: "寻找培训和研讨会？"
+    },
+    contactSubline: {
+      default: "与我们交谈。",
+      charts: "与我们的图表专家交谈。",
+      solution: "与我们的解决方案专家交谈。",
+      automotive: "与我们的汽车专家交谈。",
+      arcturus: "与我们的照明专家交谈。",
+      events: "与我们的培训团队交谈。"
+    },
+    // Contact Descriptions
+    contactDesc: {
+      default: "我们的专家很乐意为您提供有关应用的个人建议或支持您规划测试解决方案。",
+      charts: "我们的测试图专家很乐意为您选择图像质量测量的最佳图表提供建议，并支持您配置测试系统。",
+      solution: "我们的解决方案专家为您的特定需求开发量身定制的测试解决方案和校准包。从咨询到实施，我们陪伴您。",
+      automotive: "我们的汽车专家为车辆摄像头、ADAS系统和自动驾驶功能开发精确的测试程序。从IEEE-P2020认证到定制测试协议。",
+      arcturus: "我们的照明专家为您的测试要求设计最佳LED照明系统。从最大亮度配置到精确光谱控制 - 我们确保您的Arcturus系统提供完美的结果。",
+      events: "我们的培训专家在全球范围内组织专业研讨会、研讨会和实践培训课程。从基本摄像头测试到高级ADAS认证 - 我们直接为您带来专业知识。"
+    },
+    // Contact Info
+    phoneDE: "电话（德国）：+49 2273 99 99 1-0",
+    phoneUSA: "电话（美国）：+1 408 386 1496",
+    phoneChina: "电话（中国）：+86 158 8961 9096",
+    officeHours: "办公时间：周一至周五，9-17点（中欧时间）",
+    // Buttons
+    button: {
+      default: "联系我们",
+      charts: "关于我们图表的问题",
+      solution: "安排咨询",
+      automotive: "安排咨询",
+      arcturus: "安排照明咨询",
+      events: "请求培训信息"
+    },
+    // Team Quotes
+    teamQuote: {
+      default: "每天激励我的是我们工作对全球图像质量的直接影响。无论是在智能手机还是车辆摄像头中 - 我们的解决方案都能产生影响。",
+      charts: "精确的测试图是任何严肃图像质量分析的基础。凭借超过15年的经验，我帮助您找到适合您测量的完美图表。",
+      solution: "作为测试解决方案和校准解决方案的专家，我每天为客户开发量身定制的包。每个解决方案都是独特的，完全适合个人需求。",
+      automotive: "安全是汽车应用的首要任务。凭借超过12年的车辆摄像头开发经验，我确保每个测试都符合最高行业标准。",
+      arcturus: "最大亮度和完美稳定性 - 这就是Arcturus的特点。凭借超过18年的LED技术开发经验，我确保每个系统都能提供传感器所需的精确光条件。",
+      events: "培训是释放测试技术全部潜力的关键。我在全球范围内进行了200多次研讨会，并乐意分享改变团队处理图像质量测试方式的知识。"
+    },
+    teamName: {
+      default: "Laura Neumann",
+      charts: "Markus Weber",
+      solution: "Dr. Stefan Mueller",
+      automotive: "Dr. Anna Hoffmann",
+      arcturus: "Dr. Thomas Lichtner",
+      events: "Michael Training"
+    },
+    teamTitle: {
+      default: "光学系统主管",
+      charts: "技术图表专家",
+      solution: "测试解决方案和校准专家",
+      automotive: "汽车视觉专家和IEEE-P2020专家",
+      arcturus: "LED照明技术专家和Arcturus专家",
+      events: "培训和专业发展主管"
+    },
+    // Legal Links
+    terms: "条款和条件",
+    imprint: "版权信息",
+    privacy: "隐私政策",
+    compliance: "材料合规指令",
+    carbon: "碳中和",
+    esg: "ESG - 可持续性",
+    disposal: "处置和回收"
   }
 };
 
