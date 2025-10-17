@@ -238,6 +238,98 @@ export const de = {
     training: "Schulung",
     techSupport: "Technischer Support",
     rights: "Alle Rechte vorbehalten.",
-    followUs: "Folgen Sie uns"
+    followUs: "Folgen Sie uns",
+    copyright: "© Image Engineering GmbH & Co. KG – Mitglied der Nynomic Gruppe",
+    // CTA Headlines
+    cta: {
+      default: "Bereit, Ihre Vision zu transformieren?",
+      charts: "Testchart-Beratung?",
+      solution: "Individuelle Lösungspakete für Ihre Anwendung",
+      automotive: "Next-Generation Automotive Kamera-Testlösungen",
+      arcturus: "Professionelle LED-Beleuchtungslösungen für Tests",
+      events: "Benötigen Sie Schulungen?"
+    },
+    // CTA Descriptions
+    ctaDesc: {
+      default: "Lassen Sie uns besprechen, wie unsere Bildverarbeitungslösungen Ihr Geschäft revolutionieren können. Kontaktieren Sie noch heute unsere Experten.",
+      charts: "Unsere Experten helfen Ihnen bei der Auswahl der richtigen Testcharts für Ihre spezifischen Anforderungen. Profitieren Sie von unserer jahrelangen Erfahrung in der Bildqualitätsanalyse.",
+      solution: "Profitieren Sie von unseren kompletten Testlösungen und Kalibrierungspaketen. Wir entwickeln individuelle Lösungen, die perfekt auf Ihre Anforderungen zugeschnitten sind.",
+      automotive: "Von ADAS-Kameras bis zu Fahrerassistenzsystemen - unsere spezialisierten Automotive-Testlösungen gewährleisten höchste Sicherheitsstandards. Lassen Sie uns gemeinsam die Zukunft des autonomen Fahrens gestalten.",
+      arcturus: "Von Hochleistungs-LED-Systemen bis zu präziser Lichtsteuerung - unsere Arcturus-Spezialisten sorgen für optimale Beleuchtung Ihrer anspruchsvollsten Testszenarien. Maximale Leuchtdichte trifft auf unvergleichliche Stabilität.",
+      events: "Fragen Sie unser Team nach einer Schulung in Ihrer Nähe. Unsere erfahrenen Trainer bieten weltweit praktische Workshops und Seminare an und helfen Ihnen, die neuesten Testtechnologien und Industriestandards zu meistern."
+    },
+    // Contact Headlines
+    contactHeadline: {
+      default: "Haben Sie Fragen?",
+      charts: "Fragen zu Testcharts?",
+      solution: "Suchen Sie individuelle Lösungspakete?",
+      automotive: "Automotive Kamera-Tests?",
+      arcturus: "Fragen zu LED-Beleuchtungssystemen?",
+      events: "Suchen Sie Schulungen & Workshops?"
+    },
+    contactSubline: {
+      default: "Sprechen Sie mit uns.",
+      charts: "Sprechen Sie mit unseren Chart-Experten.",
+      solution: "Sprechen Sie mit unseren Lösungsexperten.",
+      automotive: "Sprechen Sie mit unseren Automotive-Experten.",
+      arcturus: "Sprechen Sie mit unseren Beleuchtungsspezialisten.",
+      events: "Sprechen Sie mit unserem Schulungsteam."
+    },
+    // Contact Descriptions
+    contactDesc: {
+      default: "Unsere Experten beraten Sie gerne persönlich zu Ihrer Anwendung oder unterstützen Sie bei der Planung Ihrer Testlösung.",
+      charts: "Unsere Testchart-Experten beraten Sie gerne bei der Auswahl der optimalen Charts für Ihre Bildqualitätsmessungen und unterstützen Sie bei der Konfiguration Ihrer Testsysteme.",
+      solution: "Unsere Lösungsexperten entwickeln maßgeschneiderte Testlösungen und Kalibrierungspakete für Ihre spezifischen Anforderungen. Von der Beratung bis zur Implementierung begleiten wir Sie.",
+      automotive: "Unsere Automotive-Spezialisten entwickeln präzise Testverfahren für Fahrzeugkameras, ADAS-Systeme und autonome Fahrfunktionen. Von der IEEE-P2020-Zertifizierung bis zu individuellen Testprotokollen.",
+      arcturus: "Unsere Beleuchtungsspezialisten entwerfen optimale LED-Beleuchtungssysteme für Ihre Testanforderungen. Von maximaler Leuchtdichtekonfiguration bis zur präzisen Spektralsteuerung - wir sorgen dafür, dass Ihr Arcturus-System perfekte Ergebnisse liefert.",
+      events: "Unsere Schulungsspezialisten organisieren weltweit professionelle Workshops, Seminare und praktische Trainingseinheiten. Von grundlegenden Kameratests bis zur fortgeschrittenen ADAS-Zertifizierung - wir bringen das Fachwissen direkt zu Ihnen."
+    },
+    // Contact Info
+    phoneDE: "Telefon (DE): +49 2273 99 99 1-0",
+    phoneUSA: "Telefon (USA): +1 408 386 1496",
+    phoneChina: "Telefon (China): +86 158 8961 9096",
+    officeHours: "Bürozeiten: Mo–Fr, 9–17 Uhr (MEZ)",
+    // Buttons
+    button: {
+      default: "Kontaktieren Sie uns",
+      charts: "Ihre Fragen zu unseren Charts",
+      solution: "Beratung vereinbaren",
+      automotive: "Beratung vereinbaren",
+      arcturus: "Beleuchtungsberatung vereinbaren",
+      events: "Schulungsinformationen anfordern"
+    },
+    // Team Quotes
+    teamQuote: {
+      default: "Was mich jeden Tag begeistert, ist die direkte Auswirkung unserer Arbeit auf die Bildqualität weltweit. Ob in Smartphones oder Fahrzeugkameras – unsere Lösungen machen den Unterschied.",
+      charts: "Präzise Testcharts sind die Grundlage jeder seriösen Bildqualitätsanalyse. Mit über 15 Jahren Erfahrung helfe ich Ihnen, die perfekten Charts für Ihre Messungen zu finden.",
+      solution: "Als Experte für Testlösungen und Kalibrierlösungen entwickle ich täglich maßgeschneiderte Pakete für unsere Kunden. Jede Lösung ist einzigartig und perfekt auf individuelle Anforderungen zugeschnitten.",
+      automotive: "Sicherheit steht bei Automotive-Anwendungen an erster Stelle. Mit über 12 Jahren Erfahrung in der Entwicklung von Fahrzeugkameras stelle ich sicher, dass jeder Test den höchsten Industriestandards entspricht.",
+      arcturus: "Maximale Leuchtdichte mit perfekter Stabilität - das macht Arcturus aus. Mit über 18 Jahren in der LED-Technologieentwicklung sorge ich dafür, dass jedes System die präzisen Lichtbedingungen liefert, die Ihre Sensoren benötigen.",
+      events: "Schulung ist der Schlüssel, um das volle Potenzial der Testtechnologie zu erschließen. Ich habe weltweit über 200 Workshops durchgeführt und teile gerne Wissen, das die Art und Weise verändert, wie Teams an Bildqualitätstests herangehen."
+    },
+    teamName: {
+      default: "Laura Neumann",
+      charts: "Markus Weber",
+      solution: "Dr. Stefan Mueller",
+      automotive: "Dr. Anna Hoffmann",
+      arcturus: "Dr. Thomas Lichtner",
+      events: "Michael Training"
+    },
+    teamTitle: {
+      default: "Leiterin Optische Systeme",
+      charts: "Technischer Chart-Spezialist",
+      solution: "Testlösungs- & Kalibrierungsexperte",
+      automotive: "Automotive Vision Expertin & IEEE-P2020 Spezialistin",
+      arcturus: "LED-Beleuchtungstechnologie-Spezialist & Arcturus-Experte",
+      events: "Leiter Schulung & Berufliche Weiterentwicklung"
+    },
+    // Legal Links
+    terms: "AGB",
+    imprint: "Impressum",
+    privacy: "Datenschutz",
+    compliance: "Material Compliance Directive",
+    carbon: "Klimaneutralität",
+    esg: "ESG - Nachhaltigkeit",
+    disposal: "Entsorgung & Recycling"
   }
 };

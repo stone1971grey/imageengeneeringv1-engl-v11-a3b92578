@@ -238,7 +238,91 @@ export const en = {
     training: "Training",
     techSupport: "Technical Support",
     rights: "All rights reserved.",
-    followUs: "Follow Us"
+    followUs: "Follow Us",
+    copyright: "© Image Engineering GmbH & Co. KG – Member of the Nynomic Group",
+    cta: {
+      default: "Ready to Transform Your Vision?",
+      charts: "Test Chart Consultation?",
+      solution: "Customized Solution Packages for Your Application",
+      automotive: "Next-Generation Automotive Camera Testing Solutions",
+      arcturus: "Professional LED Lighting Solutions for Testing",
+      events: "Need Training?"
+    },
+    ctaDesc: {
+      default: "Let us discuss how our image processing solutions can revolutionize your business. Contact our experts today.",
+      charts: "Our experts help you select the right test charts for your specific requirements. Benefit from our years of experience in image quality analysis.",
+      solution: "Benefit from our complete testing solutions and calibration packages. We develop individual solutions perfectly tailored to your requirements.",
+      automotive: "From ADAS cameras to driver assistance systems - our specialized automotive testing solutions ensure the highest safety standards. Let us shape the future of autonomous driving together.",
+      arcturus: "From high-intensity LED systems to precision lighting control - our Arcturus specialists ensure optimal illumination for your most demanding testing scenarios. Maximum luminance meets unmatched stability.",
+      events: "Ask our team for a training near you. Our experienced instructors provide hands-on workshops and seminars worldwide, helping you master the latest testing technologies and industry standards."
+    },
+    contactHeadline: {
+      default: "Have Questions?",
+      charts: "Questions About Test Charts?",
+      solution: "Looking for Individual Solution Packages?",
+      automotive: "Automotive Camera Testing?",
+      arcturus: "Questions About LED Lighting Systems?",
+      events: "Looking for Training & Workshops?"
+    },
+    contactSubline: {
+      default: "Speak with Us.",
+      charts: "Speak with Our Chart Experts.",
+      solution: "Speak with Our Solution Experts.",
+      automotive: "Speak with Our Automotive Experts.",
+      arcturus: "Speak with Our Lighting Specialists.",
+      events: "Speak with Our Training Team."
+    },
+    contactDesc: {
+      default: "Our experts are happy to advise you personally on your application or support you in planning your test solution.",
+      charts: "Our test chart experts are happy to advise you on selecting the optimal charts for your image quality measurements and support you in configuring your test systems.",
+      solution: "Our solution experts develop customized testing solutions and calibration packages for your specific requirements. From consultation to implementation, we accompany you.",
+      automotive: "Our automotive specialists develop precise testing procedures for vehicle cameras, ADAS systems and autonomous driving functions. From IEEE-P2020 certification to individual test protocols.",
+      arcturus: "Our lighting specialists design optimal LED illumination systems for your testing requirements. From maximum luminance configuration to precise spectral control - we ensure your Arcturus system delivers perfect results.",
+      events: "Our training specialists organize professional workshops, seminars and hands-on training sessions worldwide. From basic camera testing to advanced ADAS certification - we bring expertise directly to your location."
+    },
+    phoneDE: "Phone (DE): +49 2273 99 99 1-0",
+    phoneUSA: "Phone (USA): +1 408 386 1496",
+    phoneChina: "Phone (China): +86 158 8961 9096",
+    officeHours: "Office Hours: Mon–Fri, 9–5 PM (CET)",
+    button: {
+      default: "Get in contact with us",
+      charts: "Your Questions About Our Charts",
+      solution: "Schedule Consultation Now",
+      automotive: "Schedule Consultation Now",
+      arcturus: "Lighting Consultation Now",
+      events: "Request Training Information"
+    },
+    teamQuote: {
+      default: "What excites me every day is the direct impact of our work on image quality worldwide. Whether in smartphones or vehicle cameras – our solutions make the difference.",
+      charts: "Precise test charts are the foundation of every serious image quality analysis. With over 15 years of experience, I help you find the perfect charts for your measurements.",
+      solution: "As an expert in test solutions and calibration solutions, I develop customized packages for our customers daily. Each solution is unique and perfectly tailored to individual requirements.",
+      automotive: "Safety comes first in automotive applications. With over 12 years of experience in vehicle camera development, I ensure that every test meets the highest industry standards.",
+      arcturus: "Maximum luminance with perfect stability - that's what sets Arcturus apart. With over 18 years in LED technology development, I ensure every system delivers the precise lighting conditions your sensors demand.",
+      events: "Training is the key to unlocking the full potential of testing technology. I have conducted over 200 workshops worldwide and love sharing knowledge that transforms how teams approach image quality testing."
+    },
+    teamName: {
+      default: "Laura Neumann",
+      charts: "Markus Weber",
+      solution: "Dr. Stefan Mueller",
+      automotive: "Dr. Anna Hoffmann",
+      arcturus: "Dr. Thomas Lichtner",
+      events: "Michael Training"
+    },
+    teamTitle: {
+      default: "Head of Optical Systems",
+      charts: "Technical Chart Specialist",
+      solution: "Test Solutions & Calibration Expert",
+      automotive: "Automotive Vision Expert & IEEE-P2020 Specialist",
+      arcturus: "LED Lighting Technology Specialist & Arcturus Expert",
+      events: "Head of Training & Professional Development"
+    },
+    terms: "Terms & Conditions",
+    imprint: "Imprint",
+    privacy: "Privacy Policy",
+    compliance: "Material Compliance Directive",
+    carbon: "Carbon Neutrality",
+    esg: "ESG - Sustainability",
+    disposal: "Disposal & Recycling"
   }
 };
 
