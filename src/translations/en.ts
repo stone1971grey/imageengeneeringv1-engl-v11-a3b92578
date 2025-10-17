@@ -105,6 +105,12 @@ export const en = {
     stat2: "Measurement Tolerance",
     stat3: "Years of Experience"
   },
+
+  // Partner Section
+  partner: {
+    title: "Your Partner for Objective Camera & Sensor Testing",
+    description: "We engineer comprehensive test charts, test lab equipment, and evaluation software to optimize the image quality performance testing of your camera and sensor systems. We house one of the world's largest independent camera labs for objective camera and sensor testing while also offering extensive training and consultations on all aspects of image quality testing."
+  },
   
   // Industries Section
   industries: {

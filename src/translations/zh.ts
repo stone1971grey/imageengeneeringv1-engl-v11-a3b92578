@@ -105,6 +105,12 @@ export const zh = {
     stat2: "测量公差",
     stat3: "年经验"
   },
+
+  // Partner Section
+  partner: {
+    title: "您的客观相机与传感器测试合作伙伴",
+    description: "我们设计全面的测试图卡、测试实验室设备和评估软件，以优化您的相机和传感器系统的图像质量性能测试。我们拥有世界上最大的独立相机实验室之一，用于客观的相机和传感器测试，同时还提供图像质量测试各个方面的广泛培训和咨询。"
+  },
   
   // Industries Section
   industries: {

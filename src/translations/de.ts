@@ -105,6 +105,12 @@ export const de = {
     stat2: "Messtoleranz",
     stat3: "Jahre Erfahrung"
   },
+
+  // Partner Section
+  partner: {
+    title: "Ihr Partner für objektive Kamera- und Sensortests",
+    description: "Wir entwickeln umfassende Testcharts, Testlaborausrüstung und Auswertungssoftware zur Optimierung der Bildqualitätsleistungsprüfung Ihrer Kamera- und Sensorsysteme. Wir betreiben eines der weltweit größten unabhängigen Kameralabore für objektive Kamera- und Sensortests und bieten gleichzeitig umfangreiche Schulungen und Beratungen zu allen Aspekten der Bildqualitätsprüfung an."
+  },
   
   // Industries Section
   industries: {
