@@ -573,27 +573,27 @@ const Navigation = () => {
                    <div className="flex gap-8 p-6">
                        <div className="space-y-4 flex-1 pr-6 border-r border-border">
                          <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.aboutIE}</h4>
-                         <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/news" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.news}</span>
                          </Link>
-                         <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/about" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.aboutUs}</span>
                          </Link>
-                         <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/team" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.team}</span>
                          </Link>
-                         <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/nynomic-group" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.nynomicGroup}</span>
                          </Link>
-                         <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/visit-us" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.visitUs}</span>
                          </Link>
-                         <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/careers" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.careers}</span>
                          </Link>
@@ -601,19 +601,19 @@ const Navigation = () => {
                        
                        <div className="space-y-4 flex-1">
                          <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                         <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/resellers-subsidiaries" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>Resellers & Subsidiaries</span>
                          </Link>
-                         <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/strategic-partnerships" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>Strategic Partnerships</span>
                          </Link>
-                         <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/group-memberships" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>Group Memberships</span>
                          </Link>
-                         <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-blue-400 transition-colors">
+                         <Link to="/iso-9001" className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors">
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>ISO 9001</span>
                          </Link>
