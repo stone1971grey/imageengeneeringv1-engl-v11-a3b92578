@@ -645,12 +645,6 @@ const Navigation = () => {
         <div className="2xl:hidden relative">
           {isOpen && (
             <>
-              {/* Backdrop - but exclude the button area */}
-              <div 
-                className="fixed inset-0 bg-black/20 z-30"
-                onClick={() => setIsOpen(false)}
-              />
-              
               {/* Mobile Menu */}
               <div className="absolute top-full right-0 w-full max-w-[800px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-[18px] max-h-[60vh] overflow-y-auto">
                 {/* Navigation content */}
