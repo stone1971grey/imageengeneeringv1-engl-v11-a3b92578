@@ -92,7 +92,7 @@ const NewsSection = () => {
                         </p>
                         <Link to={`/news/${item.slug}`} className="w-full block">
                           <Button 
-                            className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300 mt-auto"
+                            className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] transition-colors duration-300 mt-auto"
                           >
                             Read more
                           </Button>

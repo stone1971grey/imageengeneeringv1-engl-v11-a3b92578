@@ -141,9 +141,8 @@ const StandardsExpertise = () => {
           <div className="text-center mb-8">
             <CollapsibleTrigger asChild>
               <Button 
-                variant="decision"
+                className="group w-[300px] bg-[#f5743a] text-white hover:bg-[#f68a57]"
                 size="lg"
-                className="group w-[300px]"
               >
                 {isExpanded ? t.standards.hideStandards : t.standards.seeAllStandards}
                 <ChevronDown className={`ml-2 h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
