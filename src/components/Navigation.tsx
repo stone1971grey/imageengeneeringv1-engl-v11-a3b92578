@@ -1300,65 +1300,62 @@ const Navigation = () => {
 
                   {/* Bottom section with Search, Language Picker and Contact Button */}
                   <div className="mt-8 pt-6 border-t border-gray-200">
-                    <div className="space-y-4">
-                      {/* Search Bar - Full Width */}
-                      <div className="w-full">
+                    <div className="flex items-center gap-4">
+                      {/* Search Bar */}
+                      <div className="flex-1">
                         <IntelligentSearchBar />
                       </div>
                       
-                      {/* Language Selector and Contact Button in one row */}
-                      <div className="flex items-center gap-4">
-                        {/* Language Selector */}
-                        <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
-                          <SelectTrigger className="w-[70px] h-10 bg-white border border-gray-300 text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-2 focus:ring-0 focus:ring-offset-0 rounded-md">
-                            <SelectValue className="text-center w-full flex justify-center">
-                              {language === "en" ? "🇺🇸" : language === "de" ? "🇩🇪" : language === "zh" ? "🇨🇳" : language === "ja" ? "🇯🇵" : "🇰🇷"}
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
-                            <SelectItem 
-                              value="en"
-                              className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                            >
-                              🇺🇸
-                            </SelectItem>
-                            <SelectItem 
-                              value="de"
-                              className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                            >
-                              🇩🇪
-                            </SelectItem>
-                            <SelectItem 
-                              value="zh"
-                              className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                            >
-                              🇨🇳
-                            </SelectItem>
-                            <SelectItem 
-                              value="ja"
-                              className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                            >
-                              🇯🇵
-                            </SelectItem>
-                            <SelectItem 
-                              value="ko"
-                              className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
-                            >
-                              🇰🇷
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        
-                        {/* Contact Button */}
-                        <Link to="/contact" onClick={() => setIsOpen(false)} className="flex-1">
-                          <Button 
-                            variant="default" 
-                            className="w-full h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center px-6"
+                      {/* Language Selector */}
+                      <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
+                        <SelectTrigger className="w-[70px] h-10 bg-white border border-gray-300 text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-2 focus:ring-0 focus:ring-offset-0 rounded-md">
+                          <SelectValue className="text-center w-full flex justify-center">
+                            {language === "en" ? "🇺🇸" : language === "de" ? "🇩🇪" : language === "zh" ? "🇨🇳" : language === "ja" ? "🇯🇵" : "🇰🇷"}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
+                          <SelectItem 
+                            value="en"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
                           >
-                            Contact
-                          </Button>
-                        </Link>
-                      </div>
+                            🇺🇸
+                          </SelectItem>
+                          <SelectItem 
+                            value="de"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇩🇪
+                          </SelectItem>
+                          <SelectItem 
+                            value="zh"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇨🇳
+                          </SelectItem>
+                          <SelectItem 
+                            value="ja"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇯🇵
+                          </SelectItem>
+                          <SelectItem 
+                            value="ko"
+                            className="justify-center hover:bg-gray-100 cursor-pointer text-black text-3xl py-3 pl-0 pr-0 [&_svg]:hidden [&>span:first-child]:hidden"
+                          >
+                            🇰🇷
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      {/* Contact Button */}
+                      <Link to="/contact" onClick={() => setIsOpen(false)}>
+                        <Button 
+                          variant="default" 
+                          className="h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center px-6"
+                        >
+                          Contact
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </nav>
