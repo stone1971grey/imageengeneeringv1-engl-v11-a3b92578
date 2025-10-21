@@ -115,7 +115,7 @@ export const en = {
   // Industries Section
   industries: {
     title: "Trusted Across All Industries",
-    subtitle: "Leading manufacturers and laboratories worldwide rely on our test charts and measurement solutions.",
+    subtitle: "Our image quality test solutions drive innovation and validation in any industry that utilizes camera and sensor technology.",
     automotive: {
       title: "Automotive & ADAS",
       description: "Camera systems in vehicles, driver assistance and autonomous driving"

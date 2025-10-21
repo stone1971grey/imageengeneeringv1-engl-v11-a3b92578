@@ -115,7 +115,7 @@ export const zh = {
   // Industries Section
   industries: {
     title: "跨行业信赖",
-    subtitle: "全球领先的制造商和实验室依赖我们的测试图卡和测量解决方案。",
+    subtitle: "我们的图像质量测试解决方案推动了使用相机和传感器技术的任何行业的创新和验证。",
     automotive: {
       title: "汽车与ADAS",
       description: "车辆摄像系统、驾驶辅助和自动驾驶"

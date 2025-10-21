@@ -115,7 +115,7 @@ export const ko = {
   // Industries Section
   industries: {
     title: "모든 산업에서 신뢰받는",
-    subtitle: "전 세계 주요 제조업체와 연구소가 당사의 테스트 차트 및 측정 솔루션을 신뢰합니다.",
+    subtitle: "당사의 이미지 품질 테스트 솔루션은 카메라 및 센서 기술을 활용하는 모든 산업 분야에서 혁신과 검증을 주도합니다.",
     automotive: {
       title: "자동차 및 ADAS",
       description: "차량 카메라 시스템, 운전자 보조 및 자율 주행"

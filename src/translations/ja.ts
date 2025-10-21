@@ -115,7 +115,7 @@ export const ja = {
   // Industries Section
   industries: {
     title: "すべての業界で信頼されています",
-    subtitle: "世界中の主要メーカーおよび研究所が、当社のテストチャートおよび測定ソリューションを信頼しています。",
+    subtitle: "当社の画質テストソリューションは、カメラおよびセンサー技術を利用するあらゆる業界でイノベーションと検証を推進します。",
     automotive: {
       title: "自動車・ADAS",
       description: "車両カメラシステム、運転支援、自動運転"
