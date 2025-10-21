@@ -139,8 +139,18 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-40 bg-[#f3f3f5]/95 backdrop-blur-sm shadow-lg border-b border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="w-full px-6 py-6">
-        {/* Single row - main nav left, utility right */}
+        {/* Single row - logo left, main nav center, utility right */}
         <div className="flex items-center w-full gap-8">
+          {/* Logo on the left - integrated for proper vertical centering */}
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
+            <img 
+              src={logoIE} 
+              alt="Image Engineering" 
+              className="h-[54px] w-auto max-w-[270px] object-contain"
+              style={{ width: '270px' }}
+            />
+          </Link>
+          
           <div className="flex-1"></div>
           {/* Main Navigation - aligned with search */}
           <div className="hidden 2xl:flex items-center gap-6">

@@ -87,18 +87,8 @@ const StickyLogo = () => {
     };
   }, []);
 
-  return (
-    <div ref={logoRef} className="fixed top-6 left-6 z-50 flex items-center">
-      <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-        <img 
-          src={logoIEBlack} 
-          alt="Image Engineering" 
-          className="h-[54px] w-auto max-w-[270px] object-contain transition-all duration-300"
-          style={{ width: '270px' }}
-        />
-      </Link>
-    </div>
-  );
+  // Hide StickyLogo since logo is now integrated in Navigation
+  return null;
 };
 
 export default StickyLogo;
