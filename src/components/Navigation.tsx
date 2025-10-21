@@ -139,11 +139,19 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-40 bg-[#f3f3f5]/95 backdrop-blur-sm shadow-lg border-b border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="w-full px-6 py-6">
-        {/* Single row - main nav left, utility right */}
+        {/* Single row - logo, main nav, utility */}
         <div className="flex items-center w-full gap-8">
-          <div className="flex-1"></div>
-          {/* Main Navigation - aligned with search */}
-          <div className="hidden 2xl:flex items-center gap-6">
+          {/* Logo on the left */}
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+            <img 
+              src={logoIE} 
+              alt="Image Engineering" 
+              className="h-12 w-auto object-contain"
+            />
+          </Link>
+          
+          {/* Main Navigation - centered */}
+          <div className="hidden 2xl:flex items-center gap-6 flex-1 justify-center">
             <SimpleDropdown trigger={t.nav.yourSolution}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredIndustry(null)}>
