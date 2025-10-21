@@ -50,7 +50,7 @@ const Contact = () => {
         />
         <div className="relative container mx-auto px-6">
           <div className="max-w-4xl">
-            <h1 className="text-4xl lg:text-6xl mb-6">
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl mb-6">
               <span className="text-foreground font-normal">Get Expert</span><br />
               <span className="text-foreground font-bold">Consultation</span>
             </h1>
