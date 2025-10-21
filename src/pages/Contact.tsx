@@ -241,10 +241,9 @@ const Contact = () => {
                   <div className="pt-6">
                     <Button 
                       type="submit"
-                      className="bg-[#f5743a] hover:bg-[#f5743a]/90 text-white px-10 py-4 text-base rounded-md font-medium transition-colors group"
+                      className="bg-[#f5743a] hover:bg-[#f5743a]/90 text-white px-10 py-4 text-base rounded-md font-medium transition-colors"
                     >
                       Submit
-                      <Send className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>
                 </form>
