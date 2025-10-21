@@ -54,7 +54,7 @@ const Contact = () => {
               <span className="text-foreground font-normal">Get Expert</span><br />
               <span className="text-foreground font-bold">Consultation</span>
             </h1>
-            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
+            <p className="text-xl lg:text-2xl text-white/90 mb-8 max-w-2xl">
               Connect with our imaging specialists and discover the perfect testing solution for your project requirements.
             </p>
           </div>
