@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Send, Mail, Phone, MapPin } from "lucide-react";
 import industriesHero from "@/assets/industries-hero.jpg";
 
 const Contact = () => {
@@ -15,7 +16,14 @@ const Contact = () => {
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    company: '',
+    phone: '',
+    country: '',
+    street: '',
+    postcode: '',
+    city: '',
+    subject: '',
+    message: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,10 +75,14 @@ const Contact = () => {
             
             <Card className="bg-white border border-gray-200 rounded-lg shadow-sm">
               <CardContent className="p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-8">
                   
-                  {/* First Name and Last Name Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="mb-6">
+                    <p className="text-base font-medium text-gray-700 mb-6">Request is created by:</p>
+                  </div>
+
+                  {/* Name and Country Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <Label htmlFor="firstName" className="text-base font-medium text-gray-700 mb-3 block">First Name*</Label>
                       <Input
@@ -93,10 +105,62 @@ const Contact = () => {
                         required
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="country" className="text-base font-medium text-gray-700 mb-3 block">Country*</Label>
+                      <Select onValueChange={(value) => handleInputChange('country', value)} required>
+                        <SelectTrigger className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary">
+                          <SelectValue placeholder="" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg">
+                          <SelectItem value="germany">Germany</SelectItem>
+                          <SelectItem value="usa">United States</SelectItem>
+                          <SelectItem value="uk">United Kingdom</SelectItem>
+                          <SelectItem value="france">France</SelectItem>
+                          <SelectItem value="italy">Italy</SelectItem>
+                          <SelectItem value="japan">Japan</SelectItem>
+                          <SelectItem value="china">China</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
-                  {/* Email and Phone Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Address Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <Label htmlFor="street" className="text-base font-medium text-gray-700 mb-3 block">Street/Number:</Label>
+                      <Input
+                        id="street"
+                        value={formData.street}
+                        onChange={(e) => handleInputChange('street', e.target.value)}
+                        placeholder=""
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="postcode" className="text-base font-medium text-gray-700 mb-3 block">Postcode:</Label>
+                      <Input
+                        id="postcode"
+                        value={formData.postcode}
+                        onChange={(e) => handleInputChange('postcode', e.target.value)}
+                        placeholder=""
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="city" className="text-base font-medium text-gray-700 mb-3 block">City:</Label>
+                      <Input
+                        id="city"
+                        value={formData.city}
+                        onChange={(e) => handleInputChange('city', e.target.value)}
+                        placeholder=""
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Contact Details Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <Label htmlFor="email" className="text-base font-medium text-gray-700 mb-3 block">Email*</Label>
                       <Input
@@ -110,7 +174,7 @@ const Contact = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="phone" className="text-base font-medium text-gray-700 mb-3 block">Phone</Label>
+                      <Label htmlFor="phone" className="text-base font-medium text-gray-700 mb-3 block">Phone*</Label>
                       <Input
                         id="phone"
                         type="tel"
@@ -118,8 +182,59 @@ const Contact = () => {
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                         placeholder=""
                         className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        required
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="company" className="text-base font-medium text-gray-700 mb-3 block">Company*</Label>
+                      <Input
+                        id="company"
+                        value={formData.company}
+                        onChange={(e) => handleInputChange('company', e.target.value)}
+                        placeholder=""
+                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Product Interest */}
+                  <div>
+                    <Label htmlFor="subject" className="text-base font-medium text-gray-700 mb-3 block">Which products are you interested in?*</Label>
+                    <Select onValueChange={(value) => handleInputChange('subject', value)} required>
+                      <SelectTrigger className="h-12 text-base bg-[#f5743a] text-white border-0 rounded-md focus:ring-2 focus:ring-primary font-medium hover:bg-[#f5743a]/90">
+                        <SelectValue placeholder="Select an option ..." />
+                      </SelectTrigger>
+                       <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                         <SelectItem value="test-charts" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Test Charts & Targets</SelectItem>
+                         <SelectItem value="measurement-devices" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Measurement Devices</SelectItem>
+                         <SelectItem value="illumination" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Illumination Systems</SelectItem>
+                         <SelectItem value="software" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Software Solutions</SelectItem>
+                         <SelectItem value="consulting" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Consulting & Training</SelectItem>
+                         <SelectItem value="custom-solution" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Custom Solution</SelectItem>
+                         <SelectItem value="partnership" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Partnership Inquiry</SelectItem>
+                         <SelectItem value="support" className="text-gray-900 hover:bg-gray-100 focus:bg-gray-100 text-base">Technical Support</SelectItem>
+                       </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <Label htmlFor="message" className="text-base font-medium text-gray-700 mb-3 block">Your message:</Label>
+                    <Textarea
+                      id="message"
+                      value={formData.message}
+                      onChange={(e) => handleInputChange('message', e.target.value)}
+                      placeholder="Please insert here"
+                      className="min-h-[140px] text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary resize-none"
+                      required
+                    />
+                  </div>
+
+                  {/* Attachment */}
+                  <div>
+                    <Label className="text-base font-medium text-gray-700 mb-3 block">Do you have an attachment?</Label>
+                    <p className="text-sm text-gray-500">You can attach files after submitting the form or send them via email.</p>
                   </div>
 
                   {/* Submit Button */}
