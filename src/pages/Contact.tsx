@@ -16,12 +16,7 @@ const Contact = () => {
     firstName: '',
     lastName: '',
     email: '',
-    company: '',
     phone: '',
-    country: '',
-    street: '',
-    postcode: '',
-    city: '',
     subject: '',
     message: ''
   });
@@ -77,12 +72,8 @@ const Contact = () => {
               <CardContent className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-8">
                   
-                  <div className="mb-6">
-                    <p className="text-base font-medium text-gray-700 mb-6">Request is created by:</p>
-                  </div>
-
-                  {/* Name and Country Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Name Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor="firstName" className="text-base font-medium text-gray-700 mb-3 block">First Name*</Label>
                       <Input
@@ -105,62 +96,10 @@ const Contact = () => {
                         required
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="country" className="text-base font-medium text-gray-700 mb-3 block">Country*</Label>
-                      <Select onValueChange={(value) => handleInputChange('country', value)} required>
-                        <SelectTrigger className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary">
-                          <SelectValue placeholder="" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg">
-                          <SelectItem value="germany">Germany</SelectItem>
-                          <SelectItem value="usa">United States</SelectItem>
-                          <SelectItem value="uk">United Kingdom</SelectItem>
-                          <SelectItem value="france">France</SelectItem>
-                          <SelectItem value="italy">Italy</SelectItem>
-                          <SelectItem value="japan">Japan</SelectItem>
-                          <SelectItem value="china">China</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Address Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <Label htmlFor="street" className="text-base font-medium text-gray-700 mb-3 block">Street/Number:</Label>
-                      <Input
-                        id="street"
-                        value={formData.street}
-                        onChange={(e) => handleInputChange('street', e.target.value)}
-                        placeholder=""
-                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="postcode" className="text-base font-medium text-gray-700 mb-3 block">Postcode:</Label>
-                      <Input
-                        id="postcode"
-                        value={formData.postcode}
-                        onChange={(e) => handleInputChange('postcode', e.target.value)}
-                        placeholder=""
-                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="city" className="text-base font-medium text-gray-700 mb-3 block">City:</Label>
-                      <Input
-                        id="city"
-                        value={formData.city}
-                        onChange={(e) => handleInputChange('city', e.target.value)}
-                        placeholder=""
-                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-                      />
-                    </div>
                   </div>
 
                   {/* Contact Details Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor="email" className="text-base font-medium text-gray-700 mb-3 block">Email*</Label>
                       <Input
@@ -174,7 +113,7 @@ const Contact = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="phone" className="text-base font-medium text-gray-700 mb-3 block">Phone*</Label>
+                      <Label htmlFor="phone" className="text-base font-medium text-gray-700 mb-3 block">Phone</Label>
                       <Input
                         id="phone"
                         type="tel"
@@ -182,18 +121,6 @@ const Contact = () => {
                         onChange={(e) => handleInputChange('phone', e.target.value)}
                         placeholder=""
                         className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="company" className="text-base font-medium text-gray-700 mb-3 block">Company*</Label>
-                      <Input
-                        id="company"
-                        value={formData.company}
-                        onChange={(e) => handleInputChange('company', e.target.value)}
-                        placeholder=""
-                        className="h-12 text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary"
-                        required
                       />
                     </div>
                   </div>
@@ -229,12 +156,6 @@ const Contact = () => {
                       className="min-h-[140px] text-base bg-white border border-gray-300 rounded-md focus:border-primary focus:ring-1 focus:ring-primary resize-none"
                       required
                     />
-                  </div>
-
-                  {/* Attachment */}
-                  <div>
-                    <Label className="text-base font-medium text-gray-700 mb-3 block">Do you have an attachment?</Label>
-                    <p className="text-sm text-gray-500">You can attach files after submitting the form or send them via email.</p>
                   </div>
 
                   {/* Submit Button */}
