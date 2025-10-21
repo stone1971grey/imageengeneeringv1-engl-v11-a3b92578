@@ -133,14 +133,14 @@ const Contact = () => {
                         <SelectValue placeholder="Select an option ..." />
                       </SelectTrigger>
                        <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg z-50">
-                         <SelectItem value="test-charts" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Test Charts & Targets</SelectItem>
-                         <SelectItem value="measurement-devices" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Measurement Devices</SelectItem>
-                         <SelectItem value="illumination" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Illumination Systems</SelectItem>
-                         <SelectItem value="software" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Software Solutions</SelectItem>
-                         <SelectItem value="consulting" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Consulting & Training</SelectItem>
-                         <SelectItem value="custom-solution" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Custom Solution</SelectItem>
-                         <SelectItem value="partnership" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Partnership Inquiry</SelectItem>
-                         <SelectItem value="support" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base">Technical Support</SelectItem>
+                         <SelectItem value="test-charts" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Test Charts & Targets</SelectItem>
+                         <SelectItem value="measurement-devices" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Measurement Devices</SelectItem>
+                         <SelectItem value="illumination" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Illumination Systems</SelectItem>
+                         <SelectItem value="software" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Software Solutions</SelectItem>
+                         <SelectItem value="consulting" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Consulting & Training</SelectItem>
+                         <SelectItem value="custom-solution" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Custom Solution</SelectItem>
+                         <SelectItem value="partnership" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Partnership Inquiry</SelectItem>
+                         <SelectItem value="support" className="text-gray-900 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black text-base p-1">Technical Support</SelectItem>
                        </SelectContent>
                     </Select>
                   </div>
