@@ -93,7 +93,8 @@ const StickyLogo = () => {
         <img 
           src={logoIEBlack} 
           alt="Image Engineering" 
-          className="h-12 w-auto object-contain transition-all duration-300"
+          className="h-[54px] w-auto max-w-[270px] object-contain transition-all duration-300"
+          style={{ width: '270px' }}
         />
       </Link>
     </div>
