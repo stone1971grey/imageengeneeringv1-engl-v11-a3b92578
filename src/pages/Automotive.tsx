@@ -121,19 +121,22 @@ const Automotive = () => {
       {/* Navigation */}
       <Navigation />
 
-      {/* Hero Section - starts immediately after navigation */}
-      <section id="introduction" className="min-h-screen bg-scandi-white font-roboto">
-        {/* Navigation Spacer */}
-        <div className="h-16"></div>
+      {/* Hero Section */}
+      <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+        {/* Animated background light effects */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/10 to-soft-blue/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        </div>
         
-        {/* Hero Content */}
-        <div id="hero-start" className="container mx-auto px-6 py-16 lg:py-20 pb-8 lg:pb-12">
-          <div className="grid lg:grid-cols-5 gap-16 items-center min-h-[80vh]">
+        <div className="container mx-auto px-6 py-16 lg:py-24 pt-3 md:pt-32 pb-8 lg:pb-12 relative z-10">
+          <div className="grid lg:grid-cols-5 gap-16 items-center">
             
             {/* Left Content - 2/5 */}
-            <div className="lg:col-span-2 space-y-8 lg:pr-8 -mt-[50px]">
+            <div className="lg:col-span-2 space-y-8">
               <div>
-                <h1 id="automotive-hero" className="text-5xl lg:text-6xl xl:text-7xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
+                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-light-foreground mt-8 md:mt-0">
                   Automotive
                   <br />
                   <span className="font-medium text-light-foreground">Image Quality</span>
@@ -145,7 +148,7 @@ const Automotive = () => {
               </div>
               
               <div className="pt-4">
-              <Link to="#applications-start">
+                <Link to="#applications-start">
                   <Button 
                     variant="decision"
                     size="lg"
@@ -174,17 +177,28 @@ const Automotive = () => {
             </div>
 
             {/* Right Content - Interactive Image Map - 3/5 */}
-            <div className="lg:col-span-3 relative">
-              <HotspotImage
-                src={automotiveHero}
-                alt="Automotive camera testing laboratory"
-                markers={hotspotMarkers}
-                dotColor="bg-hotspot-primary"
-                onHoverChange={(label) => setHoveredPoint(label || "Live Processing")}
-              />
+            <div className="lg:col-span-3 relative px-6">
+              <div className="relative overflow-hidden rounded-lg shadow-soft">
+                {/* Animated glow effect behind image */}
+                <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
+                
+                <HotspotImage
+                  src={automotiveHero}
+                  alt="Automotive camera testing laboratory"
+                  markers={hotspotMarkers}
+                  dotColor="bg-hotspot-primary"
+                  onHoverChange={(label) => setHoveredPoint(label || "Live Processing")}
+                />
+                
+                {/* Subtle overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-20"></div>
+                
+                {/* Moving light beam effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
+              </div>
               
-              {/* Floating stats - now shows hover text */}
-              <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey">
+              {/* Floating feature highlight */}
+              <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
                 <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Live Processing" : "ADAS Component"}</div>
                 <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Active" : hoveredPoint}</div>
               </div>
