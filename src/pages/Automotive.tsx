@@ -404,13 +404,7 @@ const Automotive = () => {
              {products.map((product, index) => (
                  <Card 
                    key={index}
-                   className={`bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col ${
-                     product.title === "Arcturus" 
-                       ? "bg-green-100 border-4 border-green-300 shadow-lg ring-4 ring-green-200" 
-                       : product.title === "LE7 VIS-IR"
-                       ? "bg-blue-100 border-4 border-blue-300 shadow-lg ring-4 ring-blue-200"
-                       : ""
-                   }`}
+                   className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col"
                  >
                  <CardContent className="p-0 flex flex-col flex-1">
                    <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
@@ -419,40 +413,17 @@ const Automotive = () => {
                        alt={product.title}
                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                      />
-                      {product.title === "Arcturus" && (
+                      {(product.title === "Arcturus" || product.title === "LE7 VIS-IR") && (
                         <div className="absolute top-2 right-2">
-                          <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                            ACTIVE
-                          </span>
-                        </div>
-                      )}
-                      {product.title === "LE7 VIS-IR" && (
-                        <div className="absolute top-2 right-2">
-                          <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                          <span className="bg-[#f5743a] text-white px-3 py-1 rounded-full text-sm font-bold">
                             ACTIVE
                           </span>
                         </div>
                       )}
                    </div>
                    <div className="p-6 flex flex-col flex-1">
-                      <h3 className={`text-xl font-bold mb-3 transition-colors group-hover:text-[#577eb4] ${
-                        product.title === "Arcturus" 
-                          ? "text-green-700" 
-                          : product.title === "LE7 VIS-IR"
-                          ? "text-blue-700"
-                          : "text-gray-900"
-                      }`}>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#577eb4]">
                         {product.title}
-                        {product.title === "Arcturus" && (
-                          <span className="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded">
-                            CLICKABLE
-                          </span>
-                        )}
-                        {product.title === "LE7 VIS-IR" && (
-                          <span className="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">
-                            CLICKABLE
-                          </span>
-                        )}
                       </h3>
                      <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
                        {product.description}
@@ -461,12 +432,8 @@ const Automotive = () => {
                        <Link to={product.link}>
                          <Button 
                            size="lg"
-                           className={`w-full text-white hover:opacity-90 ${
-                             product.title === "Arcturus" 
-                               ? "bg-green-600 hover:bg-green-700" 
-                               : ""
-                           }`}
-                           style={product.title !== "Arcturus" ? { backgroundColor: '#f5743a' } : undefined}
+                           className="w-full text-white hover:opacity-90"
+                           style={{ backgroundColor: '#f5743a' }}
                          >
                             Learn More
                          </Button>
