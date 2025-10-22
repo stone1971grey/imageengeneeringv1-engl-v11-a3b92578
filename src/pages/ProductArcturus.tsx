@@ -517,12 +517,12 @@ const ProductArcturus = () => {
 
       {/* Typical Applications */}
       <section id="applications" className="container mx-auto px-4 pb-20 scroll-mt-[320px]">
-        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Typical Applications</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Typical Applications</h2>
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Car className="text-[#3D7BA2]" size={32} />
+              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Car className="text-[#f5743a]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D]">Automotive Testing</CardTitle>
             </CardHeader>
@@ -535,8 +535,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Smartphone className="text-[#3D7BA2]" size={32} />
+              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Smartphone className="text-[#f5743a]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D]">High-End Sensors</CardTitle>
             </CardHeader>
@@ -549,8 +549,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="text-[#3D7BA2]" size={32} />
+              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="text-[#f5743a]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D]">HDR Scene Creation</CardTitle>
             </CardHeader>
@@ -565,7 +565,7 @@ const ProductArcturus = () => {
 
       {/* Product Image Gallery */}
       <section id="gallery" className="container mx-auto px-4 pb-20 scroll-mt-[310px]">
-        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-12 text-center">Product Gallery</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Product Gallery</h2>
         
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
