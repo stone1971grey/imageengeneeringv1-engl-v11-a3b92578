@@ -23,6 +23,7 @@ import ChartDetail from "./pages/ChartDetail";
 import Cart from "./pages/Cart";
 import Events from "./pages/Events";
 import WhitePaper from "./pages/WhitePaper";
+import WhitePaperDownload from "./pages/WhitePaperDownload";
 import InCabinTesting from "./pages/InCabinTesting";
 import Contact from "./pages/Contact";
 import News from "./pages/News";
@@ -62,6 +63,7 @@ const App = () => (
         <Route path="/cart" element={<Cart />} />
          <Route path="/events" element={<Events />} />
          <Route path="/whitepaper" element={<WhitePaper />} />
+         <Route path="/whitepaper_download" element={<WhitePaperDownload />} />
          <Route path="/in-cabin-testing" element={<InCabinTesting />} />
          <Route path="/contact" element={<Contact />} />
          <Route path="/news" element={<News />} />
