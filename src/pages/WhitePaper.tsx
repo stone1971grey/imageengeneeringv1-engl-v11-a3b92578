@@ -326,7 +326,7 @@ const WhitePaper = () => {
                           name="firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base">First Name *</FormLabel>
+                              <FormLabel className="text-lg font-medium">First Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -340,7 +340,7 @@ const WhitePaper = () => {
                           name="lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base">Last Name *</FormLabel>
+                              <FormLabel className="text-lg font-medium">Last Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -356,7 +356,7 @@ const WhitePaper = () => {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base">Company *</FormLabel>
+                              <FormLabel className="text-lg font-medium">Company *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -370,7 +370,7 @@ const WhitePaper = () => {
                           name="position"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base">Position *</FormLabel>
+                              <FormLabel className="text-lg font-medium">Position *</FormLabel>
                               <FormControl>
                                 <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -402,7 +402,7 @@ const WhitePaper = () => {
                             <div className="flex items-center space-x-3 flex-1">
                               <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
-                                <FormLabel className="text-base leading-tight">
+                                <FormLabel className="text-lg font-medium leading-tight">
                                   I agree to receive information about image quality testing and related topics via email. *
                                 </FormLabel>
                                 <FormMessage />
