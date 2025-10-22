@@ -78,7 +78,7 @@ const ProductFAQ: React.FC<ProductFAQProps> = ({
                 value={`item-${index}`}
                 className="bg-white rounded-lg border border-gray-200 shadow-sm"
               >
-                <AccordionTrigger className="px-6 py-4 text-left font-medium text-lg text-gray-900 hover:text-blue-600 transition-colors">
+                <AccordionTrigger className="px-6 py-4 text-left font-medium text-lg text-gray-900 hover:text-[#f5743a] transition-colors">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-lg text-gray-600 leading-relaxed">
