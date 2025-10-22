@@ -267,7 +267,7 @@ const WhitePaper = () => {
         <div className="container mx-auto px-6">
           <div className="mb-12">
             <h2 className="text-3xl font-bold mb-4">Available White Papers</h2>
-            <p className="text-muted-foreground max-w-2xl">
+            <p className="text-white max-w-2xl">
               Our white papers provide in-depth insights into testing methodologies, standards, and best practices for image quality measurement.
             </p>
           </div>
