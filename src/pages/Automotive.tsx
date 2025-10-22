@@ -183,8 +183,8 @@ const Automotive = () => {
               
               {/* Floating feature highlight */}
               <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
-                <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Live Processing" : "ADAS Component"}</div>
-                <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Active" : hoveredPoint}</div>
+                <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Interactive" : "ADAS Component"}</div>
+                <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Explore Hotspots" : hoveredPoint}</div>
               </div>
             </div>
           </div>
