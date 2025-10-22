@@ -231,8 +231,12 @@ const Automotive = () => {
 
 
       {/* Automotive International Standards - Simplified */}
-      <section id="standards" className="py-12 bg-gray-50">
+      <section id="standards" className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+            Automotive International Standards
+          </h2>
+          
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
             {/* IEEE Logo */}
             <div className="flex items-center justify-center h-24 w-40">
@@ -265,8 +269,8 @@ const Automotive = () => {
             <div className="flex items-center justify-center">
               <Button 
                 size="lg"
-                className="text-gray-900 font-semibold px-8 py-6 text-lg rounded-full hover:opacity-90 transition-all duration-300"
-                style={{ backgroundColor: '#f5c563' }}
+                className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
+                style={{ backgroundColor: '#f5743a' }}
               >
                 View Standards
               </Button>
