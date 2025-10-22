@@ -204,7 +204,7 @@ const WhitePaper = () => {
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
-          <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90 text-lg px-4 py-2">
+          <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90 text-base px-3 py-1.5">
             {paper.category}
           </Badge>
         </div>
@@ -287,7 +287,7 @@ const WhitePaper = () => {
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90 text-lg px-4 py-2">{selectedPaper.category}</Badge>
+                  <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90 text-base px-3 py-1.5">{selectedPaper.category}</Badge>
                   <Button variant="ghost" onClick={handleClose}>
                     Close
                   </Button>
