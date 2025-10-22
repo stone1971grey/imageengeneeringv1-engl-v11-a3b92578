@@ -204,12 +204,12 @@ const WhitePaper = () => {
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
-          <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">
+          <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90">
             {paper.category}
           </Badge>
         </div>
         <CardTitle className="text-xl leading-tight flex items-start gap-3">
-          <FileText className="h-6 w-6 text-[hsl(58,95%,45%)] flex-shrink-0 mt-1" />
+          <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
           <span>{paper.title}</span>
         </CardTitle>
           <div className="flex gap-4 text-base text-muted-foreground">
@@ -224,7 +224,7 @@ const WhitePaper = () => {
         </CardDescription>
         
         <Button 
-          className="w-full"
+          className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
           onClick={() => {
             setSelectedPaper(paper);
           }}
@@ -287,7 +287,7 @@ const WhitePaper = () => {
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[hsl(58,95%,45%)] text-black hover:bg-[hsl(58,95%,55%)]">{selectedPaper.category}</Badge>
+                  <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90">{selectedPaper.category}</Badge>
                   <Button variant="ghost" onClick={handleClose}>
                     Close
                   </Button>
@@ -400,7 +400,7 @@ const WhitePaper = () => {
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
                             <div className="flex items-center space-x-3 flex-1">
-                              <AlertCircle className="h-8 w-8 text-[hsl(58,95%,45%)] flex-shrink-0" />
+                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
                                 <FormLabel className="text-base leading-tight">
                                   I agree to receive information about image quality testing and related topics via email. *
@@ -412,14 +412,14 @@ const WhitePaper = () => {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-[hsl(58,95%,45%)] data-[state=checked]:bg-[hsl(58,95%,45%)] data-[state=checked]:text-black h-8 w-8 flex-shrink-0"
+                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
                           </FormItem>
                         )}
                       />
                       
-                      <Button type="submit" size="lg" className="w-full">
+                      <Button type="submit" size="lg" className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white">
                         <Download className="h-5 w-5 mr-2" />
                         {t.whitepaper.download}
                       </Button>
