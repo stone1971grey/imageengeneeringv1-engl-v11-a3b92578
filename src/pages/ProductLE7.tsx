@@ -446,23 +446,23 @@ const ProductLE7 = () => {
               <div className="bg-gray-50 rounded-xl overflow-hidden shadow-soft">
                 <div className="overflow-x-auto">
                   {/* Header */}
-                  <div className="grid grid-cols-6 bg-gradient-to-r from-[#577eb4] to-[#4a6b9a] text-white min-w-[800px]">
+                  <div className="grid grid-cols-6 text-white min-w-[800px]" style={{ background: '#f5743a' }}>
                     <div className="p-4 text-center font-semibold text-lg">
                       Criterion
                     </div>
-                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                    <div className="p-4 text-center font-semibold text-lg border-l border-orange-600">
                       LE7-2x
                     </div>
-                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                    <div className="p-4 text-center font-semibold text-lg border-l border-orange-600">
                       LE7-4x
                     </div>
-                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                    <div className="p-4 text-center font-semibold text-lg border-l border-orange-600">
                       LE7-6x
                     </div>
-                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                    <div className="p-4 text-center font-semibold text-lg border-l border-orange-600">
                       LE7 VIS-IR
                     </div>
-                    <div className="p-4 text-center font-semibold text-lg border-l border-[#4a6b9a]">
+                    <div className="p-4 text-center font-semibold text-lg border-l border-orange-600">
                       LE7-E
                     </div>
                   </div>
