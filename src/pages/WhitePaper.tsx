@@ -293,7 +293,7 @@ const WhitePaper = () => {
                   </Button>
                 </div>
                 <CardTitle className="text-3xl">{selectedPaper.title}</CardTitle>
-                <CardDescription>
+                <CardDescription className="text-white">
                   {selectedPaper.pages} Pages • Published {new Date(selectedPaper.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </CardDescription>
               </CardHeader>
