@@ -208,7 +208,7 @@ const WhitePaper = () => {
             {paper.category}
           </Badge>
         </div>
-        <CardTitle className="text-xl leading-tight flex items-start gap-3">
+        <CardTitle className="text-xl leading-relaxed flex items-start gap-3">
           <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
           <span>{paper.title}</span>
         </CardTitle>
