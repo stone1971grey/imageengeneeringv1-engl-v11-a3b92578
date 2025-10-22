@@ -97,7 +97,7 @@ const ProductArcturus = () => {
         </nav>
 
         {/* Hero Section */}
-        <section id="overview" className="min-h-[60vh] lg:h-[620px] bg-scandi-white font-roboto scroll-mt-[170px] relative overflow-hidden">
+        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[170px] relative overflow-hidden">
           {/* Animated background light effects */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
