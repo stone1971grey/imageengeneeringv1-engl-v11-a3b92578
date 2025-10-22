@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Car, Eye, Shield, CheckCircle, Zap, Target } from "lucide-react";
 import inCabinHero from "@/assets/in-cabin-hero.png";
+import inCabinMonitoring from "@/assets/in-cabin-monitoring.png";
 import kpiImage from "@/assets/kpi-image.png";
 import iqFlatlightNew from "@/assets/iq-flatlight-new.png";
 import ledPanelNew from "@/assets/led-panel-new.png";
@@ -109,12 +110,25 @@ const InCabinTesting = () => {
 
             <div className="bg-white rounded-lg p-8 shadow-sm">
               <h3 className="text-2xl font-semibold text-gray-900 mb-4">What do In-Cabin systems monitor?</h3>
-              <p className="text-gray-700 mb-6 leading-relaxed">
-                In-cabin systems monitor drivers' and passengers' behavior and facial cues by capturing videos and images. They mostly use near-infrared (NIR) sensors combined with active illumination (e.g., LED or VCSEL) to ensure accuracy in very low-light conditions. NIR sensors are preferred as they do not need to rely on a visible light source that would be noticeable to the driver and passengers. Captured results are then fed into embedded software to analyze the car's interior.
-              </p>
-              <p className="text-gray-700 mb-4 leading-relaxed">
-                Many of the aspects that in-cabin systems monitor fall into the area of machine vision, including:
-              </p>
+              
+              <div className="grid md:grid-cols-2 gap-8 items-center mb-6">
+                <div>
+                  <p className="text-gray-700 mb-6 leading-relaxed">
+                    In-cabin systems monitor drivers' and passengers' behavior and facial cues by capturing videos and images. They mostly use near-infrared (NIR) sensors combined with active illumination (e.g., LED or VCSEL) to ensure accuracy in very low-light conditions. NIR sensors are preferred as they do not need to rely on a visible light source that would be noticeable to the driver and passengers. Captured results are then fed into embedded software to analyze the car's interior.
+                  </p>
+                  <p className="text-gray-700 leading-relaxed">
+                    Many of the aspects that in-cabin systems monitor fall into the area of machine vision, including:
+                  </p>
+                </div>
+                <div className="rounded-lg overflow-hidden shadow-md">
+                  <img 
+                    src={inCabinMonitoring} 
+                    alt="In-Cabin Monitoring System" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              
               <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-6">
                 <li>Driver facial expressions to assess distraction or unsafe emotional states</li>
                 <li>Driver eye openness for drowsiness detection</li>
