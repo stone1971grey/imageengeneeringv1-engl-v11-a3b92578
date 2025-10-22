@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { FileText, Download, CheckCircle2, AlertCircle } from "lucide-react";
+import { FileText, Download, CheckCircle2, AlertCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import whitepaperHero from "@/assets/whitepaper-hero.jpg";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -288,8 +288,8 @@ const WhitePaper = () => {
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
                   <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedPaper.category}</Badge>
-                  <Button variant="ghost" onClick={handleClose}>
-                    Close
+                  <Button variant="ghost" onClick={handleClose} className="hover:text-[#f5743a] transition-colors">
+                    <X className="h-5 w-5" />
                   </Button>
                 </div>
                 <CardTitle className="text-3xl">{selectedPaper.title}</CardTitle>
