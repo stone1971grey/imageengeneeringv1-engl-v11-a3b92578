@@ -230,67 +230,53 @@ const Automotive = () => {
       </section>
 
 
-      {/* camPAS Testing Workflow Section */}
-      <section id="standards" className="py-20 bg-white">
+      {/* Automotive International Standards - Simplified */}
+      <section id="standards" className="py-12 bg-gray-50">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Automotive International Standards
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              A look at the crucial industry standards for automotive image quality performance testing and evaluation.
-            </p>
-          </div>
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+            {/* IEEE Logo */}
+            <div className="flex items-center justify-center h-24 w-40">
+              <img 
+                src={ieeeLogo} 
+                alt="IEEE P2020 Standard" 
+                className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+              />
+            </div>
 
-          {/* Standards Tiles */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* IEEE P2020 Standard */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
-              <CardContent className="p-8 text-center h-full flex flex-col">
-                <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
-                  <img src={ieeeLogo} alt="IEEE Logo" className="w-full h-full object-contain" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">IEEE-P2020</h3>
-                <p className="text-gray-600 leading-relaxed mb-6 flex-1">
-                  The first internationally recognized standard examines the factors contributing to the image quality of Advanced Driver Assistance Systems (ADAS) and outlines various test methods and tools.
-                </p>
-                <Button variant="outline" className="w-full mt-auto">
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
+            {/* ISO Logo */}
+            <div className="flex items-center justify-center h-24 w-40">
+              <img 
+                src={isoStandardsLogo} 
+                alt="ISO Standards" 
+                className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+              />
+            </div>
 
-            {/* EMVA 1288/ISO 24942 Standard */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
-              <CardContent className="p-8 text-center h-full flex flex-col">
-                <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
-                  <img src={emvaLogo} alt="EMVA Logo" className="w-full h-full object-contain" />
+            {/* EMVA 1288 Standard Compliant */}
+            <div className="flex items-center justify-center h-24">
+              <div className="flex items-center gap-3">
+                <img 
+                  src={emvaLogo} 
+                  alt="EMVA Logo" 
+                  className="h-16 object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                />
+                <div className="flex flex-col">
+                  <span className="text-3xl font-bold text-gray-900">1288</span>
+                  <span className="text-sm text-gray-600">EMVA Standard Compliant</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">EMVA 1288/ISO 24942</h3>
-                <p className="text-gray-600 leading-relaxed mb-6 flex-1">
-                  EMVA 1288/ISO 24942 (same standard metrics) outlines threshold specifications and measurement methods for machine vision cameras, many of which are commonly used in automotive vehicles.
-                </p>
-                <Button variant="outline" className="w-full mt-auto">
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
-            {/* ISO 19093 Standard */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 h-full">
-              <CardContent className="p-8 text-center h-full flex flex-col">
-                <div className="w-30 h-30 bg-white rounded-full flex items-center justify-center mx-auto mb-6 p-2">
-                  <img src={isoStandardsLogo} alt="ISO Standards Logo" className="w-full h-full object-contain" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">ISO 19093</h3>
-                <p className="text-gray-600 leading-relaxed mb-6 flex-1">
-                  ISO 19093 outlines measurement methods and metric thresholds for evaluating the performance of a camera system under various low-light conditions.
-                </p>
-                <Button variant="outline" className="w-full mt-auto">
-                  Learn More
-                </Button>
-              </CardContent>
-            </Card>
+            {/* View Standards Button */}
+            <div className="flex items-center justify-center">
+              <Button 
+                size="lg"
+                className="text-gray-900 font-semibold px-8 py-6 text-lg rounded-full hover:opacity-90 transition-all duration-300"
+                style={{ backgroundColor: '#f5c563' }}
+              >
+                View Standards
+              </Button>
+            </div>
           </div>
         </div>
       </section>
