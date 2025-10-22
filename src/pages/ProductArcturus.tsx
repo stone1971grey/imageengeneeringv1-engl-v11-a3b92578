@@ -745,8 +745,8 @@ const ProductArcturus = () => {
         <div className="grid md:grid-cols-4 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#3D7BA2]" size={32} />
+              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f5743a]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (DE)</CardTitle>
             </CardHeader>
@@ -766,8 +766,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#3D7BA2]" size={32} />
+              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f5743a]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (EN)</CardTitle>
             </CardHeader>
@@ -787,8 +787,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#3D7BA2]" size={32} />
+              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f5743a]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Controller Datasheet (DE)</CardTitle>
             </CardHeader>
@@ -808,8 +808,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#3D7BA2]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#3D7BA2]" size={32} />
+              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f5743a]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Controller Datasheet (EN)</CardTitle>
             </CardHeader>
