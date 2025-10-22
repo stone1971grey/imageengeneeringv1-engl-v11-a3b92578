@@ -231,7 +231,7 @@ const Automotive = () => {
 
 
       {/* Automotive International Standards - Simplified */}
-      <section id="standards" className="py-16 bg-gray-50">
+      <section id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
         <div className="container mx-auto px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
             Automotive International Standards
