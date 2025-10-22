@@ -172,18 +172,15 @@ const WhitePaper = () => {
   const onSubmit = (data: DownloadFormValues) => {
     console.log("Download request:", { ...data, whitePaper: selectedPaper?.id });
     
-    // Simulate download
+    // Redirect to email simulation page
     setTimeout(() => {
       setDownloadSuccess(true);
-      toast.success("White Paper is being downloaded!");
+      toast.success("Redirecting to download...");
       
-      // Reset after 3 seconds
       setTimeout(() => {
-        setIsDownloadDialogOpen(false);
-        setDownloadSuccess(false);
-        form.reset();
-      }, 2000);
-    }, 1000);
+        window.location.href = '/whitepaper_download';
+      }, 1000);
+    }, 500);
   };
 
   const handleDownloadClick = (paper: WhitePaper) => {
