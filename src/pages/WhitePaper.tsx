@@ -255,30 +255,9 @@ const WhitePaper = () => {
             <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
               White Papers
             </h1>
-            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
+            <p className="text-xl lg:text-2xl text-white mb-8 max-w-2xl">
               Technical expertise and industry knowledge for your projects. Download our comprehensive white papers.
             </p>
-            
-            {/* Featured White Paper Banner */}
-            {featuredPaper && (
-              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
-                <CardContent className="p-6">
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <h3 className="text-xl font-semibold mb-2">{featuredPaper.title}</h3>
-                      <p className="text-base text-muted-foreground mb-2">
-                        {featuredPaper.abstract}
-                      </p>
-                      <div className="flex gap-4 text-sm text-muted-foreground">
-                        <span>{featuredPaper.pages} Pages</span>
-                        <span>•</span>
-                        <span>{featuredPaper.category}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </section>
