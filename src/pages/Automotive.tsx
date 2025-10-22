@@ -136,13 +136,13 @@ const Automotive = () => {
             {/* Left Content - 2/5 */}
             <div className="lg:col-span-2 space-y-8">
               <div>
-                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-light-foreground mt-8 md:mt-0">
+                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
                   Automotive
                   <br />
-                  <span className="font-medium text-light-foreground">Image Quality</span>
+                  <span className="font-medium text-black">Image Quality</span>
                 </h1>
                 
-                <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+                <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
                   Precision-engineered camera system test solutions for robust vehicle safety, performance and autonomy.
                 </p>
               </div>
@@ -150,29 +150,13 @@ const Automotive = () => {
               <div className="pt-4">
                 <Link to="#applications-start">
                   <Button 
-                    variant="decision"
                     size="lg"
-                    className="px-8 py-4 text-lg font-medium group"
+                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    style={{ backgroundColor: '#f5743a' }}
                   >
                     Discover Automotive Solutions
                   </Button>
                 </Link>
-              </div>
-
-              {/* Minimal stats */}
-              <div className="flex items-center space-x-12 pt-8">
-                <div>
-                  <div className="text-2xl font-medium text-light-foreground">99.9%</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Genauigkeit</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-medium text-light-foreground">50ms</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] Reaktion</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-medium text-light-foreground">100+</div>
-                  <div className="text-sm text-scandi-grey font-light">[PLATZHALTER] ADAS Projekte</div>
-                </div>
               </div>
             </div>
 
