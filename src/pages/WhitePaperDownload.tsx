@@ -13,12 +13,9 @@ const WhitePaperDownload = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-6">
       <Card className="max-w-3xl w-full bg-white shadow-2xl border-0 overflow-hidden">
         {/* Modern Header with Logo */}
-        <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-6">
-          <div className="flex items-center justify-between">
-            <img src={logoIE} alt="Image Engineering" className="h-10 brightness-0 invert" />
-            <div className="text-right">
-              <p className="text-xs text-slate-300">info@image-engineering.de</p>
-            </div>
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-8">
+          <div className="flex items-center justify-center">
+            <img src={logoIE} alt="Image Engineering" className="h-16 brightness-0 invert" />
           </div>
         </div>
 
@@ -29,7 +26,7 @@ const WhitePaperDownload = () => {
             <h1 className="text-2xl font-bold text-slate-900 leading-tight">
               Your Whitepaper is Ready
             </h1>
-            <div className="h-1 w-20 bg-gradient-to-r from-[#f5743a] to-orange-400 rounded-full"></div>
+            <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f5743a' }}></div>
           </div>
 
           {/* Greeting */}
@@ -43,7 +40,7 @@ const WhitePaperDownload = () => {
           </div>
 
           {/* CTA Section */}
-          <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-8 border border-slate-200">
+          <div className="rounded-2xl p-8 border border-slate-200" style={{ backgroundColor: '#f3f3f5' }}>
             <div className="text-center space-y-6">
               <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-slate-900">
@@ -67,7 +64,7 @@ const WhitePaperDownload = () => {
 
           {/* Additional Information */}
           <div className="pt-6 border-t border-slate-200">
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+            <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f5743a' }}>
               <p className="text-sm text-slate-700 leading-relaxed">
                 <span className="font-semibold text-slate-900">Stay Connected:</span> We'd be delighted to keep you informed about our latest whitepapers, upcoming events, new products, and industry insights in automotive imaging and camera testing technology.
               </p>
@@ -92,6 +89,9 @@ const WhitePaperDownload = () => {
 
         {/* Modern Footer */}
         <div className="bg-slate-900 px-8 py-6 text-center space-y-2">
+          <p className="text-xs text-slate-400">
+            info@image-engineering.de
+          </p>
           <p className="text-xs text-slate-400">
             © 2024 Image Engineering. All rights reserved.
           </p>
