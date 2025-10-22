@@ -252,19 +252,13 @@ const Automotive = () => {
               />
             </div>
 
-            {/* EMVA 1288 Standard Compliant */}
-            <div className="flex items-center justify-center h-24">
-              <div className="flex items-center gap-3">
-                <img 
-                  src={emvaLogo} 
-                  alt="EMVA Logo" 
-                  className="h-16 object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-                />
-                <div className="flex flex-col">
-                  <span className="text-3xl font-bold text-gray-900">1288</span>
-                  <span className="text-sm text-gray-600">EMVA Standard Compliant</span>
-                </div>
-              </div>
+            {/* EMVA Logo */}
+            <div className="flex items-center justify-center h-24 w-40">
+              <img 
+                src={emvaLogo} 
+                alt="EMVA 1288 Standard" 
+                className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+              />
             </div>
 
             {/* View Standards Button */}
