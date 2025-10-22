@@ -18,36 +18,6 @@ const InCabinTesting = () => {
       
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
-        {/* Quick Navigation */}
-        <nav className="sticky top-[120px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
-          <div className="container mx-auto px-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
-                <div className="flex flex-wrap gap-6 justify-center text-lg">
-                  <a href="#overview" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Overview</a>
-                  <a href="#systems" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('systems')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Systems</a>
-                  <a href="#kpis" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('kpis')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>KPIs</a>
-                  <a href="#products" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors scroll-smooth px-2"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Products & Solutions</a>
-                </div>
-            </div>
-          </div>
-        </nav>
-
         {/* Hero Section */}
         <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[205px] relative overflow-hidden">
           {/* Animated background light effects */}
