@@ -586,7 +586,7 @@ const ProductLE7 = () => {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="py-20 bg-white scroll-mt-[205px]">
+        <section id="faq" className="py-8 bg-white scroll-mt-[205px]">
           <div className="container mx-auto px-6">
             <ProductFAQ 
               title="LE7 FAQ's"
