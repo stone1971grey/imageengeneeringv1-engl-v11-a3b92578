@@ -33,13 +33,13 @@ const InCabinTesting = () => {
               {/* Left Content - 2/5 */}
               <div className="lg:col-span-2 space-y-8">
                 <div>
-                  <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-light-foreground mt-8 md:mt-0">
+                  <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
                     In-Cabin
                     <br />
-                    <span className="font-medium text-light-foreground">Performance Testing</span>
+                    <span className="font-medium text-black">Performance Testing</span>
                   </h1>
                   
-                  <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+                  <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
                     Advanced testing solutions for in-cabin monitoring systems, ensuring optimal performance and safety in automotive environments.
                   </p>
                 </div>
