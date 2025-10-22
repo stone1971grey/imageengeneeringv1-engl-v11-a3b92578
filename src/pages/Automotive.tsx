@@ -460,22 +460,22 @@ const Automotive = () => {
                      {product.link ? (
                        <Link to={product.link}>
                          <Button 
-                           variant="decision"
                            size="lg"
-                           className={`w-full group ${
+                           className={`w-full text-white hover:opacity-90 ${
                              product.title === "Arcturus" 
-                               ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
+                               ? "bg-green-600 hover:bg-green-700" 
                                : ""
                            }`}
+                           style={product.title !== "Arcturus" ? { backgroundColor: '#f5743a' } : undefined}
                          >
                             Learn More
                          </Button>
                        </Link>
                      ) : (
                        <Button 
-                         variant="decision"
                          size="lg"
-                         className="w-full group"
+                         className="w-full text-white hover:opacity-90"
+                         style={{ backgroundColor: '#f5743a' }}
                        >
                           Learn More
                        </Button>
