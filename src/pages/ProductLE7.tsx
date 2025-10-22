@@ -611,8 +611,8 @@ const ProductLE7 = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors" style={{backgroundColor: '#ebf2f5'}}>
-                    <FileText className="w-10 h-10" style={{color: '#3e7da1'}} />
+                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">LE7 Datasheet</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">Technical specifications and performance data</p>
@@ -625,8 +625,8 @@ const ProductLE7 = () => {
 
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors" style={{backgroundColor: '#ebf2f5'}}>
-                    <FileText className="w-10 h-10" style={{color: '#3e7da1'}} />
+                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">User Manual</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">Complete setup and operation guide</p>
@@ -639,8 +639,8 @@ const ProductLE7 = () => {
 
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors" style={{backgroundColor: '#ebf2f5'}}>
-                    <FileText className="w-10 h-10" style={{color: '#3e7da1'}} />
+                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Application Note</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">NIR testing best practices and guidelines</p>
@@ -653,8 +653,8 @@ const ProductLE7 = () => {
 
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors" style={{backgroundColor: '#ebf2f5'}}>
-                    <FileText className="w-10 h-10" style={{color: '#3e7da1'}} />
+                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Software Guide</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">Control software installation and usage</p>
