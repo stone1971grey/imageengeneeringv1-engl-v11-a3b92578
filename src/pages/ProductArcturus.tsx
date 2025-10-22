@@ -111,13 +111,13 @@ const ProductArcturus = () => {
               {/* Left Content */}
               <div className="space-y-8">
                 <div>
-                        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
+                        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-gray-900 leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
                           ARCTURUS
                           <br />
-                          <span className="font-medium text-light-foreground">LED</span>
+                          <span className="font-medium text-gray-900">LED</span>
                         </h1>
                         
-                        <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+                        <p className="text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-lg">
                           Today's image sensors and High Dynamic Range configurations make testing at or near sensor saturation challenging. With Arcturus, we can generate more than enough intensity to challenge these sensors with much higher sensitivity than currently possible.
                         </p>
                 </div>
@@ -125,8 +125,8 @@ const ProductArcturus = () => {
                 <div className="pt-4">
                   <Button 
                     size="lg"
-                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#103e7c' }}
+                    className="border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    style={{ backgroundColor: '#f5743a', color: 'white' }}
                   >
                     Learn More
                     <ArrowLeft className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />

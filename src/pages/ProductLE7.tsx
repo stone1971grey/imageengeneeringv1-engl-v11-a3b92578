@@ -149,15 +149,15 @@ const ProductLE7 = () => {
               {/* Left Content */}
               <div className="space-y-8">
                 <div>
-                        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-medium text-light-foreground leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
+                        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-medium text-gray-900 leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
                           LE7
                         </h1>
                         
-                        <h2 className="text-2xl lg:text-3xl font-light text-light-foreground mb-6">
+                        <h2 className="text-2xl lg:text-3xl font-light text-gray-900 mb-6">
                           LE7-2x / LE7-4x / LE7-6x / LE7 VIS-IR / LE7-E
                         </h2>
                         
-                        <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-lg">
+                        <p className="text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-lg">
                           A uniform lightbox using iQ-LED technology for transparent test chart illumination.
                         </p>
                 </div>
@@ -165,8 +165,8 @@ const ProductLE7 = () => {
                 <div className="pt-4">
                   <Button 
                     size="lg"
-                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#103e7c' }}
+                    className="border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    style={{ backgroundColor: '#f5743a', color: 'white' }}
                     onClick={() => {
                       const footer = document.querySelector('footer');
                       if (footer) {
