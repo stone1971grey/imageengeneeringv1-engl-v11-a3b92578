@@ -426,21 +426,21 @@ const ProductArcturus = () => {
               <thead>
                 <tr className="border-b border-gray-200">
                   <th className="text-left py-4 px-4 font-semibold text-[#2D2D2D]">Feature</th>
-                  <th className="text-center py-4 px-4 font-semibold text-[#2D2D2D] bg-blue-50">
+                  <th className="text-center py-4 px-4 font-semibold text-[#2D2D2D] bg-orange-50">
                     <div className="flex flex-col items-center">
-                      <Zap className="w-6 h-6 text-blue-600 mb-2" />
+                      <Zap className="w-6 h-6 text-[#f5743a] mb-2" />
                       <span>Arcturus</span>
                     </div>
                   </th>
                   <th className="text-center py-4 px-4 font-semibold text-[#2D2D2D]">
                     <div className="flex flex-col items-center">
-                      <Lightbulb className="w-6 h-6 text-gray-600 mb-2" />
+                      <Lightbulb className="w-6 h-6 text-[#f5743a] mb-2" />
                       <span>Vega</span>
                     </div>
                   </th>
                   <th className="text-center py-4 px-4 font-semibold text-[#2D2D2D]">
                     <div className="flex flex-col items-center">
-                      <Monitor className="w-6 h-6 text-gray-600 mb-2" />
+                      <Monitor className="w-6 h-6 text-[#f5743a] mb-2" />
                       <span>Standard LED</span>
                     </div>
                   </th>
@@ -449,8 +449,8 @@ const ProductArcturus = () => {
               <tbody>
                 <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 text-[#555] font-medium">Max. Luminance</td>
-                  <td className="py-3 px-4 text-center bg-blue-50">
-                    <span className="inline-flex items-center text-blue-700 font-semibold">
+                  <td className="py-3 px-4 text-center bg-orange-50">
+                    <span className="inline-flex items-center text-[#f5743a] font-semibold">
                       ≥ 1Mcd/m² <CheckCircle className="w-4 h-4 ml-2 text-green-600" />
                     </span>
                   </td>
@@ -459,8 +459,8 @@ const ProductArcturus = () => {
                 </tr>
                 <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 text-[#555] font-medium">CRI Value</td>
-                  <td className="py-3 px-4 text-center bg-blue-50">
-                    <span className="inline-flex items-center text-blue-700 font-semibold">
+                  <td className="py-3 px-4 text-center bg-orange-50">
+                    <span className="inline-flex items-center text-[#f5743a] font-semibold">
                       ≥ 95 <CheckCircle className="w-4 h-4 ml-2 text-green-600" />
                     </span>
                   </td>
@@ -469,7 +469,7 @@ const ProductArcturus = () => {
                 </tr>
                 <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 text-[#555] font-medium">IEEE P2020</td>
-                  <td className="py-3 px-4 text-center bg-blue-50">
+                  <td className="py-3 px-4 text-center bg-orange-50">
                     <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
                   </td>
                   <td className="py-3 px-4 text-center">
@@ -481,7 +481,7 @@ const ProductArcturus = () => {
                 </tr>
                 <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 text-[#555] font-medium">Flicker-Free</td>
-                  <td className="py-3 px-4 text-center bg-blue-50">
+                  <td className="py-3 px-4 text-center bg-orange-50">
                     <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
                   </td>
                   <td className="py-3 px-4 text-center">
@@ -493,7 +493,7 @@ const ProductArcturus = () => {
                 </tr>
                 <tr className="hover:bg-gray-50 transition-colors">
                   <td className="py-3 px-4 text-[#555] font-medium">Automotive Application</td>
-                  <td className="py-3 px-4 text-center bg-blue-50">
+                  <td className="py-3 px-4 text-center bg-orange-50">
                     <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
                   </td>
                   <td className="py-3 px-4 text-center">
@@ -741,7 +741,7 @@ const ProductArcturus = () => {
 
       {/* Related Downloads */}
       <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[170px]">
-        <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8 text-center">Related Downloads</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Related Downloads</h2>
         <div className="grid md:grid-cols-4 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
