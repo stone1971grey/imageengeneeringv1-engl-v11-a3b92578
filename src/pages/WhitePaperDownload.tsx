@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Mail } from "lucide-react";
+import logoIE from "@/assets/logo-ie-black.png";
 
 const WhitePaperDownload = () => {
   return (
@@ -8,16 +9,13 @@ const WhitePaperDownload = () => {
       <Card className="max-w-2xl w-full bg-white shadow-xl">
         {/* Email Header */}
         <CardHeader className="border-b bg-muted/30 pb-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Mail className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-foreground">Image Engineering</p>
-              <p className="text-xs text-muted-foreground">info@image-engineering.de</p>
+          <div className="flex items-center justify-between mb-6">
+            <img src={logoIE} alt="Image Engineering" className="h-12" />
+            <div className="text-right">
+              <p className="text-xs text-black">info@image-engineering.de</p>
             </div>
           </div>
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-xl font-semibold text-black">
             Please find the link for the whitepaper download attached
           </h1>
         </CardHeader>
@@ -25,10 +23,10 @@ const WhitePaperDownload = () => {
         {/* Email Body */}
         <CardContent className="pt-8 pb-8 space-y-6">
           <div className="space-y-4">
-            <p className="text-base text-foreground leading-relaxed">
+            <p className="text-base text-black leading-relaxed">
               Dear Reader,
             </p>
-            <p className="text-base text-foreground leading-relaxed">
+            <p className="text-base text-black leading-relaxed">
               Thank you for your interest in our whitepaper. Below you will find the link to access your requested whitepaper download.
             </p>
           </div>
@@ -47,17 +45,17 @@ const WhitePaperDownload = () => {
 
           {/* Additional Information */}
           <div className="pt-4 border-t">
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-black leading-relaxed">
               We would be delighted to keep you informed about our latest whitepapers, upcoming events, new products, and industry insights. Stay connected with Image Engineering for the latest developments in automotive imaging and camera testing technology.
             </p>
           </div>
 
           {/* Closing */}
           <div className="space-y-2 pt-4">
-            <p className="text-base text-foreground">
+            <p className="text-base text-black">
               Best regards,
             </p>
-            <p className="text-base font-medium text-foreground">
+            <p className="text-base font-medium text-black">
               The Image Engineering Team
             </p>
           </div>
@@ -65,7 +63,7 @@ const WhitePaperDownload = () => {
 
         {/* Email Footer */}
         <div className="bg-muted/20 px-6 py-4 border-t text-center">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-black">
             © 2024 Image Engineering. All rights reserved.
           </p>
         </div>
