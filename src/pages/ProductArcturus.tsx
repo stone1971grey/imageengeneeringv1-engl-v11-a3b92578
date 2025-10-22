@@ -216,7 +216,7 @@ const ProductArcturus = () => {
         {/* Product Video */}
         <section className="container mx-auto px-4 pb-20">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
-            <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6 text-center">Arcturus in Action</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Arcturus in Action</h2>
             <div className="flex justify-center">
               <div className="w-full max-w-4xl">
                 <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg">
