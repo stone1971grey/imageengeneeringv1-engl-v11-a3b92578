@@ -163,9 +163,6 @@ const Automotive = () => {
             {/* Right Content - Interactive Image Map - 3/5 */}
             <div className="lg:col-span-3 relative px-6">
               <div className="relative overflow-hidden rounded-lg shadow-soft">
-                {/* Animated glow effect behind image */}
-                <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse pointer-events-none"></div>
-                
                 <HotspotImage
                   src={automotiveHero}
                   alt="Automotive camera testing laboratory"
@@ -173,12 +170,6 @@ const Automotive = () => {
                   dotColor="bg-hotspot-primary"
                   onHoverChange={(label) => setHoveredPoint(label || "Live Processing")}
                 />
-                
-                {/* Subtle overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-20 pointer-events-none"></div>
-                
-                {/* Moving light beam effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30 pointer-events-none"></div>
               </div>
               
               {/* Floating feature highlight */}
