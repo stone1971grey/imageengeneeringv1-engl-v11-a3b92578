@@ -309,11 +309,11 @@ const WhitePaper = () => {
                       {t.whitepaper.downloadNow}
                     </p>
                     
-                    <p className="text-base text-muted-foreground">
+                    <p className="text-base text-white">
                       {t.whitepaper.downloadIntro} {t.whitepaper.gdprCompliance}
                     </p>
                     
-                    <p className="text-base text-muted-foreground">
+                    <p className="text-base text-white">
                       {t.whitepaper.redirectInfo}
                     </p>
                   </div>
@@ -326,7 +326,7 @@ const WhitePaper = () => {
                           name="firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-2xl font-medium">First Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">First Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -340,7 +340,7 @@ const WhitePaper = () => {
                           name="lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-2xl font-medium">Last Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Last Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -356,7 +356,7 @@ const WhitePaper = () => {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-2xl font-medium">Company *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Company *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -370,7 +370,7 @@ const WhitePaper = () => {
                           name="position"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-2xl font-medium">Position *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Position *</FormLabel>
                               <FormControl>
                                 <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -385,7 +385,7 @@ const WhitePaper = () => {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base">E-Mail *</FormLabel>
+                            <FormLabel className="text-base text-white">E-Mail *</FormLabel>
                             <FormControl>
                               <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                             </FormControl>
@@ -402,7 +402,7 @@ const WhitePaper = () => {
                             <div className="flex items-center space-x-3 flex-1">
                               <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
-                                <FormLabel className="text-2xl font-medium leading-tight">
+                                <FormLabel className="text-2xl font-medium leading-tight text-white">
                                   I agree to receive information about image quality testing and related topics via email. *
                                 </FormLabel>
                                 <FormMessage />
