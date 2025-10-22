@@ -10,66 +10,93 @@ const WhitePaperDownload = () => {
   const userName = firstName && lastName ? `${firstName} ${lastName}` : "Reader";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full bg-white shadow-xl">
-        {/* Email Header */}
-        <CardHeader className="border-b bg-muted/30 pb-4">
-          <div className="flex items-center justify-between mb-6">
-            <img src={logoIE} alt="Image Engineering" className="h-12" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-6">
+      <Card className="max-w-3xl w-full bg-white shadow-2xl border-0 overflow-hidden">
+        {/* Modern Header with Logo */}
+        <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-6">
+          <div className="flex items-center justify-between">
+            <img src={logoIE} alt="Image Engineering" className="h-10 brightness-0 invert" />
             <div className="text-right">
-              <p className="text-xs text-black">info@image-engineering.de</p>
+              <p className="text-xs text-slate-300">info@image-engineering.de</p>
             </div>
           </div>
-          <h1 className="text-xl font-semibold text-black">
-            Please find the link for the whitepaper download attached
-          </h1>
-        </CardHeader>
+        </div>
 
-        {/* Email Body */}
-        <CardContent className="pt-8 pb-8 space-y-6">
+        {/* Email Content */}
+        <CardContent className="px-8 py-10 space-y-8">
+          {/* Title Section */}
+          <div className="space-y-3">
+            <h1 className="text-2xl font-bold text-slate-900 leading-tight">
+              Your Whitepaper is Ready
+            </h1>
+            <div className="h-1 w-20 bg-gradient-to-r from-[#f5743a] to-orange-400 rounded-full"></div>
+          </div>
+
+          {/* Greeting */}
           <div className="space-y-4">
-            <p className="text-base text-black leading-relaxed">
+            <p className="text-lg text-slate-700">
               Dear {userName},
             </p>
-            <p className="text-base text-black leading-relaxed">
-              Thank you for your interest in our whitepaper. Below you will find the link to access your requested whitepaper download.
+            <p className="text-base text-slate-600 leading-relaxed">
+              Thank you for your interest in our whitepaper. We're excited to share this comprehensive resource with you.
             </p>
           </div>
 
-          {/* Download Button */}
-          <div className="flex justify-center py-6">
-            <Button
-              size="lg"
-              className="text-white font-semibold px-8 py-6 text-base hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: '#f5743a' }}
-              onClick={() => window.location.href = '/whitepaper'}
-            >
-              Download Whitepaper
-            </Button>
+          {/* CTA Section */}
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-8 border border-slate-200">
+            <div className="text-center space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Access Your Whitepaper
+                </h2>
+                <p className="text-sm text-slate-600">
+                  Click the button below to download your requested document
+                </p>
+              </div>
+              
+              <Button
+                size="lg"
+                className="text-white font-semibold px-10 py-6 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                style={{ backgroundColor: '#f5743a' }}
+                onClick={() => window.location.href = '/whitepaper'}
+              >
+                Download Whitepaper
+              </Button>
+            </div>
           </div>
 
           {/* Additional Information */}
-          <div className="pt-4 border-t">
-            <p className="text-sm text-black leading-relaxed">
-              We would be delighted to keep you informed about our latest whitepapers, upcoming events, new products, and industry insights. Stay connected with Image Engineering for the latest developments in automotive imaging and camera testing technology.
-            </p>
+          <div className="pt-6 border-t border-slate-200">
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg">
+              <p className="text-sm text-slate-700 leading-relaxed">
+                <span className="font-semibold text-slate-900">Stay Connected:</span> We'd be delighted to keep you informed about our latest whitepapers, upcoming events, new products, and industry insights in automotive imaging and camera testing technology.
+              </p>
+            </div>
           </div>
 
           {/* Closing */}
-          <div className="space-y-2 pt-4">
-            <p className="text-base text-black">
+          <div className="space-y-3 pt-4">
+            <p className="text-base text-slate-600">
               Best regards,
             </p>
-            <p className="text-base font-medium text-black">
-              The Image Engineering Team
-            </p>
+            <div>
+              <p className="text-lg font-semibold text-slate-900">
+                The Image Engineering Team
+              </p>
+              <p className="text-sm text-slate-500">
+                Experts in Automotive Imaging Standards
+              </p>
+            </div>
           </div>
         </CardContent>
 
-        {/* Email Footer */}
-        <div className="bg-muted/20 px-6 py-4 border-t text-center">
-          <p className="text-xs text-black">
+        {/* Modern Footer */}
+        <div className="bg-slate-900 px-8 py-6 text-center space-y-2">
+          <p className="text-xs text-slate-400">
             © 2024 Image Engineering. All rights reserved.
+          </p>
+          <p className="text-xs text-slate-500">
+            Leading provider of automotive camera testing solutions
           </p>
         </div>
       </Card>
