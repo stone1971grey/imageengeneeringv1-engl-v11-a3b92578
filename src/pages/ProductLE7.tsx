@@ -99,32 +99,32 @@ const ProductLE7 = () => {
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
-                  <a href="#overview" className="text-[#3D7BA2] hover:text-[#f5743a] font-medium transition-colors scroll-smooth"
+                  <a href="#overview" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Overview</a>
-                  <a href="#benefits" className="text-[#3D7BA2] hover:text-[#f5743a] font-medium transition-colors scroll-smooth"
+                  <a href="#benefits" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Key Benefits</a>
-                  <a href="#use-cases" className="text-[#3D7BA2] hover:text-[#f5743a] font-medium transition-colors scroll-smooth"
+                  <a href="#use-cases" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('use-cases')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Use Cases</a>
-                  <a href="#specifications" className="text-[#3D7BA2] hover:text-[#f5743a] font-medium transition-colors scroll-smooth"
+                  <a href="#specifications" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('specifications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Specifications</a>
-                  <a href="#faq" className="text-[#3D7BA2] hover:text-[#f5743a] font-medium transition-colors scroll-smooth"
+                  <a href="#faq" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>FAQ</a>
-                  <a href="#downloads" className="text-[#3D7BA2] hover:text-[#f5743a] font-medium transition-colors scroll-smooth"
+                  <a href="#downloads" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
