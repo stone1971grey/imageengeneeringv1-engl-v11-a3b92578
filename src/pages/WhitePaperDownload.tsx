@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Mail } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-black.png";
 
 const WhitePaperDownload = () => {
+  const location = useLocation();
+  const { firstName, lastName } = (location.state as { firstName?: string; lastName?: string }) || {};
+  const userName = firstName && lastName ? `${firstName} ${lastName}` : "Reader";
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted flex items-center justify-center p-4">
       <Card className="max-w-2xl w-full bg-white shadow-xl">
@@ -24,7 +29,7 @@ const WhitePaperDownload = () => {
         <CardContent className="pt-8 pb-8 space-y-6">
           <div className="space-y-4">
             <p className="text-base text-black leading-relaxed">
-              Dear Reader,
+              Dear {userName},
             </p>
             <p className="text-base text-black leading-relaxed">
               Thank you for your interest in our whitepaper. Below you will find the link to access your requested whitepaper download.

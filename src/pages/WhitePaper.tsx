@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -152,6 +153,7 @@ const whitePapers: WhitePaper[] = [
 
 const WhitePaper = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [selectedPaper, setSelectedPaper] = useState<WhitePaper | null>(null);
   const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
@@ -172,13 +174,18 @@ const WhitePaper = () => {
   const onSubmit = (data: DownloadFormValues) => {
     console.log("Download request:", { ...data, whitePaper: selectedPaper?.id });
     
-    // Redirect to email simulation page
+    // Redirect to email simulation page with user data
     setTimeout(() => {
       setDownloadSuccess(true);
       toast.success("Redirecting to download...");
       
       setTimeout(() => {
-        window.location.href = '/whitepaper_download';
+        navigate('/whitepaper_download', { 
+          state: { 
+            firstName: data.firstName, 
+            lastName: data.lastName 
+          } 
+        });
       }, 1000);
     }, 500);
   };
