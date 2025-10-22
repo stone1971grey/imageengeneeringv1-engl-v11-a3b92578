@@ -123,13 +123,6 @@ const Automotive = () => {
 
       {/* Hero Section */}
       <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
-        {/* Animated background light effects */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/10 to-soft-blue/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        </div>
-        
         <div className="container mx-auto px-6 py-16 lg:py-24 pt-3 md:pt-32 pb-8 lg:pb-12 relative z-10">
           <div className="grid lg:grid-cols-5 gap-16 items-center">
             
