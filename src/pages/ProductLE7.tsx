@@ -188,7 +188,7 @@ const ProductLE7 = () => {
                   <img 
                     src={productImages[currentImageIndex].src} 
                     alt={productImages[currentImageIndex].title}
-                    className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10 transition-all duration-300"
+                    className="w-full h-auto max-h-[400px] lg:max-h-[450px] object-contain bg-white relative z-10 transition-all duration-300"
                   />
                   
                   {/* Subtle overlay */}
