@@ -1,4 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ZoomIn } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Car, Eye, Shield, CheckCircle, Zap, Target } from "lucide-react";
 import inCabinHero from "@/assets/in-cabin-hero.png";
@@ -13,6 +16,8 @@ import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 
 const InCabinTesting = () => {
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#F7F9FB]">
       <Navigation />
@@ -120,14 +125,34 @@ const InCabinTesting = () => {
                     Many of the aspects that in-cabin systems monitor fall into the area of machine vision, including:
                   </p>
                 </div>
-                <div className="rounded-lg overflow-hidden shadow-md">
+                <div 
+                  className="rounded-lg overflow-hidden shadow-md relative group cursor-pointer"
+                  onClick={() => setIsImageZoomed(true)}
+                >
                   <img 
                     src={inCabinMonitoring} 
                     alt="In-Cabin Monitoring System" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center">
+                    <div className="bg-white/90 p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <ZoomIn className="w-6 h-6 text-gray-700" />
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              <Dialog open={isImageZoomed} onOpenChange={setIsImageZoomed}>
+                <DialogContent className="max-w-7xl w-[95vw] p-0">
+                  <div className="relative">
+                    <img 
+                      src={inCabinMonitoring} 
+                      alt="In-Cabin Monitoring System - Vergrößerte Ansicht" 
+                      className="w-full h-auto"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
               
               <ul className="list-disc pl-6 text-gray-700 space-y-2 mb-6">
                 <li>Driver facial expressions to assess distraction or unsafe emotional states</li>
