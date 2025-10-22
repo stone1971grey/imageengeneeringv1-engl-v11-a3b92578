@@ -194,17 +194,11 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {applications.map((app, index) => {
-              const IconComponent = app.icon;
               return (
                 <div 
                   key={index}
                   className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]"
                 >
-                  {/* Large Icon at top - 70x70px round with IE Blue styling */}
-                  <div className="w-[70px] h-[70px] rounded-full bg-[#103e7c]/10 border-2 border-[#103e7c]/20 flex items-center justify-center mb-6 hover:bg-[#103e7c]/20 hover:border-[#103e7c]/40 transition-all duration-300">
-                    <IconComponent className="w-8 h-8 text-[#103e7c]/70" />
-                  </div>
-                  
                    {/* Title */}
                    <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight h-16 flex items-start">
                      {app.title}
@@ -218,7 +212,7 @@ const Automotive = () => {
                    {/* CTA Button */}
                    <Button 
                      className="w-full text-white hover:opacity-90"
-                     style={{ backgroundColor: '#103e7c' }}
+                     style={{ backgroundColor: '#f5743a' }}
                    >
                      Learn More
                    </Button>
