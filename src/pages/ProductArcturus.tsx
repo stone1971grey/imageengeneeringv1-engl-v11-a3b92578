@@ -97,7 +97,7 @@ const ProductArcturus = () => {
         </nav>
 
         {/* Hero Section */}
-        <section id="overview" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8 scroll-mt-[205px]">
+        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[205px] relative overflow-hidden">
           {/* Animated background light effects */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
@@ -105,11 +105,11 @@ const ProductArcturus = () => {
             <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/10 to-soft-blue/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
           </div>
           
-          <div className="container mx-auto px-6 py-16 lg:py-24 pt-3 md:pt-32 pb-8 lg:pb-12 relative z-10">
-            <div className="grid lg:grid-cols-5 gap-16 items-center">
+          <div className="container mx-auto px-6 py-16 lg:py-24 pt-3 md:pt-32 relative z-10">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
               
-              {/* Left Content - 2/5 */}
-              <div className="lg:col-span-2 space-y-8">
+              {/* Left Content */}
+              <div className="space-y-8">
                 <div>
                         <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
                           ARCTURUS
@@ -134,8 +134,8 @@ const ProductArcturus = () => {
                 </div>
               </div>
 
-              {/* Right Product Image - 3/5 */}
-              <div className="lg:col-span-3 relative px-6">
+              {/* Right Product Image */}
+              <div className="relative">
                 <div className="relative overflow-hidden rounded-lg shadow-soft">
                   {/* Animated glow effect behind image */}
                   <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
@@ -143,8 +143,7 @@ const ProductArcturus = () => {
                   <img 
                     src={arcturusMainGithub} 
                     alt="Arcturus LED System"
-                    className="w-full min-h-[500px] lg:h-[600px] object-cover bg-white relative z-10"
-                    style={{ objectPosition: 'center center' }}
+                    className="w-full h-[500px] lg:h-[600px] object-contain bg-white relative z-10"
                   />
                   
                   {/* Subtle overlay */}
