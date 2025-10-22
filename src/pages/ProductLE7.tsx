@@ -291,16 +291,10 @@ const ProductLE7 = () => {
                   <div className="flex gap-4">
                     <Button 
                       size="lg"
-                      className="bg-cyan-500 hover:bg-cyan-600 text-white px-8 py-3 text-lg font-medium"
+                      className="px-8 py-3 text-lg font-medium"
+                      style={{ backgroundColor: '#f5743a', color: 'white' }}
                     >
                       View Standards
-                    </Button>
-                    <Button 
-                      size="lg"
-                      variant="outline"
-                      className="border-slate-400 text-slate-300 hover:bg-slate-700 hover:text-white px-8 py-3 text-lg font-medium"
-                    >
-                      Learn More
                     </Button>
                   </div>
                 </div>
