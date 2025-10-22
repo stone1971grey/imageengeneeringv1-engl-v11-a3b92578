@@ -78,7 +78,7 @@ const InCabinTesting = () => {
                    <Button 
                      size="lg"
                      className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                     style={{ backgroundColor: '#103e7c' }}
+                     style={{ backgroundColor: '#f5743a' }}
                    >
                       Find Your Solution
                    </Button>
@@ -292,9 +292,9 @@ const InCabinTesting = () => {
                     </p>
                     <Link to="/product/le7">
                       <Button 
-                        variant="decision"
                         size="lg"
-                        className="w-full group"
+                        className="w-full group text-white"
+                        style={{ backgroundColor: '#f5743a' }}
                       >
                          Learn More
                       </Button>
@@ -321,9 +321,9 @@ const InCabinTesting = () => {
                       A uniform light source for testing cameras with reflective test targets in the NIR range.
                     </p>
                     <Button 
-                      variant="decision"
                       size="lg"
-                      className="w-full group"
+                      className="w-full group text-white"
+                      style={{ backgroundColor: '#f5743a' }}
                     >
                        Learn More
                     </Button>
@@ -349,9 +349,9 @@ const InCabinTesting = () => {
                       A timing measurement device for measuring the essential timing parameters of camera systems, including those in the NIR range.
                     </p>
                     <Button 
-                      variant="decision"
                       size="lg"
-                      className="w-full group"
+                      className="w-full group text-white"
+                      style={{ backgroundColor: '#f5743a' }}
                     >
                        Learn More
                     </Button>
@@ -377,9 +377,9 @@ const InCabinTesting = () => {
                       A test chart for spectral sensitivity measurements and color calibrations in the NIR range.
                     </p>
                     <Button 
-                      variant="decision"
                       size="lg"
-                      className="w-full group"
+                      className="w-full group text-white"
+                      style={{ backgroundColor: '#f5743a' }}
                     >
                        Learn More
                     </Button>
@@ -407,9 +407,9 @@ const InCabinTesting = () => {
                       Advanced software for evaluating the performance of various image quality factors.
                     </p>
                     <Button 
-                      variant="decision"
                       size="lg"
-                      className="w-full group"
+                      className="w-full group text-white"
+                      style={{ backgroundColor: '#f5743a' }}
                     >
                        Learn More
                     </Button>
