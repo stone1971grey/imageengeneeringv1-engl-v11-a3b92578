@@ -263,7 +263,7 @@ const Events = () => {
         </div>
         
           {!event.isPast && event.registrationUrl && (
-            <Button className="w-full" asChild>
+            <Button className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white" asChild>
               <a href={event.registrationUrl}>Register Now</a>
             </Button>
           )}
@@ -316,7 +316,7 @@ const Events = () => {
                         </div>
                       </div>
                     </div>
-                    <Button size="lg" asChild>
+                    <Button size="lg" className="bg-[#f5743a] hover:bg-[#f5743a]/90 text-white" asChild>
                       <a href={featuredEvent.registrationUrl}>Register Now</a>
                     </Button>
                   </div>
