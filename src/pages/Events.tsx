@@ -289,40 +289,9 @@ const Events = () => {
             <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
               Events & Training
             </h1>
-            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-2xl">
+            <p className="text-xl lg:text-2xl text-white mb-8 max-w-2xl">
               Our current training courses, workshops and events worldwide.
             </p>
-            
-            {/* Featured Event Banner */}
-            {featuredEvent && (
-              <Card className="bg-card/80 backdrop-blur-sm border-primary/20">
-                <CardContent className="p-6">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div>
-                      <Badge className="mb-2">Next Event</Badge>
-                      <h3 className="text-xl font-semibold mb-2">{featuredEvent.title}</h3>
-                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          {formatDate(featuredEvent.date)}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {featuredEvent.location.city}, {featuredEvent.location.country}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Globe className="h-4 w-4" />
-                          {featuredEvent.language}
-                        </div>
-                      </div>
-                    </div>
-                    <Button size="lg" className="bg-[#f5743a] hover:bg-[#f5743a]/90 text-white" asChild>
-                      <a href={featuredEvent.registrationUrl}>Register Now</a>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </section>
