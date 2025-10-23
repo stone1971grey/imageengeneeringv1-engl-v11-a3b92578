@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import ActionHero from "@/components/ActionHero";
 import { Calendar, MapPin, Clock, Globe, Filter, ArrowUpDown } from "lucide-react";
 
 // Import event images
@@ -275,26 +276,11 @@ const Events = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${eventsHero})`
-          }}
-        />
-        <div className="relative container mx-auto px-6">
-          <div className="max-w-4xl">
-            <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
-              Events & Training
-            </h1>
-            <p className="text-xl lg:text-2xl text-white mb-8 max-w-2xl">
-              Our current training courses, workshops and events worldwide.
-            </p>
-          </div>
-        </div>
-      </section>
+      <ActionHero 
+        title="Events & Training"
+        subtitle="Our current training courses, workshops and events worldwide."
+        backgroundImage={eventsHero}
+      />
 
       {/* Events Content */}
       <section className="py-16">
