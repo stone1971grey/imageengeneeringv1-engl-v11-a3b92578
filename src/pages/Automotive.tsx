@@ -422,7 +422,7 @@ const Automotive = () => {
                       )}
                    </div>
                    <div className="p-6 flex flex-col flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#577eb4]">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f5743a]">
                         {product.title}
                       </h3>
                      <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
