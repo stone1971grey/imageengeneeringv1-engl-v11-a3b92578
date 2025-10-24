@@ -153,7 +153,8 @@ const sampleEvents: Event[] = [
     language: "DE",
     description: "Specialized training on medical imaging quality assessment and endoscopy testing standards.",
     image: eventMedicalSeminar,
-    isPast: true
+    isPast: true,
+    registrationUrl: "#"
   },
   {
     id: "past2",
@@ -169,7 +170,8 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.",
     image: eventAutomotiveConference,
-    isPast: true
+    isPast: true,
+    registrationUrl: "#"
   }
 ];
 
