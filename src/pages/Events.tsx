@@ -39,7 +39,7 @@ const sampleEvents: Event[] = [
   {
     id: "1",
     title: "Advanced Camera Testing Workshop",
-    date: "2024-03-15",
+    date: "2025-03-15",
     time: "09:00 - 17:00",
     location: {
       city: "Köln",
@@ -56,7 +56,7 @@ const sampleEvents: Event[] = [
   {
     id: "2",
     title: "ADAS Vision Testing Seminar",
-    date: "2024-04-08",
+    date: "2025-04-08",
     time: "10:00 - 16:00",
     location: {
       city: "Tokyo",
@@ -73,7 +73,7 @@ const sampleEvents: Event[] = [
   {
     id: "3",
     title: "Mobile Camera Quality Conference",
-    date: "2024-05-20",
+    date: "2025-05-20",
     time: "08:30 - 18:00",
     location: {
       city: "San Francisco",
@@ -90,7 +90,7 @@ const sampleEvents: Event[] = [
   {
     id: "4",
     title: "HDR Testing Masterclass",
-    date: "2024-06-12",
+    date: "2025-06-12",
     time: "09:30 - 17:30",
     location: {
       city: "München",
@@ -107,7 +107,7 @@ const sampleEvents: Event[] = [
   {
     id: "5",
     title: "Automotive Vision Standards Workshop",
-    date: "2024-07-15",
+    date: "2025-07-15",
     time: "09:00 - 16:00",
     location: {
       city: "Shanghai",
@@ -123,8 +123,8 @@ const sampleEvents: Event[] = [
   },
   {
     id: "6",
-    title: "Image Quality Expo 2024",
-    date: "2024-09-25",
+    title: "Image Quality Expo 2025",
+    date: "2025-09-25",
     time: "08:00 - 19:00",
     location: {
       city: "London",
@@ -138,11 +138,10 @@ const sampleEvents: Event[] = [
     isPast: false,
     registrationUrl: "#"
   },
-  // Past events
   {
-    id: "past1",
+    id: "7",
     title: "Medical Imaging Quality Seminar",
-    date: "2023-11-15",
+    date: "2025-11-15",
     time: "10:00 - 16:00",
     location: {
       city: "Berlin",
@@ -153,13 +152,13 @@ const sampleEvents: Event[] = [
     language: "DE",
     description: "Specialized training on medical imaging quality assessment and endoscopy testing standards.",
     image: eventMedicalSeminar,
-    isPast: true,
+    isPast: false,
     registrationUrl: "#"
   },
   {
-    id: "past2",
-    title: "Automotive Testing Conference 2023",
-    date: "2023-10-08",
+    id: "8",
+    title: "Automotive Testing Conference 2025",
+    date: "2025-12-08",
     time: "09:00 - 18:00",
     location: {
       city: "Detroit",
@@ -170,7 +169,7 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.",
     image: eventAutomotiveConference,
-    isPast: true,
+    isPast: false,
     registrationUrl: "#"
   }
 ];
