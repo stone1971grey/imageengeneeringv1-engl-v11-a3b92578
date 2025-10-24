@@ -10,58 +10,112 @@ import chartsHero from "@/assets/charts-hero.jpg";
 // Sample chart data (simplified)
 const chartItems = [
   {
-    id: "te42",
-    title: "TE42 Low Light Chart",
+    id: "te42-ll",
+    title: "TE42-LL",
     category: "Low Light Testing",
-    sku: "TE42-V2",
-    description: "Professional test chart for low-light camera performance evaluation. Includes gray scales, color patches, and resolution targets optimized for challenging lighting conditions.",
-    features: ["OECF Analysis", "Color Accuracy", "Noise Performance"],
+    sku: "TE42-LL",
+    description: "Multipurpose test chart for measuring low light performance (ISO compliant). Essential for evaluating camera performance in challenging lighting conditions.",
+    features: ["Low Light Performance", "ISO Compliant", "Multi-Purpose"],
+    downloadUrl: "#te42-ll-datasheet"
+  },
+  {
+    id: "te42",
+    title: "TE42",
+    category: "High-Speed Testing",
+    sku: "TE42",
+    description: "Multipurpose test chart for high-speed camera testing. Designed for comprehensive evaluation of fast-moving capture systems.",
+    features: ["High-Speed Testing", "Multi-Purpose", "Professional Grade"],
     downloadUrl: "#te42-datasheet"
   },
   {
-    id: "te292",
-    title: "TE292 Dead Leaves Chart",
-    category: "Resolution Testing",
-    sku: "TE292",
-    description: "Industry-standard resolution testing chart with dead leaves pattern for MTF and texture analysis. Essential for evaluating camera sharpness and detail reproduction.",
-    features: ["MTF Testing", "Texture Analysis", "ISO 12233 Compliant"],
-    downloadUrl: "#te292-datasheet"
-  },
-  {
-    id: "te294",
-    title: "TE294 Grayscale Chart",
-    category: "Color & Tone",
-    sku: "TE294",
-    description: "Precision grayscale chart for accurate tone reproduction testing. Features calibrated neutral patches from black to white for gamma and OECF analysis.",
-    features: ["20 Gray Steps", "Neutral Patches", "OECF Calibration"],
-    downloadUrl: "#te294-datasheet"
-  },
-  {
     id: "te300",
-    title: "TE300 Universal Test Chart",
-    category: "Multi-Purpose",
+    title: "TE300",
+    category: "Skin Tone Testing",
     sku: "TE300",
-    description: "Comprehensive all-in-one test chart combining resolution, color, and distortion testing capabilities. Perfect for complete camera system evaluation.",
-    features: ["Resolution Targets", "Color Patches", "Distortion Grid"],
+    description: "An advanced and modern skin tone test chart. Perfect for accurate color reproduction in portrait and video applications.",
+    features: ["Skin Tone Analysis", "Color Accuracy", "Modern Design"],
     downloadUrl: "#te300-datasheet"
   },
   {
-    id: "geocal",
-    title: "GeoCal Calibration Target",
-    category: "Geometric Calibration",
-    sku: "GEOCAL-01",
-    description: "Advanced geometric calibration target for camera calibration and distortion correction. Precision-manufactured for accurate intrinsic parameter estimation.",
-    features: ["High Precision", "Multiple Patterns", "Calibration Software"],
-    downloadUrl: "#geocal-datasheet"
+    id: "te297",
+    title: "TE297",
+    category: "Dynamic Range",
+    sku: "TE297",
+    description: "A grayscale test chart for wide dynamic range camera testing. Enables comprehensive HDR performance evaluation.",
+    features: ["Wide Dynamic Range", "Grayscale Steps", "HDR Testing"],
+    downloadUrl: "#te297-datasheet"
   },
   {
-    id: "hdr-chart",
-    title: "HDR Extended Range Chart",
-    category: "HDR Testing",
-    sku: "HDR-EXT",
-    description: "Specialized chart for High Dynamic Range camera testing with extended luminance range. Enables comprehensive HDR performance evaluation.",
-    features: ["20 Stop Range", "LED Backlight", "Dynamic Testing"],
-    downloadUrl: "#hdr-datasheet"
+    id: "te296",
+    title: "TE296",
+    category: "Resolution Testing",
+    sku: "TE296",
+    description: "A slanted edge chart for the updated ISO 12233 (2023) standard. Industry-leading resolution measurement tool.",
+    features: ["ISO 12233:2023", "Slanted Edge", "MTF Analysis"],
+    downloadUrl: "#te296-datasheet"
+  },
+  {
+    id: "te292",
+    title: "TE292",
+    category: "Spectral Testing",
+    sku: "TE292",
+    description: "Spectral sensitivity measurements with iQ-LED. Advanced tool for analyzing camera spectral response characteristics.",
+    features: ["Spectral Sensitivity", "iQ-LED Compatible", "Precision Measurement"],
+    downloadUrl: "#te292-datasheet"
+  },
+  {
+    id: "te285",
+    title: "TE285",
+    category: "IR Testing",
+    sku: "TE285",
+    description: "IEC 62676-5 based test chart for the evaluation of Infra-Red performance. Essential for security and surveillance camera testing.",
+    features: ["IEC 62676-5", "IR Evaluation", "Security Applications"],
+    downloadUrl: "#te285-datasheet"
+  },
+  {
+    id: "te281",
+    title: "TE281",
+    category: "Flare Testing",
+    sku: "TE281",
+    description: "Flare target according to ISO 18844. Precise evaluation of lens flare and veiling glare characteristics.",
+    features: ["ISO 18844", "Flare Analysis", "Veiling Glare"],
+    downloadUrl: "#te281-datasheet"
+  },
+  {
+    id: "te280",
+    title: "TE280",
+    category: "Texture Analysis",
+    sku: "TE280",
+    description: "Texture loss test chart ISO 19567. Evaluates camera texture preservation and detail rendering capabilities.",
+    features: ["ISO 19567", "Texture Loss", "Detail Analysis"],
+    downloadUrl: "#te280-datasheet"
+  },
+  {
+    id: "te279",
+    title: "TE279",
+    category: "4K/UHD Testing",
+    sku: "TE279",
+    description: "4K (UHD TV) Universal test chart. Comprehensive testing solution for 4K camera systems and displays.",
+    features: ["4K Resolution", "UHD TV", "Universal Testing"],
+    downloadUrl: "#te279-datasheet"
+  },
+  {
+    id: "te278",
+    title: "TE278",
+    category: "8K Testing",
+    sku: "TE278",
+    description: "8K (UHD TV2) Resolution test chart 200-4000 CPH. Next-generation testing for ultra-high resolution systems.",
+    features: ["8K Resolution", "200-4000 CPH", "UHD TV2"],
+    downloadUrl: "#te278-datasheet"
+  },
+  {
+    id: "te275",
+    title: "TE275",
+    category: "Resolution Testing",
+    sku: "TE275",
+    description: "Slanted Edge ISO 12233:2017. Standard-compliant resolution testing for professional camera evaluation.",
+    features: ["ISO 12233:2017", "Slanted Edge", "Resolution Analysis"],
+    downloadUrl: "#te275-datasheet"
   }
 ];
 
