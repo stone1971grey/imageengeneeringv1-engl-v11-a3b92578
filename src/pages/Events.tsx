@@ -258,6 +258,13 @@ const Events = () => {
       {/* Events Content */}
       <section className="py-16">
         <div className="container mx-auto px-6">
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold mb-4">Upcoming Events & Training</h2>
+            <p className="text-white max-w-2xl">
+              Join our expert-led workshops, training sessions, and industry events to expand your knowledge in camera testing, image quality measurement, and industry standards.
+            </p>
+          </div>
+          
           {/* Events Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sortedEvents.map(event => (
