@@ -480,12 +480,8 @@ export default function Downloads() {
     <div className="min-h-screen bg-white">
       <Navigation />
 
-      {/* Main content wrapper with top margin to clear fixed navigation */}
-      <div className="pt-[240px]">
-
-        <main className="relative z-0">
-        {/* Hero Section */}
-        <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
+      {/* Hero Section */}
+      <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{
@@ -813,8 +809,6 @@ export default function Downloads() {
             </div>
           </div>
         </div>
-        </main>
-      </div>
 
       {/* Details Dialog */}
       <Dialog open={!!detailsItem} onOpenChange={() => setDetailsItem(null)}>
