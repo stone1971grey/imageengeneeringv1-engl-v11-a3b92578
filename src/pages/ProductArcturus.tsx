@@ -322,49 +322,8 @@ const ProductArcturus = () => {
         </div>
       </section>
 
-      {/* Standards Compliance & KPIs */}
+      {/* KPI Visualization Only */}
       <section className="container mx-auto px-4 pb-20">
-        <div className="grid md:grid-cols-2 gap-8">
-          
-          {/* Standards Compliance */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-6">Supported Standards</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="group p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-green-800">IEEE P2020</span>
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                </div>
-                <p className="text-sm text-green-700">Automotive Camera Standard</p>
-              </div>
-              
-              <div className="group p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-blue-800">ISO 12233</span>
-                  <CheckCircle className="w-5 h-5 text-blue-600" />
-                </div>
-                <p className="text-sm text-blue-700">Resolution Measurement</p>
-              </div>
-              
-              <div className="group p-4 bg-purple-50 rounded-lg border border-purple-200 hover:bg-purple-100 transition-colors cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-purple-800">ISO 15739</span>
-                  <CheckCircle className="w-5 h-5 text-purple-600" />
-                </div>
-                <p className="text-sm text-purple-700">Noise Measurement</p>
-              </div>
-              
-              <div className="group p-4 bg-orange-50 rounded-lg border border-orange-200 hover:bg-orange-100 transition-colors cursor-pointer">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-orange-800">IEC 62676</span>
-                  <CheckCircle className="w-5 h-5 text-orange-600" />
-                </div>
-                <p className="text-sm text-orange-700">CCTV Standard</p>
-              </div>
-            </div>
-          </div>
-
-          {/* KPI Visualization */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
             <h3 className="text-xl font-semibold text-[#2D2D2D] mb-6">Key Performance Indicators (KPIs)</h3>
             <div className="space-y-4">
@@ -414,7 +373,6 @@ const ProductArcturus = () => {
               </div>
             </div>
           </div>
-        </div>
       </section>
 
       {/* Interactive Product Comparison */}
