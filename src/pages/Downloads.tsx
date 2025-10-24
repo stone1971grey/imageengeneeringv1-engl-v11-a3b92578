@@ -53,6 +53,7 @@ import {
 
 // Import AI assistant avatar
 import aiAssistantAvatar from "@/assets/ai-assistant-realistic.jpg";
+import downloadsHero from "@/assets/downloads-hero.jpg";
 
 // Data model
 export type DownloadItem = {
@@ -483,14 +484,21 @@ export default function Downloads() {
       <div className="pt-[240px]">
 
         <main className="relative z-0">
-        {/* Hero */}
-        <section className="bg-gray-50">
-          <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-16">
-            <div className="text-center">
-              <h1 className="text-4xl sm:text-5xl font-medium mb-4 text-gray-900">
+        {/* Hero Section */}
+        <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${downloadsHero})`
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
+          <div className="relative container mx-auto px-6">
+            <div className="max-w-4xl">
+              <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6">
                 Downloadcenter
               </h1>
-              <p className="text-lg text-gray-600">
+              <p className="text-xl lg:text-2xl text-white mb-8 max-w-2xl">
                 Alle Ressourcen – Software, Handbücher, API‑Dokumente und mehr.
               </p>
             </div>
