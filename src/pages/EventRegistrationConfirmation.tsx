@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLocation } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-black.png";
+import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
 import { Calendar, MapPin, Clock } from "lucide-react";
 
 const EventRegistrationConfirmation = () => {
@@ -19,9 +20,20 @@ const EventRegistrationConfirmation = () => {
     }
   } | null;
   
-  const firstName = state?.firstName || "";
-  const lastName = state?.lastName || "";
-  const selectedEvent = state?.selectedEvent;
+  // Fallback data for preview
+  const firstName = state?.firstName || "Max";
+  const lastName = state?.lastName || "Mustermann";
+  const selectedEvent = state?.selectedEvent || {
+    id: "1",
+    title: "Advanced Camera Testing Workshop",
+    date: "2025-03-15",
+    time: "09:00 - 17:00",
+    location: {
+      city: "Köln",
+      country: "Deutschland"
+    },
+    image: eventCameraWorkshop
+  };
   
   const userName = firstName && lastName ? `${firstName} ${lastName}` : "Leserin/Leser";
 
