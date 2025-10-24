@@ -1,13 +1,11 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ActionHero from "@/components/ActionHero";
-import { Calendar, MapPin, Clock, Globe, Filter, ArrowUpDown } from "lucide-react";
+import { Calendar, MapPin, Clock } from "lucide-react";
 
 // Import event images
 import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
@@ -177,32 +175,13 @@ const sampleEvents: Event[] = [
 ];
 
 const Events = () => {
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [countryFilter, setCountryFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<string>("date-asc");
+  // Sort events by date (ascending)
+  const sortedEvents = [...sampleEvents].sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
 
-  // Get unique countries for filter
-  const countries = [...new Set(sampleEvents.map(event => event.location.country))];
-
-  // Filter and sort events
-  const filteredEvents = sampleEvents
-    .filter(event => {
-      if (categoryFilter !== "all" && event.category !== categoryFilter) return false;
-      if (countryFilter !== "all" && event.location.country !== countryFilter) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "date-desc":
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
-        case "date-asc":
-        default:
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
-      }
-    });
-
-  const upcomingEvents = filteredEvents.filter(event => !event.isPast);
-  const pastEvents = filteredEvents.filter(event => event.isPast);
+  const upcomingEvents = sortedEvents.filter(event => !event.isPast);
+  const pastEvents = sortedEvents.filter(event => event.isPast);
 
   // Featured event (next upcoming)
   const featuredEvent = upcomingEvents[0];
@@ -285,48 +264,6 @@ const Events = () => {
       {/* Events Content */}
       <section className="py-16">
         <div className="container mx-auto px-6">
-          {/* Filters and Sorting */}
-          <div className="mb-8 space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between">
-            <div className="flex flex-wrap gap-4">
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-48">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Kategorie" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="Schulung">Training</SelectItem>
-                  <SelectItem value="Workshop">Workshop</SelectItem>
-                  <SelectItem value="Messe">Trade Fair</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={countryFilter} onValueChange={setCountryFilter}>
-                <SelectTrigger className="w-48">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Land" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Countries</SelectItem>
-                  {countries.map(country => (
-                    <SelectItem key={country} value={country}>{country}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48">
-                <ArrowUpDown className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Sortieren" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="date-asc">Date (ascending)</SelectItem>
-                <SelectItem value="date-desc">Date (descending)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Events Tabs */}
           <Tabs defaultValue="upcoming" className="w-full">
             <TabsList className="grid w-full grid-cols-2 max-w-md">
