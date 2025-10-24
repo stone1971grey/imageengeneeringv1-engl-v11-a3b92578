@@ -211,7 +211,8 @@ export const en = {
     published: "Published",
     downloadIntro: "To receive access to the white paper, please enter your contact details and confirm your email address.",
     gdprCompliance: "This verification step ensures that your download link is sent securely and that we comply with current data protection regulations (GDPR).",
-    redirectInfo: "After confirming your email, you'll be redirected to the download page for the IEEE P2020 Automotive Imaging White Paper."
+    redirectInfo: "After confirming your email, you'll be redirected to the download page for the IEEE P2020 Automotive Imaging White Paper.",
+    additionalInformation: "Additional Information"
   },
   
   // Footer

@@ -211,7 +211,8 @@ export const de = {
     published: "Veröffentlicht",
     downloadIntro: "Um Zugriff auf das Whitepaper zu erhalten, geben Sie bitte Ihre Kontaktdaten ein und bestätigen Sie Ihre E-Mail-Adresse.",
     gdprCompliance: "Dieser Verifizierungsschritt stellt sicher, dass Ihr Download-Link sicher gesendet wird und wir die aktuellen Datenschutzbestimmungen (DSGVO) einhalten.",
-    redirectInfo: "Nach Bestätigung Ihrer E-Mail werden Sie zur Download-Seite für das IEEE P2020 Automotive Imaging Whitepaper weitergeleitet."
+    redirectInfo: "Nach Bestätigung Ihrer E-Mail werden Sie zur Download-Seite für das IEEE P2020 Automotive Imaging Whitepaper weitergeleitet.",
+    additionalInformation: "Zusätzliche Informationen"
   },
   
   // Footer

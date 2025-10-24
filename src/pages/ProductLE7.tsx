@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import ProductFAQ from "@/components/ProductFAQ";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
+import { useTranslation } from "@/hooks/useTranslation";
 
 import le7Product from "@/assets/le7-product.png";
 import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
@@ -19,6 +20,7 @@ import ieeeLogo from "@/assets/ieee-logo-standards.jpg";
 import isoLogo from "@/assets/iso-standards-logo-banner.jpg";
 
 const ProductLE7 = () => {
+  const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -162,7 +164,7 @@ const ProductLE7 = () => {
                         </p>
                 </div>
                 
-                <div className="pt-4">
+                <div className="pt-4 flex gap-4">
                   <Button 
                     size="lg"
                     className="border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
@@ -175,6 +177,19 @@ const ProductLE7 = () => {
                     }}
                   >
                      Contact Sales
+                  </Button>
+                  
+                  <Button 
+                    size="lg"
+                    className="bg-white border border-gray-300 px-8 py-4 text-lg font-medium text-gray-900 shadow-soft hover:shadow-lg transition-all duration-300"
+                    onClick={() => {
+                      const element = document.getElementById('overview');
+                      if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                  >
+                     {t.whitepaper.additionalInformation}
                   </Button>
                 </div>
               </div>

@@ -211,7 +211,8 @@ export const ko = {
     published: "게시됨",
     downloadIntro: "백서에 액세스하려면 연락처 정보를 입력하고 이메일 주소를 확인하세요.",
     gdprCompliance: "이 확인 단계는 다운로드 링크가 안전하게 전송되고 현행 데이터 보호 규정(GDPR)을 준수하도록 보장합니다.",
-    redirectInfo: "이메일 확인 후 IEEE P2020 Automotive Imaging White Paper 다운로드 페이지로 리디렉션됩니다."
+    redirectInfo: "이메일 확인 후 IEEE P2020 Automotive Imaging White Paper 다운로드 페이지로 리디렉션됩니다.",
+    additionalInformation: "추가 정보"
   },
   
   // Footer
