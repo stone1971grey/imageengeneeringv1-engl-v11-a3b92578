@@ -278,51 +278,47 @@ const ProductLE7 = () => {
           </div>
           
           {/* International Standards & Certifications Banner Section */}
-          <section className="bg-gradient-to-r from-slate-800 to-slate-900 py-16">
+          <section className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
             <div className="container mx-auto px-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-                    International Standards & Certifications
-                  </h2>
-                  <p className="text-xl text-slate-300 mb-8 max-w-3xl">
-                    Our solutions are tested and validated according to globally recognized standards, including ISO (image quality, noise, low-light), IEEE-P2020, and VCX benchmarks for phone and webcam performance.
-                  </p>
-                  <div className="flex gap-4">
-                    <Button 
-                      size="lg"
-                      className="px-8 py-3 text-lg font-medium"
-                      style={{ backgroundColor: '#f5743a', color: 'white' }}
-                    >
-                      View Standards
-                    </Button>
-                  </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center">
+                International Standards & Certifications
+              </h2>
+              <p className="text-xl text-gray-600 mb-12 max-w-3xl text-center mx-auto">
+                Our solutions are tested and validated according to globally recognized standards, including ISO (image quality, noise, low-light), IEEE-P2020, and VCX benchmarks for phone and webcam performance.
+              </p>
+              
+              <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
+                <div className="h-24 w-40 flex items-center justify-center">
+                  <img 
+                    src={vcxLogo} 
+                    alt="VCX Logo"
+                    className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                  />
                 </div>
-                <div className="hidden lg:block">
-                  <div className="grid grid-cols-1 gap-6">
-                    <div className="w-28 h-28 bg-white rounded-lg flex items-center justify-center p-3">
-                      <img 
-                        src={vcxLogo} 
-                        alt="VCX Logo"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="w-28 h-28 bg-white rounded-lg flex items-center justify-center p-3">
-                      <img 
-                        src={ieeeLogo} 
-                        alt="IEEE Logo"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="w-28 h-28 bg-white rounded-lg flex items-center justify-center p-3">
-                      <img 
-                        src={isoLogo} 
-                        alt="ISO Standards Logo"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
+                <div className="h-24 w-40 flex items-center justify-center">
+                  <img 
+                    src={ieeeLogo} 
+                    alt="IEEE Logo"
+                    className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                  />
                 </div>
+                <div className="h-24 w-40 flex items-center justify-center">
+                  <img 
+                    src={isoLogo} 
+                    alt="ISO Standards Logo"
+                    className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-center">
+                <Button 
+                  size="lg"
+                  className="text-white px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
+                  style={{ backgroundColor: '#f5743a' }}
+                >
+                  View Standards
+                </Button>
               </div>
             </div>
           </section>
