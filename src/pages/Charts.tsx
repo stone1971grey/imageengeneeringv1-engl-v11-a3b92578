@@ -19,6 +19,24 @@ const chartItems = [
     downloadUrl: "#te42-ll-t-datasheet"
   },
   {
+    id: "te42-ll-uw",
+    title: "TE42-LL UW",
+    category: "Ultra-Wide Testing",
+    sku: "TE42-LL-UW",
+    description: "Multipurpose test chart for ultra-wide camera systems. Specially designed for testing wide-angle and fisheye camera performance.",
+    features: ["Ultra-Wide Camera Systems", "Wide-Angle Testing", "Multi-Purpose"],
+    downloadUrl: "#te42-ll-uw-datasheet"
+  },
+  {
+    id: "te42-ll-2ar",
+    title: "TE42-LL 2AR",
+    category: "Multi-Aspect Testing",
+    sku: "TE42-LL-2AR",
+    description: "Multipurpose test chart with two aspect ratios on the same chart. Efficiently test different aspect ratios in one setup.",
+    features: ["Two Aspect Ratios", "Multi-Purpose", "Efficient Testing"],
+    downloadUrl: "#te42-ll-2ar-datasheet"
+  },
+  {
     id: "te42",
     title: "TE42",
     category: "High-Speed Testing",
