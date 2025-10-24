@@ -10,13 +10,13 @@ import chartsHero from "@/assets/charts-hero.jpg";
 // Sample chart data (simplified)
 const chartItems = [
   {
-    id: "te42-ll",
-    title: "TE42-LL",
+    id: "te42-ll-t",
+    title: "TE42-LL-T",
     category: "Low Light Testing",
-    sku: "TE42-LL",
-    description: "Multipurpose test chart for measuring low light performance (ISO compliant). Essential for evaluating camera performance in challenging lighting conditions.",
-    features: ["Low Light Performance", "ISO Compliant", "Multi-Purpose"],
-    downloadUrl: "#te42-ll-datasheet"
+    sku: "TE42-LL-T",
+    description: "Multipurpose low-light test chart with integrated LED-Panels for timing measurements. Perfect for evaluating camera performance with precise timing control.",
+    features: ["Integrated LED-Panels", "Timing Measurements", "Low Light Testing"],
+    downloadUrl: "#te42-ll-t-datasheet"
   },
   {
     id: "te42",
