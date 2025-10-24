@@ -113,7 +113,7 @@ export default function Downloads() {
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
-          <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+          <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
             {item.category}
           </Badge>
         </div>
