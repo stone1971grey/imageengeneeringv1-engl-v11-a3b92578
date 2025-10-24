@@ -125,7 +125,7 @@ export default function Downloads() {
           )}
           <span>{item.title}</span>
         </CardTitle>
-        <div className="flex gap-4 text-sm text-muted-foreground">
+        <div className="flex gap-4 text-sm text-white">
           {item.pages && <span>{item.pages} Pages</span>}
           {item.duration && <span>{item.duration}</span>}
           {(item.pages || item.duration) && <span>•</span>}
@@ -133,7 +133,7 @@ export default function Downloads() {
         </div>
       </CardHeader>
       <CardContent className="space-y-4 flex-1 flex flex-col">
-        <CardDescription className="text-base leading-relaxed flex-1">
+        <CardDescription className="text-base leading-relaxed flex-1 text-white">
           {item.abstract}
         </CardDescription>
         
@@ -188,8 +188,8 @@ export default function Downloads() {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">White Papers</h2>
-            <p className="text-muted-foreground max-w-2xl">
+            <h2 className="text-3xl font-bold mb-4 text-white">White Papers</h2>
+            <p className="text-white max-w-2xl">
               In-depth insights into testing methodologies, standards, and best practices for image quality measurement.
             </p>
           </div>
@@ -206,8 +206,8 @@ export default function Downloads() {
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-6">
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Conference Papers</h2>
-            <p className="text-muted-foreground max-w-2xl">
+            <h2 className="text-3xl font-bold mb-4 text-white">Conference Papers</h2>
+            <p className="text-white max-w-2xl">
               Research and technical papers presented at international conferences and industry events.
             </p>
           </div>
@@ -224,8 +224,8 @@ export default function Downloads() {
       <section className="py-16">
         <div className="container mx-auto px-6">
           <div className="mb-12">
-            <h2 className="text-3xl font-bold mb-4">Videos</h2>
-            <p className="text-muted-foreground max-w-2xl">
+            <h2 className="text-3xl font-bold mb-4 text-white">Videos</h2>
+            <p className="text-white max-w-2xl">
               Educational videos covering testing platforms, standards, and methodologies.
             </p>
           </div>
