@@ -11,7 +11,8 @@ import downloadsHero from "@/assets/downloads-hero.jpg";
 interface DownloadItem {
   id: string;
   title: string;
-  category: "whitepaper" | "conference" | "video";
+  type: "whitepaper" | "conference" | "video";
+  category: string;
   pages?: number;
   duration?: string;
   publishDate: string;
@@ -24,7 +25,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "wp-p2020",
     title: "How Well Do Vehicles Really \"See\"? – The IEEE P2020 Automotive Imaging White Paper",
-    category: "whitepaper",
+    type: "whitepaper",
+    category: "Standards & Compliance",
     pages: 24,
     publishDate: "2024-01",
     abstract: "Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance. The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap.",
@@ -33,7 +35,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "wp-printer",
     title: "Printer and Print Life Tests",
-    category: "whitepaper",
+    type: "whitepaper",
+    category: "Testing Methodology",
     pages: 18,
     publishDate: "2023-11",
     abstract: "Comprehensive guide to printer quality testing and print longevity assessment. Learn industry-standard methodologies for evaluating printer performance and output quality.",
@@ -42,7 +45,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "wp-camera",
     title: "Camera Tests",
-    category: "whitepaper",
+    type: "whitepaper",
+    category: "Image Quality",
     pages: 32,
     publishDate: "2024-02",
     abstract: "Advanced camera testing techniques for automotive, mobile, and industrial applications. Explore comprehensive testing methodologies for modern camera systems.",
@@ -51,7 +55,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "cp-adas",
     title: "ADAS Camera Standards and Testing Requirements",
-    category: "conference",
+    type: "conference",
+    category: "Standards & Compliance",
     pages: 16,
     publishDate: "2024-03",
     abstract: "Presented at the International Automotive Conference 2024. Covers the latest standards and testing requirements for Advanced Driver Assistance Systems cameras.",
@@ -60,7 +65,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "cp-hdr",
     title: "HDR Performance Metrics for Automotive Imaging",
-    category: "conference",
+    type: "conference",
+    category: "Image Quality",
     pages: 12,
     publishDate: "2024-05",
     abstract: "Research paper on High Dynamic Range performance evaluation methods, presented at the IEEE Vision Conference.",
@@ -69,7 +75,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "vid-intro",
     title: "Introduction to Automotive Camera Testing",
-    category: "video",
+    type: "video",
+    category: "Testing Methodology",
     duration: "12:34",
     publishDate: "2024-06",
     abstract: "Comprehensive introduction to automotive camera testing methodologies, standards, and best practices. Perfect for engineers new to the field.",
@@ -78,7 +85,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "vid-arcturus",
     title: "Arcturus Testing Platform Overview",
-    category: "video",
+    type: "video",
+    category: "Testing Methodology",
     duration: "8:45",
     publishDate: "2024-04",
     abstract: "Detailed walkthrough of the Arcturus testing platform, demonstrating key features and testing capabilities for automotive imaging.",
@@ -87,7 +95,8 @@ const downloadItems: DownloadItem[] = [
   {
     id: "vid-standards",
     title: "IEEE P2020 Standard Explained",
-    category: "video",
+    type: "video",
+    category: "Standards & Compliance",
     duration: "15:20",
     publishDate: "2024-02",
     abstract: "Deep dive into the IEEE P2020 automotive imaging standard, explaining key metrics, test procedures, and implementation guidelines.",
@@ -96,20 +105,20 @@ const downloadItems: DownloadItem[] = [
 ];
 
 export default function Downloads() {
-  const whitepapers = downloadItems.filter(item => item.category === "whitepaper");
-  const conferencePapers = downloadItems.filter(item => item.category === "conference");
-  const videos = downloadItems.filter(item => item.category === "video");
+  const whitepapers = downloadItems.filter(item => item.type === "whitepaper");
+  const conferencePapers = downloadItems.filter(item => item.type === "conference");
+  const videos = downloadItems.filter(item => item.type === "video");
 
   const DownloadCard = ({ item }: { item: DownloadItem }) => (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
           <Badge className="bg-[#f5743a] text-white hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
-            {item.category === "whitepaper" ? "White Paper" : item.category === "conference" ? "Conference Paper" : "Video"}
+            {item.category}
           </Badge>
         </div>
         <CardTitle className="text-xl leading-relaxed flex items-start gap-3">
-          {item.category === "video" ? (
+          {item.type === "video" ? (
             <Video className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
           ) : (
             <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
@@ -133,7 +142,7 @@ export default function Downloads() {
           asChild
         >
           <a href={item.downloadUrl} target="_blank" rel="noopener noreferrer">
-            {item.category === "video" ? (
+            {item.type === "video" ? (
               <>
                 <Video className="h-4 w-4 mr-2" />
                 Watch Video
