@@ -199,7 +199,7 @@ const Events = () => {
         />
       </div>
       <CardHeader className="space-y-3">
-        <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+        <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal w-fit">
           {event.category}
         </Badge>
         <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
