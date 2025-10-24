@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText } from "lucide-react";
+import { FileText, ChevronDown, X } from "lucide-react";
 import chartsHero from "@/assets/charts-hero.jpg";
 import te42llt from "@/assets/te42-ll-t.png";
 
-// Sample chart data (simplified)
+// Chart data with detailed information
 const chartItems = [
   {
     id: "te42-ll-t",
@@ -18,7 +18,45 @@ const chartItems = [
     description: "Multipurpose low-light test chart with integrated LED-Panels for timing measurements. Perfect for evaluating camera performance with precise timing control.",
     features: ["Integrated LED-Panels", "Timing Measurements", "Low Light Testing"],
     downloadUrl: "#te42-ll-t-datasheet",
-    image: te42llt
+    image: te42llt,
+    tags: ["Color", "Automotive", "Image quality factor", "Dynamic range", "Grayscale", "OECF", "Resolution", "Multipurpose", "Photography", "Security", "Reflective", "iQ-Analyzer-X", "Texture loss", "Noise", "Shading", "Flat Field", "Geometric Distortion", "Aberrations", "Image Stabilization", "Low light", "Timing"],
+    fullDescription: `
+      <h3>TE42-LL Timing Chart</h3>
+      
+      <p>The TE42-LL Timing chart* is a combination of the regular TE42-LL chart for low-light testing and two LED-Panels for timing measurements.</p>
+      
+      <p>The TE42-LL is the exact chart used in ISO 19093, which describes the methods and procedures for measuring the low-light performance of a digital camera. The LED-Panel is designed to measure the crucial timing parameters outlined in ISO 15781.</p>
+      
+      <p>Two LED-Panels are integrated into opposite corners of the TE42-LL Timing chart thus creating an accurate low-light scene with timing measurement capabilities.</p>
+      
+      <p>This chart is very beneficial for the mobile phone and traditional photography industries as they often experience various exposures and low-light situations. It is also beneficial when testing video quality in low-light environments.</p>
+      
+      <p>The TE42-LL Timing chart is also currently being utilized by the VCX-forum for low-light timing measurements.</p>
+      
+      <p>For more information regarding the VCX testing procedure, please see the VCX-Forum whitepaper.</p>
+      
+      <p class="text-sm text-muted-foreground mt-4">*Exact layout and dimensions may differ from image shown on the right.</p>
+      
+      <h3>Chart Attributes</h3>
+      
+      <div class="space-y-2">
+        <div class="grid grid-cols-2 gap-2">
+          <span class="font-semibold">Type:</span>
+          <span>Reflective</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <span class="font-semibold">Format:</span>
+          <div class="space-y-1">
+            <div>A1066 4:3 - Picture size 900 x 675 mm</div>
+            <div>A1066 16:9 - Picture size 1200 x 675 mm</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <span class="font-semibold">Aspect ratio:</span>
+          <span>Selectable</span>
+        </div>
+      </div>
+    `
   },
   {
     id: "te42-ll-uw",
@@ -140,6 +178,17 @@ const chartItems = [
 ];
 
 const Charts = () => {
+  const [selectedChart, setSelectedChart] = useState<typeof chartItems[0] | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedChart(null);
+      setIsClosing(false);
+    }, 500);
+  };
+
   const ChartCard = ({ chart }: { chart: typeof chartItems[0] }) => (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       {chart.image && (
@@ -181,12 +230,10 @@ const Charts = () => {
         
         <Button 
           className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-          asChild
+          onClick={() => setSelectedChart(chart)}
         >
-          <a href={chart.downloadUrl} target="_blank" rel="noopener noreferrer">
-            <FileText className="h-4 w-4 mr-2" />
-            Download Datasheet
-          </a>
+          <FileText className="h-4 w-4 mr-2" />
+          Details
         </Button>
       </CardContent>
     </Card>
@@ -234,6 +281,58 @@ const Charts = () => {
           </div>
         </div>
       </section>
+
+      {/* Selected Chart Detail */}
+      {selectedChart && (
+        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+          <div className="container mx-auto px-6">
+            <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedChart.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <CardTitle className="text-3xl">{selectedChart.title}</CardTitle>
+                <CardDescription className="text-white">
+                  SKU: {selectedChart.sku}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {selectedChart.tags && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedChart.tags.map((tag, idx) => (
+                      <Badge key={idx} variant="outline" className="text-sm border-[#f5743a]/30 text-white">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                
+                {selectedChart.fullDescription && (
+                  <div 
+                    className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1 [&_.grid]:text-foreground"
+                    dangerouslySetInnerHTML={{ __html: selectedChart.fullDescription }}
+                  />
+                )}
+                
+                <div className="pt-6 border-t border-border">
+                  <Button 
+                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                    asChild
+                  >
+                    <a href={selectedChart.downloadUrl} target="_blank" rel="noopener noreferrer">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Download Datasheet
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-16 bg-muted/30">
