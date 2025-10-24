@@ -13,6 +13,7 @@ import Footer from "@/components/Footer";
 import ActionHero from "@/components/ActionHero";
 import { Calendar, MapPin, Clock, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 // Import event images
 import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
@@ -218,6 +219,7 @@ const sampleEvents: Event[] = [
 ];
 
 const Events = () => {
+  const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -240,10 +242,14 @@ const Events = () => {
     toast.success("Registration successful! You will receive a confirmation email shortly.");
     
     setTimeout(() => {
-      handleClose();
-      form.reset();
-      setRegistrationSuccess(false);
-    }, 2000);
+      navigate('/event_registration_confirmation', { 
+        state: { 
+          firstName: data.firstName, 
+          lastName: data.lastName,
+          selectedEvent: selectedEvent
+        } 
+      });
+    }, 1000);
   };
 
   const handleDetailsClick = (event: Event) => {

@@ -24,6 +24,7 @@ import Cart from "./pages/Cart";
 import Events from "./pages/Events";
 import WhitePaper from "./pages/WhitePaper";
 import WhitePaperDownload from "./pages/WhitePaperDownload";
+import EventRegistrationConfirmation from "./pages/EventRegistrationConfirmation";
 import InCabinTesting from "./pages/InCabinTesting";
 import Contact from "./pages/Contact";
 import News from "./pages/News";
@@ -64,6 +65,7 @@ const App = () => (
          <Route path="/events" element={<Events />} />
          <Route path="/whitepaper" element={<WhitePaper />} />
          <Route path="/whitepaper_download" element={<WhitePaperDownload />} />
+         <Route path="/event_registration_confirmation" element={<EventRegistrationConfirmation />} />
          <Route path="/in-cabin-testing" element={<InCabinTesting />} />
          <Route path="/contact" element={<Contact />} />
          <Route path="/news" element={<News />} />
