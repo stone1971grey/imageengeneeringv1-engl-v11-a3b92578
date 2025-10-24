@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ActionHero from "@/components/ActionHero";
@@ -180,11 +179,6 @@ const Events = () => {
     return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
 
-  const upcomingEvents = sortedEvents.filter(event => !event.isPast);
-  const pastEvents = sortedEvents.filter(event => event.isPast);
-
-  // Featured event (next upcoming)
-  const featuredEvent = upcomingEvents[0];
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('de-DE', {
@@ -264,53 +258,12 @@ const Events = () => {
       {/* Events Content */}
       <section className="py-16">
         <div className="container mx-auto px-6">
-          {/* Events Tabs */}
-          <Tabs defaultValue="upcoming" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-md">
-              <TabsTrigger value="upcoming">Current Events</TabsTrigger>
-              <TabsTrigger value="past">Past Events</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="upcoming" className="mt-8">
-              {upcomingEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {upcomingEvents.map(event => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-              ) : (
-                <Card className="text-center py-12">
-                  <CardContent>
-                    <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-semibold mb-2">No events found</h3>
-                    <p className="text-muted-foreground">
-                      No events were found with the current filters.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            <TabsContent value="past" className="mt-8">
-              {pastEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {pastEvents.map(event => (
-                    <EventCard key={event.id} event={event} />
-                  ))}
-                </div>
-              ) : (
-                <Card className="text-center py-12">
-                  <CardContent>
-                    <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-semibold mb-2">No past events</h3>
-                    <p className="text-muted-foreground">
-                      No past events have been archived yet.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
+          {/* Events Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedEvents.map(event => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
         </div>
       </section>
 
