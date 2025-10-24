@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import chartsHero from "@/assets/charts-hero.jpg";
+import te42llt from "@/assets/te42-ll-t.png";
 
 // Sample chart data (simplified)
 const chartItems = [
@@ -16,7 +17,8 @@ const chartItems = [
     sku: "TE42-LL-T",
     description: "Multipurpose low-light test chart with integrated LED-Panels for timing measurements. Perfect for evaluating camera performance with precise timing control.",
     features: ["Integrated LED-Panels", "Timing Measurements", "Low Light Testing"],
-    downloadUrl: "#te42-ll-t-datasheet"
+    downloadUrl: "#te42-ll-t-datasheet",
+    image: te42llt
   },
   {
     id: "te42-ll-uw",
@@ -140,6 +142,15 @@ const chartItems = [
 const Charts = () => {
   const ChartCard = ({ chart }: { chart: typeof chartItems[0] }) => (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
+      {chart.image && (
+        <div className="w-full h-48 overflow-hidden">
+          <img 
+            src={chart.image} 
+            alt={chart.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
           <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
