@@ -6,7 +6,7 @@ import { Calendar, MapPin, Clock } from "lucide-react";
 
 const EventRegistrationConfirmation = () => {
   const location = useLocation();
-  const { firstName, lastName, selectedEvent } = (location.state as { 
+  const state = location.state as { 
     firstName?: string; 
     lastName?: string; 
     selectedEvent?: {
@@ -17,9 +17,13 @@ const EventRegistrationConfirmation = () => {
       location: { city: string; country: string };
       image: string;
     }
-  }) || {};
+  } | null;
   
-  const userName = firstName && lastName ? `${firstName} ${lastName}` : "Reader";
+  const firstName = state?.firstName || "";
+  const lastName = state?.lastName || "";
+  const selectedEvent = state?.selectedEvent;
+  
+  const userName = firstName && lastName ? `${firstName} ${lastName}` : "Leserin/Leser";
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
