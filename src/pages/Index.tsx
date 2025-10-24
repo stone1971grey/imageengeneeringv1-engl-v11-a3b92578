@@ -5,7 +5,6 @@ import PartnerSection from "@/components/PartnerSection";
 import Industries from "@/components/Industries";
 import NewsSection from "@/components/NewsSection";
 import InternationalStandards from "@/components/InternationalStandards";
-import StandardsExpertise from "@/components/StandardsExpertise";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -23,7 +22,6 @@ const Index = () => {
       <Industries />
       <NewsSection />
       <InternationalStandards />
-      <StandardsExpertise />
       <Footer />
     </div>
   );
