@@ -219,8 +219,8 @@ const Events = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 flex flex-col flex-1">
-        <CardDescription className="text-base leading-relaxed text-white">
+      <CardContent className="space-y-4 flex-1 flex flex-col">
+        <CardDescription className="text-base leading-relaxed text-white flex-1">
           {event.description}
         </CardDescription>
         
