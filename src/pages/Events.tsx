@@ -224,10 +224,10 @@ const Events = () => {
         </CardDescription>
         
         {/* Simple map placeholder */}
-        <div className="bg-muted rounded-lg h-32 flex items-center justify-center text-muted-foreground">
+        <div className="bg-muted rounded-lg h-32 flex items-center justify-center">
           <div className="text-center">
-            <MapPin className="h-8 w-8 mx-auto mb-2" />
-            <p className="text-sm">{event.location.city}, {event.location.country}</p>
+            <MapPin className="h-8 w-8 mx-auto mb-2 text-white" />
+            <p className="text-base text-white">{event.location.city}, {event.location.country}</p>
           </div>
         </div>
         
