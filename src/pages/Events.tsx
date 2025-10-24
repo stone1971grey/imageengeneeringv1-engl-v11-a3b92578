@@ -203,7 +203,7 @@ const Events = () => {
           {event.category}
         </Badge>
         <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
-        <div className="space-y-2 text-sm text-muted-foreground">
+        <div className="space-y-2 text-base text-white">
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <span>{formatDate(event.date)}</span>
@@ -219,7 +219,7 @@ const Events = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <CardDescription className="text-sm leading-relaxed">
+        <CardDescription className="text-base leading-relaxed text-white">
           {event.description}
         </CardDescription>
         
