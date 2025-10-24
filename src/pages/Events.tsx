@@ -200,7 +200,7 @@ const Events = () => {
       </div>
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
-          <Badge variant={event.category === "Messe" ? "default" : "secondary"}>
+          <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
             {event.category}
           </Badge>
           <Badge variant="outline" className="text-xs">
