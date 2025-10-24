@@ -78,13 +78,15 @@ const EventRegistrationConfirmation = () => {
           {/* Event Details Section */}
           {selectedEvent && (
             <div className="rounded-2xl overflow-hidden border border-slate-200">
-              <div className="relative h-64 overflow-hidden">
-                <img 
-                  src={selectedEvent.image} 
-                  alt={selectedEvent.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              {selectedEvent.image && (
+                <div className="relative h-64 overflow-hidden">
+                  <img 
+                    src={selectedEvent.image} 
+                    alt={selectedEvent.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <div className="p-6 space-y-4" style={{ backgroundColor: '#f3f3f5' }}>
                 <h2 className="text-xl font-semibold text-slate-900">
                   {selectedEvent.title}
