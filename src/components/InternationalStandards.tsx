@@ -12,31 +12,31 @@ const InternationalStandards = () => {
           Automotive International Standards
         </h2>
         
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
-          <div className="h-24 w-40 flex items-center justify-center">
-            <img 
-              src={ieeeLogo}
-              alt="IEEE P2020 Standard"
-              className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
-            />
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-8 md:gap-16">
+            <div className="h-24 w-40 flex items-center justify-center">
+              <img 
+                src={ieeeLogo}
+                alt="IEEE P2020 Standard"
+                className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+              />
+            </div>
+            <div className="h-24 w-40 flex items-center justify-center">
+              <img 
+                src={isoStandardsLogo}
+                alt="ISO Standards"
+                className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+              />
+            </div>
+            <div className="h-24 w-40 flex items-center justify-center">
+              <img 
+                src={emvaLogo}
+                alt="EMVA 1288 Standard"
+                className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
+              />
+            </div>
           </div>
-          <div className="h-24 w-40 flex items-center justify-center">
-            <img 
-              src={isoStandardsLogo}
-              alt="ISO Standards"
-              className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
-            />
-          </div>
-          <div className="h-24 w-40 flex items-center justify-center">
-            <img 
-              src={emvaLogo}
-              alt="EMVA 1288 Standard"
-              className="h-full w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
-            />
-          </div>
-        </div>
 
-        <div className="flex justify-center">
           <Link to="/automotive#standards">
             <Button 
               size="lg"
