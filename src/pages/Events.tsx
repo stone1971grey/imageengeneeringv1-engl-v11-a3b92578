@@ -348,178 +348,184 @@ const Events = () => {
           </div>
           
           {/* Events Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedEvents.map(event => (
-              <EventCard key={event.id} event={event} />
+          <div className="space-y-6">
+            {sortedEvents.map((event, index) => (
+              <div key={event.id}>
+                {index % 3 === 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    {sortedEvents.slice(index, index + 3).map((gridEvent) => (
+                      <EventCard key={gridEvent.id} event={gridEvent} />
+                    ))}
+                  </div>
+                )}
+                
+                {/* Show detail view after the clicked event's row */}
+                {selectedEvent && selectedEvent.id === event.id && (
+                  <div className={`mb-6 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+                    <Card className={`transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
+                      <CardHeader>
+                        <div className="flex items-center justify-between mb-4">
+                          <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+                            {selectedEvent.category}
+                          </Badge>
+                          <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                            <X className="h-5 w-5" />
+                          </Button>
+                        </div>
+                        <CardTitle className="text-3xl">{selectedEvent.title}</CardTitle>
+                        <div className="space-y-2 text-base text-white mt-4">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-5 w-5 text-white" />
+                            <span>{formatDate(selectedEvent.date)}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-5 w-5 text-white" />
+                            <span>{selectedEvent.time}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-5 w-5 text-white" />
+                            <span>{selectedEvent.location.city}, {selectedEvent.location.country}</span>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-6">
+                        {selectedEvent.fullDescription && (
+                          <div 
+                            className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
+                            dangerouslySetInnerHTML={{ __html: selectedEvent.fullDescription }}
+                          />
+                        )}
+                        
+                        {!selectedEvent.isPast && (
+                          <div className="pt-6 border-t border-border">
+                            <div className="space-y-4 mb-6">
+                              <p className="text-lg font-semibold">
+                                Register for this Event
+                              </p>
+                              
+                              <p className="text-base text-white">
+                                Please fill out the registration form below. We will send you a confirmation email with all event details.
+                              </p>
+                            </div>
+                            
+                            <Form {...form}>
+                              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <FormField
+                                    control={form.control}
+                                    name="firstName"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  
+                                  <FormField
+                                    control={form.control}
+                                    name="lastName"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <FormField
+                                    control={form.control}
+                                    name="company"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  
+                                  <FormField
+                                    control={form.control}
+                                    name="position"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
+                                        <FormControl>
+                                          <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </div>
+                                
+                                <FormField
+                                  control={form.control}
+                                  name="email"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-base text-white">E-Mail *</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="john.doe@example.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                
+                                <FormField
+                                  control={form.control}
+                                  name="consent"
+                                  render={({ field }) => (
+                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value}
+                                          onCheckedChange={field.onChange}
+                                          className="border-white/20"
+                                        />
+                                      </FormControl>
+                                      <div className="space-y-1 leading-none">
+                                        <FormLabel className="text-sm text-white cursor-pointer">
+                                          I agree to receive information about this event and related services. *
+                                        </FormLabel>
+                                        <FormMessage />
+                                      </div>
+                                    </FormItem>
+                                  )}
+                                />
+                                
+                                <Button 
+                                  type="submit" 
+                                  className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                                  disabled={registrationSuccess}
+                                >
+                                  {registrationSuccess ? "Registration Successful!" : "Complete Registration"}
+                                </Button>
+                              </form>
+                            </Form>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
       </section>
-
-      {/* Selected Event Detail */}
-      {selectedEvent && (
-        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
-          <div className="container mx-auto px-6">
-            <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
-              <CardHeader>
-                <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
-                    {selectedEvent.category}
-                  </Badge>
-                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-                <CardTitle className="text-3xl">{selectedEvent.title}</CardTitle>
-                <div className="space-y-2 text-base text-white mt-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-white" />
-                    <span>{formatDate(selectedEvent.date)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-white" />
-                    <span>{selectedEvent.time}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-white" />
-                    <span>{selectedEvent.location.city}, {selectedEvent.location.country}</span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {selectedEvent.fullDescription && (
-                  <div 
-                    className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
-                    dangerouslySetInnerHTML={{ __html: selectedEvent.fullDescription }}
-                  />
-                )}
-                
-                {!selectedEvent.isPast && (
-                  <div className="pt-6 border-t border-border">
-                    <div className="space-y-4 mb-6">
-                      <p className="text-lg font-semibold">
-                        Register for this Event
-                      </p>
-                      
-                      <p className="text-base text-white">
-                        Please fill out the registration form below. We will send you a confirmation email with all event details.
-                      </p>
-                    </div>
-                    
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="firstName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={form.control}
-                            name="lastName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name="company"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={form.control}
-                            name="position"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                        
-                        <FormField
-                          control={form.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-base text-white">E-Mail *</FormLabel>
-                              <FormControl>
-                                <Input placeholder="john.doe@example.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="consent"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="border-white/20"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm text-white cursor-pointer">
-                                  I agree to receive information about this event and related services. *
-                                </FormLabel>
-                                <FormMessage />
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <Button 
-                          type="submit" 
-                          className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
-                          disabled={registrationSuccess}
-                        >
-                          {registrationSuccess ? "Registration Successful!" : "Complete Registration"}
-                        </Button>
-                      </form>
-                    </Form>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      )}
 
       <Footer />
     </div>
