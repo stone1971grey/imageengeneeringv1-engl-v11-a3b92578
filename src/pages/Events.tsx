@@ -205,15 +205,15 @@ const Events = () => {
         <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
         <div className="space-y-2 text-base text-white">
           <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
+            <Calendar className="h-5 w-5 text-white" />
             <span>{formatDate(event.date)}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
+            <Clock className="h-5 w-5 text-white" />
             <span>{event.time}</span>
           </div>
           <div className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
+            <MapPin className="h-5 w-5 text-white" />
             <span>{event.location.city}, {event.location.country}</span>
           </div>
         </div>
