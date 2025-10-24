@@ -189,7 +189,7 @@ const Events = () => {
   };
 
   const EventCard = ({ event }: { event: Event }) => (
-    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <div className="aspect-video w-full overflow-hidden">
         <img 
           src={event.image} 
@@ -218,7 +218,7 @@ const Events = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex flex-col flex-1">
         <CardDescription className="text-base leading-relaxed text-white">
           {event.description}
         </CardDescription>
@@ -231,11 +231,13 @@ const Events = () => {
           </div>
         </div>
         
+        <div className="mt-auto pt-4">
           {!event.isPast && event.registrationUrl && (
             <Button className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white" asChild>
               <a href={event.registrationUrl}>Register Now</a>
             </Button>
           )}
+        </div>
       </CardContent>
     </Card>
   );
