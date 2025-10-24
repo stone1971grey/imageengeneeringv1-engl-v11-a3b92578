@@ -415,13 +415,13 @@ const Events = () => {
                                     control={form.control}
                                     name="firstName"
                                     render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
-                                        <FormControl>
-                                          <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
+                                  <FormItem>
+                                    <FormLabel className="text-2xl font-medium text-white">First Name *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
                                     )}
                                   />
                                   
@@ -429,13 +429,13 @@ const Events = () => {
                                     control={form.control}
                                     name="lastName"
                                     render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
-                                        <FormControl>
-                                          <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
+                                  <FormItem>
+                                    <FormLabel className="text-2xl font-medium text-white">Last Name *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
                                     )}
                                   />
                                 </div>
@@ -445,13 +445,13 @@ const Events = () => {
                                     control={form.control}
                                     name="company"
                                     render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
-                                        <FormControl>
-                                          <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
+                                  <FormItem>
+                                    <FormLabel className="text-2xl font-medium text-white">Company *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
                                     )}
                                   />
                                   
@@ -459,13 +459,13 @@ const Events = () => {
                                     control={form.control}
                                     name="position"
                                     render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
-                                        <FormControl>
-                                          <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
+                                  <FormItem>
+                                    <FormLabel className="text-2xl font-medium text-white">Position *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
                                     )}
                                   />
                                 </div>
