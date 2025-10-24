@@ -178,104 +178,66 @@ const chartItems = [
 ];
 
 const Charts = () => {
-  const [selectedChartId, setSelectedChartId] = useState<string | null>(null);
+  const [selectedChart, setSelectedChart] = useState<typeof chartItems[0] | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
 
-  const handleToggle = (chartId: string) => {
-    setSelectedChartId(selectedChartId === chartId ? null : chartId);
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedChart(null);
+      setIsClosing(false);
+    }, 500);
   };
 
-  const ChartCard = ({ chart }: { chart: typeof chartItems[0] }) => {
-    const isExpanded = selectedChartId === chart.id;
-    
-    return (
-      <div className="space-y-4">
-        <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
-          {chart.image && (
-            <div className="w-full h-48 overflow-hidden">
-              <img 
-                src={chart.image} 
-                alt={chart.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <CardHeader className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
-                {chart.category}
-              </Badge>
-            </div>
-            <CardTitle className="text-xl leading-relaxed flex items-start gap-3">
-              <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
-              <span>{chart.title}</span>
-            </CardTitle>
-            <div className="flex gap-4 text-sm text-white">
-              <span>SKU: {chart.sku}</span>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4 flex-1 flex flex-col">
-            <CardDescription className="text-base leading-relaxed flex-1 text-white">
-              {chart.description}
-            </CardDescription>
-            
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-white">Key Features:</p>
-              <ul className="text-sm text-white space-y-1">
-                {chart.features.map((feature, idx) => (
-                  <li key={idx}>• {feature}</li>
-                ))}
-              </ul>
-            </div>
-            
-            <Button 
-              className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-              onClick={() => handleToggle(chart.id)}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Details
-              <ChevronDown className={`h-4 w-4 ml-auto transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Expandable Details Section */}
-        {isExpanded && (
-          <Card className="animate-accordion-down overflow-hidden">
-            <CardContent className="pt-6 space-y-6">
-              {chart.tags && (
-                <div className="flex flex-wrap gap-2">
-                  {chart.tags.map((tag, idx) => (
-                    <Badge key={idx} variant="outline" className="text-sm border-[#f5743a]/30 text-white">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-              
-              {chart.fullDescription && (
-                <div 
-                  className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1 [&_.grid]:text-foreground"
-                  dangerouslySetInnerHTML={{ __html: chart.fullDescription }}
-                />
-              )}
-              
-              <div className="pt-6 border-t border-border">
-                <Button 
-                  className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-                  asChild
-                >
-                  <a href={chart.downloadUrl} target="_blank" rel="noopener noreferrer">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Download Datasheet
-                  </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    );
-  };
+  const ChartCard = ({ chart }: { chart: typeof chartItems[0] }) => (
+    <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
+      {chart.image && (
+        <div className="w-full h-48 overflow-hidden">
+          <img 
+            src={chart.image} 
+            alt={chart.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+      <CardHeader className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+            {chart.category}
+          </Badge>
+        </div>
+        <CardTitle className="text-xl leading-relaxed flex items-start gap-3">
+          <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
+          <span>{chart.title}</span>
+        </CardTitle>
+        <div className="flex gap-4 text-sm text-white">
+          <span>SKU: {chart.sku}</span>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 flex-1 flex flex-col">
+        <CardDescription className="text-base leading-relaxed flex-1 text-white">
+          {chart.description}
+        </CardDescription>
+        
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-white">Key Features:</p>
+          <ul className="text-sm text-white space-y-1">
+            {chart.features.map((feature, idx) => (
+              <li key={idx}>• {feature}</li>
+            ))}
+          </ul>
+        </div>
+        
+        <Button 
+          className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+          onClick={() => setSelectedChart(chart)}
+        >
+          <FileText className="h-4 w-4 mr-2" />
+          Details
+        </Button>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -319,6 +281,58 @@ const Charts = () => {
           </div>
         </div>
       </section>
+
+      {/* Selected Chart Detail */}
+      {selectedChart && (
+        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+          <div className="container mx-auto px-6">
+            <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedChart.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <CardTitle className="text-3xl">{selectedChart.title}</CardTitle>
+                <CardDescription className="text-white">
+                  SKU: {selectedChart.sku}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {selectedChart.tags && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedChart.tags.map((tag, idx) => (
+                      <Badge key={idx} variant="outline" className="text-sm border-[#f5743a]/30 text-white">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                
+                {selectedChart.fullDescription && (
+                  <div 
+                    className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1 [&_.grid]:text-foreground"
+                    dangerouslySetInnerHTML={{ __html: selectedChart.fullDescription }}
+                  />
+                )}
+                
+                <div className="pt-6 border-t border-border">
+                  <Button 
+                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                    asChild
+                  >
+                    <a href={selectedChart.downloadUrl} target="_blank" rel="noopener noreferrer">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Download Datasheet
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-16 bg-muted/30">
