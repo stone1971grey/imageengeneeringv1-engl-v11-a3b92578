@@ -181,7 +181,7 @@ const ProductLE7 = () => {
                   
                   <Button 
                     size="lg"
-                    className="bg-white border border-gray-300 px-8 py-4 text-lg font-medium text-gray-900 shadow-soft hover:shadow-lg transition-all duration-300"
+                    className="bg-white border border-gray-300 px-8 py-4 text-lg font-medium text-gray-900 shadow-soft hover:bg-black hover:text-white hover:shadow-lg transition-all duration-300"
                     onClick={() => {
                       const element = document.getElementById('overview');
                       if (element) {
