@@ -231,7 +231,7 @@ const Automotive = () => {
             Automotive International Standards
           </h2>
           
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
             {/* IEEE Logo */}
             <div className="flex items-center justify-center h-24 w-40">
               <img 
@@ -258,17 +258,17 @@ const Automotive = () => {
                 className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
               />
             </div>
+          </div>
 
-            {/* View Standards Button */}
-            <div className="flex items-center justify-center">
-              <Button 
-                size="lg"
-                className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
-                style={{ backgroundColor: '#f5743a' }}
-              >
-                View Standards
-              </Button>
-            </div>
+          {/* View Standards Button - Centered Below Logos */}
+          <div className="flex justify-center">
+            <Button 
+              size="lg"
+              className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
+              style={{ backgroundColor: '#f5743a' }}
+            >
+              View Standards
+            </Button>
           </div>
         </div>
       </section>
