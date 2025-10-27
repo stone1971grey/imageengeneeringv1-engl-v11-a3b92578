@@ -252,21 +252,43 @@ export default function Downloads() {
     },
   });
 
-  const onSubmit = (data: DownloadFormValues) => {
-    // Simulate download request
-    setTimeout(() => {
+  const onSubmit = async (data: DownloadFormValues) => {
+    if (!selectedItem) return;
+
+    try {
       setDownloadSuccess(true);
-      toast.success("Download started!");
       
-      // Simulate download link opening
-      setTimeout(() => {
-        if (selectedItem) {
-          window.open(selectedItem.downloadUrl, '_blank');
-        }
-        form.reset();
-        setDownloadSuccess(false);
-      }, 1000);
-    }, 500);
+      // Determine which page to navigate to based on download type
+      let targetPage = "";
+      if (selectedItem.type === "whitepaper") {
+        targetPage = "/whitepaper_download";
+      } else if (selectedItem.type === "conference") {
+        targetPage = "/conference_paper_download";
+      } else {
+        targetPage = "/video_download";
+      }
+
+      // Navigate to the download confirmation page
+      navigate(targetPage, {
+        state: {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          downloadUrl: selectedItem.downloadUrl,
+          title: selectedItem.title,
+        },
+      });
+
+      // Send email in the background (optional - can be added later)
+      // Note: This would require the RESEND_API_KEY to be set up
+      
+      form.reset();
+      setDownloadSuccess(false);
+      setSelectedItem(null);
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Something went wrong. Please try again.");
+      setDownloadSuccess(false);
+    }
   };
 
   const handleClose = () => {
