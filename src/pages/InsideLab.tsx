@@ -23,114 +23,114 @@ const InsideLab = () => {
     {
       id: 1,
       image: arcturusSetupVega,
-      title: "Vega LED Beleuchtungsaufbau",
-      description: "Vega LED + TE294 Testtafel + MMP-Test Konfiguration",
+      title: "Vega LED Lighting Setup",
+      description: "Vega LED + TE294 Test Chart + MMP-Test Configuration",
       industry: "Mobile Testing",
       icon: <Smartphone className="h-5 w-5" />,
       details: [
-        "Arcturus Vega LED Lichtquelle",
-        "TE294 Mehrzweck-Testtafel", 
-        "Präzisions-Kamera-Montagesystem",
+        "Arcturus Vega LED Light Source",
+        "TE294 Multi-Purpose Test Chart", 
+        "Precision Camera Mounting System",
         "VCX Standard Compliance"
       ]
     },
     {
       id: 2,
       image: arcturusLabInstallation,
-      title: "Automotive Vision Labor",
-      description: "ADAS Kamera-Testumgebung",
+      title: "Automotive Vision Laboratory",
+      description: "ADAS Camera Test Environment",
       industry: "Automotive",
       icon: <Car className="h-5 w-5" />,
       details: [
-        "IEEE P2020 Konformer Aufbau",
-        "Hochpräzise Testtafel-Positionierung",
-        "Automotive-Grade Beleuchtung",
-        "Umgebungskontrollsysteme"
+        "IEEE P2020 Compliant Setup",
+        "High-Precision Test Chart Positioning",
+        "Automotive-Grade Illumination",
+        "Environmental Control Systems"
       ]
     },
     {
       id: 3,
       image: precisionTestingHero,
-      title: "Präzisions-Messstation",
-      description: "Hochauflösende Kamera-Analyse-Aufbau",
-      industry: "Professionelle Fotografie",
+      title: "Precision Measurement Station",
+      description: "High-Resolution Camera Analysis Setup",
+      industry: "Professional Photography",
       icon: <Camera className="h-5 w-5" />,
       details: [
-        "Ultra-hochauflösende Testtafeln",
-        "Farbtemperatur-Kontrolle",
-        "Vibrationsfreie Montage",
-        "Spektralanalyse-Fähigkeit"
+        "Ultra-High Resolution Test Charts",
+        "Color Temperature Control",
+        "Vibration-Free Mounting",
+        "Spectral Analysis Capability"
       ]
     },
     {
       id: 4,
       image: adasTesting,
-      title: "ADAS Testlabor",
-      description: "Komplette Automotive Vision Testing Suite",
+      title: "ADAS Test Laboratory",
+      description: "Complete Automotive Vision Testing Suite",
       industry: "Automotive ADAS",
       icon: <Shield className="h-5 w-5" />,
       details: [
-        "Multi-Testtafel-Szenarien",
-        "Dynamikbereich-Tests",
-        "Schwachlicht-Leistungsanalyse",
-        "Sicherheitsstandard-Konformität"
+        "Multi-Test Chart Scenarios",
+        "Dynamic Range Testing",
+        "Low-Light Performance Analysis",
+        "Safety Standard Conformance"
       ]
     },
     {
       id: 5,
       image: qualityBenchmarking,
-      title: "Qualitäts-Benchmarking Aufbau",
-      description: "Vergleichsanalyse-Labor",
-      industry: "Qualitätskontrolle",
+      title: "Quality Benchmarking Setup",
+      description: "Comparative Analysis Laboratory",
+      industry: "Quality Control",
       icon: <Target className="h-5 w-5" />,
       details: [
-        "Multi-Geräte-Tests",
-        "Standardisierte Bedingungen",
-        "Statistische Analyse-Tools",
+        "Multi-Device Testing",
+        "Standardized Conditions",
+        "Statistical Analysis Tools",
         "ISO Compliance Framework"
       ]
     },
     {
       id: 6,
       image: arcturusRealisticLab,
-      title: "Realitätsnahe Testumgebung",
-      description: "Produktionsreife Labor-Installation",
-      industry: "Industrielle Tests",
+      title: "Production-Ready Test Environment",
+      description: "Industrial-Grade Laboratory Installation",
+      industry: "Industrial Testing",
       icon: <Microscope className="h-5 w-5" />,
       details: [
-        "Industrietaugliche Ausrüstung",
-        "24/7 Betriebsfähigkeit",
-        "Remote-Überwachungssysteme",
-        "Skalierbare Testkonfigurationen"
+        "Industrial-Grade Equipment",
+        "24/7 Operation Capability",
+        "Remote Monitoring Systems",
+        "Scalable Test Configurations"
       ]
     },
     {
       id: 7,
       image: automotiveLab,
-      title: "Automotive Elektronik Labor",
-      description: "Fahrzeug-Kamerasystem-Tests",
-      industry: "Automotive Elektronik",
+      title: "Automotive Electronics Laboratory",
+      description: "Vehicle Camera System Testing",
+      industry: "Automotive Electronics",
       icon: <Monitor className="h-5 w-5" />,
       details: [
-        "ECU Integrationstests",
-        "Echtzeit-Bildverarbeitung",
-        "Thermische Analysefähigkeit",
-        "EMV-Testumgebung"
+        "ECU Integration Testing",
+        "Real-Time Image Processing",
+        "Thermal Analysis Capability",
+        "EMC Test Environment"
       ]
     },
     {
       id: 8,
       image: productBundleIeee,
-      title: "Arcturus HDR Testpaket",
-      description: "Hochpräzise Komplettlösung für Bildqualitätstests",
-      industry: "Komplettlösung",
+      title: "Arcturus HDR Test Package",
+      description: "High-Precision Complete Solution for Image Quality Testing",
+      industry: "Complete Solution",
       icon: <Package className="h-5 w-5" />,
       details: [
-        "Arcturus LED-System mit DC-Technologie",
-        "Vega Software Suite mit Reporting & API",
-        "Hochpräzise Testcharts (z. B. TE294)",
-        "Ideal für ADAS-, Mobilgeräte- und HDR-Kamera-Tests",
-        "IEEE P2020 & VCX konform"
+        "Arcturus LED System with DC Technology",
+        "Vega Software Suite with Reporting & API",
+        "High-Precision Test Charts (e.g., TE294)",
+        "Ideal for ADAS, Mobile Device, and HDR Camera Testing",
+        "IEEE P2020 & VCX Compliant"
       ],
       link: "/solution/arcturus-bundle"
     }
@@ -209,7 +209,7 @@ const InsideLab = () => {
                             className="w-full text-white hover:opacity-90"
                             style={{ backgroundColor: '#f5743a' }}
                           >
-                            Mehr erfahren
+                            Learn more
                           </Button>
                         </Link>
                       </div>
