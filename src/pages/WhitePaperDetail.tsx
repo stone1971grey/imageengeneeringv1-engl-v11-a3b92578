@@ -416,7 +416,7 @@ const WhitePaperDetail = () => {
                       <X className="h-5 w-5" />
                     </Button>
                   </div>
-                  <CardTitle className="text-3xl text-white">{selectedEvent.title}</CardTitle>
+                  <CardTitle className="text-xl text-white">{selectedEvent.title}</CardTitle>
                   <div className="space-y-2 text-base text-white mt-4">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-5 w-5 text-white" />
@@ -457,7 +457,7 @@ const WhitePaperDetail = () => {
                                   <SelectValue placeholder="Bitte auswählen" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent className="bg-[#606060] text-white border-white/20">
+                              <SelectContent className="bg-[#606060] text-white border-white/20 z-50">
                                 <SelectItem value="arcturus-led">Arcturus LED</SelectItem>
                                 <SelectItem value="iq-analyzer">iQ-Analyzer</SelectItem>
                                 <SelectItem value="le7">LE7</SelectItem>
@@ -482,7 +482,7 @@ const WhitePaperDetail = () => {
                                   <SelectValue placeholder="Bitte auswählen" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent className="bg-[#606060] text-white border-white/20">
+                              <SelectContent className="bg-[#606060] text-white border-white/20 z-50">
                                 <SelectItem value="automotive-oem">Automotive OEM</SelectItem>
                                 <SelectItem value="automotive-tier1">Automotive Tier-1 Supplier</SelectItem>
                                 <SelectItem value="automotive-tier2">Automotive Tier-2 Supplier</SelectItem>
@@ -540,7 +540,7 @@ const WhitePaperDetail = () => {
                                           className="border-white/20 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
                                         />
                                       </FormControl>
-                                      <FormLabel className="text-sm font-normal text-white cursor-pointer">
+                                      <FormLabel className="text-base font-normal text-white cursor-pointer">
                                         {item.label}
                                       </FormLabel>
                                     </FormItem>
