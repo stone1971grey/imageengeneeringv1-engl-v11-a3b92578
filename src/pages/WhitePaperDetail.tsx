@@ -519,7 +519,7 @@ const WhitePaperDetail = () => {
                                   render={({ field }) => (
                                     <FormItem
                                       key={item.id}
-                                      className="flex flex-row items-center space-x-3 space-y-0 py-2"
+                                      className="flex flex-row items-center space-x-4 space-y-0 py-2"
                                     >
                                       <FormControl>
                                         <Checkbox
