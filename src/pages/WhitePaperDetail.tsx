@@ -260,6 +260,28 @@ const WhitePaperDetail = () => {
             </CardContent>
           </Card>
 
+          {/* Event Section Introduction */}
+          <div className="max-w-4xl mx-auto mb-8">
+            <Card className="border-0 shadow-xl bg-black">
+              <CardContent className="px-8 py-8">
+                <h2 className="text-3xl font-bold text-white mb-4">
+                  Veranstaltungen passend zu Ihrem Interesse
+                </h2>
+                <div className="space-y-4 text-lg text-white leading-relaxed">
+                  <p>
+                    Da Sie sich für dieses White Paper interessieren, möchten wir Sie auf folgende Veranstaltungen aufmerksam machen, 
+                    die perfekt zu Ihren Interessen passen.
+                  </p>
+                  <p>
+                    Für die Registrierung genügt eine kurze Teilnahmebestätigung. Um Sie noch besser kennenzulernen und Ihnen 
+                    einen noch größeren Mehrwert bieten zu können, würden wir uns freuen, wenn Sie uns noch ein paar Informationen 
+                    zu Ihren Interessen und Schwerpunkten geben.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Event Notices */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Event 1 */}
