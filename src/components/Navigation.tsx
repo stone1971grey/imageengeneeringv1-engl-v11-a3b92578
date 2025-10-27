@@ -1304,35 +1304,35 @@ const Navigation = () => {
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
                           <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.resources}</div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                          <Link to="/image-quality-factors" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.imageQualityFactors}</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                          </Link>
+                          <Link to="/blog" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.blog}</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                          </Link>
+                          <Link to="/international-standards" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.internationalStandards}</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                          </Link>
+                          <Link to="/ie-technology" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.ieTechnology}</span>
-                          </div>
+                          </Link>
                           <div className="font-medium text-gray-900 py-3 mb-2 mt-4">{t.nav.publications}</div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                          <Link to="/conference-papers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.conferencePapers}</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                          </Link>
+                          <Link to="/white-papers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.whitePapersTheses}</span>
-                          </div>
-                          <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
+                          </Link>
+                          <Link to="/video-archive" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.videoArchive}</span>
-                          </div>
+                          </Link>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/downloads" onClick={() => setIsOpen(false)}>
