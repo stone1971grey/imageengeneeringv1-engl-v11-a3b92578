@@ -23,8 +23,8 @@ const WhitePaperDetail = () => {
       <div className="min-h-screen bg-[#f3f3f5] pt-24 pb-16">
         <div className="container mx-auto px-6 max-w-5xl">
           {/* Header Card */}
-          <Card className="mb-8 border-0 shadow-xl overflow-hidden">
-            <div className="px-8 py-12" style={{ backgroundColor: '#f3f3f5' }}>
+          <Card className="mb-8 border-0 shadow-xl overflow-hidden" style={{ backgroundColor: '#f3f3f5' }}>
+            <div className="px-8 py-12">
               <div className="flex items-start gap-4 mb-4">
                 <div className="bg-white/20 p-3 rounded-lg border border-slate-300">
                   <FileText className="h-8 w-8 text-black" />
