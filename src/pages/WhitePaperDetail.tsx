@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, FileText, Calendar, Users } from "lucide-react";
+import { Download, FileText, Calendar, Users, Clock, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import eventImage from "@/assets/event-automotive-testing-2025.png";
 
 const WhitePaperDetail = () => {
   const navigate = useNavigate();
@@ -145,35 +146,38 @@ const WhitePaperDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Additional Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-black mb-3">About IEEE P2020</h3>
-                <p className="text-base text-black leading-relaxed">
-                  The IEEE P2020 standard provides a comprehensive framework for evaluating automotive 
-                  imaging systems, ensuring consistent and reliable performance metrics across the industry.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-black mb-3">Need Expert Guidance?</h3>
-                <p className="text-base text-black leading-relaxed mb-4">
-                  Our team can help you implement IEEE P2020 testing in your development process.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate('/contact')}
-                  className="w-full"
-                >
-                  Contact Our Experts
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Event Notice */}
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <div className="relative h-64 md:h-80">
+              <img 
+                src={eventImage} 
+                alt="Automotive Testing Conference 2025" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <CardContent className="p-8" style={{ backgroundColor: '#f3f3f5' }}>
+              <h3 className="text-3xl font-bold text-black mb-6">
+                Automotive Testing Conference 2025
+              </h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <Calendar className="h-6 w-6 text-[#f5743a]" />
+                  <span className="text-xl text-black">08. Dezember 2025</span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-[#f5743a]" />
+                  <span className="text-xl text-black">09:00 - 18:00</span>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-6 w-6 text-[#f5743a]" />
+                  <span className="text-xl text-black">Detroit, USA</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
       <Footer />
