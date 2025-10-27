@@ -5,7 +5,8 @@ import { Download, FileText, Calendar, Users, Clock, MapPin } from "lucide-react
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import eventImage from "@/assets/event-automotive-conference-new.jpg";
+import eventImage1 from "@/assets/event-automotive-conference-new.jpg";
+import eventImage2 from "@/assets/event-automotive-standards-new.jpg";
 
 const WhitePaperDetail = () => {
   const navigate = useNavigate();
@@ -147,21 +148,24 @@ const WhitePaperDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Event Notice */}
-          <div className="max-w-md">
-            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-black">
-              <div className="aspect-[3/4] w-full overflow-hidden">
+          {/* Event Notices */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Event 1 */}
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-black flex flex-col">
+              <div className="aspect-video w-full overflow-hidden">
                 <img 
-                  src={eventImage} 
+                  src={eventImage1} 
                   alt="Automotive Testing Conference 2025" 
                   className="w-full h-full object-cover"
                 />
               </div>
-              <CardContent className="p-6 bg-black">
-                <h3 className="text-xl font-bold text-white mb-4 leading-tight">
+              <CardHeader className="space-y-3 flex-1">
+                <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal w-fit">
+                  Messe
+                </Badge>
+                <CardTitle className="text-xl leading-tight text-white">
                   Automotive Testing Conference 2025
-                </h3>
-                
+                </CardTitle>
                 <div className="space-y-2 text-base text-white">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-5 w-5 text-white" />
@@ -176,6 +180,79 @@ const WhitePaperDetail = () => {
                     <span>Detroit, USA</span>
                   </div>
                 </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <CardDescription className="text-base leading-relaxed text-white">
+                  Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.
+                </CardDescription>
+                
+                {/* Simple map placeholder */}
+                <div className="bg-muted rounded-lg h-32 flex items-center justify-center">
+                  <div className="text-center">
+                    <MapPin className="h-8 w-8 mx-auto mb-2 text-white" />
+                    <p className="text-base text-white">Detroit, USA</p>
+                  </div>
+                </div>
+                
+                <Button 
+                  className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                  onClick={() => navigate('/events')}
+                >
+                  Register Now
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Event 2 */}
+            <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-black flex flex-col">
+              <div className="aspect-video w-full overflow-hidden">
+                <img 
+                  src={eventImage2} 
+                  alt="Automotive Vision Standards Workshop" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <CardHeader className="space-y-3 flex-1">
+                <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal w-fit">
+                  Schulung
+                </Badge>
+                <CardTitle className="text-xl leading-tight text-white">
+                  Automotive Vision Standards Workshop
+                </CardTitle>
+                <div className="space-y-2 text-base text-white">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-white" />
+                    <span>15. Juli 2025</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-white" />
+                    <span>09:00 - 16:00</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-white" />
+                    <span>Shanghai, China</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <CardDescription className="text-base leading-relaxed text-white">
+                  Comprehensive training on automotive vision testing standards and regulatory compliance.
+                </CardDescription>
+                
+                {/* Simple map placeholder */}
+                <div className="bg-muted rounded-lg h-32 flex items-center justify-center">
+                  <div className="text-center">
+                    <MapPin className="h-8 w-8 mx-auto mb-2 text-white" />
+                    <p className="text-base text-white">Shanghai, China</p>
+                  </div>
+                </div>
+                
+                <Button 
+                  className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                  onClick={() => navigate('/events')}
+                >
+                  Register Now
+                </Button>
               </CardContent>
             </Card>
           </div>
