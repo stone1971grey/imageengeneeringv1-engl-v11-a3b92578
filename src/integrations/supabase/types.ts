@@ -14,7 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      event_registrations: {
+        Row: {
+          automotive_interests: string[] | null
+          company: string
+          created_at: string
+          current_test_systems: string | null
+          email: string
+          event_date: string
+          event_location: string
+          event_title: string
+          first_name: string
+          id: string
+          industry: string | null
+          last_name: string
+          phone: string | null
+          position: string
+        }
+        Insert: {
+          automotive_interests?: string[] | null
+          company: string
+          created_at?: string
+          current_test_systems?: string | null
+          email: string
+          event_date: string
+          event_location: string
+          event_title: string
+          first_name: string
+          id?: string
+          industry?: string | null
+          last_name: string
+          phone?: string | null
+          position: string
+        }
+        Update: {
+          automotive_interests?: string[] | null
+          company?: string
+          created_at?: string
+          current_test_systems?: string | null
+          email?: string
+          event_date?: string
+          event_location?: string
+          event_title?: string
+          first_name?: string
+          id?: string
+          industry?: string | null
+          last_name?: string
+          phone?: string | null
+          position?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

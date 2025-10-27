@@ -28,6 +28,7 @@ import WhitePaperDetail from "./pages/WhitePaperDetail";
 import ConferencePaperDownload from "./pages/ConferencePaperDownload";
 import VideoDownload from "./pages/VideoDownload";
 import EventRegistrationConfirmation from "./pages/EventRegistrationConfirmation";
+import EventDetailRegistrationConfirmation from "./pages/EventDetailRegistrationConfirmation";
 import InCabinTesting from "./pages/InCabinTesting";
 import Contact from "./pages/Contact";
 import News from "./pages/News";
@@ -72,6 +73,7 @@ const App = () => (
          <Route path="/conference_paper_download" element={<ConferencePaperDownload />} />
          <Route path="/video_download" element={<VideoDownload />} />
          <Route path="/event_registration_confirmation" element={<EventRegistrationConfirmation />} />
+         <Route path="/event_detail_registration_confirmation" element={<EventDetailRegistrationConfirmation />} />
          <Route path="/in-cabin-testing" element={<InCabinTesting />} />
          <Route path="/contact" element={<Contact />} />
          <Route path="/news" element={<News />} />

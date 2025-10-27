@@ -1,15 +1,127 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Calendar, Users, Clock, MapPin } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Download, FileText, Calendar, Users, Clock, MapPin, X } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import eventImage1 from "@/assets/event-automotive-conference-new.jpg";
 import eventImage2 from "@/assets/event-automotive-standards-new.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+// Form validation schema
+const registrationFormSchema = z.object({
+  phone: z.string().optional(),
+  currentTestSystems: z.string().min(1, { message: "Bitte wählen Sie ein Test-System aus" }),
+  industry: z.string().min(1, { message: "Bitte wählen Sie eine Branche aus" }),
+  automotiveInterests: z.array(z.string()).min(1, { message: "Bitte wählen Sie mindestens ein Hauptinteresse aus" }),
+});
+
+type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
+
+interface EventData {
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  image: string;
+}
 
 const WhitePaperDetail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { firstName, lastName, email, company, position } = (location.state as { 
+    firstName?: string; 
+    lastName?: string;
+    email?: string;
+    company?: string;
+    position?: string;
+  }) || {};
+
+  const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+
+  const form = useForm<RegistrationFormValues>({
+    resolver: zodResolver(registrationFormSchema),
+    defaultValues: {
+      phone: "",
+      currentTestSystems: "",
+      industry: "",
+      automotiveInterests: [],
+    },
+  });
+
+  const onSubmit = async (data: RegistrationFormValues) => {
+    if (!selectedEvent || !firstName || !lastName || !email || !company || !position) {
+      toast.error("Fehlende Benutzerdaten. Bitte laden Sie die Seite neu.");
+      return;
+    }
+
+    try {
+      console.log("Registration data:", { ...data, event: selectedEvent.title });
+      
+      const { error } = await supabase.from('event_registrations').insert({
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        company: company,
+        position: position,
+        phone: data.phone || null,
+        current_test_systems: data.currentTestSystems,
+        industry: data.industry,
+        automotive_interests: data.automotiveInterests,
+        event_title: selectedEvent.title,
+        event_date: selectedEvent.date,
+        event_location: selectedEvent.location,
+      });
+
+      if (error) {
+        console.error("Error inserting registration:", error);
+        toast.error("Fehler bei der Registrierung. Bitte versuchen Sie es erneut.");
+        return;
+      }
+
+      setRegistrationSuccess(true);
+      toast.success("Anmeldung erfolgreich! Sie werden weitergeleitet...");
+      
+      setTimeout(() => {
+        navigate('/event_detail_registration_confirmation', { 
+          state: { 
+            firstName,
+            lastName,
+            eventData: selectedEvent
+          } 
+        });
+      }, 1000);
+    } catch (error) {
+      console.error("Error submitting registration:", error);
+      toast.error("Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+    }
+  };
+
+  const handleRegisterClick = (eventData: EventData) => {
+    setSelectedEvent(eventData);
+    setRegistrationSuccess(false);
+  };
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedEvent(null);
+      setIsClosing(false);
+      form.reset();
+    }, 500);
+  };
 
   const handleDownload = () => {
     const link = document.createElement('a');
@@ -196,7 +308,13 @@ const WhitePaperDetail = () => {
                 
                 <Button 
                   className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-                  onClick={() => navigate('/events')}
+                  onClick={() => handleRegisterClick({
+                    title: "Automotive Testing Conference 2025",
+                    date: "08. Dezember 2025",
+                    time: "09:00 - 18:00",
+                    location: "Detroit, USA",
+                    image: eventImage1
+                  })}
                 >
                   Register Now
                 </Button>
@@ -249,13 +367,204 @@ const WhitePaperDetail = () => {
                 
                 <Button 
                   className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-                  onClick={() => navigate('/events')}
+                  onClick={() => handleRegisterClick({
+                    title: "Automotive Vision Standards Workshop",
+                    date: "15. Juli 2025",
+                    time: "09:00 - 16:00",
+                    location: "Shanghai, China",
+                    image: eventImage2
+                  })}
                 >
                   Register Now
                 </Button>
               </CardContent>
             </Card>
           </div>
+
+          {/* Registration Form - appears after event selection */}
+          {selectedEvent && (
+            <div className={`transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'} max-w-4xl mx-auto mt-8`}>
+              <Card className={`transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'} bg-black`}>
+                <CardHeader>
+                  <div className="flex items-center justify-between mb-4">
+                    <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+                      Registrierung
+                    </Badge>
+                    <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors text-white">
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+                  <CardTitle className="text-3xl text-white">{selectedEvent.title}</CardTitle>
+                  <div className="space-y-2 text-base text-white mt-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5 text-white" />
+                      <span>{selectedEvent.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-5 w-5 text-white" />
+                      <span>{selectedEvent.time}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-white" />
+                      <span>{selectedEvent.location}</span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4 mb-6">
+                    <p className="text-lg font-semibold text-white">
+                      Registrieren Sie sich für diese Veranstaltung
+                    </p>
+                    
+                    <p className="text-base text-white">
+                      Bitte füllen Sie die folgenden Zusatzinformationen aus. Ihre Basisdaten haben wir bereits gespeichert.
+                    </p>
+                  </div>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
+                      <FormField
+                        control={form.control}
+                        name="currentTestSystems"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-medium text-white">Aktuell verwendete Test-Systeme *</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="bg-[#606060] text-white border-white/20">
+                                  <SelectValue placeholder="Bitte auswählen" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className="bg-[#606060] text-white border-white/20">
+                                <SelectItem value="arcturus-led">Arcturus LED</SelectItem>
+                                <SelectItem value="iq-analyzer">iQ-Analyzer</SelectItem>
+                                <SelectItem value="le7">LE7</SelectItem>
+                                <SelectItem value="competitor">Konkurrenz-Systeme</SelectItem>
+                                <SelectItem value="none">Keine/Sonstige</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="industry"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-medium text-white">Branche *</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="bg-[#606060] text-white border-white/20">
+                                  <SelectValue placeholder="Bitte auswählen" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className="bg-[#606060] text-white border-white/20">
+                                <SelectItem value="automotive-oem">Automotive OEM</SelectItem>
+                                <SelectItem value="automotive-tier1">Automotive Tier-1 Supplier</SelectItem>
+                                <SelectItem value="automotive-tier2">Automotive Tier-2 Supplier</SelectItem>
+                                <SelectItem value="mobile">Mobile Phone</SelectItem>
+                                <SelectItem value="security">Security & Surveillance</SelectItem>
+                                <SelectItem value="medical">Medical & Endoscopy</SelectItem>
+                                <SelectItem value="research">Research/University</SelectItem>
+                                <SelectItem value="other">Sonstige</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="automotiveInterests"
+                        render={() => (
+                          <FormItem>
+                            <FormLabel className="text-base font-medium text-white mb-3 block">
+                              Hauptinteressen im Automotive Bereich * (Mehrfachauswahl möglich)
+                            </FormLabel>
+                            <div className="space-y-2">
+                              {[
+                                { id: "adas", label: "ADAS Testing" },
+                                { id: "in-cabin", label: "In-Cabin Monitoring" },
+                                { id: "hdr", label: "HDR Performance" },
+                                { id: "low-light", label: "Low-Light Testing" },
+                                { id: "ieee-p2020", label: "IEEE P2020 Compliance" },
+                                { id: "led-flicker", label: "LED Flicker" },
+                                { id: "geometric", label: "Geometric Calibration" },
+                              ].map((item) => (
+                                <FormField
+                                  key={item.id}
+                                  control={form.control}
+                                  name="automotiveInterests"
+                                  render={({ field }) => (
+                                    <FormItem
+                                      key={item.id}
+                                      className="flex flex-row items-start space-x-3 space-y-0"
+                                    >
+                                      <FormControl>
+                                        <Checkbox
+                                          checked={field.value?.includes(item.id)}
+                                          onCheckedChange={(checked) => {
+                                            return checked
+                                              ? field.onChange([...field.value, item.id])
+                                              : field.onChange(
+                                                  field.value?.filter(
+                                                    (value) => value !== item.id
+                                                  )
+                                                )
+                                          }}
+                                          className="border-white/20 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
+                                        />
+                                      </FormControl>
+                                      <FormLabel className="text-sm font-normal text-white cursor-pointer">
+                                        {item.label}
+                                      </FormLabel>
+                                    </FormItem>
+                                  )}
+                                />
+                              ))}
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-medium text-white">Telefonnummer (optional)</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="+49 123 456789" 
+                                {...field} 
+                                className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <div className="pt-4">
+                        <Button
+                          type="submit"
+                          size="lg"
+                          className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white font-semibold text-lg py-6"
+                          disabled={registrationSuccess}
+                        >
+                          {registrationSuccess ? "Anmeldung erfolgreich!" : "Jetzt anmelden"}
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
       <Footer />
