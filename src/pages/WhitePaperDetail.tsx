@@ -435,7 +435,7 @@ const WhitePaperDetail = () => {
                 <CardContent className="space-y-6">
                   <div className="space-y-2 mb-6">
                     <p className="text-base text-white">
-                      Bitte füllen Sie die folgenden Zusatzinformationen aus. Ihre Basisdaten haben wir bereits gespeichert.
+                      Please fill out the following additional information. We have already saved your basic data.
                     </p>
                   </div>
                   
@@ -446,19 +446,19 @@ const WhitePaperDetail = () => {
                         name="currentTestSystems"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-lg font-normal text-white">Aktuell verwendete Test-Systeme *</FormLabel>
+                            <FormLabel className="text-lg font-normal text-white">Currently Used Test Systems *</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger className="bg-[#606060] text-white border-white/20">
-                                  <SelectValue placeholder="Bitte auswählen" />
+                                  <SelectValue placeholder="Please select" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-[#606060] text-white border-white/20 z-50">
-                                <SelectItem value="arcturus-led">Arcturus LED</SelectItem>
-                                <SelectItem value="iq-analyzer">iQ-Analyzer</SelectItem>
-                                <SelectItem value="le7">LE7</SelectItem>
-                                <SelectItem value="competitor">Konkurrenz-Systeme</SelectItem>
-                                <SelectItem value="none">Keine/Sonstige</SelectItem>
+                                <SelectItem value="arcturus-led" className="focus:bg-[#f5743a] focus:text-white">Arcturus LED</SelectItem>
+                                <SelectItem value="iq-analyzer" className="focus:bg-[#f5743a] focus:text-white">iQ-Analyzer</SelectItem>
+                                <SelectItem value="le7" className="focus:bg-[#f5743a] focus:text-white">LE7</SelectItem>
+                                <SelectItem value="competitor" className="focus:bg-[#f5743a] focus:text-white">Competitor Systems</SelectItem>
+                                <SelectItem value="none" className="focus:bg-[#f5743a] focus:text-white">None/Other</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -471,22 +471,22 @@ const WhitePaperDetail = () => {
                         name="industry"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-lg font-normal text-white">Branche *</FormLabel>
+                            <FormLabel className="text-lg font-normal text-white">Industry *</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger className="bg-[#606060] text-white border-white/20">
-                                  <SelectValue placeholder="Bitte auswählen" />
+                                  <SelectValue placeholder="Please select" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="bg-[#606060] text-white border-white/20 z-50">
-                                <SelectItem value="automotive-oem">Automotive OEM</SelectItem>
-                                <SelectItem value="automotive-tier1">Automotive Tier-1 Supplier</SelectItem>
-                                <SelectItem value="automotive-tier2">Automotive Tier-2 Supplier</SelectItem>
-                                <SelectItem value="mobile">Mobile Phone</SelectItem>
-                                <SelectItem value="security">Security & Surveillance</SelectItem>
-                                <SelectItem value="medical">Medical & Endoscopy</SelectItem>
-                                <SelectItem value="research">Research/University</SelectItem>
-                                <SelectItem value="other">Sonstige</SelectItem>
+                                <SelectItem value="automotive-oem" className="focus:bg-[#f5743a] focus:text-white">Automotive OEM</SelectItem>
+                                <SelectItem value="automotive-tier1" className="focus:bg-[#f5743a] focus:text-white">Automotive Tier-1 Supplier</SelectItem>
+                                <SelectItem value="automotive-tier2" className="focus:bg-[#f5743a] focus:text-white">Automotive Tier-2 Supplier</SelectItem>
+                                <SelectItem value="mobile" className="focus:bg-[#f5743a] focus:text-white">Mobile Phone</SelectItem>
+                                <SelectItem value="security" className="focus:bg-[#f5743a] focus:text-white">Security & Surveillance</SelectItem>
+                                <SelectItem value="medical" className="focus:bg-[#f5743a] focus:text-white">Medical & Endoscopy</SelectItem>
+                                <SelectItem value="research" className="focus:bg-[#f5743a] focus:text-white">Research/University</SelectItem>
+                                <SelectItem value="other" className="focus:bg-[#f5743a] focus:text-white">Other</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -500,7 +500,7 @@ const WhitePaperDetail = () => {
                         render={() => (
                           <FormItem>
                             <FormLabel className="text-lg font-normal text-white mb-3 block">
-                              Hauptinteressen im Automotive Bereich * (Mehrfachauswahl möglich)
+                              Main Interests in Automotive * (Multiple selection possible)
                             </FormLabel>
                             <div className="space-y-2">
                               {[
@@ -554,7 +554,7 @@ const WhitePaperDetail = () => {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-lg font-normal text-white">Telefonnummer (optional)</FormLabel>
+                            <FormLabel className="text-lg font-normal text-white">Phone Number (optional)</FormLabel>
                             <FormControl>
                               <Input 
                                 placeholder="+49 123 456789" 
@@ -574,7 +574,7 @@ const WhitePaperDetail = () => {
                           className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white font-semibold text-lg py-6"
                           disabled={registrationSuccess}
                         >
-                          {registrationSuccess ? "Anmeldung erfolgreich!" : "Jetzt anmelden"}
+                          {registrationSuccess ? "Registration successful!" : "Register now"}
                         </Button>
                       </div>
                     </form>
