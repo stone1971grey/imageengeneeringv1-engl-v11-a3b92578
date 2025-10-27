@@ -1325,7 +1325,7 @@ const Navigation = () => {
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.conferencePapers}</span>
                           </Link>
-                          <Link to="/white-papers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                          <Link to="/whitepaper" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
                             <CustomTargetIcon className="h-4 w-4" />
                             <span>{t.nav.whitePapersTheses}</span>
                           </Link>
