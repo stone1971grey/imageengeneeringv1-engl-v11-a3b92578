@@ -1,11 +1,33 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { FileText, Video, FileDown, X } from "lucide-react";
+import { toast } from "sonner";
 import downloadsHero from "@/assets/downloads-hero.jpg";
+
+// Form validation schema
+const downloadFormSchema = z.object({
+  firstName: z.string().trim().min(2, { message: "First name must be at least 2 characters" }).max(100, { message: "First name must be less than 100 characters" }),
+  lastName: z.string().trim().min(2, { message: "Last name must be at least 2 characters" }).max(100, { message: "Last name must be less than 100 characters" }),
+  email: z.string().trim().email({ message: "Please enter a valid email address" }).max(255, { message: "Email must be less than 255 characters" }),
+  company: z.string().trim().min(2, { message: "Company must be at least 2 characters" }).max(200, { message: "Company must be less than 200 characters" }),
+  position: z.string().trim().min(2, { message: "Position must be at least 2 characters" }).max(200, { message: "Position must be less than 200 characters" }),
+  consent: z.boolean().refine((val) => val === true, {
+    message: "You must agree to receive information",
+  }),
+});
+
+type DownloadFormValues = z.infer<typeof downloadFormSchema>;
 
 // Data types
 interface DownloadItem {
@@ -209,18 +231,51 @@ const downloadItems: DownloadItem[] = [
 ];
 
 export default function Downloads() {
+  const navigate = useNavigate();
   const [selectedItem, setSelectedItem] = useState<DownloadItem | null>(null);
   const [isClosing, setIsClosing] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
   
   const whitepapers = downloadItems.filter(item => item.type === "whitepaper");
   const conferencePapers = downloadItems.filter(item => item.type === "conference");
   const videos = downloadItems.filter(item => item.type === "video");
+
+  const form = useForm<DownloadFormValues>({
+    resolver: zodResolver(downloadFormSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      company: "",
+      position: "",
+      consent: false,
+    },
+  });
+
+  const onSubmit = (data: DownloadFormValues) => {
+    // Simulate download request
+    setTimeout(() => {
+      setDownloadSuccess(true);
+      toast.success("Download started!");
+      
+      // Simulate download link opening
+      setTimeout(() => {
+        if (selectedItem) {
+          window.open(selectedItem.downloadUrl, '_blank');
+        }
+        form.reset();
+        setDownloadSuccess(false);
+      }, 1000);
+    }, 500);
+  };
 
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
       setSelectedItem(null);
       setIsClosing(false);
+      form.reset();
+      setDownloadSuccess(false);
     }, 500);
   };
 
@@ -329,15 +384,128 @@ export default function Downloads() {
                 />
                 
                 <div className="pt-6 border-t border-border">
-                  <Button 
-                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-                    asChild
-                  >
-                    <a href={selectedItem.downloadUrl} target="_blank" rel="noopener noreferrer">
-                      <FileDown className="h-4 w-4 mr-2" />
-                      Download White Paper
-                    </a>
-                  </Button>
+                  <div className="space-y-4 mb-6">
+                    <p className="text-lg font-semibold">
+                      Download Now
+                    </p>
+                    
+                    <p className="text-base text-white">
+                      To receive access to the white paper, please enter your contact details and confirm your email address. This verification step ensures that your download link is sent securely and that we comply with current data protection regulations (GDPR).
+                    </p>
+                    
+                    <p className="text-base text-white">
+                      After confirming your email, you'll be redirected to the download page for the {selectedItem.title}.
+                    </p>
+                  </div>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="company"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="position"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-medium text-white">E-Mail *</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="consent"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-white/20 p-4 bg-[#606060]">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="border-white/60 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-base font-normal text-white cursor-pointer">
+                                I agree to receive information about image quality testing and related topics via email. *
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button 
+                        type="submit"
+                        className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                        disabled={downloadSuccess}
+                      >
+                        <FileDown className="h-5 w-5 mr-2" />
+                        {downloadSuccess ? "Download Started..." : "Download"}
+                      </Button>
+                    </form>
+                  </Form>
                 </div>
               </CardContent>
             </Card>
@@ -387,15 +555,128 @@ export default function Downloads() {
                 />
                 
                 <div className="pt-6 border-t border-border">
-                  <Button 
-                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-                    asChild
-                  >
-                    <a href={selectedItem.downloadUrl} target="_blank" rel="noopener noreferrer">
-                      <FileDown className="h-4 w-4 mr-2" />
-                      Download Conference Paper
-                    </a>
-                  </Button>
+                  <div className="space-y-4 mb-6">
+                    <p className="text-lg font-semibold">
+                      Download Now
+                    </p>
+                    
+                    <p className="text-base text-white">
+                      To receive access to the conference paper, please enter your contact details and confirm your email address. This verification step ensures that your download link is sent securely and that we comply with current data protection regulations (GDPR).
+                    </p>
+                    
+                    <p className="text-base text-white">
+                      After confirming your email, you'll be redirected to the download page for the {selectedItem.title}.
+                    </p>
+                  </div>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="company"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="position"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-medium text-white">E-Mail *</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="consent"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-white/20 p-4 bg-[#606060]">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="border-white/60 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-base font-normal text-white cursor-pointer">
+                                I agree to receive information about image quality testing and related topics via email. *
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button 
+                        type="submit"
+                        className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                        disabled={downloadSuccess}
+                      >
+                        <FileDown className="h-5 w-5 mr-2" />
+                        {downloadSuccess ? "Download Started..." : "Download"}
+                      </Button>
+                    </form>
+                  </Form>
                 </div>
               </CardContent>
             </Card>
@@ -445,15 +726,128 @@ export default function Downloads() {
                 />
                 
                 <div className="pt-6 border-t border-border">
-                  <Button 
-                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-                    asChild
-                  >
-                    <a href={selectedItem.downloadUrl} target="_blank" rel="noopener noreferrer">
-                      <Video className="h-4 w-4 mr-2" />
-                      Watch Video
-                    </a>
-                  </Button>
+                  <div className="space-y-4 mb-6">
+                    <p className="text-lg font-semibold">
+                      Access Video
+                    </p>
+                    
+                    <p className="text-base text-white">
+                      To receive access to the video, please enter your contact details and confirm your email address. This verification step ensures that your access link is sent securely and that we comply with current data protection regulations (GDPR).
+                    </p>
+                    
+                    <p className="text-base text-white">
+                      After confirming your email, you'll be redirected to watch {selectedItem.title}.
+                    </p>
+                  </div>
+                  
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 text-base">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="company"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="position"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
+                              <FormControl>
+                                <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-base font-medium text-white">E-Mail *</FormLabel>
+                            <FormControl>
+                              <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={form.control}
+                        name="consent"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-white/20 p-4 bg-[#606060]">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="border-white/60 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-base font-normal text-white cursor-pointer">
+                                I agree to receive information about image quality testing and related topics via email. *
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <Button 
+                        type="submit"
+                        className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                        disabled={downloadSuccess}
+                      >
+                        <Video className="h-5 w-5 mr-2" />
+                        {downloadSuccess ? "Starting Video..." : "Watch Video"}
+                      </Button>
+                    </form>
+                  </Form>
                 </div>
               </CardContent>
             </Card>
