@@ -446,7 +446,7 @@ const WhitePaperDetail = () => {
                         name="currentTestSystems"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-normal text-white">Aktuell verwendete Test-Systeme *</FormLabel>
+                            <FormLabel className="text-lg font-normal text-white">Aktuell verwendete Test-Systeme *</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger className="bg-[#606060] text-white border-white/20">
@@ -471,7 +471,7 @@ const WhitePaperDetail = () => {
                         name="industry"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-normal text-white">Branche *</FormLabel>
+                            <FormLabel className="text-lg font-normal text-white">Branche *</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger className="bg-[#606060] text-white border-white/20">
@@ -499,7 +499,7 @@ const WhitePaperDetail = () => {
                         name="automotiveInterests"
                         render={() => (
                           <FormItem>
-                            <FormLabel className="text-base font-normal text-white mb-3 block">
+                            <FormLabel className="text-lg font-normal text-white mb-3 block">
                               Hauptinteressen im Automotive Bereich * (Mehrfachauswahl möglich)
                             </FormLabel>
                             <div className="space-y-2">
@@ -554,7 +554,7 @@ const WhitePaperDetail = () => {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-normal text-white">Telefonnummer (optional)</FormLabel>
+                            <FormLabel className="text-lg font-normal text-white">Telefonnummer (optional)</FormLabel>
                             <FormControl>
                               <Input 
                                 placeholder="+49 123 456789" 
