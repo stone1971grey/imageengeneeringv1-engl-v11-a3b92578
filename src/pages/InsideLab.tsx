@@ -143,7 +143,7 @@ const InsideLab = () => {
       <ActionHero
         title="Inside the Lab"
         subtitle="Explore real test setups in professional environments – from automotive ADAS testing to quality control for mobile devices."
-        backgroundImage={precisionTestingHero}
+        backgroundImage={automotiveLab}
       />
 
       {/* Lab Gallery Grid */}
