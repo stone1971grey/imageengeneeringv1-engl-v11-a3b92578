@@ -147,61 +147,80 @@ const InsideLab = () => {
       />
 
       {/* Lab Gallery Grid */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {labSetups.map((setup) => (
-            <Card 
-              key={setup.id} 
-              className="group hover:shadow-2xl transition-all duration-300 border-0 bg-white hover:-translate-y-2"
-            >
-              <div className="relative overflow-hidden rounded-t-lg">
-                <img
-                  src={setup.image}
-                  alt={setup.title}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-4 right-4">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-2">
-                    <div className="flex items-center gap-2">
-                      <div className="text-gray-900">{setup.icon}</div>
-                      <h3 className="text-sm font-semibold text-gray-900">{setup.industry}</h3>
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Real Test Setups
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Industry-leading laboratory installations for professional image quality testing
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            {labSetups.map((setup) => (
+              <Card 
+                key={setup.id} 
+                className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group overflow-hidden flex flex-col"
+              >
+                <CardContent className="p-0 flex flex-col flex-1">
+                  <div className="aspect-[4/3] bg-gray-100 overflow-hidden relative">
+                    <img
+                      src={setup.image}
+                      alt={setup.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <div className="text-gray-900">{setup.icon}</div>
+                          <span className="text-sm font-semibold text-gray-900">{setup.industry}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                  {setup.title}
-                </h3>
-                <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                  {setup.description}
-                </p>
-                
-                <div className="space-y-3">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Setup Details:</h4>
-                  <ul className="space-y-2">
-                    {setup.details.map((detail, index) => (
-                      <li key={index} className="text-lg text-gray-600 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                        {detail}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {setup.link && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
-                      <Link to={setup.link}>Mehr erfahren</Link>
-                    </Button>
+                  
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f5743a]">
+                      {setup.title}
+                    </h3>
+                    <p className="text-lg text-gray-600 leading-relaxed mb-4">
+                      {setup.description}
+                    </p>
+                    
+                    <div className="space-y-3 flex-1">
+                      <h4 className="text-base font-semibold text-gray-900">Setup Details:</h4>
+                      <ul className="space-y-2">
+                        {setup.details.map((detail, index) => (
+                          <li key={index} className="text-base text-gray-600 flex items-start gap-2">
+                            <div className="w-1.5 h-1.5 bg-[#f5743a] rounded-full mt-2 flex-shrink-0"></div>
+                            <span>{detail}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {setup.link && (
+                      <div className="mt-4 pt-4">
+                        <Link to={setup.link}>
+                          <Button 
+                            size="lg"
+                            className="w-full text-white hover:opacity-90"
+                            style={{ backgroundColor: '#f5743a' }}
+                          >
+                            Mehr erfahren
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* Call to Action */}
       <div className="bg-scandi-light-grey py-16">
