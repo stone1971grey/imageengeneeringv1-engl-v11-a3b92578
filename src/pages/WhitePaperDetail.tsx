@@ -135,7 +135,7 @@ const WhitePaperDetail = () => {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-[#f3f3f5] pt-24 pb-16">
+      <div className="min-h-screen bg-black pt-24 pb-16">
         <div className="container mx-auto px-6 max-w-5xl">
           {/* Header Card */}
           <Card className="mb-8 border-0 shadow-xl overflow-hidden" style={{ backgroundColor: '#f3f3f5' }}>
