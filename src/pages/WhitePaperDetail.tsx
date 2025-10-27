@@ -57,7 +57,7 @@ const WhitePaperDetail = () => {
       phone: "",
       currentTestSystems: "",
       industry: "",
-      automotiveInterests: [],
+      automotiveInterests: ["adas", "in-cabin", "hdr", "low-light", "ieee-p2020", "led-flicker", "geometric"],
     },
   });
 
