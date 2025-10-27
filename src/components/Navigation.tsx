@@ -738,16 +738,15 @@ const Navigation = () => {
                                </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
-                                   <Link to="/automotive" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                     {t.nav.adas}
-                                   </Link>
-                                    <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                      {t.nav.inCabinTesting} <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">{t.nav.active}</span>
-                                    </Link>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.ieeeP2020}</div>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.hdr}</div>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.nir}</div>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.geometricCalibration}</div>
+                                   {industryData["Automotive"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name} {(item as any).active && <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">{t.nav.active}</span>}
+                                       </Link>
+                                     )
+                                   ))}
                                  </div>
                                </AccordionContent>
                             </AccordionItem>
@@ -764,15 +763,19 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">IEC 62676-5 Testing</div>
-                                  <div className="block py-2 text-sm text-gray-600">Low-light (ISO 19093)</div>
-                                  <div className="block py-2 text-sm text-gray-600">High Dynamic Range (HDR)</div>
-                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
-                                </div>
-                              </AccordionContent>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {industryData["Security & Surveillance"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                           
@@ -787,15 +790,19 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">VCX PhoneCam</div>
-                                  <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
-                                  <div className="block py-2 text-sm text-gray-600">Camera Stabilization</div>
-                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-2 text-sm text-gray-600">Timing Measurements</div>
-                                </div>
-                              </AccordionContent>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {industryData["Mobile Phone"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                           
@@ -810,14 +817,19 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">VCX WebCam</div>
-                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
-                                  <div className="block py-2 text-sm text-gray-600">Timing Measurements</div>
-                                </div>
-                              </AccordionContent>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {industryData["Web Camera"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                           
@@ -832,14 +844,19 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">EMVA 1288 (ISO 24942)</div>
-                                  <div className="block py-2 text-sm text-gray-600">Production Line Calibration</div>
-                                  <div className="block py-2 text-sm text-gray-600">Lens Distortion</div>
-                                  <div className="block py-2 text-sm text-gray-600">Signal-to-Noise Ratio (SNR)</div>
-                                </div>
-                              </AccordionContent>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {industryData["Machine Vision"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                           
@@ -854,15 +871,19 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">Color Calibration</div>
-                                  <div className="block py-2 text-sm text-gray-600">Low-Light Testing</div>
-                                  <div className="block py-2 text-sm text-gray-600">Optical Distortion</div>
-                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-2 text-sm text-gray-600">Endoscopic Illumination</div>
-                                </div>
-                              </AccordionContent>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {industryData["Medical & Endoscopy"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                           
@@ -877,15 +898,19 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">ISO 21550</div>
-                                  <div className="block py-2 text-sm text-gray-600">Universal Test Target</div>
-                                  <div className="block py-2 text-sm text-gray-600">Multispectral Illumination</div>
-                                  <div className="block py-2 text-sm text-gray-600">Scanner Dynamic Range</div>
-                                  <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
-                                </div>
-                              </AccordionContent>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {industryData["Scanners & Archiving"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                           
@@ -900,14 +925,19 @@ const Navigation = () => {
                                     </div>
                                  </div>
                                </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">Broadcast & HDTV</div>
-                                  <div className="block py-2 text-sm text-gray-600">Spectral Sensitivities</div>
-                                  <div className="block py-2 text-sm text-gray-600">ISP Tuning</div>
-                                  <div className="block py-2 text-sm text-gray-600">iQ-LED Illumination</div>
-                                </div>
-                              </AccordionContent>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {industryData["Photo & Video"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                         </div>
@@ -932,127 +962,139 @@ const Navigation = () => {
                          <div className="space-y-2">
                            <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.products}</div>
                           
-                          {/* Test Charts with subgroups */}
-                          <Accordion type="single" collapsible className="ml-2">
-                            <AccordionItem value="test-charts" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                  <div className="flex items-center justify-between w-full">
-                                    <Link to="/charts" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                      <CustomTargetIcon className="h-4 w-4" />
-                                      <span>{t.nav.testCharts}</span>
-                                      <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
-                                    </Link>
-                                  </div>
-                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                  <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
-                                  <div className="block py-2 text-sm text-gray-600">Multipurpose</div>
-                                  <div className="block py-2 text-sm text-gray-600">Image Quality Factor</div>
-                                  <div className="block py-2 text-sm text-gray-600">Infrared (VIS-IR)</div>
-                                   <Link to="/charts" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                     Reflective
-                                   </Link>
-                                   <div className="block py-2 text-sm text-gray-600">Transparent</div>
-                                   <Link to="/charts" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                     {t.nav.seeAllCharts}
-                                   </Link>
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                          
-                          {/* Illumination Devices */}
-                          <Accordion type="single" collapsible className="ml-2">
-                            <AccordionItem value="illumination" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                      <CustomTargetIcon className="h-4 w-4" />
-                                      <span>{t.nav.illuminationDevices}</span>
-                                    </div>
-                                  </div>
-                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                           {/* Test Charts with subgroups */}
+                           <Accordion type="single" collapsible className="ml-2">
+                             <AccordionItem value="test-charts" className="border-none">
+                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
+                                   <div className="flex items-center justify-between w-full">
+                                     <Link to="/charts" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                       <CustomTargetIcon className="h-4 w-4" />
+                                       <span>{t.nav.testCharts}</span>
+                                       <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
+                                     </Link>
+                                   </div>
+                                </AccordionTrigger>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
-                                   <div className="block py-2 text-sm text-gray-600">iQ-LED</div>
-                                   <div className="block py-2 text-sm text-gray-600">IEEE-P2020</div>
-                                   <div className="block py-2 text-sm text-gray-600">Production Line Calibration</div>
-                                   <div className="block py-2 text-sm text-gray-600">Flicker (PWM/MMP)</div>
-                                   <div className="block py-2 text-sm text-gray-600">Test Chart Illumination</div>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.allLightSources}</div>
+                                   {productData["Test Charts"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
                                  </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                          
-                          {/* Measurement Devices */}
-                          <Accordion type="single" collapsible className="ml-2">
-                            <AccordionItem value="measurement" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                      <CustomTargetIcon className="h-4 w-4" />
-                                      <span>{t.nav.measurementDevices}</span>
-                                    </div>
+                               </AccordionContent>
+                             </AccordionItem>
+                           </Accordion>
+                           
+                           {/* Illumination Devices */}
+                           <Accordion type="single" collapsible className="ml-2">
+                             <AccordionItem value="illumination" className="border-none">
+                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
+                                   <div className="flex items-center justify-between w-full">
+                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                       <CustomTargetIcon className="h-4 w-4" />
+                                       <span>{t.nav.illuminationDevices}</span>
+                                     </div>
+                                   </div>
+                                </AccordionTrigger>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                  <div className="space-y-2">
+                                    {productData["Illumination Devices"].subgroups.map((item, idx) => (
+                                      item.link === "#" ? (
+                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                      ) : (
+                                        <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                          {item.name}
+                                        </Link>
+                                      )
+                                    ))}
                                   </div>
-                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                               </AccordionContent>
+                             </AccordionItem>
+                           </Accordion>
+                           
+                           {/* Measurement Devices */}
+                           <Accordion type="single" collapsible className="ml-2">
+                             <AccordionItem value="measurement" className="border-none">
+                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
+                                   <div className="flex items-center justify-between w-full">
+                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                       <CustomTargetIcon className="h-4 w-4" />
+                                       <span>{t.nav.measurementDevices}</span>
+                                     </div>
+                                   </div>
+                                </AccordionTrigger>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                  <div className="space-y-2">
+                                    {productData["Measurement Devices"].subgroups.map((item, idx) => (
+                                      item.link === "#" ? (
+                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                      ) : (
+                                        <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                          {item.name}
+                                        </Link>
+                                      )
+                                    ))}
+                                  </div>
+                               </AccordionContent>
+                             </AccordionItem>
+                           </Accordion>
+                           
+                           {/* Software & APIs */}
+                           <Accordion type="single" collapsible className="ml-2">
+                             <AccordionItem value="software" className="border-none">
+                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
+                                   <div className="flex items-center justify-between w-full">
+                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                       <CustomTargetIcon className="h-4 w-4" />
+                                       <span>{t.nav.softwareApis}</span>
+                                     </div>
+                                   </div>
+                                </AccordionTrigger>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
-                                   <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
-                                   <div className="block py-2 text-sm text-gray-600">Timing Performance</div>
-                                   <div className="block py-2 text-sm text-gray-600">Climate-Controlled</div>
-                                   <div className="block py-2 text-sm text-gray-600">Machine Vision</div>
-                                   <div className="block py-2 text-sm text-gray-600">Spectral Sensitivity</div>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.allMeasurementDevices}</div>
+                                   {productData["Software & APIs"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
                                  </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                          
-                          {/* Software & APIs */}
-                          <Accordion type="single" collapsible className="ml-2">
-                            <AccordionItem value="software" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                      <CustomTargetIcon className="h-4 w-4" />
-                                      <span>{t.nav.softwareApis}</span>
-                                    </div>
-                                  </div>
-                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                   <div className="block py-2 text-sm text-gray-600">iQ-Analyzer-X</div>
-                                   <div className="block py-2 text-sm text-gray-600">Control APIs</div>
-                                   <div className="block py-2 text-sm text-gray-600">iQ-Luminance</div>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.allSoftwareApis}</div>
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          </Accordion>
-                          
-                          {/* Product Accessories */}
-                          <Accordion type="single" collapsible className="ml-2">
-                            <AccordionItem value="accessories" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                      <CustomTargetIcon className="h-4 w-4" />
-                                      <span>{t.nav.productAccessories}</span>
-                                    </div>
-                                  </div>
-                               </AccordionTrigger>
-                              <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                <div className="space-y-2">
-                                   <div className="block py-2 text-sm text-gray-600">Storage & Transport</div>
-                                   <div className="block py-2 text-sm text-gray-600">Luxmeters</div>
-                                   <div className="block py-2 text-sm text-gray-600">Camera Alignment</div>
-                                   <div className="block py-2 text-sm text-gray-600">Test Chart Mounts</div>
-                                   <div className="block py-2 text-sm text-gray-600">VCX & Webcam</div>
-                                   <div className="block py-2 text-sm text-gray-600">{t.nav.allAccessories}</div>
-                                </div>
-                              </AccordionContent>
+                               </AccordionContent>
+                             </AccordionItem>
+                           </Accordion>
+                           
+                           {/* Product Accessories */}
+                           <Accordion type="single" collapsible className="ml-2">
+                             <AccordionItem value="accessories" className="border-none">
+                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
+                                   <div className="flex items-center justify-between w-full">
+                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                       <CustomTargetIcon className="h-4 w-4" />
+                                       <span>{t.nav.productAccessories}</span>
+                                     </div>
+                                   </div>
+                                </AccordionTrigger>
+                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
+                                 <div className="space-y-2">
+                                   {productData["Product Accessories"].subgroups.map((item, idx) => (
+                                     item.link === "#" ? (
+                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                     ) : (
+                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                         {item.name}
+                                       </Link>
+                                     )
+                                   ))}
+                                 </div>
+                               </AccordionContent>
                             </AccordionItem>
                           </Accordion>
                         </div>
