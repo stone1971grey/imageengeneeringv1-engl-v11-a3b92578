@@ -36,9 +36,9 @@ const WhitePaperDetail = () => {
                   <h1 className="text-4xl lg:text-5xl font-bold text-black mb-3 leading-tight">
                     How Well Do Vehicles Really "See"?
                   </h1>
-                  <p className="text-xl lg:text-2xl text-black">
+                  <h2 className="text-xl lg:text-2xl text-black">
                     The IEEE P2020 Automotive Imaging White Paper
-                  </p>
+                  </h2>
                 </div>
               </div>
             </div>
