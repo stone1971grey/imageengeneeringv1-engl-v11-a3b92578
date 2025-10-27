@@ -11,7 +11,8 @@ const ActionHero = ({ title, subtitle, backgroundImage }: ActionHeroProps) => {
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: `url(${backgroundImage})`
+          backgroundImage: `url(${backgroundImage})`,
+          transform: 'scaleX(-1)'
         }}
       />
       <div className="relative container mx-auto px-6">
