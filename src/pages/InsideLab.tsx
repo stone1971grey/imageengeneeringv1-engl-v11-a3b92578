@@ -201,8 +201,8 @@ const InsideLab = () => {
                       </ul>
                     </div>
                     
-                    {setup.link && (
-                      <div className="mt-4 pt-4">
+                    <div className="mt-4 pt-4">
+                      {setup.link ? (
                         <Link to={setup.link}>
                           <Button 
                             size="lg"
@@ -212,8 +212,16 @@ const InsideLab = () => {
                             Learn more
                           </Button>
                         </Link>
-                      </div>
-                    )}
+                      ) : (
+                        <Button 
+                          size="lg"
+                          className="w-full text-white hover:opacity-90"
+                          style={{ backgroundColor: '#f5743a' }}
+                        >
+                          Learn more
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
