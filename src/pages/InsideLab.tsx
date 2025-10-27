@@ -234,18 +234,24 @@ const InsideLab = () => {
       <div className="bg-scandi-light-grey py-16">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-            Bereit, Ihr eigenes Labor einzurichten?
+            Ready to Set Up Your Own Lab?
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed mb-8 max-w-2xl mx-auto">
-            Unsere Experten können Ihnen dabei helfen, die perfekte Testumgebung 
-            für Ihre spezifischen Anforderungen zu entwerfen und zu implementieren.
+            Our experts can help you design and implement the perfect test environment 
+            for your specific requirements.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium">
-              Kontaktieren Sie unsere Laborexperten
+            <Button 
+              className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
+              style={{ backgroundColor: '#f5743a' }}
+            >
+              Contact Our Lab Experts
             </Button>
-            <Button variant="outline" className="border-scandi-grey text-scandi-grey px-8 py-3 text-lg font-medium hover:bg-scandi-light-grey">
-              Labor-Setup-Leitfaden herunterladen
+            <Button 
+              variant="outline" 
+              className="border-gray-900 text-white bg-gray-900 hover:bg-gray-800 px-8 py-3 text-lg font-medium"
+            >
+              Download Lab Setup Guide
             </Button>
           </div>
         </div>
