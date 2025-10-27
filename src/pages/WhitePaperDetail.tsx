@@ -502,7 +502,7 @@ const WhitePaperDetail = () => {
                             <FormLabel className="text-lg font-normal text-white mb-3 block">
                               Main Interests in Automotive * (Multiple selection possible)
                             </FormLabel>
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                               {[
                                 { id: "adas", label: "ADAS Testing" },
                                 { id: "in-cabin", label: "In-Cabin Monitoring" },
@@ -519,7 +519,7 @@ const WhitePaperDetail = () => {
                                   render={({ field }) => (
                                     <FormItem
                                       key={item.id}
-                                      className="flex flex-row items-start space-x-3 space-y-0"
+                                      className="flex flex-row items-center space-x-3 space-y-0 py-2"
                                     >
                                       <FormControl>
                                         <Checkbox
