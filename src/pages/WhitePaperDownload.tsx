@@ -10,7 +10,7 @@ const WhitePaperDownload = () => {
   const userName = firstName && lastName ? `${firstName} ${lastName}` : "Reader";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#f3f3f5] flex items-center justify-center p-6">
       <Card className="max-w-3xl w-full bg-white shadow-2xl border-0 overflow-hidden">
         {/* Modern Header with Logo */}
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-8">
@@ -23,7 +23,7 @@ const WhitePaperDownload = () => {
         <CardContent className="px-8 py-10 space-y-8">
           {/* Title Section */}
           <div className="space-y-3">
-            <h1 className="text-2xl font-bold text-slate-900 leading-tight">
+            <h1 className="text-2xl font-bold text-black leading-tight">
               Your Whitepaper is Ready
             </h1>
             <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f5743a' }}></div>
@@ -31,10 +31,10 @@ const WhitePaperDownload = () => {
 
           {/* Greeting */}
           <div className="space-y-4">
-            <p className="text-lg text-slate-700">
+            <p className="text-lg text-black">
               Dear {userName},
             </p>
-            <p className="text-base text-slate-600 leading-relaxed">
+            <p className="text-base text-black leading-relaxed">
               Thank you for your interest in our whitepaper. We're excited to share this comprehensive resource with you.
             </p>
           </div>
@@ -43,10 +43,10 @@ const WhitePaperDownload = () => {
           <div className="rounded-2xl p-8 border border-slate-200" style={{ backgroundColor: '#f3f3f5' }}>
             <div className="text-center space-y-6">
               <div className="space-y-2">
-                <h2 className="text-xl font-semibold text-slate-900">
+                <h2 className="text-xl font-semibold text-black">
                   Access Your Whitepaper
                 </h2>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-black">
                   Click the button below to download your requested document
                 </p>
               </div>
@@ -65,22 +65,22 @@ const WhitePaperDownload = () => {
           {/* Additional Information */}
           <div className="pt-6 border-t border-slate-200">
             <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f5743a' }}>
-              <p className="text-sm text-slate-700 leading-relaxed">
-                <span className="font-semibold text-slate-900">Stay Connected:</span> We'd be delighted to keep you informed about our latest whitepapers, upcoming events, new products, and industry insights in automotive imaging and camera testing technology.
+              <p className="text-sm text-black leading-relaxed">
+                <span className="font-semibold text-black">Stay Connected:</span> We'd be delighted to keep you informed about our latest whitepapers, upcoming events, new products, and industry insights in automotive imaging and camera testing technology.
               </p>
             </div>
           </div>
 
           {/* Closing */}
           <div className="space-y-3 pt-4">
-            <p className="text-base text-slate-600">
+            <p className="text-base text-black">
               Best regards,
             </p>
             <div>
-              <p className="text-lg font-semibold text-slate-900">
+              <p className="text-lg font-semibold text-black">
                 The Image Engineering Team
               </p>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-black">
                 Experts in Automotive Imaging Standards
               </p>
             </div>
