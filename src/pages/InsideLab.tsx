@@ -1,5 +1,6 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import ActionHero from "@/components/ActionHero";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -139,25 +140,11 @@ const InsideLab = () => {
     <div className="min-h-screen bg-white font-roboto">
       <Navigation />
       
-
-      {/* Hero Section */}
-      <div className="bg-scandi-white py-16 lg:py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-light-foreground leading-[0.9] tracking-tight mb-6">
-              Inside the Lab
-              <br />
-              <span className="text-soft-blue">Real Test Setups in </span>
-              <span className="text-soft-blue font-medium">Professional Environments</span>
-            </h1>
-            <p className="text-xl lg:text-2xl text-scandi-grey font-light leading-relaxed max-w-3xl mx-auto">
-              Erkunden Sie, wie Image Engineerings Testlösungen in realen Laborumgebungen eingesetzt werden. 
-              Von automotive ADAS-Tests bis hin zur Qualitätskontrolle mobiler Geräte - erleben Sie die Präzision und 
-              Professionalität, die zu genauen Ergebnissen führt.
-            </p>
-          </div>
-        </div>
-      </div>
+      <ActionHero
+        title="Inside the Lab"
+        subtitle="Explore real test setups in professional environments – from automotive ADAS testing to quality control for mobile devices."
+        backgroundImage={precisionTestingHero}
+      />
 
       {/* Lab Gallery Grid */}
       <div className="container mx-auto px-4 py-16">
