@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Download, FileText, Calendar, Users, Clock, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
@@ -147,39 +148,57 @@ const WhitePaperDetail = () => {
           </Card>
 
           {/* Event Notice */}
-          <div className="max-w-3xl">
-            <Card className="border-0 shadow-lg overflow-hidden">
-              <div className="relative h-64">
-                <img 
-                  src={eventImage} 
-                  alt="Automotive Testing Conference 2025" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <CardContent className="p-6" style={{ backgroundColor: '#f3f3f5' }}>
-                <h3 className="text-2xl font-bold text-black mb-4">
-                  Automotive Testing Conference 2025
-                </h3>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5 text-[#f5743a]" />
-                    <span className="text-lg text-black">08. Dezember 2025</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-[#f5743a]" />
-                    <span className="text-lg text-black">09:00 - 18:00</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <MapPin className="h-5 w-5 text-[#f5743a]" />
-                    <span className="text-lg text-black">Detroit, USA</span>
-                  </div>
+          <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <div className="aspect-video w-full overflow-hidden">
+              <img 
+                src={eventImage} 
+                alt="Automotive Testing Conference 2025" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <CardHeader className="space-y-3">
+              <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal w-fit">
+                Messe
+              </Badge>
+              <CardTitle className="text-xl leading-tight">
+                Automotive Testing Conference 2025
+              </CardTitle>
+              <div className="space-y-2 text-base text-white">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-white" />
+                  <span>08. Dezember 2025</span>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-white" />
+                  <span>09:00 - 18:00</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-5 w-5 text-white" />
+                  <span>Detroit, USA</span>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <CardDescription className="text-base leading-relaxed text-white">
+                Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.
+              </CardDescription>
+              
+              {/* Simple map placeholder */}
+              <div className="bg-muted rounded-lg h-32 flex items-center justify-center">
+                <div className="text-center">
+                  <MapPin className="h-8 w-8 mx-auto mb-2 text-white" />
+                  <p className="text-base text-white">Detroit, USA</p>
+                </div>
+              </div>
+              
+              <Button 
+                className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                onClick={() => navigate('/events')}
+              >
+                Register Now
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
       <Footer />
