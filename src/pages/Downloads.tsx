@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FileText, Video, FileDown, X } from "lucide-react";
+import { FileText, Video, FileDown, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import downloadsHero from "@/assets/downloads-hero.jpg";
 
@@ -406,7 +406,7 @@ export default function Downloads() {
                           name="firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">First Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -420,7 +420,7 @@ export default function Downloads() {
                           name="lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Last Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -436,7 +436,7 @@ export default function Downloads() {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Company *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -450,7 +450,7 @@ export default function Downloads() {
                           name="position"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Position *</FormLabel>
                               <FormControl>
                                 <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -465,7 +465,7 @@ export default function Downloads() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium text-white">E-Mail *</FormLabel>
+                            <FormLabel className="text-base text-white">E-Mail *</FormLabel>
                             <FormControl>
                               <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                             </FormControl>
@@ -478,20 +478,23 @@ export default function Downloads() {
                         control={form.control}
                         name="consent"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-white/20 p-4 bg-[#606060]">
+                          <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
+                            <div className="flex items-center space-x-3 flex-1">
+                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                              <div className="space-y-1 leading-none flex-1">
+                                <FormLabel className="text-2xl font-medium leading-tight text-white">
+                                  I agree to receive information about image quality testing and related topics via email. *
+                                </FormLabel>
+                                <FormMessage />
+                              </div>
+                            </div>
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-white/60 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
+                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel className="text-base font-normal text-white cursor-pointer">
-                                I agree to receive information about image quality testing and related topics via email. *
-                              </FormLabel>
-                              <FormMessage />
-                            </div>
                           </FormItem>
                         )}
                       />
@@ -577,7 +580,7 @@ export default function Downloads() {
                           name="firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">First Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -591,7 +594,7 @@ export default function Downloads() {
                           name="lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Last Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -607,7 +610,7 @@ export default function Downloads() {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Company *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -621,7 +624,7 @@ export default function Downloads() {
                           name="position"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Position *</FormLabel>
                               <FormControl>
                                 <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -636,7 +639,7 @@ export default function Downloads() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium text-white">E-Mail *</FormLabel>
+                            <FormLabel className="text-base text-white">E-Mail *</FormLabel>
                             <FormControl>
                               <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                             </FormControl>
@@ -649,20 +652,23 @@ export default function Downloads() {
                         control={form.control}
                         name="consent"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-white/20 p-4 bg-[#606060]">
+                          <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
+                            <div className="flex items-center space-x-3 flex-1">
+                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                              <div className="space-y-1 leading-none flex-1">
+                                <FormLabel className="text-2xl font-medium leading-tight text-white">
+                                  I agree to receive information about image quality testing and related topics via email. *
+                                </FormLabel>
+                                <FormMessage />
+                              </div>
+                            </div>
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-white/60 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
+                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel className="text-base font-normal text-white cursor-pointer">
-                                I agree to receive information about image quality testing and related topics via email. *
-                              </FormLabel>
-                              <FormMessage />
-                            </div>
                           </FormItem>
                         )}
                       />
@@ -748,7 +754,7 @@ export default function Downloads() {
                           name="firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">First Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">First Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="John" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -762,7 +768,7 @@ export default function Downloads() {
                           name="lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Last Name *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Last Name *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Doe" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -778,7 +784,7 @@ export default function Downloads() {
                           name="company"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Company *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Company *</FormLabel>
                               <FormControl>
                                 <Input placeholder="Your Company Inc." {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -792,7 +798,7 @@ export default function Downloads() {
                           name="position"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-base font-medium text-white">Position *</FormLabel>
+                              <FormLabel className="text-2xl font-medium text-white">Position *</FormLabel>
                               <FormControl>
                                 <Input placeholder="e.g. Test Engineer" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                               </FormControl>
@@ -807,7 +813,7 @@ export default function Downloads() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-base font-medium text-white">E-Mail *</FormLabel>
+                            <FormLabel className="text-base text-white">E-Mail *</FormLabel>
                             <FormControl>
                               <Input type="email" placeholder="john@company.com" {...field} className="bg-[#606060] text-white placeholder:text-white/60 text-base border-white/20" />
                             </FormControl>
@@ -820,20 +826,23 @@ export default function Downloads() {
                         control={form.control}
                         name="consent"
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-white/20 p-4 bg-[#606060]">
+                          <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
+                            <div className="flex items-center space-x-3 flex-1">
+                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                              <div className="space-y-1 leading-none flex-1">
+                                <FormLabel className="text-2xl font-medium leading-tight text-white">
+                                  I agree to receive information about image quality testing and related topics via email. *
+                                </FormLabel>
+                                <FormMessage />
+                              </div>
+                            </div>
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-white/60 data-[state=checked]:bg-[#f5743a] data-[state=checked]:border-[#f5743a]"
+                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel className="text-base font-normal text-white cursor-pointer">
-                                I agree to receive information about image quality testing and related topics via email. *
-                              </FormLabel>
-                              <FormMessage />
-                            </div>
                           </FormItem>
                         )}
                       />
