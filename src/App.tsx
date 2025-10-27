@@ -24,6 +24,7 @@ import Cart from "./pages/Cart";
 import Events from "./pages/Events";
 import WhitePaper from "./pages/WhitePaper";
 import WhitePaperDownload from "./pages/WhitePaperDownload";
+import WhitePaperDetail from "./pages/WhitePaperDetail";
 import ConferencePaperDownload from "./pages/ConferencePaperDownload";
 import VideoDownload from "./pages/VideoDownload";
 import EventRegistrationConfirmation from "./pages/EventRegistrationConfirmation";
@@ -67,6 +68,7 @@ const App = () => (
          <Route path="/events" element={<Events />} />
          <Route path="/whitepaper" element={<WhitePaper />} />
          <Route path="/whitepaper_download" element={<WhitePaperDownload />} />
+         <Route path="/whitepaper/ieee-p2020" element={<WhitePaperDetail />} />
          <Route path="/conference_paper_download" element={<ConferencePaperDownload />} />
          <Route path="/video_download" element={<VideoDownload />} />
          <Route path="/event_registration_confirmation" element={<EventRegistrationConfirmation />} />

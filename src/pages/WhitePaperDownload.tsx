@@ -55,7 +55,7 @@ const WhitePaperDownload = () => {
                 size="lg"
                 className="text-white font-semibold px-10 py-6 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 style={{ backgroundColor: '#f5743a' }}
-                onClick={() => window.location.href = '/whitepaper'}
+                onClick={() => window.location.href = '/whitepaper/ieee-p2020'}
               >
                 Download Whitepaper
               </Button>
