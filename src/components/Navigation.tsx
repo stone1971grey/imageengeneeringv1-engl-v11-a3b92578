@@ -405,11 +405,11 @@ const Navigation = () => {
                          <span>VCX</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredTestService("Image Quality")}>
-                         <Camera className="h-5 w-5" />
-                         <span>{t.nav.imageQuality}</span>
-                       </div>
+                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredTestService("Image Quality")}>
+                          <Camera className="h-5 w-5" />
+                          <span>{t.nav.infoHub}</span>
+                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f5743a] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredTestService("Standardized")}>
@@ -570,7 +570,7 @@ const Navigation = () => {
                     <Link to="/downloads" className="w-full">
                       <Button variant="default" className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57]">
                         <Microscope className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">{t.nav.exploreImageQuality}</span>
+                        <span className="text-lg font-medium">{t.nav.exploreInfoHub}</span>
                         <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
                       </Button>
                     </Link>
@@ -1296,10 +1296,10 @@ const Navigation = () => {
                       </AccordionContent>
                     </AccordionItem>
 
-                    {/* Image Quality */}
-                    <AccordionItem value="image-quality" className="border-none">
+                    {/* Info Hub */}
+                    <AccordionItem value="info-hub" className="border-none">
                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-gray-100 rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
-                          {t.nav.imageQuality}
+                          {t.nav.infoHub}
                         </AccordionTrigger>
                       <AccordionContent className="px-0 pb-4">
                         <div className="space-y-4">
@@ -1336,12 +1336,12 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/downloads" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
-                              <Microscope className="h-4 w-4 mr-2" />
-                              <span className="hidden sm:inline">{t.nav.exploreImageQuality}</span>
-                              <span className="sm:hidden">Quality Resources</span>
-                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
-                            </Button>
+                             <Button className="w-full bg-[#f5743a] text-white hover:bg-[#f68a57] rounded-lg font-medium">
+                               <Microscope className="h-4 w-4 mr-2" />
+                               <span className="hidden sm:inline">{t.nav.exploreInfoHub}</span>
+                               <span className="sm:hidden">Info Hub</span>
+                               <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
+                             </Button>
                           </Link>
                         </div>
                       </AccordionContent>
