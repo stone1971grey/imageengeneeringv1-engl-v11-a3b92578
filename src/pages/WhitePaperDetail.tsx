@@ -147,37 +147,39 @@ const WhitePaperDetail = () => {
           </Card>
 
           {/* Event Notice */}
-          <Card className="border-0 shadow-lg overflow-hidden">
-            <div className="relative h-64 md:h-80">
-              <img 
-                src={eventImage} 
-                alt="Automotive Testing Conference 2025" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <CardContent className="p-8" style={{ backgroundColor: '#f3f3f5' }}>
-              <h3 className="text-3xl font-bold text-black mb-6">
-                Automotive Testing Conference 2025
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Calendar className="h-6 w-6 text-[#f5743a]" />
-                  <span className="text-xl text-black">08. Dezember 2025</span>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <Clock className="h-6 w-6 text-[#f5743a]" />
-                  <span className="text-xl text-black">09:00 - 18:00</span>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-6 w-6 text-[#f5743a]" />
-                  <span className="text-xl text-black">Detroit, USA</span>
-                </div>
+          <div className="max-w-3xl">
+            <Card className="border-0 shadow-lg overflow-hidden">
+              <div className="relative h-64">
+                <img 
+                  src={eventImage} 
+                  alt="Automotive Testing Conference 2025" 
+                  className="w-full h-full object-cover"
+                />
               </div>
-            </CardContent>
-          </Card>
+              <CardContent className="p-6" style={{ backgroundColor: '#f3f3f5' }}>
+                <h3 className="text-2xl font-bold text-black mb-4">
+                  Automotive Testing Conference 2025
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-[#f5743a]" />
+                    <span className="text-lg text-black">08. Dezember 2025</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5 text-[#f5743a]" />
+                    <span className="text-lg text-black">09:00 - 18:00</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-[#f5743a]" />
+                    <span className="text-lg text-black">Detroit, USA</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
       <Footer />
