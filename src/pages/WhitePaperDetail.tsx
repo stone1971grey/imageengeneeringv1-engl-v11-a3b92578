@@ -24,16 +24,16 @@ const WhitePaperDetail = () => {
         <div className="container mx-auto px-6 max-w-5xl">
           {/* Header Card */}
           <Card className="mb-8 border-0 shadow-xl overflow-hidden">
-            <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-12">
+            <div className="px-8 py-12" style={{ backgroundColor: '#f3f3f5' }}>
               <div className="flex items-start gap-4 mb-4">
-                <div className="bg-white/10 p-3 rounded-lg">
-                  <FileText className="h-8 w-8 text-white" />
+                <div className="bg-white/20 p-3 rounded-lg border border-slate-300">
+                  <FileText className="h-8 w-8 text-black" />
                 </div>
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-white mb-3 leading-tight">
+                  <h1 className="text-3xl font-bold text-black mb-3 leading-tight">
                     How Well Do Vehicles Really "See"?
                   </h1>
-                  <p className="text-xl text-slate-200">
+                  <p className="text-xl text-black">
                     The IEEE P2020 Automotive Imaging White Paper
                   </p>
                 </div>
