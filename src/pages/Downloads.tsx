@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Video, FileDown } from "lucide-react";
+import { FileText, Video, FileDown, X } from "lucide-react";
 import downloadsHero from "@/assets/downloads-hero.jpg";
 
 // Data types
@@ -17,6 +17,7 @@ interface DownloadItem {
   duration?: string;
   publishDate: string;
   abstract: string;
+  fullDescription: string;
   downloadUrl: string;
 }
 
@@ -30,6 +31,19 @@ const downloadItems: DownloadItem[] = [
     pages: 24,
     publishDate: "2024-01",
     abstract: "Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance. The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap.",
+    fullDescription: `
+      <h3>How Well Do Vehicles Really "See"?</h3>
+      <p>Cameras are the eyes of modern vehicles – yet until recently, the automotive industry lacked a common standard to objectively measure their performance.</p>
+      <p>The IEEE P2020 Automotive Imaging White Paper reveals how international experts are closing this gap by defining the first unified framework for automotive image quality.</p>
+      <p>Discover why traditional image quality standards from consumer electronics fail to meet the demanding conditions of vehicle cameras – and how P2020 introduces consistent KPIs, testing procedures, and evaluation models that ensure safety, reliability, and comparability across imaging systems.</p>
+      <h3>What You'll Learn</h3>
+      <p>This white paper provides valuable insights for OEMs, suppliers, and technology decision-makers who want to understand:</p>
+      <ul>
+        <li>Where current standards fall short</li>
+        <li>How LED flicker, HDR, fisheye optics, and temperature extremes affect image performance</li>
+        <li>Why standardized metrics are key to safer driver assistance and autonomous systems</li>
+      </ul>
+    `,
     downloadUrl: "#download-p2020",
   },
   {
@@ -40,6 +54,19 @@ const downloadItems: DownloadItem[] = [
     pages: 18,
     publishDate: "2023-11",
     abstract: "Comprehensive guide to printer quality testing and print longevity assessment. Learn industry-standard methodologies for evaluating printer performance and output quality.",
+    fullDescription: `
+      <h3>Introduction</h3>
+      <p>Printer testing and print life assessment are critical components of quality assurance in the printing industry.</p>
+      <p>This white paper explores comprehensive testing methodologies and best practices.</p>
+      <h3>Testing Approaches</h3>
+      <ul>
+        <li>Color accuracy and consistency testing</li>
+        <li>Resolution and sharpness measurements</li>
+        <li>Print durability and longevity tests</li>
+        <li>Environmental stability testing</li>
+        <li>Test chart applications and usage</li>
+      </ul>
+    `,
     downloadUrl: "#download-printer"
   },
   {
@@ -50,6 +77,19 @@ const downloadItems: DownloadItem[] = [
     pages: 32,
     publishDate: "2024-02",
     abstract: "Advanced camera testing techniques for automotive, mobile, and industrial applications. Explore comprehensive testing methodologies for modern camera systems.",
+    fullDescription: `
+      <h3>Scope</h3>
+      <p>Modern camera systems require rigorous testing to ensure optimal performance across diverse applications.</p>
+      <p>This white paper covers comprehensive testing approaches for various camera technologies.</p>
+      <h3>Testing Categories</h3>
+      <ul>
+        <li>Resolution and MTF testing</li>
+        <li>Color accuracy and reproduction</li>
+        <li>Dynamic range and HDR performance</li>
+        <li>Low-light sensitivity testing</li>
+        <li>Geometric distortion analysis</li>
+      </ul>
+    `,
     downloadUrl: "#download-camera"
   },
   {
@@ -60,6 +100,19 @@ const downloadItems: DownloadItem[] = [
     pages: 16,
     publishDate: "2024-03",
     abstract: "Presented at the International Automotive Conference 2024. Covers the latest standards and testing requirements for Advanced Driver Assistance Systems cameras.",
+    fullDescription: `
+      <h3>Overview</h3>
+      <p>This conference paper was presented at the International Automotive Conference 2024, addressing critical testing standards for ADAS cameras.</p>
+      <h3>Key Topics</h3>
+      <ul>
+        <li>Current ADAS testing standards</li>
+        <li>IEEE P2020 compliance requirements</li>
+        <li>Safety-critical performance metrics</li>
+        <li>Future standardization efforts</li>
+      </ul>
+      <h3>Target Audience</h3>
+      <p>Automotive engineers, test engineers, and quality assurance professionals working on ADAS development.</p>
+    `,
     downloadUrl: "#download-adas-paper"
   },
   {
@@ -70,6 +123,17 @@ const downloadItems: DownloadItem[] = [
     pages: 12,
     publishDate: "2024-05",
     abstract: "Research paper on High Dynamic Range performance evaluation methods, presented at the IEEE Vision Conference.",
+    fullDescription: `
+      <h3>HDR in Automotive Applications</h3>
+      <p>This research paper explores the critical role of High Dynamic Range imaging in modern automotive camera systems.</p>
+      <h3>Research Focus</h3>
+      <ul>
+        <li>HDR performance measurement methodologies</li>
+        <li>Real-world testing scenarios</li>
+        <li>Comparative analysis of HDR techniques</li>
+        <li>Standards compliance evaluation</li>
+      </ul>
+    `,
     downloadUrl: "#download-hdr-paper"
   },
   {
@@ -80,6 +144,20 @@ const downloadItems: DownloadItem[] = [
     duration: "12:34",
     publishDate: "2024-06",
     abstract: "Comprehensive introduction to automotive camera testing methodologies, standards, and best practices. Perfect for engineers new to the field.",
+    fullDescription: `
+      <h3>Video Overview</h3>
+      <p>This comprehensive video provides an introduction to automotive camera testing, covering essential methodologies and industry standards.</p>
+      <h3>Topics Covered</h3>
+      <ul>
+        <li>Fundamentals of automotive camera testing</li>
+        <li>Key performance indicators</li>
+        <li>Testing equipment and setup</li>
+        <li>Industry standards overview</li>
+        <li>Best practices and common pitfalls</li>
+      </ul>
+      <h3>Who Should Watch</h3>
+      <p>Engineers new to automotive imaging, test engineers transitioning to the automotive sector, and quality assurance professionals.</p>
+    `,
     downloadUrl: "#video-intro"
   },
   {
@@ -90,6 +168,18 @@ const downloadItems: DownloadItem[] = [
     duration: "8:45",
     publishDate: "2024-04",
     abstract: "Detailed walkthrough of the Arcturus testing platform, demonstrating key features and testing capabilities for automotive imaging.",
+    fullDescription: `
+      <h3>Platform Introduction</h3>
+      <p>Learn about the Arcturus testing platform and its comprehensive capabilities for automotive camera testing.</p>
+      <h3>Video Content</h3>
+      <ul>
+        <li>Platform architecture and components</li>
+        <li>Hardware setup and configuration</li>
+        <li>Software features and capabilities</li>
+        <li>Real-world testing demonstrations</li>
+        <li>Integration with existing workflows</li>
+      </ul>
+    `,
     downloadUrl: "#video-arcturus"
   },
   {
@@ -100,14 +190,39 @@ const downloadItems: DownloadItem[] = [
     duration: "15:20",
     publishDate: "2024-02",
     abstract: "Deep dive into the IEEE P2020 automotive imaging standard, explaining key metrics, test procedures, and implementation guidelines.",
+    fullDescription: `
+      <h3>Understanding IEEE P2020</h3>
+      <p>This video provides a comprehensive explanation of the IEEE P2020 standard for automotive imaging systems.</p>
+      <h3>Content Overview</h3>
+      <ul>
+        <li>Background and motivation for P2020</li>
+        <li>Key performance metrics and KPIs</li>
+        <li>Test procedures and methodologies</li>
+        <li>Implementation guidelines</li>
+        <li>Compliance and certification</li>
+      </ul>
+      <h3>Learning Outcomes</h3>
+      <p>After watching, you'll understand how to implement P2020 testing in your organization and achieve compliance.</p>
+    `,
     downloadUrl: "#video-p2020"
   }
 ];
 
 export default function Downloads() {
+  const [selectedItem, setSelectedItem] = useState<DownloadItem | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  
   const whitepapers = downloadItems.filter(item => item.type === "whitepaper");
   const conferencePapers = downloadItems.filter(item => item.type === "conference");
   const videos = downloadItems.filter(item => item.type === "video");
+
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setSelectedItem(null);
+      setIsClosing(false);
+    }, 500);
+  };
 
   const DownloadCard = ({ item }: { item: DownloadItem }) => (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
@@ -139,21 +254,9 @@ export default function Downloads() {
         
         <Button 
           className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
-          asChild
+          onClick={() => setSelectedItem(item)}
         >
-          <a href={item.downloadUrl} target="_blank" rel="noopener noreferrer">
-            {item.type === "video" ? (
-              <>
-                <Video className="h-4 w-4 mr-2" />
-                Watch Video
-              </>
-            ) : (
-              <>
-                <FileDown className="h-4 w-4 mr-2" />
-                Download
-              </>
-            )}
-          </a>
+          Learn More
         </Button>
       </CardContent>
     </Card>
@@ -202,6 +305,46 @@ export default function Downloads() {
         </div>
       </section>
 
+      {/* Selected Item Detail (White Papers) */}
+      {selectedItem && selectedItem.type === "whitepaper" && (
+        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+          <div className="container mx-auto px-6">
+            <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <CardTitle className="text-3xl">{selectedItem.title}</CardTitle>
+                <CardDescription className="text-white">
+                  {selectedItem.pages} Pages • Published {new Date(selectedItem.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div 
+                  className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
+                  dangerouslySetInnerHTML={{ __html: selectedItem.fullDescription }}
+                />
+                
+                <div className="pt-6 border-t border-border">
+                  <Button 
+                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                    asChild
+                  >
+                    <a href={selectedItem.downloadUrl} target="_blank" rel="noopener noreferrer">
+                      <FileDown className="h-4 w-4 mr-2" />
+                      Download White Paper
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
       {/* Conference Papers Section */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-6">
@@ -220,6 +363,46 @@ export default function Downloads() {
         </div>
       </section>
 
+      {/* Selected Item Detail (Conference Papers) */}
+      {selectedItem && selectedItem.type === "conference" && (
+        <section className={`py-16 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+          <div className="container mx-auto px-6">
+            <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <CardTitle className="text-3xl">{selectedItem.title}</CardTitle>
+                <CardDescription className="text-white">
+                  {selectedItem.pages} Pages • Published {new Date(selectedItem.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div 
+                  className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
+                  dangerouslySetInnerHTML={{ __html: selectedItem.fullDescription }}
+                />
+                
+                <div className="pt-6 border-t border-border">
+                  <Button 
+                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                    asChild
+                  >
+                    <a href={selectedItem.downloadUrl} target="_blank" rel="noopener noreferrer">
+                      <FileDown className="h-4 w-4 mr-2" />
+                      Download Conference Paper
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
       {/* Videos Section */}
       <section className="py-16">
         <div className="container mx-auto px-6">
@@ -237,6 +420,46 @@ export default function Downloads() {
           </div>
         </div>
       </section>
+
+      {/* Selected Item Detail (Videos) */}
+      {selectedItem && selectedItem.type === "video" && (
+        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+          <div className="container mx-auto px-6">
+            <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
+              <CardHeader>
+                <div className="flex items-center justify-between mb-4">
+                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                    <X className="h-5 w-5" />
+                  </Button>
+                </div>
+                <CardTitle className="text-3xl">{selectedItem.title}</CardTitle>
+                <CardDescription className="text-white">
+                  {selectedItem.duration} • Published {new Date(selectedItem.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div 
+                  className="text-base leading-relaxed [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:text-foreground [&_p]:mb-3 [&_p]:text-foreground [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 [&_li]:text-foreground [&_li]:pl-1"
+                  dangerouslySetInnerHTML={{ __html: selectedItem.fullDescription }}
+                />
+                
+                <div className="pt-6 border-t border-border">
+                  <Button 
+                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                    asChild
+                  >
+                    <a href={selectedItem.downloadUrl} target="_blank" rel="noopener noreferrer">
+                      <Video className="h-4 w-4 mr-2" />
+                      Watch Video
+                    </a>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       <Footer />
     </div>
