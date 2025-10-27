@@ -88,7 +88,7 @@ const WhitePaperDetail = () => {
                   </div>
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <div className="rounded-xl p-6 border border-slate-200" style={{ backgroundColor: '#f3f3f5' }}>
                   <h3 className="text-lg font-semibold text-black mb-3">Key Topics Covered</h3>
                   <ul className="space-y-2 text-black">
                     <li className="flex items-start gap-2">
