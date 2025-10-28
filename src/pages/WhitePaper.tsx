@@ -16,6 +16,7 @@ import { FileText, Download, CheckCircle2, AlertCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import whitepaperHero from "@/assets/whitepaper-hero.jpg";
 import { useTranslation } from "@/hooks/useTranslation";
+import { supabase } from "@/integrations/supabase/client";
 
 // Form validation schema
 const downloadFormSchema = z.object({
@@ -171,11 +172,31 @@ const WhitePaper = () => {
     },
   });
 
-  const onSubmit = (data: DownloadFormValues) => {
-    console.log("Download request:", { ...data, whitePaper: selectedPaper?.id });
-    
-    // Redirect to email simulation page with user data
-    setTimeout(() => {
+  const onSubmit = async (data: DownloadFormValues) => {
+    if (!selectedPaper) return;
+
+    try {
+      // Save to database
+      const { error: dbError } = await supabase
+        .from('download_requests')
+        .insert({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          company: data.company,
+          position: data.position,
+          download_type: 'whitepaper',
+          item_id: selectedPaper.id,
+          item_title: selectedPaper.title,
+          consent: data.consent
+        });
+
+      if (dbError) {
+        console.error("Database error:", dbError);
+        toast.error("Failed to save your request. Please try again.");
+        return;
+      }
+
       setDownloadSuccess(true);
       toast.success("Redirecting to download...");
       
@@ -187,7 +208,10 @@ const WhitePaper = () => {
           } 
         });
       }, 1000);
-    }, 500);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   const handleDownloadClick = (paper: WhitePaper) => {

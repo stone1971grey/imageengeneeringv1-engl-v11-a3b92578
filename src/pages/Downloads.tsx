@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { FileText, Video, FileDown, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import downloadsHero from "@/assets/downloads-hero.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 // Form validation schema
 const downloadFormSchema = z.object({
@@ -258,6 +259,28 @@ export default function Downloads() {
     try {
       setDownloadSuccess(true);
       
+      // Save to database
+      const { error: dbError } = await supabase
+        .from('download_requests')
+        .insert({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          company: data.company,
+          position: data.position,
+          download_type: selectedItem.type,
+          item_id: selectedItem.id,
+          item_title: selectedItem.title,
+          consent: data.consent
+        });
+
+      if (dbError) {
+        console.error("Database error:", dbError);
+        toast.error("Failed to save your request. Please try again.");
+        setDownloadSuccess(false);
+        return;
+      }
+      
       // Determine which page to navigate to based on download type
       let targetPage = "";
       if (selectedItem.type === "whitepaper") {
@@ -277,9 +300,6 @@ export default function Downloads() {
           title: selectedItem.title,
         },
       });
-
-      // Send email in the background (optional - can be added later)
-      // Note: This would require the RESEND_API_KEY to be set up
       
       form.reset();
       setDownloadSuccess(false);

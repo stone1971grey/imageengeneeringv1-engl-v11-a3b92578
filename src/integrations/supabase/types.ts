@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string
+          phone: string | null
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          message: string
+          phone?: string | null
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string
+          phone?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
+      download_requests: {
+        Row: {
+          company: string
+          consent: boolean
+          created_at: string
+          download_type: string
+          email: string
+          first_name: string
+          id: string
+          item_id: string
+          item_title: string
+          last_name: string
+          position: string
+        }
+        Insert: {
+          company: string
+          consent?: boolean
+          created_at?: string
+          download_type: string
+          email: string
+          first_name: string
+          id?: string
+          item_id: string
+          item_title: string
+          last_name: string
+          position: string
+        }
+        Update: {
+          company?: string
+          consent?: boolean
+          created_at?: string
+          download_type?: string
+          email?: string
+          first_name?: string
+          id?: string
+          item_id?: string
+          item_title?: string
+          last_name?: string
+          position?: string
+        }
+        Relationships: []
+      }
       event_registrations: {
         Row: {
           automotive_interests: string[] | null
