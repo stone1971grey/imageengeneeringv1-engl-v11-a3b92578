@@ -14,7 +14,6 @@ import ActionHero from "@/components/ActionHero";
 import { Calendar, MapPin, Clock, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 
 // Import event images
 import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
@@ -224,6 +223,8 @@ const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'neutral' | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
@@ -238,50 +239,51 @@ const Events = () => {
   });
 
   const onSubmit = async (data: RegistrationFormValues) => {
-    if (!selectedEvent) return;
+    if (!selectedEvent || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitStatus(null);
 
     try {
-      // Save to database
-      const { error: dbError } = await supabase
-        .from('event_registrations')
-        .insert({
-          first_name: data.firstName,
-          last_name: data.lastName,
-          email: data.email,
+      const response = await fetch('https://afrcagkprhtvvucukubf.supabase.co/functions/v1/register-event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
           company: data.company,
           position: data.position,
-          event_title: selectedEvent.title,
-          event_date: selectedEvent.date,
-          event_location: `${selectedEvent.location.city}, ${selectedEvent.location.country}`
-        });
+          email: data.email,
+          consent: true,
+          eventName: 'P2020 / EMVA 1288 Workshop',
+          eventDate: selectedEvent.date,
+          eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
+        }),
+      });
 
-      if (dbError) {
-        console.error("Database error:", dbError);
-        toast.error("Registration failed. Please try again.");
-        return;
+      const result = await response.json();
+
+      if (result.success === true) {
+        setSubmitStatus('success');
+        setRegistrationSuccess(true);
+        form.reset();
+      } else {
+        setSubmitStatus('neutral');
       }
-
-      setRegistrationSuccess(true);
-      toast.success("Registration successful! You will receive a confirmation email shortly.");
-      
-      setTimeout(() => {
-        navigate('/event_registration_confirmation', { 
-          state: { 
-            firstName: data.firstName, 
-            lastName: data.lastName,
-            selectedEvent: selectedEvent
-          } 
-        });
-      }, 1000);
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Something went wrong. Please try again.");
+      setSubmitStatus('neutral');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDetailsClick = (event: Event) => {
     setSelectedEvent(event);
     setRegistrationSuccess(false);
+    setSubmitStatus(null);
   };
 
   const handleClose = () => {
@@ -545,10 +547,26 @@ const Events = () => {
                                 <Button 
                                   type="submit" 
                                   className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
-                                  disabled={registrationSuccess}
+                                  disabled={isSubmitting || registrationSuccess}
                                 >
-                                  {registrationSuccess ? "Registration Successful!" : "Complete Registration"}
+                                  {isSubmitting ? "Submitting..." : registrationSuccess ? "Registration Successful!" : "Complete Registration"}
                                 </Button>
+                                
+                                {submitStatus === 'success' && (
+                                  <div className="p-4 bg-green-500/20 border border-green-500 rounded-md">
+                                    <p className="text-green-500 text-base">
+                                      Thank you for registering. Please check your inbox for event details.
+                                    </p>
+                                  </div>
+                                )}
+                                
+                                {submitStatus === 'neutral' && (
+                                  <div className="p-4 bg-blue-500/20 border border-blue-500 rounded-md">
+                                    <p className="text-blue-500 text-base">
+                                      Thank you, we've received your request. We'll contact you shortly.
+                                    </p>
+                                  </div>
+                                )}
                               </form>
                             </Form>
                           </div>
