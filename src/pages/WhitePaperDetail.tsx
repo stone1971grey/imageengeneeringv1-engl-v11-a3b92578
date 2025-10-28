@@ -206,24 +206,24 @@ const WhitePaperDetail = () => {
                 <div className="rounded-xl p-6 border border-slate-200" style={{ backgroundColor: '#f3f3f5' }}>
                   <h3 className="text-xl font-semibold text-black mb-3">Key Topics Covered</h3>
                   <ul className="space-y-2 text-base text-black">
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#f5743a] text-2xl">•</span>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f5743a] text-2xl leading-none -mt-0.5">•</span>
                       <span>IEEE P2020 standard overview and requirements</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#f5743a] text-2xl">•</span>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f5743a] text-2xl leading-none -mt-0.5">•</span>
                       <span>Standardized test methodologies for automotive cameras</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#f5743a] text-2xl">•</span>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f5743a] text-2xl leading-none -mt-0.5">•</span>
                       <span>Key performance indicators and quality metrics</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#f5743a] text-2xl">•</span>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f5743a] text-2xl leading-none -mt-0.5">•</span>
                       <span>Real-world testing scenarios and validation approaches</span>
                     </li>
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#f5743a] text-2xl">•</span>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f5743a] text-2xl leading-none -mt-0.5">•</span>
                       <span>Industry best practices and recommendations</span>
                     </li>
                   </ul>
