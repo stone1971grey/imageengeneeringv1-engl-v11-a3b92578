@@ -223,8 +223,6 @@ const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'success' | 'neutral' | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
@@ -239,51 +237,15 @@ const Events = () => {
   });
 
   const onSubmit = async (data: RegistrationFormValues) => {
-    if (!selectedEvent || isSubmitting) return;
-
-    setIsSubmitting(true);
-    setSubmitStatus(null);
-
-    try {
-      const response = await fetch('https://afrcagkprhtvvucukubf.supabase.co/functions/v1/register-event', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          company: data.company,
-          position: data.position,
-          email: data.email,
-          consent: true,
-          eventName: 'P2020 / EMVA 1288 Workshop',
-          eventDate: selectedEvent.date,
-          eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (result.success === true) {
-        setSubmitStatus('success');
-        setRegistrationSuccess(true);
-        form.reset();
-      } else {
-        setSubmitStatus('neutral');
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setSubmitStatus('neutral');
-    } finally {
-      setIsSubmitting(false);
-    }
+    if (!selectedEvent) return;
+    
+    // Navigate to the simulated confirmation email page
+    navigate('/event-registration-confirmation');
   };
 
   const handleDetailsClick = (event: Event) => {
     setSelectedEvent(event);
     setRegistrationSuccess(false);
-    setSubmitStatus(null);
   };
 
   const handleClose = () => {
@@ -547,34 +509,9 @@ const Events = () => {
                                 <Button 
                                   type="submit" 
                                   className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
-                                  disabled={isSubmitting || registrationSuccess}
                                 >
-                                  {isSubmitting ? "Submitting..." : registrationSuccess ? "Registration Successful!" : "Complete Registration"}
+                                  Complete Registration
                                 </Button>
-                                
-                                {submitStatus === 'success' && (
-                                  <div className="p-4 bg-green-500/20 border border-green-500 rounded-md">
-                                    <p className="text-green-500 text-base">
-                                      Thank you for registering. Please check your inbox for event details.{" "}
-                                      <a 
-                                        href="/event-registration-confirmation" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="underline hover:text-green-400"
-                                      >
-                                        View simulated email
-                                      </a>
-                                    </p>
-                                  </div>
-                                )}
-                                
-                                {submitStatus === 'neutral' && (
-                                  <div className="p-4 bg-blue-500/20 border border-blue-500 rounded-md">
-                                    <p className="text-blue-500 text-base">
-                                      Thank you, we've received your request. We'll contact you shortly.
-                                    </p>
-                                  </div>
-                                )}
                               </form>
                             </Form>
                           </div>
