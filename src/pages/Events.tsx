@@ -238,22 +238,48 @@ const Events = () => {
 
   const onSubmit = async (data: RegistrationFormValues) => {
     if (!selectedEvent) return;
-    
-    // Navigate to the simulated confirmation email page with form data
-    navigate('/event_registration_confirmation', {
-      state: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        selectedEvent: {
-          id: selectedEvent.id,
-          title: selectedEvent.title,
-          date: selectedEvent.date,
-          time: selectedEvent.time,
-          location: selectedEvent.location,
-          image: selectedEvent.image
+
+    try {
+      // Call the edge function to save to database and send to Mautic
+      const response = await fetch('https://afrcagkprhtvvucukubf.supabase.co/functions/v1/register-event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          company: data.company,
+          position: data.position,
+          email: data.email,
+          consent: true,
+          eventName: 'P2020 / EMVA 1288 Workshop',
+          eventDate: selectedEvent.date,
+          eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
+        }),
+      });
+
+      await response.json();
+      
+      // Navigate to the simulated confirmation email page with form data
+      navigate('/event_registration_confirmation', {
+        state: {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          selectedEvent: {
+            id: selectedEvent.id,
+            title: selectedEvent.title,
+            date: selectedEvent.date,
+            time: selectedEvent.time,
+            location: selectedEvent.location,
+            image: selectedEvent.image
+          }
         }
-      }
-    });
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Registration failed. Please try again.");
+    }
   };
 
   const handleDetailsClick = (event: Event) => {
