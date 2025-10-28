@@ -1,1 +1,7 @@
 project_id = "afrcagkprhtvvucukubf"
+
+[functions.register-event]
+verify_jwt = false
+
+[functions.send-download-email]
+verify_jwt = false
