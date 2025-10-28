@@ -14,6 +14,7 @@ import ActionHero from "@/components/ActionHero";
 import { Calendar, MapPin, Clock, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 // Import event images
 import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
@@ -236,20 +237,46 @@ const Events = () => {
     },
   });
 
-  const onSubmit = (data: RegistrationFormValues) => {
-    console.log("Registration:", { ...data, event: selectedEvent?.id });
-    setRegistrationSuccess(true);
-    toast.success("Registration successful! You will receive a confirmation email shortly.");
-    
-    setTimeout(() => {
-      navigate('/event_registration_confirmation', { 
-        state: { 
-          firstName: data.firstName, 
-          lastName: data.lastName,
-          selectedEvent: selectedEvent
-        } 
-      });
-    }, 1000);
+  const onSubmit = async (data: RegistrationFormValues) => {
+    if (!selectedEvent) return;
+
+    try {
+      // Save to database
+      const { error: dbError } = await supabase
+        .from('event_registrations')
+        .insert({
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          company: data.company,
+          position: data.position,
+          event_title: selectedEvent.title,
+          event_date: selectedEvent.date,
+          event_location: `${selectedEvent.location.city}, ${selectedEvent.location.country}`
+        });
+
+      if (dbError) {
+        console.error("Database error:", dbError);
+        toast.error("Registration failed. Please try again.");
+        return;
+      }
+
+      setRegistrationSuccess(true);
+      toast.success("Registration successful! You will receive a confirmation email shortly.");
+      
+      setTimeout(() => {
+        navigate('/event_registration_confirmation', { 
+          state: { 
+            firstName: data.firstName, 
+            lastName: data.lastName,
+            selectedEvent: selectedEvent
+          } 
+        });
+      }, 1000);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   const handleDetailsClick = (event: Event) => {
