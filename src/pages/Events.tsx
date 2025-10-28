@@ -240,7 +240,7 @@ const Events = () => {
     if (!selectedEvent) return;
     
     // Navigate to the simulated confirmation email page
-    navigate('/event-registration-confirmation');
+    navigate('/event_registration_confirmation');
   };
 
   const handleDetailsClick = (event: Event) => {
