@@ -239,8 +239,21 @@ const Events = () => {
   const onSubmit = async (data: RegistrationFormValues) => {
     if (!selectedEvent) return;
     
-    // Navigate to the simulated confirmation email page
-    navigate('/event_registration_confirmation');
+    // Navigate to the simulated confirmation email page with form data
+    navigate('/event_registration_confirmation', {
+      state: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        selectedEvent: {
+          id: selectedEvent.id,
+          title: selectedEvent.title,
+          date: selectedEvent.date,
+          time: selectedEvent.time,
+          location: selectedEvent.location,
+          image: selectedEvent.image
+        }
+      }
+    });
   };
 
   const handleDetailsClick = (event: Event) => {
