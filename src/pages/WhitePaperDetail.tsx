@@ -251,10 +251,6 @@ const WhitePaperDetail = () => {
                     <Download className="h-5 w-5 mr-2" />
                     Download PDF (2.5 MB)
                   </Button>
-                  
-                  <p className="text-base text-black">
-                    No registration required • Instant download
-                  </p>
                 </div>
               </div>
             </CardContent>
