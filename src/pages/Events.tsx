@@ -555,7 +555,15 @@ const Events = () => {
                                 {submitStatus === 'success' && (
                                   <div className="p-4 bg-green-500/20 border border-green-500 rounded-md">
                                     <p className="text-green-500 text-base">
-                                      Thank you for registering. Please check your inbox for event details.
+                                      Thank you for registering. Please check your inbox for event details.{" "}
+                                      <a 
+                                        href="/event-registration-confirmation" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="underline hover:text-green-400"
+                                      >
+                                        View simulated email
+                                      </a>
                                     </p>
                                   </div>
                                 )}
