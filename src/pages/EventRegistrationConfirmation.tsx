@@ -35,12 +35,12 @@ const EventRegistrationConfirmation = () => {
     image: eventCameraWorkshop
   };
   
-  const userName = firstName && lastName ? `${firstName} ${lastName}` : "Leserin/Leser";
+  const userName = firstName && lastName ? `${firstName} ${lastName}` : "Reader";
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('de-DE', { 
+    return date.toLocaleDateString('en-US', {
       day: '2-digit', 
       month: 'long', 
       year: 'numeric' 
@@ -52,12 +52,12 @@ const EventRegistrationConfirmation = () => {
     {
       title: "HDR Masterclass",
       date: "2025-04-22",
-      location: "München, Deutschland"
+      location: "Munich, Germany"
     },
     {
       title: "Automotive Standards Conference",
       date: "2025-05-10",
-      location: "Stuttgart, Deutschland"
+      location: "Stuttgart, Germany"
     }
   ];
 
@@ -76,7 +76,7 @@ const EventRegistrationConfirmation = () => {
           {/* Title Section */}
           <div className="space-y-3">
             <h1 className="text-2xl font-bold text-slate-900 leading-tight">
-              Vielen Dank für Ihre Anmeldung
+              Thank You for Your Registration
             </h1>
             <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f5743a' }}></div>
           </div>
@@ -84,10 +84,10 @@ const EventRegistrationConfirmation = () => {
           {/* Greeting */}
           <div className="space-y-4">
             <p className="text-lg text-slate-700">
-              Sehr geehrte/r {userName},
+              Dear {userName},
             </p>
             <p className="text-base text-slate-600 leading-relaxed">
-              vielen Dank für Ihre Anmeldung. Wir freuen uns, Sie bei unserer Veranstaltung begrüßen zu dürfen.
+              thank you for your registration. We look forward to welcoming you at our event.
             </p>
           </div>
 
@@ -129,7 +129,7 @@ const EventRegistrationConfirmation = () => {
           <div className="pt-6 border-t border-slate-200">
             <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f5743a' }}>
               <p className="text-sm text-slate-700 leading-relaxed">
-                <span className="font-semibold text-slate-900">Wichtiger Hinweis:</span> Sie erhalten 2 Tage vor der Veranstaltung eine Erinnerung mit allen relevanten Details und Informationen zur Anfahrt.
+                <span className="font-semibold text-slate-900">Important Note:</span> You will receive a reminder 2 days before the event with all relevant details and directions.
               </p>
             </div>
           </div>
@@ -137,7 +137,7 @@ const EventRegistrationConfirmation = () => {
           {/* Similar Events Teaser */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-slate-900">
-              Weitere interessante Veranstaltungen
+              Other Interesting Events
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {similarEvents.map((event, index) => (
@@ -163,14 +163,14 @@ const EventRegistrationConfirmation = () => {
           {/* Closing */}
           <div className="space-y-3 pt-4">
             <p className="text-base text-slate-600">
-              Wir freuen uns auf Ihre Teilnahme!
+              We look forward to your participation!
             </p>
             <div>
               <p className="text-lg font-semibold text-slate-900">
-                Ihr Image Engineering Team
+                Your Image Engineering Team
               </p>
               <p className="text-sm text-slate-500">
-                Experten für Automotive Imaging Standards
+                Experts in Automotive Imaging Standards
               </p>
             </div>
           </div>
@@ -182,10 +182,10 @@ const EventRegistrationConfirmation = () => {
             info@image-engineering.de
           </p>
           <p className="text-xs text-slate-400">
-            © 2024 Image Engineering. Alle Rechte vorbehalten.
+            © 2024 Image Engineering. All rights reserved.
           </p>
           <p className="text-xs text-slate-500">
-            Führender Anbieter von Automotive Kamera-Testlösungen
+            Leading Provider of Automotive Camera Testing Solutions
           </p>
         </div>
       </Card>
