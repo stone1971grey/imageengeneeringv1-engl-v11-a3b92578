@@ -223,6 +223,7 @@ const Events = () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
@@ -237,7 +238,9 @@ const Events = () => {
   });
 
   const onSubmit = async (data: RegistrationFormValues) => {
-    if (!selectedEvent) return;
+    if (!selectedEvent || isSubmitting) return;
+
+    setIsSubmitting(true);
 
     try {
       // Call the edge function to save to database and send to Mautic
@@ -279,6 +282,7 @@ const Events = () => {
     } catch (error) {
       console.error("Error:", error);
       toast.error("Registration failed. Please try again.");
+      setIsSubmitting(false);
     }
   };
 
@@ -548,8 +552,9 @@ const Events = () => {
                                 <Button 
                                   type="submit" 
                                   className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                                  disabled={isSubmitting}
                                 >
-                                  Complete Registration
+                                  {isSubmitting ? "Submitting..." : "Complete Registration"}
                                 </Button>
                               </form>
                             </Form>
