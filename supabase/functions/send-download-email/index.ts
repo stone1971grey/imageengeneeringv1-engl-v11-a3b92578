@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.76.1";
 
 interface ResendResponse {
   id?: string;
@@ -39,6 +40,8 @@ interface DownloadEmailRequest {
   position: string;
   downloadType: "whitepaper" | "conference" | "video";
   title: string;
+  itemId?: string;
+  consent?: boolean;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -48,11 +51,49 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const apiKey = Deno.env.get("RESEND_API_KEY");
-    if (!apiKey) {
-      console.error("RESEND_API_KEY is not set");
+    const { firstName, lastName, email, company, position, downloadType, title, itemId, consent }: DownloadEmailRequest = await req.json();
+    
+    console.log("Processing download request for:", email, "type:", downloadType);
+
+    // Validate required fields
+    const requiredFields = ['firstName', 'lastName', 'email', 'company', 'position', 'downloadType', 'title'];
+    for (const field of requiredFields) {
+      if (!eval(field)) {
+        console.error(`Missing required field: ${field}`);
+        return new Response(
+          JSON.stringify({ success: false, error: "missing field" }),
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+    }
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Save to database
+    const { error: dbError } = await supabase
+      .from('download_requests')
+      .insert({
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        company: company,
+        position: position,
+        download_type: downloadType,
+        item_id: itemId || title,
+        item_title: title,
+        consent: consent || false,
+      });
+
+    if (dbError) {
+      console.error("Database error:", dbError);
       return new Response(
-        JSON.stringify({ success: false, error: "Email service not configured" }),
+        JSON.stringify({ success: false, error: "database error" }),
         {
           status: 500,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -60,9 +101,63 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const { firstName, lastName, email, company, position, downloadType, title }: DownloadEmailRequest = await req.json();
+    console.log("Download request saved to database");
+
+    // Send to Mautic
+    const mauticBaseUrl = Deno.env.get("MAUTIC_BASE_URL");
+    const mauticUser = Deno.env.get("MAUTIC_USER");
+    const mauticPass = Deno.env.get("MAUTIC_PASS");
+
+    if (mauticBaseUrl && mauticUser && mauticPass) {
+      try {
+        const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
+        
+        const mauticData = {
+          firstname: firstName,
+          lastname: lastName,
+          email: email,
+          company: company,
+          position: position,
+          download_type: downloadType,
+          download_title: title,
+          item_id: itemId || title,
+        };
+
+        const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Basic ${basicAuth}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(mauticData),
+        });
+
+        if (!mauticResponse.ok) {
+          console.error("Mautic API error:", await mauticResponse.text());
+        } else {
+          console.log("Successfully sent to Mautic");
+        }
+      } catch (mauticError) {
+        console.error("Error sending to Mautic:", mauticError);
+        // Don't fail the request if Mautic fails
+      }
+    }
+
+    // Send email
+    const apiKey = Deno.env.get("RESEND_API_KEY");
+    if (!apiKey) {
+      console.error("RESEND_API_KEY is not set");
+      // Still return success since DB and Mautic worked
+      return new Response(
+        JSON.stringify({ success: true, warning: "Email service not configured" }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
     
-    console.log("Sending download email to:", email, "for:", downloadType);
+    console.log("Sending download email to:", email);
 
     let emailSubject = "";
     let emailContent = "";
