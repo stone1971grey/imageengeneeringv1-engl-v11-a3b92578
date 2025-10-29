@@ -96,7 +96,7 @@ const handler = async (req: Request): Promise<Response> => {
           email: data.email,
           company: data.company,
           position: data.position,
-          event_name: data.eventName,
+          event_title: data.eventName,
           event_date: data.eventDate,
           event_location: data.eventLocation,
           phone: data.phone,
