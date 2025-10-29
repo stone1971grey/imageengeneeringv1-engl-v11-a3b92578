@@ -44,12 +44,15 @@ const ConfirmDone = () => {
     <div className="min-h-screen flex flex-col">
       <Navigation />
       
-      <ActionHero
-        title="Successfully Confirmed!"
-        subtitle="Thank you for confirming your email address"
-        backgroundImage={confirmDoneHero}
-        flipImage={false}
-      />
+      <div className="relative">
+        <ActionHero
+          title="Successfully Confirmed!"
+          subtitle="Thank you for confirming your email address"
+          backgroundImage={confirmDoneHero}
+          flipImage={false}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent pointer-events-none"></div>
+      </div>
 
       <section className="py-20 bg-gradient-to-b from-[#000000] via-[#1a1a1a] to-[#404040]">
         <div className="container mx-auto px-6 max-w-3xl text-center">
