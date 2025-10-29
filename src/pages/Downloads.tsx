@@ -259,27 +259,29 @@ export default function Downloads() {
     try {
       setDownloadSuccess(true);
       
-      // Save to database
-      const { error: dbError } = await supabase
-        .from('download_requests')
-        .insert({
-          first_name: data.firstName,
-          last_name: data.lastName,
+      // Call edge function to save to database, send to Mautic, and send email
+      const { data: responseData, error } = await supabase.functions.invoke('send-download-email', {
+        body: {
+          firstName: data.firstName,
+          lastName: data.lastName,
           email: data.email,
           company: data.company,
           position: data.position,
-          download_type: selectedItem.type,
-          item_id: selectedItem.id,
-          item_title: selectedItem.title,
+          downloadType: selectedItem.type,
+          title: selectedItem.title,
+          itemId: selectedItem.id,
           consent: data.consent
-        });
+        }
+      });
 
-      if (dbError) {
-        console.error("Database error:", dbError);
-        toast.error("Failed to save your request. Please try again.");
+      if (error) {
+        console.error("Edge function error:", error);
+        toast.error("Failed to process your request. Please try again.");
         setDownloadSuccess(false);
         return;
       }
+
+      console.log("Download request processed successfully:", responseData);
       
       // Determine which page to navigate to based on download type
       let targetPage = "";
