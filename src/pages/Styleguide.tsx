@@ -68,26 +68,46 @@ const Styleguide = () => {
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
         {/* Quick Navigation */}
-        <nav className="sticky top-[195px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+        <nav className="sticky top-[85px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                <div className="flex flex-wrap gap-6 justify-center text-lg">
-                 <a href="#buttons" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
+                 <a href="#buttons" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('buttons')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>
                    Buttons
                  </a>
-                 <a href="#tiles" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
+                 <a href="#tiles" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('tiles')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>
                    Tiles
                  </a>
-                 <a href="#colors" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
+                 <a href="#colors" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('colors')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>
                    Colors
                  </a>
-                 <a href="#background-colors" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
+                 <a href="#background-colors" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('background-colors')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>
                    Background Colors
                  </a>
-                 <a href="#typography" className="text-[#3D7BA2] hover:text-[#3D7BA2]/80 font-medium transition-colors">
+                 <a href="#typography" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('typography')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>
                    Typography
                  </a>
-              </div>
+               </div>
             </div>
           </div>
         </nav>
