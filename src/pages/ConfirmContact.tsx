@@ -4,7 +4,7 @@ import ActionHero from "@/components/ActionHero";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import contactHero from "@/assets/professional-training.jpg";
+import contactHero from "@/assets/confirm-contact-hero.jpg";
 
 declare global {
   interface Window {
@@ -67,7 +67,7 @@ const ConfirmContact = () => {
             <div className="pt-6">
               <Button 
                 onClick={handleConfirm}
-                variant="explore"
+                variant="academia"
                 size="lg"
                 className="text-lg px-12"
               >
