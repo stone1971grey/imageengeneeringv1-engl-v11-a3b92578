@@ -48,6 +48,7 @@ const ConfirmContact = () => {
         title="Confirm Your Contact"
         subtitle="Please confirm your email address to complete your registration"
         backgroundImage={contactHero}
+        flipImage={false}
       />
 
       <section className="py-20 bg-black">

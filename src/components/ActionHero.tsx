@@ -2,9 +2,10 @@ interface ActionHeroProps {
   title: string;
   subtitle: string;
   backgroundImage: string;
+  flipImage?: boolean;
 }
 
-const ActionHero = ({ title, subtitle, backgroundImage }: ActionHeroProps) => {
+const ActionHero = ({ title, subtitle, backgroundImage, flipImage = true }: ActionHeroProps) => {
   return (
     <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
@@ -12,7 +13,7 @@ const ActionHero = ({ title, subtitle, backgroundImage }: ActionHeroProps) => {
         className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage: `url(${backgroundImage})`,
-          transform: 'scaleX(-1)'
+          transform: flipImage ? 'scaleX(-1)' : 'none'
         }}
       />
       <div className="relative container mx-auto px-6">
