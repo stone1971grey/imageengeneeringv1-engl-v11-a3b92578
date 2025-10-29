@@ -27,7 +27,7 @@ const Optin = () => {
             {/* Title Section */}
             <div className="space-y-3">
               <h1 className="text-2xl font-bold text-slate-900 leading-tight">
-                Bestätigen Sie Ihre E-Mail-Adresse
+                Confirm Your Email Address
               </h1>
               <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f5743a' }}></div>
             </div>
@@ -35,13 +35,13 @@ const Optin = () => {
             {/* Greeting */}
             <div className="space-y-4">
               <p className="text-lg text-slate-700">
-                Hallo {firstName} {lastName},
+                Hello {firstName} {lastName},
               </p>
               <p className="text-base text-slate-600 leading-relaxed">
-                vielen Dank für Ihr Interesse an unseren Testcharts und Lösungen. Um Ihnen die gewünschten Informationen zusenden zu können, bitten wir Sie, Ihre E-Mail-Adresse zu bestätigen.
+                Thank you for your interest in our test charts and solutions. To send you the requested information, we kindly ask you to confirm your email address.
               </p>
               <p className="text-base text-slate-600 leading-relaxed">
-                Bitte klicken Sie auf den folgenden Button, um Ihre Anmeldung abzuschließen:
+                Please click the button below to complete your registration:
               </p>
             </div>
 
@@ -50,10 +50,10 @@ const Optin = () => {
               <div className="text-center space-y-6">
                 <div className="space-y-2">
                   <h2 className="text-xl font-semibold text-slate-900">
-                    E-Mail-Adresse bestätigen
+                    Confirm Email Address
                   </h2>
                   <p className="text-sm text-slate-600">
-                    Klicken Sie auf den Button, um fortzufahren
+                    Click the button to continue
                   </p>
                 </div>
                 
@@ -62,7 +62,7 @@ const Optin = () => {
                   className="inline-block text-white font-semibold px-10 py-4 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-lg"
                   style={{ backgroundColor: '#f5743a', textDecoration: 'none' }}
                 >
-                  E-Mail-Adresse bestätigen
+                  Confirm Email Address
                 </a>
               </div>
             </div>
@@ -71,7 +71,7 @@ const Optin = () => {
             <div className="pt-6 border-t border-slate-200">
               <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f5743a' }}>
                 <p className="text-sm text-slate-700 leading-relaxed">
-                  <span className="font-semibold text-slate-900">Hinweis:</span> Diese Bestätigung hilft uns, die Sicherheit Ihrer Daten zu gewährleisten und sicherzustellen, dass Sie alle wichtigen Updates erhalten.
+                  <span className="font-semibold text-slate-900">Note:</span> This confirmation helps us ensure the security of your data and guarantees that you receive all important updates.
                 </p>
               </div>
             </div>
@@ -79,14 +79,14 @@ const Optin = () => {
             {/* Closing */}
             <div className="space-y-3 pt-4">
               <p className="text-base text-slate-600">
-                Mit freundlichen Grüßen,
+                Best regards,
               </p>
               <div>
                 <p className="text-lg font-semibold text-slate-900">
-                  Ihr Image Engineering Team
+                  The Image Engineering Team
                 </p>
                 <p className="text-sm text-slate-500">
-                  Experten für Automotive Imaging Standards
+                  Experts in Automotive Imaging Standards
                 </p>
               </div>
             </div>
