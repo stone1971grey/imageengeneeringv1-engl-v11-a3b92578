@@ -145,63 +145,6 @@ const Styleguide = () => {
                        </Button>
                      </div>
                     
-                    {/* Secondary Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Secondary</p>
-                        <p className="text-sm text-gray-500">Secondary technical actions</p>
-                      </div>
-                      <Button variant="secondary" className="group">
-                        Secondary Button
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    </div>
-                    
-                    {/* Outline Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Outline</p>
-                        <p className="text-sm text-gray-500">Alternative actions</p>
-                      </div>
-                      <Button variant="outline">
-                        Outline Button
-                      </Button>
-                    </div>
-                    
-                    {/* Ghost Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Ghost</p>
-                        <p className="text-sm text-gray-500">Subtle actions</p>
-                      </div>
-                      <Button variant="ghost">
-                        Ghost Button
-                      </Button>
-                    </div>
-                    
-                    {/* Link Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Link</p>
-                        <p className="text-sm text-gray-500">Text links</p>
-                      </div>
-                      <Button variant="link">
-                        Link Button
-                        <ExternalLink className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                    
-                    {/* Destructive Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                      <div className="w-32">
-                        <p className="font-medium text-gray-900">Destructive</p>
-                        <p className="text-sm text-gray-500">Delete actions</p>
-                      </div>
-                      <Button variant="destructive">
-                        Delete Item
-                        <Trash2 className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
                   </div>
                 </div>
                 
