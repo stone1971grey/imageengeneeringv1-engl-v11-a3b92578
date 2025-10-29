@@ -119,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
           company: company,
           position: position,
           download_type: downloadType,
-          download_title: title,
+          item_title: title,
           item_id: itemId || title,
         };
 
