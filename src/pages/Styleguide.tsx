@@ -118,21 +118,8 @@ const Styleguide = () => {
                   <h3 className="text-2xl font-semibold text-gray-900 mb-8">Button Variants</h3>
                   
                   <div className="grid gap-8">
-                    {/* Default Variant */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                       <div className="w-32">
-                         <p className="font-medium text-gray-900">Default</p>
-                         <p className="text-sm text-gray-500">Primary action</p>
-                         <p className="text-xs text-gray-400 font-mono">#22C3F7</p>
-                       </div>
-                      <Button variant="default">
-                        Primary Button
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </div>
-                    
                      {/* Decision Variant - Standard Orange */}
-                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg bg-[#f5743a]/5">
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Decision</p>
                          <p className="text-sm text-gray-500">Standard Orange - Main CTAs</p>
@@ -142,32 +129,6 @@ const Styleguide = () => {
                        <Button variant="decision">
                          Discover Charts
                          <ArrowRight className="ml-2 h-4 w-4" />
-                       </Button>
-                     </div>
-                     
-                     {/* Academia Variant */}
-                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                       <div className="w-32">
-                         <p className="font-medium text-gray-900">Academia</p>
-                         <p className="text-sm text-gray-500">Training & Education</p>
-                         <p className="text-xs text-gray-400 font-mono">#F8BF04</p>
-                       </div>
-                       <Button className="bg-academia-button text-black hover:opacity-90">
-                         Professional Training
-                         <ArrowRight className="ml-2 h-4 w-4" />
-                       </Button>
-                     </div>
-                    
-                     {/* Contact Variant */}
-                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
-                       <div className="w-32">
-                         <p className="font-medium text-gray-900">Contact</p>
-                         <p className="text-sm text-gray-500">Contact actions</p>
-                         <p className="text-xs text-gray-400 font-mono">#0f407b</p>
-                       </div>
-                       <Button variant="contact">
-                         Contact Sales
-                         <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                        </Button>
                      </div>
                     
