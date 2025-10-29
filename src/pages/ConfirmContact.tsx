@@ -37,7 +37,7 @@ const ConfirmContact = () => {
     if (window.mt) {
       window.mt('send', 'event', 'DOI', 'confirmed');
     }
-    navigate("/");
+    navigate("/confirm-done");
   };
 
   return (
