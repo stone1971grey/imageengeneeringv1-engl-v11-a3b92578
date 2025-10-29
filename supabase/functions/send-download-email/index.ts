@@ -121,6 +121,7 @@ const handler = async (req: Request): Promise<Response> => {
           download_type: downloadType,
           item_title: title,
           item_id: itemId || title,
+          marketing_optin: "pending",
         };
 
         const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {

@@ -103,6 +103,7 @@ const handler = async (req: Request): Promise<Response> => {
           industry: data.industry,
           current_test_systems: data.currentTestSystems,
           automotive_interests: data.automotiveInterests?.join(', '),
+          marketing_optin: "pending",
         };
 
         const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
