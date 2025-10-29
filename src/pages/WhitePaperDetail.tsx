@@ -70,26 +70,34 @@ const WhitePaperDetail = () => {
     try {
       console.log("Registration data:", { ...data, event: selectedEvent.title });
       
-      const { error } = await supabase.from('event_registrations').insert({
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        company: company,
-        position: position,
-        phone: data.phone || null,
-        current_test_systems: data.currentTestSystems,
-        industry: data.industry,
-        automotive_interests: data.automotiveInterests,
-        event_title: selectedEvent.title,
-        event_date: selectedEvent.date,
-        event_location: selectedEvent.location,
+      // Call the edge function to save to database and send to Mautic
+      const response = await fetch('https://afrcagkprhtvvucukubf.supabase.co/functions/v1/register-event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          company,
+          position,
+          phone: data.phone || null,
+          currentTestSystems: data.currentTestSystems,
+          industry: data.industry,
+          automotiveInterests: data.automotiveInterests,
+          eventName: selectedEvent.title,
+          eventDate: selectedEvent.date,
+          eventLocation: selectedEvent.location,
+        }),
       });
 
-      if (error) {
-        console.error("Error inserting registration:", error);
-        toast.error("Fehler bei der Registrierung. Bitte versuchen Sie es erneut.");
-        return;
+      if (!response.ok) {
+        throw new Error('Failed to register for event');
       }
+
+      const result = await response.json();
+      console.log("Registration successful:", result);
 
       setRegistrationSuccess(true);
       toast.success("Anmeldung erfolgreich! Sie werden weitergeleitet...");
