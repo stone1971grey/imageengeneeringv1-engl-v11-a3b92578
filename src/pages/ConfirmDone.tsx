@@ -51,7 +51,7 @@ const ConfirmDone = () => {
         flipImage={false}
       />
 
-      <section className="py-20 bg-gradient-to-b from-black via-gray-900 to-gray-800">
+      <section className="py-20 bg-gradient-to-b from-[#000000] via-[#1a1a1a] to-[#404040]">
         <div className="container mx-auto px-6 max-w-3xl text-center">
           <div className="space-y-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-white">

@@ -102,7 +102,9 @@ All colors MUST be HSL.
     /* Custom explore button */
     --explore-button: 19 90% 59%;
     
-    /* Orange accent for badges */
+    /* Standard Orange #f5743a */
+    --orange: 19 90% 59%;
+    --orange-foreground: 0 0% 100%;
     --orange-accent: 19 90% 59%;
     --orange-accent-foreground: 0 0% 100%;
 
