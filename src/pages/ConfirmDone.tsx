@@ -45,26 +45,26 @@ const ConfirmDone = () => {
       <Navigation />
       
       <ActionHero
-        title="Erfolgreich Bestätigt!"
-        subtitle="Vielen Dank für die Bestätigung Ihrer E-Mail-Adresse"
+        title="Successfully Confirmed!"
+        subtitle="Thank you for confirming your email address"
         backgroundImage={confirmDoneHero}
         flipImage={false}
       />
 
-      <section className="py-20 bg-black">
+      <section className="py-20 bg-gradient-to-b from-black via-gray-900 to-gray-800">
         <div className="container mx-auto px-6 max-w-3xl text-center">
           <div className="space-y-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-white">
-              Alles Erledigt!
+              All Set!
             </h2>
             <p className="text-lg text-white/80 leading-relaxed">
-              Ihre E-Mail-Adresse wurde erfolgreich bestätigt. Sie erhalten ab sofort alle wichtigen 
-              Updates und Informationen von Image Engineering. Wir freuen uns, Sie als Teil unserer 
-              Community begrüßen zu dürfen.
+              Your email address has been successfully confirmed. You will now receive all important 
+              updates and information from Image Engineering. We are delighted to welcome you as part 
+              of our community.
             </p>
             <p className="text-base text-white/60">
-              Entdecken Sie jetzt unsere innovativen Lösungen für Bildqualitätstests und 
-              professionelle Testtafeln.
+              Discover our innovative solutions for image quality testing and 
+              professional test charts.
             </p>
             <div className="pt-6">
               <Button 
