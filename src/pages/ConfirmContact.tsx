@@ -68,6 +68,7 @@ const ConfirmContact = () => {
             <div className="pt-6">
               <Button 
                 onClick={handleConfirm}
+                variant="decision"
                 size="lg"
                 className="text-lg px-12"
               >

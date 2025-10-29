@@ -131,12 +131,13 @@ const Styleguide = () => {
                       </Button>
                     </div>
                     
-                     {/* Decision Variant */}
+                     {/* Decision Variant - Standard Orange */}
                      <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Decision</p>
-                         <p className="text-sm text-gray-500">Main CTA buttons</p>
+                         <p className="text-sm text-gray-500">Standard Orange - Main CTAs</p>
                          <p className="text-xs text-gray-400 font-mono">#f5743a</p>
+                         <p className="text-xs text-gray-500 mt-1">HSL: 19, 90%, 59%</p>
                        </div>
                        <Button variant="decision">
                          Discover Charts
