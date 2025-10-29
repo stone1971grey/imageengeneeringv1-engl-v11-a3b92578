@@ -87,7 +87,7 @@ const handler = async (req: Request): Promise<Response> => {
         download_type: downloadType,
         item_id: itemId || title,
         item_title: title,
-        consent: consent || false,
+        consent: consent ?? true,
       });
 
     if (dbError) {
