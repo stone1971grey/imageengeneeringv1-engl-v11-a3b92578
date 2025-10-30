@@ -256,7 +256,7 @@ const Events = () => {
           position: data.position,
           email: data.email,
           consent: true,
-          eventName: 'P2020 / EMVA 1288 Workshop',
+          eventName: selectedEvent.title,
           eventDate: selectedEvent.date,
           eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
         }),
