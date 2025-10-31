@@ -41,6 +41,7 @@ type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
 // Event data types
 interface Event {
   id: string;
+  slug: string;
   title: string;
   date: string;
   time: string;
@@ -62,6 +63,7 @@ interface Event {
 const sampleEvents: Event[] = [
   {
     id: "1",
+    slug: "advanced-camera-testing-workshop",
     title: "Advanced Camera Testing Workshop",
     date: "2025-03-15",
     time: "09:00 - 17:00",
@@ -99,6 +101,7 @@ const sampleEvents: Event[] = [
   },
   {
     id: "2",
+    slug: "adas-vision-testing-seminar",
     title: "ADAS Vision Testing Seminar",
     date: "2025-04-08",
     time: "10:00 - 16:00",
@@ -116,6 +119,7 @@ const sampleEvents: Event[] = [
   },
   {
     id: "3",
+    slug: "mobile-camera-quality-conference",
     title: "Mobile Camera Quality Conference",
     date: "2025-05-20",
     time: "08:30 - 18:00",
@@ -133,6 +137,7 @@ const sampleEvents: Event[] = [
   },
   {
     id: "4",
+    slug: "hdr-testing-masterclass",
     title: "HDR Testing Masterclass",
     date: "2025-06-12",
     time: "09:30 - 17:30",
@@ -150,6 +155,7 @@ const sampleEvents: Event[] = [
   },
   {
     id: "5",
+    slug: "automotive-vision-standards-workshop",
     title: "Automotive Vision Standards Workshop",
     date: "2025-07-15",
     time: "09:00 - 16:00",
@@ -167,6 +173,7 @@ const sampleEvents: Event[] = [
   },
   {
     id: "6",
+    slug: "image-quality-expo-2025",
     title: "Image Quality Expo 2025",
     date: "2025-09-25",
     time: "08:00 - 19:00",
@@ -184,6 +191,7 @@ const sampleEvents: Event[] = [
   },
   {
     id: "7",
+    slug: "medical-imaging-quality-seminar",
     title: "Medical Imaging Quality Seminar",
     date: "2025-11-15",
     time: "10:00 - 16:00",
@@ -201,6 +209,7 @@ const sampleEvents: Event[] = [
   },
   {
     id: "8",
+    slug: "automotive-testing-conference-2025",
     title: "Automotive Testing Conference 2025",
     date: "2025-12-08",
     time: "09:00 - 18:00",
@@ -257,6 +266,7 @@ const Events = () => {
           email: data.email,
           consent: true,
           eventName: selectedEvent.title,
+          eventSlug: selectedEvent.slug,
           eventDate: selectedEvent.date,
           eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
         }),

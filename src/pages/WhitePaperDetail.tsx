@@ -29,6 +29,7 @@ const registrationFormSchema = z.object({
 type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
 
 interface EventData {
+  slug: string;
   title: string;
   date: string;
   time: string;
@@ -87,6 +88,7 @@ const WhitePaperDetail = () => {
           industry: data.industry,
           automotiveInterests: data.automotiveInterests,
           eventName: selectedEvent.title,
+          eventSlug: selectedEvent.slug,
           eventDate: selectedEvent.date,
           eventLocation: selectedEvent.location,
         }),
@@ -335,6 +337,7 @@ const WhitePaperDetail = () => {
                 <Button 
                   className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
                   onClick={() => handleRegisterClick({
+                    slug: "automotive-testing-conference-2025",
                     title: "Automotive Testing Conference 2025",
                     date: "08. Dezember 2025",
                     time: "09:00 - 18:00",
@@ -394,6 +397,7 @@ const WhitePaperDetail = () => {
                 <Button 
                   className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
                   onClick={() => handleRegisterClick({
+                    slug: "automotive-vision-standards-workshop",
                     title: "Automotive Vision Standards Workshop",
                     date: "15. Juli 2025",
                     time: "09:00 - 16:00",

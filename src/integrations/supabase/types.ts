@@ -98,6 +98,7 @@ export type Database = {
           email: string
           event_date: string
           event_location: string
+          event_slug: string
           event_title: string
           first_name: string
           id: string
@@ -114,6 +115,7 @@ export type Database = {
           email: string
           event_date: string
           event_location: string
+          event_slug?: string
           event_title: string
           first_name: string
           id?: string
@@ -130,6 +132,7 @@ export type Database = {
           email?: string
           event_date?: string
           event_location?: string
+          event_slug?: string
           event_title?: string
           first_name?: string
           id?: string

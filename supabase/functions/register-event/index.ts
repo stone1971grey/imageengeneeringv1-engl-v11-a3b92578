@@ -13,6 +13,7 @@ interface EventRegistrationRequest {
   company: string;
   position: string;
   eventName: string;
+  eventSlug: string;
   eventDate?: string;
   eventLocation?: string;
   phone?: string;
@@ -31,7 +32,7 @@ const handler = async (req: Request): Promise<Response> => {
     const data: EventRegistrationRequest = await req.json();
     
     // Validate required fields
-    const requiredFields = ['firstName', 'lastName', 'email', 'company', 'position', 'eventName'];
+    const requiredFields = ['firstName', 'lastName', 'email', 'company', 'position', 'eventName', 'eventSlug'];
     for (const field of requiredFields) {
       if (!data[field as keyof EventRegistrationRequest]) {
         console.error(`Missing required field: ${field}`);
@@ -60,6 +61,7 @@ const handler = async (req: Request): Promise<Response> => {
         company: data.company,
         position: data.position,
         event_title: data.eventName,
+        event_slug: data.eventSlug,
         event_date: data.eventDate || '',
         event_location: data.eventLocation || '',
         phone: data.phone,
@@ -104,6 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
           current_test_systems: data.currentTestSystems,
           automotive_interests: data.automotiveInterests?.join(', '),
           marketing_optin: "pending",
+          tags: [`evt:${data.eventSlug}`],
         };
 
         const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
