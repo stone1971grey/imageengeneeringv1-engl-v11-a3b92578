@@ -102,7 +102,7 @@ const handler = async (req: Request): Promise<Response> => {
           event_title: data.eventName,
           event_date: data.eventDate,
           event_location: data.eventLocation,
-          event_image: data.eventImage,
+          evt_image_url: data.eventImage,
           phone: data.phone,
           industry: data.industry,
           current_test_systems: data.currentTestSystems,
