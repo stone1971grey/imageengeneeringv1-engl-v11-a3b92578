@@ -16,6 +16,7 @@ interface EventRegistrationRequest {
   eventSlug: string;
   eventDate?: string;
   eventLocation?: string;
+  eventImage?: string;
   phone?: string;
   industry?: string;
   currentTestSystems?: string;
@@ -101,6 +102,7 @@ const handler = async (req: Request): Promise<Response> => {
           event_title: data.eventName,
           event_date: data.eventDate,
           event_location: data.eventLocation,
+          event_image: data.eventImage,
           phone: data.phone,
           industry: data.industry,
           current_test_systems: data.currentTestSystems,

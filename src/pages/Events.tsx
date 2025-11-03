@@ -269,6 +269,7 @@ const Events = () => {
           eventSlug: selectedEvent.slug,
           eventDate: selectedEvent.date,
           eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
+          eventImage: selectedEvent.image,
         }),
       });
 
