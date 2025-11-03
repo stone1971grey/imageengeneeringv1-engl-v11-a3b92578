@@ -299,6 +299,13 @@ const Events = () => {
   const handleDetailsClick = (event: Event) => {
     setSelectedEvent(event);
     setRegistrationSuccess(false);
+    // Scroll to registration form after state update
+    setTimeout(() => {
+      const formElement = document.getElementById('registration-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const handleClose = () => {
@@ -411,7 +418,7 @@ const Events = () => {
                 
                 {/* Show detail view after the clicked event's row */}
                 {selectedEvent && selectedEvent.id === event.id && (
-                  <div className={`mb-6 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'} max-w-4xl mx-auto`}>
+                  <div id="registration-form" className={`mb-6 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'} max-w-4xl mx-auto`}>
                     <Card className={`transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
                       <CardHeader>
                         <div className="flex items-center justify-between mb-4">
