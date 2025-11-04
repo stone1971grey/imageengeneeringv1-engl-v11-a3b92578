@@ -603,7 +603,7 @@ const NewsDetail = () => {
               </p>
               <div className="flex gap-4">
                 <Button 
-                  className="bg-[#0f407b] text-white hover:bg-[#0d3468]"
+                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                   onClick={() => window.location.href = 'mailto:sales@image-engineering.de'}
                 >
                   <Mail className="mr-2 h-4 w-4" />
@@ -647,7 +647,7 @@ const NewsDetail = () => {
                           {relatedArticle.teaser}
                         </p>
                         <Button 
-                          className="mt-auto w-full bg-[#0f407b] text-white hover:bg-[#0d3468]"
+                          className="mt-auto w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                         >
                           Read more
                         </Button>
@@ -660,7 +660,7 @@ const NewsDetail = () => {
             {/* Navigation to other articles */}
             <div className="mt-12 pt-8 border-t border-gray-200">
               <Link to="/news">
-                <Button className="w-full md:w-auto bg-[#0f407b] text-white hover:bg-[#0d3468]">
+                <Button className="w-full md:w-auto bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   View all news articles
                 </Button>
