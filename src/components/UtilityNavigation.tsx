@@ -43,7 +43,7 @@ const UtilityNavigation = () => {
       <Link to="/contact">
         <Button 
           variant="default" 
-          className="h-10 bg-[#f5743a] hover:bg-[#e66428] text-white border border-[#f5743a] hover:border-[#e66428] transition-all duration-300 flex items-center justify-center px-6"
+          className="h-10 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black border border-[#f9dc24] hover:border-[#f9dc24]/90 transition-all duration-300 flex items-center justify-center px-6"
         >
           Contact
         </Button>

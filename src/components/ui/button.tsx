@@ -9,7 +9,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-[#f5743a] text-white hover:bg-[#f5743a]/90",
+        default: "bg-[hsl(var(--orange))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--orange))]/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -18,7 +18,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-[#626262] hover:text-white",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        decision: "bg-[#f5743a] text-white hover:bg-[#f5743a]/90 shadow-soft hover:shadow-lg transition-all duration-300",
+        decision: "bg-[hsl(var(--orange))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--orange))]/90 shadow-soft hover:shadow-lg transition-all duration-300",
         contact: "bg-[#103e7c] text-white hover:bg-[#0d3369] shadow-lg hover:shadow-xl transition-all duration-300",
         technical: "bg-gray-900 text-white hover:bg-[#626262] hover:text-white transition-all duration-300",
         academia: "bg-[hsl(45,95%,49%)] text-black hover:bg-[hsl(45,95%,65%)] shadow-soft hover:shadow-lg transition-all duration-300",

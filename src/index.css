@@ -100,13 +100,13 @@ All colors MUST be HSL.
     --hotspot-primary: 205 45% 44%;
     
     /* Custom explore button */
-    --explore-button: 19 90% 59%;
+    --explore-button: 52 95% 56%;
     
-    /* Standard Orange #f5743a */
-    --orange: 19 90% 59%;
-    --orange-foreground: 0 0% 100%;
-    --orange-accent: 19 90% 59%;
-    --orange-accent-foreground: 0 0% 100%;
+    /* Standard Yellow #f9dc24 (previously orange #f5743a) */
+    --orange: 52 95% 56%;
+    --orange-foreground: 0 0% 0%;
+    --orange-accent: 52 95% 56%;
+    --orange-accent-foreground: 0 0% 0%;
 
     --radius: 0.5rem;
 

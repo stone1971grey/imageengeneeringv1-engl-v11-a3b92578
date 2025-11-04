@@ -46,7 +46,7 @@ const Hero = () => {
                 size="lg"
                 variant="decision"
                 className="border-0 px-12 py-4 w-full md:w-auto"
-                style={{ backgroundColor: '#f5743a', color: 'white' }}
+                style={{ backgroundColor: '#f9dc24', color: 'black' }}
                 onClick={() => {
                   const element = document.getElementById('trusted-industries');
                   if (element) {

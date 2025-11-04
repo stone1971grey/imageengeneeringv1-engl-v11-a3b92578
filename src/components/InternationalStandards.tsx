@@ -40,7 +40,7 @@ const InternationalStandards = () => {
           <Link to="/automotive#standards">
             <Button 
               size="lg"
-              className="bg-[#f5743a] text-white px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
+              className="bg-[#f9dc24] text-black px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
             >
               View Standards
             </Button>

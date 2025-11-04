@@ -60,26 +60,26 @@ const Footer = () => {
             <div className="space-y-4">              
               <div className="space-y-2">
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
                   <span className="text-foreground">{t.footer.phoneDE}</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
                   <span className="text-foreground">{t.footer.phoneUSA}</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
+                  <Phone className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
                   <span className="text-foreground">{t.footer.phoneChina}</span>
                 </div>
               </div>
               
               <div className="flex items-center">
-                <Clock className="h-5 w-5 mr-3" style={{ color: '#f5743a' }} />
+                <Clock className="h-5 w-5 mr-3" style={{ color: '#f9dc24' }} />
                 <span className="text-foreground">{t.footer.officeHours}</span>
               </div>
             </div>
 
-            <Button className="bg-[#f5743a] hover:bg-[#e66428] text-white px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
               {t.footer.button[pageType]}
             </Button>
           </div>

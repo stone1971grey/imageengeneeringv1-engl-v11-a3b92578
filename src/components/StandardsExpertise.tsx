@@ -141,7 +141,7 @@ const StandardsExpertise = () => {
           <div className="text-center mb-8">
             <CollapsibleTrigger asChild>
               <Button 
-                className="group w-[300px] bg-[#f5743a] text-white hover:bg-[#f68a57]"
+                className="group w-[300px] bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                 size="lg"
               >
                 {isExpanded ? t.standards.hideStandards : t.standards.seeAllStandards}
