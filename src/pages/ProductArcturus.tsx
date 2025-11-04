@@ -61,32 +61,32 @@ const ProductArcturus = () => {
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
-                 <a href="#overview" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth" 
+                 <a href="#overview" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth" 
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Overview</a>
-                  <a href="#benefits" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#benefits" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Benefits</a>
-                  <a href="#specifications" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#specifications" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('specifications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Specifications</a>
-                  <a href="#applications" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#applications" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Applications</a>
-                  <a href="#gallery" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#gallery" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Gallery</a>
-                  <a href="#downloads" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#downloads" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -126,7 +126,7 @@ const ProductArcturus = () => {
                   <Button 
                     size="lg"
                     className="border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#f5743a', color: 'white' }}
+                    style={{ backgroundColor: '#f9dc24', color: 'black' }}
                   >
                     Learn More
                     <ArrowLeft className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -329,8 +329,8 @@ const ProductArcturus = () => {
         <div className="grid md:grid-cols-3 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Car className="text-[#f5743a]" size={32} />
+              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Car className="text-[#f9dc24]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D]">Automotive Testing</CardTitle>
             </CardHeader>
@@ -343,8 +343,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Smartphone className="text-[#f5743a]" size={32} />
+              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Smartphone className="text-[#f9dc24]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D]">High-End Sensors</CardTitle>
             </CardHeader>
@@ -357,8 +357,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="text-[#f5743a]" size={32} />
+              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="text-[#f9dc24]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D]">HDR Scene Creation</CardTitle>
             </CardHeader>
@@ -553,8 +553,8 @@ const ProductArcturus = () => {
         <div className="grid md:grid-cols-4 gap-6">
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f5743a]" size={32} />
+              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f9dc24]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (DE)</CardTitle>
             </CardHeader>
@@ -574,8 +574,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f5743a]" size={32} />
+              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f9dc24]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (EN)</CardTitle>
             </CardHeader>
@@ -595,8 +595,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f5743a]" size={32} />
+              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f9dc24]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Controller Datasheet (DE)</CardTitle>
             </CardHeader>
@@ -616,8 +616,8 @@ const ProductArcturus = () => {
 
           <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f5743a]" size={32} />
+              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-[#f9dc24]" size={32} />
               </div>
               <CardTitle className="text-[#2D2D2D] text-lg">Controller Datasheet (EN)</CardTitle>
             </CardHeader>

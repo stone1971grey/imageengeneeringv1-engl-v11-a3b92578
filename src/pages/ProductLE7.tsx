@@ -101,32 +101,32 @@ const ProductLE7 = () => {
           <div className="container mx-auto px-4">
             <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
               <div className="flex flex-wrap gap-6 justify-center text-lg">
-                  <a href="#overview" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#overview" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Overview</a>
-                  <a href="#benefits" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#benefits" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Key Benefits</a>
-                  <a href="#use-cases" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#use-cases" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('use-cases')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Use Cases</a>
-                  <a href="#specifications" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#specifications" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('specifications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>Specifications</a>
-                  <a href="#faq" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#faq" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }}>FAQ</a>
-                  <a href="#downloads" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                  <a href="#downloads" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
                       e.preventDefault();
                       document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -168,7 +168,7 @@ const ProductLE7 = () => {
                   <Button 
                     size="lg"
                     className="border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#f5743a', color: 'white' }}
+                    style={{ backgroundColor: '#f9dc24', color: 'black' }}
                     onClick={() => {
                       const footer = document.querySelector('footer');
                       if (footer) {
@@ -329,8 +329,8 @@ const ProductLE7 = () => {
               <div className="flex justify-center">
                 <Button 
                   size="lg"
-                  className="text-white px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
-                  style={{ backgroundColor: '#f5743a' }}
+                  className="px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
+                  style={{ backgroundColor: '#f9dc24', color: 'black' }}
                 >
                   View Standards
                 </Button>
@@ -451,11 +451,11 @@ const ProductLE7 = () => {
               <div className="bg-gray-50 rounded-xl overflow-hidden shadow-soft">
                 <div className="overflow-x-auto">
                   {/* Header */}
-                  <div className="grid grid-cols-6 text-white min-w-[800px]" style={{ background: '#f5743a' }}>
+                  <div className="grid grid-cols-6 text-black min-w-[800px]" style={{ background: '#f9dc24' }}>
                     <div className="p-4 text-center font-semibold text-lg">
                       Criterion
                     </div>
-                    <div className="p-4 text-center font-semibold text-lg border-l border-orange-600">
+                    <div className="p-4 text-center font-semibold text-lg border-l border-yellow-600">
                       LE7-2x
                     </div>
                     <div className="p-4 text-center font-semibold text-lg border-l border-orange-600">
@@ -616,8 +616,8 @@ const ProductLE7 = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
-                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
+                  <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f9dc24]/20 group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f9dc24]/70 group-hover:text-[#f9dc24] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">LE7 Datasheet</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">Technical specifications and performance data</p>
@@ -630,8 +630,8 @@ const ProductLE7 = () => {
 
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
-                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
+                  <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f9dc24]/20 group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f9dc24]/70 group-hover:text-[#f9dc24] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">User Manual</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">Complete setup and operation guide</p>
@@ -644,8 +644,8 @@ const ProductLE7 = () => {
 
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
-                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
+                  <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f9dc24]/20 group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f9dc24]/70 group-hover:text-[#f9dc24] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Application Note</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">NIR testing best practices and guidelines</p>
@@ -658,8 +658,8 @@ const ProductLE7 = () => {
 
               <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 group cursor-pointer flex flex-col h-full">
                 <CardContent className="p-6 text-center flex-1 flex flex-col">
-                  <div className="w-20 h-20 bg-[#f5743a]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f5743a]/20 group-hover:bg-[#f5743a]/20 group-hover:border-[#f5743a]/40 transition-all duration-300">
-                    <FileText className="w-10 h-10 text-[#f5743a]/70 group-hover:text-[#f5743a] transition-all duration-300" />
+                  <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#f9dc24]/20 group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-300">
+                    <FileText className="w-10 h-10 text-[#f9dc24]/70 group-hover:text-[#f9dc24] transition-all duration-300" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Software Guide</h3>
                   <p className="text-sm text-gray-600 mb-6 flex-1">Control software installation and usage</p>
