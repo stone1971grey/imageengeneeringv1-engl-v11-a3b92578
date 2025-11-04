@@ -182,19 +182,19 @@ const InsideLab = () => {
                   </div>
                   
                   <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f5743a]">
-                      {setup.title}
-                    </h3>
-                    <p className="text-lg text-gray-600 leading-relaxed mb-4">
-                      {setup.description}
-                    </p>
-                    
-                    <div className="space-y-3 flex-1">
-                      <h4 className="text-base font-semibold text-gray-900">Setup Details:</h4>
-                      <ul className="space-y-2">
-                        {setup.details.map((detail, index) => (
-                          <li key={index} className="text-base text-gray-600 flex items-start gap-2">
-                            <div className="w-1.5 h-1.5 bg-[#f5743a] rounded-full mt-2 flex-shrink-0"></div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f9dc24]">
+                        {setup.title}
+                      </h3>
+                      <p className="text-lg text-gray-600 leading-relaxed mb-4">
+                        {setup.description}
+                      </p>
+                      
+                      <div className="space-y-3 flex-1">
+                        <h4 className="text-base font-semibold text-gray-900">Setup Details:</h4>
+                        <ul className="space-y-2">
+                          {setup.details.map((detail, index) => (
+                            <li key={index} className="text-base text-gray-600 flex items-start gap-2">
+                              <div className="w-1.5 h-1.5 bg-[#f9dc24] rounded-full mt-2 flex-shrink-0"></div>
                             <span>{detail}</span>
                           </li>
                         ))}
@@ -206,8 +206,8 @@ const InsideLab = () => {
                         <Link to={setup.link}>
                           <Button 
                             size="lg"
-                            className="w-full text-white hover:opacity-90"
-                            style={{ backgroundColor: '#f5743a' }}
+                            className="w-full text-black hover:opacity-90"
+                            style={{ backgroundColor: '#f9dc24' }}
                           >
                             Learn more
                           </Button>
@@ -215,8 +215,8 @@ const InsideLab = () => {
                       ) : (
                         <Button 
                           size="lg"
-                          className="w-full text-white hover:opacity-90"
-                          style={{ backgroundColor: '#f5743a' }}
+                          className="w-full text-black hover:opacity-90"
+                          style={{ backgroundColor: '#f9dc24' }}
                         >
                           Learn more
                         </Button>
@@ -242,8 +242,8 @@ const InsideLab = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
-              className="text-white hover:opacity-90 px-8 py-3 text-lg font-medium"
-              style={{ backgroundColor: '#f5743a' }}
+              className="text-black hover:opacity-90 px-8 py-3 text-lg font-medium"
+              style={{ backgroundColor: '#f9dc24' }}
             >
               Contact Our Lab Experts
             </Button>

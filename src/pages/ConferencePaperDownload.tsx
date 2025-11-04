@@ -25,7 +25,7 @@ const ConferencePaperDownload = () => {
             <h1 className="text-2xl font-bold text-slate-900 leading-tight">
               Your Conference Paper is Ready
             </h1>
-            <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f5743a' }}></div>
+            <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f9dc24' }}></div>
           </div>
 
           {/* Greeting */}
@@ -52,8 +52,8 @@ const ConferencePaperDownload = () => {
               
               <Button
                 size="lg"
-                className="text-white font-semibold px-10 py-6 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                style={{ backgroundColor: '#f5743a' }}
+                className="text-black font-semibold px-10 py-6 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                style={{ backgroundColor: '#f9dc24' }}
                 onClick={() => {
                   if (downloadUrl) {
                     window.open(downloadUrl, '_blank');
@@ -67,7 +67,7 @@ const ConferencePaperDownload = () => {
 
           {/* Additional Information */}
           <div className="pt-6 border-t border-slate-200">
-            <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f5743a' }}>
+            <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f9dc24' }}>
               <p className="text-sm text-slate-700 leading-relaxed">
                 <span className="font-semibold text-slate-900">Stay Connected:</span> We'd be delighted to keep you informed about our latest research papers, upcoming conferences, new products, and industry insights in automotive imaging and camera testing technology.
               </p>

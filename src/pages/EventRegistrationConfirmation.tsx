@@ -78,7 +78,7 @@ const EventRegistrationConfirmation = () => {
             <h1 className="text-2xl font-bold text-slate-900 leading-tight">
               Thank You for Your Registration
             </h1>
-            <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f5743a' }}></div>
+            <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f9dc24' }}></div>
           </div>
 
           {/* Greeting */}
@@ -109,15 +109,15 @@ const EventRegistrationConfirmation = () => {
                 </h2>
                 <div className="space-y-2 text-sm text-slate-600">
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" style={{ color: '#f5743a' }} />
+                    <Calendar className="h-4 w-4" style={{ color: '#f9dc24' }} />
                     <span>{formatDate(selectedEvent.date)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" style={{ color: '#f5743a' }} />
+                    <Clock className="h-4 w-4" style={{ color: '#f9dc24' }} />
                     <span>{selectedEvent.time}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" style={{ color: '#f5743a' }} />
+                    <MapPin className="h-4 w-4" style={{ color: '#f9dc24' }} />
                     <span>{selectedEvent.location.city}, {selectedEvent.location.country}</span>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ const EventRegistrationConfirmation = () => {
 
           {/* Reminder Information */}
           <div className="pt-6 border-t border-slate-200">
-            <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f5743a' }}>
+            <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f9dc24' }}>
               <p className="text-sm text-slate-700 leading-relaxed">
                 <span className="font-semibold text-slate-900">Important Note:</span> You will receive a reminder 2 days before the event with all relevant details and directions.
               </p>
@@ -148,11 +148,11 @@ const EventRegistrationConfirmation = () => {
                 >
                   <h4 className="font-semibold text-slate-900 mb-2">{event.title}</h4>
                   <p className="text-sm text-slate-600 flex items-center gap-2">
-                    <Calendar className="h-4 w-4" style={{ color: '#f5743a' }} />
+                    <Calendar className="h-4 w-4" style={{ color: '#f9dc24' }} />
                     {formatDate(event.date)}
                   </p>
                   <p className="text-sm text-slate-600 flex items-center gap-2 mt-1">
-                    <MapPin className="h-4 w-4" style={{ color: '#f5743a' }} />
+                    <MapPin className="h-4 w-4" style={{ color: '#f9dc24' }} />
                     {event.location}
                   </p>
                 </div>

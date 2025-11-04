@@ -53,8 +53,8 @@ const InCabinTesting = () => {
                  <div className="pt-4">
                    <Button 
                      size="lg"
-                     className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                     style={{ backgroundColor: '#f5743a' }}
+                     className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                     style={{ backgroundColor: '#f9dc24' }}
                    >
                       Find Your Solution
                    </Button>
@@ -302,8 +302,8 @@ const InCabinTesting = () => {
                     <Link to="/product/le7">
                       <Button 
                         size="lg"
-                        className="w-full group text-white"
-                        style={{ backgroundColor: '#f5743a' }}
+                        className="w-full group text-black"
+                        style={{ backgroundColor: '#f9dc24' }}
                       >
                          Learn More
                       </Button>
@@ -331,8 +331,8 @@ const InCabinTesting = () => {
                     </p>
                     <Button 
                       size="lg"
-                      className="w-full group text-white"
-                      style={{ backgroundColor: '#f5743a' }}
+                      className="w-full group text-black"
+                      style={{ backgroundColor: '#f9dc24' }}
                     >
                        Learn More
                     </Button>
@@ -359,8 +359,8 @@ const InCabinTesting = () => {
                     </p>
                     <Button 
                       size="lg"
-                      className="w-full group text-white"
-                      style={{ backgroundColor: '#f5743a' }}
+                      className="w-full group text-black"
+                      style={{ backgroundColor: '#f9dc24' }}
                     >
                        Learn More
                     </Button>
@@ -387,8 +387,8 @@ const InCabinTesting = () => {
                     </p>
                     <Button 
                       size="lg"
-                      className="w-full group text-white"
-                      style={{ backgroundColor: '#f5743a' }}
+                      className="w-full group text-black"
+                      style={{ backgroundColor: '#f9dc24' }}
                     >
                        Learn More
                     </Button>
@@ -417,8 +417,8 @@ const InCabinTesting = () => {
                     </p>
                     <Button 
                       size="lg"
-                      className="w-full group text-white"
-                      style={{ backgroundColor: '#f5743a' }}
+                      className="w-full group text-black"
+                      style={{ backgroundColor: '#f9dc24' }}
                     >
                        Learn More
                     </Button>

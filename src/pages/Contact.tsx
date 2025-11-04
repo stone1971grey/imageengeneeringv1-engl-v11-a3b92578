@@ -164,7 +164,7 @@ const Contact = () => {
                   <div>
                     <Label htmlFor="subject" className="text-base font-medium text-gray-700 mb-3 block">Which products are you interested in?*</Label>
                     <Select onValueChange={(value) => handleInputChange('subject', value)} required>
-                      <SelectTrigger className="h-12 text-base bg-[#f5743a] text-white border-0 rounded-md focus:ring-2 focus:ring-primary font-medium hover:bg-[#f5743a]/90 px-4 py-2">
+                      <SelectTrigger className="h-12 text-base bg-[#f9dc24] text-black border-0 rounded-md focus:ring-2 focus:ring-primary font-medium hover:bg-[#f9dc24]/90 px-4 py-2">
                         <SelectValue placeholder="Select an option ..." />
                       </SelectTrigger>
                        <SelectContent className="bg-white border border-gray-300 rounded-lg shadow-lg z-50">
@@ -197,7 +197,7 @@ const Contact = () => {
                   <div className="pt-6">
                     <Button 
                       type="submit"
-                      className="bg-[#f5743a] hover:bg-[#f5743a]/90 text-white px-10 py-4 text-base rounded-md font-medium transition-colors"
+                      className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-10 py-4 text-base rounded-md font-medium transition-colors"
                     >
                       Submit
                     </Button>

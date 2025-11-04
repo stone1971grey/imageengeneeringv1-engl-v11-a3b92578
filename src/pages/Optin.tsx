@@ -29,7 +29,7 @@ const Optin = () => {
               <h1 className="text-2xl font-bold text-slate-900 leading-tight">
                 Confirm Your Email Address
               </h1>
-              <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f5743a' }}></div>
+              <div className="h-1 w-20 rounded-full" style={{ backgroundColor: '#f9dc24' }}></div>
             </div>
 
             {/* Greeting */}
@@ -59,8 +59,8 @@ const Optin = () => {
                 
                 <a
                   href="https://preview--imageengeneeringv1-engl-v11.lovable.app/confirm-contact"
-                  className="inline-block text-white font-semibold px-10 py-4 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-lg"
-                  style={{ backgroundColor: '#f5743a', textDecoration: 'none' }}
+                  className="inline-block text-black font-semibold px-10 py-4 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-lg"
+                  style={{ backgroundColor: '#f9dc24', textDecoration: 'none' }}
                 >
                   Confirm Email Address
                 </a>
@@ -69,7 +69,7 @@ const Optin = () => {
 
             {/* Additional Information */}
             <div className="pt-6 border-t border-slate-200">
-              <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f5743a' }}>
+              <div className="border-l-4 p-4 rounded-r-lg" style={{ backgroundColor: '#f3f3f5', borderLeftColor: '#f9dc24' }}>
                 <p className="text-sm text-slate-700 leading-relaxed">
                   <span className="font-semibold text-slate-900">Note:</span> This confirmation helps us ensure the security of your data and guarantees that you receive all important updates.
                 </p>

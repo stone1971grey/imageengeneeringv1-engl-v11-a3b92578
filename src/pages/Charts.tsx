@@ -203,12 +203,12 @@ const Charts = () => {
         )}
         <CardHeader className="space-y-3">
           <div className="flex items-center justify-between">
-            <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
               {chart.category}
             </Badge>
           </div>
           <CardTitle className="text-xl leading-relaxed flex items-start gap-3">
-            <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
+            <FileText className="h-6 w-6 text-[#f9dc24] flex-shrink-0 mt-1" />
             <span>{chart.title}</span>
           </CardTitle>
           <div className="flex gap-4 text-sm text-white">
@@ -230,7 +230,7 @@ const Charts = () => {
           </div>
           
           <Button 
-            className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+            className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
             onClick={() => setSelectedChart(chart)}
           >
             Learn More
@@ -290,10 +290,10 @@ const Charts = () => {
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
                     {selectedChart.category}
                   </Badge>
-                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f9dc24] hover:text-black transition-colors">
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -306,7 +306,7 @@ const Charts = () => {
                 {selectedChart.tags && (
                   <div className="flex flex-wrap gap-2">
                     {selectedChart.tags.map((tag, idx) => (
-                      <Badge key={idx} variant="outline" className="text-sm border-[#f5743a]/30 text-white">
+                      <Badge key={idx} variant="outline" className="text-sm border-[#f9dc24]/30 text-white">
                         {tag}
                       </Badge>
                     ))}
@@ -322,7 +322,7 @@ const Charts = () => {
                 
                 <div className="pt-6 border-t border-border">
                   <Button 
-                    className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                    className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
                     asChild
                   >
                     <a href={selectedChart.downloadUrl} target="_blank" rel="noopener noreferrer">
@@ -346,7 +346,7 @@ const Charts = () => {
           </p>
           <Button 
             size="lg"
-            className="bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+            className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
             asChild
           >
             <a href="#contact">Contact Our Experts</a>

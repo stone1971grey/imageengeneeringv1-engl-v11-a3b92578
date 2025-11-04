@@ -341,7 +341,7 @@ const Events = () => {
         />
       </div>
       <CardHeader className="space-y-3">
-        <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal w-fit">
+        <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal w-fit">
           {event.category}
         </Badge>
         <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
@@ -375,7 +375,7 @@ const Events = () => {
         
         <div className="mt-auto pt-4">
           <Button 
-            className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+            className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
             onClick={() => handleDetailsClick(event)}
           >
             {!event.isPast ? "Register Now" : "View Details"}
@@ -423,10 +423,10 @@ const Events = () => {
                     <Card className={`transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
                       <CardHeader>
                         <div className="flex items-center justify-between mb-4">
-                          <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+                          <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
                             {selectedEvent.category}
                           </Badge>
-                          <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                          <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f9dc24] hover:text-black transition-colors">
                             <X className="h-5 w-5" />
                           </Button>
                         </div>
@@ -548,7 +548,7 @@ const Events = () => {
                                   render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
                                       <div className="flex items-center space-x-3 flex-1">
-                                        <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                                        <AlertCircle className="h-8 w-8 text-[#f9dc24] flex-shrink-0" />
                                         <div className="space-y-1 leading-none flex-1">
                                           <FormLabel className="text-2xl font-medium leading-tight text-white">
                                             I agree to receive information about image quality testing and related topics via email. *
@@ -560,7 +560,7 @@ const Events = () => {
                                         <Checkbox
                                           checked={field.value}
                                           onCheckedChange={field.onChange}
-                                          className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
+                                          className="border-[#f9dc24] data-[state=checked]:bg-[#f9dc24] data-[state=checked]:text-black h-8 w-8 flex-shrink-0"
                                         />
                                       </FormControl>
                                     </FormItem>
@@ -569,7 +569,7 @@ const Events = () => {
                                 
                                 <Button 
                                   type="submit" 
-                                  className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                                  className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black text-base py-6"
                                   disabled={isSubmitting}
                                 >
                                   {isSubmitting ? "Submitting..." : "Complete Registration"}

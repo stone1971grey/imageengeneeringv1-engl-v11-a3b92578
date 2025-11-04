@@ -327,15 +327,15 @@ export default function Downloads() {
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
-          <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+          <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
             {item.category}
           </Badge>
         </div>
         <CardTitle className="text-xl leading-relaxed flex items-start gap-3">
           {item.type === "video" ? (
-            <Video className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
+            <Video className="h-6 w-6 text-[#f9dc24] flex-shrink-0 mt-1" />
           ) : (
-            <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
+            <FileText className="h-6 w-6 text-[#f9dc24] flex-shrink-0 mt-1" />
           )}
           <span>{item.title}</span>
         </CardTitle>
@@ -352,7 +352,7 @@ export default function Downloads() {
         </CardDescription>
         
         <Button 
-          className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+          className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
           onClick={() => setSelectedItem(item)}
         >
           Learn More
@@ -411,8 +411,8 @@ export default function Downloads() {
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
-                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f9dc24] hover:text-black transition-colors">
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -524,7 +524,7 @@ export default function Downloads() {
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
                             <div className="flex items-center space-x-3 flex-1">
-                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                              <AlertCircle className="h-8 w-8 text-[#f9dc24] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
                                 <FormLabel className="text-2xl font-medium leading-tight text-white">
                                   I agree to receive information about image quality testing and related topics via email. *
@@ -536,7 +536,7 @@ export default function Downloads() {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
+                                className="border-[#f9dc24] data-[state=checked]:bg-[#f9dc24] data-[state=checked]:text-black h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
                           </FormItem>
@@ -545,7 +545,7 @@ export default function Downloads() {
                       
                       <Button 
                         type="submit"
-                        className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                        className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black text-base py-6"
                         disabled={downloadSuccess}
                       >
                         <FileDown className="h-5 w-5 mr-2" />
@@ -585,8 +585,8 @@ export default function Downloads() {
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
-                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f9dc24] hover:text-black transition-colors">
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -698,7 +698,7 @@ export default function Downloads() {
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
                             <div className="flex items-center space-x-3 flex-1">
-                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                              <AlertCircle className="h-8 w-8 text-[#f9dc24] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
                                 <FormLabel className="text-2xl font-medium leading-tight text-white">
                                   I agree to receive information about image quality testing and related topics via email. *
@@ -710,7 +710,7 @@ export default function Downloads() {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
+                                className="border-[#f9dc24] data-[state=checked]:bg-[#f9dc24] data-[state=checked]:text-black h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
                           </FormItem>
@@ -719,7 +719,7 @@ export default function Downloads() {
                       
                       <Button 
                         type="submit"
-                        className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                        className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black text-base py-6"
                         disabled={downloadSuccess}
                       >
                         <FileDown className="h-5 w-5 mr-2" />
@@ -759,8 +759,8 @@ export default function Downloads() {
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
-                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">{selectedItem.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f9dc24] hover:text-black transition-colors">
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -872,7 +872,7 @@ export default function Downloads() {
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
                             <div className="flex items-center space-x-3 flex-1">
-                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                              <AlertCircle className="h-8 w-8 text-[#f9dc24] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
                                 <FormLabel className="text-2xl font-medium leading-tight text-white">
                                   I agree to receive information about image quality testing and related topics via email. *
@@ -884,7 +884,7 @@ export default function Downloads() {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
+                                className="border-[#f9dc24] data-[state=checked]:bg-[#f9dc24] data-[state=checked]:text-black h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
                           </FormItem>
@@ -893,7 +893,7 @@ export default function Downloads() {
                       
                       <Button 
                         type="submit"
-                        className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white text-base py-6"
+                        className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black text-base py-6"
                         disabled={downloadSuccess}
                       >
                         <Video className="h-5 w-5 mr-2" />

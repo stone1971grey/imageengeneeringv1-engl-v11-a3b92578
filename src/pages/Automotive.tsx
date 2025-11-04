@@ -144,8 +144,8 @@ const Automotive = () => {
                 <Link to="#applications-start">
                   <Button 
                     size="lg"
-                    className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#f5743a' }}
+                    className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                    style={{ backgroundColor: '#f9dc24' }}
                   >
                     Discover Automotive Solutions
                   </Button>
@@ -211,8 +211,8 @@ const Automotive = () => {
                   
                    {/* CTA Button */}
                    <Button 
-                     className="w-full text-white hover:opacity-90"
-                     style={{ backgroundColor: '#f5743a' }}
+                     className="w-full text-black hover:opacity-90"
+                     style={{ backgroundColor: '#f9dc24' }}
                    >
                      Learn More
                    </Button>
@@ -264,8 +264,8 @@ const Automotive = () => {
           <div className="flex justify-center">
             <Button 
               size="lg"
-              className="text-white border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
-              style={{ backgroundColor: '#f5743a' }}
+              className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
+              style={{ backgroundColor: '#f9dc24' }}
             >
               View Standards
             </Button>
@@ -415,14 +415,14 @@ const Automotive = () => {
                      />
                       {(product.title === "Arcturus" || product.title === "LE7 VIS-IR") && (
                         <div className="absolute top-2 right-2">
-                          <span className="bg-[#f5743a] text-white px-3 py-1 rounded-full text-sm font-bold">
+                          <span className="bg-[#f9dc24] text-black px-3 py-1 rounded-full text-sm font-bold">
                             ACTIVE
                           </span>
                         </div>
                       )}
                    </div>
                    <div className="p-6 flex flex-col flex-1">
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f5743a]">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f9dc24]">
                         {product.title}
                       </h3>
                      <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
@@ -432,8 +432,8 @@ const Automotive = () => {
                        <Link to={product.link}>
                          <Button 
                            size="lg"
-                           className="w-full text-white hover:opacity-90"
-                           style={{ backgroundColor: '#f5743a' }}
+                           className="w-full text-black hover:opacity-90"
+                           style={{ backgroundColor: '#f9dc24' }}
                          >
                             Learn More
                          </Button>
@@ -441,8 +441,8 @@ const Automotive = () => {
                      ) : (
                        <Button 
                          size="lg"
-                         className="w-full text-white hover:opacity-90"
-                         style={{ backgroundColor: '#f5743a' }}
+                         className="w-full text-black hover:opacity-90"
+                         style={{ backgroundColor: '#f9dc24' }}
                        >
                           Learn More
                        </Button>
