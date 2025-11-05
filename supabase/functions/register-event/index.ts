@@ -94,6 +94,12 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
         
+        // Construct full image URL
+        const baseUrl = "https://preview--imageengeneeringv1-engl-v11.lovable.app";
+        const imageUrl = data.eventImage 
+          ? `${baseUrl}/assets/${data.eventImage.split('/').pop()}`
+          : '';
+        
         const mauticData = {
           firstname: data.firstName,
           lastname: data.lastName,
@@ -103,7 +109,7 @@ const handler = async (req: Request): Promise<Response> => {
           event_title: data.eventName,
           event_date: data.eventDate,
           event_location: data.eventLocation,
-          evt_image_url: data.eventImage,
+          evt_image_url: imageUrl,
           phone: data.phone,
           industry: data.industry,
           current_test_systems: data.currentTestSystems,
