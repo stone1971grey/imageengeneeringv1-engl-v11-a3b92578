@@ -52,6 +52,15 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Construct full image URL for both database and Mautic
+    const baseUrl = "https://preview--imageengeneeringv1-engl-v11.lovable.app";
+    const fullImageUrl = data.eventImage 
+      ? `${baseUrl}${data.eventImage.startsWith('/') ? '' : '/'}${data.eventImage}`
+      : '';
+
+    console.log("Processing registration for:", data.email, "Event:", data.eventSlug);
+    console.log("Image URL:", fullImageUrl);
+
     // Save to database
     const { error: dbError } = await supabase
       .from('event_registrations')
@@ -65,7 +74,7 @@ const handler = async (req: Request): Promise<Response> => {
         event_slug: data.eventSlug,
         event_date: data.eventDate || '',
         event_location: data.eventLocation || '',
-        evt_image_url: data.eventImage,
+        evt_image_url: fullImageUrl,
         phone: data.phone,
         industry: data.industry,
         current_test_systems: data.currentTestSystems,
@@ -91,14 +100,9 @@ const handler = async (req: Request): Promise<Response> => {
     const mauticPass = Deno.env.get("MAUTIC_PASS");
 
     if (mauticBaseUrl && mauticUser && mauticPass) {
+      console.log("Sending to Mautic for:", data.email);
       try {
         const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
-        
-        // Construct full image URL
-        const baseUrl = "https://preview--imageengeneeringv1-engl-v11.lovable.app";
-        const imageUrl = data.eventImage 
-          ? `${baseUrl}/assets/${data.eventImage.split('/').pop()}`
-          : '';
         
         const mauticData = {
           firstname: data.firstName,
@@ -109,7 +113,7 @@ const handler = async (req: Request): Promise<Response> => {
           event_title: data.eventName,
           event_date: data.eventDate,
           event_location: data.eventLocation,
-          evt_image_url: imageUrl,
+          evt_image_url: fullImageUrl,
           phone: data.phone,
           industry: data.industry,
           current_test_systems: data.currentTestSystems,
@@ -128,14 +132,18 @@ const handler = async (req: Request): Promise<Response> => {
         });
 
         if (!mauticResponse.ok) {
-          console.error("Mautic API error:", await mauticResponse.text());
+          const errorText = await mauticResponse.text();
+          console.error("Mautic API error:", mauticResponse.status, errorText);
         } else {
-          console.log("Successfully sent to Mautic");
+          const responseData = await mauticResponse.json();
+          console.log("Successfully sent to Mautic:", responseData);
         }
       } catch (mauticError) {
         console.error("Error sending to Mautic:", mauticError);
         // Don't fail the request if Mautic fails
       }
+    } else {
+      console.log("Mautic credentials not configured, skipping Mautic sync");
     }
 
     return new Response(
