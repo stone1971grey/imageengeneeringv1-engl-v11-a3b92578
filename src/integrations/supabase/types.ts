@@ -100,6 +100,7 @@ export type Database = {
           event_location: string
           event_slug: string
           event_title: string
+          evt_image_url: string | null
           first_name: string
           id: string
           industry: string | null
@@ -117,6 +118,7 @@ export type Database = {
           event_location: string
           event_slug?: string
           event_title: string
+          evt_image_url?: string | null
           first_name: string
           id?: string
           industry?: string | null
@@ -134,6 +136,7 @@ export type Database = {
           event_location?: string
           event_slug?: string
           event_title?: string
+          evt_image_url?: string | null
           first_name?: string
           id?: string
           industry?: string | null
