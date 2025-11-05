@@ -66,7 +66,7 @@ const sampleEvents: Event[] = [
     id: "1",
     slug: "advanced-camera-testing-workshop",
     title: "Advanced Camera Testing Workshop",
-    date: "2025-03-15",
+    date: "2026-03-15",
     time: "09:00 - 17:00",
     location: {
       city: "Köln",
@@ -104,7 +104,7 @@ const sampleEvents: Event[] = [
     id: "2",
     slug: "adas-vision-testing-seminar",
     title: "ADAS Vision Testing Seminar",
-    date: "2025-04-08",
+    date: "2026-04-08",
     time: "10:00 - 16:00",
     location: {
       city: "Tokyo",
@@ -122,7 +122,7 @@ const sampleEvents: Event[] = [
     id: "3",
     slug: "mobile-camera-quality-conference",
     title: "Mobile Camera Quality Conference",
-    date: "2025-05-20",
+    date: "2026-05-20",
     time: "08:30 - 18:00",
     location: {
       city: "San Francisco",
@@ -140,7 +140,7 @@ const sampleEvents: Event[] = [
     id: "4",
     slug: "hdr-testing-masterclass",
     title: "HDR Testing Masterclass",
-    date: "2025-06-12",
+    date: "2026-06-12",
     time: "09:30 - 17:30",
     location: {
       city: "München",
@@ -158,7 +158,7 @@ const sampleEvents: Event[] = [
     id: "5",
     slug: "automotive-vision-standards-workshop",
     title: "Automotive Vision Standards Workshop",
-    date: "2025-07-15",
+    date: "2026-07-15",
     time: "09:00 - 16:00",
     location: {
       city: "Shanghai",
@@ -174,9 +174,9 @@ const sampleEvents: Event[] = [
   },
   {
     id: "6",
-    slug: "image-quality-expo-2025",
-    title: "Image Quality Expo 2025",
-    date: "2025-09-25",
+    slug: "image-quality-expo-2026",
+    title: "Image Quality Expo 2026",
+    date: "2026-09-25",
     time: "08:00 - 19:00",
     location: {
       city: "London",
@@ -194,7 +194,7 @@ const sampleEvents: Event[] = [
     id: "7",
     slug: "medical-imaging-quality-seminar",
     title: "Medical Imaging Quality Seminar",
-    date: "2025-11-15",
+    date: "2025-12-15",
     time: "10:00 - 16:00",
     location: {
       city: "Berlin",
@@ -210,9 +210,9 @@ const sampleEvents: Event[] = [
   },
   {
     id: "8",
-    slug: "automotive-testing-conference-2025",
-    title: "Automotive Testing Conference 2025",
-    date: "2025-12-08",
+    slug: "automotive-testing-conference-2026",
+    title: "Automotive Testing Conference 2026",
+    date: "2026-02-18",
     time: "09:00 - 18:00",
     location: {
       city: "Detroit",
@@ -230,7 +230,7 @@ const sampleEvents: Event[] = [
     id: "9",
     slug: "adas-innovations-live-stream",
     title: "ADAS Innovations Live Stream",
-    date: "2025-02-28",
+    date: "2025-11-28",
     time: "14:00 - 16:00",
     location: {
       city: "Online Webinar",
