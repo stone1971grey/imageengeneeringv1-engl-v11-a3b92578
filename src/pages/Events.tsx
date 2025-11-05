@@ -22,6 +22,7 @@ import eventTechExpo from "@/assets/event-tech-expo.jpg";
 import eventHdrMasterclass from "@/assets/event-hdr-masterclass.jpg";
 import eventMedicalSeminar from "@/assets/event-medical-seminar.jpg";
 import eventAutomotiveStandards from "@/assets/event-automotive-standards.jpg";
+import eventAdasStreaming from "@/assets/event-adas-streaming.jpg";
 import eventsHero from "@/assets/events-hero.jpg";
 
 // Form validation schema
@@ -222,6 +223,45 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.",
     image: eventAutomotiveConference,
+    isPast: false,
+    registrationUrl: "#"
+  },
+  {
+    id: "9",
+    slug: "adas-innovations-live-stream",
+    title: "ADAS Innovations Live Stream",
+    date: "2025-02-28",
+    time: "14:00 - 16:00",
+    location: {
+      city: "Online Webinar",
+      country: "Worldwide",
+      coordinates: [0, 0]
+    },
+    category: "Schulung",
+    language: "DE",
+    description: "Erfahren Sie in unserem Live-Stream die neuesten Entwicklungen und Innovationen im ADAS-Testing. Experten präsentieren aktuelle Testmethoden, Standards und Best Practices für fortgeschrittene Fahrerassistenzsysteme.",
+    fullDescription: `
+      <h3>ADAS Innovations Live Stream</h3>
+      
+      <p>Nehmen Sie an unserem interaktiven Online-Webinar teil und erhalten Sie Einblicke in die neuesten Trends und Technologien im Bereich ADAS-Testing.</p>
+      
+      <h3>Themen des Webinars</h3>
+      <ul>
+        <li>Aktuelle IEEE P2020 Standards für ADAS-Kamerasysteme</li>
+        <li>Innovative Testmethoden für Kamera- und Sensorsysteme</li>
+        <li>HDR-Testing und Low-Light-Performance-Bewertung</li>
+        <li>Praxisbeispiele aus der Automotive-Industrie</li>
+        <li>Live-Demo: Arcturus LED-Systeme im ADAS-Testing</li>
+        <li>Q&A Session mit unseren Experten</li>
+      </ul>
+      
+      <h3>Für wen ist dieses Webinar geeignet?</h3>
+      <p>Test-Ingenieure, Quality-Manager, ADAS-Entwickler und alle Fachleute, die sich mit der Bewertung von Fahrerassistenzsystemen beschäftigen.</p>
+      
+      <h3>Webinar-Details</h3>
+      <p>Die Teilnahme ist kostenlos. Nach der Registrierung erhalten Sie die Zugangsdaten per E-Mail. Das Webinar wird aufgezeichnet - registrierte Teilnehmer erhalten im Anschluss Zugang zur Aufzeichnung.</p>
+    `,
+    image: eventAdasStreaming,
     isPast: false,
     registrationUrl: "#"
   }
