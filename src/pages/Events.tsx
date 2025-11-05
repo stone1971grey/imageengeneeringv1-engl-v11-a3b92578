@@ -98,6 +98,7 @@ const sampleEvents: Event[] = [
       <p>Test engineers, quality assurance professionals, camera developers, and anyone involved in image quality assessment and camera performance evaluation.</p>
     `,
     image: eventCameraWorkshop,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-camera-workshop.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -116,6 +117,7 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Professional training on ADAS vision system testing protocols and IEEE P2020 compliance requirements.",
     image: eventAutomotiveConference,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-automotive-conference.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -134,6 +136,7 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Industry conference showcasing the latest developments in mobile camera quality testing and VCX standards.",
     image: eventTechExpo,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-tech-expo.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -152,6 +155,7 @@ const sampleEvents: Event[] = [
     language: "DE",
     description: "In-depth masterclass on HDR testing techniques using Arcturus LED systems and advanced measurement tools.",
     image: eventHdrMasterclass,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-hdr-masterclass.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -170,6 +174,7 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Comprehensive training on automotive vision testing standards and regulatory compliance.",
     image: eventAutomotiveStandards,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-automotive-standards.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -188,6 +193,7 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Annual expo featuring the latest innovations in image quality testing technology and industry best practices.",
     image: eventTechExpo,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-tech-expo.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -206,6 +212,7 @@ const sampleEvents: Event[] = [
     language: "DE",
     description: "Specialized training on medical imaging quality assessment and endoscopy testing standards.",
     image: eventMedicalSeminar,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-medical-seminar.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -224,6 +231,7 @@ const sampleEvents: Event[] = [
     language: "EN",
     description: "Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.",
     image: eventAutomotiveConference,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-automotive-conference.jpg",
     isPast: false,
     registrationUrl: "#"
   },
@@ -263,6 +271,7 @@ const sampleEvents: Event[] = [
       <p>Die Teilnahme ist kostenlos. Nach der Registrierung erhalten Sie die Zugangsdaten per E-Mail. Das Webinar wird aufgezeichnet - registrierte Teilnehmer erhalten im Anschluss Zugang zur Aufzeichnung.</p>
     `,
     image: eventAdasStreaming,
+    imageUrl: "https://YOUR-DOMAIN.app/assets/event-adas-streaming.jpg",
     isPast: false,
     registrationUrl: "#"
   }
