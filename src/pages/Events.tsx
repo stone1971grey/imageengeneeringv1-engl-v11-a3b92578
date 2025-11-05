@@ -56,6 +56,7 @@ interface Event {
   description: string;
   fullDescription?: string;
   image: string;
+  imageUrl?: string; // Public URL for email/external use
   isPast: boolean;
   registrationUrl?: string;
 }
@@ -309,7 +310,7 @@ const Events = () => {
           eventSlug: selectedEvent.slug,
           eventDate: selectedEvent.date,
           eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
-          eventImage: selectedEvent.image,
+          eventImage: selectedEvent.imageUrl || selectedEvent.image,
         }),
       });
 
