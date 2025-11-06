@@ -138,7 +138,7 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
         
-        const mauticData = {
+        const mauticData: any = {
           firstname: data.firstName,
           lastname: data.lastName,
           email: data.email,
@@ -152,9 +152,16 @@ const handler = async (req: Request): Promise<Response> => {
           industry: data.industry,
           current_test_systems: data.currentTestSystems,
           automotive_interests: data.automotiveInterests?.join(', '),
-          marketing_optin: "pending",
           tags: ["evt", `evt:${data.eventSlug}`],
         };
+
+        // Only set marketing_optin to "pending" for first-time registrations
+        if (!existingRegistrations || existingRegistrations.length === 0) {
+          mauticData.marketing_optin = "pending";
+          console.log("First registration - setting marketing_optin to pending");
+        } else {
+          console.log("Existing registrations found - keeping current marketing_optin status");
+        }
 
         const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
           method: "POST",
