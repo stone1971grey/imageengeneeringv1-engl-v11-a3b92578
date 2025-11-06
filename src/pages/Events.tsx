@@ -339,19 +339,14 @@ const Events = () => {
         return;
       }
       
-      // Navigate to the simulated confirmation email page with form data
-      navigate('/event_registration_confirmation', {
+      // Navigate to the success confirmation page
+      navigate('/event-registration-success', {
         state: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          selectedEvent: {
-            id: selectedEvent.id,
-            title: selectedEvent.title,
-            date: selectedEvent.date,
-            time: selectedEvent.time,
-            location: selectedEvent.location,
-            image: selectedEvent.image
-          }
+          eventTitle: selectedEvent.title,
+          eventDate: selectedEvent.date,
+          eventTime: selectedEvent.time,
+          eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
+          eventImageUrl: selectedEvent.image
         }
       });
     } catch (error) {
