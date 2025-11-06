@@ -165,6 +165,19 @@ const Styleguide = () => {
                        </Button>
                      </div>
                     
+                     {/* Yellow Variant - Standard Yellow */}
+                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg bg-[#f9dc24]/5">
+                       <div className="w-32">
+                         <p className="font-medium text-gray-900">Yellow</p>
+                         <p className="text-sm text-gray-500">Standard yellow</p>
+                         <p className="text-xs text-gray-400 font-mono">#f9dc24</p>
+                       </div>
+                       <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
+                         Register Now
+                         <ArrowRight className="ml-2 h-4 w-4" />
+                       </Button>
+                     </div>
+                    
                   </div>
                 </div>
                 
