@@ -64,7 +64,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Check if contact is already registered for any event
     const { data: existingRegistrations, error: checkError } = await supabase
       .from('event_registrations')
-      .select('id, event_slug, event_title')
+      .select('id, event_slug, event_title, event_date, evt_image_url, created_at')
       .eq('email', data.email);
 
     if (checkError) {
@@ -81,7 +81,14 @@ const handler = async (req: Request): Promise<Response> => {
         return new Response(
           JSON.stringify({ 
             error: "already_registered",
-            message: "This email is already registered for this event"
+            message: "This email is already registered for this event",
+            registrationData: {
+              eventTitle: data.eventName,
+              eventDate: data.eventDate,
+              eventTime: data.eventLocation,
+              eventImageUrl: fullImageUrl,
+              registrationDate: currentEventRegistration.created_at
+            }
           }),
           {
             status: 409,

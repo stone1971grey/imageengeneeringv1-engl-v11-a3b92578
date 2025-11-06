@@ -323,7 +323,21 @@ const Events = () => {
         }),
       });
 
-      await response.json();
+      const result = await response.json();
+      
+      // Check if user is already registered
+      if (response.status === 409 && result.error === 'already_registered') {
+        navigate('/event-already-registered', {
+          state: {
+            eventTitle: result.registrationData.eventTitle,
+            eventDate: selectedEvent.date,
+            eventTime: selectedEvent.time,
+            eventImageUrl: selectedEvent.image,
+            registrationDate: result.registrationData.registrationDate
+          }
+        });
+        return;
+      }
       
       // Navigate to the simulated confirmation email page with form data
       navigate('/event_registration_confirmation', {
