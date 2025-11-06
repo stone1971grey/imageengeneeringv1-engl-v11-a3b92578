@@ -61,30 +61,38 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Processing registration for:", data.email, "Event:", data.eventSlug);
     console.log("Image URL:", fullImageUrl);
 
-    // Check if contact is already registered for this event
-    const { data: existingRegistration, error: checkError } = await supabase
+    // Check if contact is already registered for any event
+    const { data: existingRegistrations, error: checkError } = await supabase
       .from('event_registrations')
-      .select('id')
-      .eq('email', data.email)
-      .eq('event_slug', data.eventSlug)
-      .single();
+      .select('id, event_slug, event_title')
+      .eq('email', data.email);
 
-    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error("Error checking existing registration:", checkError);
+    if (checkError) {
+      console.error("Error checking existing registrations:", checkError);
     }
 
-    if (existingRegistration) {
-      console.log("Contact already registered for this event:", data.email);
-      return new Response(
-        JSON.stringify({ 
-          error: "already_registered",
-          message: "This email is already registered for this event"
-        }),
-        {
-          status: 409,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
+    if (existingRegistrations && existingRegistrations.length > 0) {
+      const currentEventRegistration = existingRegistrations.find(
+        reg => reg.event_slug === data.eventSlug
       );
+      
+      if (currentEventRegistration) {
+        console.log("Contact already registered for this event:", data.email);
+        return new Response(
+          JSON.stringify({ 
+            error: "already_registered",
+            message: "This email is already registered for this event"
+          }),
+          {
+            status: 409,
+            headers: { "Content-Type": "application/json", ...corsHeaders },
+          }
+        );
+      }
+
+      // Log other event registrations
+      const otherEvents = existingRegistrations.map(reg => reg.event_title).join(', ');
+      console.log(`Contact ${data.email} already registered for other events:`, otherEvents);
     }
 
     // Save to database
