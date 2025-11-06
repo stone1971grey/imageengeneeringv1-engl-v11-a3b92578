@@ -32,6 +32,7 @@ import Optin from "./pages/Optin";
 import VideoDownload from "./pages/VideoDownload";
 import EventRegistrationConfirmation from "./pages/EventRegistrationConfirmation";
 import EventDetailRegistrationConfirmation from "./pages/EventDetailRegistrationConfirmation";
+import EventAlreadyRegistered from "./pages/EventAlreadyRegistered";
 import InCabinTesting from "./pages/InCabinTesting";
 import Contact from "./pages/Contact";
 import News from "./pages/News";
@@ -80,6 +81,7 @@ const App = () => (
          <Route path="/video_download" element={<VideoDownload />} />
          <Route path="/event_registration_confirmation" element={<EventRegistrationConfirmation />} />
          <Route path="/event_detail_registration_confirmation" element={<EventDetailRegistrationConfirmation />} />
+         <Route path="/event-already-registered" element={<EventAlreadyRegistered />} />
          <Route path="/in-cabin-testing" element={<InCabinTesting />} />
          <Route path="/contact" element={<Contact />} />
          <Route path="/news" element={<News />} />
