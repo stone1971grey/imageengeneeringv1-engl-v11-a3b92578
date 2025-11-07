@@ -240,54 +240,147 @@ const handler = async (req: Request): Promise<Response> => {
       subject: emailSubject,
       html: `
         <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          </head>
-          <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: white;">
-              <!-- Header -->
-              <div style="background: linear-gradient(to right, #0f172a, #1e293b); padding: 32px; text-align: center;">
-                <h1 style="color: white; margin: 0; font-size: 24px;">Image Engineering</h1>
-              </div>
-              
-              <!-- Content -->
-              <div style="padding: 40px 32px;">
-                ${emailContent}
-                
-                <!-- CTA Box -->
-                <div style="background-color: #f3f3f5; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; text-align: center; margin: 32px 0;">
-                  <h3 style="color: #1e293b; font-size: 20px; margin: 0 0 8px 0;">Access Your ${downloadType === "video" ? "Video" : "Document"}</h3>
-                  <p style="color: #64748b; font-size: 12px; margin: 0 0 24px 0;">Click the button below to ${downloadType === "video" ? "watch" : "download"} your requested ${downloadType === "video" ? "video" : "document"}</p>
-                  <a href="${downloadLink}" style="display: inline-block; background-color: #f5743a; color: white; text-decoration: none; padding: 16px 40px; border-radius: 8px; font-weight: 600; font-size: 16px;">${buttonText}</a>
-                </div>
-                
-                <!-- Additional Info -->
-                <div style="border-top: 1px solid #e2e8f0; padding-top: 24px; margin-top: 24px;">
-                  <div style="border-left: 4px solid #f5743a; background-color: #f3f3f5; padding: 16px; border-radius: 0 8px 8px 0;">
-                    <p style="color: #475569; font-size: 12px; margin: 0; line-height: 1.6;">
-                      <strong style="color: #1e293b;">Stay Connected:</strong> We'd be delighted to keep you informed about our latest ${downloadType === "video" ? "videos" : "publications"}, upcoming events, new products, and industry insights in automotive imaging and camera testing technology.
-                    </p>
-                  </div>
-                </div>
-                
-                <!-- Closing -->
-                <div style="margin-top: 32px;">
-                  <p style="color: #64748b; font-size: 14px; margin: 0 0 16px 0;">Best regards,</p>
-                  <p style="color: #1e293b; font-size: 16px; font-weight: 600; margin: 0;">The Image Engineering Team</p>
-                  <p style="color: #94a3b8; font-size: 12px; margin: 4px 0 0 0;">Experts in Automotive Imaging Standards</p>
-                </div>
-              </div>
-              
-              <!-- Footer -->
-              <div style="background-color: #0f172a; padding: 24px 32px; text-align: center;">
-                <p style="color: #94a3b8; font-size: 10px; margin: 0 0 8px 0;">info@image-engineering.de</p>
-                <p style="color: #94a3b8; font-size: 10px; margin: 0 0 8px 0;">© 2024 Image Engineering. All rights reserved.</p>
-                <p style="color: #64748b; font-size: 10px; margin: 0;">Leading provider of automotive camera testing solutions</p>
-              </div>
-            </div>
-          </body>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+          <title>${emailSubject}</title>
+        </head>
+        <body style="margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);">
+          <table width="100%" cellpadding="0" cellspacing="0" style="padding:24px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px; background-color:#ffffff; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); border-radius:8px; overflow:hidden;">
+
+                  <!-- Header with Logo -->
+                  <tr>
+                    <td style="background: linear-gradient(to right, #0f172a, #1e293b); padding: 32px; text-align: center;">
+                      <img src="https://preview--imageengeneeringv1-engl-v11.lovable.app/logo-ie-email.png"
+                           alt="Image Engineering"
+                           style="height: 64px; filter: brightness(0) invert(1);" />
+                    </td>
+                  </tr>
+
+                  <!-- Email Content -->
+                  <tr>
+                    <td style="padding: 40px 32px;">
+                      
+                      <!-- Title Section -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px;">
+                        <tr>
+                          <td>
+                            <h1 style="font-size: 24px; font-weight: 700; color: #0f172a; margin: 0 0 12px 0; line-height: 1.3;">
+                              Your ${dlTypeFormatted} is Ready
+                            </h1>
+                            <div style="height: 4px; width: 80px; background-color: #f9dc24; border-radius: 9999px;"></div>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Greeting -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px;">
+                        <tr>
+                          <td>
+                            <p style="font-size: 18px; color: #334155; margin: 0 0 16px 0;">
+                              Dear ${firstName} ${lastName},
+                            </p>
+                            <p style="font-size: 16px; color: #475569; margin: 0; line-height: 1.6;">
+                              Thank you for your interest in our ${dlTypeFormatted.toLowerCase()}. We're excited to share this comprehensive resource with you.
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Download Details Section -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; margin-bottom: 32px;">
+                        <!-- Download Details -->
+                        <tr>
+                          <td style="padding: 24px; background-color: #f3f3f5;">
+                            <h2 style="font-size: 20px; font-weight: 600; color: #0f172a; margin: 0 0 16px 0;">
+                              ${title}
+                            </h2>
+                            
+                            <!-- Type -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 8px;">
+                              <tr>
+                                <td style="font-size: 14px; color: #475569;">
+                                  <span style="margin-right: 8px;">📄</span>
+                                  <span>Type: ${dlTypeFormatted}</span>
+                                </td>
+                              </tr>
+                            </table>
+                            
+                            <!-- Download Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
+                              <tr>
+                                <td align="center">
+                                  <a href="${dlUrl}" style="display: inline-block; background-color: #f9dc24; color: #0f172a; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                                    ${buttonText}
+                                  </a>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Additional Information -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="padding-top: 24px; border-top: 1px solid #e2e8f0; margin-bottom: 32px;">
+                        <tr>
+                          <td>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="border-left: 4px solid #f9dc24; background-color: #f3f3f5; border-radius: 0 8px 8px 0;">
+                              <tr>
+                                <td style="padding: 16px;">
+                                  <p style="font-size: 14px; color: #334155; margin: 0; line-height: 1.6;">
+                                    <strong style="color: #0f172a;">Stay Connected:</strong> We'd be delighted to keep you informed about our latest ${downloadType === "video" ? "videos" : "publications"}, upcoming events, new products, and industry insights in automotive imaging and camera testing technology.
+                                  </p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Closing -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="padding-top: 16px;">
+                        <tr>
+                          <td>
+                            <p style="font-size: 16px; color: #475569; margin: 0 0 12px 0;">
+                              We look forward to your continued interest!
+                            </p>
+                            <p style="font-size: 18px; font-weight: 600; color: #0f172a; margin: 0;">
+                              Your Image Engineering Team
+                            </p>
+                            <p style="font-size: 14px; color: #64748b; margin: 4px 0 0 0;">
+                              Experts in Automotive Imaging Standards
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #0f172a; padding: 24px 32px; text-align: center;">
+                      <p style="font-size: 12px; color: #94a3b8; margin: 0 0 8px 0;">
+                        info@image-engineering.de
+                      </p>
+                      <p style="font-size: 12px; color: #94a3b8; margin: 0 0 8px 0;">
+                        © 2024 Image Engineering. All rights reserved.
+                      </p>
+                      <p style="font-size: 12px; color: #475569; margin: 0;">
+                        Leading provider of automotive camera testing solutions
+                      </p>
+                    </td>
+                  </tr>
+
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
         </html>
       `,
     });
