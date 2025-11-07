@@ -60,9 +60,9 @@ const handler = async (req: Request): Promise<Response> => {
       ? "Conference paper" 
       : "Video";
     
-    // Construct download URL if not provided
-    const baseUrl = Deno.env.get("SUPABASE_URL")?.replace('/rest/v1', '') || 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
-    const dlUrl = downloadUrl || `${baseUrl}/${downloadType}/${itemId || 'download'}`;
+    // Construct download URL - use app URL, not Supabase URL
+    const baseUrl = 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
+    const dlUrl = downloadUrl || `${baseUrl}/whitepaper_download?id=${itemId || 'download'}`;
 
     // Save to database
     const { error: dbError } = await supabase
