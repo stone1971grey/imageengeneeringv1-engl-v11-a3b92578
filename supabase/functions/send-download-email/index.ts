@@ -121,6 +121,15 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
         
+        // Map download_type to tag
+        const tagMapping: Record<string, string> = {
+          "whitepaper": "dl:whitepaper",
+          "conference": "dl:conference-paper",
+          "video": "dl:video"
+        };
+        
+        const downloadTag = tagMapping[downloadType] || "dl:whitepaper";
+        
         const mauticData = {
           firstname: firstName,
           lastname: lastName,
@@ -136,6 +145,7 @@ const handler = async (req: Request): Promise<Response> => {
           dl_type: dlTypeFormatted,
           dl_title: title,
           dl_url: dlUrl,
+          tags: [downloadTag]
         };
 
         const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
