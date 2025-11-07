@@ -107,6 +107,21 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Download request saved to database");
 
+    // Check if contact already exists in event_registrations
+    const { data: existingRegistrations, error: checkError } = await supabase
+      .from('event_registrations')
+      .select('id')
+      .eq('email', email);
+
+    if (checkError) {
+      console.error("Error checking existing registrations:", checkError);
+    }
+
+    const isExistingContact = existingRegistrations && existingRegistrations.length > 0;
+    const marketingOptinValue = isExistingContact ? "yes" : "pending";
+    
+    console.log(`Contact ${email} - Existing: ${isExistingContact}, marketing_optin: ${marketingOptinValue}`);
+
     // Send to Mautic
     const mauticBaseUrl = Deno.env.get("MAUTIC_BASE_URL");
     const mauticUser = Deno.env.get("MAUTIC_USER");
@@ -125,7 +140,7 @@ const handler = async (req: Request): Promise<Response> => {
           download_type: downloadType,
           item_title: title,
           item_id: itemId || title,
-          marketing_optin: "pending",
+          marketing_optin: marketingOptinValue,
           category_tag: categoryTag,
           title_tag: titleTag,
         };
