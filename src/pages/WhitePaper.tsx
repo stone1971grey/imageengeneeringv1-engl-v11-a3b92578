@@ -253,12 +253,12 @@ const WhitePaper = () => {
     <Card className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
       <CardHeader className="space-y-3">
         <div className="flex items-center justify-between">
-          <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">
+          <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
             {paper.category}
           </Badge>
         </div>
         <CardTitle className="text-xl leading-relaxed flex items-start gap-3">
-          <FileText className="h-6 w-6 text-[#f5743a] flex-shrink-0 mt-1" />
+          <FileText className="h-6 w-6 text-[#f9dc24] flex-shrink-0 mt-1" />
           <span>{paper.title}</span>
         </CardTitle>
           <div className="flex gap-4 text-base text-white">
@@ -273,7 +273,7 @@ const WhitePaper = () => {
         </CardDescription>
         
         <Button 
-          className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+          className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
           onClick={() => {
             setSelectedPaper(paper);
           }}
@@ -336,8 +336,8 @@ const WhitePaper = () => {
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
                 <div className="flex items-center justify-between mb-4">
-                  <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal">{selectedPaper.category}</Badge>
-                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f5743a] hover:text-white transition-colors">
+                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">{selectedPaper.category}</Badge>
+                  <Button variant="ghost" onClick={handleClose} className="hover:bg-[#f9dc24] hover:text-black transition-colors">
                     <X className="h-5 w-5" />
                   </Button>
                 </div>
@@ -461,14 +461,14 @@ const WhitePaper = () => {
                               <Checkbox
                                 checked={field.value}
                                 onCheckedChange={field.onChange}
-                                className="border-[#f5743a] data-[state=checked]:bg-[#f5743a] data-[state=checked]:text-white h-8 w-8 flex-shrink-0"
+                                className="border-[#f9dc24] data-[state=checked]:bg-[#f9dc24] data-[state=checked]:text-black h-8 w-8 flex-shrink-0"
                               />
                             </FormControl>
                           </FormItem>
                         )}
                       />
                       
-                      <Button type="submit" size="lg" className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white">
+                      <Button type="submit" size="lg" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
                         <Download className="h-5 w-5 mr-2" />
                         {t.whitepaper.download}
                       </Button>
