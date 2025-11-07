@@ -42,6 +42,8 @@ interface DownloadEmailRequest {
   title: string;
   itemId?: string;
   consent?: boolean;
+  categoryTag?: string;
+  titleTag?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -51,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { firstName, lastName, email, company, position, downloadType, title, itemId, consent }: DownloadEmailRequest = await req.json();
+    const { firstName, lastName, email, company, position, downloadType, title, itemId, consent, categoryTag, titleTag }: DownloadEmailRequest = await req.json();
     
     console.log("Processing download request for:", email, "type:", downloadType);
 
@@ -88,6 +90,8 @@ const handler = async (req: Request): Promise<Response> => {
         item_id: itemId || title,
         item_title: title,
         consent: consent ?? true,
+        category_tag: categoryTag,
+        title_tag: titleTag,
       });
 
     if (dbError) {
@@ -122,6 +126,8 @@ const handler = async (req: Request): Promise<Response> => {
           item_title: title,
           item_id: itemId || title,
           marketing_optin: "pending",
+          category_tag: categoryTag,
+          title_tag: titleTag,
         };
 
         const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {

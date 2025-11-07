@@ -49,6 +49,7 @@ export type Database = {
       }
       download_requests: {
         Row: {
+          category_tag: string | null
           company: string
           consent: boolean
           created_at: string
@@ -60,8 +61,10 @@ export type Database = {
           item_title: string
           last_name: string
           position: string
+          title_tag: string | null
         }
         Insert: {
+          category_tag?: string | null
           company: string
           consent?: boolean
           created_at?: string
@@ -73,8 +76,10 @@ export type Database = {
           item_title: string
           last_name: string
           position: string
+          title_tag?: string | null
         }
         Update: {
+          category_tag?: string | null
           company?: string
           consent?: boolean
           created_at?: string
@@ -86,6 +91,7 @@ export type Database = {
           item_title?: string
           last_name?: string
           position?: string
+          title_tag?: string | null
         }
         Relationships: []
       }

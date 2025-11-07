@@ -185,6 +185,15 @@ const WhitePaper = () => {
     if (!selectedPaper) return;
 
     try {
+      // Generate category tag for whitepaper
+      const categoryTag = "dl:whitepaper";
+
+      // Generate title tag for specific items
+      let titleTag = undefined;
+      if (selectedPaper.id === "wp-p2020") {
+        titleTag = "dl:whitepaper-IEEE-P2020-Automotive-Imaging";
+      }
+
       // Call edge function to save to database, send to Mautic, and send email
       const { data: responseData, error } = await supabase.functions.invoke('send-download-email', {
         body: {
@@ -196,7 +205,9 @@ const WhitePaper = () => {
           downloadType: 'whitepaper',
           title: selectedPaper.title,
           itemId: selectedPaper.id,
-          consent: data.consent
+          consent: data.consent,
+          categoryTag: categoryTag,
+          titleTag: titleTag,
         }
       });
 

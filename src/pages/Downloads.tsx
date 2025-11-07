@@ -268,6 +268,19 @@ export default function Downloads() {
     try {
       setDownloadSuccess(true);
       
+      // Generate category tag based on download type
+      const categoryTag = selectedItem.type === "whitepaper" 
+        ? "dl:whitepaper" 
+        : selectedItem.type === "conference" 
+        ? "dl:conference-paper" 
+        : "dl:video";
+
+      // Generate title tag for specific items
+      let titleTag = undefined;
+      if (selectedItem.id === "wp-p2020") {
+        titleTag = "dl:whitepaper-IEEE-P2020-Automotive-Imaging";
+      }
+      
       // Call edge function to save to database, send to Mautic, and send email
       const { data: responseData, error } = await supabase.functions.invoke('send-download-email', {
         body: {
@@ -279,7 +292,9 @@ export default function Downloads() {
           downloadType: selectedItem.type,
           title: selectedItem.title,
           itemId: selectedItem.id,
-          consent: data.consent
+          consent: data.consent,
+          categoryTag: categoryTag,
+          titleTag: titleTag,
         }
       });
 
