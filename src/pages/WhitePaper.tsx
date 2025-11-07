@@ -449,7 +449,7 @@ const WhitePaper = () => {
                         render={({ field }) => (
                           <FormItem className="flex flex-row items-center justify-between space-x-4 space-y-0">
                             <div className="flex items-center space-x-3 flex-1">
-                              <AlertCircle className="h-8 w-8 text-[#f5743a] flex-shrink-0" />
+                              <AlertCircle className="h-8 w-8 text-[#f9dc24] flex-shrink-0" />
                               <div className="space-y-1 leading-none flex-1">
                                 <FormLabel className="text-2xl font-medium leading-tight text-white">
                                   I agree to receive information about image quality testing and related topics via email. *
