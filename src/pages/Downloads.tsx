@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -236,10 +236,19 @@ export default function Downloads() {
   const [selectedItem, setSelectedItem] = useState<DownloadItem | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const detailSectionRef = useRef<HTMLElement>(null);
   
   const whitepapers = downloadItems.filter(item => item.type === "whitepaper");
   const conferencePapers = downloadItems.filter(item => item.type === "conference");
   const videos = downloadItems.filter(item => item.type === "video");
+
+  useEffect(() => {
+    if (selectedItem && detailSectionRef.current) {
+      setTimeout(() => {
+        detailSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [selectedItem]);
 
   const form = useForm<DownloadFormValues>({
     resolver: zodResolver(downloadFormSchema),
@@ -406,7 +415,7 @@ export default function Downloads() {
 
       {/* Selected Item Detail (White Papers) */}
       {selectedItem && selectedItem.type === "whitepaper" && (
-        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+        <section ref={detailSectionRef} className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
           <div className="container mx-auto px-6">
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
@@ -580,7 +589,7 @@ export default function Downloads() {
 
       {/* Selected Item Detail (Conference Papers) */}
       {selectedItem && selectedItem.type === "conference" && (
-        <section className={`py-16 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+        <section ref={detailSectionRef} className={`py-16 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
           <div className="container mx-auto px-6">
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
@@ -754,7 +763,7 @@ export default function Downloads() {
 
       {/* Selected Item Detail (Videos) */}
       {selectedItem && selectedItem.type === "video" && (
-        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+        <section ref={detailSectionRef} className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
           <div className="container mx-auto px-6">
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>

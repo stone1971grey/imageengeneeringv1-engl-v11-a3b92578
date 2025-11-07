@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -159,6 +159,15 @@ const WhitePaper = () => {
   const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const detailSectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (selectedPaper && detailSectionRef.current) {
+      setTimeout(() => {
+        detailSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [selectedPaper]);
 
   const form = useForm<DownloadFormValues>({
     resolver: zodResolver(downloadFormSchema),
@@ -311,7 +320,7 @@ const WhitePaper = () => {
 
       {/* Selected Paper Detail */}
       {selectedPaper && !isDownloadDialogOpen && (
-        <section className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
+        <section ref={detailSectionRef} className={`py-16 bg-muted/30 transition-all duration-500 ${isClosing ? 'opacity-0' : 'opacity-100 animate-fade-in'}`}>
           <div className="container mx-auto px-6">
             <Card className={`max-w-4xl mx-auto transition-all duration-500 ${isClosing ? 'opacity-0 scale-95 translate-y-4' : 'opacity-100 scale-100 translate-y-0 animate-scale-in'}`}>
               <CardHeader>
