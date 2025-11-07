@@ -53,6 +53,9 @@ export type Database = {
           company: string
           consent: boolean
           created_at: string
+          dl_title: string | null
+          dl_type: string | null
+          dl_url: string | null
           download_type: string
           email: string
           first_name: string
@@ -68,6 +71,9 @@ export type Database = {
           company: string
           consent?: boolean
           created_at?: string
+          dl_title?: string | null
+          dl_type?: string | null
+          dl_url?: string | null
           download_type: string
           email: string
           first_name: string
@@ -83,6 +89,9 @@ export type Database = {
           company?: string
           consent?: boolean
           created_at?: string
+          dl_title?: string | null
+          dl_type?: string | null
+          dl_url?: string | null
           download_type?: string
           email?: string
           first_name?: string

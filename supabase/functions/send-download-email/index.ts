@@ -78,6 +78,17 @@ const handler = async (req: Request): Promise<Response> => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Format dl_type for display
+    const dlTypeFormatted = downloadType === "whitepaper" 
+      ? "Whitepaper" 
+      : downloadType === "conference" 
+      ? "Conference paper" 
+      : "Video";
+    
+    // Construct download URL if not provided
+    const baseUrl = Deno.env.get("SUPABASE_URL")?.replace('/rest/v1', '') || 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
+    const dlUrl = downloadUrl || `${baseUrl}/${downloadType}/${itemId || 'download'}`;
+
     // Save to database
     const { error: dbError } = await supabase
       .from('download_requests')
@@ -93,6 +104,9 @@ const handler = async (req: Request): Promise<Response> => {
         consent: consent ?? true,
         category_tag: categoryTag,
         title_tag: titleTag,
+        dl_type: dlTypeFormatted,
+        dl_title: title,
+        dl_url: dlUrl,
       });
 
     if (dbError) {
@@ -131,17 +145,6 @@ const handler = async (req: Request): Promise<Response> => {
     if (mauticBaseUrl && mauticUser && mauticPass) {
       try {
         const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
-        
-        // Format dl_type for Mautic
-        const dlTypeFormatted = downloadType === "whitepaper" 
-          ? "Whitepaper" 
-          : downloadType === "conference" 
-          ? "Conference paper" 
-          : "Video";
-        
-        // Construct download URL if not provided
-        const baseUrl = Deno.env.get("SUPABASE_URL")?.replace('/rest/v1', '') || 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
-        const dlUrl = downloadUrl || `${baseUrl}/${downloadType}/${itemId || 'download'}`;
         
         const mauticData = {
           firstname: firstName,
