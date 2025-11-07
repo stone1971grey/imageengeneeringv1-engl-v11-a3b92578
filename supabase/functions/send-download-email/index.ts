@@ -44,6 +44,7 @@ interface DownloadEmailRequest {
   consent?: boolean;
   categoryTag?: string;
   titleTag?: string;
+  downloadUrl?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -53,7 +54,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { firstName, lastName, email, company, position, downloadType, title, itemId, consent, categoryTag, titleTag }: DownloadEmailRequest = await req.json();
+    const { firstName, lastName, email, company, position, downloadType, title, itemId, consent, categoryTag, titleTag, downloadUrl }: DownloadEmailRequest = await req.json();
     
     console.log("Processing download request for:", email, "type:", downloadType);
 
@@ -131,6 +132,17 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
         
+        // Format dl_type for Mautic
+        const dlTypeFormatted = downloadType === "whitepaper" 
+          ? "Whitepaper" 
+          : downloadType === "conference" 
+          ? "Conference paper" 
+          : "Video";
+        
+        // Construct download URL if not provided
+        const baseUrl = Deno.env.get("SUPABASE_URL")?.replace('/rest/v1', '') || 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
+        const dlUrl = downloadUrl || `${baseUrl}/${downloadType}/${itemId || 'download'}`;
+        
         const mauticData = {
           firstname: firstName,
           lastname: lastName,
@@ -143,6 +155,9 @@ const handler = async (req: Request): Promise<Response> => {
           marketing_optin: marketingOptinValue,
           category_tag: categoryTag,
           title_tag: titleTag,
+          dl_type: dlTypeFormatted,
+          dl_title: title,
+          dl_url: dlUrl,
         };
 
         const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
