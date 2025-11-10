@@ -48,7 +48,7 @@ interface WhitePaper {
 // Sample white paper data
 const whitePapers: WhitePaper[] = [
   {
-    id: "p2020",
+    id: "wp-p2020",
     title: "How Well Do Vehicles Really \"See\"? – The IEEE P2020 Automotive Imaging White Paper",
     category: "Standards & Compliance",
     pages: 24,
@@ -78,7 +78,7 @@ const whitePapers: WhitePaper[] = [
       <h3>Target Audience</h3>
       <p>This white paper is designed for automotive engineers, test engineers, quality assurance professionals, OEMs, suppliers, and technology decision-makers involved in ADAS development and testing.</p>
     `,
-    downloadUrl: "#download-p2020",
+    downloadUrl: "https://preview--imageengeneeringv1-engl-v11.lovable.app/whitepaper/ieee-p2020",
     featured: true
   },
   {
