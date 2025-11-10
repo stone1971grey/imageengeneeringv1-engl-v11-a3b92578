@@ -63,6 +63,9 @@ const handler = async (req: Request): Promise<Response> => {
     // Construct download URL - use app URL, not Supabase URL
     const baseUrl = 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
     const dlUrl = downloadUrl || `${baseUrl}/whitepaper_download?id=${itemId || 'download'}`;
+    
+    console.log("downloadUrl received:", downloadUrl);
+    console.log("dlUrl being sent to Mautic:", dlUrl);
 
     // Save to database
     const { error: dbError } = await supabase
