@@ -100,21 +100,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Download request saved to database");
 
-    // Check if contact already exists in event_registrations
-    const { data: existingRegistrations, error: checkError } = await supabase
-      .from('event_registrations')
-      .select('id')
-      .eq('email', email);
-
-    if (checkError) {
-      console.error("Error checking existing registrations:", checkError);
-    }
-
-    const isExistingContact = existingRegistrations && existingRegistrations.length > 0;
-    const marketingOptinValue = isExistingContact ? "yes" : "pending";
-    
-    console.log(`Contact ${email} - Existing: ${isExistingContact}, marketing_optin: ${marketingOptinValue}`);
-
     // Send to Mautic
     const mauticBaseUrl = Deno.env.get("MAUTIC_BASE_URL");
     const mauticUser = Deno.env.get("MAUTIC_USER");
@@ -239,8 +224,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Download request processed successfully",
-        isExistingContact: isExistingContact 
+        message: "Download request processed successfully"
       }),
       {
         status: 200,
