@@ -133,37 +133,99 @@ const handler = async (req: Request): Promise<Response> => {
         
         const downloadTag = tagMapping[downloadType] || "dl:whitepaper";
         
-        const mauticData = {
-          firstname: firstName,
-          lastname: lastName,
-          email: email,
-          company: company,
-          position: position,
-          download_type: downloadType,
-          item_title: title,
-          item_id: itemId || title,
-          marketing_optin: marketingOptinValue,
-          category_tag: categoryTag,
-          title_tag: titleTag,
-          dl_type: dlTypeFormatted,
-          dl_title: title,
-          dl_url: dlUrl,
-          tags: [downloadTag]
-        };
+        // First, search for existing contact in Mautic
+        const searchResponse = await fetch(
+          `${mauticBaseUrl}/api/contacts?search=email:${encodeURIComponent(email)}`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-        const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Basic ${basicAuth}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(mauticData),
-        });
+        let mauticContactId = null;
+        let isExistingMauticContact = false;
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          if (searchData.contacts && Object.keys(searchData.contacts).length > 0) {
+            const contactId = Object.keys(searchData.contacts)[0];
+            mauticContactId = contactId;
+            isExistingMauticContact = true;
+            console.log(`Found existing Mautic contact with ID: ${contactId}`);
+          }
+        }
+
+        let mauticResponse;
+
+        if (isExistingMauticContact && mauticContactId) {
+          // Update existing contact - only send download data and tags, preserve marketing_optin
+          console.log("Updating existing Mautic contact - preserving marketing_optin and all segments");
+          
+          const updateData: any = {
+            download_type: downloadType,
+            item_title: title,
+            item_id: itemId || title,
+            dl_type: dlTypeFormatted,
+            dl_title: title,
+            dl_url: dlUrl,
+            tags: [downloadTag], // Mautic will ADD these tags, not replace
+          };
+
+          // Only add category and title tags if provided
+          if (categoryTag) updateData.category_tag = categoryTag;
+          if (titleTag) updateData.title_tag = titleTag;
+
+          // CRITICAL: Do NOT send marketing_optin for existing contacts to preserve their status
+
+          mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/${mauticContactId}/edit`, {
+            method: "PATCH",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updateData),
+          });
+        } else {
+          // Create new contact with all data
+          console.log("Creating new Mautic contact with marketing_optin: pending");
+          
+          const createData: any = {
+            firstname: firstName,
+            lastname: lastName,
+            email: email,
+            company: company,
+            position: position,
+            download_type: downloadType,
+            item_title: title,
+            item_id: itemId || title,
+            marketing_optin: "pending", // Only for NEW contacts
+            dl_type: dlTypeFormatted,
+            dl_title: title,
+            dl_url: dlUrl,
+            tags: [downloadTag]
+          };
+
+          if (categoryTag) createData.category_tag = categoryTag;
+          if (titleTag) createData.title_tag = titleTag;
+
+          mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(createData),
+          });
+        }
 
         if (!mauticResponse.ok) {
           console.error("Mautic API error:", await mauticResponse.text());
         } else {
-          console.log("Successfully sent to Mautic");
+          const responseData = await mauticResponse.json();
+          console.log("Successfully sent to Mautic:", responseData);
         }
       } catch (mauticError) {
         console.error("Error sending to Mautic:", mauticError);

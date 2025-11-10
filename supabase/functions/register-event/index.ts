@@ -145,39 +145,94 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         const basicAuth = btoa(`${mauticUser}:${mauticPass}`);
         
-        const mauticData: any = {
-          firstname: data.firstName,
-          lastname: data.lastName,
-          email: data.email,
-          company: data.company,
-          position: data.position,
-          event_title: data.eventName,
-          event_date: data.eventDate,
-          event_location: data.eventLocation,
-          evt_image_url: fullImageUrl,
-          phone: data.phone,
-          industry: data.industry,
-          current_test_systems: data.currentTestSystems,
-          automotive_interests: data.automotiveInterests?.join(', '),
-          tags: ["evt", `evt:${data.eventSlug}`],
-        };
+        // First, search for existing contact in Mautic
+        const searchResponse = await fetch(
+          `${mauticBaseUrl}/api/contacts?search=email:${encodeURIComponent(data.email)}`,
+          {
+            method: "GET",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-        // Only set marketing_optin to "pending" for first-time registrations
-        if (!existingRegistrations || existingRegistrations.length === 0) {
-          mauticData.marketing_optin = "pending";
-          console.log("First registration - setting marketing_optin to pending");
-        } else {
-          console.log("Existing registrations found - keeping current marketing_optin status");
+        let mauticContactId = null;
+        let isExistingMauticContact = false;
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+          if (searchData.contacts && Object.keys(searchData.contacts).length > 0) {
+            const contactId = Object.keys(searchData.contacts)[0];
+            mauticContactId = contactId;
+            isExistingMauticContact = true;
+            console.log(`Found existing Mautic contact with ID: ${contactId}`);
+          }
         }
 
-        const mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
-          method: "POST",
-          headers: {
-            "Authorization": `Basic ${basicAuth}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(mauticData),
-        });
+        let mauticResponse;
+
+        if (isExistingMauticContact && mauticContactId) {
+          // Update existing contact - only send new event data and tags
+          console.log("Updating existing Mautic contact - preserving all existing data");
+          
+          const updateData: any = {
+            event_title: data.eventName,
+            event_date: data.eventDate,
+            event_location: data.eventLocation,
+            evt_image_url: fullImageUrl,
+          };
+
+          // Only update these fields if they have values
+          if (data.phone) updateData.phone = data.phone;
+          if (data.industry) updateData.industry = data.industry;
+          if (data.currentTestSystems) updateData.current_test_systems = data.currentTestSystems;
+          if (data.automotiveInterests && data.automotiveInterests.length > 0) {
+            updateData.automotive_interests = data.automotiveInterests.join(', ');
+          }
+
+          // IMPORTANT: Add new tags without removing existing ones
+          updateData.tags = ["evt", `evt:${data.eventSlug}`];
+
+          mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/${mauticContactId}/edit`, {
+            method: "PATCH",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updateData),
+          });
+        } else {
+          // Create new contact with all data
+          console.log("Creating new Mautic contact");
+          
+          const createData: any = {
+            firstname: data.firstName,
+            lastname: data.lastName,
+            email: data.email,
+            company: data.company,
+            position: data.position,
+            event_title: data.eventName,
+            event_date: data.eventDate,
+            event_location: data.eventLocation,
+            evt_image_url: fullImageUrl,
+            phone: data.phone,
+            industry: data.industry,
+            current_test_systems: data.currentTestSystems,
+            automotive_interests: data.automotiveInterests?.join(', '),
+            marketing_optin: "pending",
+            tags: ["evt", `evt:${data.eventSlug}`],
+          };
+
+          mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/new`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(createData),
+          });
+        }
 
         if (!mauticResponse.ok) {
           const errorText = await mauticResponse.text();
