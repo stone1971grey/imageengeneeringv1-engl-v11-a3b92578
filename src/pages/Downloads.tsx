@@ -67,7 +67,7 @@ const downloadItems: DownloadItem[] = [
         <li>Why standardized metrics are key to safer driver assistance and autonomous systems</li>
       </ul>
     `,
-    downloadUrl: "#download-p2020",
+    downloadUrl: "https://preview--imageengeneeringv1-engl-v11.lovable.app/whitepaper/ieee-p2020",
   },
   {
     id: "wp-printer",
