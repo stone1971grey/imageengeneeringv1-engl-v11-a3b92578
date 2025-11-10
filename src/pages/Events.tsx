@@ -247,28 +247,28 @@ const sampleEvents: Event[] = [
       coordinates: [0, 0]
     },
     category: "Schulung",
-    language: "DE",
-    description: "Erfahren Sie in unserem Live-Stream die neuesten Entwicklungen und Innovationen im ADAS-Testing. Experten präsentieren aktuelle Testmethoden, Standards und Best Practices für fortgeschrittene Fahrerassistenzsysteme.",
+    language: "EN",
+    description: "Learn about the latest developments and innovations in ADAS testing. Experts present current test methods, standards, and best practices for advanced driver assistance systems.",
     fullDescription: `
       <h3>ADAS Innovations Live Stream</h3>
       
-      <p>Nehmen Sie an unserem interaktiven Online-Webinar teil und erhalten Sie Einblicke in die neuesten Trends und Technologien im Bereich ADAS-Testing.</p>
+      <p>Join our interactive online webinar and gain insights into the latest trends and technologies in ADAS testing.</p>
       
-      <h3>Themen des Webinars</h3>
+      <h3>Webinar Topics</h3>
       <ul>
-        <li>Aktuelle IEEE P2020 Standards für ADAS-Kamerasysteme</li>
-        <li>Innovative Testmethoden für Kamera- und Sensorsysteme</li>
-        <li>HDR-Testing und Low-Light-Performance-Bewertung</li>
-        <li>Praxisbeispiele aus der Automotive-Industrie</li>
-        <li>Live-Demo: Arcturus LED-Systeme im ADAS-Testing</li>
-        <li>Q&A Session mit unseren Experten</li>
+        <li>Current IEEE P2020 standards for ADAS camera systems</li>
+        <li>Innovative test methods for camera and sensor systems</li>
+        <li>HDR testing and low-light performance evaluation</li>
+        <li>Real-world examples from the automotive industry</li>
+        <li>Live demo: Arcturus LED systems in ADAS testing</li>
+        <li>Q&A session with our experts</li>
       </ul>
       
-      <h3>Für wen ist dieses Webinar geeignet?</h3>
-      <p>Test-Ingenieure, Quality-Manager, ADAS-Entwickler und alle Fachleute, die sich mit der Bewertung von Fahrerassistenzsystemen beschäftigen.</p>
+      <h3>Who is this webinar for?</h3>
+      <p>Test engineers, quality managers, ADAS developers, and all professionals working with the evaluation of advanced driver assistance systems.</p>
       
-      <h3>Webinar-Details</h3>
-      <p>Die Teilnahme ist kostenlos. Nach der Registrierung erhalten Sie die Zugangsdaten per E-Mail. Das Webinar wird aufgezeichnet - registrierte Teilnehmer erhalten im Anschluss Zugang zur Aufzeichnung.</p>
+      <h3>Webinar Details</h3>
+      <p>Participation is free. After registration, you will receive access credentials via email. The webinar will be recorded - registered participants will receive access to the recording afterwards.</p>
     `,
     image: eventAdasStreaming,
     imageUrl: "/images/event-adas-streaming.jpg",
