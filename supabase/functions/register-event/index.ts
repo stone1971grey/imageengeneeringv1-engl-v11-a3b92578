@@ -135,6 +135,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Event registration saved to database");
 
+    // Variable to track if contact exists in Mautic
+    let isExistingMauticContact = false;
+
     // Send to Mautic
     const mauticBaseUrl = Deno.env.get("MAUTIC_BASE_URL");
     const mauticUser = Deno.env.get("MAUTIC_USER");
@@ -158,7 +161,6 @@ const handler = async (req: Request): Promise<Response> => {
         );
 
         let mauticContactId = null;
-        let isExistingMauticContact = false;
 
         if (searchResponse.ok) {
           const searchData = await searchResponse.json();
@@ -250,7 +252,10 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     return new Response(
-      JSON.stringify({ success: true }),
+      JSON.stringify({ 
+        success: true,
+        isExistingContact: isExistingMauticContact 
+      }),
       {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },

@@ -339,8 +339,14 @@ const Events = () => {
         return;
       }
       
-      // Navigate to the success confirmation page
-      navigate('/event-registration-success', {
+      // Determine which page to navigate to based on existing contact status
+      const isExistingContact = result?.isExistingContact || false;
+      const targetPage = isExistingContact 
+        ? "/event-detail-registration-confirmation" 
+        : "/event-registration-success";
+      
+      // Navigate to the appropriate confirmation page
+      navigate(targetPage, {
         state: {
           eventTitle: selectedEvent.title,
           eventDate: selectedEvent.date,
