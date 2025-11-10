@@ -26,6 +26,8 @@ import WhitePaper from "./pages/WhitePaper";
 import WhitePaperDownload from "./pages/WhitePaperDownload";
 import WhitePaperDetail from "./pages/WhitePaperDetail";
 import ConferencePaperDownload from "./pages/ConferencePaperDownload";
+import DownloadRegistrationSuccess from "./pages/DownloadRegistrationSuccess";
+import DownloadConfirmation from "./pages/DownloadConfirmation";
 import ConfirmContact from "./pages/ConfirmContact";
 import ConfirmDone from "./pages/ConfirmDone";
 import Optin from "./pages/Optin";
@@ -76,6 +78,8 @@ const App = () => (
          <Route path="/whitepaper_download" element={<WhitePaperDownload />} />
          <Route path="/whitepaper/ieee-p2020" element={<WhitePaperDetail />} />
          <Route path="/conference_paper_download" element={<ConferencePaperDownload />} />
+         <Route path="/download-registration-success" element={<DownloadRegistrationSuccess />} />
+         <Route path="/download-confirmation" element={<DownloadConfirmation />} />
          <Route path="/confirm-contact" element={<ConfirmContact />} />
          <Route path="/confirm-done" element={<ConfirmDone />} />
          <Route path="/optin" element={<Optin />} />

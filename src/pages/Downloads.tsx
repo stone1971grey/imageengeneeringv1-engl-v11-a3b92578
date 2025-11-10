@@ -307,23 +307,17 @@ export default function Downloads() {
 
       console.log("Download request processed successfully:", responseData);
       
-      // Determine which page to navigate to based on download type
-      let targetPage = "";
-      if (selectedItem.type === "whitepaper") {
-        targetPage = "/whitepaper_download";
-      } else if (selectedItem.type === "conference") {
-        targetPage = "/conference_paper_download";
-      } else {
-        targetPage = "/video_download";
-      }
+      // Determine which page to navigate to based on existing contact status
+      const isExistingContact = responseData?.isExistingContact || false;
+      const targetPage = isExistingContact 
+        ? "/download-confirmation" 
+        : "/download-registration-success";
 
-      // Navigate to the download confirmation page
+      // Navigate to the appropriate confirmation page
       navigate(targetPage, {
         state: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          downloadUrl: selectedItem.downloadUrl,
-          title: selectedItem.title,
+          downloadTitle: selectedItem.title,
+          downloadType: selectedItem.type,
         },
       });
       

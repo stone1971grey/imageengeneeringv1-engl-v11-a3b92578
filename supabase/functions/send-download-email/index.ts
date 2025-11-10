@@ -172,7 +172,11 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Download request processed successfully - Mautic will handle email notifications");
 
     return new Response(
-      JSON.stringify({ success: true, message: "Download request processed successfully" }),
+      JSON.stringify({ 
+        success: true, 
+        message: "Download request processed successfully",
+        isExistingContact: isExistingContact 
+      }),
       {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
