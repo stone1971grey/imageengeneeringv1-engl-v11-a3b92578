@@ -254,8 +254,8 @@ const WhitePaperDetail = () => {
                   
                   <Button
                     size="lg"
-                    className="text-white font-semibold px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                    style={{ backgroundColor: '#f5743a' }}
+                    className="text-black font-semibold px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                    style={{ backgroundColor: '#f9dc24' }}
                     onClick={handleDownload}
                   >
                     <Download className="h-5 w-5 mr-2" />
