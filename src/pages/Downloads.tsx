@@ -295,6 +295,7 @@ export default function Downloads() {
           consent: data.consent,
           categoryTag: categoryTag,
           titleTag: titleTag,
+          downloadUrl: selectedItem.downloadUrl,
         }
       });
 
