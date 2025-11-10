@@ -84,8 +84,8 @@ const App = () => (
          <Route path="/confirm-done" element={<ConfirmDone />} />
          <Route path="/optin" element={<Optin />} />
          <Route path="/video_download" element={<VideoDownload />} />
-         <Route path="/event_registration_confirmation" element={<EventRegistrationConfirmation />} />
-         <Route path="/event_detail_registration_confirmation" element={<EventDetailRegistrationConfirmation />} />
+         <Route path="/event-registration-confirmation" element={<EventRegistrationConfirmation />} />
+         <Route path="/event-detail-registration-confirmation" element={<EventDetailRegistrationConfirmation />} />
          <Route path="/event-already-registered" element={<EventAlreadyRegistered />} />
          <Route path="/event-registration-success" element={<EventRegistrationSuccess />} />
          <Route path="/in-cabin-testing" element={<InCabinTesting />} />
