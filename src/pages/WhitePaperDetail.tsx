@@ -300,7 +300,7 @@ const WhitePaperDetail = () => {
                 />
               </div>
               <CardHeader className="space-y-3 flex-1">
-                <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal w-fit">
+                <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal w-fit">
                   Messe
                 </Badge>
                 <CardTitle className="text-xl leading-tight text-white">
@@ -335,7 +335,7 @@ const WhitePaperDetail = () => {
                 </div>
                 
                 <Button 
-                  className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                  className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
                   onClick={() => handleRegisterClick({
                     slug: "automotive-testing-conference-2025",
                     title: "Automotive Testing Conference 2025",
@@ -360,7 +360,7 @@ const WhitePaperDetail = () => {
                 />
               </div>
               <CardHeader className="space-y-3 flex-1">
-                <Badge className="bg-[#f5743a] text-black hover:bg-[#f5743a]/90 text-base px-3 py-1.5 font-normal w-fit">
+                <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal w-fit">
                   Schulung
                 </Badge>
                 <CardTitle className="text-xl leading-tight text-white">
@@ -395,7 +395,7 @@ const WhitePaperDetail = () => {
                 </div>
                 
                 <Button 
-                  className="w-full bg-[#f5743a] hover:bg-[#f5743a]/90 text-white"
+                  className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
                   onClick={() => handleRegisterClick({
                     slug: "automotive-vision-standards-workshop",
                     title: "Automotive Vision Standards Workshop",
