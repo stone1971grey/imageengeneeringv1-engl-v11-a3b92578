@@ -208,6 +208,7 @@ const WhitePaper = () => {
           consent: data.consent,
           categoryTag: categoryTag,
           titleTag: titleTag,
+          downloadUrl: selectedPaper.downloadUrl,
         }
       });
 
@@ -218,17 +219,24 @@ const WhitePaper = () => {
       }
 
       console.log("Download request processed successfully:", responseData);
-      setDownloadSuccess(true);
-      toast.success("Redirecting to download...");
       
-      setTimeout(() => {
-        navigate('/whitepaper_download', { 
-          state: { 
-            firstName: data.firstName, 
-            lastName: data.lastName 
-          } 
-        });
-      }, 1000);
+      // Determine which page to navigate to based on existing contact status
+      const isExistingContact = responseData?.isExistingContact || false;
+      const targetPage = isExistingContact 
+        ? "/download-confirmation" 
+        : "/download-registration-success";
+
+      // Navigate to the appropriate confirmation page
+      navigate(targetPage, {
+        state: {
+          downloadTitle: selectedPaper.title,
+          downloadType: 'whitepaper',
+        },
+      });
+      
+      form.reset();
+      setDownloadSuccess(false);
+      setSelectedPaper(null);
     } catch (error) {
       console.error("Error:", error);
       toast.error("Something went wrong. Please try again.");
