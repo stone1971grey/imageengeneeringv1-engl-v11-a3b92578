@@ -26,7 +26,7 @@ const EventDetailRegistrationConfirmation = () => {
       
       <ActionHero
         title={eventTitle || "Event Registration"}
-        subtitle="Anmeldung bestätigt"
+        subtitle="Registration confirmed"
         backgroundImage={eventImageUrl || "/images/event-placeholder.jpg"}
         flipImage={false}
       />
@@ -39,10 +39,10 @@ const EventDetailRegistrationConfirmation = () => {
                 <CheckCircle2 className="w-8 h-8 text-green-500" />
               </div>
               <h2 className="text-3xl font-bold text-foreground mb-4">
-                Anmeldung Bestätigt
+                Registration Confirmed
               </h2>
               <p className="text-lg text-muted-foreground">
-                Vielen Dank für Ihre Anmeldung. Wir haben Ihre Informationen erhalten und Sie erhalten in Kürze eine Bestätigungs-E-Mail mit allen Event-Details.
+                Thank you for your registration. We have received your information and you will receive a confirmation email shortly with all event details.
               </p>
             </div>
 
@@ -52,7 +52,7 @@ const EventDetailRegistrationConfirmation = () => {
                 <div className="flex items-start gap-3">
                   <Calendar className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Event Datum</p>
+                    <p className="text-sm text-muted-foreground">Event Date</p>
                     <p className="font-medium text-foreground">{formatDate(eventDate)}</p>
                   </div>
                 </div>
@@ -60,7 +60,7 @@ const EventDetailRegistrationConfirmation = () => {
                   <div className="flex items-start gap-3">
                     <Clock className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Uhrzeit</p>
+                      <p className="text-sm text-muted-foreground">Time</p>
                       <p className="font-medium text-foreground">{eventTime}</p>
                     </div>
                   </div>
@@ -69,7 +69,7 @@ const EventDetailRegistrationConfirmation = () => {
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Ort</p>
+                      <p className="text-sm text-muted-foreground">Location</p>
                       <p className="font-medium text-foreground">{eventLocation}</p>
                     </div>
                   </div>
@@ -79,7 +79,7 @@ const EventDetailRegistrationConfirmation = () => {
 
             <div className="bg-[#f9dc24]/10 border border-[#f9dc24]/20 rounded-lg p-6 mb-8">
               <p className="text-sm text-foreground leading-relaxed">
-                <span className="font-semibold">Wichtiger Hinweis:</span> Sie erhalten 2 Tage vor der Veranstaltung eine Erinnerungs-E-Mail mit allen relevanten Details und Wegbeschreibungen zum Veranstaltungsort.
+                <span className="font-semibold">Important Note:</span> You will receive a reminder email 2 days before the event with all relevant details and directions to the venue.
               </p>
             </div>
 
@@ -89,7 +89,7 @@ const EventDetailRegistrationConfirmation = () => {
                 size="lg"
                 className="min-w-[200px] bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
               >
-                Weitere Events ansehen
+                Browse Other Events
               </Button>
             </div>
           </div>
