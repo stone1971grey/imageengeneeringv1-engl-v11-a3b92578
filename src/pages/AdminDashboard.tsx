@@ -573,33 +573,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleSaveSegment = async (segmentIndex: number, data: any) => {
-    if (!user) return;
-    
-    const updatedSegments = [...pageSegments];
-    updatedSegments[segmentIndex].data = data;
-    setPageSegments(updatedSegments);
-
-    try {
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: "photography",
-          section_key: "page_segments",
-          content_type: "json",
-          content_value: JSON.stringify(updatedSegments),
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      toast.success("Segment saved successfully!");
-    } catch (error: any) {
-      toast.error("Error saving segment: " + error.message);
-    }
-  };
-
   const getDefaultSegmentData = (templateType: string) => {
     switch (templateType) {
       case "hero":
@@ -833,24 +806,103 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <Tabs defaultValue={pageSegments.length > 0 ? "segment-0" : undefined} className="w-full">
-          <TabsList 
-            className="grid w-full mb-6 h-auto p-2 bg-gray-200"
-            style={{ gridTemplateColumns: `repeat(${pageSegments.length}, 1fr)` }}
-          >
-            {pageSegments.map((segment, index) => (
-              <TabsTrigger 
-                key={`segment-tab-${index}`}
-                value={`segment-${index}`}
-                className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-              >
-                {segment.type === 'hero' && 'Hero'}
-                {segment.type === 'tiles' && 'Tiles'}
-                {segment.type === 'banner' && 'Banner'}
-                {segment.type === 'image-text' && 'Image & Text'}
-                {` ${index + 1}`}
-              </TabsTrigger>
-            ))}
+        {/* Display current segments */}
+        {pageSegments.length > 0 && (
+          <Card className="mb-6 bg-gray-100 border-gray-300">
+            <CardHeader>
+              <CardTitle>Current Page Segments</CardTitle>
+              <CardDescription>Overview of all segments on this page</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {pageSegments.map((segment, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-[#f9dc24] rounded-full flex items-center justify-center font-bold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-semibold capitalize">{segment.type} Segment</p>
+                        <p className="text-sm text-gray-500">
+                          {segment.data?.title || "Untitled"}
+                        </p>
+                      </div>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Segment?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete this {segment.type} segment.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={async () => {
+                              const updatedSegments = pageSegments.filter((_, i) => i !== index);
+                              setPageSegments(updatedSegments);
+                              
+                              await supabase
+                                .from("page_content")
+                                .upsert({
+                                  page_slug: "photography",
+                                  section_key: "page_segments",
+                                  content_type: "json",
+                                  content_value: JSON.stringify(updatedSegments),
+                                  updated_at: new Date().toISOString(),
+                                  updated_by: user?.id
+                                }, {
+                                  onConflict: 'page_slug,section_key'
+                                });
+                              
+                              toast.success("Segment deleted!");
+                            }}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Tabs defaultValue="hero" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-6 h-auto p-2 bg-gray-200">
+            <TabsTrigger 
+              value="hero" 
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Produkt-Hero
+            </TabsTrigger>
+            <TabsTrigger 
+              value="tiles"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Tiles
+            </TabsTrigger>
+            <TabsTrigger 
+              value="banner"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Banner
+            </TabsTrigger>
+            <TabsTrigger 
+              value="solutions"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Image & Text
+            </TabsTrigger>
           </TabsList>
 
           {/* Hero Section Tab */}
