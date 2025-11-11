@@ -1273,13 +1273,13 @@ const AdminDashboard = () => {
                   <SelectItem value="photography" disabled={isEditor && !allowedPages.includes("photography")}>
                     <div className="flex flex-col">
                       <span className="font-medium">Photo & Video</span>
-                      <span className="text-xs text-gray-500">Industries → Photo & Video</span>
+                      <span className="text-xs text-gray-500">Your solution → Photo & Video</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="scanners-archiving" disabled={isEditor && !allowedPages.includes("scanners-archiving")}>
                     <div className="flex flex-col">
                       <span className="font-medium">Scanners & Archiving</span>
-                      <span className="text-xs text-gray-500">Industries → Scanners & Archiving</span>
+                      <span className="text-xs text-gray-500">Your solution → Scanners & Archiving</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
