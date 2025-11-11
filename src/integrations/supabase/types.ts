@@ -104,6 +104,27 @@ export type Database = {
         }
         Relationships: []
       }
+      editor_page_access: {
+        Row: {
+          created_at: string | null
+          id: string
+          page_slug: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          page_slug: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          page_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_registrations: {
         Row: {
           automotive_interests: string[] | null
@@ -247,7 +268,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "editor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -375,7 +396,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "editor"],
     },
   },
 } as const
