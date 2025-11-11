@@ -31,6 +31,7 @@ const AdminDashboard = () => {
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
+  const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -107,6 +108,8 @@ const AdminDashboard = () => {
         setHeroImagePosition(item.content_value || "right");
       } else if (item.section_key === "hero_layout") {
         setHeroLayout(item.content_value || "2-5");
+      } else if (item.section_key === "hero_top_padding") {
+        setHeroTopPadding(item.content_value || "medium");
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -234,6 +237,20 @@ const AdminDashboard = () => {
           section_key: "hero_layout",
           content_type: "text",
           content_value: heroLayout,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      // Update hero top padding
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "hero_top_padding",
+          content_type: "text",
+          content_value: heroTopPadding,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
@@ -401,6 +418,22 @@ const AdminDashboard = () => {
                     <option value="2-5">2:5 (Text:Image)</option>
                   </select>
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_top_padding">Top Spacing</Label>
+                <select
+                  id="hero_top_padding"
+                  value={heroTopPadding}
+                  onChange={(e) => setHeroTopPadding(e.target.value)}
+                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                >
+                  <option value="small">Small (PT-16)</option>
+                  <option value="medium">Medium (PT-24)</option>
+                  <option value="large">Large (PT-32)</option>
+                  <option value="xlarge">Extra Large (PT-40)</option>
+                </select>
+                <p className="text-sm text-gray-500 mt-1">Controls the spacing from the top of the hero section</p>
               </div>
 
               <div>

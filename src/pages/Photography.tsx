@@ -39,6 +39,7 @@ const Photography = () => {
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
+  const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
 
   useEffect(() => {
     loadContent();
@@ -63,6 +64,8 @@ const Photography = () => {
           setHeroImagePosition(item.content_value || "right");
         } else if (item.section_key === "hero_layout") {
           setHeroLayout(item.content_value || "2-5");
+        } else if (item.section_key === "hero_top_padding") {
+          setHeroTopPadding(item.content_value || "medium");
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -143,7 +146,13 @@ const Photography = () => {
 
       {/* Hero Section */}
       <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
-        <div className="container mx-auto px-6 py-16 lg:py-24 pt-3 md:pt-32 pb-8 lg:pb-12 relative z-10">
+        <div className={`container mx-auto px-6 py-16 lg:py-24 pb-8 lg:pb-12 relative z-10 ${
+          heroTopPadding === "small" ? "pt-3 md:pt-16" :
+          heroTopPadding === "medium" ? "pt-3 md:pt-24" :
+          heroTopPadding === "large" ? "pt-3 md:pt-32" :
+          heroTopPadding === "xlarge" ? "pt-3 md:pt-40" :
+          "pt-3 md:pt-32"
+        }`}>
           <div className={`grid gap-16 items-center ${
             heroLayout === "50-50" ? "lg:grid-cols-2" : 
             heroLayout === "2-3" ? "lg:grid-cols-5" :
