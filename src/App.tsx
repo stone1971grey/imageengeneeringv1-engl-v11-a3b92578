@@ -13,6 +13,7 @@ import Industries from "./pages/Industries";
 import Products from "./pages/Products";
 import Automotive from "./pages/Automotive";
 import Photography from "./pages/Photography";
+import ScannersArchiving from "./pages/ScannersArchiving";
 import Downloads from "./pages/Downloads";
 import ProductArcturus from "./pages/ProductArcturus";
 import ProductLE7 from "./pages/ProductLE7";
@@ -67,6 +68,7 @@ const App = () => (
         <Route path="/products" element={<Products />} />
         <Route path="/automotive" element={<Automotive />} />
         <Route path="/photography" element={<Photography />} />
+        <Route path="/scanners-archiving" element={<ScannersArchiving />} />
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/product/arcturus" element={<ProductArcturus />} />
          <Route path="/product/le7" element={<ProductLE7 />} />

@@ -95,6 +95,7 @@ const AdminDashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditor, setIsEditor] = useState(false);
   const [allowedPages, setAllowedPages] = useState<string[]>([]);
+  const [selectedPage, setSelectedPage] = useState<string>("photography");
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<Record<string, string>>({});
   const [applications, setApplications] = useState<any[]>([]);
@@ -159,12 +160,19 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (user) {
       checkUserAccess();
-      loadContent();
     }
   }, [user]);
 
+  useEffect(() => {
+    if (user && (isAdmin || isEditor)) {
+      loadContent();
+    }
+  }, [user, selectedPage, isAdmin, isEditor]);
+
   // Sync tabOrder with pageSegments - ensure all segment IDs are in tabOrder
   useEffect(() => {
+    if (!user || !selectedPage) return;
+    
     const staticTabs = ['tiles', 'banner', 'solutions'];
     const segmentIds = pageSegments.map((_, index) => `segment-${index}`);
     
@@ -182,22 +190,20 @@ const AdminDashboard = () => {
       setTabOrder(newOrder);
       
       // Save to database
-      if (user) {
-        supabase
-          .from("page_content")
-          .upsert({
-            page_slug: "photography",
-            section_key: "tab_order",
-            content_type: "json",
-            content_value: JSON.stringify(newOrder),
-            updated_at: new Date().toISOString(),
-            updated_by: user.id
-          }, {
-            onConflict: 'page_slug,section_key'
-          });
-      }
+      supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "tab_order",
+          content_type: "json",
+          content_value: JSON.stringify(newOrder),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
     }
-  }, [pageSegments, user]);
+  }, [pageSegments, user, selectedPage]);
 
   const checkUserAccess = async () => {
     if (!user) return;
@@ -241,16 +247,15 @@ const AdminDashboard = () => {
 
       const pages = pageAccessData.map(p => p.page_slug);
       
-      // Check if editor has access to photography page (hardcoded for now)
-      if (!pages.includes("photography")) {
-        toast.error("You don't have access to this page");
-        navigate("/");
-        return;
-      }
-
       setIsEditor(true);
       setIsAdmin(false);
       setAllowedPages(pages);
+      
+      // Set first allowed page as selected
+      if (pages.length > 0) {
+        setSelectedPage(pages[0]);
+      }
+      
       setLoading(false);
       return;
     }
@@ -264,7 +269,7 @@ const AdminDashboard = () => {
     const { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", "photography");
+      .eq("page_slug", selectedPage);
 
     if (error) {
       toast.error("Error loading content");
@@ -1258,7 +1263,28 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-2">Edit Photography Page Content</p>
+            <div className="flex items-center gap-4 mt-4">
+              <Label htmlFor="page-selector" className="text-gray-600">Edit Page:</Label>
+              <Select value={selectedPage} onValueChange={setSelectedPage}>
+                <SelectTrigger id="page-selector" className="w-[300px]">
+                  <SelectValue placeholder="Select a page" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="photography" disabled={isEditor && !allowedPages.includes("photography")}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">Photo & Video</span>
+                      <span className="text-xs text-gray-500">Industries → Photo & Video</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="scanners-archiving" disabled={isEditor && !allowedPages.includes("scanners-archiving")}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">Scanners & Archiving</span>
+                      <span className="text-xs text-gray-500">Industries → Scanners & Archiving</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
