@@ -241,7 +241,7 @@ const Photography = () => {
       </section>
 
       {/* Better anchor point for smooth scrolling */}
-      <div id="applications-start" className="h-12 -mb-12"></div>
+      <div id="applications-start" className="scroll-mt-32"></div>
 
       {/* Applications Overview */}
       <section id="applications" className="py-8 bg-gray-50">
