@@ -1082,6 +1082,12 @@ const AdminDashboard = () => {
                 </TabsTrigger>
               );
             })}
+            <TabsTrigger 
+              value="footer"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Footer
+            </TabsTrigger>
           </TabsList>
 
           {/* Hero Section Tab */}
@@ -2003,6 +2009,179 @@ const AdminDashboard = () => {
                   >
                     <Save className="h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Footer Tab */}
+          <TabsContent value="footer">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Footer Section</CardTitle>
+                <CardDescription className="text-gray-300">Edit footer content for the Photography page</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Vision CTA Section */}
+                <div className="border-b border-gray-700 pb-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">1. Vision CTA Section</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="footer_cta_title" className="text-white">CTA Title</Label>
+                      <Input
+                        id="footer_cta_title"
+                        value={footerCtaTitle}
+                        onChange={(e) => setFooterCtaTitle(e.target.value)}
+                        placeholder="e.g., Charts that help you win"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_cta_description" className="text-white">CTA Description</Label>
+                      <Textarea
+                        id="footer_cta_description"
+                        value={footerCtaDescription}
+                        onChange={(e) => setFooterCtaDescription(e.target.value)}
+                        rows={3}
+                        placeholder="Describe your vision..."
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Section */}
+                <div className="border-b border-gray-700 pb-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">2. Contact Section</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="footer_contact_headline" className="text-white">Contact Headline (Line 1)</Label>
+                      <Input
+                        id="footer_contact_headline"
+                        value={footerContactHeadline}
+                        onChange={(e) => setFooterContactHeadline(e.target.value)}
+                        placeholder="e.g., Need help choosing"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_contact_subline" className="text-white">Contact Headline (Line 2)</Label>
+                      <Input
+                        id="footer_contact_subline"
+                        value={footerContactSubline}
+                        onChange={(e) => setFooterContactSubline(e.target.value)}
+                        placeholder="e.g., the right test chart?"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_contact_description" className="text-white">Contact Description</Label>
+                      <Textarea
+                        id="footer_contact_description"
+                        value={footerContactDescription}
+                        onChange={(e) => setFooterContactDescription(e.target.value)}
+                        rows={3}
+                        placeholder="Contact description..."
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_button_text" className="text-white">Button Text</Label>
+                      <Input
+                        id="footer_button_text"
+                        value={footerButtonText}
+                        onChange={(e) => setFooterButtonText(e.target.value)}
+                        placeholder="e.g., Get in Touch"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Team Quote Section */}
+                <div className="pb-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">3. Team Quote Section</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-white">Team Member Photo</Label>
+                      <div className="flex gap-2 items-start">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFooterTeamImageUpload}
+                          disabled={uploading}
+                          className="border-2 border-gray-600"
+                        />
+                      </div>
+                      {footerTeamImageUrl && (
+                        <div className="mt-2 relative inline-block">
+                          <img 
+                            src={footerTeamImageUrl} 
+                            alt="Team member" 
+                            className="w-32 h-32 object-cover rounded border"
+                          />
+                          <button
+                            onClick={() => setFooterTeamImageUrl('')}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_team_quote" className="text-white">Team Quote</Label>
+                      <Textarea
+                        id="footer_team_quote"
+                        value={footerTeamQuote}
+                        onChange={(e) => setFooterTeamQuote(e.target.value)}
+                        rows={3}
+                        placeholder="Team member's quote..."
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_team_name" className="text-white">Team Member Name</Label>
+                      <Input
+                        id="footer_team_name"
+                        value={footerTeamName}
+                        onChange={(e) => setFooterTeamName(e.target.value)}
+                        placeholder="e.g., Laura Neumann"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_team_title" className="text-white">Team Member Title</Label>
+                      <Input
+                        id="footer_team_title"
+                        value={footerTeamTitle}
+                        onChange={(e) => setFooterTeamTitle(e.target.value)}
+                        placeholder="e.g., Head of Optical Systems"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-gray-600">
+                  <Button
+                    onClick={handleSaveFooter}
+                    disabled={saving}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Saving..." : "Save Footer"}
                   </Button>
                 </div>
               </CardContent>
