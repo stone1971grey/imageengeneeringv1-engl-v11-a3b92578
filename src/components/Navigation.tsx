@@ -205,11 +205,11 @@ const Navigation = () => {
                          <span>{t.nav.scannersArchiving}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                       <Link to="/photography" className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
                          onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
                          <Camera className="h-5 w-5" />
                          <span>{t.nav.photoVideo}</span>
-                       </div>
+                       </Link>
                     </div>
                     
                      {/* Right Column: Applications */}
