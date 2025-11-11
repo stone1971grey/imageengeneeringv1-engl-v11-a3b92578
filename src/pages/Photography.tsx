@@ -302,6 +302,13 @@ const Photography = () => {
                    key={index}
                    className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
                  >
+                   {/* Debug Info */}
+                   <div className="bg-red-100 p-2 text-xs">
+                     <div>Tile {index + 1}</div>
+                     <div>ctaStyle: {app.ctaStyle || "undefined"}</div>
+                     <div>Color: {app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24"}</div>
+                   </div>
+                   
                    {/* Icon */}
                    {IconComponent && (
                      <div className="w-full flex justify-center pt-8">
