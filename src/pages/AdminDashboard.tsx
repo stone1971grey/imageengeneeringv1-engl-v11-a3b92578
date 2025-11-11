@@ -564,8 +564,18 @@ const AdminDashboard = () => {
       case 'tiles':
         return {
           title: 'New Tiles Section',
-          description: '',
-          items: []
+          description: 'Section description text',
+          items: [
+            {
+              title: 'New Application',
+              description: 'Add description here...',
+              ctaLink: '',
+              ctaStyle: 'standard',
+              ctaText: 'Learn More',
+              imageUrl: '',
+              icon: ''
+            }
+          ]
         };
       case 'banner':
         return {
