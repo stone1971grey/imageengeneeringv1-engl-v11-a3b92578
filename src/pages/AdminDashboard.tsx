@@ -1099,39 +1099,40 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleDeleteSegment = async (index: number) => {
+  const handleDeleteSegment = async (position: number) => {
     if (!user) return;
 
-    const deletedSegmentId = `segment-${index}`;
-    const updatedSegments = pageSegments.filter((_, i) => i !== index);
+    const segmentId = `segment-${position}`;
     
-    // Renumber all remaining segments to maintain consistency
+    // Remove the segment with this position
+    const updatedSegments = pageSegments
+      .filter(seg => seg.position !== position)
+      .map((seg, idx) => ({
+        ...seg,
+        position: idx  // Renumber positions sequentially
+      }));
+    
+    // Remove from tab order and renumber segment IDs
     const updatedTabOrder = tabOrder
-      .filter(id => id !== deletedSegmentId)
+      .filter(id => id !== segmentId)
       .map(id => {
         if (id.startsWith('segment-')) {
-          const segIndex = parseInt(id.split('-')[1]);
-          if (segIndex > index) {
-            return `segment-${segIndex - 1}`;
+          const pos = parseInt(id.split('-')[1]);
+          if (pos > position) {
+            return `segment-${pos - 1}`;
           }
         }
         return id;
       });
 
     try {
-      // Save segments with renumbered positions
-      const renumberedSegments = updatedSegments.map((seg, idx) => ({
-        ...seg,
-        position: idx
-      }));
-
       const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
           section_key: "page_segments",
           content_type: "json",
-          content_value: JSON.stringify(renumberedSegments),
+          content_value: JSON.stringify(updatedSegments),
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
@@ -1140,7 +1141,6 @@ const AdminDashboard = () => {
 
       if (segmentsError) throw segmentsError;
 
-      // Save tab order
       const { error: orderError } = await supabase
         .from("page_content")
         .upsert({
@@ -1156,7 +1156,7 @@ const AdminDashboard = () => {
 
       if (orderError) throw orderError;
 
-      setPageSegments(renumberedSegments);
+      setPageSegments(updatedSegments);
       setTabOrder(updatedTabOrder);
       
       // Switch to first available tab
@@ -2718,7 +2718,7 @@ const AdminDashboard = () => {
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDeleteSegment(index)}
+                              onClick={() => handleDeleteSegment(segment.position)}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
                               Delete
