@@ -437,7 +437,7 @@ const AdminDashboard = () => {
                     id="hero_image_position"
                     value={heroImagePosition}
                     onChange={(e) => setHeroImagePosition(e.target.value)}
-                    className="w-full pl-3 pr-10 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                   >
                     <option value="left">Left</option>
                     <option value="right">Right</option>
@@ -450,7 +450,7 @@ const AdminDashboard = () => {
                     id="hero_layout"
                     value={heroLayout}
                     onChange={(e) => setHeroLayout(e.target.value)}
-                    className="w-full pl-3 pr-10 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                   >
                     <option value="50-50">50:50 (Equal)</option>
                     <option value="2-3">2:3 (Text:Image)</option>
@@ -466,7 +466,7 @@ const AdminDashboard = () => {
                   id="hero_top_padding"
                   value={heroTopPadding}
                   onChange={(e) => setHeroTopPadding(e.target.value)}
-                  className="w-full pl-3 pr-10 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                 >
                   <option value="small">Small (PT-16)</option>
                   <option value="medium">Medium (PT-24)</option>
@@ -534,7 +534,7 @@ const AdminDashboard = () => {
                   id="hero_cta_style"
                   value={heroCtaStyle}
                   onChange={(e) => setHeroCtaStyle(e.target.value)}
-                  className="w-full pl-3 pr-10 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                 >
                   <option value="standard">Standard (Yellow with Black Text)</option>
                   <option value="technical">Technical (Dark Gray with White Text)</option>
