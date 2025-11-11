@@ -304,7 +304,7 @@ const AdminDashboard = () => {
               <div>
                 <Label htmlFor="hero_image">Hero Image</Label>
                 <p className="text-sm text-gray-500 mb-2">
-                  Upload a custom hero image (replaces the interactive hotspot image)
+                  {heroImageUrl ? "Current hero image - click 'Replace Image' to upload a new one" : "Upload a custom hero image (replaces the interactive hotspot image)"}
                 </p>
                 {heroImageUrl && (
                   <div className="mb-4">
@@ -313,15 +313,28 @@ const AdminDashboard = () => {
                       alt="Current hero" 
                       className="w-full max-w-md rounded-lg border"
                     />
-                    <p className="text-sm text-gray-500 mt-2">Current hero image</p>
                   </div>
                 )}
+                
+                {heroImageUrl ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('hero_image')?.click()}
+                    disabled={uploading}
+                    className="mb-2"
+                  >
+                    {uploading ? "Uploading..." : "Replace Image"}
+                  </Button>
+                ) : null}
+                
                 <Input
                   id="hero_image"
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                   disabled={uploading}
+                  className={heroImageUrl ? "hidden" : ""}
                 />
                 {uploading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
               </div>
