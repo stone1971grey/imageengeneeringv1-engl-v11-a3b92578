@@ -2712,8 +2712,6 @@ const AdminDashboard = () => {
           ))}
         </Tabs>
       </div>
-
-      <Footer />
     </div>
   );
 };
