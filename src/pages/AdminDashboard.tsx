@@ -57,6 +57,16 @@ const AdminDashboard = () => {
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("hero");
+  const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
+  const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
+  const [footerContactHeadline, setFooterContactHeadline] = useState<string>("");
+  const [footerContactSubline, setFooterContactSubline] = useState<string>("");
+  const [footerContactDescription, setFooterContactDescription] = useState<string>("");
+  const [footerTeamImageUrl, setFooterTeamImageUrl] = useState<string>("");
+  const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
+  const [footerTeamName, setFooterTeamName] = useState<string>("");
+  const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
+  const [footerButtonText, setFooterButtonText] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -166,6 +176,26 @@ const AdminDashboard = () => {
         } catch {
           setPageSegments([]);
         }
+      } else if (item.section_key === "footer_cta_title") {
+        setFooterCtaTitle(item.content_value);
+      } else if (item.section_key === "footer_cta_description") {
+        setFooterCtaDescription(item.content_value);
+      } else if (item.section_key === "footer_contact_headline") {
+        setFooterContactHeadline(item.content_value);
+      } else if (item.section_key === "footer_contact_subline") {
+        setFooterContactSubline(item.content_value);
+      } else if (item.section_key === "footer_contact_description") {
+        setFooterContactDescription(item.content_value);
+      } else if (item.section_key === "footer_team_image_url") {
+        setFooterTeamImageUrl(item.content_value);
+      } else if (item.section_key === "footer_team_quote") {
+        setFooterTeamQuote(item.content_value);
+      } else if (item.section_key === "footer_team_name") {
+        setFooterTeamName(item.content_value);
+      } else if (item.section_key === "footer_team_title") {
+        setFooterTeamTitle(item.content_value);
+      } else if (item.section_key === "footer_button_text") {
+        setFooterButtonText(item.content_value);
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -574,6 +604,67 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleFooterTeamImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    
+    const file = e.target.files[0];
+    
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `footer-team-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      setFooterTeamImageUrl(publicUrl);
+      
+      // Save to database
+      const { error: dbError } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "footer_team_image_url",
+          content_type: "image_url",
+          content_value: publicUrl,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (dbError) throw dbError;
+
+      toast.success("Team image uploaded successfully!");
+    } catch (error: any) {
+      toast.error("Error uploading image: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleAddBannerImage = () => {
     const newImage = {
       url: "",
@@ -808,6 +899,47 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSaveFooter = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+
+    try {
+      const footerFields = {
+        'footer_cta_title': footerCtaTitle,
+        'footer_cta_description': footerCtaDescription,
+        'footer_contact_headline': footerContactHeadline,
+        'footer_contact_subline': footerContactSubline,
+        'footer_contact_description': footerContactDescription,
+        'footer_team_quote': footerTeamQuote,
+        'footer_team_name': footerTeamName,
+        'footer_team_title': footerTeamTitle,
+        'footer_button_text': footerButtonText
+      };
+
+      for (const [key, value] of Object.entries(footerFields)) {
+        await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: "photography",
+            section_key: key,
+            content_type: "text",
+            content_value: value,
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key'
+          });
+      }
+
+      toast.success("Footer section saved successfully!");
+    } catch (error: any) {
+      toast.error("Error saving footer section: " + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -907,7 +1039,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full mb-6 h-auto p-2 bg-gray-200`} style={{ gridTemplateColumns: `repeat(${4 + pageSegments.length}, minmax(0, 1fr))` }}>
+          <TabsList className={`grid w-full mb-6 h-auto p-2 bg-gray-200`} style={{ gridTemplateColumns: `repeat(${5 + pageSegments.length}, minmax(0, 1fr))` }}>
             <TabsTrigger 
               value="hero" 
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
@@ -931,6 +1063,12 @@ const AdminDashboard = () => {
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
               Image & Text
+            </TabsTrigger>
+            <TabsTrigger 
+              value="footer"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Footer
             </TabsTrigger>
             {pageSegments.map((segment, index) => (
               <TabsTrigger 
@@ -1865,6 +2003,179 @@ const AdminDashboard = () => {
                   >
                     <Save className="h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Footer Tab */}
+          <TabsContent value="footer">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Footer Section</CardTitle>
+                <CardDescription className="text-gray-300">Edit footer content for the Photography page</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Vision CTA Section */}
+                <div className="border-b border-gray-700 pb-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">1. Vision CTA Section</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="footer_cta_title" className="text-white">CTA Title</Label>
+                      <Input
+                        id="footer_cta_title"
+                        value={footerCtaTitle}
+                        onChange={(e) => setFooterCtaTitle(e.target.value)}
+                        placeholder="e.g., Charts that help you win"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_cta_description" className="text-white">CTA Description</Label>
+                      <Textarea
+                        id="footer_cta_description"
+                        value={footerCtaDescription}
+                        onChange={(e) => setFooterCtaDescription(e.target.value)}
+                        rows={3}
+                        placeholder="Describe your vision..."
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Section */}
+                <div className="border-b border-gray-700 pb-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">2. Contact Section</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="footer_contact_headline" className="text-white">Contact Headline (Line 1)</Label>
+                      <Input
+                        id="footer_contact_headline"
+                        value={footerContactHeadline}
+                        onChange={(e) => setFooterContactHeadline(e.target.value)}
+                        placeholder="e.g., Need help choosing"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_contact_subline" className="text-white">Contact Headline (Line 2)</Label>
+                      <Input
+                        id="footer_contact_subline"
+                        value={footerContactSubline}
+                        onChange={(e) => setFooterContactSubline(e.target.value)}
+                        placeholder="e.g., the right test chart?"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_contact_description" className="text-white">Contact Description</Label>
+                      <Textarea
+                        id="footer_contact_description"
+                        value={footerContactDescription}
+                        onChange={(e) => setFooterContactDescription(e.target.value)}
+                        rows={3}
+                        placeholder="Contact description..."
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_button_text" className="text-white">Button Text</Label>
+                      <Input
+                        id="footer_button_text"
+                        value={footerButtonText}
+                        onChange={(e) => setFooterButtonText(e.target.value)}
+                        placeholder="e.g., Get in Touch"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Team Quote Section */}
+                <div className="pb-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">3. Team Quote Section</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-white">Team Member Photo</Label>
+                      <div className="flex gap-2 items-start">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFooterTeamImageUpload}
+                          disabled={uploading}
+                          className="border-2 border-gray-600"
+                        />
+                      </div>
+                      {footerTeamImageUrl && (
+                        <div className="mt-2 relative inline-block">
+                          <img 
+                            src={footerTeamImageUrl} 
+                            alt="Team member" 
+                            className="w-32 h-32 object-cover rounded border"
+                          />
+                          <button
+                            onClick={() => setFooterTeamImageUrl('')}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_team_quote" className="text-white">Team Quote</Label>
+                      <Textarea
+                        id="footer_team_quote"
+                        value={footerTeamQuote}
+                        onChange={(e) => setFooterTeamQuote(e.target.value)}
+                        rows={3}
+                        placeholder="Team member's quote..."
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_team_name" className="text-white">Team Member Name</Label>
+                      <Input
+                        id="footer_team_name"
+                        value={footerTeamName}
+                        onChange={(e) => setFooterTeamName(e.target.value)}
+                        placeholder="e.g., Laura Neumann"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="footer_team_title" className="text-white">Team Member Title</Label>
+                      <Input
+                        id="footer_team_title"
+                        value={footerTeamTitle}
+                        onChange={(e) => setFooterTeamTitle(e.target.value)}
+                        placeholder="e.g., Head of Optical Systems"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-gray-600">
+                  <Button
+                    onClick={handleSaveFooter}
+                    disabled={saving}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Saving..." : "Save Footer"}
                   </Button>
                 </div>
               </CardContent>
