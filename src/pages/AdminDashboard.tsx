@@ -879,19 +879,22 @@ const AdminDashboard = () => {
                           
                           <div>
                             <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
-                            <select
-                              id={`app_cta_style_${index}`}
+                            <Select
                               value={app.ctaStyle || "standard"}
-                              onChange={(e) => {
+                              onValueChange={(value) => {
                                 const newApps = [...applications];
-                                newApps[index].ctaStyle = e.target.value;
+                                newApps[index].ctaStyle = value;
                                 setApplications(newApps);
                               }}
-                              className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                             >
-                              <option value="standard">Standard (Yellow with Black Text)</option>
-                              <option value="technical">Technical (Dark Gray with White Text)</option>
-                            </select>
+                              <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                                <SelectValue placeholder="Select button style" className="text-black" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
+                                <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </div>
                         </div>
                       </div>
