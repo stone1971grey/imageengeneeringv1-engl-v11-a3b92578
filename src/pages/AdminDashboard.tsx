@@ -651,8 +651,13 @@ const AdminDashboard = () => {
               <div className="space-y-4 mt-6">
                 <h3 className="text-lg font-semibold text-white">Application Items</h3>
                 {applications.map((app, index) => (
-                  <Card key={index} className="border-2 border-gray-600 bg-gray-700">
+                  <Card key={index} className={`border-2 border-gray-600 ${index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-600'}`}>
                     <CardContent className="pt-6 space-y-3">
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-bold rounded-md">
+                          Tile {index + 1}
+                        </div>
+                      </div>
                       {/* Image Upload */}
                       <div>
                         <Label htmlFor={`app_image_${index}`} className="text-white">Tile Image (Optional)</Label>
