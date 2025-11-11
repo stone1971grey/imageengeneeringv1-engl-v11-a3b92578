@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import logoIE from "@/assets/logo-ie-black.png";
+import logoIE from "@/assets/logo-ie-white.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -118,7 +118,7 @@ const Auth = () => {
             <img 
               src={logoIE} 
               alt="Image Engineering" 
-              className="h-12 w-auto"
+              className="h-20 w-auto"
             />
           </div>
           <CardTitle className="text-2xl text-center">
