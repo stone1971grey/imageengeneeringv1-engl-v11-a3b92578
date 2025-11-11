@@ -233,6 +233,36 @@ export type Database = {
         }
         Relationships: []
       }
+      segment_registry: {
+        Row: {
+          created_at: string | null
+          id: number
+          is_static: boolean | null
+          page_slug: string
+          segment_id: number
+          segment_key: string
+          segment_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          is_static?: boolean | null
+          page_slug: string
+          segment_id: number
+          segment_key: string
+          segment_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          is_static?: boolean | null
+          page_slug?: string
+          segment_id?: number
+          segment_key?: string
+          segment_type?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
