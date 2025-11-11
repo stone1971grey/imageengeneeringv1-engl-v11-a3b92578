@@ -1105,11 +1105,10 @@ const AdminDashboard = () => {
     const deletedSegmentId = `segment-${index}`;
     const updatedSegments = pageSegments.filter((_, i) => i !== index);
     
-    // Remove from tab order and adjust indices for remaining segments
+    // Renumber all remaining segments to maintain consistency
     const updatedTabOrder = tabOrder
       .filter(id => id !== deletedSegmentId)
       .map(id => {
-        // Adjust segment indices if they come after the deleted one
         if (id.startsWith('segment-')) {
           const segIndex = parseInt(id.split('-')[1]);
           if (segIndex > index) {
@@ -1120,14 +1119,19 @@ const AdminDashboard = () => {
       });
 
     try {
-      // Save segments
+      // Save segments with renumbered positions
+      const renumberedSegments = updatedSegments.map((seg, idx) => ({
+        ...seg,
+        position: idx
+      }));
+
       const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
           section_key: "page_segments",
           content_type: "json",
-          content_value: JSON.stringify(updatedSegments),
+          content_value: JSON.stringify(renumberedSegments),
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
@@ -1152,8 +1156,13 @@ const AdminDashboard = () => {
 
       if (orderError) throw orderError;
 
-      setPageSegments(updatedSegments);
+      setPageSegments(renumberedSegments);
       setTabOrder(updatedTabOrder);
+      
+      // Switch to first available tab
+      const firstTab = updatedTabOrder[0] || 'tiles';
+      setActiveTab(firstTab);
+      
       toast.success("Segment deleted successfully!");
     } catch (error: any) {
       toast.error("Error deleting segment: " + error.message);
