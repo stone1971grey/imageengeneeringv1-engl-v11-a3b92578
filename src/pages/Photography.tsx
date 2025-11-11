@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain } from "lucide-react";
+import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain, FileText, Download, BarChart3, Smartphone, Heart, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
@@ -29,6 +29,30 @@ import solutionsGeometric from "@/assets/solutions-geometric-calibration.jpg";
 import solutionsClimate from "@/assets/solutions-climate-control.png";
 import photographyHeroDefault from "@/assets/photography-hero-default.jpg";
 import { supabase } from "@/integrations/supabase/client";
+
+const iconMap: Record<string, any> = {
+  FileText,
+  Download,
+  BarChart3,
+  Zap,
+  Shield,
+  Eye,
+  Car,
+  Smartphone,
+  Heart,
+  CheckCircle,
+  Lightbulb,
+  Monitor,
+};
+
+interface Application {
+  title: string;
+  description: string;
+  ctaLink: string;
+  ctaStyle: string;
+  imageUrl: string;
+  icon: string;
+}
 
 // Photography & Video landing page component
 const Photography = () => {
@@ -269,15 +293,26 @@ const Photography = () => {
 
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-            {applications.map((app, index) => {
+            {applications.map((app: Application, index) => {
+              const IconComponent = app.icon ? iconMap[app.icon] : null;
+              
               return (
                  <div 
                    key={index}
                    className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden"
                  >
+                   {/* Icon */}
+                   {IconComponent && (
+                     <div className="w-full flex justify-center pt-8">
+                       <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center">
+                         <IconComponent className="text-[#f9dc24]" size={32} />
+                       </div>
+                     </div>
+                   )}
+                   
                    {/* Tile Image */}
                    {app.imageUrl && (
-                     <div className="w-full h-[200px] overflow-hidden">
+                     <div className="w-full h-[200px] overflow-hidden mt-4">
                        <img 
                          src={app.imageUrl} 
                          alt={app.title} 
@@ -286,7 +321,7 @@ const Photography = () => {
                      </div>
                    )}
                    
-                   <div className="p-8 flex flex-col items-center text-center flex-1">
+                   <div className={`p-8 flex flex-col items-center text-center flex-1 ${!IconComponent && !app.imageUrl ? 'pt-8' : ''}`}>
                      {/* Title */}
                      <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
                        {app.title}

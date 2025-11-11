@@ -11,6 +11,13 @@ import { User, Session } from "@supabase/supabase-js";
 import { LogOut, Save } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ContentItem {
   id: string;
@@ -681,6 +688,41 @@ const AdminDashboard = () => {
                           disabled={uploading}
                           className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
                         />
+                      </div>
+                      
+                      {/* Icon Selection */}
+                      <div>
+                        <Label htmlFor={`app_icon_${index}`} className="text-white">Icon (Optional)</Label>
+                        <Select
+                          value={app.icon || "none"}
+                          onValueChange={(value) => {
+                            const newApps = [...applications];
+                            newApps[index].icon = value === "none" ? "" : value;
+                            setApplications(newApps);
+                          }}
+                        >
+                          <SelectTrigger className="border-2 border-gray-600 bg-white">
+                            <SelectValue placeholder="Select an icon" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">No Icon</SelectItem>
+                            <SelectItem value="FileText">Document (FileText)</SelectItem>
+                            <SelectItem value="Download">Download</SelectItem>
+                            <SelectItem value="BarChart3">Bar Chart</SelectItem>
+                            <SelectItem value="Zap">Lightning (Zap)</SelectItem>
+                            <SelectItem value="Shield">Shield</SelectItem>
+                            <SelectItem value="Eye">Eye</SelectItem>
+                            <SelectItem value="Car">Car</SelectItem>
+                            <SelectItem value="Smartphone">Smartphone</SelectItem>
+                            <SelectItem value="Heart">Heart</SelectItem>
+                            <SelectItem value="CheckCircle">Check Circle</SelectItem>
+                            <SelectItem value="Lightbulb">Lightbulb</SelectItem>
+                            <SelectItem value="Monitor">Monitor</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-sm text-white mt-1">
+                          Icon appears in a yellow circle above the title
+                        </p>
                       </div>
                       
                       <div>
