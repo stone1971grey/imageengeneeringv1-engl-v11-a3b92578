@@ -286,12 +286,47 @@ const Photography = () => {
                    </p>
                   
                    {/* CTA Button */}
-                   <Button 
-                     className="w-full text-black hover:opacity-90"
-                     style={{ backgroundColor: '#f9dc24' }}
-                   >
-                     Learn More
-                   </Button>
+                   {app.ctaLink ? (
+                     app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
+                       <a 
+                         href={app.ctaLink}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="w-full"
+                       >
+                         <Button 
+                           className={`w-full border-0 hover:opacity-90 ${
+                             app.ctaStyle === "technical" ? "text-white" : "text-black"
+                           }`}
+                           style={{ 
+                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                           }}
+                         >
+                           Learn More
+                         </Button>
+                       </a>
+                     ) : (
+                       <Link to={app.ctaLink} className="w-full">
+                         <Button 
+                           className={`w-full border-0 hover:opacity-90 ${
+                             app.ctaStyle === "technical" ? "text-white" : "text-black"
+                           }`}
+                           style={{ 
+                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                           }}
+                         >
+                           Learn More
+                         </Button>
+                       </Link>
+                     )
+                   ) : (
+                     <Button 
+                       className="w-full text-black hover:opacity-90"
+                       style={{ backgroundColor: '#f9dc24' }}
+                     >
+                       Learn More
+                     </Button>
+                   )}
                 </div>
               );
             })}

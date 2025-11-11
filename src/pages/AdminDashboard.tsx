@@ -557,8 +557,15 @@ const AdminDashboard = () => {
           {/* Applications Section */}
           <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="text-white">Main Applications Section</CardTitle>
-              <CardDescription className="text-gray-300">Edit the applications section content</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-white">Tiles Template</CardTitle>
+                  <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
+                </div>
+                <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                  Tiles Template
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -613,6 +620,48 @@ const AdminDashboard = () => {
                           rows={3}
                           className="border-2 border-gray-600"
                         />
+                      </div>
+                      
+                      {/* Button Settings */}
+                      <div className="pt-3 border-t border-gray-600">
+                        <h4 className="text-sm font-semibold text-white mb-3">Button Settings</h4>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <Label htmlFor={`app_cta_link_${index}`} className="text-white">Button Link</Label>
+                            <Input
+                              id={`app_cta_link_${index}`}
+                              value={app.ctaLink || ""}
+                              onChange={(e) => {
+                                const newApps = [...applications];
+                                newApps[index].ctaLink = e.target.value;
+                                setApplications(newApps);
+                              }}
+                              placeholder="/page-url or https://example.com"
+                              className="border-2 border-gray-600"
+                            />
+                            <p className="text-sm text-white mt-1">
+                              Use '/path' for internal pages or 'https://...' for external URLs
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
+                            <select
+                              id={`app_cta_style_${index}`}
+                              value={app.ctaStyle || "standard"}
+                              onChange={(e) => {
+                                const newApps = [...applications];
+                                newApps[index].ctaStyle = e.target.value;
+                                setApplications(newApps);
+                              }}
+                              className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                            >
+                              <option value="standard">Standard (Yellow with Black Text)</option>
+                              <option value="technical">Technical (Dark Gray with White Text)</option>
+                            </select>
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
