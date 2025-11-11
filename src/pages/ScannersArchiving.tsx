@@ -81,16 +81,6 @@ const ScannersArchiving = () => {
     setLoading(false);
   };
 
-  const getPaddingClass = () => {
-    switch (heroTopPadding) {
-      case 'small': return 'pt-16';
-      case 'medium': return 'pt-24';
-      case 'large': return 'pt-32';
-      case 'extra-large': return 'pt-40';
-      default: return 'pt-24';
-    }
-  };
-
   const renderSegment = (segmentId: string) => {
     // Dynamic segments (tiles, banner, image-text)
     if (segmentId.startsWith('segment-')) {
@@ -287,64 +277,111 @@ const ScannersArchiving = () => {
         icon="calendar"
       />
 
-      {/* Hero Section */}
-      {heroImageUrl && (
-        <section className="relative min-h-screen overflow-hidden">
-          <div className="absolute inset-0 animate-fade-in">
-            <img 
-              src={heroImageUrl} 
-              alt="Scanners & Archiving Hero" 
-              className="w-full h-full object-cover animate-ken-burns"
-              style={{ objectPosition: heroImagePosition }}
-            />
-            <div className="absolute inset-0 bg-black/40"></div>
-          </div>
-
-          <div className="h-16"></div>
-          
-          <div className={`relative z-10 container mx-auto px-6 py-24 lg:py-32 ${getPaddingClass()}`}>
-            <div className="text-center max-w-5xl mx-auto -mt-[50px]">
-              <div className="mb-8">
-                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
+      {/* Hero Section - Product Hero Template */}
+      <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+        <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
+          heroTopPadding === "small" ? "pt-16 lg:pt-16" :
+          heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
+          heroTopPadding === "large" ? "pt-32 lg:pt-32" :
+          heroTopPadding === "xlarge" ? "pt-40 lg:pt-40" :
+          "pt-32 lg:pt-32"
+        }`}>
+          <div className={`grid gap-16 items-center ${
+            heroLayout === "50-50" ? "lg:grid-cols-2" : 
+            heroLayout === "2-3" ? "lg:grid-cols-5" :
+            heroLayout === "1-2" ? "lg:grid-cols-3" :
+            "lg:grid-cols-5"
+          }`}>
+            
+            {/* Text Content */}
+            <div className={`space-y-8 ${
+              heroLayout === "50-50" ? "" :
+              heroLayout === "2-3" ? "lg:col-span-2" :
+              heroLayout === "1-2" ? "" :
+              "lg:col-span-2"
+            } ${heroImagePosition === "left" ? "order-2" : "order-1"}`}>
+              <div>
+                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
                   {content.hero_title || "Scanners & Archiving"}
+                  {content.hero_subtitle && (
+                    <>
+                      <br />
+                      <span className="font-medium text-black">{content.hero_subtitle}</span>
+                    </>
+                  )}
                 </h1>
                 
-                <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-3xl mx-auto">
-                  {content.hero_subtitle || "Advanced scanning solutions for digital archiving"}
+                <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
+                  {content.hero_description || "Advanced scanning solutions for digital archiving"}
                 </p>
               </div>
               
-              {heroCtaLink && content.hero_cta_text && (
+              {content.hero_cta && (
                 <div className="pt-4">
-                  <Button 
-                    size="lg"
-                    className="px-12 py-4"
-                    style={{
-                      backgroundColor: heroCtaStyle === 'technical' ? '#1f2937' : '#f9dc24',
-                      color: heroCtaStyle === 'technical' ? 'white' : 'black'
-                    }}
-                    onClick={() => {
-                      if (heroCtaLink.startsWith('http')) {
-                        window.open(heroCtaLink, '_blank');
-                      } else {
-                        window.location.href = heroCtaLink;
-                      }
-                    }}
-                  >
-                    {content.hero_cta_text}
-                  </Button>
+                  {heroCtaLink.startsWith('http://') || heroCtaLink.startsWith('https://') ? (
+                    <a 
+                      href={heroCtaLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button 
+                        size="lg"
+                        className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                          heroCtaStyle === "technical" ? "text-white" : "text-black"
+                        }`}
+                        style={{ 
+                          backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                        }}
+                      >
+                        {content.hero_cta}
+                      </Button>
+                    </a>
+                  ) : (
+                    <Button 
+                      size="lg"
+                      className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                        heroCtaStyle === "technical" ? "text-white" : "text-black"
+                      }`}
+                      style={{ 
+                        backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                      }}
+                      onClick={() => {
+                        if (heroCtaLink) {
+                          window.location.href = heroCtaLink;
+                        }
+                      }}
+                    >
+                      {content.hero_cta}
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <div className="w-6 h-10 border-2 border-white/40 rounded-full flex justify-center">
-              <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
+            {/* Image Content */}
+            <div className={`relative px-6 ${
+              heroLayout === "50-50" ? "" :
+              heroLayout === "2-3" ? "lg:col-span-3" :
+              heroLayout === "1-2" ? "lg:col-span-2" :
+              "lg:col-span-3"
+            } ${heroImagePosition === "left" ? "order-1" : "order-2"}`}>
+              <div className="relative overflow-hidden rounded-lg shadow-soft">
+                {heroImageUrl ? (
+                  <img 
+                    src={heroImageUrl} 
+                    alt="Scanners & Archiving" 
+                    className="w-full h-[500px] object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-[500px] bg-gray-200 flex items-center justify-center">
+                    <p className="text-gray-400">Hero Image</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Dynamic Segments */}
       {tabOrder.map((segmentId) => renderSegment(segmentId))}
