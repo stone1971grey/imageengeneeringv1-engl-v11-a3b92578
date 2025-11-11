@@ -33,6 +33,7 @@ const AdminDashboard = () => {
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
+  const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -111,6 +112,8 @@ const AdminDashboard = () => {
         setHeroLayout(item.content_value || "2-5");
       } else if (item.section_key === "hero_top_padding") {
         setHeroTopPadding(item.content_value || "medium");
+      } else if (item.section_key === "hero_cta_link") {
+        setHeroCtaLink(item.content_value || "#applications-start");
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -252,6 +255,20 @@ const AdminDashboard = () => {
           section_key: "hero_top_padding",
           content_type: "text",
           content_value: heroTopPadding,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      // Update hero CTA link
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "hero_cta_link",
+          content_type: "text",
+          content_value: heroCtaLink,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
@@ -545,6 +562,17 @@ const AdminDashboard = () => {
                   value={content.hero_cta || ""}
                   onChange={(e) => setContent({ ...content, hero_cta: e.target.value })}
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="hero_cta_link">CTA Button Link</Label>
+                <Input
+                  id="hero_cta_link"
+                  value={heroCtaLink}
+                  onChange={(e) => setHeroCtaLink(e.target.value)}
+                  placeholder="#applications-start or /page-url"
+                />
+                <p className="text-sm text-gray-500 mt-1">Use '#section-id' for same page links or '/path' for other pages</p>
               </div>
 
               <div className="flex justify-end pt-4 border-t">

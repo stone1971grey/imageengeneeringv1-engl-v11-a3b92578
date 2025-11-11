@@ -40,6 +40,7 @@ const Photography = () => {
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
+  const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
 
   useEffect(() => {
     loadContent();
@@ -66,6 +67,8 @@ const Photography = () => {
           setHeroLayout(item.content_value || "2-5");
         } else if (item.section_key === "hero_top_padding") {
           setHeroTopPadding(item.content_value || "medium");
+        } else if (item.section_key === "hero_cta_link") {
+          setHeroCtaLink(item.content_value || "#applications-start");
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -180,7 +183,7 @@ const Photography = () => {
               </div>
               
               <div className="pt-4">
-                <Link to="#applications-start">
+                <Link to={heroCtaLink}>
                   <Button 
                     size="lg"
                     className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
