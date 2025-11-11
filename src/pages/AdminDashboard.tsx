@@ -381,8 +381,15 @@ const AdminDashboard = () => {
           {/* Hero Section */}
           <Card>
             <CardHeader>
-              <CardTitle>Hero Section</CardTitle>
-              <CardDescription>Edit the main hero section content</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Hero Section</CardTitle>
+                  <CardDescription>Edit the main hero section content</CardDescription>
+                </div>
+                <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                  Produkt-Hero Template
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Hero Image Upload */}
