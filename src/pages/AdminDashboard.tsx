@@ -379,12 +379,12 @@ const AdminDashboard = () => {
 
         <div className="space-y-6">
           {/* Hero Section */}
-          <Card>
+          <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Hero Section</CardTitle>
-                  <CardDescription>Edit the main hero section content</CardDescription>
+                  <CardTitle className="text-white">Hero Section</CardTitle>
+                  <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
                 </div>
                 <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
                   Produkt-Hero Template
@@ -394,8 +394,8 @@ const AdminDashboard = () => {
             <CardContent className="space-y-4">
               {/* Hero Image Upload */}
               <div>
-                <Label htmlFor="hero_image">Hero Image</Label>
-                <p className="text-sm text-gray-500 mb-2">
+                <Label htmlFor="hero_image" className="text-white">Hero Image</Label>
+                <p className="text-sm text-white mb-2">
                   {heroImageUrl ? "Current hero image - click 'Replace Image' to upload a new one" : "Upload a custom hero image (replaces the interactive hotspot image)"}
                 </p>
                 {heroImageUrl && (
@@ -403,7 +403,7 @@ const AdminDashboard = () => {
                     <img 
                       src={heroImageUrl} 
                       alt="Current hero" 
-                      className="w-full max-w-md rounded-lg border"
+                      className="w-full max-w-md rounded-lg border-2 border-gray-600"
                     />
                   </div>
                 )}
@@ -411,10 +411,9 @@ const AdminDashboard = () => {
                 {heroImageUrl ? (
                   <Button
                     type="button"
-                    variant="outline"
                     onClick={() => document.getElementById('hero_image')?.click()}
                     disabled={uploading}
-                    className="mb-2"
+                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                   >
                     {uploading ? "Uploading..." : "Replace Image"}
                   </Button>
@@ -426,19 +425,19 @@ const AdminDashboard = () => {
                   accept="image/*"
                   onChange={handleImageUpload}
                   disabled={uploading}
-                  className={heroImageUrl ? "hidden" : ""}
+                  className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
                 />
-                {uploading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
+                {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="hero_image_position">Image Position</Label>
+                  <Label htmlFor="hero_image_position" className="text-white">Image Position</Label>
                   <select
                     id="hero_image_position"
                     value={heroImagePosition}
                     onChange={(e) => setHeroImagePosition(e.target.value)}
-                    className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                    className="w-full px-3 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                   >
                     <option value="left">Left</option>
                     <option value="right">Right</option>
@@ -446,12 +445,12 @@ const AdminDashboard = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="hero_layout">Layout Ratio</Label>
+                  <Label htmlFor="hero_layout" className="text-white">Layout Ratio</Label>
                   <select
                     id="hero_layout"
                     value={heroLayout}
                     onChange={(e) => setHeroLayout(e.target.value)}
-                    className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                    className="w-full px-3 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                   >
                     <option value="50-50">50:50 (Equal)</option>
                     <option value="2-3">2:3 (Text:Image)</option>
@@ -462,75 +461,80 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <Label htmlFor="hero_top_padding">Top Spacing</Label>
+                <Label htmlFor="hero_top_padding" className="text-white">Top Spacing</Label>
                 <select
                   id="hero_top_padding"
                   value={heroTopPadding}
                   onChange={(e) => setHeroTopPadding(e.target.value)}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  className="w-full px-3 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                 >
                   <option value="small">Small (PT-16)</option>
                   <option value="medium">Medium (PT-24)</option>
                   <option value="large">Large (PT-32)</option>
                   <option value="xlarge">Extra Large (PT-40)</option>
                 </select>
-                <p className="text-sm text-gray-500 mt-1">Controls the spacing from the top of the hero section</p>
+                <p className="text-sm text-white mt-1">Controls the spacing from the top of the hero section</p>
               </div>
 
               <div>
-                <Label htmlFor="hero_title">Title</Label>
+                <Label htmlFor="hero_title" className="text-white">Title</Label>
                 <Input
                   id="hero_title"
                   value={content.hero_title || ""}
                   onChange={(e) => setContent({ ...content, hero_title: e.target.value })}
+                  className="border-2 border-gray-600"
                 />
               </div>
               <div>
-                <Label htmlFor="hero_subtitle">Subtitle</Label>
+                <Label htmlFor="hero_subtitle" className="text-white">Subtitle</Label>
                 <Input
                   id="hero_subtitle"
                   value={content.hero_subtitle || ""}
                   onChange={(e) => setContent({ ...content, hero_subtitle: e.target.value })}
+                  className="border-2 border-gray-600"
                 />
               </div>
               <div>
-                <Label htmlFor="hero_description">Description</Label>
+                <Label htmlFor="hero_description" className="text-white">Description</Label>
                 <Textarea
                   id="hero_description"
                   value={content.hero_description || ""}
                   onChange={(e) => setContent({ ...content, hero_description: e.target.value })}
                   rows={3}
+                  className="border-2 border-gray-600"
                 />
               </div>
               <div>
-                <Label htmlFor="hero_cta">CTA Button Text</Label>
+                <Label htmlFor="hero_cta" className="text-white">CTA Button Text</Label>
                 <Input
                   id="hero_cta"
                   value={content.hero_cta || ""}
                   onChange={(e) => setContent({ ...content, hero_cta: e.target.value })}
+                  className="border-2 border-gray-600"
                 />
               </div>
 
               <div>
-                <Label htmlFor="hero_cta_link">CTA Button Link</Label>
+                <Label htmlFor="hero_cta_link" className="text-white">CTA Button Link</Label>
                 <Input
                   id="hero_cta_link"
                   value={heroCtaLink}
                   onChange={(e) => setHeroCtaLink(e.target.value)}
                   placeholder="#applications-start, /page-url, or https://example.com"
+                  className="border-2 border-gray-600"
                 />
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-white mt-1">
                   Use '#section-id' for same page links, '/path' for internal pages, or 'https://...' for external URLs (opens in new tab)
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="hero_cta_style">CTA Button Style</Label>
+                <Label htmlFor="hero_cta_style" className="text-white">CTA Button Style</Label>
                 <select
                   id="hero_cta_style"
                   value={heroCtaStyle}
                   onChange={(e) => setHeroCtaStyle(e.target.value)}
-                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  className="w-full px-3 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                 >
                   <option value="standard">Standard (Yellow with Black Text)</option>
                   <option value="technical">Technical (Dark Gray with White Text)</option>
@@ -551,38 +555,40 @@ const AdminDashboard = () => {
           </Card>
 
           {/* Applications Section */}
-          <Card>
+          <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle>Main Applications Section</CardTitle>
-              <CardDescription>Edit the applications section content</CardDescription>
+              <CardTitle className="text-white">Main Applications Section</CardTitle>
+              <CardDescription className="text-gray-300">Edit the applications section content</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="applications_title">Section Title</Label>
+                <Label htmlFor="applications_title" className="text-white">Section Title</Label>
                 <Input
                   id="applications_title"
                   value={content.applications_title || ""}
                   onChange={(e) => setContent({ ...content, applications_title: e.target.value })}
+                  className="border-2 border-gray-600"
                 />
               </div>
               <div>
-                <Label htmlFor="applications_description">Section Description</Label>
+                <Label htmlFor="applications_description" className="text-white">Section Description</Label>
                 <Textarea
                   id="applications_description"
                   value={content.applications_description || ""}
                   onChange={(e) => setContent({ ...content, applications_description: e.target.value })}
                   rows={3}
+                  className="border-2 border-gray-600"
                 />
               </div>
 
               {/* Application Items */}
               <div className="space-y-4 mt-6">
-                <h3 className="text-lg font-semibold">Application Items</h3>
+                <h3 className="text-lg font-semibold text-white">Application Items</h3>
                 {applications.map((app, index) => (
-                  <Card key={index} className="border-2">
+                  <Card key={index} className="border-2 border-gray-600 bg-gray-700">
                     <CardContent className="pt-6 space-y-3">
                       <div>
-                        <Label htmlFor={`app_title_${index}`}>Application {index + 1} Title</Label>
+                        <Label htmlFor={`app_title_${index}`} className="text-white">Application {index + 1} Title</Label>
                         <Input
                           id={`app_title_${index}`}
                           value={app.title}
@@ -591,10 +597,11 @@ const AdminDashboard = () => {
                             newApps[index].title = e.target.value;
                             setApplications(newApps);
                           }}
+                          className="border-2 border-gray-600"
                         />
                       </div>
                       <div>
-                        <Label htmlFor={`app_desc_${index}`}>Application {index + 1} Description</Label>
+                        <Label htmlFor={`app_desc_${index}`} className="text-white">Application {index + 1} Description</Label>
                         <Textarea
                           id={`app_desc_${index}`}
                           value={app.description}
@@ -604,6 +611,7 @@ const AdminDashboard = () => {
                             setApplications(newApps);
                           }}
                           rows={3}
+                          className="border-2 border-gray-600"
                         />
                       </div>
                     </CardContent>
