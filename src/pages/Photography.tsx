@@ -38,138 +38,15 @@ const Photography = () => {
   }, []);
 
   const loadSegments = async () => {
-    // Try to load new segment-based content first
-    const { data: segmentData, error: segmentError } = await supabase
+    const { data, error } = await supabase
       .from("page_content")
       .select("*")
       .eq("page_slug", "photography")
       .eq("section_key", "page_segments");
 
-    if (!segmentError && segmentData && segmentData.length > 0) {
-      const loadedSegments = JSON.parse(segmentData[0].content_value);
+    if (!error && data && data.length > 0) {
+      const loadedSegments = JSON.parse(data[0].content_value);
       setSegments(loadedSegments.sort((a: PageSegment, b: PageSegment) => a.position - b.position));
-      setLoading(false);
-      return;
-    }
-
-    // Fallback: Load old format and convert to segments
-    const { data: oldData, error: oldError } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", "photography");
-
-    if (!oldError && oldData && oldData.length > 0) {
-      const convertedSegments: PageSegment[] = [];
-      let position = 0;
-
-      // Convert old hero data
-      const heroTitle = oldData.find(item => item.section_key === "hero_title")?.content_value || "Photography & Video";
-      const heroSubtitle = oldData.find(item => item.section_key === "hero_subtitle")?.content_value || "";
-      const heroCtaText = oldData.find(item => item.section_key === "hero_cta_text")?.content_value || "Explore Applications";
-      const heroCtaLink = oldData.find(item => item.section_key === "hero_cta_link")?.content_value || "#applications-start";
-      const heroCtaStyle = oldData.find(item => item.section_key === "hero_cta_style")?.content_value || "standard";
-      const heroImageUrl = oldData.find(item => item.section_key === "hero_image_url")?.content_value || "";
-      const heroImagePosition = oldData.find(item => item.section_key === "hero_image_position")?.content_value || "right";
-      const heroLayout = oldData.find(item => item.section_key === "hero_layout")?.content_value || "2-5";
-      const heroTopPadding = oldData.find(item => item.section_key === "hero_top_padding")?.content_value || "medium";
-
-      if (heroTitle) {
-        convertedSegments.push({
-          id: `hero-${position}`,
-          type: 'hero',
-          position: position++,
-          data: {
-            title: heroTitle,
-            subtitle: heroSubtitle,
-            ctaText: heroCtaText,
-            ctaLink: heroCtaLink,
-            ctaStyle: heroCtaStyle,
-            imageUrl: heroImageUrl,
-            imagePosition: heroImagePosition,
-            layout: heroLayout,
-            topPadding: heroTopPadding
-          }
-        });
-      }
-
-      // Convert old tiles/applications data
-      const applicationsItem = oldData.find(item => item.section_key === "applications_items");
-      const tilesTitle = oldData.find(item => item.section_key === "applications_title")?.content_value || "Main Applications";
-      const tilesSubtitle = oldData.find(item => item.section_key === "applications_subtitle")?.content_value || "";
-      
-      if (applicationsItem) {
-        try {
-          const items = JSON.parse(applicationsItem.content_value);
-          convertedSegments.push({
-            id: `tiles-${position}`,
-            type: 'tiles',
-            position: position++,
-            data: {
-              title: tilesTitle,
-              subtitle: tilesSubtitle,
-              items: items
-            }
-          });
-        } catch (e) {
-          console.error("Error parsing applications items:", e);
-        }
-      }
-
-      // Convert old banner data
-      const bannerTitle = oldData.find(item => item.section_key === "banner_title")?.content_value;
-      const bannerSubtext = oldData.find(item => item.section_key === "banner_subtext")?.content_value || "";
-      const bannerImagesItem = oldData.find(item => item.section_key === "banner_images");
-      const bannerButtonText = oldData.find(item => item.section_key === "banner_button_text")?.content_value || "";
-      const bannerButtonLink = oldData.find(item => item.section_key === "banner_button_link")?.content_value || "";
-      const bannerButtonStyle = oldData.find(item => item.section_key === "banner_button_style")?.content_value || "standard";
-
-      if (bannerTitle && bannerImagesItem) {
-        try {
-          const images = JSON.parse(bannerImagesItem.content_value);
-          convertedSegments.push({
-            id: `banner-${position}`,
-            type: 'banner',
-            position: position++,
-            data: {
-              title: bannerTitle,
-              subtext: bannerSubtext,
-              images: images,
-              buttonText: bannerButtonText,
-              buttonLink: bannerButtonLink,
-              buttonStyle: bannerButtonStyle
-            }
-          });
-        } catch (e) {
-          console.error("Error parsing banner images:", e);
-        }
-      }
-
-      // Convert old solutions/image-text data
-      const solutionsTitle = oldData.find(item => item.section_key === "solutions_title")?.content_value;
-      const solutionsSubtext = oldData.find(item => item.section_key === "solutions_subtext")?.content_value || "";
-      const solutionsLayout = oldData.find(item => item.section_key === "solutions_layout")?.content_value || "2-col";
-      const solutionsItemsData = oldData.find(item => item.section_key === "solutions_items");
-
-      if (solutionsTitle && solutionsItemsData) {
-        try {
-          const items = JSON.parse(solutionsItemsData.content_value);
-          convertedSegments.push({
-            id: `image-text-${position}`,
-            type: 'image-text',
-            position: position++,
-            data: {
-              title: solutionsTitle,
-              subtext: solutionsSubtext,
-              layout: solutionsLayout,
-              items: items
-            }
-          });
-        } catch (e) {
-          console.error("Error parsing solutions items:", e);
-        }
-      }
-
-      setSegments(convertedSegments);
     }
     
     setLoading(false);
