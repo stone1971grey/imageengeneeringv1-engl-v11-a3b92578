@@ -78,6 +78,7 @@ const Photography = () => {
   const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col"); // 1-col, 2-col, 3-col
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
+  const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
 
   useEffect(() => {
     loadContent();
@@ -98,6 +99,13 @@ const Photography = () => {
           const segments = JSON.parse(item.content_value);
           console.log("Loading page_segments:", segments);
           setPageSegments(segments);
+        } else if (item.section_key === "tab_order") {
+          try {
+            const order = JSON.parse(item.content_value);
+            setTabOrder(order || ['tiles', 'banner', 'solutions']);
+          } catch {
+            setTabOrder(['tiles', 'banner', 'solutions']);
+          }
         } else if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
         } else if (item.section_key === "solutions_title") {
@@ -195,9 +203,425 @@ const Photography = () => {
 
   console.log("Photography component - pageSegments:", pageSegments);
   console.log("Photography component - pageSegments length:", pageSegments.length);
+  console.log("Photography component - tabOrder:", tabOrder);
   pageSegments.forEach((seg, idx) => {
     console.log(`Segment ${idx}:`, seg.type, seg.data);
   });
+
+  // Helper function to render segment by ID
+  const renderSegment = (segmentId: string) => {
+    // Static segments
+    if (segmentId === 'tiles') {
+      return (
+        <section key="tiles" id="applications" className="py-8 bg-gray-50">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {content.applications_title || "Main Applications"}
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                {content.applications_description || "Photography and video camera systems cover a broad spectrum of applications that contribute to image quality, color accuracy and overall performance."}
+              </p>
+            </div>
+          </div>
+
+          <div className="container mx-auto px-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              {applications.map((app: Application, index) => {
+                const IconComponent = app.icon ? iconMap[app.icon] : null;
+                
+                return (
+                   <div 
+                     key={index}
+                     className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
+                   >
+                     {IconComponent && (
+                       <div className="w-full flex justify-center pt-8">
+                         <div className="relative">
+                           <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                             <IconComponent 
+                               size={36} 
+                               className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                               strokeWidth={1.8}
+                             />
+                           </div>
+                           <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
+                         </div>
+                       </div>
+                     )}
+                     
+                     {app.imageUrl && (
+                       <div className={`w-full h-[200px] overflow-hidden ${IconComponent ? 'mt-4' : ''}`}>
+                         <img 
+                           src={app.imageUrl} 
+                           alt={app.title} 
+                           className="w-full h-full object-cover"
+                         />
+                       </div>
+                     )}
+                     
+                     <div className={`p-8 flex flex-col items-center text-center flex-1 ${!IconComponent && !app.imageUrl ? 'pt-8' : ''}`}>
+                       <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
+                         {app.title}
+                       </h3>
+                       
+                       <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
+                         {app.description}
+                       </p>
+                    
+                     {app.ctaLink ? (
+                       app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
+                         <a 
+                           href={app.ctaLink}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="w-full"
+                         >
+                           <button
+                             className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                             style={{
+                               backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                               color: app.ctaStyle === "technical" ? "white" : "black"
+                             }}
+                           >
+                             {app.ctaText || 'Learn More'}
+                           </button>
+                         </a>
+                       ) : (
+                         <Link to={app.ctaLink} className="w-full">
+                           <button
+                             className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                             style={{
+                               backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                               color: app.ctaStyle === "technical" ? "white" : "black"
+                             }}
+                           >
+                             {app.ctaText || 'Learn More'}
+                           </button>
+                         </Link>
+                       )
+                     ) : app.ctaText ? (
+                       <button
+                         className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                         style={{
+                           backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                           color: app.ctaStyle === "technical" ? "white" : "black"
+                         }}
+                       >
+                         {app.ctaText}
+                       </button>
+                     ) : null}
+                   </div>
+                 </div>
+               );
+             })}
+           </div>
+         </div>
+       </section>
+      );
+    }
+
+    if (segmentId === 'banner') {
+      return (
+        <section key="banner" id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+          <div className="container mx-auto px-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
+              {bannerTitle || "Automotive International Standards"}
+            </h2>
+            
+            {bannerSubtext && (
+              <p className="text-lg text-gray-600 mb-12 text-center mx-auto" style={{ maxWidth: '600px' }}>
+                {bannerSubtext}
+              </p>
+            )}
+            
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
+              {bannerImages.map((image: any, index: number) => (
+                <div key={index} className="flex items-center justify-center h-24 w-40">
+                  <img 
+                    src={image.url} 
+                    alt={image.alt || `Banner image ${index + 1}`}
+                    className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {bannerButtonText && (
+              <div className="flex justify-center">
+                {bannerButtonLink ? (
+                  bannerButtonLink.startsWith('http://') || bannerButtonLink.startsWith('https://') ? (
+                    <a 
+                      href={bannerButtonLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <button
+                        className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                        style={{
+                          backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                          color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
+                        }}
+                      >
+                        {bannerButtonText}
+                      </button>
+                    </a>
+                  ) : (
+                    <Link to={bannerButtonLink}>
+                      <button
+                        className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                        style={{
+                          backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                          color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
+                        }}
+                      >
+                        {bannerButtonText}
+                      </button>
+                    </Link>
+                  )
+                ) : (
+                  <button
+                    className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                    style={{
+                      backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                      color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
+                    }}
+                  >
+                    {bannerButtonText}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    if (segmentId === 'solutions') {
+      return (
+        <section key="solutions" className="py-20 bg-gray-50">
+          <div className="w-full px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {solutionsTitle || "Automotive Camera Test Solutions"}
+              </h2>
+              {solutionsSubtext && (
+                <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                  {solutionsSubtext}
+                </p>
+              )}
+            </div>
+
+            <div className={`grid gap-8 max-w-7xl mx-auto ${
+              solutionsLayout === "1-col" ? "grid-cols-1" :
+              solutionsLayout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+              "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {solutionsItems.map((item: any, index: number) => (
+                <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CardContent className="p-0">
+                    {item.imageUrl && (
+                      <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                        <img 
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                      <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                        {item.description}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // Dynamic segments (segment-0, segment-1, etc.)
+    if (segmentId.startsWith('segment-')) {
+      const segmentIndex = parseInt(segmentId.split('-')[1]);
+      const segment = pageSegments[segmentIndex];
+      
+      if (!segment) return null;
+
+      if (segment.type === 'tiles') {
+        return (
+          <section key={segmentId} id={segmentId} className="py-8 bg-gray-50">
+            <div className="container mx-auto px-6">
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {segment.data.title || "Section Title"}
+                </h2>
+                {segment.data.description && (
+                  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    {segment.data.description}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="container mx-auto px-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                {segment.data.items?.map((item: any, itemIndex: number) => {
+                  const IconComponent = item.icon ? iconMap[item.icon] : null;
+                  
+                  return (
+                    <div 
+                      key={itemIndex}
+                      className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
+                    >
+                      {item.imageUrl && (
+                        <div className="w-full h-[200px] overflow-hidden">
+                          <img 
+                            src={item.imageUrl} 
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+
+                      {IconComponent && (
+                        <div className="w-full flex justify-center pt-8">
+                          <div className="relative">
+                            <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                              <IconComponent 
+                                size={36} 
+                                className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                                strokeWidth={1.8}
+                              />
+                            </div>
+                            <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="p-6 flex flex-col flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f9dc24]">
+                          {item.title}
+                        </h3>
+                        <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                          {item.description}
+                        </p>
+                        {item.ctaLink && (
+                          item.ctaLink.startsWith('http://') || item.ctaLink.startsWith('https://') ? (
+                            <a 
+                              href={item.ctaLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full"
+                            >
+                              <button
+                                className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                                style={{ 
+                                  backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: item.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {item.ctaText || 'Learn More'}
+                              </button>
+                            </a>
+                          ) : (
+                            <Link to={item.ctaLink} className="w-full">
+                              <button
+                                className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                                style={{ 
+                                  backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: item.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {item.ctaText || 'Learn More'}
+                              </button>
+                            </Link>
+                          )
+                        )}
+                        {!item.ctaLink && item.ctaText && (
+                          <button
+                            className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                            style={{ 
+                              backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                              color: item.ctaStyle === "technical" ? "white" : "black"
+                            }}
+                          >
+                            {item.ctaText}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      }
+      
+      if (segment.type === 'image-text') {
+        return (
+          <section key={segmentId} className="py-20 bg-gray-50">
+            <div className="w-full px-6">
+              {segment.data.heroImageUrl && (
+                <div className="mb-12 max-w-7xl mx-auto">
+                  <img 
+                    src={segment.data.heroImageUrl}
+                    alt={segment.data.title || "Section hero"}
+                    className="w-full h-[400px] object-cover rounded-lg shadow-lg"
+                  />
+                </div>
+              )}
+              
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {segment.data.title || "Image & Text Section"}
+                </h2>
+                {segment.data.subtext && (
+                  <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                    {segment.data.subtext}
+                  </p>
+                )}
+              </div>
+
+              <div className={`grid gap-8 max-w-7xl mx-auto ${
+                segment.data.layout === "1-col" ? "grid-cols-1" :
+                segment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+                "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              }`}>
+                {segment.data.items?.map((item: any, itemIndex: number) => (
+                  <Card key={itemIndex} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <CardContent className="p-0">
+                      {item.imageUrl && (
+                        <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                          <img 
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                        <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                          {item.description}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+    }
+
+    return null;
+  };
 
   if (loading) {
     return (
@@ -320,426 +744,8 @@ const Photography = () => {
       {/* Better anchor point for smooth scrolling */}
       <div id="applications-start" className="scroll-mt-32"></div>
 
-      {/* Applications Overview */}
-      <section id="applications" className="py-8 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {content.applications_title || "Main Applications"}
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {content.applications_description || "Photography and video camera systems cover a broad spectrum of applications that contribute to image quality, color accuracy and overall performance."}
-            </p>
-          </div>
-        </div>
-
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-            {applications.map((app: Application, index) => {
-              const IconComponent = app.icon ? iconMap[app.icon] : null;
-              
-              return (
-                 <div 
-                   key={index}
-                   className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
-                 >
-                   {/* Icon */}
-                   {IconComponent && (
-                     <div className="w-full flex justify-center pt-8">
-                       <div className="relative">
-                         <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
-                           <IconComponent 
-                             size={36} 
-                             className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
-                             strokeWidth={1.8}
-                           />
-                         </div>
-                         {/* Yellow Glow Effect */}
-                         <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
-                       </div>
-                     </div>
-                   )}
-                   
-                   {/* Tile Image */}
-                   {app.imageUrl && (
-                     <div className={`w-full h-[200px] overflow-hidden ${IconComponent ? 'mt-4' : ''}`}>
-                       <img 
-                         src={app.imageUrl} 
-                         alt={app.title} 
-                         className="w-full h-full object-cover"
-                       />
-                     </div>
-                   )}
-                   
-                   <div className={`p-8 flex flex-col items-center text-center flex-1 ${!IconComponent && !app.imageUrl ? 'pt-8' : ''}`}>
-                     {/* Title */}
-                     <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
-                       {app.title}
-                     </h3>
-                     
-                     {/* Description */}
-                     <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
-                       {app.description}
-                     </p>
-                  
-                   {/* CTA Button */}
-                   {app.ctaLink ? (
-                     app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
-                       <a 
-                         href={app.ctaLink}
-                         target="_blank"
-                         rel="noopener noreferrer"
-                         className="w-full"
-                       >
-                         <button
-                           className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                           style={{
-                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
-                           }}
-                         >
-                           {app.ctaText || "Learn More"}
-                         </button>
-                       </a>
-                     ) : (
-                       <Link to={app.ctaLink} className="w-full">
-                         <button
-                           className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                           style={{
-                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
-                           }}
-                         >
-                           {app.ctaText || "Learn More"}
-                         </button>
-                       </Link>
-                     )
-                   ) : (
-                     <button
-                       className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                       style={{
-                         backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                         color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
-                       }}
-                     >
-                       {app.ctaText || "Learn More"}
-                     </button>
-                     )}
-                   </div>
-                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-
-      {/* Banner Template Section */}
-      <section id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
-        <div className="container mx-auto px-6">
-          {/* Title */}
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
-            {bannerTitle || "Automotive International Standards"}
-          </h2>
-          
-          {/* Optional Subtext */}
-          {bannerSubtext && (
-            <p className="text-lg text-gray-600 mb-12 text-center mx-auto" style={{ maxWidth: '600px' }}>
-              {bannerSubtext}
-            </p>
-          )}
-          
-          {/* Images */}
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
-            {bannerImages.map((image: any, index: number) => (
-              <div key={index} className="flex items-center justify-center h-24 w-40">
-                <img 
-                  src={image.url} 
-                  alt={image.alt || `Banner image ${index + 1}`}
-                  className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Button */}
-          {bannerButtonText && (
-            <div className="flex justify-center">
-              {bannerButtonLink ? (
-                bannerButtonLink.startsWith('http://') || bannerButtonLink.startsWith('https://') ? (
-                  <a 
-                    href={bannerButtonLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <button
-                      className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
-                      style={{
-                        backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
-                        color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
-                      }}
-                    >
-                      {bannerButtonText}
-                    </button>
-                  </a>
-                ) : (
-                  <Link to={bannerButtonLink}>
-                    <button
-                      className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
-                      style={{
-                        backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
-                        color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
-                      }}
-                    >
-                      {bannerButtonText}
-                    </button>
-                  </Link>
-                )
-              ) : (
-                <button
-                  className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
-                  style={{
-                    backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
-                    color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
-                  }}
-                >
-                  {bannerButtonText}
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
-
-
-      {/* Static Image & Text Section (Solutions Template) */}
-      <section className="py-20 bg-gray-50">
-        <div className="w-full px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {solutionsTitle || "Automotive Camera Test Solutions"}
-            </h2>
-            {solutionsSubtext && (
-              <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                {solutionsSubtext}
-              </p>
-            )}
-          </div>
-
-          {/* Dynamic Grid Layout */}
-          <div className={`grid gap-8 max-w-7xl mx-auto ${
-            solutionsLayout === "1-col" ? "grid-cols-1" :
-            solutionsLayout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
-            "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-          }`}>
-            {solutionsItems.map((item: any, index: number) => (
-              <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-                <CardContent className="p-0">
-                  {/* Optional Full-Width Image */}
-                  {item.imageUrl && (
-                    <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                      <img 
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  {/* Content */}
-                  <div className="p-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
-                    <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                      {item.description}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* Dynamic Segments */}
-      {pageSegments.map((segment, index) => {
-        if (segment.type === 'tiles') {
-          return (
-            <section key={`segment-${index}`} id={`segment-${index}`} className="py-8 bg-gray-50">
-              <div className="container mx-auto px-6">
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.title || "Section Title"}
-                  </h2>
-                  {segment.data.description && (
-                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                      {segment.data.description}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              <div className="container mx-auto px-6">
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                  {segment.data.items?.map((item: any, itemIndex: number) => {
-                    const IconComponent = item.icon ? iconMap[item.icon] : null;
-                    
-                    return (
-                      <div 
-                        key={itemIndex}
-                        className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
-                      >
-                        {/* Image */}
-                        {item.imageUrl && (
-                          <div className="w-full h-[200px] overflow-hidden">
-                            <img 
-                              src={item.imageUrl} 
-                              alt={item.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                        )}
-
-                        {/* Icon */}
-                        {IconComponent && (
-                          <div className="w-full flex justify-center pt-8">
-                            <div className="relative">
-                              <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
-                                <IconComponent 
-                                  size={36} 
-                                  className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
-                                  strokeWidth={1.8}
-                                />
-                              </div>
-                              <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="p-6 flex flex-col flex-1">
-                          <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f9dc24]">
-                            {item.title}
-                          </h3>
-                          <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
-                            {item.description}
-                          </p>
-                          {item.ctaLink && (
-                            item.ctaLink.startsWith('http://') || item.ctaLink.startsWith('https://') ? (
-                              <a 
-                                href={item.ctaLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full"
-                              >
-                                <button
-                                  className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
-                                  style={{ 
-                                    backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                                    color: item.ctaStyle === "technical" ? "white" : "black"
-                                  }}
-                                >
-                                  {item.ctaText || 'Learn More'}
-                                </button>
-                              </a>
-                            ) : (
-                              <Link to={item.ctaLink} className="w-full">
-                                <button
-                                  className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
-                                  style={{ 
-                                    backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                                    color: item.ctaStyle === "technical" ? "white" : "black"
-                                  }}
-                                >
-                                  {item.ctaText || 'Learn More'}
-                                </button>
-                              </Link>
-                            )
-                          )}
-                          {!item.ctaLink && item.ctaText && (
-                            <button
-                              className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
-                              style={{ 
-                                backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                                color: item.ctaStyle === "technical" ? "white" : "black"
-                              }}
-                            >
-                              {item.ctaText}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </section>
-          );
-        }
-        
-        if (segment.type === 'image-text') {
-          return (
-            <section key={`segment-${index}`} className="py-20 bg-gray-50">
-              <div className="w-full px-6">
-                {/* Optional Hero Image above title */}
-                {segment.data.heroImageUrl && (
-                  <div className="mb-12 max-w-7xl mx-auto">
-                    <img 
-                      src={segment.data.heroImageUrl}
-                      alt={segment.data.title || "Section hero"}
-                      className="w-full h-[400px] object-cover rounded-lg shadow-lg"
-                    />
-                  </div>
-                )}
-                
-                <div className="text-center mb-16">
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.title || "Image & Text Section"}
-                  </h2>
-                  {segment.data.subtext && (
-                    <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                      {segment.data.subtext}
-                    </p>
-                  )}
-                </div>
-
-                {/* Dynamic Grid Layout */}
-                <div className={`grid gap-8 max-w-7xl mx-auto ${
-                  segment.data.layout === "1-col" ? "grid-cols-1" :
-                  segment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
-                  "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                }`}>
-                  {segment.data.items?.map((item: any, itemIndex: number) => (
-                    <Card key={itemIndex} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-                      <CardContent className="p-0">
-                        {/* Optional Full-Width Image */}
-                        {item.imageUrl && (
-                          <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                            <img 
-                              src={item.imageUrl}
-                              alt={item.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-                        {/* Content */}
-                        <div className="p-8">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
-                          <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                            {item.description}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </section>
-          );
-        }
-        
-        return null;
-      })}
-
-
+      {/* Render all segments in tabOrder */}
+      {tabOrder.map((segmentId) => renderSegment(segmentId))}
 
       <Footer />
     </div>
