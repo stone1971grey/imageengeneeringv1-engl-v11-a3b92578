@@ -614,7 +614,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="hero" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 h-auto p-2 bg-gray-200">
+          <TabsList className="grid w-full grid-cols-5 mb-6 h-auto p-2 bg-gray-200">
             <TabsTrigger 
               value="hero" 
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
@@ -638,6 +638,12 @@ const AdminDashboard = () => {
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
               Image & Text
+            </TabsTrigger>
+            <TabsTrigger 
+              value="segments"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              + Add Segment
             </TabsTrigger>
           </TabsList>
 
@@ -1561,6 +1567,123 @@ const AdminDashboard = () => {
                     <Save className="h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Add Segment Tab */}
+          <TabsContent value="segments">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Add New Segment</CardTitle>
+                <CardDescription className="text-gray-300">
+                  Choose a template to add a new segment to your page
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Produkt-Hero Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Produkt-Hero Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">🎯</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Full-width hero section with image, title, description, and CTA button. Configurable layout and styling options.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Hero segment functionality coming soon")}
+                      >
+                        Add Hero Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Tiles Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Tiles Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">🧩</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Grid of tiles with icons, images, titles, descriptions, and customizable CTA buttons.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Tiles segment functionality coming soon")}
+                      >
+                        Add Tiles Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Banner Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Banner Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">🖼️</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Horizontal banner with multiple images (grayscale with color hover effect), title, and CTA button.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Banner segment functionality coming soon")}
+                      >
+                        Add Banner Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Image & Text Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Image & Text Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">📝</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Flexible layout with 1, 2, or 3 columns. Each column can contain an image and text description.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Image & Text segment functionality coming soon")}
+                      >
+                        Add Image & Text Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="mt-8 p-6 bg-gray-700 rounded-lg border border-gray-600">
+                  <h3 className="text-white font-semibold mb-2">How it works</h3>
+                  <ul className="text-gray-300 text-sm space-y-2">
+                    <li>• Select a template above to add a new segment to your page</li>
+                    <li>• Each segment can be edited independently in its own tab</li>
+                    <li>• Segments will appear on the page in the order you add them</li>
+                    <li>• You can have multiple segments of the same type</li>
+                  </ul>
                 </div>
               </CardContent>
             </Card>
