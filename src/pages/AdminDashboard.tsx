@@ -1269,7 +1269,7 @@ const AdminDashboard = () => {
                 <SelectTrigger id="page-selector" className="w-[320px]">
                   <SelectValue placeholder="Select a page" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white z-50">
                   <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Your solution</div>
                   <SelectItem 
                     value="your-solution" 
