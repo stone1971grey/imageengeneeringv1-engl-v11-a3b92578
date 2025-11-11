@@ -181,28 +181,65 @@ const AdminDashboard = () => {
     navigate("/auth");
   };
 
-  const handleSave = async () => {
+  const handleSaveHero = async () => {
     if (!user) return;
     
     setSaving(true);
 
     try {
-      // Update text fields
-      for (const [key, value] of Object.entries(content)) {
-        const { error } = await supabase
-          .from("page_content")
-          .update({
-            content_value: value,
-            updated_at: new Date().toISOString(),
-            updated_by: user.id
-          })
-          .eq("page_slug", "photography")
-          .eq("section_key", key);
+      // Update hero fields
+      const heroFields = ['hero_title', 'hero_subtitle', 'hero_description', 'hero_cta'];
+      
+      for (const key of heroFields) {
+        if (content[key] !== undefined) {
+          const { error } = await supabase
+            .from("page_content")
+            .update({
+              content_value: content[key],
+              updated_at: new Date().toISOString(),
+              updated_by: user.id
+            })
+            .eq("page_slug", "photography")
+            .eq("section_key", key);
 
-        if (error) throw error;
+          if (error) throw error;
+        }
       }
 
-      // Update applications
+      toast.success("Hero section saved successfully!");
+    } catch (error: any) {
+      toast.error("Error saving hero section: " + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveApplications = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+
+    try {
+      // Update applications title and description
+      const appFields = ['applications_title', 'applications_description'];
+      
+      for (const key of appFields) {
+        if (content[key] !== undefined) {
+          const { error } = await supabase
+            .from("page_content")
+            .update({
+              content_value: content[key],
+              updated_at: new Date().toISOString(),
+              updated_by: user.id
+            })
+            .eq("page_slug", "photography")
+            .eq("section_key", key);
+
+          if (error) throw error;
+        }
+      }
+
+      // Update applications items
       const { error: appsError } = await supabase
         .from("page_content")
         .update({
@@ -215,9 +252,9 @@ const AdminDashboard = () => {
 
       if (appsError) throw appsError;
 
-      toast.success("Content saved successfully!");
+      toast.success("Applications section saved successfully!");
     } catch (error: any) {
-      toast.error("Error saving content: " + error.message);
+      toast.error("Error saving applications section: " + error.message);
     } finally {
       setSaving(false);
     }
@@ -321,6 +358,17 @@ const AdminDashboard = () => {
                   onChange={(e) => setContent({ ...content, hero_cta: e.target.value })}
                 />
               </div>
+
+              <div className="flex justify-end pt-4 border-t">
+                <Button
+                  onClick={handleSaveHero}
+                  disabled={saving}
+                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {saving ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
@@ -384,20 +432,19 @@ const AdminDashboard = () => {
                   </Card>
                 ))}
               </div>
+
+              <div className="flex justify-end pt-4 border-t">
+                <Button
+                  onClick={handleSaveApplications}
+                  disabled={saving}
+                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {saving ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
-
-          {/* Save Button */}
-          <div className="flex justify-end">
-            <Button
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2 px-8 py-6 text-lg"
-            >
-              <Save className="h-5 w-5" />
-              {saving ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
         </div>
       </div>
 
