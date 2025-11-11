@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
 import { LogOut, Save, Plus, Trash2 } from "lucide-react";
@@ -54,8 +53,6 @@ const AdminDashboard = () => {
   const [solutionsSubtext, setSolutionsSubtext] = useState<string>("");
   const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col");
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
-  const [pageSegments, setPageSegments] = useState<any[]>([]);
-  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -158,8 +155,6 @@ const AdminDashboard = () => {
         setHeroCtaLink(item.content_value || "#applications-start");
       } else if (item.section_key === "hero_cta_style") {
         setHeroCtaStyle(item.content_value || "standard");
-      } else if (item.section_key === "page_segments") {
-        setPageSegments(JSON.parse(item.content_value));
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -540,81 +535,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleAddSegment = async (templateType: string) => {
-    if (!user) return;
-    
-    const newSegment = {
-      type: templateType,
-      position: pageSegments.length,
-      data: getDefaultSegmentData(templateType)
-    };
-
-    const updatedSegments = [...pageSegments, newSegment];
-    setPageSegments(updatedSegments);
-
-    try {
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: "photography",
-          section_key: "page_segments",
-          content_type: "json",
-          content_value: JSON.stringify(updatedSegments),
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      toast.success(`${templateType} segment added successfully!`);
-      setIsTemplateDialogOpen(false);
-    } catch (error: any) {
-      toast.error("Error adding segment: " + error.message);
-    }
-  };
-
-  const getDefaultSegmentData = (templateType: string) => {
-    switch (templateType) {
-      case "hero":
-        return {
-          title: "New Hero Section",
-          subtitle: "",
-          description: "",
-          cta: "Learn More",
-          imageUrl: "",
-          imagePosition: "right",
-          layout: "2-5",
-          topPadding: "medium",
-          ctaLink: "",
-          ctaStyle: "standard"
-        };
-      case "tiles":
-        return {
-          title: "New Tiles Section",
-          description: "",
-          items: []
-        };
-      case "banner":
-        return {
-          title: "New Banner Section",
-          subtext: "",
-          images: [],
-          buttonText: "Learn More",
-          buttonLink: "",
-          buttonStyle: "standard"
-        };
-      case "image-text":
-        return {
-          title: "New Image & Text Section",
-          subtext: "",
-          layout: "2-col",
-          items: []
-        };
-      default:
-        return {};
-    }
-  };
-
   const handleSaveApplications = async () => {
     if (!user) return;
     
@@ -683,202 +603,18 @@ const AdminDashboard = () => {
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="text-gray-600 mt-2">Edit Photography Page Content</p>
           </div>
-          <div className="flex gap-3 mt-2">
-            <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add New Segment
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl">
-                <DialogHeader>
-                  <DialogTitle>Choose a Template</DialogTitle>
-                  <DialogDescription>
-                    Select a template to add a new segment to your page
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                  {/* Produkt-Hero Template */}
-                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Produkt-Hero Template</CardTitle>
-                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
-                          <span className="text-2xl">🎯</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Full-width hero section with image, title, description, and CTA button.
-                      </p>
-                      <Button 
-                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                        onClick={() => handleAddSegment("hero")}
-                      >
-                        Add Hero Section
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Tiles Template */}
-                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Tiles Template</CardTitle>
-                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
-                          <span className="text-2xl">🧩</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Grid of tiles with icons, images, titles, and CTA buttons.
-                      </p>
-                      <Button 
-                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                        onClick={() => handleAddSegment("tiles")}
-                      >
-                        Add Tiles Section
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Banner Template */}
-                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Banner Template</CardTitle>
-                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
-                          <span className="text-2xl">🖼️</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Horizontal banner with multiple images and CTA button.
-                      </p>
-                      <Button 
-                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                        onClick={() => handleAddSegment("banner")}
-                      >
-                        Add Banner Section
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  {/* Image & Text Template */}
-                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Image & Text Template</CardTitle>
-                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
-                          <span className="text-2xl">📝</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Flexible layout with 1, 2, or 3 columns with images and text.
-                      </p>
-                      <Button 
-                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                        onClick={() => handleAddSegment("image-text")}
-                      >
-                        Add Image & Text Section
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          </div>
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="flex items-center gap-2 mt-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
         </div>
 
-        {/* Display current segments */}
-        {pageSegments.length > 0 && (
-          <Card className="mb-6 bg-gray-100 border-gray-300">
-            <CardHeader>
-              <CardTitle>Current Page Segments</CardTitle>
-              <CardDescription>Overview of all segments on this page</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {pageSegments.map((segment, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[#f9dc24] rounded-full flex items-center justify-center font-bold">
-                        {index + 1}
-                      </div>
-                      <div>
-                        <p className="font-semibold capitalize">{segment.type} Segment</p>
-                        <p className="text-sm text-gray-500">
-                          {segment.data?.title || "Untitled"}
-                        </p>
-                      </div>
-                    </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Segment?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently delete this {segment.type} segment.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={async () => {
-                              const updatedSegments = pageSegments.filter((_, i) => i !== index);
-                              setPageSegments(updatedSegments);
-                              
-                              await supabase
-                                .from("page_content")
-                                .upsert({
-                                  page_slug: "photography",
-                                  section_key: "page_segments",
-                                  content_type: "json",
-                                  content_value: JSON.stringify(updatedSegments),
-                                  updated_at: new Date().toISOString(),
-                                  updated_by: user?.id
-                                }, {
-                                  onConflict: 'page_slug,section_key'
-                                });
-                              
-                              toast.success("Segment deleted!");
-                            }}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         <Tabs defaultValue="hero" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 h-auto p-2 bg-gray-200">
+          <TabsList className="grid w-full grid-cols-5 mb-6 h-auto p-2 bg-gray-200">
             <TabsTrigger 
               value="hero" 
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
@@ -902,6 +638,12 @@ const AdminDashboard = () => {
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
               Image & Text
+            </TabsTrigger>
+            <TabsTrigger 
+              value="segments"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              + Add Segment
             </TabsTrigger>
           </TabsList>
 
@@ -1825,6 +1567,123 @@ const AdminDashboard = () => {
                     <Save className="h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Add Segment Tab */}
+          <TabsContent value="segments">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Add New Segment</CardTitle>
+                <CardDescription className="text-gray-300">
+                  Choose a template to add a new segment to your page
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Produkt-Hero Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Produkt-Hero Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">🎯</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Full-width hero section with image, title, description, and CTA button. Configurable layout and styling options.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Hero segment functionality coming soon")}
+                      >
+                        Add Hero Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Tiles Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Tiles Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">🧩</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Grid of tiles with icons, images, titles, descriptions, and customizable CTA buttons.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Tiles segment functionality coming soon")}
+                      >
+                        Add Tiles Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Banner Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Banner Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">🖼️</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Horizontal banner with multiple images (grayscale with color hover effect), title, and CTA button.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Banner segment functionality coming soon")}
+                      >
+                        Add Banner Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Image & Text Template */}
+                  <Card className="border-2 border-[#f9dc24] hover:shadow-lg transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Image & Text Template</CardTitle>
+                        <div className="w-12 h-12 bg-[#f9dc24] rounded-full flex items-center justify-center">
+                          <span className="text-2xl">📝</span>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Flexible layout with 1, 2, or 3 columns. Each column can contain an image and text description.
+                      </p>
+                      <Button 
+                        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                        onClick={() => toast.info("Image & Text segment functionality coming soon")}
+                      >
+                        Add Image & Text Section
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="mt-8 p-6 bg-gray-700 rounded-lg border border-gray-600">
+                  <h3 className="text-white font-semibold mb-2">How it works</h3>
+                  <ul className="text-gray-300 text-sm space-y-2">
+                    <li>• Select a template above to add a new segment to your page</li>
+                    <li>• Each segment can be edited independently in its own tab</li>
+                    <li>• Segments will appear on the page in the order you add them</li>
+                    <li>• You can have multiple segments of the same type</li>
+                  </ul>
                 </div>
               </CardContent>
             </Card>
