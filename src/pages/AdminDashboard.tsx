@@ -634,7 +634,7 @@ const AdminDashboard = () => {
               value="solutions"
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
-              Solutions
+              Image & Text
             </TabsTrigger>
           </TabsList>
 
@@ -1336,12 +1336,12 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          {/* Solutions Template Tab */}
+          {/* Image & Text Template Tab */}
           <TabsContent value="solutions">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Solutions Template</CardTitle>
-                <CardDescription className="text-gray-300">Edit solutions section with flexible column layout (1/2/3 columns)</CardDescription>
+                <CardTitle className="text-white">Image & Text Template</CardTitle>
+                <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Title */}
@@ -1524,9 +1524,9 @@ const AdminDashboard = () => {
 
                         if (error) throw error;
 
-                        toast.success("Solutions content saved successfully!");
+                        toast.success("Image & Text content saved successfully!");
                       } catch (error: any) {
-                        toast.error("Error saving solutions content: " + error.message);
+                        toast.error("Error saving image & text content: " + error.message);
                       } finally {
                         setSaving(false);
                       }
