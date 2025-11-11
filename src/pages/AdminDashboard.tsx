@@ -50,6 +50,7 @@ const AdminDashboard = () => {
   const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
   const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
   const [solutionsTitle, setSolutionsTitle] = useState<string>("");
+  const [solutionsSubtext, setSolutionsSubtext] = useState<string>("");
   const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col");
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -124,6 +125,8 @@ const AdminDashboard = () => {
         apps = JSON.parse(item.content_value);
       } else if (item.section_key === "solutions_title") {
         setSolutionsTitle(item.content_value);
+      } else if (item.section_key === "solutions_subtext") {
+        setSolutionsSubtext(item.content_value);
       } else if (item.section_key === "solutions_layout") {
         setSolutionsLayout(item.content_value || "2-col");
       } else if (item.section_key === "solutions_items") {
@@ -1356,6 +1359,19 @@ const AdminDashboard = () => {
                   />
                 </div>
 
+                {/* Subtext */}
+                <div>
+                  <Label htmlFor="solutions_subtext" className="text-white">Subtext (Optional)</Label>
+                  <Textarea
+                    id="solutions_subtext"
+                    value={solutionsSubtext}
+                    onChange={(e) => setSolutionsSubtext(e.target.value)}
+                    placeholder="Optional description text below the title"
+                    rows={3}
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
                 {/* Layout Selection */}
                 <div>
                   <Label htmlFor="solutions_layout" className="text-white">Column Layout</Label>
@@ -1495,6 +1511,14 @@ const AdminDashboard = () => {
                             section_key: "solutions_title",
                             content_type: "heading",
                             content_value: solutionsTitle,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "solutions_subtext",
+                            content_type: "text",
+                            content_value: solutionsSubtext,
                             updated_at: new Date().toISOString(),
                             updated_by: user?.id
                           },

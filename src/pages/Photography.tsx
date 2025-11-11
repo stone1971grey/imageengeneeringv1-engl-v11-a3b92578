@@ -74,6 +74,7 @@ const Photography = () => {
   const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
   const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
   const [solutionsTitle, setSolutionsTitle] = useState<string>("");
+  const [solutionsSubtext, setSolutionsSubtext] = useState<string>("");
   const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col"); // 1-col, 2-col, 3-col
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
 
@@ -96,6 +97,8 @@ const Photography = () => {
           apps = JSON.parse(item.content_value);
         } else if (item.section_key === "solutions_title") {
           setSolutionsTitle(item.content_value);
+        } else if (item.section_key === "solutions_subtext") {
+          setSolutionsSubtext(item.content_value);
         } else if (item.section_key === "solutions_layout") {
           setSolutionsLayout(item.content_value || "2-col");
         } else if (item.section_key === "solutions_items") {
@@ -504,6 +507,11 @@ const Photography = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               {solutionsTitle || "Automotive Camera Test Solutions"}
             </h2>
+            {solutionsSubtext && (
+              <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                {solutionsSubtext}
+              </p>
+            )}
           </div>
 
           {/* Dynamic Grid Layout */}
