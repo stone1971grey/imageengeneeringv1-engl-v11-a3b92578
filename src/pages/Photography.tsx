@@ -235,14 +235,14 @@ const Photography = () => {
                   <img 
                     src={heroImageUrl} 
                     alt="Photography testing laboratory" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-[500px] object-cover"
                   />
                 ) : (
                   // Display default generated image
                   <img 
                     src={photographyHeroDefault} 
                     alt="Photography testing laboratory" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-[500px] object-cover"
                   />
                 )}
               </div>
