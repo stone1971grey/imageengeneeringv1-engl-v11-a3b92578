@@ -184,7 +184,7 @@ const Auth = () => {
           <div className="mt-4 text-center text-sm">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-gray-600 hover:text-gray-900 underline"
+              className="text-white hover:text-gray-200 underline font-semibold"
               disabled={loading}
             >
               {isLogin ? "Need an account? Sign up" : "Already have an account? Login"}
