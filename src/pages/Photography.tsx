@@ -350,35 +350,39 @@ const Photography = () => {
                          rel="noopener noreferrer"
                          className="w-full"
                        >
-                         <Button 
-                           className={`w-full border-0 hover:opacity-90 ${
-                             app.ctaStyle === "technical" 
-                               ? "!bg-[#1f2937] !text-white" 
-                               : "!bg-[#f9dc24] !text-black"
-                           }`}
+                         <button
+                           className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                           style={{
+                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                           }}
                          >
                            {app.ctaText || "Learn More"}
-                         </Button>
+                         </button>
                        </a>
                      ) : (
                        <Link to={app.ctaLink} className="w-full">
-                         <Button 
-                           className={`w-full border-0 hover:opacity-90 ${
-                             app.ctaStyle === "technical" 
-                               ? "!bg-[#1f2937] !text-white" 
-                               : "!bg-[#f9dc24] !text-black"
-                           }`}
+                         <button
+                           className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                           style={{
+                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                           }}
                          >
                            {app.ctaText || "Learn More"}
-                         </Button>
+                         </button>
                        </Link>
                      )
                    ) : (
-                     <Button 
-                       className="w-full border-0 hover:opacity-90 !bg-[#f9dc24] !text-black"
+                     <button
+                       className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                       style={{
+                         backgroundColor: "#f9dc24",
+                         color: "#000000"
+                       }}
                      >
                        {app.ctaText || "Learn More"}
-                     </Button>
+                     </button>
                      )}
                    </div>
                  </div>
