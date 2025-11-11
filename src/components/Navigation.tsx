@@ -15,6 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNavigationData } from "@/hooks/useNavigationData";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 // Import industry images
 import industryPhotography from "@/assets/industry-photography.jpg";
@@ -43,6 +45,82 @@ const Navigation = () => {
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
   const [hoveredSolution, setHoveredSolution] = useState<string | null>(null);
   const [hoveredTestService, setHoveredTestService] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [isAdminOrEditor, setIsAdminOrEditor] = useState(false);
+  const [allowedPages, setAllowedPages] = useState<string[]>([]);
+
+  // Check authentication status
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Check user role
+  useEffect(() => {
+    const checkUserRole = async () => {
+      if (!user) {
+        setIsAdminOrEditor(false);
+        return;
+      }
+
+      // Check if admin
+      const { data: adminData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (adminData) {
+        setIsAdminOrEditor(true);
+        setAllowedPages([]);
+        return;
+      }
+
+      // Check if editor
+      const { data: editorData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "editor")
+        .maybeSingle();
+
+      if (editorData) {
+        const { data: pageAccessData } = await supabase
+          .from("editor_page_access")
+          .select("page_slug")
+          .eq("user_id", user.id);
+
+        if (pageAccessData && pageAccessData.length > 0) {
+          setIsAdminOrEditor(true);
+          setAllowedPages(pageAccessData.map(p => p.page_slug));
+        }
+      }
+    };
+
+    checkUserRole();
+  }, [user]);
+
+  // Helper function to get admin link if user is admin/editor
+  const getLink = (pageSlug: string, defaultPath: string) => {
+    if (!isAdminOrEditor) return defaultPath;
+    
+    // For editors, check if they have access to this page
+    if (allowedPages.length > 0 && !allowedPages.includes(pageSlug)) {
+      return defaultPath;
+    }
+    
+    return `/admin-dashboard?page=${pageSlug}`;
+  };
 
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
@@ -199,17 +277,17 @@ const Navigation = () => {
                          <span>{t.nav.medicalEndoscopy}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
-                         <ScanLine className="h-5 w-5" />
-                         <span>{t.nav.scannersArchiving}</span>
-                       </div>
-                       
-                       <Link to="/photography" className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
-                         <Camera className="h-5 w-5" />
-                         <span>{t.nav.photoVideo}</span>
-                       </Link>
+                        <Link to={getLink("scanners-archiving", "/scanners-archiving")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
+                          <ScanLine className="h-5 w-5" />
+                          <span>{t.nav.scannersArchiving}</span>
+                        </Link>
+                        
+                        <Link to={getLink("photography", "/photography")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
+                          <Camera className="h-5 w-5" />
+                          <span>{t.nav.photoVideo}</span>
+                        </Link>
                     </div>
                     
                      {/* Right Column: Applications */}
@@ -892,10 +970,10 @@ const Navigation = () => {
                             <AccordionItem value="scanning" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
+                                    <Link to={getLink("scanners-archiving", "/scanners-archiving")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <ScanLine className="h-4 w-4" />
                                       <span>{t.nav.scannersArchiving}</span>
-                                    </div>
+                                    </Link>
                                  </div>
                                </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
@@ -919,7 +997,7 @@ const Navigation = () => {
                             <AccordionItem value="photo-video" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                    <Link to="/photography" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                    <Link to={getLink("photography", "/photography")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <Camera className="h-4 w-4" />
                                       <span>{t.nav.photoVideo}</span>
                                     </Link>
@@ -942,7 +1020,7 @@ const Navigation = () => {
                           </Accordion>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                          <Link to="/industries" onClick={() => setIsOpen(false)}>
+                          <Link to={getLink("your-solution", "/industries")} onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium">
                               <Search className="h-4 w-4 mr-2" />
                                <span className="hidden sm:inline">{t.hero.findYourSolution}</span>

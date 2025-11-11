@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,9 +95,14 @@ const AdminDashboard = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditor, setIsEditor] = useState(false);
   const [allowedPages, setAllowedPages] = useState<string[]>([]);
-  const [selectedPage, setSelectedPage] = useState<string>("photography");
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<Record<string, string>>({});
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get selected page from URL parameter
+  const searchParams = new URLSearchParams(location.search);
+  const selectedPage = searchParams.get('page') || 'photography';
   const [applications, setApplications] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -131,7 +136,6 @@ const AdminDashboard = () => {
   const [footerTeamName, setFooterTeamName] = useState<string>("");
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
   const [footerButtonText, setFooterButtonText] = useState<string>("");
-  const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -251,9 +255,9 @@ const AdminDashboard = () => {
       setIsAdmin(false);
       setAllowedPages(pages);
       
-      // Set first allowed page as selected
-      if (pages.length > 0) {
-        setSelectedPage(pages[0]);
+      // Redirect to first allowed page if current page is not in allowed pages
+      if (pages.length > 0 && !pages.includes(selectedPage)) {
+        navigate(`/admin-dashboard?page=${pages[0]}`);
       }
       
       setLoading(false);
@@ -1263,46 +1267,13 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-            <div className="flex items-center gap-4 mt-4">
-              <Label htmlFor="page-selector" className="text-gray-600">Edit Page:</Label>
-              <Select value={selectedPage} onValueChange={setSelectedPage}>
-                <SelectTrigger id="page-selector" className="w-[320px]">
-                  <SelectValue placeholder="Select a page" />
-                </SelectTrigger>
-                <SelectContent className="bg-white z-50">
-                  <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Your solution</div>
-                  <SelectItem 
-                    value="your-solution" 
-                    disabled={isEditor && !allowedPages.includes("your-solution")}
-                    className="pl-6"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Overview</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem 
-                    value="photography" 
-                    disabled={isEditor && !allowedPages.includes("photography")}
-                    className="pl-6"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">↳</span>
-                      <span>Photo & Video</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem 
-                    value="scanners-archiving" 
-                    disabled={isEditor && !allowedPages.includes("scanners-archiving")}
-                    className="pl-6"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">↳</span>
-                      <span>Scanners & Archiving</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <p className="text-gray-600 mt-2">
+              Editing: <span className="font-semibold">
+                {selectedPage === 'photography' ? 'Photo & Video' : 
+                 selectedPage === 'scanners-archiving' ? 'Scanners & Archiving' :
+                 selectedPage === 'your-solution' ? 'Your Solution' : selectedPage}
+              </span>
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
