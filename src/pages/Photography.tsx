@@ -303,10 +303,10 @@ const Photography = () => {
                    className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
                  >
                    {/* Debug Info */}
-                   <div className="bg-red-100 p-2 text-xs text-black border border-red-300">
-                     <div className="font-bold">Tile {index + 1}</div>
-                     <div>ctaStyle: <strong>{app.ctaStyle || "undefined"}</strong></div>
-                     <div>Color: <strong>{app.ctaStyle === "technical" ? "#1f2937 (dunkelgrau)" : "#f9dc24 (gelb)"}</strong></div>
+                   <div style={{ backgroundColor: '#fecaca', padding: '8px', fontSize: '12px', color: '#000000', border: '2px solid #991b1b' }}>
+                     <div style={{ fontWeight: 'bold', color: '#000000' }}>Tile {index + 1}</div>
+                     <div style={{ color: '#000000' }}>ctaStyle: <strong>{app.ctaStyle || "undefined"}</strong></div>
+                     <div style={{ color: '#000000' }}>Color: <strong>{app.ctaStyle === "technical" ? "#1f2937 (dunkelgrau)" : "#f9dc24 (gelb)"}</strong></div>
                    </div>
                    
                    {/* Icon */}
