@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
 import { LogOut, Save } from "lucide-react";
@@ -436,9 +437,15 @@ const AdminDashboard = () => {
           </Button>
         </div>
 
-        <div className="space-y-6">
-          {/* Hero Section */}
-          <Card className="bg-gray-800 border-gray-700">
+        <Tabs defaultValue="hero" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="hero">Hero Section</TabsTrigger>
+            <TabsTrigger value="tiles">Tiles Template</TabsTrigger>
+          </TabsList>
+
+          {/* Hero Section Tab */}
+          <TabsContent value="hero">
+            <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -612,9 +619,11 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
+          </TabsContent>
 
-          {/* Applications Section */}
-          <Card className="bg-gray-800 border-gray-700">
+          {/* Applications Section Tab */}
+          <TabsContent value="tiles">
+            <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -834,7 +843,8 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Footer />
