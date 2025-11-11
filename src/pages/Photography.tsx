@@ -299,20 +299,28 @@ const Photography = () => {
               return (
                  <div 
                    key={index}
-                   className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden"
+                   className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
                  >
                    {/* Icon */}
                    {IconComponent && (
                      <div className="w-full flex justify-center pt-8">
-                       <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center">
-                         <IconComponent className="text-[#f9dc24]" size={32} />
+                       <div className="relative">
+                         <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                           <IconComponent 
+                             size={36} 
+                             className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                             strokeWidth={1.8}
+                           />
+                         </div>
+                         {/* Yellow Glow Effect */}
+                         <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
                        </div>
                      </div>
                    )}
                    
                    {/* Tile Image */}
                    {app.imageUrl && (
-                     <div className="w-full h-[200px] overflow-hidden mt-4">
+                     <div className={`w-full h-[200px] overflow-hidden ${IconComponent ? 'mt-4' : ''}`}>
                        <img 
                          src={app.imageUrl} 
                          alt={app.title} 
