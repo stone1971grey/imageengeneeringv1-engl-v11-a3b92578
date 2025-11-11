@@ -1824,11 +1824,229 @@ const AdminDashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
-                    <p className="text-white text-center">
-                      Segment editor for {segment.type} coming soon. This segment has been saved.
-                    </p>
-                  </div>
+                  {segment.type === 'tiles' && (
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor={`segment_${index}_title`} className="text-white">Section Title</Label>
+                        <Input
+                          id={`segment_${index}_title`}
+                          value={segment.data.title || ''}
+                          onChange={(e) => {
+                            const newSegments = [...pageSegments];
+                            newSegments[index].data.title = e.target.value;
+                            setPageSegments(newSegments);
+                          }}
+                          className="border-2 border-gray-600"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`segment_${index}_description`} className="text-white">Section Description</Label>
+                        <Textarea
+                          id={`segment_${index}_description`}
+                          value={segment.data.description || ''}
+                          onChange={(e) => {
+                            const newSegments = [...pageSegments];
+                            newSegments[index].data.description = e.target.value;
+                            setPageSegments(newSegments);
+                          }}
+                          rows={3}
+                          className="border-2 border-gray-600"
+                        />
+                      </div>
+
+                      {/* Tiles */}
+                      <div className="space-y-4 mt-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="text-lg font-semibold text-white">Tiles</h3>
+                          <Button
+                            onClick={() => {
+                              const newSegments = [...pageSegments];
+                              if (!newSegments[index].data.items) {
+                                newSegments[index].data.items = [];
+                              }
+                              newSegments[index].data.items.push({
+                                title: 'New Application',
+                                description: 'Add description here...',
+                                ctaLink: '',
+                                ctaStyle: 'standard',
+                                ctaText: 'Learn More',
+                                imageUrl: '',
+                                icon: ''
+                              });
+                              setPageSegments(newSegments);
+                              toast.success("New tile added! Don't forget to save changes.");
+                            }}
+                            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                          >
+                            <Plus className="h-4 w-4" />
+                            Add New Tile
+                          </Button>
+                        </div>
+                        {segment.data.items && segment.data.items.map((tile: any, tileIndex: number) => (
+                          <Card key={tileIndex} className={`border-2 ${tileIndex % 2 === 0 ? 'bg-gray-600 border-gray-500' : 'bg-gray-800 border-gray-700'}`}>
+                            <CardContent className="pt-6 space-y-3">
+                              <div className="flex items-center justify-between mb-4">
+                                <div className={`px-4 py-2 ${tileIndex % 2 === 0 ? 'bg-[#f9dc24]' : 'bg-orange-400'} text-black text-base font-bold rounded-md shadow-lg`}>
+                                  Tile {tileIndex + 1}
+                                </div>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="destructive"
+                                      size="sm"
+                                      className="flex items-center gap-2"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                      Delete
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This will permanently delete "Tile {tileIndex + 1}". This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          const newSegments = [...pageSegments];
+                                          newSegments[index].data.items = newSegments[index].data.items.filter((_: any, i: number) => i !== tileIndex);
+                                          setPageSegments(newSegments);
+                                          toast.success("Tile deleted! Don't forget to save changes.");
+                                        }}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor={`tile_${index}_${tileIndex}_title`} className="text-white">Title</Label>
+                                <Input
+                                  id={`tile_${index}_${tileIndex}_title`}
+                                  value={tile.title}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data.items[tileIndex].title = e.target.value;
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className="border-2 border-gray-600"
+                                />
+                              </div>
+                              
+                              <div>
+                                <Label htmlFor={`tile_${index}_${tileIndex}_description`} className="text-white">Description</Label>
+                                <Textarea
+                                  id={`tile_${index}_${tileIndex}_description`}
+                                  value={tile.description}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data.items[tileIndex].description = e.target.value;
+                                    setPageSegments(newSegments);
+                                  }}
+                                  rows={3}
+                                  className="border-2 border-gray-600"
+                                />
+                              </div>
+
+                              <div>
+                                <Label htmlFor={`tile_${index}_${tileIndex}_cta_text`} className="text-white">Button Text</Label>
+                                <Input
+                                  id={`tile_${index}_${tileIndex}_cta_text`}
+                                  value={tile.ctaText || 'Learn More'}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data.items[tileIndex].ctaText = e.target.value;
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className="border-2 border-gray-600"
+                                />
+                              </div>
+
+                              <div>
+                                <Label htmlFor={`tile_${index}_${tileIndex}_cta_link`} className="text-white">Button Link</Label>
+                                <Input
+                                  id={`tile_${index}_${tileIndex}_cta_link`}
+                                  value={tile.ctaLink || ''}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data.items[tileIndex].ctaLink = e.target.value;
+                                    setPageSegments(newSegments);
+                                  }}
+                                  placeholder="/page, #section, or https://..."
+                                  className="border-2 border-gray-600"
+                                />
+                              </div>
+
+                              <div>
+                                <Label htmlFor={`tile_${index}_${tileIndex}_cta_style`} className="text-white">Button Style</Label>
+                                <select
+                                  id={`tile_${index}_${tileIndex}_cta_style`}
+                                  value={tile.ctaStyle || 'standard'}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data.items[tileIndex].ctaStyle = e.target.value;
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                                >
+                                  <option value="standard">Standard (Yellow with Black Text)</option>
+                                  <option value="technical">Technical (Dark Gray with White Text)</option>
+                                </select>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+
+                      <div className="flex justify-end pt-4 border-t border-gray-600">
+                        <Button
+                          onClick={async () => {
+                            setSaving(true);
+                            try {
+                              const { error } = await supabase
+                                .from("page_content")
+                                .upsert({
+                                  page_slug: "photography",
+                                  section_key: "page_segments",
+                                  content_type: "json",
+                                  content_value: JSON.stringify(pageSegments),
+                                  updated_at: new Date().toISOString(),
+                                  updated_by: user?.id
+                                }, {
+                                  onConflict: 'page_slug,section_key'
+                                });
+
+                              if (error) throw error;
+                              toast.success("Tiles segment saved successfully!");
+                            } catch (error: any) {
+                              toast.error("Error saving segment: " + error.message);
+                            } finally {
+                              setSaving(false);
+                            }
+                          }}
+                          disabled={saving}
+                          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                        >
+                          <Save className="h-4 w-4" />
+                          {saving ? "Saving..." : "Save Changes"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {segment.type !== 'tiles' && (
+                    <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
+                      <p className="text-white text-center">
+                        Segment editor for {segment.type} coming soon. This segment has been saved.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
