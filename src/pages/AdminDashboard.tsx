@@ -190,6 +190,58 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    
+    const file = e.target.files[0];
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `tile-${tileIndex}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      // Update applications array
+      const newApps = [...applications];
+      newApps[tileIndex].imageUrl = publicUrl;
+      setApplications(newApps);
+
+      toast.success("Image uploaded successfully!");
+    } catch (error: any) {
+      toast.error("Error uploading image: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
@@ -594,6 +646,43 @@ const AdminDashboard = () => {
                 {applications.map((app, index) => (
                   <Card key={index} className="border-2 border-gray-600 bg-gray-700">
                     <CardContent className="pt-6 space-y-3">
+                      {/* Image Upload */}
+                      <div>
+                        <Label htmlFor={`app_image_${index}`} className="text-white">Tile Image (Optional)</Label>
+                        <p className="text-sm text-white mb-2">
+                          {app.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this tile (appears above the title)"}
+                        </p>
+                        {app.imageUrl && (
+                          <div className="mb-3">
+                            <img 
+                              src={app.imageUrl} 
+                              alt={`Tile ${index + 1}`} 
+                              className="w-full h-[200px] object-cover rounded-lg border-2 border-gray-600"
+                            />
+                          </div>
+                        )}
+                        
+                        {app.imageUrl ? (
+                          <Button
+                            type="button"
+                            onClick={() => document.getElementById(`app_image_${index}`)?.click()}
+                            disabled={uploading}
+                            className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                          >
+                            {uploading ? "Uploading..." : "Replace Image"}
+                          </Button>
+                        ) : null}
+                        
+                        <Input
+                          id={`app_image_${index}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleTileImageUpload(e, index)}
+                          disabled={uploading}
+                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
+                        />
+                      </div>
+                      
                       <div>
                         <Label htmlFor={`app_title_${index}`} className="text-white">Application {index + 1} Title</Label>
                         <Input

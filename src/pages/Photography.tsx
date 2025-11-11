@@ -271,19 +271,31 @@ const Photography = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {applications.map((app, index) => {
               return (
-                <div 
-                  key={index}
-                  className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]"
-                >
-                   {/* Title */}
-                   <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight h-16 flex items-start">
-                     {app.title}
-                   </h3>
+                 <div 
+                   key={index}
+                   className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden"
+                 >
+                   {/* Tile Image */}
+                   {app.imageUrl && (
+                     <div className="w-full h-[200px] overflow-hidden">
+                       <img 
+                         src={app.imageUrl} 
+                         alt={app.title} 
+                         className="w-full h-full object-cover"
+                       />
+                     </div>
+                   )}
                    
-                   {/* Description */}
-                   <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
-                     {app.description}
-                   </p>
+                   <div className="p-8 flex flex-col items-center text-center flex-1">
+                     {/* Title */}
+                     <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
+                       {app.title}
+                     </h3>
+                     
+                     {/* Description */}
+                     <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
+                       {app.description}
+                     </p>
                   
                    {/* CTA Button */}
                    {app.ctaLink ? (
@@ -326,8 +338,9 @@ const Photography = () => {
                      >
                        Learn More
                      </Button>
-                   )}
-                </div>
+                     )}
+                   </div>
+                 </div>
               );
             })}
           </div>
