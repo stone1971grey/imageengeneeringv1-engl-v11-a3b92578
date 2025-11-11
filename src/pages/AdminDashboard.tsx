@@ -210,8 +210,11 @@ const AdminDashboard = () => {
       setFooterButtonText("");
       setContent({});
       
-      // Then load new content
-      loadContent();
+      // First, calculate global max segment ID across all pages
+      calculateGlobalMaxSegmentId().then(() => {
+        // Then load content for current page
+        loadContent();
+      });
     }
   }, [user, selectedPage, isAdmin, isEditor]);
 
@@ -311,6 +314,46 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
+  // Calculate the maximum segment ID across ALL pages to ensure global uniqueness
+  const calculateGlobalMaxSegmentId = async () => {
+    try {
+      // Query all page_segments from all pages
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("section_key", "page_segments");
+
+      if (error) {
+        console.error("Error fetching global segments:", error);
+        return;
+      }
+
+      let globalMaxId = 4; // Start from 4 (after static segments 1-4)
+
+      if (data && data.length > 0) {
+        data.forEach((item: any) => {
+          try {
+            const segments = JSON.parse(item.content_value);
+            segments.forEach((seg: any) => {
+              const id = typeof seg.id === 'number' ? seg.id : 
+                        typeof seg.id === 'string' && seg.id.match(/^\d+$/) ? parseInt(seg.id) : 0;
+              if (!isNaN(id) && id > globalMaxId) {
+                globalMaxId = id;
+              }
+            });
+          } catch (e) {
+            console.error("Error parsing segment data:", e);
+          }
+        });
+      }
+
+      setNextSegmentId(globalMaxId + 1);
+      console.log("Global max segment ID calculated:", globalMaxId, "Next ID will be:", globalMaxId + 1);
+    } catch (error) {
+      console.error("Error calculating global max segment ID:", error);
+    }
+  };
+
   const loadContent = async () => {
     const { data, error } = await supabase
       .from("page_content")
@@ -371,13 +414,8 @@ const AdminDashboard = () => {
           }));
           setPageSegments(segmentsWithIds);
           
-          // Calculate next available ID
-          const maxId = segmentsWithIds.reduce((max: number, seg: any) => {
-            const id = typeof seg.id === 'number' ? seg.id : 
-                      typeof seg.id === 'string' && seg.id.match(/^\d+$/) ? parseInt(seg.id) : 0;
-            return Math.max(max, isNaN(id) ? 0 : id);
-          }, 4); // Start from 4 (after static segments 1-4)
-          setNextSegmentId(maxId + 1);
+          // Note: Global max ID is already calculated in calculateGlobalMaxSegmentId()
+          // No need to recalculate here as it would only check current page
         } catch {
           setPageSegments([]);
         }
@@ -1107,8 +1145,9 @@ const AdminDashboard = () => {
   const handleAddSegment = async (templateType: string) => {
     if (!user) return;
 
-    // Generate a unique numeric ID for this segment
+    // Generate a unique numeric ID for this segment (globally unique across all pages)
     const segmentId = String(nextSegmentId);
+    console.log("Creating new segment with global ID:", segmentId);
     setNextSegmentId(nextSegmentId + 1);
     
     const newSegment = {
