@@ -444,15 +444,12 @@ const Photography = () => {
       );
     }
 
-    // Dynamic segments (segment-0, segment-1, etc.)
-    if (segmentId.startsWith('segment-')) {
-      const segmentIndex = parseInt(segmentId.split('-')[1]);
-      const segment = pageSegments[segmentIndex];
-      
-      if (!segment) return null;
+    // Dynamic segments - find by ID
+    const segment = pageSegments.find(s => s.id === segmentId);
+    if (!segment) return null;
 
-      if (segment.type === 'tiles') {
-        return (
+    if (segment.type === 'tiles') {
+      return (
           <section key={segmentId} id={segmentId} className="py-8 bg-gray-50">
             <div className="container mx-auto px-6">
               <div className="text-center mb-16">
@@ -618,7 +615,6 @@ const Photography = () => {
           </section>
         );
       }
-    }
 
     return null;
   };

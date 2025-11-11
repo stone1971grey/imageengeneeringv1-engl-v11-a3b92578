@@ -178,7 +178,7 @@ const AdminDashboard = () => {
     if (!user || !selectedPage) return;
     
     const staticTabs = ['tiles', 'banner', 'solutions'];
-    const segmentIds = pageSegments.map((_, index) => `segment-${index}`);
+    const segmentIds = pageSegments.map(seg => seg.id || `segment-${seg.position}`);
     
     // Build complete list of all tabs that should exist
     const allTabs = [...staticTabs, ...segmentIds];
@@ -321,14 +321,28 @@ const AdminDashboard = () => {
       } else if (item.section_key === "page_segments") {
         try {
           const segments = JSON.parse(item.content_value);
-          setPageSegments(segments || []);
+          // Ensure all segments have IDs (backward compatibility)
+          const segmentsWithIds = (segments || []).map((seg: any, idx: number) => ({
+            ...seg,
+            id: seg.id || `seg-legacy-${idx}-${Date.now()}`,
+            position: idx
+          }));
+          setPageSegments(segmentsWithIds);
         } catch {
           setPageSegments([]);
         }
       } else if (item.section_key === "tab_order") {
         try {
           const order = JSON.parse(item.content_value);
-          setTabOrder(order || ['tiles', 'banner', 'solutions']);
+          // Convert old segment-X format to new IDs if needed
+          const updatedOrder = (order || ['tiles', 'banner', 'solutions']).map((tabId: string) => {
+            if (tabId.startsWith('segment-')) {
+              // This will be fixed by the useEffect sync after segments load
+              return tabId;
+            }
+            return tabId;
+          });
+          setTabOrder(updatedOrder);
         } catch {
           setTabOrder(['tiles', 'banner', 'solutions']);
         }
@@ -1043,15 +1057,18 @@ const AdminDashboard = () => {
   const handleAddSegment = async (templateType: string) => {
     if (!user) return;
 
+    // Generate a unique ID for this segment
+    const segmentId = `seg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
     const newSegment = {
+      id: segmentId,
       type: templateType,
       position: pageSegments.length,
       data: getDefaultSegmentData(templateType)
     };
 
     const updatedSegments = [...pageSegments, newSegment];
-    const newSegmentId = `segment-${updatedSegments.length - 1}`;
-    const updatedTabOrder = [...tabOrder, newSegmentId];
+    const updatedTabOrder = [...tabOrder, segmentId];
 
     try {
       // Save segments
@@ -1091,7 +1108,7 @@ const AdminDashboard = () => {
       setIsTemplateDialogOpen(false);
       
       // Switch to the newly added segment tab
-      setActiveTab(newSegmentId);
+      setActiveTab(segmentId);
       
       toast.success("New segment added successfully!");
     } catch (error: any) {
@@ -1099,31 +1116,19 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleDeleteSegment = async (position: number) => {
+  const handleDeleteSegment = async (segmentId: string) => {
     if (!user) return;
 
-    const segmentId = `segment-${position}`;
-    
-    // Remove the segment with this position
+    // Remove the segment with this ID
     const updatedSegments = pageSegments
-      .filter(seg => seg.position !== position)
+      .filter(seg => seg.id !== segmentId)
       .map((seg, idx) => ({
         ...seg,
         position: idx  // Renumber positions sequentially
       }));
     
-    // Remove from tab order and renumber segment IDs
-    const updatedTabOrder = tabOrder
-      .filter(id => id !== segmentId)
-      .map(id => {
-        if (id.startsWith('segment-')) {
-          const pos = parseInt(id.split('-')[1]);
-          if (pos > position) {
-            return `segment-${pos - 1}`;
-          }
-        }
-        return id;
-      });
+    // Remove from tab order (IDs stay the same, just remove this one)
+    const updatedTabOrder = tabOrder.filter(id => id !== segmentId);
 
     try {
       const { error: segmentsError } = await supabase
@@ -1405,9 +1410,9 @@ const AdminDashboard = () => {
                   }
                   
                   // Dynamic segment tabs
-                  const segmentIndex = pageSegments.findIndex((_, i) => `segment-${i}` === tabId);
-                  if (segmentIndex !== -1) {
-                    const segment = pageSegments[segmentIndex];
+                  const segment = pageSegments.find(s => s.id === tabId);
+                  if (segment) {
+                    const segmentIndex = pageSegments.indexOf(segment);
                     const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === segment.type).length;
                     const displayNumber = sameTypeBefore + 2;
                     
@@ -2675,16 +2680,16 @@ const AdminDashboard = () => {
 
           {/* Dynamic Segment Tabs */}
           {pageSegments.map((segment, index) => (
-            <TabsContent key={`segment-content-${index}`} value={`segment-${index}`}>
+            <TabsContent key={`segment-content-${segment.id}`} value={segment.id}>
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-white">
-                        {segment.type === 'hero' && `Hero Section ${index + 1}`}
-                        {segment.type === 'tiles' && `Tiles Section ${index + 1}`}
-                        {segment.type === 'banner' && `Banner Section ${index + 1}`}
-                        {segment.type === 'image-text' && `Image & Text Section ${index + 1}`}
+                        {segment.type === 'hero' && `Hero Section ${segment.position + 1}`}
+                        {segment.type === 'tiles' && `Tiles Section ${segment.position + 1}`}
+                        {segment.type === 'banner' && `Banner Section ${segment.position + 1}`}
+                        {segment.type === 'image-text' && `Image & Text Section ${segment.position + 1}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
@@ -2718,7 +2723,7 @@ const AdminDashboard = () => {
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => handleDeleteSegment(segment.position)}
+                              onClick={() => handleDeleteSegment(segment.id)}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
                               Delete
