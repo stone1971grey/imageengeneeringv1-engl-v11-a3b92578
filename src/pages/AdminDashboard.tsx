@@ -145,6 +145,7 @@ const AdminDashboard = () => {
   const [footerTeamName, setFooterTeamName] = useState<string>("");
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
   const [footerButtonText, setFooterButtonText] = useState<string>("");
+  const [segmentRegistry, setSegmentRegistry] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -210,10 +211,13 @@ const AdminDashboard = () => {
       setFooterButtonText("");
       setContent({});
       
-      // First, calculate global max segment ID across all pages
-      calculateGlobalMaxSegmentId().then(() => {
-        // Then load content for current page
-        loadContent();
+      // First, load segment registry to get all segment IDs
+      loadSegmentRegistry().then(() => {
+        // Then calculate global max segment ID across all pages
+        calculateGlobalMaxSegmentId().then(() => {
+          // Finally load content for current page
+          loadContent();
+        });
       });
     }
   }, [user, selectedPage, isAdmin, isEditor]);
@@ -314,48 +318,56 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
-  // Calculate the maximum segment ID across ALL pages to ensure global uniqueness
-  const calculateGlobalMaxSegmentId = async () => {
+  // Load segment registry to get all segment IDs
+  const loadSegmentRegistry = async () => {
     try {
-      // Query all page_segments from all pages
       const { data, error } = await supabase
-        .from("page_content")
-        .select("content_value")
-        .eq("section_key", "page_segments");
+        .from("segment_registry")
+        .select("*")
+        .eq("page_slug", selectedPage);
 
       if (error) {
-        console.error("Error fetching global segments:", error);
-        setNextSegmentId(5); // Default to 5 if error
+        console.error("Error loading segment registry:", error);
         return;
       }
 
-      let globalMaxId = 4; // Start from 4 (after static segments 1-4)
+      // Create a map of segment_key to segment_id
+      const registry: Record<string, number> = {};
+      data?.forEach((item: any) => {
+        registry[item.segment_key] = item.segment_id;
+      });
 
-      if (data && data.length > 0) {
-        data.forEach((item: any) => {
-          try {
-            const segments = JSON.parse(item.content_value);
-            segments.forEach((seg: any) => {
-              if (seg.id) {
-                const id = typeof seg.id === 'number' ? seg.id : 
-                          typeof seg.id === 'string' && seg.id.match(/^\d+$/) ? parseInt(seg.id) : 0;
-                if (!isNaN(id) && id > globalMaxId) {
-                  globalMaxId = id;
-                }
-              }
-            });
-          } catch (e) {
-            console.error("Error parsing segment data:", e);
-          }
-        });
+      setSegmentRegistry(registry);
+      console.log("✅ Loaded segment registry for", selectedPage, ":", registry);
+    } catch (error) {
+      console.error("Error loading segment registry:", error);
+    }
+  };
+
+  // Calculate the maximum segment ID across ALL pages to ensure global uniqueness
+  const calculateGlobalMaxSegmentId = async () => {
+    try {
+      // Query segment_registry to get the highest segment_id
+      const { data, error } = await supabase
+        .from("segment_registry")
+        .select("segment_id")
+        .order("segment_id", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error("Error fetching global max segment ID:", error);
+        setNextSegmentId(18); // Default to 18 (after initial 17 segments)
+        return;
       }
 
+      const globalMaxId = data?.segment_id || 17;
       const nextId = globalMaxId + 1;
       setNextSegmentId(nextId);
       console.log("✅ Global max segment ID:", globalMaxId, "| Next available ID:", nextId);
     } catch (error) {
       console.error("Error calculating global max segment ID:", error);
-      setNextSegmentId(5); // Default to 5 if error
+      setNextSegmentId(18); // Default to 18 if error
     }
   };
 
@@ -1532,7 +1544,7 @@ const AdminDashboard = () => {
                 value="hero" 
                 className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
               >
-                Produkt-Hero
+                ID {segmentRegistry['hero'] || 1}: Produkt-Hero
               </TabsTrigger>
 
               {/* Draggable Middle Tabs */}
@@ -1545,21 +1557,21 @@ const AdminDashboard = () => {
                   if (tabId === 'tiles') {
                     return (
                       <SortableTab key="tiles" id="tiles" value="tiles">
-                        Tiles
+                        ID {segmentRegistry['tiles'] || 2}: Tiles
                       </SortableTab>
                     );
                   }
                   if (tabId === 'banner') {
                     return (
                       <SortableTab key="banner" id="banner" value="banner">
-                        Banner
+                        ID {segmentRegistry['banner'] || 3}: Banner
                       </SortableTab>
                     );
                   }
                   if (tabId === 'solutions') {
                     return (
                       <SortableTab key="solutions" id="solutions" value="solutions">
-                        Image & Text
+                        ID {segmentRegistry['solutions'] || 4}: Image & Text
                       </SortableTab>
                     );
                   }
@@ -1577,9 +1589,11 @@ const AdminDashboard = () => {
                     if (segment.type === 'banner') label = `Banner ${displayNumber}`;
                     if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
                     
+                    const segmentId = segmentRegistry[tabId] || tabId;
+                    
                     return (
                       <SortableTab key={tabId} id={tabId} value={tabId}>
-                        {label}
+                        ID {segmentId}: {label}
                       </SortableTab>
                     );
                   }
@@ -1592,7 +1606,7 @@ const AdminDashboard = () => {
                 value="footer"
                 className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
               >
-                Footer
+                ID {segmentRegistry['footer'] || 7}: Footer
               </TabsTrigger>
             </TabsList>
           </DndContext>
