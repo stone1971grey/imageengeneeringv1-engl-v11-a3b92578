@@ -591,7 +591,13 @@ const AdminDashboard = () => {
           title: 'New Image & Text Section',
           subtext: '',
           layout: '2-col',
-          items: []
+          items: [
+            {
+              title: 'New Item',
+              description: 'Add description here...',
+              imageUrl: ''
+            }
+          ]
         };
       default:
         return {};
@@ -2050,7 +2056,192 @@ const AdminDashboard = () => {
                   );
                   })()}
 
-                  {segment.type !== 'tiles' && (
+                  {segment.type === 'image-text' && (() => {
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('image-text');
+                    }
+                    if (!segment.data.items) {
+                      segment.data.items = [];
+                    }
+                    
+                    return (
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor={`segment_${index}_title`} className="text-white">Section Title</Label>
+                          <Input
+                            id={`segment_${index}_title`}
+                            value={segment.data.title || ''}
+                            onChange={(e) => {
+                              const newSegments = [...pageSegments];
+                              newSegments[index].data.title = e.target.value;
+                              setPageSegments(newSegments);
+                            }}
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor={`segment_${index}_subtext`} className="text-white">Section Subtext (optional)</Label>
+                          <Textarea
+                            id={`segment_${index}_subtext`}
+                            value={segment.data.subtext || ''}
+                            onChange={(e) => {
+                              const newSegments = [...pageSegments];
+                              newSegments[index].data.subtext = e.target.value;
+                              setPageSegments(newSegments);
+                            }}
+                            rows={2}
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor={`segment_${index}_layout`} className="text-white">Layout</Label>
+                          <select
+                            id={`segment_${index}_layout`}
+                            value={segment.data.layout || '2-col'}
+                            onChange={(e) => {
+                              const newSegments = [...pageSegments];
+                              newSegments[index].data.layout = e.target.value;
+                              setPageSegments(newSegments);
+                            }}
+                            className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md"
+                          >
+                            <option value="1-col">1 Column (Full Width)</option>
+                            <option value="2-col">2 Columns</option>
+                            <option value="3-col">3 Columns</option>
+                          </select>
+                        </div>
+
+                        {/* Items */}
+                        <div className="space-y-4 mt-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-white">Items</h3>
+                            <Button
+                              onClick={() => {
+                                const newSegments = [...pageSegments];
+                                if (!newSegments[index].data.items) {
+                                  newSegments[index].data.items = [];
+                                }
+                                newSegments[index].data.items.push({
+                                  title: 'New Item',
+                                  description: 'Add description here...',
+                                  imageUrl: ''
+                                });
+                                setPageSegments(newSegments);
+                                toast.success("New item added! Don't forget to save changes.");
+                              }}
+                              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                            >
+                              <Plus className="h-4 w-4" />
+                              Add Item
+                            </Button>
+                          </div>
+                          {segment.data.items.map((item: any, itemIndex: number) => (
+                            <Card key={itemIndex} className="border-2 bg-gray-600 border-gray-500">
+                              <CardContent className="pt-6 space-y-3">
+                                <div className="flex items-center justify-between mb-4">
+                                  <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md shadow-lg">
+                                    Item {itemIndex + 1}
+                                  </div>
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data.items.splice(itemIndex, 1);
+                                      setPageSegments(newSegments);
+                                      toast.success("Item deleted! Don't forget to save changes.");
+                                    }}
+                                    className="flex items-center gap-2"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete
+                                  </Button>
+                                </div>
+
+                                <div>
+                                  <Label className="text-white">Title</Label>
+                                  <Input
+                                    value={item.title || ''}
+                                    onChange={(e) => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data.items[itemIndex].title = e.target.value;
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className="border-2 border-gray-600"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label className="text-white">Description</Label>
+                                  <Textarea
+                                    value={item.description || ''}
+                                    onChange={(e) => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data.items[itemIndex].description = e.target.value;
+                                      setPageSegments(newSegments);
+                                    }}
+                                    rows={4}
+                                    className="border-2 border-gray-600"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label className="text-white">Image URL (optional)</Label>
+                                  <Input
+                                    value={item.imageUrl || ''}
+                                    onChange={(e) => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data.items[itemIndex].imageUrl = e.target.value;
+                                      setPageSegments(newSegments);
+                                    }}
+                                    placeholder="Enter image URL or leave empty"
+                                    className="border-2 border-gray-600"
+                                  />
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+
+                        <div className="flex justify-end pt-4 border-t border-gray-600">
+                          <Button
+                            onClick={async () => {
+                              setSaving(true);
+                              try {
+                                const { error } = await supabase
+                                  .from("page_content")
+                                  .upsert({
+                                    page_slug: "photography",
+                                    section_key: "page_segments",
+                                    content_type: "json",
+                                    content_value: JSON.stringify(pageSegments),
+                                    updated_at: new Date().toISOString(),
+                                    updated_by: user?.id
+                                  }, {
+                                    onConflict: 'page_slug,section_key'
+                                  });
+
+                                if (error) throw error;
+                                toast.success("Image & Text segment saved successfully!");
+                              } catch (error: any) {
+                                toast.error("Error saving segment: " + error.message);
+                              } finally {
+                                setSaving(false);
+                              }
+                            }}
+                            disabled={saving}
+                            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                          >
+                            <Save className="h-4 w-4" />
+                            {saving ? "Saving..." : "Save Changes"}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {segment.type !== 'tiles' && segment.type !== 'image-text' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
                       <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.
