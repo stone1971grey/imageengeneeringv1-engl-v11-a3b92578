@@ -325,6 +325,7 @@ const AdminDashboard = () => {
 
       if (error) {
         console.error("Error fetching global segments:", error);
+        setNextSegmentId(5); // Default to 5 if error
         return;
       }
 
@@ -335,10 +336,12 @@ const AdminDashboard = () => {
           try {
             const segments = JSON.parse(item.content_value);
             segments.forEach((seg: any) => {
-              const id = typeof seg.id === 'number' ? seg.id : 
-                        typeof seg.id === 'string' && seg.id.match(/^\d+$/) ? parseInt(seg.id) : 0;
-              if (!isNaN(id) && id > globalMaxId) {
-                globalMaxId = id;
+              if (seg.id) {
+                const id = typeof seg.id === 'number' ? seg.id : 
+                          typeof seg.id === 'string' && seg.id.match(/^\d+$/) ? parseInt(seg.id) : 0;
+                if (!isNaN(id) && id > globalMaxId) {
+                  globalMaxId = id;
+                }
               }
             });
           } catch (e) {
@@ -347,10 +350,12 @@ const AdminDashboard = () => {
         });
       }
 
-      setNextSegmentId(globalMaxId + 1);
-      console.log("Global max segment ID calculated:", globalMaxId, "Next ID will be:", globalMaxId + 1);
+      const nextId = globalMaxId + 1;
+      setNextSegmentId(nextId);
+      console.log("✅ Global max segment ID:", globalMaxId, "| Next available ID:", nextId);
     } catch (error) {
       console.error("Error calculating global max segment ID:", error);
+      setNextSegmentId(5); // Default to 5 if error
     }
   };
 
@@ -406,16 +411,51 @@ const AdminDashboard = () => {
       } else if (item.section_key === "page_segments") {
         try {
           const segments = JSON.parse(item.content_value);
-          // Ensure all segments have IDs (backward compatibility)
-          const segmentsWithIds = (segments || []).map((seg: any, idx: number) => ({
-            ...seg,
-            id: seg.id || `seg-legacy-${idx}-${Date.now()}`,
-            position: idx
-          }));
+          // Ensure all segments have numeric IDs
+          let needsUpdate = false;
+          const segmentsWithIds = (segments || []).map((seg: any, idx: number) => {
+            if (!seg.id || typeof seg.id !== 'number' && !seg.id.match(/^\d+$/)) {
+              needsUpdate = true;
+              // Assign sequential IDs starting after static segments (1-4)
+              return {
+                ...seg,
+                id: String(5 + idx), // Start from 5 for dynamic segments
+                position: idx
+              };
+            }
+            return {
+              ...seg,
+              position: idx
+            };
+          });
+          
           setPageSegments(segmentsWithIds);
           
+          // If we added IDs, save back to database immediately
+          if (needsUpdate && user) {
+            console.log("Updating segments with numeric IDs:", segmentsWithIds);
+            supabase
+              .from("page_content")
+              .upsert({
+                page_slug: selectedPage,
+                section_key: "page_segments",
+                content_type: "json",
+                content_value: JSON.stringify(segmentsWithIds),
+                updated_at: new Date().toISOString(),
+                updated_by: user.id
+              }, {
+                onConflict: 'page_slug,section_key'
+              })
+              .then(({ error }) => {
+                if (error) {
+                  console.error("Error updating segment IDs:", error);
+                } else {
+                  console.log("Segment IDs updated successfully");
+                }
+              });
+          }
+          
           // Note: Global max ID is already calculated in calculateGlobalMaxSegmentId()
-          // No need to recalculate here as it would only check current page
         } catch {
           setPageSegments([]);
         }
