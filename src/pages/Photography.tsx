@@ -507,52 +507,6 @@ const Photography = () => {
         </div>
       </section>
 
-      {/* Solutions Template Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="w-full px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              {solutionsTitle || "Automotive Camera Test Solutions"}
-            </h2>
-            {solutionsSubtext && (
-              <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                {solutionsSubtext}
-              </p>
-            )}
-          </div>
-
-          {/* Dynamic Grid Layout */}
-          <div className={`grid gap-8 max-w-7xl mx-auto ${
-            solutionsLayout === "1-col" ? "grid-cols-1" :
-            solutionsLayout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
-            "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-          }`}>
-            {solutionsItems.map((item: any, index: number) => (
-              <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-                <CardContent className="p-0">
-                  {/* Optional Full-Width Image */}
-                  {item.imageUrl && (
-                    <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                      <img 
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  {/* Content */}
-                  <div className="p-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
-                    <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                      {item.description}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
 
       {/* Dynamic Segments */}
@@ -672,29 +626,6 @@ const Photography = () => {
         return null;
       })}
 
-      {/* Professional Laboratory Installation */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="aspect-video relative">
-              <img 
-                src={testLabServices} 
-                alt="Automotive Camera Test Services in iQ-Lab"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Automotive Camera Test Services</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Welcome to our iQ-Lab, one of the world's largest independent camera test labs. We offer a wide range of tests for the automotive industry, including the camPAS (Camera Performance for Automotive Systems) test.
-              </p>
-              <p className="text-gray-600 leading-relaxed mt-4">
-                The camPAS test was developed for clients who need independent and objective test results from a neutral third-party to support their development decisions. camPAS, like most of our testing services, can be tailored to meet your specific KPI requirements. Don't hesitate to reach out to our iQ-Lab team to discuss your requirements and all of our test services.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
 
       <Footer />
