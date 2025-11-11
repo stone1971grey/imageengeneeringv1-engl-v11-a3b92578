@@ -1449,7 +1449,7 @@ const AdminDashboard = () => {
                               <img 
                                 src={item.imageUrl} 
                                 alt={`Solution ${index + 1}`} 
-                                className="w-full aspect-[4/3] object-cover rounded-lg border-2 border-gray-600"
+                                className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
                               />
                             </div>
                           )}
