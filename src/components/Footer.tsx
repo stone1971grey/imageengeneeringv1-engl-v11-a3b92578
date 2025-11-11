@@ -96,14 +96,16 @@ const Footer = () => {
           {/* Left Column - Contact */}
           <div className="space-y-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold">
                 {isPhotographyPage && footerContent.footer_contact_headline 
                   ? footerContent.footer_contact_headline 
-                  : t.footer.contactHeadline[pageType]}<br />
+                  : t.footer.contactHeadline[pageType]}
+              </h2>
+              <p className="text-lg md:text-xl font-semibold mb-4 mt-2">
                 {isPhotographyPage && footerContent.footer_contact_subline 
                   ? footerContent.footer_contact_subline 
                   : t.footer.contactSubline[pageType]}
-              </h2>
+              </p>
               <p className="text-white leading-relaxed">
                 {isPhotographyPage && footerContent.footer_contact_description 
                   ? footerContent.footer_contact_description 
