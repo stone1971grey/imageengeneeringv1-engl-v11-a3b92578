@@ -194,6 +194,10 @@ const Photography = () => {
   ];
 
   console.log("Photography component - pageSegments:", pageSegments);
+  console.log("Photography component - pageSegments length:", pageSegments.length);
+  pageSegments.forEach((seg, idx) => {
+    console.log(`Segment ${idx}:`, seg.type, seg.data);
+  });
 
   if (loading) {
     return (
