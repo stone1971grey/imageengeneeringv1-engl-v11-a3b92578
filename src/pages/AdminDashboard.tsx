@@ -43,6 +43,12 @@ const AdminDashboard = () => {
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
   const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
   const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
+  const [bannerTitle, setBannerTitle] = useState<string>("");
+  const [bannerSubtext, setBannerSubtext] = useState<string>("");
+  const [bannerImages, setBannerImages] = useState<any[]>([]);
+  const [bannerButtonText, setBannerButtonText] = useState<string>("");
+  const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
+  const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -113,6 +119,18 @@ const AdminDashboard = () => {
     data?.forEach((item: ContentItem) => {
       if (item.section_key === "applications_items") {
         apps = JSON.parse(item.content_value);
+      } else if (item.section_key === "banner_images") {
+        setBannerImages(JSON.parse(item.content_value));
+      } else if (item.section_key === "banner_title") {
+        setBannerTitle(item.content_value);
+      } else if (item.section_key === "banner_subtext") {
+        setBannerSubtext(item.content_value);
+      } else if (item.section_key === "banner_button_text") {
+        setBannerButtonText(item.content_value);
+      } else if (item.section_key === "banner_button_link") {
+        setBannerButtonLink(item.content_value);
+      } else if (item.section_key === "banner_button_style") {
+        setBannerButtonStyle(item.content_value || "standard");
       } else if (item.section_key === "hero_image_url") {
         setHeroImageUrl(item.content_value);
       } else if (item.section_key === "hero_image_position") {
@@ -380,6 +398,68 @@ const AdminDashboard = () => {
     toast.success("Tile deleted! Don't forget to save changes.");
   };
 
+  const handleAddBannerImage = () => {
+    const newImage = {
+      url: "",
+      alt: `Banner image ${bannerImages.length + 1}`
+    };
+    setBannerImages([...bannerImages, newImage]);
+    toast.success("New banner image slot added! Upload an image.");
+  };
+
+  const handleDeleteBannerImage = (index: number) => {
+    const newImages = bannerImages.filter((_, i) => i !== index);
+    setBannerImages(newImages);
+    toast.success("Banner image deleted! Don't forget to save changes.");
+  };
+
+  const handleBannerImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    
+    const file = e.target.files[0];
+    
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `banner-image-${index}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      const newImages = [...bannerImages];
+      newImages[index].url = publicUrl;
+      setBannerImages(newImages);
+
+      toast.success("Banner image uploaded successfully!");
+    } catch (error: any) {
+      toast.error("Error uploading image: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSaveApplications = async () => {
     if (!user) return;
     
@@ -459,7 +539,7 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="hero" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 h-auto p-2 bg-gray-200">
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto p-2 bg-gray-200">
             <TabsTrigger 
               value="hero" 
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
@@ -471,6 +551,12 @@ const AdminDashboard = () => {
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
               Tiles Template
+            </TabsTrigger>
+            <TabsTrigger 
+              value="banner"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Banner Template
             </TabsTrigger>
           </TabsList>
 
@@ -915,6 +1001,261 @@ const AdminDashboard = () => {
               </div>
             </CardContent>
           </Card>
+          </TabsContent>
+
+          {/* Banner Template Tab */}
+          <TabsContent value="banner">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Banner Template Section</CardTitle>
+                <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Title */}
+                <div>
+                  <Label htmlFor="banner_title" className="text-white">Section Title</Label>
+                  <Input
+                    id="banner_title"
+                    value={bannerTitle}
+                    onChange={(e) => setBannerTitle(e.target.value)}
+                    placeholder="e.g., Automotive International Standards"
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
+                {/* Subtext */}
+                <div>
+                  <Label htmlFor="banner_subtext" className="text-white">Subtext (Optional)</Label>
+                  <Textarea
+                    id="banner_subtext"
+                    value={bannerSubtext}
+                    onChange={(e) => setBannerSubtext(e.target.value)}
+                    placeholder="Optional description text (max width 600px, centered)"
+                    rows={3}
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
+                {/* Banner Images */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white text-lg font-semibold">Banner Images</Label>
+                    <Button
+                      onClick={handleAddBannerImage}
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Image
+                    </Button>
+                  </div>
+
+                  {bannerImages.map((image, index) => (
+                    <Card key={index} className="bg-gray-700 border-gray-600">
+                      <CardContent className="pt-6 space-y-3">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md">
+                            Image {index + 1}
+                          </div>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="flex items-center gap-2"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete "Image {index + 1}". This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteBannerImage(index)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+
+                        {image.url && (
+                          <div className="mb-3">
+                            <img 
+                              src={image.url} 
+                              alt={`Banner ${index + 1}`} 
+                              className="w-40 h-24 object-contain rounded-lg border-2 border-gray-600 bg-white p-2"
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <Label htmlFor={`banner_image_${index}`} className="text-white">Image File</Label>
+                          <Input
+                            id={`banner_image_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleBannerImageUpload(e, index)}
+                            disabled={uploading}
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor={`banner_image_alt_${index}`} className="text-white">Alt Text</Label>
+                          <Input
+                            id={`banner_image_alt_${index}`}
+                            value={image.alt}
+                            onChange={(e) => {
+                              const newImages = [...bannerImages];
+                              newImages[index].alt = e.target.value;
+                              setBannerImages(newImages);
+                            }}
+                            placeholder="Image description for accessibility"
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Button Settings */}
+                <div className="pt-4 border-t border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4">Button Settings</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="banner_button_text" className="text-white">Button Text</Label>
+                      <Input
+                        id="banner_button_text"
+                        value={bannerButtonText}
+                        onChange={(e) => setBannerButtonText(e.target.value)}
+                        placeholder="e.g., View Standards"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="banner_button_link" className="text-white">Button Link</Label>
+                      <Input
+                        id="banner_button_link"
+                        value={bannerButtonLink}
+                        onChange={(e) => setBannerButtonLink(e.target.value)}
+                        placeholder="/page-url or https://example.com"
+                        className="border-2 border-gray-600"
+                      />
+                      <p className="text-sm text-white mt-1">
+                        Use '/path' for internal pages or 'https://...' for external URLs
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="banner_button_style" className="text-white">Button Style</Label>
+                      <Select
+                        value={bannerButtonStyle}
+                        onValueChange={(value) => setBannerButtonStyle(value)}
+                      >
+                        <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                          <SelectValue placeholder="Select button style" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
+                          <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-gray-600">
+                  <Button
+                    onClick={async () => {
+                      setSaving(true);
+                      try {
+                        const updates = [
+                          {
+                            page_slug: "photography",
+                            section_key: "banner_title",
+                            content_type: "heading",
+                            content_value: bannerTitle,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "banner_subtext",
+                            content_type: "text",
+                            content_value: bannerSubtext,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "banner_images",
+                            content_type: "json",
+                            content_value: JSON.stringify(bannerImages),
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "banner_button_text",
+                            content_type: "text",
+                            content_value: bannerButtonText,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "banner_button_link",
+                            content_type: "text",
+                            content_value: bannerButtonLink,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "banner_button_style",
+                            content_type: "text",
+                            content_value: bannerButtonStyle,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          }
+                        ];
+
+                        const { error } = await supabase
+                          .from("page_content")
+                          .upsert(updates, {
+                            onConflict: 'page_slug,section_key'
+                          });
+
+                        if (error) throw error;
+
+                        toast.success("Banner content saved successfully!");
+                      } catch (error: any) {
+                        toast.error("Error saving banner content: " + error.message);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    disabled={saving}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

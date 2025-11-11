@@ -67,6 +67,12 @@ const Photography = () => {
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
   const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
   const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
+  const [bannerTitle, setBannerTitle] = useState<string>("");
+  const [bannerSubtext, setBannerSubtext] = useState<string>("");
+  const [bannerImages, setBannerImages] = useState<any[]>([]);
+  const [bannerButtonText, setBannerButtonText] = useState<string>("");
+  const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
+  const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
 
   useEffect(() => {
     loadContent();
@@ -85,6 +91,18 @@ const Photography = () => {
       data.forEach((item: any) => {
         if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
+        } else if (item.section_key === "banner_images") {
+          setBannerImages(JSON.parse(item.content_value));
+        } else if (item.section_key === "banner_title") {
+          setBannerTitle(item.content_value);
+        } else if (item.section_key === "banner_subtext") {
+          setBannerSubtext(item.content_value);
+        } else if (item.section_key === "banner_button_text") {
+          setBannerButtonText(item.content_value);
+        } else if (item.section_key === "banner_button_link") {
+          setBannerButtonLink(item.content_value);
+        } else if (item.section_key === "banner_button_style") {
+          setBannerButtonStyle(item.content_value || "standard");
         } else if (item.section_key === "hero_image_url") {
           setHeroImageUrl(item.content_value);
         } else if (item.section_key === "hero_image_position") {
@@ -393,52 +411,80 @@ const Photography = () => {
       </section>
 
 
-      {/* Automotive International Standards - Simplified */}
+      {/* Banner Template Section */}
       <section id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
-            Automotive International Standards
+          {/* Title */}
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
+            {bannerTitle || "Automotive International Standards"}
           </h2>
           
+          {/* Optional Subtext */}
+          {bannerSubtext && (
+            <p className="text-lg text-gray-600 mb-12 text-center mx-auto" style={{ maxWidth: '600px' }}>
+              {bannerSubtext}
+            </p>
+          )}
+          
+          {/* Images */}
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
-            {/* IEEE Logo */}
-            <div className="flex items-center justify-center h-24 w-40">
-              <img 
-                src={ieeeLogo} 
-                alt="IEEE P2020 Standard" 
-                className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-              />
-            </div>
-
-            {/* ISO Logo */}
-            <div className="flex items-center justify-center h-24 w-40">
-              <img 
-                src={isoStandardsLogo} 
-                alt="ISO Standards" 
-                className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-              />
-            </div>
-
-            {/* EMVA Logo */}
-            <div className="flex items-center justify-center h-24 w-40">
-              <img 
-                src={emvaLogo} 
-                alt="EMVA 1288 Standard" 
-                className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
-              />
-            </div>
+            {bannerImages.map((image: any, index: number) => (
+              <div key={index} className="flex items-center justify-center h-24 w-40">
+                <img 
+                  src={image.url} 
+                  alt={image.alt || `Banner image ${index + 1}`}
+                  className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                />
+              </div>
+            ))}
           </div>
 
-          {/* View Standards Button - Centered Below Logos */}
-          <div className="flex justify-center">
-            <Button 
-              size="lg"
-              className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300"
-              style={{ backgroundColor: '#f9dc24' }}
-            >
-              View Standards
-            </Button>
-          </div>
+          {/* Button */}
+          {bannerButtonText && (
+            <div className="flex justify-center">
+              {bannerButtonLink ? (
+                bannerButtonLink.startsWith('http://') || bannerButtonLink.startsWith('https://') ? (
+                  <a 
+                    href={bannerButtonLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <button
+                      className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                      style={{
+                        backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                        color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
+                      }}
+                    >
+                      {bannerButtonText}
+                    </button>
+                  </a>
+                ) : (
+                  <Link to={bannerButtonLink}>
+                    <button
+                      className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                      style={{
+                        backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                        color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
+                      }}
+                    >
+                      {bannerButtonText}
+                    </button>
+                  </Link>
+                )
+              ) : (
+                <button
+                  className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                  style={{
+                    backgroundColor: bannerButtonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                    color: bannerButtonStyle === "technical" ? "#ffffff" : "#000000"
+                  }}
+                >
+                  {bannerButtonText}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
