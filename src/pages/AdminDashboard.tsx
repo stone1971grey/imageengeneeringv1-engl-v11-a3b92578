@@ -1064,12 +1064,6 @@ const AdminDashboard = () => {
             >
               Image & Text
             </TabsTrigger>
-            <TabsTrigger 
-              value="footer"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Footer
-            </TabsTrigger>
             {pageSegments.map((segment, index) => (
               <TabsTrigger 
                 key={`segment-${index}`}
@@ -1082,6 +1076,12 @@ const AdminDashboard = () => {
                 {segment.type === 'image-text' && `Image & Text ${index + 2}`}
               </TabsTrigger>
             ))}
+            <TabsTrigger 
+              value="footer"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Footer
+            </TabsTrigger>
           </TabsList>
 
           {/* Hero Section Tab */}
