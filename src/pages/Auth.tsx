@@ -29,7 +29,7 @@ const Auth = () => {
         if (session?.user) {
           // Redirect to admin dashboard after successful login
           setTimeout(() => {
-            navigate("/admin");
+            navigate("/admin-dashboard");
           }, 0);
         }
       }
@@ -41,7 +41,7 @@ const Auth = () => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        navigate("/admin");
+        navigate("/admin-dashboard");
       }
     });
 
@@ -64,7 +64,7 @@ const Auth = () => {
       return;
     }
 
-    const redirectUrl = `${window.location.origin}/admin`;
+    const redirectUrl = `${window.location.origin}/admin-dashboard`;
 
     const { error } = await supabase.auth.signUp({
       email,
