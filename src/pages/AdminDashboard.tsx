@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import {
@@ -102,10 +102,10 @@ const AdminDashboard = () => {
   
   // Static segment IDs - these are fixed and never change
   const STATIC_SEGMENT_IDS = {
-    hero: 'seg-static-hero',
-    tiles: 'seg-static-tiles', 
-    banner: 'seg-static-banner',
-    solutions: 'seg-static-solutions'
+    hero: 1,
+    tiles: 2, 
+    banner: 3,
+    solutions: 4
   };
   
   // Get selected page from URL parameter
@@ -134,6 +134,7 @@ const AdminDashboard = () => {
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("hero");
   const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
+  const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
   const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
   const [footerContactHeadline, setFooterContactHeadline] = useState<string>("");
@@ -369,6 +370,14 @@ const AdminDashboard = () => {
             position: idx
           }));
           setPageSegments(segmentsWithIds);
+          
+          // Calculate next available ID
+          const maxId = segmentsWithIds.reduce((max: number, seg: any) => {
+            const id = typeof seg.id === 'number' ? seg.id : 
+                      typeof seg.id === 'string' && seg.id.match(/^\d+$/) ? parseInt(seg.id) : 0;
+            return Math.max(max, isNaN(id) ? 0 : id);
+          }, 4); // Start from 4 (after static segments 1-4)
+          setNextSegmentId(maxId + 1);
         } catch {
           setPageSegments([]);
         }
@@ -1098,8 +1107,9 @@ const AdminDashboard = () => {
   const handleAddSegment = async (templateType: string) => {
     if (!user) return;
 
-    // Generate a unique ID for this segment
-    const segmentId = `seg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // Generate a unique numeric ID for this segment
+    const segmentId = String(nextSegmentId);
+    setNextSegmentId(nextSegmentId + 1);
     
     const newSegment = {
       id: segmentId,
@@ -1395,6 +1405,22 @@ const AdminDashboard = () => {
                 </div>
               </DialogContent>
             </Dialog>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const urlMap: Record<string, string> = {
+                  'photography': '/photography',
+                  'scanners-archiving': '/scanners-archiving',
+                  'your-solution': '/your-solution'
+                };
+                const previewUrl = urlMap[selectedPage] || '/';
+                window.open(previewUrl, '_blank');
+              }}
+              className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10"
+            >
+              <Eye className="h-4 w-4" />
+              Preview Frontend
+            </Button>
             <Button
               onClick={handleLogout}
               variant="outline"
@@ -2747,7 +2773,7 @@ const AdminDashboard = () => {
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
                       </CardDescription>
-                      <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                      <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                         ID: {segment.id}
                       </div>
                     </div>
