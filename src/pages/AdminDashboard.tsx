@@ -93,6 +93,8 @@ const AdminDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isEditor, setIsEditor] = useState(false);
+  const [allowedPages, setAllowedPages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<Record<string, string>>({});
   const [applications, setApplications] = useState<any[]>([]);
@@ -156,7 +158,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (user) {
-      checkAdminStatus();
+      checkUserAccess();
       loadContent();
     }
   }, [user]);
@@ -197,24 +199,65 @@ const AdminDashboard = () => {
     }
   }, [pageSegments, user]);
 
-  const checkAdminStatus = async () => {
+  const checkUserAccess = async () => {
     if (!user) return;
     
-    const { data, error } = await supabase
+    // Check if user is admin
+    const { data: adminData } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
       .eq("role", "admin")
-      .single();
+      .maybeSingle();
 
-    if (error || !data) {
-      toast.error("You don't have admin access");
-      navigate("/");
+    if (adminData) {
+      setIsAdmin(true);
+      setIsEditor(false);
+      setAllowedPages([]); // Admins have access to all pages
+      setLoading(false);
       return;
     }
 
-    setIsAdmin(true);
-    setLoading(false);
+    // Check if user is editor
+    const { data: editorData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "editor")
+      .maybeSingle();
+
+    if (editorData) {
+      // Get editor's allowed pages
+      const { data: pageAccessData, error: pageAccessError } = await supabase
+        .from("editor_page_access")
+        .select("page_slug")
+        .eq("user_id", user.id);
+
+      if (pageAccessError || !pageAccessData || pageAccessData.length === 0) {
+        toast.error("You don't have access to any pages");
+        navigate("/");
+        return;
+      }
+
+      const pages = pageAccessData.map(p => p.page_slug);
+      
+      // Check if editor has access to photography page (hardcoded for now)
+      if (!pages.includes("photography")) {
+        toast.error("You don't have access to this page");
+        navigate("/");
+        return;
+      }
+
+      setIsEditor(true);
+      setIsAdmin(false);
+      setAllowedPages(pages);
+      setLoading(false);
+      return;
+    }
+
+    // No valid role found
+    toast.error("You don't have admin or editor access");
+    navigate("/");
   };
 
   const loadContent = async () => {
