@@ -351,8 +351,7 @@ const Photography = () => {
                          className="w-full"
                        >
                          <Button 
-                           variant="ghost"
-                           className="w-full border-0 hover:opacity-90 !bg-transparent"
+                           className={`w-full border-0 hover:opacity-90`}
                            style={{ 
                              backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
                              color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
@@ -364,8 +363,7 @@ const Photography = () => {
                      ) : (
                        <Link to={app.ctaLink} className="w-full">
                          <Button 
-                           variant="ghost"
-                           className="w-full border-0 hover:opacity-90 !bg-transparent"
+                           className={`w-full border-0 hover:opacity-90`}
                            style={{ 
                              backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
                              color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
@@ -377,8 +375,7 @@ const Photography = () => {
                      )
                    ) : (
                      <Button 
-                       variant="ghost"
-                       className="w-full border-0 hover:opacity-90 !bg-transparent"
+                       className="w-full border-0 hover:opacity-90"
                        style={{ 
                          backgroundColor: '#f9dc24',
                          color: '#000000'
