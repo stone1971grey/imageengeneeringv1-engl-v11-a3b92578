@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2 } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, MoveUp, MoveDown, FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import {
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface ContentItem {
   id: string;
@@ -28,31 +29,22 @@ interface ContentItem {
   content_value: string;
 }
 
+interface PageSegment {
+  id: string;
+  type: 'hero' | 'tiles' | 'banner' | 'image-text';
+  position: number;
+  data: any;
+}
+
 const AdminDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [content, setContent] = useState<Record<string, string>>({});
-  const [applications, setApplications] = useState<any[]>([]);
+  const [segments, setSegments] = useState<PageSegment[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [heroImageUrl, setHeroImageUrl] = useState<string>("");
-  const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
-  const [heroLayout, setHeroLayout] = useState<string>("2-5");
-  const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
-  const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
-  const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
-  const [bannerTitle, setBannerTitle] = useState<string>("");
-  const [bannerSubtext, setBannerSubtext] = useState<string>("");
-  const [bannerImages, setBannerImages] = useState<any[]>([]);
-  const [bannerButtonText, setBannerButtonText] = useState<string>("");
-  const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
-  const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
-  const [solutionsTitle, setSolutionsTitle] = useState<string>("");
-  const [solutionsSubtext, setSolutionsSubtext] = useState<string>("");
-  const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col");
-  const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,7 +74,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (user) {
       checkAdminStatus();
-      loadContent();
+      loadSegments();
     }
   }, [user]);
 
@@ -106,338 +98,162 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
-  const loadContent = async () => {
+  const loadSegments = async () => {
     const { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", "photography");
+      .eq("page_slug", "photography")
+      .eq("section_key", "page_segments");
 
-    if (error) {
-      toast.error("Error loading content");
-      return;
+    if (!error && data && data.length > 0) {
+      const loadedSegments = JSON.parse(data[0].content_value);
+      setSegments(loadedSegments);
     }
-
-    const contentMap: Record<string, string> = {};
-    let apps: any[] = [];
-
-    data?.forEach((item: ContentItem) => {
-      if (item.section_key === "applications_items") {
-        apps = JSON.parse(item.content_value);
-      } else if (item.section_key === "solutions_title") {
-        setSolutionsTitle(item.content_value);
-      } else if (item.section_key === "solutions_subtext") {
-        setSolutionsSubtext(item.content_value);
-      } else if (item.section_key === "solutions_layout") {
-        setSolutionsLayout(item.content_value || "2-col");
-      } else if (item.section_key === "solutions_items") {
-        setSolutionsItems(JSON.parse(item.content_value));
-      } else if (item.section_key === "banner_images") {
-        setBannerImages(JSON.parse(item.content_value));
-      } else if (item.section_key === "banner_title") {
-        setBannerTitle(item.content_value);
-      } else if (item.section_key === "banner_subtext") {
-        setBannerSubtext(item.content_value);
-      } else if (item.section_key === "banner_button_text") {
-        setBannerButtonText(item.content_value);
-      } else if (item.section_key === "banner_button_link") {
-        setBannerButtonLink(item.content_value);
-      } else if (item.section_key === "banner_button_style") {
-        setBannerButtonStyle(item.content_value || "standard");
-      } else if (item.section_key === "hero_image_url") {
-        setHeroImageUrl(item.content_value);
-      } else if (item.section_key === "hero_image_position") {
-        setHeroImagePosition(item.content_value || "right");
-      } else if (item.section_key === "hero_layout") {
-        setHeroLayout(item.content_value || "2-5");
-      } else if (item.section_key === "hero_top_padding") {
-        setHeroTopPadding(item.content_value || "medium");
-      } else if (item.section_key === "hero_cta_link") {
-        setHeroCtaLink(item.content_value || "#applications-start");
-      } else if (item.section_key === "hero_cta_style") {
-        setHeroCtaStyle(item.content_value || "standard");
-      } else {
-        contentMap[item.section_key] = item.content_value;
-      }
-    });
-
-    setContent(contentMap);
-    setApplications(apps);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0]) return;
+  const addSegment = (type: 'hero' | 'tiles' | 'banner' | 'image-text') => {
+    const newSegment: PageSegment = {
+      id: `segment-${Date.now()}`,
+      type,
+      position: segments.length,
+      data: getDefaultData(type)
+    };
     
-    const file = e.target.files[0];
+    setSegments([...segments, newSegment]);
+    setShowTemplateSelector(false);
+    toast.success(`${getTemplateName(type)} added`);
+  };
+
+  const getDefaultData = (type: string) => {
+    switch (type) {
+      case 'hero':
+        return {
+          title: "New Hero Title",
+          subtitle: "",
+          ctaText: "Learn More",
+          ctaLink: "#",
+          ctaStyle: "standard",
+          imageUrl: "",
+          imagePosition: "right",
+          layout: "2-5",
+          topPadding: "medium"
+        };
+      case 'tiles':
+        return {
+          title: "New Tiles Section",
+          subtitle: "",
+          items: []
+        };
+      case 'banner':
+        return {
+          title: "New Banner Title",
+          subtext: "",
+          images: [],
+          buttonText: "",
+          buttonLink: "",
+          buttonStyle: "standard"
+        };
+      case 'image-text':
+        return {
+          title: "New Image & Text Section",
+          subtext: "",
+          layout: "2-col",
+          items: []
+        };
+      default:
+        return {};
+    }
+  };
+
+  const getTemplateName = (type: string) => {
+    switch (type) {
+      case 'hero': return 'Hero Template';
+      case 'tiles': return 'Tiles Template';
+      case 'banner': return 'Banner Template';
+      case 'image-text': return 'Image & Text Template';
+      default: return 'Template';
+    }
+  };
+
+  const deleteSegment = (id: string) => {
+    setSegments(segments.filter(s => s.id !== id).map((s, idx) => ({
+      ...s,
+      position: idx
+    })));
+    toast.success("Segment deleted");
+  };
+
+  const moveSegment = (id: string, direction: 'up' | 'down') => {
+    const index = segments.findIndex(s => s.id === id);
+    if (
+      (direction === 'up' && index === 0) ||
+      (direction === 'down' && index === segments.length - 1)
+    ) return;
+
+    const newSegments = [...segments];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
     
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
+    [newSegments[index], newSegments[targetIndex]] = [newSegments[targetIndex], newSegments[index]];
+    
+    newSegments.forEach((seg, idx) => {
+      seg.position = idx;
+    });
+    
+    setSegments(newSegments);
+  };
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
+  const updateSegmentData = (id: string, newData: any) => {
+    setSegments(segments.map(s => 
+      s.id === id ? { ...s, data: newData } : s
+    ));
+  };
 
-    setUploading(true);
-
+  const saveAllSegments = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+    
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `photography-hero-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      setHeroImageUrl(publicUrl);
-      
-      // Save to database
-      const { error: dbError } = await supabase
+      const { error } = await supabase
         .from("page_content")
         .upsert({
           page_slug: "photography",
-          section_key: "hero_image_url",
-          content_type: "image_url",
-          content_value: publicUrl,
+          section_key: "page_segments",
+          content_type: "json",
+          content_value: JSON.stringify(segments),
           updated_at: new Date().toISOString(),
-          updated_by: user?.id
+          updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: "page_slug,section_key"
         });
 
-      if (dbError) throw dbError;
-
-      toast.success("Image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
+      if (error) throw error;
+      
+      toast.success("All segments saved successfully!");
+    } catch (error) {
+      console.error("Error saving segments:", error);
+      toast.error("Failed to save segments");
     } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
-    if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
-    setUploading(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `tile-${tileIndex}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Update applications array
-      const newApps = [...applications];
-      newApps[tileIndex].imageUrl = publicUrl;
-      setApplications(newApps);
-
-      toast.success("Image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
+      setSaving(false);
     }
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast.success("Logged out successfully");
-    navigate("/auth");
+    navigate("/");
   };
 
-  const handleSaveHero = async () => {
-    if (!user) return;
-    
-    setSaving(true);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, segmentId: string, field: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    try {
-      // Update hero fields
-      const heroFields = ['hero_title', 'hero_subtitle', 'hero_description', 'hero_cta'];
-      
-      for (const key of heroFields) {
-        if (content[key] !== undefined) {
-          const { error } = await supabase
-            .from("page_content")
-            .update({
-              content_value: content[key],
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            })
-            .eq("page_slug", "photography")
-            .eq("section_key", key);
-
-          if (error) throw error;
-        }
-      }
-
-      // Update hero image position
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: "photography",
-          section_key: "hero_image_position",
-          content_type: "text",
-          content_value: heroImagePosition,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      // Update hero layout
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: "photography",
-          section_key: "hero_layout",
-          content_type: "text",
-          content_value: heroLayout,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      // Update hero top padding
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: "photography",
-          section_key: "hero_top_padding",
-          content_type: "text",
-          content_value: heroTopPadding,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      // Update hero CTA link
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: "photography",
-          section_key: "hero_cta_link",
-          content_type: "text",
-          content_value: heroCtaLink,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      // Update hero CTA style
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: "photography",
-          section_key: "hero_cta_style",
-          content_type: "text",
-          content_value: heroCtaStyle,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      toast.success("Hero section saved successfully!");
-    } catch (error: any) {
-      toast.error("Error saving hero section: " + error.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleAddTile = () => {
-    const newTile = {
-      title: "New Application",
-      description: "Add description here...",
-      ctaLink: "",
-      ctaStyle: "standard",
-      ctaText: "Learn More",
-      imageUrl: "",
-      icon: ""
-    };
-    setApplications([...applications, newTile]);
-    toast.success("New tile added! Don't forget to save changes.");
-  };
-
-  const handleDeleteTile = (index: number) => {
-    const newApps = applications.filter((_, i) => i !== index);
-    setApplications(newApps);
-    toast.success("Tile deleted! Don't forget to save changes.");
-  };
-
-  const handleAddSolutionItem = () => {
-    const newItem = {
-      title: "New Solution",
-      description: "Add description here...",
-      imageUrl: ""
-    };
-    setSolutionsItems([...solutionsItems, newItem]);
-    toast.success("New solution item added! Don't forget to save changes.");
-  };
-
-  const handleDeleteSolutionItem = (index: number) => {
-    const newItems = solutionsItems.filter((_, i) => i !== index);
-    setSolutionsItems(newItems);
-    toast.success("Solution item deleted! Don't forget to save changes.");
-  };
-
-  const handleSolutionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
     if (!file.type.startsWith('image/')) {
       toast.error("Please upload an image file");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
+      toast.error("File size must be less than 5MB");
       return;
     }
 
@@ -445,15 +261,12 @@ const AdminDashboard = () => {
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `solution-${index}-${Date.now()}.${fileExt}`;
+      const fileName = `${segmentId}-${field}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+        .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
@@ -461,130 +274,27 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      const newItems = [...solutionsItems];
-      newItems[index].imageUrl = publicUrl;
-      setSolutionsItems(newItems);
-
-      toast.success("Solution image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleAddBannerImage = () => {
-    const newImage = {
-      url: "",
-      alt: `Banner image ${bannerImages.length + 1}`
-    };
-    setBannerImages([...bannerImages, newImage]);
-    toast.success("New banner image slot added! Upload an image.");
-  };
-
-  const handleDeleteBannerImage = (index: number) => {
-    const newImages = bannerImages.filter((_, i) => i !== index);
-    setBannerImages(newImages);
-    toast.success("Banner image deleted! Don't forget to save changes.");
-  };
-
-  const handleBannerImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    if (!e.target.files || !e.target.files[0]) return;
-    
-    const file = e.target.files[0];
-    
-    if (!file.type.startsWith('image/')) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size must be less than 5MB");
-      return;
-    }
-
-    setUploading(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `banner-image-${index}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
+      const segment = segments.find(s => s.id === segmentId);
+      if (segment) {
+        updateSegmentData(segmentId, {
+          ...segment.data,
+          [field]: publicUrl
         });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      const newImages = [...bannerImages];
-      newImages[index].url = publicUrl;
-      setBannerImages(newImages);
-
-      toast.success("Banner image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleSaveApplications = async () => {
-    if (!user) return;
-    
-    setSaving(true);
-
-    try {
-      // Update applications title and description
-      const appFields = ['applications_title', 'applications_description'];
-      
-      for (const key of appFields) {
-        if (content[key] !== undefined) {
-          const { error } = await supabase
-            .from("page_content")
-            .update({
-              content_value: content[key],
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            })
-            .eq("page_slug", "photography")
-            .eq("section_key", key);
-
-          if (error) throw error;
-        }
       }
 
-      // Update applications items
-      const { error: appsError } = await supabase
-        .from("page_content")
-        .update({
-          content_value: JSON.stringify(applications),
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        })
-        .eq("page_slug", "photography")
-        .eq("section_key", "applications_items");
-
-      if (appsError) throw appsError;
-
-      toast.success("Applications section saved successfully!");
-    } catch (error: any) {
-      toast.error("Error saving applications section: " + error.message);
+      toast.success("Image uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image");
     } finally {
-      setSaving(false);
+      setUploading(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-lg">Loading...</p>
       </div>
     );
   }
@@ -594,981 +304,846 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-6 py-32">
-        <div className="flex justify-between items-start mb-8">
+      <div className="container mx-auto px-4 py-8 mt-20">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-2">Edit Photography Page Content</p>
+            <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Manage page content and segments</p>
           </div>
-          <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="flex items-center gap-2 mt-2"
-          >
-            <LogOut className="h-4 w-4" />
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
         </div>
 
-        <Tabs defaultValue="hero" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6 h-auto p-2 bg-gray-200">
-            <TabsTrigger 
-              value="hero" 
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Produkt-Hero
-            </TabsTrigger>
-            <TabsTrigger 
-              value="tiles"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Tiles
-            </TabsTrigger>
-            <TabsTrigger 
-              value="banner"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Banner
-            </TabsTrigger>
-            <TabsTrigger 
-              value="solutions"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Image & Text
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Hero Section Tab */}
-          <TabsContent value="hero">
-            <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">Hero Section</CardTitle>
-                  <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
-                </div>
-                <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
-                  Produkt-Hero Template
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Hero Image Upload */}
-              <div>
-                <Label htmlFor="hero_image" className="text-white">Hero Image</Label>
-                <p className="text-sm text-white mb-2">
-                  {heroImageUrl ? "Current hero image - click 'Replace Image' to upload a new one" : "Upload a custom hero image (replaces the interactive hotspot image)"}
-                </p>
-                {heroImageUrl && (
-                  <div className="mb-4">
-                    <img 
-                      src={heroImageUrl} 
-                      alt="Current hero" 
-                      className="w-full max-w-md rounded-lg border-2 border-gray-600"
-                    />
-                  </div>
-                )}
-                
-                {heroImageUrl ? (
-                  <Button
-                    type="button"
-                    onClick={() => document.getElementById('hero_image')?.click()}
-                    disabled={uploading}
-                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                  >
-                    {uploading ? "Uploading..." : "Replace Image"}
-                  </Button>
-                ) : null}
-                
-                <Input
-                  id="hero_image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
-                />
-                {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="hero_image_position" className="text-white">Image Position</Label>
-                  <select
-                    id="hero_image_position"
-                    value={heroImagePosition}
-                    onChange={(e) => setHeroImagePosition(e.target.value)}
-                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                  >
-                    <option value="left">Left</option>
-                    <option value="right">Right</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label htmlFor="hero_layout" className="text-white">Layout Ratio</Label>
-                  <select
-                    id="hero_layout"
-                    value={heroLayout}
-                    onChange={(e) => setHeroLayout(e.target.value)}
-                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                  >
-                    <option value="50-50">50:50 (Equal)</option>
-                    <option value="2-3">2:3 (Text:Image)</option>
-                    <option value="1-2">1:2 (Text:Image)</option>
-                    <option value="2-5">2:5 (Text:Image)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="hero_top_padding" className="text-white">Top Spacing</Label>
-                <select
-                  id="hero_top_padding"
-                  value={heroTopPadding}
-                  onChange={(e) => setHeroTopPadding(e.target.value)}
-                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                >
-                  <option value="small">Small (PT-16)</option>
-                  <option value="medium">Medium (PT-24)</option>
-                  <option value="large">Large (PT-32)</option>
-                  <option value="xlarge">Extra Large (PT-40)</option>
-                </select>
-                <p className="text-sm text-white mt-1">Controls the spacing from the top of the hero section</p>
-              </div>
-
-              <div>
-                <Label htmlFor="hero_title" className="text-white">Title</Label>
-                <Input
-                  id="hero_title"
-                  value={content.hero_title || ""}
-                  onChange={(e) => setContent({ ...content, hero_title: e.target.value })}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label htmlFor="hero_subtitle" className="text-white">Subtitle</Label>
-                <Input
-                  id="hero_subtitle"
-                  value={content.hero_subtitle || ""}
-                  onChange={(e) => setContent({ ...content, hero_subtitle: e.target.value })}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label htmlFor="hero_description" className="text-white">Description</Label>
-                <Textarea
-                  id="hero_description"
-                  value={content.hero_description || ""}
-                  onChange={(e) => setContent({ ...content, hero_description: e.target.value })}
-                  rows={3}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label htmlFor="hero_cta" className="text-white">CTA Button Text</Label>
-                <Input
-                  id="hero_cta"
-                  value={content.hero_cta || ""}
-                  onChange={(e) => setContent({ ...content, hero_cta: e.target.value })}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="hero_cta_link" className="text-white">CTA Button Link</Label>
-                <Input
-                  id="hero_cta_link"
-                  value={heroCtaLink}
-                  onChange={(e) => setHeroCtaLink(e.target.value)}
-                  placeholder="#applications-start, /page-url, or https://example.com"
-                  className="border-2 border-gray-600"
-                />
-                <p className="text-sm text-white mt-1">
-                  Use '#section-id' for same page links, '/path' for internal pages, or 'https://...' for external URLs (opens in new tab)
-                </p>
-              </div>
-
-              <div>
-                <Label htmlFor="hero_cta_style" className="text-white">CTA Button Style</Label>
-                <select
-                  id="hero_cta_style"
-                  value={heroCtaStyle}
-                  onChange={(e) => setHeroCtaStyle(e.target.value)}
-                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                >
-                  <option value="standard">Standard (Yellow with Black Text)</option>
-                  <option value="technical">Technical (Dark Gray with White Text)</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end pt-4 border-t">
-                <Button
-                  onClick={handleSaveHero}
-                  disabled={saving}
-                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  {saving ? "Saving..." : "Save Changes"}
+        <Card className="mb-8 bg-card border-border">
+          <CardHeader>
+            <CardTitle className="text-foreground">Photography Page - Segments</CardTitle>
+            <CardDescription>Build your page by adding and arranging content segments</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Add Segment Button */}
+            <Dialog open={showTemplateSelector} onOpenChange={setShowTemplateSelector}>
+              <DialogTrigger asChild>
+                <Button className="w-full" size="lg">
+                  <Plus className="mr-2 h-5 w-5" />
+                  Add New Segment
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-          </TabsContent>
-
-          {/* Applications Section Tab */}
-          <TabsContent value="tiles">
-            <Card className="bg-gray-800 border-gray-700">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">Tiles Template</CardTitle>
-                  <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
-                </div>
-                <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
-                  Tiles Template
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="applications_title" className="text-white">Section Title</Label>
-                <Input
-                  id="applications_title"
-                  value={content.applications_title || ""}
-                  onChange={(e) => setContent({ ...content, applications_title: e.target.value })}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label htmlFor="applications_description" className="text-white">Section Description</Label>
-                <Textarea
-                  id="applications_description"
-                  value={content.applications_description || ""}
-                  onChange={(e) => setContent({ ...content, applications_description: e.target.value })}
-                  rows={3}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-
-              {/* Application Items */}
-              <div className="space-y-4 mt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">Application Items</h3>
-                  <Button
-                    onClick={handleAddTile}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle>Select Template Type</DialogTitle>
+                  <DialogDescription>Choose which template you want to add to your page</DialogDescription>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  <Card 
+                    className="cursor-pointer hover:border-primary transition-colors"
+                    onClick={() => addSegment('hero')}
                   >
-                    <Plus className="h-4 w-4" />
-                    Add New Tile
-                  </Button>
-                </div>
-                {applications.map((app, index) => (
-                  <Card key={index} className={`border-2 ${index % 2 === 0 ? 'bg-gray-600 border-gray-500' : 'bg-gray-800 border-gray-700'}`}>
-                    <CardContent className="pt-6 space-y-3">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className={`px-4 py-2 ${index % 2 === 0 ? 'bg-[#f9dc24]' : 'bg-orange-400'} text-black text-base font-bold rounded-md shadow-lg`}>
-                          Tile {index + 1}
-                        </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="flex items-center gap-2"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              Delete
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently delete "Tile {index + 1}". This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeleteTile(index)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                      {/* Image Upload */}
-                      <div>
-                        <Label htmlFor={`app_image_${index}`} className="text-white">Tile Image (Optional)</Label>
-                        <p className="text-sm text-white mb-2">
-                          {app.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this tile (appears above the title)"}
-                        </p>
-                        {app.imageUrl && (
-                          <div className="mb-3">
-                            <img 
-                              src={app.imageUrl} 
-                              alt={`Tile ${index + 1}`} 
-                              className="w-full h-[200px] object-cover rounded-lg border-2 border-gray-600"
-                            />
-                          </div>
-                        )}
-                        
-                        {app.imageUrl ? (
-                          <Button
-                            type="button"
-                            onClick={() => document.getElementById(`app_image_${index}`)?.click()}
-                            disabled={uploading}
-                            className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                          >
-                            {uploading ? "Uploading..." : "Replace Image"}
-                          </Button>
-                        ) : null}
-                        
-                        <Input
-                          id={`app_image_${index}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleTileImageUpload(e, index)}
-                          disabled={uploading}
-                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
-                        />
-                      </div>
-                      
-                      {/* Icon Selection */}
-                      <div>
-                        <Label htmlFor={`app_icon_${index}`} className="text-white">Icon (Optional)</Label>
-                        <Select
-                          value={app.icon || "none"}
-                          onValueChange={(value) => {
-                            const newApps = [...applications];
-                            newApps[index].icon = value === "none" ? "" : value;
-                            setApplications(newApps);
-                          }}
-                        >
-                          <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                            <SelectValue placeholder="Select an icon" className="text-black" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white">
-                            <SelectItem value="none" className="text-black">No Icon</SelectItem>
-                            <SelectItem value="FileText" className="text-black">Document (FileText)</SelectItem>
-                            <SelectItem value="Download" className="text-black">Download</SelectItem>
-                            <SelectItem value="BarChart3" className="text-black">Bar Chart</SelectItem>
-                            <SelectItem value="Zap" className="text-black">Lightning (Zap)</SelectItem>
-                            <SelectItem value="Shield" className="text-black">Shield</SelectItem>
-                            <SelectItem value="Eye" className="text-black">Eye</SelectItem>
-                            <SelectItem value="Car" className="text-black">Car</SelectItem>
-                            <SelectItem value="Smartphone" className="text-black">Smartphone</SelectItem>
-                            <SelectItem value="Heart" className="text-black">Heart</SelectItem>
-                            <SelectItem value="CheckCircle" className="text-black">Check Circle</SelectItem>
-                            <SelectItem value="Lightbulb" className="text-black">Lightbulb</SelectItem>
-                            <SelectItem value="Monitor" className="text-black">Monitor</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <p className="text-sm text-white mt-1">
-                          Icon appears in a yellow circle above the title
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor={`app_title_${index}`} className="text-white">Application {index + 1} Title</Label>
-                        <Input
-                          id={`app_title_${index}`}
-                          value={app.title}
-                          onChange={(e) => {
-                            const newApps = [...applications];
-                            newApps[index].title = e.target.value;
-                            setApplications(newApps);
-                          }}
-                          className="border-2 border-gray-600"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`app_desc_${index}`} className="text-white">Application {index + 1} Description</Label>
-                        <Textarea
-                          id={`app_desc_${index}`}
-                          value={app.description}
-                          onChange={(e) => {
-                            const newApps = [...applications];
-                            newApps[index].description = e.target.value;
-                            setApplications(newApps);
-                          }}
-                          rows={3}
-                          className="border-2 border-gray-600"
-                        />
-                      </div>
-                      
-                      {/* Button Settings */}
-                      <div className="pt-3 border-t border-gray-600">
-                        <h4 className="text-sm font-semibold text-white mb-3">Button Settings</h4>
-                        
-                        <div className="space-y-3">
-                          <div>
-                            <Label htmlFor={`app_cta_link_${index}`} className="text-white">Button Link</Label>
-                            <Input
-                              id={`app_cta_link_${index}`}
-                              value={app.ctaLink || ""}
-                              onChange={(e) => {
-                                const newApps = [...applications];
-                                newApps[index].ctaLink = e.target.value;
-                                setApplications(newApps);
-                              }}
-                              placeholder="/page-url or https://example.com"
-                              className="border-2 border-gray-600"
-                            />
-                            <p className="text-sm text-white mt-1">
-                              Use '/path' for internal pages or 'https://...' for external URLs
-                            </p>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor={`app_cta_text_${index}`} className="text-white">Button Text</Label>
-                            <Input
-                              id={`app_cta_text_${index}`}
-                              value={app.ctaText || ""}
-                              onChange={(e) => {
-                                const newApps = [...applications];
-                                newApps[index].ctaText = e.target.value;
-                                setApplications(newApps);
-                              }}
-                              placeholder="Learn More"
-                              className="border-2 border-gray-600"
-                            />
-                            <p className="text-sm text-white mt-1">
-                              Text displayed on the button (default: "Learn More")
-                            </p>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
-                            <Select
-                              value={app.ctaStyle || "standard"}
-                              onValueChange={(value) => {
-                                const newApps = [...applications];
-                                newApps[index].ctaStyle = value;
-                                setApplications(newApps);
-                              }}
-                            >
-                              <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                                <SelectValue placeholder="Select button style" className="text-black" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-white">
-                                <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
-                                <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Hero Template</CardTitle>
+                      <CardDescription>Image with title, subtitle and CTA button</CardDescription>
+                    </CardHeader>
                   </Card>
-                ))}
-              </div>
-
-              <div className="flex justify-end pt-4 border-t">
-                <Button
-                  onClick={handleSaveApplications}
-                  disabled={saving}
-                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  {saving ? "Saving..." : "Save Changes"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-          </TabsContent>
-
-          {/* Banner Template Tab */}
-          <TabsContent value="banner">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Banner Template Section</CardTitle>
-                <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Title */}
-                <div>
-                  <Label htmlFor="banner_title" className="text-white">Section Title</Label>
-                  <Input
-                    id="banner_title"
-                    value={bannerTitle}
-                    onChange={(e) => setBannerTitle(e.target.value)}
-                    placeholder="e.g., Automotive International Standards"
-                    className="border-2 border-gray-600"
-                  />
-                </div>
-
-                {/* Subtext */}
-                <div>
-                  <Label htmlFor="banner_subtext" className="text-white">Subtext (Optional)</Label>
-                  <Textarea
-                    id="banner_subtext"
-                    value={bannerSubtext}
-                    onChange={(e) => setBannerSubtext(e.target.value)}
-                    placeholder="Optional description text (max width 600px, centered)"
-                    rows={3}
-                    className="border-2 border-gray-600"
-                  />
-                </div>
-
-                {/* Banner Images */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-white text-lg font-semibold">Banner Images</Label>
-                    <Button
-                      onClick={handleAddBannerImage}
-                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Image
-                    </Button>
-                  </div>
-
-                  {bannerImages.map((image, index) => (
-                    <Card key={index} className="bg-gray-700 border-gray-600">
-                      <CardContent className="pt-6 space-y-3">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md">
-                            Image {index + 1}
-                          </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                className="flex items-center gap-2"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This will permanently delete "Image {index + 1}". This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteBannerImage(index)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-
-                        {image.url && (
-                          <div className="mb-3">
-                            <img 
-                              src={image.url} 
-                              alt={`Banner ${index + 1}`} 
-                              className="w-40 h-24 object-contain rounded-lg border-2 border-gray-600 bg-white p-2"
-                            />
-                          </div>
-                        )}
-
-                        <div>
-                          <Label htmlFor={`banner_image_${index}`} className="text-white">Image File</Label>
-                          <Input
-                            id={`banner_image_${index}`}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleBannerImageUpload(e, index)}
-                            disabled={uploading}
-                            className="border-2 border-gray-600"
-                          />
-                        </div>
-
-                        <div>
-                          <Label htmlFor={`banner_image_alt_${index}`} className="text-white">Alt Text</Label>
-                          <Input
-                            id={`banner_image_alt_${index}`}
-                            value={image.alt}
-                            onChange={(e) => {
-                              const newImages = [...bannerImages];
-                              newImages[index].alt = e.target.value;
-                              setBannerImages(newImages);
-                            }}
-                            placeholder="Image description for accessibility"
-                            className="border-2 border-gray-600"
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {/* Button Settings */}
-                <div className="pt-4 border-t border-gray-600">
-                  <h3 className="text-lg font-semibold text-white mb-4">Button Settings</h3>
                   
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="banner_button_text" className="text-white">Button Text</Label>
-                      <Input
-                        id="banner_button_text"
-                        value={bannerButtonText}
-                        onChange={(e) => setBannerButtonText(e.target.value)}
-                        placeholder="e.g., View Standards"
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="banner_button_link" className="text-white">Button Link</Label>
-                      <Input
-                        id="banner_button_link"
-                        value={bannerButtonLink}
-                        onChange={(e) => setBannerButtonLink(e.target.value)}
-                        placeholder="/page-url or https://example.com"
-                        className="border-2 border-gray-600"
-                      />
-                      <p className="text-sm text-white mt-1">
-                        Use '/path' for internal pages or 'https://...' for external URLs
-                      </p>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="banner_button_style" className="text-white">Button Style</Label>
-                      <Select
-                        value={bannerButtonStyle}
-                        onValueChange={(value) => setBannerButtonStyle(value)}
-                      >
-                        <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                          <SelectValue placeholder="Select button style" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
-                          <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-4 border-t border-gray-600">
-                  <Button
-                    onClick={async () => {
-                      setSaving(true);
-                      try {
-                        const updates = [
-                          {
-                            page_slug: "photography",
-                            section_key: "banner_title",
-                            content_type: "heading",
-                            content_value: bannerTitle,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "banner_subtext",
-                            content_type: "text",
-                            content_value: bannerSubtext,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "banner_images",
-                            content_type: "json",
-                            content_value: JSON.stringify(bannerImages),
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "banner_button_text",
-                            content_type: "text",
-                            content_value: bannerButtonText,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "banner_button_link",
-                            content_type: "text",
-                            content_value: bannerButtonLink,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "banner_button_style",
-                            content_type: "text",
-                            content_value: bannerButtonStyle,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          }
-                        ];
-
-                        const { error } = await supabase
-                          .from("page_content")
-                          .upsert(updates, {
-                            onConflict: 'page_slug,section_key'
-                          });
-
-                        if (error) throw error;
-
-                        toast.success("Banner content saved successfully!");
-                      } catch (error: any) {
-                        toast.error("Error saving banner content: " + error.message);
-                      } finally {
-                        setSaving(false);
-                      }
-                    }}
-                    disabled={saving}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  <Card 
+                    className="cursor-pointer hover:border-primary transition-colors"
+                    onClick={() => addSegment('tiles')}
                   >
-                    <Save className="h-4 w-4" />
-                    {saving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Image & Text Template Tab */}
-          <TabsContent value="solutions">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Image & Text Template</CardTitle>
-                <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Title */}
-                <div>
-                  <Label htmlFor="solutions_title" className="text-white">Section Title</Label>
-                  <Input
-                    id="solutions_title"
-                    value={solutionsTitle}
-                    onChange={(e) => setSolutionsTitle(e.target.value)}
-                    placeholder="e.g., Automotive Camera Test Solutions"
-                    className="border-2 border-gray-600"
-                  />
-                </div>
-
-                {/* Subtext */}
-                <div>
-                  <Label htmlFor="solutions_subtext" className="text-white">Subtext (Optional)</Label>
-                  <Textarea
-                    id="solutions_subtext"
-                    value={solutionsSubtext}
-                    onChange={(e) => setSolutionsSubtext(e.target.value)}
-                    placeholder="Optional description text below the title"
-                    rows={3}
-                    className="border-2 border-gray-600"
-                  />
-                </div>
-
-                {/* Layout Selection */}
-                <div>
-                  <Label htmlFor="solutions_layout" className="text-white">Column Layout</Label>
-                  <Select
-                    value={solutionsLayout}
-                    onValueChange={(value) => setSolutionsLayout(value)}
+                    <CardHeader>
+                      <CardTitle className="text-lg">Tiles Template</CardTitle>
+                      <CardDescription>Grid of cards with icons and text</CardDescription>
+                    </CardHeader>
+                  </Card>
+                  
+                  <Card 
+                    className="cursor-pointer hover:border-primary transition-colors"
+                    onClick={() => addSegment('banner')}
                   >
-                    <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                      <SelectValue placeholder="Select layout" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="1-col" className="text-black">1 Column (Full Width)</SelectItem>
-                      <SelectItem value="2-col" className="text-black">2 Columns</SelectItem>
-                      <SelectItem value="3-col" className="text-black">3 Columns</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Solution Items */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-white text-lg font-semibold">Solution Items</Label>
-                    <Button
-                      onClick={handleAddSolutionItem}
-                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Item
-                    </Button>
-                  </div>
-
-                  {solutionsItems.map((item, index) => (
-                    <Card key={index} className="bg-gray-700 border-gray-600">
-                      <CardContent className="pt-6 space-y-3">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md">
-                            Item {index + 1}
-                          </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                className="flex items-center gap-2"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This will permanently delete "Item {index + 1}". This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteSolutionItem(index)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-
-                        {/* Image Upload */}
-                        <div>
-                          <Label htmlFor={`solution_image_${index}`} className="text-white">Image (Optional - Full Width)</Label>
-                          {item.imageUrl && (
-                            <div className="mb-3">
-                              <img 
-                                src={item.imageUrl} 
-                                alt={`Solution ${index + 1}`} 
-                                className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
-                              />
-                            </div>
-                          )}
-                          <Input
-                            id={`solution_image_${index}`}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleSolutionImageUpload(e, index)}
-                            disabled={uploading}
-                            className="border-2 border-gray-600"
-                          />
-                        </div>
-
-                        {/* Title */}
-                        <div>
-                          <Label htmlFor={`solution_title_${index}`} className="text-white">Title</Label>
-                          <Input
-                            id={`solution_title_${index}`}
-                            value={item.title}
-                            onChange={(e) => {
-                              const newItems = [...solutionsItems];
-                              newItems[index].title = e.target.value;
-                              setSolutionsItems(newItems);
-                            }}
-                            placeholder="e.g., In-Cabin Testing"
-                            className="border-2 border-gray-600"
-                          />
-                        </div>
-
-                        {/* Description */}
-                        <div>
-                          <Label htmlFor={`solution_desc_${index}`} className="text-white">Description</Label>
-                          <Textarea
-                            id={`solution_desc_${index}`}
-                            value={item.description}
-                            onChange={(e) => {
-                              const newItems = [...solutionsItems];
-                              newItems[index].description = e.target.value;
-                              setSolutionsItems(newItems);
-                            }}
-                            rows={6}
-                            placeholder="Detailed description..."
-                            className="border-2 border-gray-600"
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                <div className="flex justify-end pt-4 border-t border-gray-600">
-                  <Button
-                    onClick={async () => {
-                      setSaving(true);
-                      try {
-                        const updates = [
-                          {
-                            page_slug: "photography",
-                            section_key: "solutions_title",
-                            content_type: "heading",
-                            content_value: solutionsTitle,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "solutions_subtext",
-                            content_type: "text",
-                            content_value: solutionsSubtext,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "solutions_layout",
-                            content_type: "text",
-                            content_value: solutionsLayout,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: "photography",
-                            section_key: "solutions_items",
-                            content_type: "json",
-                            content_value: JSON.stringify(solutionsItems),
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          }
-                        ];
-
-                        const { error } = await supabase
-                          .from("page_content")
-                          .upsert(updates, {
-                            onConflict: 'page_slug,section_key'
-                          });
-
-                        if (error) throw error;
-
-                        toast.success("Image & Text content saved successfully!");
-                      } catch (error: any) {
-                        toast.error("Error saving image & text content: " + error.message);
-                      } finally {
-                        setSaving(false);
-                      }
-                    }}
-                    disabled={saving}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    <CardHeader>
+                      <CardTitle className="text-lg">Banner Template</CardTitle>
+                      <CardDescription>Logo banner with title and button</CardDescription>
+                    </CardHeader>
+                  </Card>
+                  
+                  <Card 
+                    className="cursor-pointer hover:border-primary transition-colors"
+                    onClick={() => addSegment('image-text')}
                   >
-                    <Save className="h-4 w-4" />
-                    {saving ? "Saving..." : "Save Changes"}
-                  </Button>
+                    <CardHeader>
+                      <CardTitle className="text-lg">Image & Text</CardTitle>
+                      <CardDescription>Flexible column layout with images</CardDescription>
+                    </CardHeader>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+              </DialogContent>
+            </Dialog>
+
+            {/* Segment List */}
+            <div className="space-y-4">
+              {segments.sort((a, b) => a.position - b.position).map((segment, index) => (
+                <SegmentEditor
+                  key={segment.id}
+                  segment={segment}
+                  index={index}
+                  total={segments.length}
+                  onUpdate={(newData) => updateSegmentData(segment.id, newData)}
+                  onDelete={() => deleteSegment(segment.id)}
+                  onMove={(direction) => moveSegment(segment.id, direction)}
+                  onImageUpload={(e, field) => handleImageUpload(e, segment.id, field)}
+                  uploading={uploading}
+                />
+              ))}
+            </div>
+
+            {/* Save All Button */}
+            {segments.length > 0 && (
+              <Button 
+                onClick={saveAllSegments} 
+                disabled={saving}
+                className="w-full"
+                size="lg"
+              >
+                <Save className="mr-2 h-5 w-5" />
+                {saving ? "Saving..." : "Save All Segments"}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Footer />
+    </div>
+  );
+};
+
+// Segment Editor Component
+const SegmentEditor = ({ 
+  segment, 
+  index, 
+  total, 
+  onUpdate, 
+  onDelete, 
+  onMove, 
+  onImageUpload,
+  uploading 
+}: {
+  segment: PageSegment;
+  index: number;
+  total: number;
+  onUpdate: (data: any) => void;
+  onDelete: () => void;
+  onMove: (direction: 'up' | 'down') => void;
+  onImageUpload: (e: React.ChangeEvent<HTMLInputElement>, field: string) => void;
+  uploading: boolean;
+}) => {
+  const getTemplateName = (type: string) => {
+    switch (type) {
+      case 'hero': return 'Hero Template';
+      case 'tiles': return 'Tiles Template';
+      case 'banner': return 'Banner Template';
+      case 'image-text': return 'Image & Text Template';
+      default: return 'Template';
+    }
+  };
+
+  const getTemplateColor = (type: string) => {
+    switch (type) {
+      case 'hero': return 'bg-blue-500';
+      case 'tiles': return 'bg-green-500';
+      case 'banner': return 'bg-purple-500';
+      case 'image-text': return 'bg-orange-500';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  return (
+    <Card className="bg-muted/50">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Badge className={getTemplateColor(segment.type)}>
+              {getTemplateName(segment.type)}
+            </Badge>
+            <span className="text-sm text-muted-foreground">Position {index + 1}</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => onMove('up')}
+              disabled={index === 0}
+            >
+              <MoveUp className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => onMove('down')}
+              disabled={index === total - 1}
+            >
+              <MoveDown className="h-4 w-4" />
+            </Button>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="icon" variant="ghost" className="text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Segment?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete this segment.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={onDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent>
+        {segment.type === 'hero' && (
+          <HeroSegmentEditor data={segment.data} onUpdate={onUpdate} onImageUpload={onImageUpload} uploading={uploading} />
+        )}
+        {segment.type === 'tiles' && (
+          <TilesSegmentEditor data={segment.data} onUpdate={onUpdate} onImageUpload={onImageUpload} uploading={uploading} />
+        )}
+        {segment.type === 'banner' && (
+          <BannerSegmentEditor data={segment.data} onUpdate={onUpdate} onImageUpload={onImageUpload} uploading={uploading} />
+        )}
+        {segment.type === 'image-text' && (
+          <ImageTextSegmentEditor data={segment.data} onUpdate={onUpdate} onImageUpload={onImageUpload} uploading={uploading} />
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// Hero Segment Editor
+const HeroSegmentEditor = ({ data, onUpdate, onImageUpload, uploading }: any) => {
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Title</Label>
+        <Input
+          value={data.title}
+          onChange={(e) => onUpdate({ ...data, title: e.target.value })}
+        />
+      </div>
+      
+      <div>
+        <Label>Subtitle (Optional)</Label>
+        <Textarea
+          value={data.subtitle}
+          onChange={(e) => onUpdate({ ...data, subtitle: e.target.value })}
+          rows={3}
+        />
+      </div>
+
+      <div>
+        <Label>Hero Image</Label>
+        {data.imageUrl && (
+          <div className="mb-3">
+            <img 
+              src={data.imageUrl} 
+              alt="Hero" 
+              className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
+            />
+          </div>
+        )}
+        <Input
+          type="file"
+          accept="image/*"
+          onChange={(e) => onImageUpload(e, 'imageUrl')}
+          disabled={uploading}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label>Image Position</Label>
+          <Select value={data.imagePosition} onValueChange={(val) => onUpdate({ ...data, imagePosition: val })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="left">Left</SelectItem>
+              <SelectItem value="right">Right</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label>Layout Ratio</Label>
+          <Select value={data.layout} onValueChange={(val) => onUpdate({ ...data, layout: val })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1-1">50:50</SelectItem>
+              <SelectItem value="2-3">2/3 Text : 1/3 Image</SelectItem>
+              <SelectItem value="2-5">2/5 Text : 3/5 Image</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <Label>Top Padding</Label>
+        <Select value={data.topPadding} onValueChange={(val) => onUpdate({ ...data, topPadding: val })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="small">Small (PT-16)</SelectItem>
+            <SelectItem value="medium">Medium (PT-24)</SelectItem>
+            <SelectItem value="large">Large (PT-32)</SelectItem>
+            <SelectItem value="xlarge">Extra Large (PT-40)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label>CTA Button Text</Label>
+        <Input
+          value={data.ctaText}
+          onChange={(e) => onUpdate({ ...data, ctaText: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label>CTA Button Link</Label>
+        <Input
+          value={data.ctaLink}
+          onChange={(e) => onUpdate({ ...data, ctaLink: e.target.value })}
+          placeholder="/path or https://external.com"
+        />
+      </div>
+
+      <div>
+        <Label>CTA Button Style</Label>
+        <Select value={data.ctaStyle} onValueChange={(val) => onUpdate({ ...data, ctaStyle: val })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="standard">Standard (Yellow #f9dc24)</SelectItem>
+            <SelectItem value="technical">Technical (Dark Gray #1f2937)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+};
+
+// Tiles Segment Editor
+const TilesSegmentEditor = ({ data, onUpdate, onImageUpload, uploading }: any) => {
+  const iconOptions = [
+    { value: "FileText", label: "File Text", icon: FileText },
+    { value: "Download", label: "Download", icon: Download },
+    { value: "BarChart3", label: "Bar Chart", icon: BarChart3 },
+    { value: "Zap", label: "Zap", icon: Zap },
+    { value: "Shield", label: "Shield", icon: Shield },
+    { value: "Eye", label: "Eye", icon: Eye },
+    { value: "Car", label: "Car", icon: Car },
+    { value: "Smartphone", label: "Smartphone", icon: Smartphone },
+    { value: "Heart", label: "Heart", icon: Heart },
+    { value: "CheckCircle", label: "Check Circle", icon: CheckCircle },
+    { value: "Lightbulb", label: "Lightbulb", icon: Lightbulb },
+    { value: "Monitor", label: "Monitor", icon: Monitor },
+  ];
+
+  const addTile = () => {
+    const newItems = [...(data.items || []), {
+      id: Date.now().toString(),
+      title: "New Tile",
+      description: "Description",
+      ctaLink: "",
+      ctaStyle: "standard",
+      ctaText: "Learn More",
+      imageUrl: "",
+      icon: "FileText"
+    }];
+    onUpdate({ ...data, items: newItems });
+  };
+
+  const updateTile = (index: number, updates: any) => {
+    const newItems = [...data.items];
+    newItems[index] = { ...newItems[index], ...updates };
+    onUpdate({ ...data, items: newItems });
+  };
+
+  const deleteTile = (index: number) => {
+    const newItems = data.items.filter((_: any, i: number) => i !== index);
+    onUpdate({ ...data, items: newItems });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Section Title</Label>
+        <Input
+          value={data.title}
+          onChange={(e) => onUpdate({ ...data, title: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label>Subtitle (Optional)</Label>
+        <Textarea
+          value={data.subtitle || ''}
+          onChange={(e) => onUpdate({ ...data, subtitle: e.target.value })}
+          rows={2}
+        />
+      </div>
+
+      <div className="space-y-4 mt-6">
+        <div className="flex items-center justify-between">
+          <Label className="text-lg">Tiles</Label>
+          <Button onClick={addTile} size="sm">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Tile
+          </Button>
+        </div>
+
+        {data.items && data.items.map((tile: any, index: number) => (
+          <Card key={tile.id} className="bg-background/50">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-base">Tile {index + 1}</CardTitle>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="ghost" className="text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Tile?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteTile(index)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <Label>Image (Optional)</Label>
+                {tile.imageUrl && (
+                  <div className="mb-2">
+                    <img 
+                      src={tile.imageUrl} 
+                      alt={`Tile ${index + 1}`} 
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      // Handle tile-specific image upload
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        updateTile(index, { imageUrl: reader.result });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  disabled={uploading}
+                />
+              </div>
+
+              <div>
+                <Label>Icon</Label>
+                <Select 
+                  value={tile.icon} 
+                  onValueChange={(val) => updateTile(index, { icon: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {iconOptions.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label>Title</Label>
+                <Input
+                  value={tile.title}
+                  onChange={(e) => updateTile(index, { title: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={tile.description}
+                  onChange={(e) => updateTile(index, { description: e.target.value })}
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <Label>Button Text</Label>
+                <Input
+                  value={tile.ctaText}
+                  onChange={(e) => updateTile(index, { ctaText: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <Label>Button Link (Optional)</Label>
+                <Input
+                  value={tile.ctaLink}
+                  onChange={(e) => updateTile(index, { ctaLink: e.target.value })}
+                  placeholder="/path or https://external.com"
+                />
+              </div>
+
+              <div>
+                <Label>Button Style</Label>
+                <Select 
+                  value={tile.ctaStyle} 
+                  onValueChange={(val) => updateTile(index, { ctaStyle: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">Standard (Yellow)</SelectItem>
+                    <SelectItem value="technical">Technical (Dark Gray)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Banner Segment Editor
+const BannerSegmentEditor = ({ data, onUpdate, onImageUpload, uploading }: any) => {
+  const addBannerImage = () => {
+    const newImages = [...(data.images || []), {
+      id: Date.now().toString(),
+      url: "",
+      alt: "Logo"
+    }];
+    onUpdate({ ...data, images: newImages });
+  };
+
+  const updateBannerImage = (index: number, updates: any) => {
+    const newImages = [...data.images];
+    newImages[index] = { ...newImages[index], ...updates };
+    onUpdate({ ...data, images: newImages });
+  };
+
+  const deleteBannerImage = (index: number) => {
+    const newImages = data.images.filter((_: any, i: number) => i !== index);
+    onUpdate({ ...data, images: newImages });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Banner Title</Label>
+        <Input
+          value={data.title}
+          onChange={(e) => onUpdate({ ...data, title: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label>Subtext (Optional)</Label>
+        <Textarea
+          value={data.subtext || ''}
+          onChange={(e) => onUpdate({ ...data, subtext: e.target.value })}
+          rows={2}
+        />
+      </div>
+
+      <div className="space-y-4 mt-6">
+        <div className="flex items-center justify-between">
+          <Label className="text-lg">Banner Images</Label>
+          <Button onClick={addBannerImage} size="sm">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Image
+          </Button>
+        </div>
+
+        {data.images && data.images.map((img: any, index: number) => (
+          <Card key={img.id} className="bg-background/50">
+            <CardContent className="pt-6 space-y-3">
+              {img.url && (
+                <div className="mb-2">
+                  <img 
+                    src={img.url} 
+                    alt={img.alt} 
+                    className="w-full h-24 object-contain rounded-lg bg-white p-2"
+                  />
+                </div>
+              )}
+              
+              <div className="flex items-end gap-2">
+                <div className="flex-1">
+                  <Label>Image {index + 1}</Label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          updateBannerImage(index, { url: reader.result });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    disabled={uploading}
+                  />
+                </div>
+                
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="icon" variant="ghost" className="text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Image?</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteBannerImage(index)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div>
+        <Label>Button Text</Label>
+        <Input
+          value={data.buttonText}
+          onChange={(e) => onUpdate({ ...data, buttonText: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label>Button Link</Label>
+        <Input
+          value={data.buttonLink}
+          onChange={(e) => onUpdate({ ...data, buttonLink: e.target.value })}
+          placeholder="/path or https://external.com"
+        />
+      </div>
+
+      <div>
+        <Label>Button Style</Label>
+        <Select value={data.buttonStyle} onValueChange={(val) => onUpdate({ ...data, buttonStyle: val })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="standard">Standard (Yellow)</SelectItem>
+            <SelectItem value="technical">Technical (Dark Gray)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+};
+
+// Image & Text Segment Editor
+const ImageTextSegmentEditor = ({ data, onUpdate, onImageUpload, uploading }: any) => {
+  const addItem = () => {
+    const newItems = [...(data.items || []), {
+      id: Date.now().toString(),
+      title: "New Item",
+      description: "Description",
+      imageUrl: ""
+    }];
+    onUpdate({ ...data, items: newItems });
+  };
+
+  const updateItem = (index: number, updates: any) => {
+    const newItems = [...data.items];
+    newItems[index] = { ...newItems[index], ...updates };
+    onUpdate({ ...data, items: newItems });
+  };
+
+  const deleteItem = (index: number) => {
+    const newItems = data.items.filter((_: any, i: number) => i !== index);
+    onUpdate({ ...data, items: newItems });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label>Section Title</Label>
+        <Input
+          value={data.title}
+          onChange={(e) => onUpdate({ ...data, title: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label>Subtext (Optional)</Label>
+        <Textarea
+          value={data.subtext || ''}
+          onChange={(e) => onUpdate({ ...data, subtext: e.target.value })}
+          rows={2}
+        />
+      </div>
+
+      <div>
+        <Label>Column Layout</Label>
+        <Select value={data.layout} onValueChange={(val) => onUpdate({ ...data, layout: val })}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="1-col">1 Column (Full Width)</SelectItem>
+            <SelectItem value="2-col">2 Columns</SelectItem>
+            <SelectItem value="3-col">3 Columns</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-4 mt-6">
+        <div className="flex items-center justify-between">
+          <Label className="text-lg">Items</Label>
+          <Button onClick={addItem} size="sm">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Item
+          </Button>
+        </div>
+
+        {data.items && data.items.map((item: any, index: number) => (
+          <Card key={item.id} className="bg-background/50">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-base">Item {index + 1}</CardTitle>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant="ghost" className="text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Item?</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteItem(index)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <Label>Image (Optional)</Label>
+                {item.imageUrl && (
+                  <div className="mb-2">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={`Item ${index + 1}`} 
+                      className="w-full h-32 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        updateItem(index, { imageUrl: reader.result });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  disabled={uploading}
+                />
+              </div>
+
+              <div>
+                <Label>Title</Label>
+                <Input
+                  value={item.title}
+                  onChange={(e) => updateItem(index, { title: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <Label>Description</Label>
+                <Textarea
+                  value={item.description}
+                  onChange={(e) => updateItem(index, { description: e.target.value })}
+                  rows={3}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 };
