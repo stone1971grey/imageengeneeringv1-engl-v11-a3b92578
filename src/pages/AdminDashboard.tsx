@@ -378,7 +378,7 @@ const AdminDashboard = () => {
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `photography-hero-${Date.now()}.${fileExt}`;
+      const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       // Upload to storage
@@ -402,7 +402,7 @@ const AdminDashboard = () => {
       const { error: dbError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "hero_image_url",
           content_type: "image_url",
           content_value: publicUrl,
@@ -505,7 +505,7 @@ const AdminDashboard = () => {
       const { error } = await supabase
         .from("page_content")
         .delete()
-        .eq("page_slug", "photography")
+        .eq("page_slug", selectedPage)
         .in("section_key", sectionKeys);
 
       if (error) throw error;
@@ -517,7 +517,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
@@ -565,7 +565,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(newOrder),
@@ -597,7 +597,7 @@ const AdminDashboard = () => {
               updated_at: new Date().toISOString(),
               updated_by: user.id
             })
-            .eq("page_slug", "photography")
+            .eq("page_slug", selectedPage)
             .eq("section_key", key);
 
           if (error) throw error;
@@ -608,7 +608,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "hero_image_position",
           content_type: "text",
           content_value: heroImagePosition,
@@ -622,7 +622,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "hero_layout",
           content_type: "text",
           content_value: heroLayout,
@@ -636,7 +636,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "hero_top_padding",
           content_type: "text",
           content_value: heroTopPadding,
@@ -650,7 +650,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "hero_cta_link",
           content_type: "text",
           content_value: heroCtaLink,
@@ -664,7 +664,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "hero_cta_style",
           content_type: "text",
           content_value: heroCtaStyle,
@@ -896,7 +896,7 @@ const AdminDashboard = () => {
       const { error: dbError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "footer_team_image_url",
           content_type: "image_url",
           content_value: publicUrl,
@@ -1054,7 +1054,7 @@ const AdminDashboard = () => {
       const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(updatedSegments),
@@ -1070,7 +1070,7 @@ const AdminDashboard = () => {
       const { error: orderError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
@@ -1120,7 +1120,7 @@ const AdminDashboard = () => {
       const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(updatedSegments),
@@ -1136,7 +1136,7 @@ const AdminDashboard = () => {
       const { error: orderError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: "photography",
+          page_slug: selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
@@ -1174,7 +1174,7 @@ const AdminDashboard = () => {
               updated_at: new Date().toISOString(),
               updated_by: user.id
             })
-            .eq("page_slug", "photography")
+            .eq("page_slug", selectedPage)
             .eq("section_key", key);
 
           if (error) throw error;
@@ -1189,7 +1189,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         })
-        .eq("page_slug", "photography")
+        .eq("page_slug", selectedPage)
         .eq("section_key", "applications_items");
 
       if (appsError) throw appsError;
@@ -1224,7 +1224,7 @@ const AdminDashboard = () => {
         await supabase
           .from("page_content")
           .upsert({
-            page_slug: "photography",
+            page_slug: selectedPage,
             section_key: key,
             content_type: "text",
             content_value: value,
@@ -2162,7 +2162,7 @@ const AdminDashboard = () => {
                       try {
                         const updates = [
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "banner_title",
                             content_type: "heading",
                             content_value: bannerTitle,
@@ -2170,7 +2170,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "banner_subtext",
                             content_type: "text",
                             content_value: bannerSubtext,
@@ -2178,7 +2178,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "banner_images",
                             content_type: "json",
                             content_value: JSON.stringify(bannerImages),
@@ -2186,7 +2186,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "banner_button_text",
                             content_type: "text",
                             content_value: bannerButtonText,
@@ -2194,7 +2194,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "banner_button_link",
                             content_type: "text",
                             content_value: bannerButtonLink,
@@ -2202,7 +2202,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "banner_button_style",
                             content_type: "text",
                             content_value: bannerButtonStyle,
@@ -2443,7 +2443,7 @@ const AdminDashboard = () => {
                       try {
                         const updates = [
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "solutions_title",
                             content_type: "heading",
                             content_value: solutionsTitle,
@@ -2451,7 +2451,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "solutions_subtext",
                             content_type: "text",
                             content_value: solutionsSubtext,
@@ -2459,7 +2459,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "solutions_layout",
                             content_type: "text",
                             content_value: solutionsLayout,
@@ -2467,7 +2467,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: "photography",
+                            page_slug: selectedPage,
                             section_key: "solutions_items",
                             content_type: "json",
                             content_value: JSON.stringify(solutionsItems),
@@ -2507,7 +2507,7 @@ const AdminDashboard = () => {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white">Footer Section</CardTitle>
-                <CardDescription className="text-gray-300">Edit footer content for the Photography page</CardDescription>
+                <CardDescription className="text-gray-300">Edit footer content for the {selectedPage} page</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Vision CTA Section */}
@@ -2925,12 +2925,12 @@ const AdminDashboard = () => {
                         <Button
                           onClick={async () => {
                             setSaving(true);
-                            try {
-                              const { error } = await supabase
-                                .from("page_content")
-                                .upsert({
-                                  page_slug: "photography",
-                                  section_key: "page_segments",
+    try {
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "page_segments",
                                   content_type: "json",
                                   content_value: JSON.stringify(pageSegments),
                                   updated_at: new Date().toISOString(),
@@ -3165,7 +3165,7 @@ const AdminDashboard = () => {
                                 const { error } = await supabase
                                   .from("page_content")
                                   .upsert({
-                                    page_slug: "photography",
+                                    page_slug: selectedPage,
                                     section_key: "page_segments",
                                     content_type: "json",
                                     content_value: JSON.stringify(pageSegments),
