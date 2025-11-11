@@ -85,7 +85,6 @@ const Photography = () => {
       data.forEach((item: any) => {
         if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
-          console.log("Loaded applications from DB:", apps);
         } else if (item.section_key === "hero_image_url") {
           setHeroImageUrl(item.content_value);
         } else if (item.section_key === "hero_image_position") {
@@ -352,12 +351,11 @@ const Photography = () => {
                          className="w-full"
                        >
                          <Button 
-                           className={`w-full border-0 hover:opacity-90`}
-                           style={{ 
-                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
-                           }}
-                           onClick={() => console.log("Tile button clicked - ctaStyle:", app.ctaStyle, "backgroundColor:", app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24")}
+                           className={`w-full border-0 hover:opacity-90 ${
+                             app.ctaStyle === "technical" 
+                               ? "!bg-[#1f2937] !text-white" 
+                               : "!bg-[#f9dc24] !text-black"
+                           }`}
                          >
                            {app.ctaText || "Learn More"}
                          </Button>
@@ -365,12 +363,11 @@ const Photography = () => {
                      ) : (
                        <Link to={app.ctaLink} className="w-full">
                          <Button 
-                           className={`w-full border-0 hover:opacity-90`}
-                           style={{ 
-                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
-                           }}
-                           onClick={() => console.log("Tile button clicked - ctaStyle:", app.ctaStyle, "backgroundColor:", app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24")}
+                           className={`w-full border-0 hover:opacity-90 ${
+                             app.ctaStyle === "technical" 
+                               ? "!bg-[#1f2937] !text-white" 
+                               : "!bg-[#f9dc24] !text-black"
+                           }`}
                          >
                            {app.ctaText || "Learn More"}
                          </Button>
@@ -378,11 +375,7 @@ const Photography = () => {
                      )
                    ) : (
                      <Button 
-                       className="w-full border-0 hover:opacity-90"
-                       style={{ 
-                         backgroundColor: '#f9dc24',
-                         color: '#000000'
-                       }}
+                       className="w-full border-0 hover:opacity-90 !bg-[#f9dc24] !text-black"
                      >
                        {app.ctaText || "Learn More"}
                      </Button>
