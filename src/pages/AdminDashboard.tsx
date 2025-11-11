@@ -691,20 +691,23 @@ const AdminDashboard = () => {
     setSaving(true);
 
     try {
-      // Update hero fields
+      // Update hero fields using upsert to handle both new and existing entries
       const heroFields = ['hero_title', 'hero_subtitle', 'hero_description', 'hero_cta'];
       
       for (const key of heroFields) {
         if (content[key] !== undefined) {
           const { error } = await supabase
             .from("page_content")
-            .update({
+            .upsert({
+              page_slug: selectedPage,
+              section_key: key,
+              content_type: "text",
               content_value: content[key],
               updated_at: new Date().toISOString(),
               updated_by: user.id
-            })
-            .eq("page_slug", selectedPage)
-            .eq("section_key", key);
+            }, {
+              onConflict: 'page_slug,section_key'
+            });
 
           if (error) throw error;
         }
@@ -1270,35 +1273,41 @@ const AdminDashboard = () => {
     setSaving(true);
 
     try {
-      // Update applications title and description
+      // Update applications title and description using upsert
       const appFields = ['applications_title', 'applications_description'];
       
       for (const key of appFields) {
         if (content[key] !== undefined) {
           const { error } = await supabase
             .from("page_content")
-            .update({
+            .upsert({
+              page_slug: selectedPage,
+              section_key: key,
+              content_type: "text",
               content_value: content[key],
               updated_at: new Date().toISOString(),
               updated_by: user.id
-            })
-            .eq("page_slug", selectedPage)
-            .eq("section_key", key);
+            }, {
+              onConflict: 'page_slug,section_key'
+            });
 
           if (error) throw error;
         }
       }
 
-      // Update applications items
+      // Update applications items using upsert
       const { error: appsError } = await supabase
         .from("page_content")
-        .update({
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "applications_items",
+          content_type: "json",
           content_value: JSON.stringify(applications),
           updated_at: new Date().toISOString(),
           updated_by: user.id
-        })
-        .eq("page_slug", selectedPage)
-        .eq("section_key", "applications_items");
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
 
       if (appsError) throw appsError;
 
