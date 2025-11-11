@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain } from "lucide-react";
@@ -27,10 +27,42 @@ import solutionsInCabin from "@/assets/solutions-in-cabin.png";
 import solutionsAdas from "@/assets/solutions-adas.png";
 import solutionsGeometric from "@/assets/solutions-geometric-calibration.jpg";
 import solutionsClimate from "@/assets/solutions-climate-control.png";
+import { supabase } from "@/integrations/supabase/client";
 
-// Automotive & ADAS landing page component
-const Automotive = () => {
+// Photography & Video landing page component
+const Photography = () => {
   const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
+  const [content, setContent] = useState<Record<string, string>>({});
+  const [applications, setApplications] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    const { data, error } = await supabase
+      .from("page_content")
+      .select("*")
+      .eq("page_slug", "photography");
+
+    if (!error && data) {
+      const contentMap: Record<string, string> = {};
+      let apps: any[] = [];
+
+      data.forEach((item: any) => {
+        if (item.section_key === "applications_items") {
+          apps = JSON.parse(item.content_value);
+        } else {
+          contentMap[item.section_key] = item.content_value;
+        }
+      });
+
+      setContent(contentMap);
+      setApplications(apps);
+    }
+    setLoading(false);
+  };
 
   const hotspotMarkers = [
     { id: 1, label: "Front camera", top: 37, left: 48 },
@@ -45,40 +77,6 @@ const Automotive = () => {
     { id: 5, label: "Mid range radar", top: 50, left: 80 },
     { id: 6, label: "Side ultra sonic sensor", top: 73, left: 36 },
     { id: 6, label: "Side ultra sonic sensor", top: 45, left: 78 },
-  ];
-  const sections = [
-    { id: 'introduction', label: 'Introduction' },
-    { id: 'applications', label: 'ADAS Applications' },
-    { id: 'standards', label: 'Standards & Testing' },
-    { id: 'products', label: 'Products' },
-    { id: 'contact', label: 'Contact' }
-  ];
-
-  const applications = [
-    {
-      title: "In-Cabin Performance Testing",
-      description: "Driver and occupant monitoring systems (DMS/OMS) use a variety of near-infrared (NIR) sensors combined with active illumination (e.g., LED) to enhance the safety and comfort of drivers and passengers.",
-      icon: Eye,
-      iconType: "vision"
-    },
-    {
-      title: "ADAS Performance Testing",
-      description: "Advanced Driver Assistance Systems (ADAS) encompass a wide range of camera and sensor systems that support autonomous vehicle movements and provide driver caution notices.",
-      icon: Shield,
-      iconType: "testing"
-    },
-    {
-      title: "Geometric Camera Calibration",
-      description: "An essential measurement for ADAS applications that are required to detect and accurately map 3D objects in a moving scene and make adjustments based on those calculations.",
-      icon: Brain,
-      iconType: "ai"
-    },
-    {
-      title: "Climate-Controlled Testing",
-      description: "Incorporating various weather scenarios into automotive camera testing is crucial to understanding if these systems can still meet their performance thresholds in even the harshest weather conditions.",
-      icon: Zap,
-      iconType: "illumination"
-    }
   ];
 
   const products = [
@@ -116,6 +114,18 @@ const Automotive = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <p className="text-xl text-gray-600">Loading...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -130,13 +140,13 @@ const Automotive = () => {
             <div className="lg:col-span-2 space-y-8">
               <div>
                 <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
-                  Automotive
+                  {content.hero_title || "Photo & Video"}
                   <br />
-                  <span className="font-medium text-black">Image Quality</span>
+                  <span className="font-medium text-black">{content.hero_subtitle || "Image Quality"}</span>
                 </h1>
                 
                 <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
-                  Precision-engineered camera system test solutions for robust vehicle safety, performance and autonomy.
+                  {content.hero_description || "Precision-engineered camera system test solutions for professional photography and video production."}
                 </p>
               </div>
               
@@ -147,7 +157,7 @@ const Automotive = () => {
                     className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
                     style={{ backgroundColor: '#f9dc24' }}
                   >
-                    Discover Automotive Solutions
+                    {content.hero_cta || "Discover Photography Solutions"}
                   </Button>
                 </Link>
               </div>
@@ -183,10 +193,10 @@ const Automotive = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Main Applications
+              {content.applications_title || "Main Applications"}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Automotive camera systems cover a broad spectrum of applications that contribute to vehicle safety, comfort and performance.
+              {content.applications_description || "Photography and video camera systems cover a broad spectrum of applications that contribute to image quality, color accuracy and overall performance."}
             </p>
           </div>
         </div>
@@ -485,4 +495,4 @@ const Automotive = () => {
   );
 };
 
-export default Automotive;
+export default Photography;

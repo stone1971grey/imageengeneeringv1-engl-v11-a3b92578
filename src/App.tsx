@@ -45,6 +45,8 @@ import Styleguide from "./pages/Styleguide";
 import IconsStyleguide from "./pages/IconsStyleguide";
 import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
 import ImageDownload from "./pages/ImageDownload";
+import Auth from "./pages/Auth";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -98,6 +100,8 @@ const App = () => (
         <Route path="/icons-styleguide" element={<IconsStyleguide />} />
         <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
         <Route path="/image-download" element={<ImageDownload />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/admin" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
