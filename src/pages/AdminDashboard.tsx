@@ -380,7 +380,7 @@ const AdminDashboard = () => {
                     id="hero_image_position"
                     value={heroImagePosition}
                     onChange={(e) => setHeroImagePosition(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24]"
+                    className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                   >
                     <option value="left">Left</option>
                     <option value="right">Right</option>
@@ -393,7 +393,7 @@ const AdminDashboard = () => {
                     id="hero_layout"
                     value={heroLayout}
                     onChange={(e) => setHeroLayout(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24]"
+                    className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                   >
                     <option value="50-50">50:50 (Equal)</option>
                     <option value="2-3">2:3 (Text:Image)</option>
