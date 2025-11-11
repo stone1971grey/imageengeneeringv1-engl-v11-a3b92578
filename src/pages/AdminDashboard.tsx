@@ -1266,20 +1266,38 @@ const AdminDashboard = () => {
             <div className="flex items-center gap-4 mt-4">
               <Label htmlFor="page-selector" className="text-gray-600">Edit Page:</Label>
               <Select value={selectedPage} onValueChange={setSelectedPage}>
-                <SelectTrigger id="page-selector" className="w-[300px]">
+                <SelectTrigger id="page-selector" className="w-[320px]">
                   <SelectValue placeholder="Select a page" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="photography" disabled={isEditor && !allowedPages.includes("photography")}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">Photo & Video</span>
-                      <span className="text-xs text-gray-500">Your solution → Photo & Video</span>
+                  <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Your solution</div>
+                  <SelectItem 
+                    value="your-solution" 
+                    disabled={isEditor && !allowedPages.includes("your-solution")}
+                    className="pl-6"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Overview</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="scanners-archiving" disabled={isEditor && !allowedPages.includes("scanners-archiving")}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">Scanners & Archiving</span>
-                      <span className="text-xs text-gray-500">Your solution → Scanners & Archiving</span>
+                  <SelectItem 
+                    value="photography" 
+                    disabled={isEditor && !allowedPages.includes("photography")}
+                    className="pl-6"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">↳</span>
+                      <span>Photo & Video</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem 
+                    value="scanners-archiving" 
+                    disabled={isEditor && !allowedPages.includes("scanners-archiving")}
+                    className="pl-6"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">↳</span>
+                      <span>Scanners & Archiving</span>
                     </div>
                   </SelectItem>
                 </SelectContent>

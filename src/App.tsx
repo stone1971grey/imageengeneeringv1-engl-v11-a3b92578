@@ -9,7 +9,7 @@ import GlobalPasswordGate from "@/components/GlobalPasswordGate";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Index from "./pages/Index";
 import InsideLab from "./pages/InsideLab";
-import Industries from "./pages/Industries";
+import YourSolution from "./pages/YourSolution";
 import Products from "./pages/Products";
 import Automotive from "./pages/Automotive";
 import Photography from "./pages/Photography";
@@ -64,7 +64,8 @@ const App = () => (
           <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/inside-lab" element={<InsideLab />} />
-        <Route path="/industries" element={<Industries />} />
+        <Route path="/industries" element={<YourSolution />} />
+        <Route path="/your-solution" element={<YourSolution />} />
         <Route path="/products" element={<Products />} />
         <Route path="/automotive" element={<Automotive />} />
         <Route path="/photography" element={<Photography />} />
