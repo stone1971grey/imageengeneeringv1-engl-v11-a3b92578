@@ -85,6 +85,7 @@ const Photography = () => {
       data.forEach((item: any) => {
         if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
+          console.log("Loaded applications from DB:", apps);
         } else if (item.section_key === "hero_image_url") {
           setHeroImageUrl(item.content_value);
         } else if (item.section_key === "hero_image_position") {
@@ -356,6 +357,7 @@ const Photography = () => {
                              backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
                              color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
                            }}
+                           onClick={() => console.log("Tile button clicked - ctaStyle:", app.ctaStyle, "backgroundColor:", app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24")}
                          >
                            {app.ctaText || "Learn More"}
                          </Button>
@@ -368,6 +370,7 @@ const Photography = () => {
                              backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
                              color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
                            }}
+                           onClick={() => console.log("Tile button clicked - ctaStyle:", app.ctaStyle, "backgroundColor:", app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24")}
                          >
                            {app.ctaText || "Learn More"}
                          </Button>

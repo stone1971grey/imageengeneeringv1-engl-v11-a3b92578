@@ -882,9 +882,11 @@ const AdminDashboard = () => {
                             <Select
                               value={app.ctaStyle || "standard"}
                               onValueChange={(value) => {
+                                console.log("Button style changing for tile", index, "from", app.ctaStyle, "to", value);
                                 const newApps = [...applications];
                                 newApps[index].ctaStyle = value;
                                 setApplications(newApps);
+                                console.log("Updated applications:", newApps);
                               }}
                             >
                               <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
@@ -895,6 +897,9 @@ const AdminDashboard = () => {
                                 <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
                               </SelectContent>
                             </Select>
+                            <p className="text-sm text-white mt-1">
+                              Current: {app.ctaStyle || "standard"}
+                            </p>
                           </div>
                         </div>
                       </div>
