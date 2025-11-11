@@ -438,9 +438,19 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="hero" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="hero">Hero Section</TabsTrigger>
-            <TabsTrigger value="tiles">Tiles Template</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-6 h-auto p-2 bg-gray-200">
+            <TabsTrigger 
+              value="hero" 
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Produkt-Hero-Section
+            </TabsTrigger>
+            <TabsTrigger 
+              value="tiles"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Tiles Template
+            </TabsTrigger>
           </TabsList>
 
           {/* Hero Section Tab */}
