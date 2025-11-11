@@ -328,6 +328,50 @@ const AdminDashboard = () => {
     navigate("/auth");
   };
 
+  const handleDeleteStaticSegment = async (segmentType: 'hero' | 'tiles' | 'banner' | 'solutions') => {
+    if (!user) return;
+    
+    setSaving(true);
+    try {
+      let sectionKeys: string[] = [];
+      
+      switch (segmentType) {
+        case 'hero':
+          sectionKeys = ['hero_title', 'hero_subtitle', 'hero_description', 'hero_cta', 'hero_image_url', 'hero_image_position', 'hero_layout', 'hero_top_padding', 'hero_cta_link', 'hero_cta_style'];
+          break;
+        case 'tiles':
+          sectionKeys = ['applications_title', 'applications_description', 'applications_items'];
+          break;
+        case 'banner':
+          sectionKeys = ['banner_title', 'banner_subtext', 'banner_images', 'banner_button_text', 'banner_button_link', 'banner_button_style'];
+          break;
+        case 'solutions':
+          sectionKeys = ['solutions_title', 'solutions_subtext', 'solutions_layout', 'solutions_items'];
+          break;
+      }
+
+      const { error } = await supabase
+        .from("page_content")
+        .delete()
+        .eq("page_slug", "photography")
+        .in("section_key", sectionKeys);
+
+      if (error) throw error;
+
+      toast.success("Segment deleted successfully!");
+      
+      // Reload content
+      await loadContent();
+      
+      // Switch to first available tab
+      setActiveTab("hero");
+    } catch (error: any) {
+      toast.error("Error deleting segment: " + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveHero = async () => {
     if (!user) return;
     
@@ -1099,8 +1143,39 @@ const AdminDashboard = () => {
                   <CardTitle className="text-white">Hero Section</CardTitle>
                   <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
                 </div>
-                <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
-                  Produkt-Hero Template
+                <div className="flex items-center gap-3">
+                  <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                    Produkt-Hero Template
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Segment
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Hero Segment?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the entire Hero section and all its content. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteStaticSegment('hero')}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </CardHeader>
@@ -1277,8 +1352,39 @@ const AdminDashboard = () => {
                   <CardTitle className="text-white">Tiles Template</CardTitle>
                   <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
                 </div>
-                <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
-                  Tiles Template
+                <div className="flex items-center gap-3">
+                  <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                    Tiles Template
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Segment
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Tiles Segment?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the entire Tiles section and all its tiles. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteStaticSegment('tiles')}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </CardHeader>
@@ -1537,8 +1643,41 @@ const AdminDashboard = () => {
           <TabsContent value="banner">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Banner Template Section</CardTitle>
-                <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">Banner Template Section</CardTitle>
+                    <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Segment
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Banner Segment?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the entire Banner section and all its content. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteStaticSegment('banner')}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Title */}
@@ -1792,8 +1931,41 @@ const AdminDashboard = () => {
           <TabsContent value="solutions">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Image & Text Template</CardTitle>
-                <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">Image & Text Template</CardTitle>
+                    <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Segment
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Image & Text Segment?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the entire Image & Text section and all its content. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteStaticSegment('solutions')}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Title */}
