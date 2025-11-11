@@ -894,9 +894,9 @@ const AdminDashboard = () => {
                 className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
               >
                 {segment.type === 'hero' && `Hero ${index + 1}`}
-                {segment.type === 'tiles' && `Tiles ${index + 1}`}
+                {segment.type === 'tiles' && `Tiles ${index + 2}`}
                 {segment.type === 'banner' && `Banner ${index + 1}`}
-                {segment.type === 'image-text' && `Image & Text ${index + 1}`}
+                {segment.type === 'image-text' && `Image & Text ${index + 2}`}
               </TabsTrigger>
             ))}
           </TabsList>
