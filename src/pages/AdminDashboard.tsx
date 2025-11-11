@@ -161,6 +161,42 @@ const AdminDashboard = () => {
     }
   }, [user]);
 
+  // Sync tabOrder with pageSegments - ensure all segment IDs are in tabOrder
+  useEffect(() => {
+    const staticTabs = ['tiles', 'banner', 'solutions'];
+    const segmentIds = pageSegments.map((_, index) => `segment-${index}`);
+    
+    // Build complete list of all tabs that should exist
+    const allTabs = [...staticTabs, ...segmentIds];
+    
+    // Filter current order to only include valid tabs
+    const validOrder = tabOrder.filter(id => allTabs.includes(id));
+    
+    // Find missing tabs
+    const missingTabs = allTabs.filter(id => !validOrder.includes(id));
+    
+    if (missingTabs.length > 0) {
+      const newOrder = [...validOrder, ...missingTabs];
+      setTabOrder(newOrder);
+      
+      // Save to database
+      if (user) {
+        supabase
+          .from("page_content")
+          .upsert({
+            page_slug: "photography",
+            section_key: "tab_order",
+            content_type: "json",
+            content_value: JSON.stringify(newOrder),
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key'
+          });
+      }
+    }
+  }, [pageSegments, user]);
+
   const checkAdminStatus = async () => {
     if (!user) return;
     
