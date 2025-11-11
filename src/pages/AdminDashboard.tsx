@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import {
@@ -21,6 +21,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface ContentItem {
   id: string;
@@ -28,6 +45,49 @@ interface ContentItem {
   content_type: string;
   content_value: string;
 }
+
+interface SortableTabProps {
+  id: string;
+  value: string;
+  children: React.ReactNode;
+  isDraggable?: boolean;
+}
+
+const SortableTab = ({ id, value, children, isDraggable = true }: SortableTabProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: !isDraggable });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    cursor: isDraggable ? 'grab' : 'default',
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="flex items-center">
+      <TabsTrigger 
+        value={value}
+        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black flex-1"
+      >
+        <div className="flex items-center gap-2">
+          {isDraggable && (
+            <div {...attributes} {...listeners}>
+              <GripVertical className="h-4 w-4 text-gray-500" />
+            </div>
+          )}
+          {children}
+        </div>
+      </TabsTrigger>
+    </div>
+  );
+};
 
 const AdminDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -57,6 +117,7 @@ const AdminDashboard = () => {
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("hero");
+  const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
   const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
   const [footerContactHeadline, setFooterContactHeadline] = useState<string>("");
@@ -175,6 +236,13 @@ const AdminDashboard = () => {
           setPageSegments(segments || []);
         } catch {
           setPageSegments([]);
+        }
+      } else if (item.section_key === "tab_order") {
+        try {
+          const order = JSON.parse(item.content_value);
+          setTabOrder(order || ['tiles', 'banner', 'solutions']);
+        } catch {
+          setTabOrder(['tiles', 'banner', 'solutions']);
         }
       } else if (item.section_key === "footer_cta_title") {
         setFooterCtaTitle(item.content_value);
@@ -358,6 +426,24 @@ const AdminDashboard = () => {
 
       if (error) throw error;
 
+      // Remove from tab order
+      const updatedTabOrder = tabOrder.filter(id => id !== segmentType);
+      
+      // Save updated tab order
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "tab_order",
+          content_type: "json",
+          content_value: JSON.stringify(updatedTabOrder),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      setTabOrder(updatedTabOrder);
       toast.success("Segment deleted successfully!");
       
       // Reload content
@@ -369,6 +455,43 @@ const AdminDashboard = () => {
       toast.error("Error deleting segment: " + error.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = tabOrder.indexOf(active.id as string);
+    const newIndex = tabOrder.indexOf(over.id as string);
+
+    const newOrder = arrayMove(tabOrder, oldIndex, newIndex);
+    setTabOrder(newOrder);
+
+    // Save new order to database
+    try {
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "tab_order",
+          content_type: "json",
+          content_value: JSON.stringify(newOrder),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+    } catch (error: any) {
+      toast.error("Error saving tab order: " + error.message);
     }
   };
 
@@ -839,9 +962,12 @@ const AdminDashboard = () => {
     };
 
     const updatedSegments = [...pageSegments, newSegment];
+    const newSegmentId = `segment-${updatedSegments.length - 1}`;
+    const updatedTabOrder = [...tabOrder, newSegmentId];
 
     try {
-      const { error } = await supabase
+      // Save segments
+      const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: "photography",
@@ -854,14 +980,30 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
-      if (error) throw error;
+      if (segmentsError) throw segmentsError;
+
+      // Save tab order
+      const { error: orderError } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "tab_order",
+          content_type: "json",
+          content_value: JSON.stringify(updatedTabOrder),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (orderError) throw orderError;
 
       setPageSegments(updatedSegments);
+      setTabOrder(updatedTabOrder);
       setIsTemplateDialogOpen(false);
       
       // Switch to the newly added segment tab
-      const newSegmentIndex = updatedSegments.length - 1;
-      setActiveTab(`segment-${newSegmentIndex}`);
+      setActiveTab(newSegmentId);
       
       toast.success("New segment added successfully!");
     } catch (error: any) {
@@ -872,10 +1014,26 @@ const AdminDashboard = () => {
   const handleDeleteSegment = async (index: number) => {
     if (!user) return;
 
+    const deletedSegmentId = `segment-${index}`;
     const updatedSegments = pageSegments.filter((_, i) => i !== index);
+    
+    // Remove from tab order and adjust indices for remaining segments
+    const updatedTabOrder = tabOrder
+      .filter(id => id !== deletedSegmentId)
+      .map(id => {
+        // Adjust segment indices if they come after the deleted one
+        if (id.startsWith('segment-')) {
+          const segIndex = parseInt(id.split('-')[1]);
+          if (segIndex > index) {
+            return `segment-${segIndex - 1}`;
+          }
+        }
+        return id;
+      });
 
     try {
-      const { error } = await supabase
+      // Save segments
+      const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: "photography",
@@ -888,9 +1046,26 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
-      if (error) throw error;
+      if (segmentsError) throw segmentsError;
+
+      // Save tab order
+      const { error: orderError } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "tab_order",
+          content_type: "json",
+          content_value: JSON.stringify(updatedTabOrder),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (orderError) throw orderError;
 
       setPageSegments(updatedSegments);
+      setTabOrder(updatedTabOrder);
       toast.success("Segment deleted successfully!");
     } catch (error: any) {
       toast.error("Error deleting segment: " + error.message);
@@ -1083,56 +1258,81 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className={`grid w-full mb-6 h-auto p-2 bg-gray-200`} style={{ gridTemplateColumns: `repeat(${5 + pageSegments.length}, minmax(0, 1fr))` }}>
-            <TabsTrigger 
-              value="hero" 
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Produkt-Hero
-            </TabsTrigger>
-            <TabsTrigger 
-              value="tiles"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Tiles
-            </TabsTrigger>
-            <TabsTrigger 
-              value="banner"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Banner
-            </TabsTrigger>
-            <TabsTrigger 
-              value="solutions"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Image & Text
-            </TabsTrigger>
-            {pageSegments.map((segment, index) => {
-              // Count how many segments of the same type appear before this one
-              const sameTypeBefore = pageSegments.slice(0, index).filter(s => s.type === segment.type).length;
-              const displayNumber = sameTypeBefore + 2; // +2 because static segment is #1
-              
-              return (
-                <TabsTrigger 
-                  key={`segment-${index}`}
-                  value={`segment-${index}`}
-                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                >
-                  {segment.type === 'hero' && `Hero ${displayNumber}`}
-                  {segment.type === 'tiles' && `Tiles ${displayNumber}`}
-                  {segment.type === 'banner' && `Banner ${displayNumber}`}
-                  {segment.type === 'image-text' && `Image & Text ${displayNumber}`}
-                </TabsTrigger>
-              );
-            })}
-            <TabsTrigger 
-              value="footer"
-              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-            >
-              Footer
-            </TabsTrigger>
-          </TabsList>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <TabsList className="flex w-full mb-6 h-auto p-2 bg-gray-200">
+              {/* Hero Tab - Fixed Left */}
+              <TabsTrigger 
+                value="hero" 
+                className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+              >
+                Produkt-Hero
+              </TabsTrigger>
+
+              {/* Draggable Middle Tabs */}
+              <SortableContext
+                items={tabOrder}
+                strategy={horizontalListSortingStrategy}
+              >
+                {tabOrder.map((tabId) => {
+                  // Static tabs
+                  if (tabId === 'tiles') {
+                    return (
+                      <SortableTab key="tiles" id="tiles" value="tiles">
+                        Tiles
+                      </SortableTab>
+                    );
+                  }
+                  if (tabId === 'banner') {
+                    return (
+                      <SortableTab key="banner" id="banner" value="banner">
+                        Banner
+                      </SortableTab>
+                    );
+                  }
+                  if (tabId === 'solutions') {
+                    return (
+                      <SortableTab key="solutions" id="solutions" value="solutions">
+                        Image & Text
+                      </SortableTab>
+                    );
+                  }
+                  
+                  // Dynamic segment tabs
+                  const segmentIndex = pageSegments.findIndex((_, i) => `segment-${i}` === tabId);
+                  if (segmentIndex !== -1) {
+                    const segment = pageSegments[segmentIndex];
+                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === segment.type).length;
+                    const displayNumber = sameTypeBefore + 2;
+                    
+                    let label = '';
+                    if (segment.type === 'hero') label = `Hero ${displayNumber}`;
+                    if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
+                    if (segment.type === 'banner') label = `Banner ${displayNumber}`;
+                    if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
+                    
+                    return (
+                      <SortableTab key={tabId} id={tabId} value={tabId}>
+                        {label}
+                      </SortableTab>
+                    );
+                  }
+                  return null;
+                })}
+              </SortableContext>
+
+              {/* Footer Tab - Fixed Right */}
+              <TabsTrigger 
+                value="footer"
+                className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+              >
+                Footer
+              </TabsTrigger>
+            </TabsList>
+          </DndContext>
 
           {/* Hero Section Tab */}
           <TabsContent value="hero">
