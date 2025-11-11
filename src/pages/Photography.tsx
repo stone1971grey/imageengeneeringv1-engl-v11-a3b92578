@@ -37,6 +37,8 @@ const Photography = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
+  const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
+  const [heroLayout, setHeroLayout] = useState<string>("2-5");
 
   useEffect(() => {
     loadContent();
@@ -57,6 +59,10 @@ const Photography = () => {
           apps = JSON.parse(item.content_value);
         } else if (item.section_key === "hero_image_url") {
           setHeroImageUrl(item.content_value);
+        } else if (item.section_key === "hero_image_position") {
+          setHeroImagePosition(item.content_value || "right");
+        } else if (item.section_key === "hero_layout") {
+          setHeroLayout(item.content_value || "2-5");
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -138,10 +144,20 @@ const Photography = () => {
       {/* Hero Section */}
       <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
         <div className="container mx-auto px-6 py-16 lg:py-24 pt-3 md:pt-32 pb-8 lg:pb-12 relative z-10">
-          <div className="grid lg:grid-cols-5 gap-16 items-center">
+          <div className={`grid gap-16 items-center ${
+            heroLayout === "50-50" ? "lg:grid-cols-2" : 
+            heroLayout === "2-3" ? "lg:grid-cols-5" :
+            heroLayout === "1-2" ? "lg:grid-cols-3" :
+            "lg:grid-cols-5"
+          }`}>
             
-            {/* Left Content - 2/5 */}
-            <div className="lg:col-span-2 space-y-8">
+            {/* Text Content */}
+            <div className={`space-y-8 ${
+              heroLayout === "50-50" ? "" :
+              heroLayout === "2-3" ? "lg:col-span-2" :
+              heroLayout === "1-2" ? "" :
+              "lg:col-span-2"
+            } ${heroImagePosition === "left" ? "order-2" : "order-1"}`}>
               <div>
                 <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
                   {content.hero_title || "Photo & Video"}
@@ -167,8 +183,13 @@ const Photography = () => {
               </div>
             </div>
 
-            {/* Right Content - Image or Interactive Image Map - 3/5 */}
-            <div className="lg:col-span-3 relative px-6">
+            {/* Image Content */}
+            <div className={`relative px-6 ${
+              heroLayout === "50-50" ? "" :
+              heroLayout === "2-3" ? "lg:col-span-3" :
+              heroLayout === "1-2" ? "lg:col-span-2" :
+              "lg:col-span-3"
+            } ${heroImagePosition === "left" ? "order-1" : "order-2"}`}>
               <div className="relative overflow-hidden rounded-lg shadow-soft">
                 {heroImageUrl ? (
                   // Display uploaded custom image

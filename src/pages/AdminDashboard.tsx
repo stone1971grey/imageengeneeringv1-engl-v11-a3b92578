@@ -29,6 +29,8 @@ const AdminDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
+  const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
+  const [heroLayout, setHeroLayout] = useState<string>("2-5");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,6 +103,10 @@ const AdminDashboard = () => {
         apps = JSON.parse(item.content_value);
       } else if (item.section_key === "hero_image_url") {
         setHeroImageUrl(item.content_value);
+      } else if (item.section_key === "hero_image_position") {
+        setHeroImagePosition(item.content_value || "right");
+      } else if (item.section_key === "hero_layout") {
+        setHeroLayout(item.content_value || "2-5");
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -205,6 +211,34 @@ const AdminDashboard = () => {
           if (error) throw error;
         }
       }
+
+      // Update hero image position
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "hero_image_position",
+          content_type: "text",
+          content_value: heroImagePosition,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      // Update hero layout
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "hero_layout",
+          content_type: "text",
+          content_value: heroLayout,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
 
       toast.success("Hero section saved successfully!");
     } catch (error: any) {
@@ -338,6 +372,37 @@ const AdminDashboard = () => {
                 />
                 {uploading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="hero_image_position">Image Position</Label>
+                  <select
+                    id="hero_image_position"
+                    value={heroImagePosition}
+                    onChange={(e) => setHeroImagePosition(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24]"
+                  >
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                  </select>
+                </div>
+
+                <div>
+                  <Label htmlFor="hero_layout">Layout Ratio</Label>
+                  <select
+                    id="hero_layout"
+                    value={heroLayout}
+                    onChange={(e) => setHeroLayout(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24]"
+                  >
+                    <option value="50-50">50:50 (Equal)</option>
+                    <option value="2-3">2:3 (Text:Image)</option>
+                    <option value="1-2">1:2 (Text:Image)</option>
+                    <option value="2-5">2:5 (Text:Image)</option>
+                  </select>
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="hero_title">Title</Label>
                 <Input
