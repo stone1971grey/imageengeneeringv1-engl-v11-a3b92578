@@ -777,6 +777,24 @@ const AdminDashboard = () => {
                           </div>
                           
                           <div>
+                            <Label htmlFor={`app_cta_text_${index}`} className="text-white">Button Text</Label>
+                            <Input
+                              id={`app_cta_text_${index}`}
+                              value={app.ctaText || ""}
+                              onChange={(e) => {
+                                const newApps = [...applications];
+                                newApps[index].ctaText = e.target.value;
+                                setApplications(newApps);
+                              }}
+                              placeholder="Learn More"
+                              className="border-2 border-gray-600"
+                            />
+                            <p className="text-sm text-white mt-1">
+                              Text displayed on the button (default: "Learn More")
+                            </p>
+                          </div>
+                          
+                          <div>
                             <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
                             <select
                               id={`app_cta_style_${index}`}

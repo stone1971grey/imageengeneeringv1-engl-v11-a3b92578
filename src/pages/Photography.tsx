@@ -50,6 +50,7 @@ interface Application {
   description: string;
   ctaLink: string;
   ctaStyle: string;
+  ctaText: string;
   imageUrl: string;
   icon: string;
 }
@@ -350,36 +351,37 @@ const Photography = () => {
                          className="w-full"
                        >
                          <Button 
-                           className={`w-full border-0 hover:opacity-90 ${
-                             app.ctaStyle === "technical" ? "text-white" : "text-black"
-                           }`}
+                           className={`w-full border-0 hover:opacity-90`}
                            style={{ 
-                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
                            }}
                          >
-                           Learn More
+                           {app.ctaText || "Learn More"}
                          </Button>
                        </a>
                      ) : (
                        <Link to={app.ctaLink} className="w-full">
                          <Button 
-                           className={`w-full border-0 hover:opacity-90 ${
-                             app.ctaStyle === "technical" ? "text-white" : "text-black"
-                           }`}
+                           className={`w-full border-0 hover:opacity-90`}
                            style={{ 
-                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                             backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                             color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
                            }}
                          >
-                           Learn More
+                           {app.ctaText || "Learn More"}
                          </Button>
                        </Link>
                      )
                    ) : (
                      <Button 
-                       className="w-full text-black hover:opacity-90"
-                       style={{ backgroundColor: '#f9dc24' }}
+                       className="w-full border-0 hover:opacity-90"
+                       style={{ 
+                         backgroundColor: '#f9dc24',
+                         color: '#000000'
+                       }}
                      >
-                       Learn More
+                       {app.ctaText || "Learn More"}
                      </Button>
                      )}
                    </div>
