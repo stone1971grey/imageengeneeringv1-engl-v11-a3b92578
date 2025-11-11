@@ -1064,18 +1064,24 @@ const AdminDashboard = () => {
             >
               Image & Text
             </TabsTrigger>
-            {pageSegments.map((segment, index) => (
-              <TabsTrigger 
-                key={`segment-${index}`}
-                value={`segment-${index}`}
-                className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-              >
-                {segment.type === 'hero' && `Hero ${index + 1}`}
-                {segment.type === 'tiles' && `Tiles ${index + 2}`}
-                {segment.type === 'banner' && `Banner ${index + 1}`}
-                {segment.type === 'image-text' && `Image & Text ${index + 2}`}
-              </TabsTrigger>
-            ))}
+            {pageSegments.map((segment, index) => {
+              // Count how many segments of the same type appear before this one
+              const sameTypeBefore = pageSegments.slice(0, index).filter(s => s.type === segment.type).length;
+              const displayNumber = sameTypeBefore + 2; // +2 because static segment is #1
+              
+              return (
+                <TabsTrigger 
+                  key={`segment-${index}`}
+                  value={`segment-${index}`}
+                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                >
+                  {segment.type === 'hero' && `Hero ${displayNumber}`}
+                  {segment.type === 'tiles' && `Tiles ${displayNumber}`}
+                  {segment.type === 'banner' && `Banner ${displayNumber}`}
+                  {segment.type === 'image-text' && `Image & Text ${displayNumber}`}
+                </TabsTrigger>
+              );
+            })}
             <TabsTrigger 
               value="footer"
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
