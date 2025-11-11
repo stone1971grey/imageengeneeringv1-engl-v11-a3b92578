@@ -169,6 +169,39 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (user && (isAdmin || isEditor)) {
+      // Reset all state when changing pages
+      setHeroImageUrl("");
+      setHeroImagePosition("right");
+      setHeroLayout("2-5");
+      setHeroTopPadding("medium");
+      setHeroCtaLink("#applications-start");
+      setHeroCtaStyle("standard");
+      setBannerTitle("");
+      setBannerSubtext("");
+      setBannerImages([]);
+      setBannerButtonText("");
+      setBannerButtonLink("");
+      setBannerButtonStyle("standard");
+      setSolutionsTitle("");
+      setSolutionsSubtext("");
+      setSolutionsLayout("2-col");
+      setSolutionsItems([]);
+      setApplications([]);
+      setPageSegments([]);
+      setTabOrder(['tiles', 'banner', 'solutions']);
+      setFooterCtaTitle("");
+      setFooterCtaDescription("");
+      setFooterContactHeadline("");
+      setFooterContactSubline("");
+      setFooterContactDescription("");
+      setFooterTeamImageUrl("");
+      setFooterTeamQuote("");
+      setFooterTeamName("");
+      setFooterTeamTitle("");
+      setFooterButtonText("");
+      setContent({});
+      
+      // Then load new content
       loadContent();
     }
   }, [user, selectedPage, isAdmin, isEditor]);
