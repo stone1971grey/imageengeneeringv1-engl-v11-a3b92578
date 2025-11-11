@@ -100,6 +100,14 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Static segment IDs - these are fixed and never change
+  const STATIC_SEGMENT_IDS = {
+    hero: 'seg-static-hero',
+    tiles: 'seg-static-tiles', 
+    banner: 'seg-static-banner',
+    solutions: 'seg-static-solutions'
+  };
+  
   // Get selected page from URL parameter
   const searchParams = new URLSearchParams(location.search);
   const selectedPage = searchParams.get('page') || 'photography';
@@ -1483,6 +1491,9 @@ const AdminDashboard = () => {
                 <div>
                   <CardTitle className="text-white">Hero Section</CardTitle>
                   <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
+                  <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                    ID: {STATIC_SEGMENT_IDS.hero}
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
@@ -1692,6 +1703,9 @@ const AdminDashboard = () => {
                 <div>
                   <CardTitle className="text-white">Tiles Template</CardTitle>
                   <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
+                  <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                    ID: {STATIC_SEGMENT_IDS.tiles}
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
@@ -1988,6 +2002,9 @@ const AdminDashboard = () => {
                   <div>
                     <CardTitle className="text-white">Banner Template Section</CardTitle>
                     <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
+                    <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                      ID: {STATIC_SEGMENT_IDS.banner}
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
@@ -2281,6 +2298,9 @@ const AdminDashboard = () => {
                   <div>
                     <CardTitle className="text-white">Image & Text Template</CardTitle>
                     <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
+                    <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                      ID: {STATIC_SEGMENT_IDS.solutions}
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
