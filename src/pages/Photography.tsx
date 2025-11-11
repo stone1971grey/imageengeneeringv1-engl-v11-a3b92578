@@ -183,15 +183,31 @@ const Photography = () => {
               </div>
               
               <div className="pt-4">
-                <Link to={heroCtaLink}>
-                  <Button 
-                    size="lg"
-                    className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#f9dc24' }}
+                {heroCtaLink.startsWith('http://') || heroCtaLink.startsWith('https://') ? (
+                  <a 
+                    href={heroCtaLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    {content.hero_cta || "Discover Photography Solutions"}
-                  </Button>
-                </Link>
+                    <Button 
+                      size="lg"
+                      className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                      style={{ backgroundColor: '#f9dc24' }}
+                    >
+                      {content.hero_cta || "Discover Photography Solutions"}
+                    </Button>
+                  </a>
+                ) : (
+                  <Link to={heroCtaLink}>
+                    <Button 
+                      size="lg"
+                      className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
+                      style={{ backgroundColor: '#f9dc24' }}
+                    >
+                      {content.hero_cta || "Discover Photography Solutions"}
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
 

@@ -570,9 +570,11 @@ const AdminDashboard = () => {
                   id="hero_cta_link"
                   value={heroCtaLink}
                   onChange={(e) => setHeroCtaLink(e.target.value)}
-                  placeholder="#applications-start or /page-url"
+                  placeholder="#applications-start, /page-url, or https://example.com"
                 />
-                <p className="text-sm text-gray-500 mt-1">Use '#section-id' for same page links or '/path' for other pages</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Use '#section-id' for same page links, '/path' for internal pages, or 'https://...' for external URLs (opens in new tab)
+                </p>
               </div>
 
               <div className="flex justify-end pt-4 border-t">
