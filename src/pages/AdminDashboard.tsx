@@ -8,9 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save } from "lucide-react";
+import { LogOut, Save, Eye } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import photographyHeroDefault from "@/assets/photography-hero-default.jpg";
 
 interface ContentItem {
   id: string;
@@ -347,10 +348,86 @@ const AdminDashboard = () => {
           {/* Hero Section */}
           <Card>
             <CardHeader>
-              <CardTitle>Hero Section</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" />
+                Hero Section
+              </CardTitle>
               <CardDescription>Edit the main hero section content</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Live Preview */}
+              <div className="bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
+                <h3 className="text-sm font-semibold mb-3 text-gray-700">Live Preview</h3>
+                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div 
+                    className={`grid gap-4 p-4 ${
+                      heroLayout === "50-50" ? "grid-cols-2" : 
+                      heroLayout === "2-3" ? "grid-cols-5" :
+                      heroLayout === "1-2" ? "grid-cols-3" :
+                      "grid-cols-5"
+                    }`}
+                    style={{
+                      paddingTop: heroTopPadding === "small" ? "1rem" :
+                                  heroTopPadding === "medium" ? "1.5rem" :
+                                  heroTopPadding === "large" ? "2rem" :
+                                  heroTopPadding === "xlarge" ? "2.5rem" :
+                                  "2rem"
+                    }}
+                  >
+                    {/* Text Content */}
+                    <div className={`space-y-2 ${
+                      heroLayout === "50-50" ? "" :
+                      heroLayout === "2-3" ? "col-span-2" :
+                      heroLayout === "1-2" ? "" :
+                      "col-span-2"
+                    } ${heroImagePosition === "left" ? "order-2" : "order-1"}`}>
+                      <h4 className="text-lg font-light leading-tight text-black">
+                        {content.hero_title || "Photo & Video"}
+                        <br />
+                        <span className="font-medium">{content.hero_subtitle || "Image Quality"}</span>
+                      </h4>
+                      <p className="text-xs text-black font-light leading-relaxed">
+                        {content.hero_description?.substring(0, 80) + "..." || "Precision-engineered camera system test solutions..."}
+                      </p>
+                      <button 
+                        className="text-xs px-3 py-1 rounded text-black mt-2"
+                        style={{ backgroundColor: '#f9dc24' }}
+                      >
+                        {content.hero_cta || "Discover Photography Solutions"}
+                      </button>
+                    </div>
+
+                    {/* Image Content */}
+                    <div className={`${
+                      heroLayout === "50-50" ? "" :
+                      heroLayout === "2-3" ? "col-span-3" :
+                      heroLayout === "1-2" ? "col-span-2" :
+                      "col-span-3"
+                    } ${heroImagePosition === "left" ? "order-1" : "order-2"}`}>
+                      <div className="relative overflow-hidden rounded aspect-video bg-gray-200">
+                        {heroImageUrl ? (
+                          <img 
+                            src={heroImageUrl} 
+                            alt="Hero preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <img 
+                            src={photographyHeroDefault} 
+                            alt="Default hero preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">
+                  Preview updates automatically as you change settings
+                </p>
+              </div>
+
+              {/* Settings */}
               {/* Hero Image Upload */}
               <div>
                 <Label htmlFor="hero_image">Hero Image</Label>
