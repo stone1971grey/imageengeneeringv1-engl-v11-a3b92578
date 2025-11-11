@@ -1488,10 +1488,10 @@ const AdminDashboard = () => {
             <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <div>
+                <div className="flex-1">
                   <CardTitle className="text-white">Hero Section</CardTitle>
                   <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
-                  <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                  <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                     ID: {STATIC_SEGMENT_IDS.hero}
                   </div>
                 </div>
@@ -1700,10 +1700,10 @@ const AdminDashboard = () => {
             <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <div>
+                <div className="flex-1">
                   <CardTitle className="text-white">Tiles Template</CardTitle>
                   <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
-                  <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                  <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                     ID: {STATIC_SEGMENT_IDS.tiles}
                   </div>
                 </div>
@@ -1999,10 +1999,10 @@ const AdminDashboard = () => {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-white">Banner Template Section</CardTitle>
                     <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
-                    <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                    <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                       ID: {STATIC_SEGMENT_IDS.banner}
                     </div>
                   </div>
@@ -2295,10 +2295,10 @@ const AdminDashboard = () => {
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-white">Image & Text Template</CardTitle>
                     <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
-                    <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                    <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                       ID: {STATIC_SEGMENT_IDS.solutions}
                     </div>
                   </div>
