@@ -268,8 +268,8 @@ const Photography = () => {
                        <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
                          {app.description}
                        </p>
-                    
-                     {app.ctaLink ? (
+                     
+                     {app.ctaLink && app.ctaLink.trim() ? (
                        app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
                          <a 
                            href={app.ctaLink}
@@ -300,7 +300,7 @@ const Photography = () => {
                            </button>
                          </Link>
                        )
-                     ) : app.ctaText ? (
+                     ) : (
                        <button
                          className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
                          style={{
@@ -308,9 +308,9 @@ const Photography = () => {
                            color: app.ctaStyle === "technical" ? "white" : "black"
                          }}
                        >
-                         {app.ctaText}
+                         {app.ctaText || 'Learn More'}
                        </button>
-                     ) : null}
+                     )}
                    </div>
                  </div>
                );
