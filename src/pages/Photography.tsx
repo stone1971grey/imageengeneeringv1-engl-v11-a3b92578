@@ -623,6 +623,68 @@ const Photography = () => {
             </section>
           );
         }
+        
+        if (segment.type === 'image-text') {
+          return (
+            <section key={`segment-${index}`} className="py-20 bg-gray-50">
+              <div className="w-full px-6">
+                {/* Optional Hero Image above title */}
+                {segment.data.heroImageUrl && (
+                  <div className="mb-12 max-w-7xl mx-auto">
+                    <img 
+                      src={segment.data.heroImageUrl}
+                      alt={segment.data.title || "Section hero"}
+                      className="w-full h-[400px] object-cover rounded-lg shadow-lg"
+                    />
+                  </div>
+                )}
+                
+                <div className="text-center mb-16">
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.title || "Image & Text Section"}
+                  </h2>
+                  {segment.data.subtext && (
+                    <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                      {segment.data.subtext}
+                    </p>
+                  )}
+                </div>
+
+                {/* Dynamic Grid Layout */}
+                <div className={`grid gap-8 max-w-7xl mx-auto ${
+                  segment.data.layout === "1-col" ? "grid-cols-1" :
+                  segment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+                  "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                }`}>
+                  {segment.data.items?.map((item: any, itemIndex: number) => (
+                    <Card key={itemIndex} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                      <CardContent className="p-0">
+                        {/* Optional Full-Width Image */}
+                        {item.imageUrl && (
+                          <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                            <img 
+                              src={item.imageUrl}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        {/* Content */}
+                        <div className="p-8">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                          <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                            {item.description}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        }
+        
         return null;
       })}
 

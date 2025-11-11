@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2 } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import {
@@ -477,6 +477,51 @@ const AdminDashboard = () => {
       setSolutionsItems(newItems);
 
       toast.success("Solution image uploaded successfully!");
+    } catch (error: any) {
+      toast.error("Error uploading image: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleImageTextHeroImageUpload = async (segmentIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `image-text-hero-${segmentIndex}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      const newSegments = [...pageSegments];
+      newSegments[segmentIndex].data.heroImageUrl = publicUrl;
+      setPageSegments(newSegments);
+
+      toast.success("Hero image uploaded successfully!");
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
@@ -2066,6 +2111,39 @@ const AdminDashboard = () => {
                     
                     return (
                       <div className="space-y-4">
+                        {/* Hero Image Upload */}
+                        <div>
+                          <Label className="text-white">Hero Image (optional)</Label>
+                          <div className="flex gap-2 items-start">
+                            <Input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageTextHeroImageUpload(index, e)}
+                              disabled={uploading}
+                              className="border-2 border-gray-600"
+                            />
+                          </div>
+                          {segment.data.heroImageUrl && (
+                            <div className="mt-2 relative inline-block">
+                              <img 
+                                src={segment.data.heroImageUrl} 
+                                alt="Hero" 
+                                className="w-32 h-32 object-cover rounded border"
+                              />
+                              <button
+                                onClick={() => {
+                                  const newSegments = [...pageSegments];
+                                  newSegments[index].data.heroImageUrl = '';
+                                  setPageSegments(newSegments);
+                                }}
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
                         <div>
                           <Label htmlFor={`segment_${index}_title`} className="text-white">Section Title</Label>
                           <Input
