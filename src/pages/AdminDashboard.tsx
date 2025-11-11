@@ -56,6 +56,7 @@ const AdminDashboard = () => {
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("hero");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -616,6 +617,11 @@ const AdminDashboard = () => {
 
       setPageSegments(updatedSegments);
       setIsTemplateDialogOpen(false);
+      
+      // Switch to the newly added segment tab
+      const newSegmentIndex = updatedSegments.length - 1;
+      setActiveTab(`segment-${newSegmentIndex}`);
+      
       toast.success("New segment added successfully!");
     } catch (error: any) {
       toast.error("Error adding segment: " + error.message);
@@ -794,7 +800,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="hero" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className={`grid w-full mb-6 h-auto p-2 bg-gray-200`} style={{ gridTemplateColumns: `repeat(${4 + pageSegments.length}, minmax(0, 1fr))` }}>
             <TabsTrigger 
               value="hero" 
