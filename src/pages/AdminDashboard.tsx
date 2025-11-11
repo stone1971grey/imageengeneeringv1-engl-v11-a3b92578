@@ -651,10 +651,10 @@ const AdminDashboard = () => {
               <div className="space-y-4 mt-6">
                 <h3 className="text-lg font-semibold text-white">Application Items</h3>
                 {applications.map((app, index) => (
-                  <Card key={index} className={`border-2 border-gray-600 ${index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-600'}`}>
+                  <Card key={index} className={`border-2 ${index % 2 === 0 ? 'bg-gray-700 border-gray-500' : 'bg-gray-800 border-gray-600'}`}>
                     <CardContent className="pt-6 space-y-3">
                       <div className="flex items-center gap-2 mb-4">
-                        <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-bold rounded-md">
+                        <div className={`px-4 py-2 ${index % 2 === 0 ? 'bg-[#f9dc24]' : 'bg-orange-400'} text-black text-base font-bold rounded-md shadow-lg`}>
                           Tile {index + 1}
                         </div>
                       </div>
