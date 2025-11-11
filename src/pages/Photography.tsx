@@ -73,6 +73,9 @@ const Photography = () => {
   const [bannerButtonText, setBannerButtonText] = useState<string>("");
   const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
   const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
+  const [solutionsTitle, setSolutionsTitle] = useState<string>("");
+  const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col"); // 1-col, 2-col, 3-col
+  const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
 
   useEffect(() => {
     loadContent();
@@ -91,6 +94,12 @@ const Photography = () => {
       data.forEach((item: any) => {
         if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
+        } else if (item.section_key === "solutions_title") {
+          setSolutionsTitle(item.content_value);
+        } else if (item.section_key === "solutions_layout") {
+          setSolutionsLayout(item.content_value || "2-col");
+        } else if (item.section_key === "solutions_items") {
+          setSolutionsItems(JSON.parse(item.content_value));
         } else if (item.section_key === "banner_images") {
           setBannerImages(JSON.parse(item.content_value));
         } else if (item.section_key === "banner_title") {
@@ -488,116 +497,44 @@ const Photography = () => {
         </div>
       </section>
 
-      {/* Automotive Camera Test Solutions - Full Width 2x2 Grid */}
+      {/* Solutions Template Section */}
       <section className="py-20 bg-gray-50">
         <div className="w-full px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Automotive Camera Test Solutions
+              {solutionsTitle || "Automotive Camera Test Solutions"}
             </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-              We offer a wide range of test solutions for all of the most crucial
-              automotive camera applications and performance metrics.
-            </p>
           </div>
 
-          {/* 2x2 Grid - Full Viewport Width */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl mx-auto">
-            {/* In-Cabin Testing */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                  <img 
-                    src={solutionsInCabin}
-                    alt="In-Cabin Testing Setup"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">In-Cabin Testing</h3>
-                  <div className="text-gray-600 leading-relaxed space-y-4">
-                    <p>
-                      In-Cabin systems are primarily tasked with observing the comfort and safety of the driver and passengers. These systems typically work with NIR (near-infrared) sensors combined with active illumination (e.g., LED or VCSEL) to ensure accuracy in very low-light conditions.
-                    </p>
-                    <p>
-                      We offer a wide range of test solutions with IR capabilities, including the LE7 VIS-IR uniform lightbox, which uses iQ-LED technology, allowing you to generate custom spectra between 380 – 1050 nm. The LE7 can be used with transparent test charts such as the camSPECS plate IR, which is optimized for color calibrations and measuring spectral sensitivities in the NIR range.
-                    </p>
+          {/* Dynamic Grid Layout */}
+          <div className={`grid gap-8 max-w-7xl mx-auto ${
+            solutionsLayout === "1-col" ? "grid-cols-1" :
+            solutionsLayout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+            "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          }`}>
+            {solutionsItems.map((item: any, index: number) => (
+              <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                <CardContent className="p-0">
+                  {/* Optional Full-Width Image */}
+                  {item.imageUrl && (
+                    <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                      <img 
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  {/* Content */}
+                  <div className="p-8">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                    <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                      {item.description}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* ADAS Performance Testing */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                  <img 
-                    src={solutionsAdas}
-                    alt="ADAS Performance Testing Setup"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">ADAS Performance Testing</h3>
-                  <div className="text-gray-600 leading-relaxed space-y-4">
-                    <p>
-                      Advanced Driver Assistance Systems (ADAS) refer to the camera and sensor systems that assist drivers with various movement adjustments and safety warnings. These systems require a broad range of test methods and metrics to evaluate to ensure high performance and safety. Our test solutions closely follow the test method guidelines established in the IEEE-P2020 standard for ADAS image quality performance.
-                    </p>
-                    <p>
-                      A few of the key performance indicators (KPIs) outlined in the P2020 standard include contrast indicators – contrast transfer accuracy (CTA) and contrast signal-to-noise ratio (CSNR) -, dynamic range, and flicker response. These KPIs require powerful light sources that can simulate the high intensities experienced by ADAS systems. We offer multiple light sources, including Vega and Arcturus, that can generate dynamic test scenes with extremely high stability and consistency.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Geometric Calibration */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                  <img 
-                    src={solutionsGeometric}
-                    alt="Geometric Calibration Setup"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Geometric Calibration</h3>
-                  <div className="text-gray-600 leading-relaxed space-y-4">
-                    <p>
-                      Geometric calibration refers to the ability of a camera to detect and accurately map 3D objects in a moving scene. In automotive applications, distances to objects are calculated based on the measured geometrical characteristics of the camera or a stereo camera pair. Proper geometric calibration of automotive camera systems is essential to ensure high performance and safety.
-                    </p>
-                    <p>
-                      Traditional geometric calibration methods typically require a vast amount of lab space combined with numerous distortion test targets and relay lenses. While these methods are functional, they are not very practical for most test labs that don&apos;t have space. To account for this challenge, we offer the GEOCAL solution. GEOCAL is a compact device that uses a beam expanded laser and diffractive optical element (DOE) to generate a grid of light spots originating from infinity. These features eliminate the need for multiple test targets and relay lenses, making them suitable for use in labs of any size.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Climate-Controlled Testing */}
-            <Card className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-              <CardContent className="p-0">
-                <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                  <img 
-                    src={solutionsClimate}
-                    alt="Climate-Controlled Testing Setup"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Climate-Controlled Testing</h3>
-                  <div className="text-gray-600 leading-relaxed space-y-4">
-                    <p>
-                      One of the fundamental requirements of ADAS applications is their ability to function properly in any weather scenario. If these systems fail to meet their minimum performance threshold requirements due to conditions like dense fog or pouring rain, safety could be compromised. Therefore, testing ADAS applications in changing weather environments is essential.
-                    </p>
-                    <p>
-                      To perform weather tests, many companies drive test vehicles in various weather conditions and record the camera performance. However, while accurate in a real-world sense, these tests usually lack repeatability and extreme conditions (e.g., extreme cold or heat) due to the unpredictability of the weather and test locations. To combat these challenges, we offer the iQ-Climate Chamber solution, which allows you to test a camera system in extreme weather conditions in the comfort of a test lab.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>

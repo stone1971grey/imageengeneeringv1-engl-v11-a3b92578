@@ -49,6 +49,9 @@ const AdminDashboard = () => {
   const [bannerButtonText, setBannerButtonText] = useState<string>("");
   const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
   const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
+  const [solutionsTitle, setSolutionsTitle] = useState<string>("");
+  const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col");
+  const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -119,6 +122,12 @@ const AdminDashboard = () => {
     data?.forEach((item: ContentItem) => {
       if (item.section_key === "applications_items") {
         apps = JSON.parse(item.content_value);
+      } else if (item.section_key === "solutions_title") {
+        setSolutionsTitle(item.content_value);
+      } else if (item.section_key === "solutions_layout") {
+        setSolutionsLayout(item.content_value || "2-col");
+      } else if (item.section_key === "solutions_items") {
+        setSolutionsItems(JSON.parse(item.content_value));
       } else if (item.section_key === "banner_images") {
         setBannerImages(JSON.parse(item.content_value));
       } else if (item.section_key === "banner_title") {
@@ -398,6 +407,69 @@ const AdminDashboard = () => {
     toast.success("Tile deleted! Don't forget to save changes.");
   };
 
+  const handleAddSolutionItem = () => {
+    const newItem = {
+      title: "New Solution",
+      description: "Add description here...",
+      imageUrl: ""
+    };
+    setSolutionsItems([...solutionsItems, newItem]);
+    toast.success("New solution item added! Don't forget to save changes.");
+  };
+
+  const handleDeleteSolutionItem = (index: number) => {
+    const newItems = solutionsItems.filter((_, i) => i !== index);
+    setSolutionsItems(newItems);
+    toast.success("Solution item deleted! Don't forget to save changes.");
+  };
+
+  const handleSolutionImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    
+    const file = e.target.files[0];
+    
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `solution-${index}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      const newItems = [...solutionsItems];
+      newItems[index].imageUrl = publicUrl;
+      setSolutionsItems(newItems);
+
+      toast.success("Solution image uploaded successfully!");
+    } catch (error: any) {
+      toast.error("Error uploading image: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleAddBannerImage = () => {
     const newImage = {
       url: "",
@@ -539,24 +611,30 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="hero" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto p-2 bg-gray-200">
+          <TabsList className="grid w-full grid-cols-4 mb-6 h-auto p-2 bg-gray-200">
             <TabsTrigger 
               value="hero" 
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
-              Produkt-Hero-Section
+              Produkt-Hero
             </TabsTrigger>
             <TabsTrigger 
               value="tiles"
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
-              Tiles Template
+              Tiles
             </TabsTrigger>
             <TabsTrigger 
               value="banner"
               className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
             >
-              Banner Template
+              Banner
+            </TabsTrigger>
+            <TabsTrigger 
+              value="solutions"
+              className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+            >
+              Solutions
             </TabsTrigger>
           </TabsList>
 
@@ -1243,6 +1321,212 @@ const AdminDashboard = () => {
                         toast.success("Banner content saved successfully!");
                       } catch (error: any) {
                         toast.error("Error saving banner content: " + error.message);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    disabled={saving}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Solutions Template Tab */}
+          <TabsContent value="solutions">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Solutions Template</CardTitle>
+                <CardDescription className="text-gray-300">Edit solutions section with flexible column layout (1/2/3 columns)</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Title */}
+                <div>
+                  <Label htmlFor="solutions_title" className="text-white">Section Title</Label>
+                  <Input
+                    id="solutions_title"
+                    value={solutionsTitle}
+                    onChange={(e) => setSolutionsTitle(e.target.value)}
+                    placeholder="e.g., Automotive Camera Test Solutions"
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
+                {/* Layout Selection */}
+                <div>
+                  <Label htmlFor="solutions_layout" className="text-white">Column Layout</Label>
+                  <Select
+                    value={solutionsLayout}
+                    onValueChange={(value) => setSolutionsLayout(value)}
+                  >
+                    <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                      <SelectValue placeholder="Select layout" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="1-col" className="text-black">1 Column (Full Width)</SelectItem>
+                      <SelectItem value="2-col" className="text-black">2 Columns</SelectItem>
+                      <SelectItem value="3-col" className="text-black">3 Columns</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Solution Items */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white text-lg font-semibold">Solution Items</Label>
+                    <Button
+                      onClick={handleAddSolutionItem}
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Item
+                    </Button>
+                  </div>
+
+                  {solutionsItems.map((item, index) => (
+                    <Card key={index} className="bg-gray-700 border-gray-600">
+                      <CardContent className="pt-6 space-y-3">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md">
+                            Item {index + 1}
+                          </div>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="flex items-center gap-2"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete "Item {index + 1}". This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteSolutionItem(index)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div>
+                          <Label htmlFor={`solution_image_${index}`} className="text-white">Image (Optional - Full Width)</Label>
+                          {item.imageUrl && (
+                            <div className="mb-3">
+                              <img 
+                                src={item.imageUrl} 
+                                alt={`Solution ${index + 1}`} 
+                                className="w-full aspect-[4/3] object-cover rounded-lg border-2 border-gray-600"
+                              />
+                            </div>
+                          )}
+                          <Input
+                            id={`solution_image_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleSolutionImageUpload(e, index)}
+                            disabled={uploading}
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+
+                        {/* Title */}
+                        <div>
+                          <Label htmlFor={`solution_title_${index}`} className="text-white">Title</Label>
+                          <Input
+                            id={`solution_title_${index}`}
+                            value={item.title}
+                            onChange={(e) => {
+                              const newItems = [...solutionsItems];
+                              newItems[index].title = e.target.value;
+                              setSolutionsItems(newItems);
+                            }}
+                            placeholder="e.g., In-Cabin Testing"
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                          <Label htmlFor={`solution_desc_${index}`} className="text-white">Description</Label>
+                          <Textarea
+                            id={`solution_desc_${index}`}
+                            value={item.description}
+                            onChange={(e) => {
+                              const newItems = [...solutionsItems];
+                              newItems[index].description = e.target.value;
+                              setSolutionsItems(newItems);
+                            }}
+                            rows={6}
+                            placeholder="Detailed description..."
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-gray-600">
+                  <Button
+                    onClick={async () => {
+                      setSaving(true);
+                      try {
+                        const updates = [
+                          {
+                            page_slug: "photography",
+                            section_key: "solutions_title",
+                            content_type: "heading",
+                            content_value: solutionsTitle,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "solutions_layout",
+                            content_type: "text",
+                            content_value: solutionsLayout,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: "photography",
+                            section_key: "solutions_items",
+                            content_type: "json",
+                            content_value: JSON.stringify(solutionsItems),
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          }
+                        ];
+
+                        const { error } = await supabase
+                          .from("page_content")
+                          .upsert(updates, {
+                            onConflict: 'page_slug,section_key'
+                          });
+
+                        if (error) throw error;
+
+                        toast.success("Solutions content saved successfully!");
+                      } catch (error: any) {
+                        toast.error("Error saving solutions content: " + error.message);
                       } finally {
                         setSaving(false);
                       }
