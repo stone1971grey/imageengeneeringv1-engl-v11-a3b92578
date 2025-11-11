@@ -41,6 +41,7 @@ const Photography = () => {
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
   const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
+  const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
 
   useEffect(() => {
     loadContent();
@@ -69,6 +70,8 @@ const Photography = () => {
           setHeroTopPadding(item.content_value || "medium");
         } else if (item.section_key === "hero_cta_link") {
           setHeroCtaLink(item.content_value || "#applications-start");
+        } else if (item.section_key === "hero_cta_style") {
+          setHeroCtaStyle(item.content_value || "standard");
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -191,8 +194,12 @@ const Photography = () => {
                   >
                     <Button 
                       size="lg"
-                      className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                      style={{ backgroundColor: '#f9dc24' }}
+                      className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                        heroCtaStyle === "technical" ? "text-white" : "text-black"
+                      }`}
+                      style={{ 
+                        backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                      }}
                     >
                       {content.hero_cta || "Discover Photography Solutions"}
                     </Button>
@@ -201,8 +208,12 @@ const Photography = () => {
                   <Link to={heroCtaLink}>
                     <Button 
                       size="lg"
-                      className="text-black border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                      style={{ backgroundColor: '#f9dc24' }}
+                      className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                        heroCtaStyle === "technical" ? "text-white" : "text-black"
+                      }`}
+                      style={{ 
+                        backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                      }}
                     >
                       {content.hero_cta || "Discover Photography Solutions"}
                     </Button>

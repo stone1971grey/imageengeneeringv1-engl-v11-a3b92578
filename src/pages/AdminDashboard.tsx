@@ -33,6 +33,7 @@ const AdminDashboard = () => {
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
   const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
+  const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -113,6 +114,8 @@ const AdminDashboard = () => {
         setHeroTopPadding(item.content_value || "medium");
       } else if (item.section_key === "hero_cta_link") {
         setHeroCtaLink(item.content_value || "#applications-start");
+      } else if (item.section_key === "hero_cta_style") {
+        setHeroCtaStyle(item.content_value || "standard");
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -268,6 +271,20 @@ const AdminDashboard = () => {
           section_key: "hero_cta_link",
           content_type: "text",
           content_value: heroCtaLink,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      // Update hero CTA style
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "hero_cta_style",
+          content_type: "text",
+          content_value: heroCtaStyle,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
@@ -498,6 +515,19 @@ const AdminDashboard = () => {
                 <p className="text-sm text-gray-500 mt-1">
                   Use '#section-id' for same page links, '/path' for internal pages, or 'https://...' for external URLs (opens in new tab)
                 </p>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_cta_style">CTA Button Style</Label>
+                <select
+                  id="hero_cta_style"
+                  value={heroCtaStyle}
+                  onChange={(e) => setHeroCtaStyle(e.target.value)}
+                  className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                >
+                  <option value="standard">Standard (Yellow with Black Text)</option>
+                  <option value="technical">Technical (Dark Gray with White Text)</option>
+                </select>
               </div>
 
               <div className="flex justify-end pt-4 border-t">
