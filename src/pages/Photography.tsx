@@ -95,7 +95,9 @@ const Photography = () => {
 
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
-          setPageSegments(JSON.parse(item.content_value));
+          const segments = JSON.parse(item.content_value);
+          console.log("Loading page_segments:", segments);
+          setPageSegments(segments);
         } else if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
         } else if (item.section_key === "solutions_title") {
@@ -190,6 +192,8 @@ const Photography = () => {
       image: iqAnalyzerImage
     }
   ];
+
+  console.log("Photography component - pageSegments:", pageSegments);
 
   if (loading) {
     return (
