@@ -384,8 +384,8 @@ const Photography = () => {
                      <button
                        className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
                        style={{
-                         backgroundColor: "#f9dc24",
-                         color: "#000000"
+                         backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                         color: app.ctaStyle === "technical" ? "#ffffff" : "#000000"
                        }}
                      >
                        {app.ctaText || "Learn More"}
