@@ -170,8 +170,8 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="container mx-auto px-6 py-24">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container mx-auto px-6 py-32">
+        <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
             <p className="text-gray-600 mt-2">Edit Photography Page Content</p>
@@ -179,7 +179,7 @@ const AdminDashboard = () => {
           <Button
             onClick={handleLogout}
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 mt-2"
           >
             <LogOut className="h-4 w-4" />
             Logout
