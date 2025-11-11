@@ -2694,6 +2694,9 @@ const AdminDashboard = () => {
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
                       </CardDescription>
+                      <div className="mt-2 px-2 py-1 bg-gray-700 rounded text-xs font-mono text-gray-300 inline-block">
+                        ID: {segment.id}
+                      </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
