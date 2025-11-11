@@ -27,6 +27,8 @@ const AdminDashboard = () => {
   const [content, setContent] = useState<Record<string, string>>({});
   const [applications, setApplications] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,6 +99,8 @@ const AdminDashboard = () => {
     data?.forEach((item: ContentItem) => {
       if (item.section_key === "applications_items") {
         apps = JSON.parse(item.content_value);
+      } else if (item.section_key === "hero_image_url") {
+        setHeroImageUrl(item.content_value);
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -104,6 +108,71 @@ const AdminDashboard = () => {
 
     setContent(contentMap);
     setApplications(apps);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    
+    const file = e.target.files[0];
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `photography-hero-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload to storage
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(filePath);
+
+      setHeroImageUrl(publicUrl);
+      
+      // Save to database
+      const { error: dbError } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: "photography",
+          section_key: "hero_image_url",
+          content_type: "image_url",
+          content_value: publicUrl,
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (dbError) throw dbError;
+
+      toast.success("Image uploaded successfully!");
+    } catch (error: any) {
+      toast.error("Error uploading image: " + error.message);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -194,6 +263,31 @@ const AdminDashboard = () => {
               <CardDescription>Edit the main hero section content</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Hero Image Upload */}
+              <div>
+                <Label htmlFor="hero_image">Hero Image</Label>
+                <p className="text-sm text-gray-500 mb-2">
+                  Upload a custom hero image (replaces the interactive hotspot image)
+                </p>
+                {heroImageUrl && (
+                  <div className="mb-4">
+                    <img 
+                      src={heroImageUrl} 
+                      alt="Current hero" 
+                      className="w-full max-w-md rounded-lg border"
+                    />
+                    <p className="text-sm text-gray-500 mt-2">Current hero image</p>
+                  </div>
+                )}
+                <Input
+                  id="hero_image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                />
+                {uploading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
+              </div>
               <div>
                 <Label htmlFor="hero_title">Title</Label>
                 <Input

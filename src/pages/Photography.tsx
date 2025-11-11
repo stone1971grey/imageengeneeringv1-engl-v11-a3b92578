@@ -27,6 +27,7 @@ import solutionsInCabin from "@/assets/solutions-in-cabin.png";
 import solutionsAdas from "@/assets/solutions-adas.png";
 import solutionsGeometric from "@/assets/solutions-geometric-calibration.jpg";
 import solutionsClimate from "@/assets/solutions-climate-control.png";
+import photographyHeroDefault from "@/assets/photography-hero-default.jpg";
 import { supabase } from "@/integrations/supabase/client";
 
 // Photography & Video landing page component
@@ -35,6 +36,7 @@ const Photography = () => {
   const [content, setContent] = useState<Record<string, string>>({});
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [heroImageUrl, setHeroImageUrl] = useState<string>("");
 
   useEffect(() => {
     loadContent();
@@ -53,6 +55,8 @@ const Photography = () => {
       data.forEach((item: any) => {
         if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
+        } else if (item.section_key === "hero_image_url") {
+          setHeroImageUrl(item.content_value);
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -163,22 +167,24 @@ const Photography = () => {
               </div>
             </div>
 
-            {/* Right Content - Interactive Image Map - 3/5 */}
+            {/* Right Content - Image or Interactive Image Map - 3/5 */}
             <div className="lg:col-span-3 relative px-6">
               <div className="relative overflow-hidden rounded-lg shadow-soft">
-                <HotspotImage
-                  src={automotiveHero}
-                  alt="Automotive camera testing laboratory"
-                  markers={hotspotMarkers}
-                  dotColor="bg-hotspot-primary"
-                  onHoverChange={(label) => setHoveredPoint(label || "Live Processing")}
-                />
-              </div>
-              
-              {/* Floating feature highlight */}
-              <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
-                <div className="text-sm text-scandi-grey font-light mb-1">{hoveredPoint === "Live Processing" ? "Interactive" : "ADAS Component"}</div>
-                <div className="text-2xl font-medium text-light-foreground">{hoveredPoint === "Live Processing" ? "Explore Hotspots" : hoveredPoint}</div>
+                {heroImageUrl ? (
+                  // Display uploaded custom image
+                  <img 
+                    src={heroImageUrl} 
+                    alt="Photography testing laboratory" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  // Display default generated image
+                  <img 
+                    src={photographyHeroDefault} 
+                    alt="Photography testing laboratory" 
+                    className="w-full h-full object-cover"
+                  />
+                )}
               </div>
             </div>
           </div>
