@@ -1246,7 +1246,7 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!isAdmin) {
+  if (!isAdmin && !isEditor) {
     return null;
   }
 
