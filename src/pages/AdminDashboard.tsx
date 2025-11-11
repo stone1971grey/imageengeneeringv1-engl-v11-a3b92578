@@ -1824,65 +1824,74 @@ const AdminDashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {segment.type === 'tiles' && (
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor={`segment_${index}_title`} className="text-white">Section Title</Label>
-                        <Input
-                          id={`segment_${index}_title`}
-                          value={segment.data.title || ''}
-                          onChange={(e) => {
-                            const newSegments = [...pageSegments];
-                            newSegments[index].data.title = e.target.value;
-                            setPageSegments(newSegments);
-                          }}
-                          className="border-2 border-gray-600"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`segment_${index}_description`} className="text-white">Section Description</Label>
-                        <Textarea
-                          id={`segment_${index}_description`}
-                          value={segment.data.description || ''}
-                          onChange={(e) => {
-                            const newSegments = [...pageSegments];
-                            newSegments[index].data.description = e.target.value;
-                            setPageSegments(newSegments);
-                          }}
-                          rows={3}
-                          className="border-2 border-gray-600"
-                        />
-                      </div>
-
-                      {/* Tiles */}
-                      <div className="space-y-4 mt-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-lg font-semibold text-white">Tiles</h3>
-                          <Button
-                            onClick={() => {
+                  {segment.type === 'tiles' && (() => {
+                    // Initialize data if missing
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('tiles');
+                    }
+                    if (!segment.data.items) {
+                      segment.data.items = [];
+                    }
+                    
+                    return (
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor={`segment_${index}_title`} className="text-white">Section Title</Label>
+                          <Input
+                            id={`segment_${index}_title`}
+                            value={segment.data.title || ''}
+                            onChange={(e) => {
                               const newSegments = [...pageSegments];
-                              if (!newSegments[index].data.items) {
-                                newSegments[index].data.items = [];
-                              }
-                              newSegments[index].data.items.push({
-                                title: 'New Application',
-                                description: 'Add description here...',
-                                ctaLink: '',
-                                ctaStyle: 'standard',
-                                ctaText: 'Learn More',
-                                imageUrl: '',
-                                icon: ''
-                              });
+                              newSegments[index].data.title = e.target.value;
                               setPageSegments(newSegments);
-                              toast.success("New tile added! Don't forget to save changes.");
                             }}
-                            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                          >
-                            <Plus className="h-4 w-4" />
-                            Add New Tile
-                          </Button>
+                            className="border-2 border-gray-600"
+                          />
                         </div>
-                        {segment.data.items && segment.data.items.map((tile: any, tileIndex: number) => (
+                        <div>
+                          <Label htmlFor={`segment_${index}_description`} className="text-white">Section Description</Label>
+                          <Textarea
+                            id={`segment_${index}_description`}
+                            value={segment.data.description || ''}
+                            onChange={(e) => {
+                              const newSegments = [...pageSegments];
+                              newSegments[index].data.description = e.target.value;
+                              setPageSegments(newSegments);
+                            }}
+                            rows={3}
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+
+                        {/* Tiles */}
+                        <div className="space-y-4 mt-6">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold text-white">Tiles</h3>
+                            <Button
+                              onClick={() => {
+                                const newSegments = [...pageSegments];
+                                if (!newSegments[index].data.items) {
+                                  newSegments[index].data.items = [];
+                                }
+                                newSegments[index].data.items.push({
+                                  title: 'New Application',
+                                  description: 'Add description here...',
+                                  ctaLink: '',
+                                  ctaStyle: 'standard',
+                                  ctaText: 'Learn More',
+                                  imageUrl: '',
+                                  icon: ''
+                                });
+                                setPageSegments(newSegments);
+                                toast.success("New tile added! Don't forget to save changes.");
+                              }}
+                              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                            >
+                              <Plus className="h-4 w-4" />
+                              Add New Tile
+                            </Button>
+                          </div>
+                          {segment.data.items.map((tile: any, tileIndex: number) => (
                           <Card key={tileIndex} className={`border-2 ${tileIndex % 2 === 0 ? 'bg-gray-600 border-gray-500' : 'bg-gray-800 border-gray-700'}`}>
                             <CardContent className="pt-6 space-y-3">
                               <div className="flex items-center justify-between mb-4">
@@ -2038,7 +2047,8 @@ const AdminDashboard = () => {
                         </Button>
                       </div>
                     </div>
-                  )}
+                  );
+                  })()}
 
                   {segment.type !== 'tiles' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
