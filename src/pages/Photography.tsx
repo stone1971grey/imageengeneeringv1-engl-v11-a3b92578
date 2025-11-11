@@ -77,6 +77,7 @@ const Photography = () => {
   const [solutionsSubtext, setSolutionsSubtext] = useState<string>("");
   const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col"); // 1-col, 2-col, 3-col
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
+  const [pageSegments, setPageSegments] = useState<any[]>([]);
 
   useEffect(() => {
     loadContent();
@@ -93,7 +94,9 @@ const Photography = () => {
       let apps: any[] = [];
 
       data.forEach((item: any) => {
-        if (item.section_key === "applications_items") {
+        if (item.section_key === "page_segments") {
+          setPageSegments(JSON.parse(item.content_value));
+        } else if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
         } else if (item.section_key === "solutions_title") {
           setSolutionsTitle(item.content_value);
@@ -614,6 +617,123 @@ const Photography = () => {
           </div>
         </div>
       </section>
+
+      {/* Dynamic Segments */}
+      {pageSegments.map((segment, index) => {
+        if (segment.type === 'tiles') {
+          return (
+            <section key={`segment-${index}`} id={`segment-${index}`} className="py-8 bg-gray-50">
+              <div className="container mx-auto px-6">
+                <div className="text-center mb-16">
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.title || "Section Title"}
+                  </h2>
+                  {segment.data.description && (
+                    <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                      {segment.data.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="container mx-auto px-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                  {segment.data.items?.map((item: any, itemIndex: number) => {
+                    const IconComponent = item.icon ? iconMap[item.icon] : null;
+                    
+                    return (
+                      <div 
+                        key={itemIndex}
+                        className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
+                      >
+                        {/* Image */}
+                        {item.imageUrl && (
+                          <div className="w-full h-[200px] overflow-hidden">
+                            <img 
+                              src={item.imageUrl} 
+                              alt={item.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+
+                        {/* Icon */}
+                        {IconComponent && (
+                          <div className="w-full flex justify-center pt-8">
+                            <div className="relative">
+                              <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                                <IconComponent 
+                                  size={36} 
+                                  className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                                  strokeWidth={1.8}
+                                />
+                              </div>
+                              <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="p-6 flex flex-col flex-1">
+                          <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f9dc24]">
+                            {item.title}
+                          </h3>
+                          <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                            {item.description}
+                          </p>
+                          {item.ctaLink && (
+                            item.ctaLink.startsWith('http://') || item.ctaLink.startsWith('https://') ? (
+                              <a 
+                                href={item.ctaLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full"
+                              >
+                                <button
+                                  className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                                  style={{ 
+                                    backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                    color: item.ctaStyle === "technical" ? "white" : "black"
+                                  }}
+                                >
+                                  {item.ctaText || 'Learn More'}
+                                </button>
+                              </a>
+                            ) : (
+                              <Link to={item.ctaLink} className="w-full">
+                                <button
+                                  className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                                  style={{ 
+                                    backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                    color: item.ctaStyle === "technical" ? "white" : "black"
+                                  }}
+                                >
+                                  {item.ctaText || 'Learn More'}
+                                </button>
+                              </Link>
+                            )
+                          )}
+                          {!item.ctaLink && item.ctaText && (
+                            <button
+                              className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                              style={{ 
+                                backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                color: item.ctaStyle === "technical" ? "white" : "black"
+                              }}
+                            >
+                              {item.ctaText}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          );
+        }
+        return null;
+      })}
 
       {/* Professional Laboratory Installation */}
       <section className="py-20 bg-gray-50">
