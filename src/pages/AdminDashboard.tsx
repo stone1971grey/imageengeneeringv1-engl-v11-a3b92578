@@ -701,23 +701,23 @@ const AdminDashboard = () => {
                             setApplications(newApps);
                           }}
                         >
-                          <SelectTrigger className="border-2 border-gray-600 bg-white">
-                            <SelectValue placeholder="Select an icon" />
+                          <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                            <SelectValue placeholder="Select an icon" className="text-black" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">No Icon</SelectItem>
-                            <SelectItem value="FileText">Document (FileText)</SelectItem>
-                            <SelectItem value="Download">Download</SelectItem>
-                            <SelectItem value="BarChart3">Bar Chart</SelectItem>
-                            <SelectItem value="Zap">Lightning (Zap)</SelectItem>
-                            <SelectItem value="Shield">Shield</SelectItem>
-                            <SelectItem value="Eye">Eye</SelectItem>
-                            <SelectItem value="Car">Car</SelectItem>
-                            <SelectItem value="Smartphone">Smartphone</SelectItem>
-                            <SelectItem value="Heart">Heart</SelectItem>
-                            <SelectItem value="CheckCircle">Check Circle</SelectItem>
-                            <SelectItem value="Lightbulb">Lightbulb</SelectItem>
-                            <SelectItem value="Monitor">Monitor</SelectItem>
+                          <SelectContent className="bg-white">
+                            <SelectItem value="none" className="text-black">No Icon</SelectItem>
+                            <SelectItem value="FileText" className="text-black">Document (FileText)</SelectItem>
+                            <SelectItem value="Download" className="text-black">Download</SelectItem>
+                            <SelectItem value="BarChart3" className="text-black">Bar Chart</SelectItem>
+                            <SelectItem value="Zap" className="text-black">Lightning (Zap)</SelectItem>
+                            <SelectItem value="Shield" className="text-black">Shield</SelectItem>
+                            <SelectItem value="Eye" className="text-black">Eye</SelectItem>
+                            <SelectItem value="Car" className="text-black">Car</SelectItem>
+                            <SelectItem value="Smartphone" className="text-black">Smartphone</SelectItem>
+                            <SelectItem value="Heart" className="text-black">Heart</SelectItem>
+                            <SelectItem value="CheckCircle" className="text-black">Check Circle</SelectItem>
+                            <SelectItem value="Lightbulb" className="text-black">Lightbulb</SelectItem>
+                            <SelectItem value="Monitor" className="text-black">Monitor</SelectItem>
                           </SelectContent>
                         </Select>
                         <p className="text-sm text-white mt-1">
