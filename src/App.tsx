@@ -101,7 +101,7 @@ const App = () => (
         <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
         <Route path="/image-download" element={<ImageDownload />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
           </Routes>
