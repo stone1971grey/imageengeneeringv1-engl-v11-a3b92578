@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save } from "lucide-react";
+import { LogOut, Save, Plus, Trash2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import {
@@ -359,6 +360,26 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleAddTile = () => {
+    const newTile = {
+      title: "New Application",
+      description: "Add description here...",
+      ctaLink: "",
+      ctaStyle: "standard",
+      ctaText: "Learn More",
+      imageUrl: "",
+      icon: ""
+    };
+    setApplications([...applications, newTile]);
+    toast.success("New tile added! Don't forget to save changes.");
+  };
+
+  const handleDeleteTile = (index: number) => {
+    const newApps = applications.filter((_, i) => i !== index);
+    setApplications(newApps);
+    toast.success("Tile deleted! Don't forget to save changes.");
+  };
+
   const handleSaveApplications = async () => {
     if (!user) return;
     
@@ -668,14 +689,52 @@ const AdminDashboard = () => {
 
               {/* Application Items */}
               <div className="space-y-4 mt-6">
-                <h3 className="text-lg font-semibold text-white">Application Items</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Application Items</h3>
+                  <Button
+                    onClick={handleAddTile}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add New Tile
+                  </Button>
+                </div>
                 {applications.map((app, index) => (
                   <Card key={index} className={`border-2 ${index % 2 === 0 ? 'bg-gray-600 border-gray-500' : 'bg-gray-800 border-gray-700'}`}>
                     <CardContent className="pt-6 space-y-3">
-                      <div className="flex items-center gap-2 mb-4">
+                      <div className="flex items-center justify-between mb-4">
                         <div className={`px-4 py-2 ${index % 2 === 0 ? 'bg-[#f9dc24]' : 'bg-orange-400'} text-black text-base font-bold rounded-md shadow-lg`}>
                           Tile {index + 1}
                         </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="flex items-center gap-2"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete "Tile {index + 1}". This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteTile(index)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                       {/* Image Upload */}
                       <div>
