@@ -33,6 +33,9 @@ const ScannersArchiving = () => {
   const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
+  const [tilesData, setTilesData] = useState<any>({ title: "", subtext: "", items: [] });
+  const [bannerData, setBannerData] = useState<any>({ title: "", subtext: "", images: [], buttonText: "", buttonLink: "", buttonStyle: "standard" });
+  const [solutionsData, setSolutionsData] = useState<any>({ title: "", subtext: "", layout: "2-col", items: [] });
 
   useEffect(() => {
     loadContent();
@@ -70,6 +73,47 @@ const ScannersArchiving = () => {
           setHeroCtaLink(item.content_value || "#content");
         } else if (item.section_key === "hero_cta_style") {
           setHeroCtaStyle(item.content_value || "standard");
+        } else if (item.section_key === "applications_title") {
+          setTilesData((prev: any) => ({ ...prev, title: item.content_value }));
+        } else if (item.section_key === "applications_description") {
+          setTilesData((prev: any) => ({ ...prev, subtext: item.content_value }));
+        } else if (item.section_key === "applications_items") {
+          try {
+            const items = JSON.parse(item.content_value);
+            setTilesData((prev: any) => ({ ...prev, items: items || [] }));
+          } catch {
+            setTilesData((prev: any) => ({ ...prev, items: [] }));
+          }
+        } else if (item.section_key === "banner_title") {
+          setBannerData((prev: any) => ({ ...prev, title: item.content_value }));
+        } else if (item.section_key === "banner_subtext") {
+          setBannerData((prev: any) => ({ ...prev, subtext: item.content_value }));
+        } else if (item.section_key === "banner_images") {
+          try {
+            const images = JSON.parse(item.content_value);
+            setBannerData((prev: any) => ({ ...prev, images: images || [] }));
+          } catch {
+            setBannerData((prev: any) => ({ ...prev, images: [] }));
+          }
+        } else if (item.section_key === "banner_button_text") {
+          setBannerData((prev: any) => ({ ...prev, buttonText: item.content_value }));
+        } else if (item.section_key === "banner_button_link") {
+          setBannerData((prev: any) => ({ ...prev, buttonLink: item.content_value }));
+        } else if (item.section_key === "banner_button_style") {
+          setBannerData((prev: any) => ({ ...prev, buttonStyle: item.content_value || "standard" }));
+        } else if (item.section_key === "solutions_title") {
+          setSolutionsData((prev: any) => ({ ...prev, title: item.content_value }));
+        } else if (item.section_key === "solutions_subtext") {
+          setSolutionsData((prev: any) => ({ ...prev, subtext: item.content_value }));
+        } else if (item.section_key === "solutions_layout") {
+          setSolutionsData((prev: any) => ({ ...prev, layout: item.content_value || "2-col" }));
+        } else if (item.section_key === "solutions_items") {
+          try {
+            const items = JSON.parse(item.content_value);
+            setSolutionsData((prev: any) => ({ ...prev, items: items || [] }));
+          } catch {
+            setSolutionsData((prev: any) => ({ ...prev, items: [] }));
+          }
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -82,9 +126,189 @@ const ScannersArchiving = () => {
   };
 
   const renderSegment = (segmentId: string) => {
+    // Static Tiles segment
+    if (segmentId === 'tiles') {
+      if (!tilesData.title && tilesData.items.length === 0) return null;
+      
+      return (
+        <section key="tiles" className="w-full py-16 bg-background">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+                {tilesData.title}
+              </h2>
+              {tilesData.subtext && (
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  {tilesData.subtext}
+                </p>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {tilesData.items?.map((tile: any, idx: number) => {
+                const IconComponent = tile.icon ? iconMap[tile.icon] : null;
+                return (
+                  <Card key={idx} className="hover:shadow-lg transition-all">
+                    <CardContent className="p-6">
+                      {tile.imageUrl && (
+                        <div className="w-full h-[200px] mb-4 overflow-hidden rounded-md">
+                          <img 
+                            src={tile.imageUrl} 
+                            alt={tile.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      {IconComponent && (
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#f9dc24' }}>
+                          <IconComponent className="w-8 h-8 text-black" />
+                        </div>
+                      )}
+                      <h3 className="text-xl font-semibold text-foreground mb-3">
+                        {tile.title}
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        {tile.description}
+                      </p>
+                      {tile.ctaLink && (
+                        <button
+                          onClick={() => {
+                            if (tile.ctaLink.startsWith('http')) {
+                              window.open(tile.ctaLink, '_blank');
+                            } else {
+                              window.location.href = tile.ctaLink;
+                            }
+                          }}
+                          className="px-6 py-2 rounded-md font-medium transition-all"
+                          style={{
+                            backgroundColor: tile.ctaStyle === 'technical' ? '#1f2937' : '#f9dc24',
+                            color: tile.ctaStyle === 'technical' ? 'white' : 'black'
+                          }}
+                        >
+                          {tile.ctaText || "Learn More"}
+                        </button>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // Static Banner segment
+    if (segmentId === 'banner') {
+      if (!bannerData.title && bannerData.images.length === 0) return null;
+      
+      return (
+        <section key="banner" className="w-full py-16 bg-muted/30">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+                {bannerData.title}
+              </h2>
+              {bannerData.subtext && (
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+                  {bannerData.subtext}
+                </p>
+              )}
+            </div>
+            {bannerData.images && bannerData.images.length > 0 && (
+              <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
+                {bannerData.images.map((img: any, idx: number) => (
+                  <div key={idx} className="grayscale hover:grayscale-0 transition-all duration-300">
+                    <img 
+                      src={img.url} 
+                      alt={img.alt || `Banner image ${idx + 1}`}
+                      className="h-16 object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            {bannerData.buttonText && (
+              <div className="text-center">
+                <button
+                  onClick={() => {
+                    if (bannerData.buttonLink?.startsWith('http')) {
+                      window.open(bannerData.buttonLink, '_blank');
+                    } else if (bannerData.buttonLink) {
+                      window.location.href = bannerData.buttonLink;
+                    }
+                  }}
+                  className="px-8 py-3 rounded-md font-medium transition-all"
+                  style={{
+                    backgroundColor: bannerData.buttonStyle === 'technical' ? '#1f2937' : '#f9dc24',
+                    color: bannerData.buttonStyle === 'technical' ? 'white' : 'black'
+                  }}
+                >
+                  {bannerData.buttonText}
+                </button>
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    // Static Solutions/Image-Text segment
+    if (segmentId === 'solutions') {
+      if (!solutionsData.title && solutionsData.items.length === 0) return null;
+      
+      const getLayoutClass = () => {
+        switch (solutionsData.layout) {
+          case '1-col': return 'grid-cols-1';
+          case '2-col': return 'grid-cols-1 md:grid-cols-2';
+          case '3-col': return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+          default: return 'grid-cols-1 md:grid-cols-2';
+        }
+      };
+
+      return (
+        <section key="solutions" className="w-full py-16 bg-background">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+                {solutionsData.title}
+              </h2>
+              {solutionsData.subtext && (
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  {solutionsData.subtext}
+                </p>
+              )}
+            </div>
+            <div className={`grid ${getLayoutClass()} gap-8`}>
+              {solutionsData.items?.map((item: any, idx: number) => (
+                <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all">
+                  {item.imageUrl && (
+                    <div className="w-full h-[250px] overflow-hidden">
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      {item.title}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {item.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     // Dynamic segments (tiles, banner, image-text)
-    if (segmentId.startsWith('segment-')) {
-      const segment = pageSegments.find(s => s.id === segmentId);
+    if (segmentId.startsWith('segment-') || typeof segmentId === 'number' || (typeof segmentId === 'string' && segmentId.match(/^\d+$/))) {
+      const segment = pageSegments.find(s => s.id === segmentId || s.id === String(segmentId));
       if (!segment) return null;
 
       // Render based on segment type
