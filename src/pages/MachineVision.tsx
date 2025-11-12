@@ -500,7 +500,7 @@ const MachineVision = () => {
       
       if (segment.type === 'image-text') {
         return (
-          <section key={segmentId} id={segmentId} className="py-20 bg-gray-50">
+          <section key={segmentId} id={segment.id.toString()} className="py-20 bg-gray-50">
             <div className="w-full px-6">
               {segment.data.heroImageUrl && (
                 <div className="mb-12 max-w-7xl mx-auto">
