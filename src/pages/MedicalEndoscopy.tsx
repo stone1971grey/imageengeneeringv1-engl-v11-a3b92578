@@ -153,14 +153,14 @@ const MedicalEndoscopy = () => {
         return <MetaNavigation key={segmentId} data={dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'product-hero-gallery') {
-        return <ProductHeroGallery key={segmentId} data={dynamicSegment.data} />;
+        return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
       }
     }
 
     // Static segments
     if (segmentId === 'tiles') {
       return (
-        <section key="tiles" id="applications" className="py-8 bg-gray-50">
+        <section key="tiles" id="tiles" className="py-8 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -508,7 +508,7 @@ const MedicalEndoscopy = () => {
       
       if (segment.type === 'image-text') {
         return (
-          <section key={segmentId} className="py-20 bg-gray-50">
+          <section key={segmentId} id={segmentId} className="py-20 bg-gray-50">
             <div className="w-full px-6">
               {segment.data.heroImageUrl && (
                 <div className="mb-12 max-w-7xl mx-auto">

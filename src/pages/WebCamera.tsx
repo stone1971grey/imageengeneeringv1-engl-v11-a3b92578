@@ -145,7 +145,7 @@ const WebCamera = () => {
         return <MetaNavigation key={segmentId} data={dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'product-hero-gallery') {
-        return <ProductHeroGallery key={segmentId} data={dynamicSegment.data} />;
+        return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
       }
     }
 
@@ -500,7 +500,7 @@ const WebCamera = () => {
       
       if (segment.type === 'image-text') {
         return (
-          <section key={segmentId} className="py-20 bg-gray-50">
+          <section key={segmentId} id={segmentId} className="py-20 bg-gray-50">
             <div className="w-full px-6">
               {segment.data.heroImageUrl && (
                 <div className="mb-12 max-w-7xl mx-auto">
