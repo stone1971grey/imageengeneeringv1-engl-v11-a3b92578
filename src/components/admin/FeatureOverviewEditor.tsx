@@ -40,7 +40,7 @@ const FeatureOverviewEditor = ({ segmentId, pageSlug }: FeatureOverviewEditorPro
         .select('content_type, content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', `segment_${segmentId}`)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
