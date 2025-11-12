@@ -72,8 +72,15 @@ const App = () => (
         <Route path="/your-solution" element={<YourSolution />} />
         <Route path="/products" element={<Products />} />
         
+        {/* Redirects for old URLs */}
+        <Route path="/automotive" element={<Navigate to="/your-solution/automotive" replace />} />
+        <Route path="/product/le7" element={<Navigate to="/products/test-charts/le7" replace />} />
+        <Route path="/product/arcturus" element={<Navigate to="/products/illumination-devices/arcturus" replace />} />
+        <Route path="/in-cabin-testing" element={<Navigate to="/your-solution/automotive/in-cabin-testing" replace />} />
+        
         {/* Hierarchical Your Solution Routes */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
+        <Route path="/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
         <Route path="/your-solution/photography" element={<Photography />} />
         <Route path="/your-solution/medical-endoscopy" element={<MedicalEndoscopy />} />
         <Route path="/your-solution/machine-vision" element={<MachineVision />} />
@@ -107,7 +114,6 @@ const App = () => (
          <Route path="/event-detail-registration-confirmation" element={<EventDetailRegistrationConfirmation />} />
          <Route path="/event-already-registered" element={<EventAlreadyRegistered />} />
          <Route path="/event-registration-success" element={<EventRegistrationSuccess />} />
-         <Route path="/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
          <Route path="/contact" element={<Contact />} />
          <Route path="/news" element={<News />} />
          <Route path="/news/:slug" element={<NewsDetail />} />
