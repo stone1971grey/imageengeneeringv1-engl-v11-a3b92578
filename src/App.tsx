@@ -48,6 +48,7 @@ import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
 import ImageDownload from "./pages/ImageDownload";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
+import MedicalEndoscopy from "./pages/MedicalEndoscopy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ const App = () => (
         <Route path="/products" element={<Products />} />
         <Route path="/automotive" element={<Automotive />} />
         <Route path="/photography" element={<Photography />} />
+        <Route path="/medical-endoscopy" element={<MedicalEndoscopy />} />
         <Route path="/scanners-archiving" element={<ScannersArchiving />} />
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/product/arcturus" element={<ProductArcturus />} />
