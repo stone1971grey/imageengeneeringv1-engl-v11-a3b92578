@@ -230,12 +230,12 @@ const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
 
       {/* Image Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-[90vw] max-h-[90vh] p-0">
+        <DialogContent className="max-w-5xl max-h-[80vh] p-4">
           <div className="relative">
             <img 
               src={data.images[currentImageIndex]?.imageUrl} 
               alt={data.images[currentImageIndex]?.title || data.title}
-              className="w-full h-full object-contain"
+              className="w-full h-full max-h-[75vh] object-contain"
             />
           </div>
         </DialogContent>
