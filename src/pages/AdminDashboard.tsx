@@ -1823,6 +1823,7 @@ const AdminDashboard = () => {
                     if (segment.type === 'banner') label = `Banner ${displayNumber}`;
                     if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
                     if (segment.type === 'feature-overview') label = `Features ${displayNumber}`;
+                    if (segment.type === 'table') label = `Table ${displayNumber}`;
                     
                     const segmentId = segmentRegistry[tabId] || tabId;
                     
