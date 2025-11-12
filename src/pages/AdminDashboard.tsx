@@ -43,6 +43,7 @@ import ProductHeroGalleryEditor from '@/components/admin/ProductHeroGalleryEdito
 import FeatureOverviewEditor from '@/components/admin/FeatureOverviewEditor';
 import TableEditor from '@/components/admin/TableEditor';
 import FAQEditor from '@/components/admin/FAQEditor';
+import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 
 interface ContentItem {
   id: string;
@@ -1271,6 +1272,12 @@ const AdminDashboard = () => {
             }
           ]
         };
+      case 'video':
+        return {
+          title: 'Product in Action',
+          videoUrl: '',
+          caption: ''
+        };
       default:
         return {};
     }
@@ -1711,6 +1718,17 @@ const AdminDashboard = () => {
                       </Button>
                     </CardContent>
                   </Card>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('video')}>
+                    <CardHeader>
+                      <CardTitle>Video</CardTitle>
+                      <CardDescription>YouTube video embed with caption</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        Add Video
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
               </DialogContent>
             </Dialog>
@@ -1848,6 +1866,7 @@ const AdminDashboard = () => {
                     if (segment.type === 'feature-overview') label = `Features ${displayNumber}`;
                     if (segment.type === 'table') label = `Table ${displayNumber}`;
                     if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
+                    if (segment.type === 'video') label = `Video ${displayNumber}`;
                     
                     const segmentId = segmentRegistry[tabId] || tabId;
                     
@@ -3161,6 +3180,7 @@ const AdminDashboard = () => {
                         {segment.type === 'feature-overview' && 'Feature Overview Template'}
                         {segment.type === 'table' && 'Table Template'}
                         {segment.type === 'faq' && 'FAQ Template'}
+                        {segment.type === 'video' && 'Video Template'}
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -3902,7 +3922,26 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && (
+                  {segment.type === 'video' && (() => {
+                    // Initialize with default data if needed
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('video');
+                    }
+                    
+                    return (
+                      <VideoSegmentEditor
+                        data={segment.data}
+                        onChange={(newData) => {
+                          const updatedSegments = pageSegments.map(s =>
+                            s.id === segment.id ? { ...s, data: newData } : s
+                          );
+                          setPageSegments(updatedSegments);
+                        }}
+                      />
+                    );
+                  })()}
+
+                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && segment.type !== 'video' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
                       <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.

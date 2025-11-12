@@ -11,6 +11,7 @@ import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
+import { Video } from "@/components/segments/Video";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
@@ -254,6 +255,9 @@ const Photography = () => {
       }
       if (dynamicSegment.type === 'faq') {
         return <FAQ key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'video') {
+        return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
       }
     }
 
