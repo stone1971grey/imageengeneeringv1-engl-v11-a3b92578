@@ -44,6 +44,7 @@ import FeatureOverviewEditor from '@/components/admin/FeatureOverviewEditor';
 import TableEditor from '@/components/admin/TableEditor';
 import FAQEditor from '@/components/admin/FAQEditor';
 import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
+import { SEOEditor } from '@/components/admin/SEOEditor';
 
 interface ContentItem {
   id: string;
@@ -152,6 +153,20 @@ const AdminDashboard = () => {
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
   const [footerButtonText, setFooterButtonText] = useState<string>("");
   const [segmentRegistry, setSegmentRegistry] = useState<Record<string, number>>({});
+  const [isSEOEditorOpen, setIsSEOEditorOpen] = useState(false);
+  const [seoData, setSeoData] = useState<any>({
+    title: '',
+    metaDescription: '',
+    slug: selectedPage,
+    canonical: '',
+    robotsIndex: 'index',
+    robotsFollow: 'follow',
+    focusKeyword: '',
+    ogTitle: '',
+    ogDescription: '',
+    ogImage: '',
+    twitterCard: 'summary_large_image'
+  });
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -216,6 +231,19 @@ const AdminDashboard = () => {
       setFooterTeamTitle("");
       setFooterButtonText("");
       setContent({});
+      setSeoData({
+        title: '',
+        metaDescription: '',
+        slug: selectedPage,
+        canonical: '',
+        robotsIndex: 'index',
+        robotsFollow: 'follow',
+        focusKeyword: '',
+        ogTitle: '',
+        ogDescription: '',
+        ogImage: '',
+        twitterCard: 'summary_large_image'
+      });
       
       // First, load segment registry to get all segment IDs
       loadSegmentRegistry().then(() => {
@@ -515,6 +543,17 @@ const AdminDashboard = () => {
         setFooterTeamTitle(item.content_value);
       } else if (item.section_key === "footer_button_text") {
         setFooterButtonText(item.content_value);
+      } else if (item.section_key === "seo_settings") {
+        try {
+          const seoSettings = JSON.parse(item.content_value);
+          setSeoData({
+            ...seoData,
+            ...seoSettings,
+            slug: seoSettings.slug || selectedPage
+          });
+        } catch {
+          // Keep default SEO data
+        }
       } else {
         contentMap[item.section_key] = item.content_value;
       }
@@ -1480,6 +1519,34 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSaveSEO = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+
+    try {
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "seo_settings",
+          content_type: "json",
+          content_value: JSON.stringify(seoData),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (error) throw error;
+      toast.success("SEO Settings saved successfully!");
+    } catch (error: any) {
+      toast.error("Error saving SEO settings: " + error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSaveApplications = async () => {
     if (!user) return;
     
@@ -1602,6 +1669,13 @@ const AdminDashboard = () => {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
+              variant={isSEOEditorOpen ? "default" : "outline"}
+              className={isSEOEditorOpen ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" : ""}
+            >
+              SEO Settings
+            </Button>
             <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -1775,6 +1849,26 @@ const AdminDashboard = () => {
             </Button>
           </div>
         </div>
+
+        {/* SEO Editor - Conditional Rendering */}
+        {isSEOEditorOpen && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>SEO Settings for {selectedPage}</CardTitle>
+              <CardDescription>
+                Konfiguriere alle SEO-relevanten Einstellungen für diese Seite
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SEOEditor
+                pageSlug={selectedPage}
+                data={seoData}
+                onChange={setSeoData}
+                onSave={handleSaveSEO}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <DndContext
