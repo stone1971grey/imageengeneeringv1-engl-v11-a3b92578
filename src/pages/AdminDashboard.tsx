@@ -1538,12 +1538,19 @@ const AdminDashboard = () => {
               variant="outline"
               onClick={() => {
                 const urlMap: Record<string, string> = {
+                  'index': '/',
+                  'your-solution': '/your-solution',
+                  'products': '/products',
+                  'downloads': '/downloads',
+                  'events': '/events',
+                  'news': '/news',
+                  'inside-lab': '/inside-lab',
+                  'contact': '/contact',
                   'photography': '/your-solution/photography',
                   'scanners-archiving': '/your-solution/scanners-archiving',
                   'medical-endoscopy': '/your-solution/medical-endoscopy',
-                  'machine-vision': '/your-solution/machine-vision',
                   'web-camera': '/your-solution/web-camera',
-                  'your-solution': '/your-solution'
+                  'machine-vision': '/your-solution/machine-vision'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';
                 window.open(previewUrl, '_blank');
