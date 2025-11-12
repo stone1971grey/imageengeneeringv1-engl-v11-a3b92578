@@ -86,15 +86,15 @@ const FeatureOverviewEditor = ({ data, onChange, onSave }: FeatureOverviewEditor
           </div>
 
           <div>
-            <Label htmlFor="layout">Column Layout</Label>
+            <Label htmlFor="layout">Spalten pro Zeile</Label>
             <Select value={layout} onValueChange={(value: '1' | '2' | '3') => onChange({ ...data, layout: value })}>
               <SelectTrigger id="layout">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">1 Column</SelectItem>
-                <SelectItem value="2">2 Columns</SelectItem>
-                <SelectItem value="3">3 Columns</SelectItem>
+                <SelectItem value="1">1 Spalte</SelectItem>
+                <SelectItem value="2">2 Spalten</SelectItem>
+                <SelectItem value="3">3 Spalten</SelectItem>
               </SelectContent>
             </Select>
           </div>
