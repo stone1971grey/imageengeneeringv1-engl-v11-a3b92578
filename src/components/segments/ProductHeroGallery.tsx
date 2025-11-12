@@ -28,33 +28,32 @@ interface ProductHeroGalleryProps {
 const ProductHeroGallery = ({ data }: ProductHeroGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hoveredButton, setHoveredButton] = useState<string | null>(null);
 
-  const getButtonStyle = (style: string) => {
+  const getButtonStyle = (style: string, isHovered: boolean, buttonId: string) => {
     switch (style) {
       case 'technical':
         return { backgroundColor: '#1f2937', color: 'white' };
       case 'outline-white':
-        return { 
-          backgroundColor: 'white', 
-          color: 'black',
-          border: '1px solid #e5e5e5'
-        };
+        return isHovered && hoveredButton === buttonId
+          ? { backgroundColor: 'black', color: 'white', border: '1px solid black' }
+          : { backgroundColor: 'white', color: 'black', border: '1px solid #e5e5e5' };
       default:
         return { backgroundColor: '#f9dc24', color: 'black' };
     }
   };
 
-  const renderButton = (text: string, link: string, style: string, size: string = 'lg') => {
-    const buttonStyle = getButtonStyle(style);
-    const buttonClasses = `border-0 px-8 py-4 text-lg font-medium shadow-soft transition-all duration-300 group ${
-      style === 'outline-white' ? 'hover:bg-black hover:text-white' : 'hover:shadow-lg'
-    }`;
+  const renderButton = (text: string, link: string, style: string, size: string = 'lg', buttonId: string = 'cta1') => {
+    const buttonStyle = getButtonStyle(style, true, buttonId);
+    const buttonClasses = `border-0 px-8 py-4 text-lg font-medium shadow-soft transition-all duration-300`;
 
     const buttonElement = (
       <Button 
         size={size as any}
         className={buttonClasses}
         style={buttonStyle}
+        onMouseEnter={() => setHoveredButton(buttonId)}
+        onMouseLeave={() => setHoveredButton(null)}
       >
         {text}
       </Button>
@@ -112,8 +111,8 @@ const ProductHeroGallery = ({ data }: ProductHeroGalleryProps) => {
             </div>
             
             <div className="pt-4 flex gap-4">
-              {data.cta1Text && renderButton(data.cta1Text, data.cta1Link, data.cta1Style)}
-              {data.cta2Text && renderButton(data.cta2Text, data.cta2Link, data.cta2Style)}
+              {data.cta1Text && renderButton(data.cta1Text, data.cta1Link, data.cta1Style, 'lg', 'cta1')}
+              {data.cta2Text && renderButton(data.cta2Text, data.cta2Link, data.cta2Style, 'lg', 'cta2')}
             </div>
           </div>
 
