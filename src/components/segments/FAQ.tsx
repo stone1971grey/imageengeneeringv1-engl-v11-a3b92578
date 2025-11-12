@@ -68,7 +68,7 @@ const FAQ: React.FC<FAQProps> = ({
                       <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-4 text-lg">
                         {item.question}
                       </AccordionTrigger>
-                      <AccordionContent className="text-foreground pb-4 pt-2 text-lg">
+                      <AccordionContent className="text-foreground pb-4 pt-2 text-lg font-light">
                         {item.answer}
                       </AccordionContent>
                     </AccordionItem>
