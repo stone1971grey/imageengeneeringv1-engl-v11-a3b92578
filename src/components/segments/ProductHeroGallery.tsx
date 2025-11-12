@@ -93,7 +93,7 @@ const ProductHeroGallery = ({ data }: ProductHeroGalleryProps) => {
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
       </div>
       
-      <div className="container mx-auto px-6 py-6 lg:py-10 relative z-10">
+      <div className="container mx-auto px-6 pt-0 pb-6 lg:pb-10 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           
           {/* Left Content */}
