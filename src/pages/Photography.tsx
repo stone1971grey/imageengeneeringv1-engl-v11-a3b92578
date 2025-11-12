@@ -440,7 +440,7 @@ const Photography = () => {
 
     if (segmentId === 'solutions') {
       return (
-        <section key="solutions" className="py-20 bg-gray-50">
+        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="py-20 bg-gray-50">
           <div className="w-full px-6">
             <div className="text-center mb-16">
               {solutionsTitle && (

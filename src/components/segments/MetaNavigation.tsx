@@ -16,6 +16,7 @@ const MetaNavigation = ({ data, segmentIdMap = {} }: MetaNavigationProps) => {
     
     // Otherwise, try to map segment_key to segment_id
     const segmentId = segmentIdMap[anchor];
+    console.log(`MetaNav: Resolving anchor "${anchor}" to ID:`, segmentId, 'SegmentIdMap:', segmentIdMap);
     return segmentId ? segmentId.toString() : anchor;
   };
 
