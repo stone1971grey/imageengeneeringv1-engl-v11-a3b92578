@@ -38,6 +38,7 @@ const ScannersArchiving = () => {
   const [tilesData, setTilesData] = useState<any>({ title: "", subtext: "", items: [] });
   const [bannerData, setBannerData] = useState<any>({ title: "", subtext: "", images: [], buttonText: "", buttonLink: "", buttonStyle: "standard" });
   const [solutionsData, setSolutionsData] = useState<any>({ title: "", subtext: "", layout: "2-col", items: [] });
+  const [hasHeroContent, setHasHeroContent] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -51,6 +52,7 @@ const ScannersArchiving = () => {
 
     if (!error && data) {
       const contentMap: Record<string, string> = {};
+      let heroExists = false;
 
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
@@ -65,6 +67,7 @@ const ScannersArchiving = () => {
           }
         } else if (item.section_key === "hero_image_url") {
           setHeroImageUrl(item.content_value || "");
+          heroExists = true;
         } else if (item.section_key === "hero_image_position") {
           setHeroImagePosition(item.content_value || "center");
         } else if (item.section_key === "hero_layout") {
@@ -75,6 +78,9 @@ const ScannersArchiving = () => {
           setHeroCtaLink(item.content_value || "#content");
         } else if (item.section_key === "hero_cta_style") {
           setHeroCtaStyle(item.content_value || "standard");
+        } else if (item.section_key === "hero_title") {
+          contentMap[item.section_key] = item.content_value;
+          heroExists = true;
         } else if (item.section_key === "applications_title") {
           setTilesData((prev: any) => ({ ...prev, title: item.content_value }));
         } else if (item.section_key === "applications_description") {
@@ -122,6 +128,7 @@ const ScannersArchiving = () => {
       });
 
       setContent(contentMap);
+      setHasHeroContent(heroExists);
     }
 
     setLoading(false);
@@ -646,8 +653,9 @@ const ScannersArchiving = () => {
         icon="calendar"
       />
 
-      {/* Hero Section - Product Hero Template */}
-      <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+      {/* Hero Section - Product Hero Template - Only render if hero content exists */}
+      {hasHeroContent && (
+        <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
         <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
           heroTopPadding === "small" ? "pt-16 lg:pt-16" :
           heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
@@ -751,6 +759,7 @@ const ScannersArchiving = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Dynamic Segments */}
       {tabOrder.map((segmentId) => renderSegment(segmentId))}

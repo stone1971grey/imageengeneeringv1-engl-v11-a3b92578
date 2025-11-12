@@ -58,6 +58,7 @@ const MedicalEndoscopy = () => {
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
+  const [hasHeroContent, setHasHeroContent] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -72,6 +73,7 @@ const MedicalEndoscopy = () => {
     if (!error && data) {
       const contentMap: Record<string, string> = {};
       let apps: any[] = [];
+      let heroExists = false;
 
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
@@ -109,6 +111,7 @@ const MedicalEndoscopy = () => {
           setBannerButtonStyle(item.content_value || "standard");
         } else if (item.section_key === "hero_image_url") {
           setHeroImageUrl(item.content_value);
+          heroExists = true;
         } else if (item.section_key === "hero_image_position") {
           setHeroImagePosition(item.content_value || "right");
         } else if (item.section_key === "hero_layout") {
@@ -119,6 +122,9 @@ const MedicalEndoscopy = () => {
           setHeroCtaLink(item.content_value || "#applications-start");
         } else if (item.section_key === "hero_cta_style") {
           setHeroCtaStyle(item.content_value || "standard");
+        } else if (item.section_key === "hero_title") {
+          contentMap[item.section_key] = item.content_value;
+          heroExists = true;
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -126,6 +132,7 @@ const MedicalEndoscopy = () => {
 
       setContent(contentMap);
       setApplications(apps);
+      setHasHeroContent(heroExists);
     }
     setLoading(false);
   };
@@ -576,8 +583,9 @@ const MedicalEndoscopy = () => {
       {/* Navigation */}
       <Navigation />
 
-      {/* Hero Section */}
-      <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+      {/* Hero Section - Only render if hero content exists */}
+      {hasHeroContent && (
+        <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
         <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
           heroTopPadding === "small" ? "pt-16 lg:pt-16" :
           heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
@@ -672,6 +680,7 @@ const MedicalEndoscopy = () => {
           </div>
         </div>
       </section>
+      )}
 
       {/* Better anchor point for smooth scrolling */}
       <div id="applications-start" className="scroll-mt-32"></div>
