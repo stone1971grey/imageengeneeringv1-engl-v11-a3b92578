@@ -86,7 +86,7 @@ const ProductHeroGallery = ({ data }: ProductHeroGalleryProps) => {
   };
 
   return (
-    <section className="min-h-[60vh] bg-scandi-white font-roboto relative overflow-hidden">
+    <section className="min-h-[60vh] bg-scandi-white font-roboto relative overflow-hidden -mt-8">
       {/* Animated background light effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
