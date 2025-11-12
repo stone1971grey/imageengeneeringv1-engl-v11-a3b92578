@@ -152,7 +152,7 @@ const WebCamera = () => {
     // Static segments
     if (segmentId === 'tiles') {
       return (
-        <section key="tiles" id="applications" className="py-8 bg-gray-50">
+        <section key="tiles" id="tiles" className="py-8 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -262,7 +262,7 @@ const WebCamera = () => {
 
     if (segmentId === 'banner') {
       return (
-        <section key="banner" id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+        <section key="banner" id="banner" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
           <div className="container mx-auto px-6">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
               {bannerTitle || "International Standards"}
@@ -338,7 +338,7 @@ const WebCamera = () => {
 
     if (segmentId === 'solutions') {
       return (
-        <section key="solutions" className="py-20 bg-gray-50">
+        <section key="solutions" id="solutions" className="py-20 bg-gray-50">
           <div className="w-full px-6">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
