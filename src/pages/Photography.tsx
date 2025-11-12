@@ -238,7 +238,7 @@ const Photography = () => {
     const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
     if (dynamicSegment) {
       if (dynamicSegment.type === 'meta-navigation') {
-        return <MetaNavigation key={segmentId} data={dynamicSegment.data} />;
+        return <MetaNavigation key={segmentId} data={dynamicSegment.data} segmentIdMap={segmentIdMap} />;
       }
       if (dynamicSegment.type === 'product-hero-gallery') {
         return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
