@@ -9,7 +9,7 @@ interface MetaNavigationProps {
 
 const MetaNavigation = ({ data }: MetaNavigationProps) => {
   return (
-    <nav className="sticky top-32 z-40 bg-[#F7F9FB] py-4 border-b border-gray-100 transition-all duration-300 -mt-8">
+    <nav className="sticky top-32 z-40 bg-[#F7F9FB] py-4 border-b border-gray-100 transition-all duration-300">
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
           <div className="flex flex-wrap gap-6 justify-center text-lg">
