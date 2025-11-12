@@ -205,14 +205,14 @@ const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
   );
 
   return (
-    <section id={id} className={`min-h-[60vh] bg-scandi-white font-roboto relative overflow-hidden ${getTopPaddingClass()}`}>
+    <section id={id} className={`min-h-[60vh] bg-scandi-white font-roboto relative overflow-hidden ${getTopPaddingClass()} pb-8`}>
       {/* Animated background light effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
       </div>
       
-      <div className="container mx-auto px-6 pb-6 lg:pb-10 relative z-10">
+      <div className="container mx-auto px-6 relative z-10">
         <div className={`grid ${getLayoutClasses()} gap-16 items-center`}>
           {imagePosition === 'left' ? (
             <>
