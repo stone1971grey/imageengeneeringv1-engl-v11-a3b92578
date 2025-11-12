@@ -3197,12 +3197,13 @@ const AdminDashboard = () => {
                 <CardContent>
                   {segment.type === 'meta-navigation' && (() => {
                     // Build available segments list with their titles
+                    // IMPORTANT: Use numeric segment_id from segmentRegistry, not string keys
                     const availableSegments = [];
                     
                     // Hero segment
                     if (segmentRegistry['hero']) {
                       availableSegments.push({
-                        id: 'hero',
+                        id: segmentRegistry['hero'].toString(),
                         title: content.hero_title || 'Hero Section'
                       });
                     }
@@ -3210,7 +3211,7 @@ const AdminDashboard = () => {
                     // Tiles segment
                     if (segmentRegistry['tiles']) {
                       availableSegments.push({
-                        id: 'tiles',
+                        id: segmentRegistry['tiles'].toString(),
                         title: content.applications_title || 'Tiles Section'
                       });
                     }
@@ -3218,7 +3219,7 @@ const AdminDashboard = () => {
                     // Banner segment
                     if (segmentRegistry['banner']) {
                       availableSegments.push({
-                        id: 'banner',
+                        id: segmentRegistry['banner'].toString(),
                         title: bannerTitle || 'Banner Section'
                       });
                     }
@@ -3226,16 +3227,16 @@ const AdminDashboard = () => {
                     // Solutions/Image & Text segment
                     if (segmentRegistry['solutions']) {
                       availableSegments.push({
-                        id: 'solutions',
+                        id: segmentRegistry['solutions'].toString(),
                         title: solutionsTitle || 'Image & Text Section'
                       });
                     }
                     
-                    // Dynamic segments
+                    // Dynamic segments - ONLY include if they exist in segmentRegistry (not deleted)
                     pageSegments.forEach((seg) => {
-                      if (seg.type !== 'meta-navigation' && seg.data?.title) {
+                      if (seg.type !== 'meta-navigation' && seg.data?.title && segmentRegistry[seg.id]) {
                         availableSegments.push({
-                          id: seg.id,
+                          id: segmentRegistry[seg.id].toString(),
                           title: seg.data.title
                         });
                       }
@@ -3244,7 +3245,7 @@ const AdminDashboard = () => {
                     // Footer segment
                     if (segmentRegistry['footer']) {
                       availableSegments.push({
-                        id: 'footer',
+                        id: segmentRegistry['footer'].toString(),
                         title: 'Footer'
                       });
                     }
