@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Expand, X } from 'lucide-react';
+import { Expand, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
@@ -230,13 +230,40 @@ const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
 
       {/* Image Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-5xl max-h-[80vh] p-4">
+        <DialogContent className="max-w-5xl max-h-[80vh] p-4 bg-white">
           <div className="relative">
             <img 
               src={data.images[currentImageIndex]?.imageUrl} 
               alt={data.images[currentImageIndex]?.title || data.title}
               className="w-full h-full max-h-[75vh] object-contain"
             />
+            
+            {/* Navigation Arrows */}
+            {data.images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentImageIndex((prev) => (prev === 0 ? data.images.length - 1 : prev - 1));
+                  }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-50"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-6 h-6 text-gray-800" />
+                </button>
+                
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentImageIndex((prev) => (prev === data.images.length - 1 ? 0 : prev + 1));
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-50"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-6 h-6 text-gray-800" />
+                </button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
