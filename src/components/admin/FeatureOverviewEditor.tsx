@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Trash2, Plus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -16,70 +15,23 @@ interface FeatureItem {
 }
 
 interface FeatureOverviewEditorProps {
-  segmentId: number;
-  pageSlug: string;
+  data: any;
+  onChange: (newData: any) => void;
+  onSave: () => void;
 }
 
-const FeatureOverviewEditor = ({ segmentId, pageSlug }: FeatureOverviewEditorProps) => {
-  const [title, setTitle] = useState('');
-  const [subtext, setSubtext] = useState('');
-  const [layout, setLayout] = useState<'1' | '2' | '3'>('3');
-  const [items, setItems] = useState<FeatureItem[]>([
-    { title: '', description: '' }
-  ]);
+const FeatureOverviewEditor = ({ data, onChange, onSave }: FeatureOverviewEditorProps) => {
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadContent();
-  }, [segmentId, pageSlug]);
-
-  const loadContent = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('page_content')
-        .select('content_type, content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', `segment_${segmentId}`)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (data?.content_value) {
-        const content = typeof data.content_value === 'string' 
-          ? JSON.parse(data.content_value) 
-          : data.content_value;
-        
-        setTitle(content.title || '');
-        setSubtext(content.subtext || '');
-        setLayout(content.layout || '3');
-        setItems(content.items || [{ title: '', description: '' }]);
-      }
-    } catch (error) {
-      console.error('Error loading feature overview content:', error);
-    }
-  };
+  const title = data?.title || '';
+  const subtext = data?.subtext || '';
+  const layout = data?.layout || '3';
+  const items = data?.items || [{ title: '', description: '' }];
 
   const handleSave = async () => {
     setLoading(true);
     try {
-      const content = {
-        title,
-        subtext,
-        layout,
-        items
-      };
-
-      const { error } = await supabase
-        .from('page_content')
-        .upsert({
-          page_slug: pageSlug,
-          section_key: `segment_${segmentId}`,
-          content_type: 'json',
-          content_value: JSON.stringify(content)
-        });
-
-      if (error) throw error;
-
+      await onSave();
       toast.success('Feature Overview saved successfully');
     } catch (error) {
       console.error('Error saving feature overview:', error);
@@ -90,17 +42,19 @@ const FeatureOverviewEditor = ({ segmentId, pageSlug }: FeatureOverviewEditorPro
   };
 
   const addItem = () => {
-    setItems([...items, { title: '', description: '' }]);
+    const newItems = [...items, { title: '', description: '' }];
+    onChange({ ...data, items: newItems });
   };
 
   const removeItem = (index: number) => {
-    setItems(items.filter((_, i) => i !== index));
+    const newItems = items.filter((_: any, i: number) => i !== index);
+    onChange({ ...data, items: newItems });
   };
 
   const updateItem = (index: number, field: 'title' | 'description', value: string) => {
     const newItems = [...items];
     newItems[index][field] = value;
-    setItems(newItems);
+    onChange({ ...data, items: newItems });
   };
 
   return (
@@ -115,7 +69,7 @@ const FeatureOverviewEditor = ({ segmentId, pageSlug }: FeatureOverviewEditorPro
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => onChange({ ...data, title: e.target.value })}
               placeholder="e.g., Key Benefits of LE7"
             />
           </div>
@@ -125,7 +79,7 @@ const FeatureOverviewEditor = ({ segmentId, pageSlug }: FeatureOverviewEditorPro
             <Textarea
               id="subtext"
               value={subtext}
-              onChange={(e) => setSubtext(e.target.value)}
+              onChange={(e) => onChange({ ...data, subtext: e.target.value })}
               placeholder="Optional description text below the title"
               rows={2}
             />
@@ -133,7 +87,7 @@ const FeatureOverviewEditor = ({ segmentId, pageSlug }: FeatureOverviewEditorPro
 
           <div>
             <Label htmlFor="layout">Column Layout</Label>
-            <Select value={layout} onValueChange={(value: '1' | '2' | '3') => setLayout(value)}>
+            <Select value={layout} onValueChange={(value: '1' | '2' | '3') => onChange({ ...data, layout: value })}>
               <SelectTrigger id="layout">
                 <SelectValue />
               </SelectTrigger>

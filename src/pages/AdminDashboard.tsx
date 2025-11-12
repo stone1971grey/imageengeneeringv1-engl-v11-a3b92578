@@ -3678,12 +3678,24 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type === 'feature-overview' && (
-                    <FeatureOverviewEditor
-                      segmentId={parseInt(segment.id)}
-                      pageSlug={selectedPage}
-                    />
-                  )}
+                  {segment.type === 'feature-overview' && (() => {
+                    // Initialize data if missing
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('feature-overview');
+                    }
+                    
+                    return (
+                      <FeatureOverviewEditor
+                        data={segment.data}
+                        onChange={(newData) => {
+                          const newSegments = [...pageSegments];
+                          newSegments[index].data = newData;
+                          setPageSegments(newSegments);
+                        }}
+                        onSave={() => handleSaveSegments()}
+                      />
+                    );
+                  })()}
 
                   {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
