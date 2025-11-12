@@ -105,8 +105,7 @@ const MetaNavigationEditor = ({ data, onChange, onSave }: MetaNavigationEditorPr
                     <SelectItem value="hero">Hero Section</SelectItem>
                     <SelectItem value="tiles">Tiles Section</SelectItem>
                     <SelectItem value="banner">Banner Section</SelectItem>
-                    <SelectItem value="solutions">Solutions Section</SelectItem>
-                    <SelectItem value="applications">Applications</SelectItem>
+                    <SelectItem value="solutions">Image & Text Section</SelectItem>
                     <SelectItem value="footer">Footer</SelectItem>
                   </SelectContent>
                 </Select>

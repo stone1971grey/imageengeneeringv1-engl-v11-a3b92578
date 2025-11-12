@@ -20,10 +20,19 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
                 className="text-gray-700 hover:text-gray-900 font-medium transition-colors scroll-smooth"
                 onClick={(e) => {
                   e.preventDefault();
-                  document.getElementById(link.anchor)?.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                  });
+                  const element = document.getElementById(link.anchor);
+                  if (element) {
+                    const navbarHeight = 85; // Main navigation height
+                    const metaNavHeight = 85; // Meta navigation height
+                    const totalOffset = navbarHeight + metaNavHeight;
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - totalOffset;
+
+                    window.scrollTo({
+                      top: offsetPosition,
+                      behavior: 'smooth'
+                    });
+                  }
                 }}
               >
                 {link.label}
