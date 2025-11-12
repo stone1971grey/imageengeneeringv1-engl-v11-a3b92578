@@ -1546,11 +1546,16 @@ const AdminDashboard = () => {
                   'news': '/news',
                   'inside-lab': '/inside-lab',
                   'contact': '/contact',
+                  'automotive': '/your-solution/automotive',
                   'photography': '/your-solution/photography',
                   'scanners-archiving': '/your-solution/scanners-archiving',
                   'medical-endoscopy': '/your-solution/medical-endoscopy',
                   'web-camera': '/your-solution/web-camera',
-                  'machine-vision': '/your-solution/machine-vision'
+                  'machine-vision': '/your-solution/machine-vision',
+                  'test-charts': '/products/test-charts',
+                  'illumination-devices': '/products/illumination-devices',
+                  'le7': '/products/test-charts/le7',
+                  'arcturus': '/products/illumination-devices/arcturus'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';
                 window.open(previewUrl, '_blank');

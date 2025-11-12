@@ -240,7 +240,7 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                        <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
                        
-                       <Link to="/automotive" className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                       <Link to="/your-solution/automotive" className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                           onMouseEnter={() => setHoveredIndustry("Automotive")}>
                           <Car className="h-5 w-5" />
                           <span>{t.nav.automotive}</span>
@@ -807,7 +807,7 @@ const Navigation = () => {
                             <AccordionItem value="automotive" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                   <Link to="/your-solution/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <Car className="h-4 w-4" />
                                       <span>{t.nav.automotive}</span>
                                       <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
@@ -1221,7 +1221,7 @@ const Navigation = () => {
                              <AccordionItem value="auto-test" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                    <Link to="/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                   <Link to="/your-solution/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                        <CustomTargetIcon className="h-4 w-4" />
                                       <span>{t.nav.automotive}</span>
                                     </Link>

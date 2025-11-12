@@ -71,18 +71,20 @@ const App = () => (
         <Route path="/industries" element={<YourSolution />} />
         <Route path="/your-solution" element={<YourSolution />} />
         <Route path="/products" element={<Products />} />
-        <Route path="/automotive" element={<Automotive />} />
         
         {/* Hierarchical Your Solution Routes */}
+        <Route path="/your-solution/automotive" element={<Automotive />} />
         <Route path="/your-solution/photography" element={<Photography />} />
         <Route path="/your-solution/medical-endoscopy" element={<MedicalEndoscopy />} />
         <Route path="/your-solution/machine-vision" element={<MachineVision />} />
         <Route path="/your-solution/web-camera" element={<WebCamera />} />
         <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
         
+        {/* Hierarchical Product Routes */}
+        <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
+        <Route path="/products/illumination-devices/arcturus" element={<ProductArcturus />} />
+        
         <Route path="/downloads" element={<Downloads />} />
-         <Route path="/product/arcturus" element={<ProductArcturus />} />
-         <Route path="/product/le7" element={<ProductLE7 />} />
          <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
          <Route path="/backlog" element={<Backlog />} />
