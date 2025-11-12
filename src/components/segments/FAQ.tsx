@@ -65,10 +65,10 @@ const FAQ: React.FC<FAQProps> = ({
                       value={`item-${index}`}
                       className="border border-border rounded-lg px-6 bg-card"
                     >
-                      <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-4">
+                      <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-4 text-lg">
                         {item.question}
                       </AccordionTrigger>
-                      <AccordionContent className="text-muted-foreground pb-4 pt-2 text-base">
+                      <AccordionContent className="text-foreground pb-4 pt-2 text-lg">
                         {item.answer}
                       </AccordionContent>
                     </AccordionItem>
