@@ -1695,17 +1695,7 @@ const AdminDashboard = () => {
             onDragEnd={handleDragEnd}
           >
             <TabsList className="flex w-full mb-6 h-auto p-2 bg-gray-200">
-              {/* Hero Tab - Fixed Left (only if not deleted) */}
-              {segmentRegistry['hero'] && (
-                <TabsTrigger 
-                  value="hero" 
-                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                >
-                  ID {segmentRegistry['hero']}: Produkt-Hero
-                </TabsTrigger>
-              )}
-
-              {/* MANDATORY: Meta Navigation - ALWAYS Second Position (Fixed, Non-Draggable) */}
+              {/* MANDATORY: Meta Navigation - ALWAYS FIRST/LEFTMOST (Nothing before it!) */}
               {pageSegments
                 .filter(segment => segment.type === 'meta-navigation')
                 .map((segment) => {
@@ -1725,7 +1715,17 @@ const AdminDashboard = () => {
                   );
                 })}
 
-              {/* Draggable Middle Tabs - ALL segments EXCEPT Hero, Meta Navigation, and Footer */}
+              {/* Hero Tab - Fixed Second Position (After Meta Nav) */}
+              {segmentRegistry['hero'] && (
+                <TabsTrigger 
+                  value="hero" 
+                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                >
+                  ID {segmentRegistry['hero']}: Produkt-Hero
+                </TabsTrigger>
+              )}
+
+              {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Hero, and Footer */}
               <SortableContext
                 items={tabOrder.filter(tabId => {
                   const segment = pageSegments.find(s => s.id === tabId);
