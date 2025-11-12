@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
@@ -92,12 +93,23 @@ const MetaNavigationEditor = ({ data, onChange, onSave }: MetaNavigationEditorPr
                 />
               </div>
               <div>
-                <Label>Anchor ID</Label>
-                <Input
+                <Label>Target Segment</Label>
+                <Select
                   value={link.anchor}
-                  onChange={(e) => handleLinkChange(index, 'anchor', e.target.value)}
-                  placeholder="e.g., overview (without #)"
-                />
+                  onValueChange={(value) => handleLinkChange(index, 'anchor', value)}
+                >
+                  <SelectTrigger className="bg-gray-700 text-white border-gray-600">
+                    <SelectValue placeholder="Select target segment" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-700 text-white border-gray-600 z-50">
+                    <SelectItem value="hero">Hero Section</SelectItem>
+                    <SelectItem value="tiles">Tiles Section</SelectItem>
+                    <SelectItem value="banner">Banner Section</SelectItem>
+                    <SelectItem value="solutions">Solutions Section</SelectItem>
+                    <SelectItem value="applications">Applications</SelectItem>
+                    <SelectItem value="footer">Footer</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>

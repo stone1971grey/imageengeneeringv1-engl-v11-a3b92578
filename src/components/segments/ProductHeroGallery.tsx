@@ -37,7 +37,7 @@ const ProductHeroGallery = ({ data }: ProductHeroGalleryProps) => {
         return { 
           backgroundColor: 'white', 
           color: 'black',
-          border: '2px solid black'
+          border: '1px solid #e5e5e5'
         };
       default:
         return { backgroundColor: '#f9dc24', color: 'black' };
@@ -46,8 +46,8 @@ const ProductHeroGallery = ({ data }: ProductHeroGalleryProps) => {
 
   const renderButton = (text: string, link: string, style: string, size: string = 'lg') => {
     const buttonStyle = getButtonStyle(style);
-    const buttonClasses = `border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
-      style === 'outline-white' ? 'border-2' : ''
+    const buttonClasses = `border-0 px-8 py-4 text-lg font-medium shadow-soft transition-all duration-300 group ${
+      style === 'outline-white' ? 'hover:bg-black hover:text-white' : 'hover:shadow-lg'
     }`;
 
     const buttonElement = (
