@@ -38,6 +38,8 @@ import {
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import MetaNavigationEditor from '@/components/admin/MetaNavigationEditor';
+import ProductHeroGalleryEditor from '@/components/admin/ProductHeroGalleryEditor';
 
 interface ContentItem {
   id: string;
@@ -1170,6 +1172,31 @@ const AdminDashboard = () => {
           ctaLink: '',
           ctaStyle: 'standard'
         };
+      case 'meta-navigation':
+        return {
+          links: [
+            { label: 'Overview', anchor: 'overview' },
+            { label: 'Key Benefits', anchor: 'benefits' },
+            { label: 'Use Cases', anchor: 'use-cases' }
+          ]
+        };
+      case 'product-hero-gallery':
+        return {
+          title: 'Product Name',
+          subtitle: 'Product Variants',
+          description: 'Product description',
+          cta1Text: 'Contact Sales',
+          cta1Link: '#contact',
+          cta1Style: 'standard',
+          cta2Text: 'Learn More',
+          cta2Link: '',
+          cta2Style: 'outline-white',
+          images: [{
+            imageUrl: '',
+            title: '',
+            description: ''
+          }]
+        };
       case 'tiles':
         return {
           title: 'New Tiles Section',
@@ -1224,12 +1251,29 @@ const AdminDashboard = () => {
     const newSegment = {
       id: segmentId,
       type: templateType,
-      position: pageSegments.length,
+      position: templateType === 'meta-navigation' ? 1 : pageSegments.length,
       data: getDefaultSegmentData(templateType)
     };
 
     const updatedSegments = [...pageSegments, newSegment];
-    const updatedTabOrder = [...tabOrder, segmentId];
+    
+    // Update tab order to include new segment
+    let updatedTabOrder: string[];
+    if (templateType === 'meta-navigation') {
+      // Insert meta-navigation right after hero
+      const heroIndex = tabOrder.findIndex(id => id === 'hero');
+      if (heroIndex !== -1) {
+        updatedTabOrder = [
+          ...tabOrder.slice(0, heroIndex + 1),
+          segmentId,
+          ...tabOrder.slice(heroIndex + 1)
+        ];
+      } else {
+        updatedTabOrder = [segmentId, ...tabOrder];
+      }
+    } else {
+      updatedTabOrder = [...tabOrder, segmentId];
+    }
 
     try {
       // Save segments
@@ -1345,6 +1389,34 @@ const AdminDashboard = () => {
       toast.success("Segment deleted successfully! (ID will never be reused)");
     } catch (error: any) {
       toast.error("Error deleting segment: " + error.message);
+    }
+  };
+
+  const handleSaveSegments = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+
+    try {
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "page_segments",
+          content_type: "json",
+          content_value: JSON.stringify(pageSegments),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (error) throw error;
+      toast.success("Segment saved successfully!");
+    } catch (error: any) {
+      toast.error("Error saving segment: " + error.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -1487,6 +1559,28 @@ const AdminDashboard = () => {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-4 mt-4">
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('meta-navigation')}>
+                    <CardHeader>
+                      <CardTitle>Meta Navigation</CardTitle>
+                      <CardDescription>Sticky navigation with anchor links</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        Add Meta Navigation
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('product-hero-gallery')}>
+                    <CardHeader>
+                      <CardTitle>Product Hero Gallery</CardTitle>
+                      <CardDescription>Hero with image gallery & dual CTAs</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        Add Product Gallery
+                      </Button>
+                    </CardContent>
+                  </Card>
                   <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('hero')}>
                     <CardHeader>
                       <CardTitle>Produkt-Hero</CardTitle>
@@ -1630,6 +1724,8 @@ const AdminDashboard = () => {
                     
                     let label = '';
                     if (segment.type === 'hero') label = `Hero ${displayNumber}`;
+                    if (segment.type === 'meta-navigation') label = `Meta Nav ${displayNumber}`;
+                    if (segment.type === 'product-hero-gallery') label = `Product Gallery ${displayNumber}`;
                     if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
                     if (segment.type === 'banner') label = `Banner ${displayNumber}`;
                     if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
@@ -2920,6 +3016,8 @@ const AdminDashboard = () => {
                     <div>
                       <CardTitle className="text-white">
                         {segment.type === 'hero' && `Hero Section ${segment.position + 1}`}
+                        {segment.type === 'meta-navigation' && `Meta Navigation ${segment.position + 1}`}
+                        {segment.type === 'product-hero-gallery' && `Product Hero Gallery ${segment.position + 1}`}
                         {segment.type === 'tiles' && `Tiles Section ${segment.position + 1}`}
                         {segment.type === 'banner' && `Banner Section ${segment.position + 1}`}
                         {segment.type === 'image-text' && `Image & Text Section ${segment.position + 1}`}
@@ -2934,6 +3032,8 @@ const AdminDashboard = () => {
                     <div className="flex items-center gap-3">
                       <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
                         {segment.type === 'hero' && 'Produkt-Hero Template'}
+                        {segment.type === 'meta-navigation' && 'Meta Navigation'}
+                        {segment.type === 'product-hero-gallery' && 'Product Hero Gallery'}
                         {segment.type === 'tiles' && 'Tiles Template'}
                         {segment.type === 'banner' && 'Banner Template'}
                         {segment.type === 'image-text' && 'Image & Text Template'}
@@ -2971,6 +3071,30 @@ const AdminDashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
+                  {segment.type === 'meta-navigation' && (
+                    <MetaNavigationEditor
+                      data={segment.data}
+                      onChange={(newData) => {
+                        const newSegments = [...pageSegments];
+                        newSegments[index].data = newData;
+                        setPageSegments(newSegments);
+                      }}
+                      onSave={() => handleSaveSegments()}
+                    />
+                  )}
+                  {segment.type === 'product-hero-gallery' && (
+                    <ProductHeroGalleryEditor
+                      data={segment.data}
+                      onChange={(newData) => {
+                        const newSegments = [...pageSegments];
+                        newSegments[index].data = newData;
+                        setPageSegments(newSegments);
+                      }}
+                      onSave={() => handleSaveSegments()}
+                      pageSlug={selectedPage}
+                      segmentId={parseInt(segment.id)}
+                    />
+                  )}
                   {segment.type === 'tiles' && (() => {
                     // Initialize data if missing
                     if (!segment.data) {
