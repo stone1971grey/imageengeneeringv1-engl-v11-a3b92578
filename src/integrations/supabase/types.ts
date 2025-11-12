@@ -219,6 +219,7 @@ export type Database = {
           page_id: number
           page_slug: string
           page_title: string
+          parent_id: number | null
           parent_slug: string | null
         }
         Insert: {
@@ -227,6 +228,7 @@ export type Database = {
           page_id: number
           page_slug: string
           page_title: string
+          parent_id?: number | null
           parent_slug?: string | null
         }
         Update: {
@@ -235,6 +237,7 @@ export type Database = {
           page_id?: number
           page_slug?: string
           page_title?: string
+          parent_id?: number | null
           parent_slug?: string | null
         }
         Relationships: []
