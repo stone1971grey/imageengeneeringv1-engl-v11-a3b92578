@@ -216,7 +216,7 @@ const Navigation = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-[#f3f3f5]/95 backdrop-blur-sm shadow-lg border-b border-white/10">
       {/* Main Navigation with integrated Utility Navigation */}
-      <div className="w-full px-6 pt-6 pb-2">
+      <div className="w-full px-6 py-6">
         {/* Single row - logo left, main nav center, utility right */}
         <div className="flex items-center w-full gap-8">
           {/* Logo on the left - integrated for proper vertical centering */}
