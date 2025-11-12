@@ -5,7 +5,7 @@ export const navigationDataEn = {
       description: "Camera systems in vehicles, driver assistance and autonomous driving",
       subgroups: [
         { name: "Advanced Driver Assistance Systems (ADAS)", link: "/automotive" },
-        { name: "In-Cabin Testing", link: "/in-cabin-testing", active: true },
+        { name: "In-Cabin Testing", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020 Testing", link: "#" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "Near-Infrared (NIR)", link: "#" },
@@ -218,7 +218,7 @@ export const navigationDataEn = {
       description: "Specialized testing services for automotive camera systems and ADAS applications",
       services: [
         { name: "camPAS", link: "#" },
-        { name: "In-Cabin Testing", link: "/in-cabin-testing", active: true },
+        { name: "In-Cabin Testing", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "HDR Testing", link: "#" },
         { name: "Geometric Calibration", link: "#" },
         { name: "Baseline Evaluations", link: "#" }

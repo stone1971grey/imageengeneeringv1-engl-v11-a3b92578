@@ -5,7 +5,7 @@ export const navigationDataKo = {
       description: "차량 카메라 시스템, 운전 보조 및 자율 주행",
       subgroups: [
         { name: "첨단 운전자 보조 시스템(ADAS)", link: "/automotive" },
-        { name: "차량 내부 테스트", link: "/in-cabin-testing", active: true },
+        { name: "차량 내부 테스트", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020 테스트", link: "#" },
         { name: "하이 다이내믹 레인지(HDR)", link: "#" },
         { name: "근적외선(NIR)", link: "#" },
@@ -218,7 +218,7 @@ export const navigationDataKo = {
       description: "자동차 카메라 시스템 및 ADAS 애플리케이션용 전문 테스트 서비스",
       services: [
         { name: "camPAS", link: "#" },
-        { name: "차량 내부 테스트", link: "/in-cabin-testing", active: true },
+        { name: "차량 내부 테스트", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "HDR 테스트", link: "#" },
         { name: "기하학적 캘리브레이션", link: "#" },
         { name: "기준선 평가", link: "#" }

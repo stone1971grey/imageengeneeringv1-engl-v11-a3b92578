@@ -1230,7 +1230,7 @@ const Navigation = () => {
                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
                                    <div className="block py-2 text-sm text-gray-600">camPAS</div>
-                                    <Link to="/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                    <Link to="/your-solution/automotive/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                       {t.nav.inCabinTesting} <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">{t.nav.active}</span>
                                     </Link>
                                    <div className="block py-2 text-sm text-gray-600">HDR Testing</div>

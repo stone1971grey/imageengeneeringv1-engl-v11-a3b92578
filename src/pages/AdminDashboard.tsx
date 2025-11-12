@@ -1547,6 +1547,7 @@ const AdminDashboard = () => {
                   'inside-lab': '/inside-lab',
                   'contact': '/contact',
                   'automotive': '/your-solution/automotive',
+                  'in-cabin-testing': '/your-solution/automotive/in-cabin-testing',
                   'photography': '/your-solution/photography',
                   'scanners-archiving': '/your-solution/scanners-archiving',
                   'medical-endoscopy': '/your-solution/medical-endoscopy',

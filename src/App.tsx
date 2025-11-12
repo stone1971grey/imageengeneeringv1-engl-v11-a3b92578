@@ -107,7 +107,7 @@ const App = () => (
          <Route path="/event-detail-registration-confirmation" element={<EventDetailRegistrationConfirmation />} />
          <Route path="/event-already-registered" element={<EventAlreadyRegistered />} />
          <Route path="/event-registration-success" element={<EventRegistrationSuccess />} />
-         <Route path="/in-cabin-testing" element={<InCabinTesting />} />
+         <Route path="/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
          <Route path="/contact" element={<Contact />} />
          <Route path="/news" element={<News />} />
          <Route path="/news/:slug" element={<NewsDetail />} />

@@ -5,7 +5,7 @@ export const navigationDataJa = {
       description: "車両カメラシステム、運転支援、自動運転",
       subgroups: [
         { name: "先進運転支援システム(ADAS)", link: "/automotive" },
-        { name: "キャビン内テスト", link: "/in-cabin-testing", active: true },
+        { name: "キャビン内テスト", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020テスト", link: "#" },
         { name: "ハイダイナミックレンジ(HDR)", link: "#" },
         { name: "近赤外線(NIR)", link: "#" },
@@ -218,7 +218,7 @@ export const navigationDataJa = {
       description: "自動車カメラシステムとADASアプリケーション用の専門テストサービス",
       services: [
         { name: "camPAS", link: "#" },
-        { name: "キャビン内テスト", link: "/in-cabin-testing", active: true },
+        { name: "キャビン内テスト", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "HDRテスト", link: "#" },
         { name: "幾何学的キャリブレーション", link: "#" },
         { name: "ベースライン評価", link: "#" }

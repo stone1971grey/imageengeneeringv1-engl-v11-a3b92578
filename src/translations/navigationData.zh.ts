@@ -5,7 +5,7 @@ export const navigationDataZh = {
       description: "车辆摄像系统、驾驶辅助和自动驾驶",
       subgroups: [
         { name: "高级驾驶辅助系统(ADAS)", link: "/automotive" },
-        { name: "车内测试", link: "/in-cabin-testing", active: true },
+        { name: "车内测试", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020测试", link: "#" },
         { name: "高动态范围(HDR)", link: "#" },
         { name: "近红外(NIR)", link: "#" },
@@ -218,7 +218,7 @@ export const navigationDataZh = {
       description: "汽车摄像系统和ADAS应用的专业测试服务",
       services: [
         { name: "camPAS", link: "#" },
-        { name: "车内测试", link: "/in-cabin-testing", active: true },
+        { name: "车内测试", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "HDR测试", link: "#" },
         { name: "几何校准", link: "#" },
         { name: "基准评估", link: "#" }

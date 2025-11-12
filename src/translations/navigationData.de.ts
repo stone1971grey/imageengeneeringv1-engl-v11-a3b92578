@@ -5,7 +5,7 @@ export const navigationDataDe = {
       description: "Kamerasysteme in Fahrzeugen, Fahrerassistenz und autonomes Fahren",
       subgroups: [
         { name: "Fahrerassistenzsysteme (ADAS)", link: "/automotive" },
-        { name: "Innenraumtests", link: "/in-cabin-testing", active: true },
+        { name: "Innenraumtests", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020-Tests", link: "#" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "Nahinfrarot (NIR)", link: "#" },
@@ -218,7 +218,7 @@ export const navigationDataDe = {
       description: "Spezialisierte Testdienstleistungen für Automotive-Kamerasysteme und ADAS-Anwendungen",
       services: [
         { name: "camPAS", link: "#" },
-        { name: "Innenraumtests", link: "/in-cabin-testing", active: true },
+        { name: "Innenraumtests", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "HDR-Tests", link: "#" },
         { name: "Geometrische Kalibrierung", link: "#" },
         { name: "Basis-Evaluierungen", link: "#" }
