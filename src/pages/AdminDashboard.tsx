@@ -41,6 +41,7 @@ import { CSS } from '@dnd-kit/utilities';
 import MetaNavigationEditor from '@/components/admin/MetaNavigationEditor';
 import ProductHeroGalleryEditor from '@/components/admin/ProductHeroGalleryEditor';
 import FeatureOverviewEditor from '@/components/admin/FeatureOverviewEditor';
+import TableEditor from '@/components/admin/TableEditor';
 
 interface ContentItem {
   id: string;
@@ -1248,6 +1249,16 @@ const AdminDashboard = () => {
             }
           ]
         };
+      case 'table':
+        return {
+          title: 'Technical Specifications',
+          subtext: 'Detailed technical specifications and performance data',
+          headers: ['Criterion', 'Column 2', 'Column 3'],
+          rows: [
+            ['Row 1', 'Data 1', 'Data 2'],
+            ['Row 2', 'Data 3', 'Data 4']
+          ]
+        };
       default:
         return {};
     }
@@ -1663,6 +1674,17 @@ const AdminDashboard = () => {
                     <CardContent>
                       <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
                         Add Feature Overview
+                      </Button>
+                    </CardContent>
+                  </Card>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('table')}>
+                    <CardHeader>
+                      <CardTitle>Table</CardTitle>
+                      <CardDescription>Data table with specifications</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        Add Table
                       </Button>
                     </CardContent>
                   </Card>
@@ -3697,7 +3719,26 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && (
+                  {segment.type === 'table' && (() => {
+                    // Initialize data if missing
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('table');
+                    }
+                    
+                    return (
+                      <TableEditor
+                        data={segment.data}
+                        onChange={(newData) => {
+                          const newSegments = [...pageSegments];
+                          newSegments[index].data = newData;
+                          setPageSegments(newSegments);
+                        }}
+                        onSave={() => handleSaveSegments()}
+                      />
+                    );
+                  })()}
+
+                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
                       <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.

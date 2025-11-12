@@ -5,6 +5,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
+import Table from "@/components/segments/Table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
@@ -598,6 +599,19 @@ const ScannersArchiving = () => {
             subtext={segment.data.subtext}
             layout={segment.data.layout}
             items={segment.data.items}
+          />
+        );
+      }
+
+      if (segment.type === 'table') {
+        return (
+          <Table
+            key={segmentId}
+            id={segment.id?.toString() || segmentId}
+            title={segment.data.title}
+            subtext={segment.data.subtext}
+            headers={segment.data.headers}
+            rows={segment.data.rows}
           />
         );
       }
