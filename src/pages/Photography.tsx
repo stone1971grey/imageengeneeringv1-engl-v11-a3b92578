@@ -10,6 +10,7 @@ import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
+import FAQ from "@/components/segments/FAQ";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
@@ -247,6 +248,12 @@ const Photography = () => {
       }
       if (dynamicSegment.type === 'feature-overview') {
         return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'table') {
+        return <Table key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'faq') {
+        return <FAQ key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 
@@ -688,6 +695,18 @@ const Photography = () => {
             subtext={segment.data.subtext}
             headers={segment.data.headers}
             rows={segment.data.rows}
+          />
+        );
+      }
+
+      if (segment.type === 'faq') {
+        return (
+          <FAQ
+            key={segmentId}
+            id={segment.id?.toString() || segmentId}
+            title={segment.data.title}
+            subtext={segment.data.subtext}
+            items={segment.data.items}
           />
         );
       }

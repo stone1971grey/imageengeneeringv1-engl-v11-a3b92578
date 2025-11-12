@@ -6,6 +6,7 @@ import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
+import FAQ from "@/components/segments/FAQ";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
@@ -163,6 +164,12 @@ const ScannersArchiving = () => {
       }
       if (dynamicSegment.type === 'feature-overview') {
         return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'table') {
+        return <Table key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'faq') {
+        return <FAQ key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 

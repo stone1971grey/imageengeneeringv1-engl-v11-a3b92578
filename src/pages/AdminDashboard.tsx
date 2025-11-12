@@ -42,6 +42,7 @@ import MetaNavigationEditor from '@/components/admin/MetaNavigationEditor';
 import ProductHeroGalleryEditor from '@/components/admin/ProductHeroGalleryEditor';
 import FeatureOverviewEditor from '@/components/admin/FeatureOverviewEditor';
 import TableEditor from '@/components/admin/TableEditor';
+import FAQEditor from '@/components/admin/FAQEditor';
 
 interface ContentItem {
   id: string;
@@ -1259,6 +1260,17 @@ const AdminDashboard = () => {
             ['Row 2', 'Data 3', 'Data 4']
           ]
         };
+      case 'faq':
+        return {
+          title: 'Frequently Asked Questions',
+          subtext: '',
+          items: [
+            {
+              question: 'What is your question?',
+              answer: 'Your answer goes here...'
+            }
+          ]
+        };
       default:
         return {};
     }
@@ -1688,6 +1700,17 @@ const AdminDashboard = () => {
                       </Button>
                     </CardContent>
                   </Card>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('faq')}>
+                    <CardHeader>
+                      <CardTitle>FAQ</CardTitle>
+                      <CardDescription>Frequently Asked Questions with Schema.org markup</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        Add FAQ
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
               </DialogContent>
             </Dialog>
@@ -1824,6 +1847,7 @@ const AdminDashboard = () => {
                     if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
                     if (segment.type === 'feature-overview') label = `Features ${displayNumber}`;
                     if (segment.type === 'table') label = `Table ${displayNumber}`;
+                    if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
                     
                     const segmentId = segmentRegistry[tabId] || tabId;
                     
@@ -3135,6 +3159,8 @@ const AdminDashboard = () => {
                         {segment.type === 'banner' && 'Banner Template'}
                         {segment.type === 'image-text' && 'Image & Text Template'}
                         {segment.type === 'feature-overview' && 'Feature Overview Template'}
+                        {segment.type === 'table' && 'Table Template'}
+                        {segment.type === 'faq' && 'FAQ Template'}
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -3739,7 +3765,26 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && (
+                  {segment.type === 'faq' && (() => {
+                    // Initialize data if missing
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('faq');
+                    }
+                    
+                    return (
+                      <FAQEditor
+                        data={segment.data}
+                        onChange={(newData) => {
+                          const newSegments = [...pageSegments];
+                          newSegments[index].data = newData;
+                          setPageSegments(newSegments);
+                        }}
+                        onSave={() => handleSaveSegments()}
+                      />
+                    );
+                  })()}
+
+                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
                       <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.

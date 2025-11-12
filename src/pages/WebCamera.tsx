@@ -9,6 +9,7 @@ import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
+import FAQ from "@/components/segments/FAQ";
 import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, any> = {
@@ -166,6 +167,12 @@ const WebCamera = () => {
       }
       if (dynamicSegment.type === 'feature-overview') {
         return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'table') {
+        return <Table key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'faq') {
+        return <FAQ key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 
