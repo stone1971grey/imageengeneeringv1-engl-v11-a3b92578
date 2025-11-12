@@ -26,8 +26,8 @@ export const Video = ({ id, data }: VideoProps) => {
   if (!data.videoUrl) return null;
 
   return (
-    <section id={id} className="container mx-auto px-4 pb-20 scroll-mt-[170px]">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
+    <section id={id} className="container mx-auto px-4 pb-20 scroll-mt-[170px] bg-white">
+      <div className="py-10">
         {data.title && (
           <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             {data.title}
@@ -46,7 +46,7 @@ export const Video = ({ id, data }: VideoProps) => {
               ></iframe>
             </div>
             {data.caption && (
-              <p className="text-center text-[#555] mt-4 text-sm">
+              <p className="text-center text-gray-700 mt-6 text-lg">
                 {data.caption}
               </p>
             )}
