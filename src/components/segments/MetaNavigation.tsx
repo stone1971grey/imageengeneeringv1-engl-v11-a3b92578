@@ -17,7 +17,7 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
               <a
                 key={index}
                 href={`#${link.anchor}`}
-                className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
+                className="text-gray-700 hover:text-gray-900 font-medium transition-colors scroll-smooth"
                 onClick={(e) => {
                   e.preventDefault();
                   document.getElementById(link.anchor)?.scrollIntoView({ 
