@@ -1695,13 +1695,15 @@ const AdminDashboard = () => {
             onDragEnd={handleDragEnd}
           >
             <TabsList className="flex w-full mb-6 h-auto p-2 bg-gray-200">
-              {/* Hero Tab - Fixed Left */}
-              <TabsTrigger 
-                value="hero" 
-                className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-              >
-                ID {segmentRegistry['hero'] || 1}: Produkt-Hero
-              </TabsTrigger>
+              {/* Hero Tab - Fixed Left (only if not deleted) */}
+              {segmentRegistry['hero'] && (
+                <TabsTrigger 
+                  value="hero" 
+                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                >
+                  ID {segmentRegistry['hero']}: Produkt-Hero
+                </TabsTrigger>
+              )}
 
               {/* Draggable Middle Tabs */}
               <SortableContext
@@ -1709,25 +1711,25 @@ const AdminDashboard = () => {
                 strategy={horizontalListSortingStrategy}
               >
                 {tabOrder.map((tabId) => {
-                  // Static tabs
-                  if (tabId === 'tiles') {
+                  // Static tabs - only show if not deleted (in segmentRegistry)
+                  if (tabId === 'tiles' && segmentRegistry['tiles']) {
                     return (
                       <SortableTab key="tiles" id="tiles" value="tiles">
-                        ID {segmentRegistry['tiles'] || 2}: Tiles
+                        ID {segmentRegistry['tiles']}: Tiles
                       </SortableTab>
                     );
                   }
-                  if (tabId === 'banner') {
+                  if (tabId === 'banner' && segmentRegistry['banner']) {
                     return (
                       <SortableTab key="banner" id="banner" value="banner">
-                        ID {segmentRegistry['banner'] || 3}: Banner
+                        ID {segmentRegistry['banner']}: Banner
                       </SortableTab>
                     );
                   }
-                  if (tabId === 'solutions') {
+                  if (tabId === 'solutions' && segmentRegistry['solutions']) {
                     return (
                       <SortableTab key="solutions" id="solutions" value="solutions">
-                        ID {segmentRegistry['solutions'] || 4}: Image & Text
+                        ID {segmentRegistry['solutions']}: Image & Text
                       </SortableTab>
                     );
                   }
@@ -1759,13 +1761,15 @@ const AdminDashboard = () => {
                 })}
               </SortableContext>
 
-              {/* Footer Tab - Fixed Right */}
-              <TabsTrigger 
-                value="footer"
-                className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-              >
-                ID {segmentRegistry['footer'] || 7}: Footer
-              </TabsTrigger>
+              {/* Footer Tab - Fixed Right (only if not deleted) */}
+              {segmentRegistry['footer'] && (
+                <TabsTrigger 
+                  value="footer"
+                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                >
+                  ID {segmentRegistry['footer']}: Footer
+                </TabsTrigger>
+              )}
             </TabsList>
           </DndContext>
 
