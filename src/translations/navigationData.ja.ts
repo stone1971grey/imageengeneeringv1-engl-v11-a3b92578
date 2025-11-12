@@ -86,7 +86,7 @@ export const navigationDataJa = {
     "Test Charts": {
       description: "多目的、反射、透過オプションを含む包括的な画質分析用の高精度テストパターンとカラーチャート",
       subgroups: [
-        { name: "LE7 VIS-IR", link: "/product/le7" },
+        { name: "LE7 VIS-IR", link: "/products/test-charts/le7" },
         { name: "iQ-Analyzer-X", link: "#" },
         { name: "多目的", link: "#" },
         { name: "画質係数", link: "#" },
@@ -99,7 +99,7 @@ export const navigationDataJa = {
     "Illumination Devices": {
       description: "安定したテスト環境のためのプロフェッショナルLED照明システムと均一光源",
       subgroups: [
-        { name: "ARCTURUS LED", link: "/product/arcturus" },
+        { name: "ARCTURUS LED", link: "/products/illumination-devices/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "生産ラインキャリブレーション", link: "#" },

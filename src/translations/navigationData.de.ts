@@ -86,7 +86,7 @@ export const navigationDataDe = {
     "Test Charts": {
       description: "Hochpräzise Testmuster und Farbtafeln für umfassende Bildqualitätsanalyse, einschließlich Mehrzweck-, reflektierenden und transparenten Optionen",
       subgroups: [
-        { name: "LE7 VIS-IR", link: "/product/le7" },
+        { name: "LE7 VIS-IR", link: "/products/test-charts/le7" },
         { name: "iQ-Analyzer-X", link: "#" },
         { name: "Mehrzweck", link: "#" },
         { name: "Bildqualitätsfaktor", link: "#" },
@@ -99,7 +99,7 @@ export const navigationDataDe = {
     "Illumination Devices": {
       description: "Professionelle LED-Beleuchtungssysteme und gleichmäßige Lichtquellen für stabile Testumgebungen",
       subgroups: [
-        { name: "ARCTURUS LED", link: "/product/arcturus" },
+        { name: "ARCTURUS LED", link: "/products/illumination-devices/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "Produktionslinienkalibrierung", link: "#" },

@@ -86,7 +86,7 @@ export const navigationDataEn = {
     "Test Charts": {
       description: "High-precision test patterns and color charts for comprehensive image quality analysis including multipurpose, reflective, and transparent options",
       subgroups: [
-        { name: "LE7 VIS-IR", link: "/product/le7" },
+        { name: "LE7 VIS-IR", link: "/products/test-charts/le7" },
         { name: "iQ-Analyzer-X", link: "#" },
         { name: "Multipurpose", link: "#" },
         { name: "Image Quality Factor", link: "#" },
@@ -99,7 +99,7 @@ export const navigationDataEn = {
     "Illumination Devices": {
       description: "Professional LED lighting systems and uniform light sources for stable testing environments",
       subgroups: [
-        { name: "ARCTURUS LED", link: "/product/arcturus" },
+        { name: "ARCTURUS LED", link: "/products/illumination-devices/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "Production Line Calibration", link: "#" },
