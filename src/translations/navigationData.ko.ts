@@ -86,6 +86,7 @@ export const navigationDataKo = {
     "Test Charts": {
       description: "다목적, 반사, 투과 옵션을 포함한 포괄적인 이미지 품질 분석용 고정밀 테스트 패턴 및 컬러 차트",
       subgroups: [
+        { name: "LE7 VIS-IR", link: "/product/le7" },
         { name: "iQ-Analyzer-X", link: "#" },
         { name: "다목적", link: "#" },
         { name: "이미지 품질 계수", link: "#" },
@@ -98,6 +99,7 @@ export const navigationDataKo = {
     "Illumination Devices": {
       description: "안정적인 테스트 환경을 위한 전문 LED 조명 시스템 및 균일 광원",
       subgroups: [
+        { name: "ARCTURUS LED", link: "/product/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "생산 라인 캘리브레이션", link: "#" },

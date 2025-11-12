@@ -86,6 +86,7 @@ export const navigationDataZh = {
     "Test Charts": {
       description: "用于全面图像质量分析的高精度测试图案和色卡，包括多用途、反射和透射选项",
       subgroups: [
+        { name: "LE7 VIS-IR", link: "/product/le7" },
         { name: "iQ-Analyzer-X", link: "#" },
         { name: "多用途", link: "#" },
         { name: "图像质量因子", link: "#" },
@@ -98,6 +99,7 @@ export const navigationDataZh = {
     "Illumination Devices": {
       description: "专业LED照明系统和均匀光源，用于稳定的测试环境",
       subgroups: [
+        { name: "ARCTURUS LED", link: "/product/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "生产线校准", link: "#" },
