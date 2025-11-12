@@ -5,6 +5,8 @@ import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MetaNavigation from "@/components/segments/MetaNavigation";
+import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, any> = {
@@ -129,6 +131,17 @@ const WebCamera = () => {
 
   // Helper function to render segment by ID
   const renderSegment = (segmentId: string) => {
+    // Check if it's a dynamic segment
+    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+    if (dynamicSegment) {
+      if (dynamicSegment.type === 'meta-navigation') {
+        return <MetaNavigation key={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'product-hero-gallery') {
+        return <ProductHeroGallery key={segmentId} data={dynamicSegment.data} />;
+      }
+    }
+
     // Static segments
     if (segmentId === 'tiles') {
       return (

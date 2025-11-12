@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
+import MetaNavigation from "@/components/segments/MetaNavigation";
+import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
@@ -126,6 +128,17 @@ const ScannersArchiving = () => {
   };
 
   const renderSegment = (segmentId: string) => {
+    // Check if it's a dynamic segment
+    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+    if (dynamicSegment) {
+      if (dynamicSegment.type === 'meta-navigation') {
+        return <MetaNavigation key={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'product-hero-gallery') {
+        return <ProductHeroGallery key={segmentId} data={dynamicSegment.data} />;
+      }
+    }
+
     // Static Tiles segment
     if (segmentId === 'tiles') {
       if (!tilesData.title && tilesData.items.length === 0) return null;
