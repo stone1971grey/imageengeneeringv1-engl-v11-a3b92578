@@ -1620,7 +1620,7 @@ const AdminDashboard = () => {
                   <CardTitle className="text-white">Hero Section</CardTitle>
                   <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
                   <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
-                    ID: {STATIC_SEGMENT_IDS.hero}
+                    ID: {segmentRegistry['hero'] || 1}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -1832,7 +1832,7 @@ const AdminDashboard = () => {
                   <CardTitle className="text-white">Tiles Template</CardTitle>
                   <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
                   <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
-                    ID: {STATIC_SEGMENT_IDS.tiles}
+                    ID: {segmentRegistry['tiles'] || 2}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -2131,7 +2131,7 @@ const AdminDashboard = () => {
                     <CardTitle className="text-white">Banner Template Section</CardTitle>
                     <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
                     <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
-                      ID: {STATIC_SEGMENT_IDS.banner}
+                      ID: {segmentRegistry['banner'] || 3}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -2427,7 +2427,7 @@ const AdminDashboard = () => {
                     <CardTitle className="text-white">Image & Text Template</CardTitle>
                     <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
                     <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
-                      ID: {STATIC_SEGMENT_IDS.solutions}
+                      ID: {segmentRegistry['solutions'] || 4}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -2690,8 +2690,15 @@ const AdminDashboard = () => {
           <TabsContent value="footer">
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-white">Footer Section</CardTitle>
-                <CardDescription className="text-gray-300">Edit footer content for the {selectedPage} page</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-white">Footer Section</CardTitle>
+                    <CardDescription className="text-gray-300">Edit footer content for the {selectedPage} page</CardDescription>
+                    <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                      ID: {segmentRegistry['footer'] || 7}
+                    </div>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Vision CTA Section */}
@@ -2876,7 +2883,7 @@ const AdminDashboard = () => {
                         Edit this {segment.type} segment
                       </CardDescription>
                       <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
-                        ID: {segment.id}
+                        ID: {segmentRegistry[segment.id] || segment.id}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
