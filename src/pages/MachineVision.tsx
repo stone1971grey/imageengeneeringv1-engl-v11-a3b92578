@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
+import Table from "@/components/segments/Table";
 import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, any> = {
@@ -593,6 +594,19 @@ const MachineVision = () => {
             subtext={segment.data.subtext}
             layout={segment.data.layout}
             items={segment.data.items}
+          />
+        );
+      }
+
+      if (segment.type === 'table') {
+        return (
+          <Table
+            key={segmentId}
+            id={segment.id?.toString() || segmentId}
+            title={segment.data.title}
+            subtext={segment.data.subtext}
+            headers={segment.data.headers}
+            rows={segment.data.rows}
           />
         );
       }
