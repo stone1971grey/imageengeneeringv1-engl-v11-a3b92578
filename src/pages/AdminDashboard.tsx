@@ -1540,6 +1540,7 @@ const AdminDashboard = () => {
                 const urlMap: Record<string, string> = {
                   'photography': '/photography',
                   'scanners-archiving': '/scanners-archiving',
+                  'medical-endoscopy': '/medical-endoscopy',
                   'your-solution': '/your-solution'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';
