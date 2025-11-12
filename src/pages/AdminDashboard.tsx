@@ -1244,12 +1244,12 @@ const AdminDashboard = () => {
     if (!user) return;
 
     // Generate a unique numeric ID for this segment (globally unique across all pages)
-    const segmentId = String(nextSegmentId);
+    const segmentId = nextSegmentId;
     console.log("Creating new segment with global ID:", segmentId);
     setNextSegmentId(nextSegmentId + 1);
     
     const newSegment = {
-      id: segmentId,
+      id: String(segmentId),
       type: templateType,
       position: templateType === 'meta-navigation' ? 1 : pageSegments.length,
       data: getDefaultSegmentData(templateType)
@@ -1265,17 +1265,34 @@ const AdminDashboard = () => {
       if (heroIndex !== -1) {
         updatedTabOrder = [
           ...tabOrder.slice(0, heroIndex + 1),
-          segmentId,
+          String(segmentId),
           ...tabOrder.slice(heroIndex + 1)
         ];
       } else {
-        updatedTabOrder = [segmentId, ...tabOrder];
+        updatedTabOrder = [String(segmentId), ...tabOrder];
       }
     } else {
-      updatedTabOrder = [...tabOrder, segmentId];
+      updatedTabOrder = [...tabOrder, String(segmentId)];
     }
 
     try {
+      // CRITICAL: Register segment in segment_registry with global unique ID
+      const { error: registryError } = await supabase
+        .from("segment_registry")
+        .insert({
+          segment_id: segmentId,
+          page_slug: selectedPage,
+          segment_type: templateType,
+          segment_key: String(segmentId),
+          is_static: false,
+          deleted: false
+        });
+
+      if (registryError) {
+        console.error("Error registering segment in registry:", registryError);
+        throw registryError;
+      }
+
       // Save segments
       const { error: segmentsError } = await supabase
         .from("page_content")
@@ -1313,9 +1330,9 @@ const AdminDashboard = () => {
       setIsTemplateDialogOpen(false);
       
       // Switch to the newly added segment tab
-      setActiveTab(segmentId);
+      setActiveTab(String(segmentId));
       
-      toast.success("New segment added successfully!");
+      toast.success(`New segment added successfully with ID ${segmentId}!`);
     } catch (error: any) {
       toast.error("Error adding segment: " + error.message);
     }
