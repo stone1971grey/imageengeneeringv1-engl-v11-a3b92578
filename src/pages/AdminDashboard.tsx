@@ -1792,7 +1792,7 @@ const AdminDashboard = () => {
                   if (segment) {
                     const segmentIndex = pageSegments.indexOf(segment);
                     const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === segment.type).length;
-                    const displayNumber = sameTypeBefore + 2;
+                    const displayNumber = sameTypeBefore + 1;
                     
                     let label = '';
                     if (segment.type === 'hero') label = `Hero ${displayNumber}`;

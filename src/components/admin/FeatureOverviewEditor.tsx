@@ -214,9 +214,11 @@ const FeatureOverviewEditor = ({ segmentId, pageSlug }: FeatureOverviewEditorPro
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} disabled={loading} className="w-full">
-        {loading ? 'Saving...' : 'Save Changes'}
-      </Button>
+      <div className="flex justify-end pt-4 border-t">
+        <Button onClick={handleSave} disabled={loading} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+          {loading ? 'Saving...' : 'Save Changes'}
+        </Button>
+      </div>
     </div>
   );
 };
