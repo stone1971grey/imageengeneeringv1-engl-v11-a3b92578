@@ -166,15 +166,19 @@ const ScannersArchiving = () => {
       if (!tilesData.title && tilesData.items.length === 0) return null;
       
       return (
-        <section key="tiles" id="tiles" className="py-8 bg-gray-50">
+        <section key="tiles" id={segmentIdMap['tiles']?.toString() || 'tiles'} className="py-8 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {tilesData.title || "Main Applications"}
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {tilesData.subtext || ""}
-              </p>
+              {tilesData.title && (
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {tilesData.title}
+                </h2>
+              )}
+              {tilesData.subtext && (
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  {tilesData.subtext}
+                </p>
+              )}
             </div>
           </div>
 
@@ -281,9 +285,11 @@ const ScannersArchiving = () => {
       return (
         <section key="banner" id={segmentIdMap['banner']?.toString() || 'banner'} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
-              {bannerData.title || ""}
-            </h2>
+            {bannerData.title && (
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
+                {bannerData.title}
+              </h2>
+            )}
             
             {bannerData.subtext && (
               <p className="text-lg text-gray-600 mb-12 text-center mx-auto" style={{ maxWidth: '600px' }}>
@@ -361,9 +367,11 @@ const ScannersArchiving = () => {
         <section key="solutions" className="py-20 bg-gray-50">
           <div className="w-full px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {solutionsData.title || ""}
-              </h2>
+              {solutionsData.title && (
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {solutionsData.title}
+                </h2>
+              )}
               {solutionsData.subtext && (
                 <p className="text-xl text-gray-600 max-w-4xl mx-auto">
                   {solutionsData.subtext}
@@ -533,9 +541,11 @@ const ScannersArchiving = () => {
               )}
               
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  {segment.data.title || "Image & Text Section"}
-                </h2>
+                {segment.data.title && (
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.title}
+                  </h2>
+                )}
                 {segment.data.subtext && (
                   <p className="text-xl text-gray-600 max-w-4xl mx-auto">
                     {segment.data.subtext}

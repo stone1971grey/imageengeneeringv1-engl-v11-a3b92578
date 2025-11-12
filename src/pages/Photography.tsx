@@ -248,15 +248,19 @@ const Photography = () => {
     // Static segments
     if (segmentId === 'tiles') {
       return (
-        <section key="tiles" id="tiles" className="py-8 bg-gray-50">
+        <section key="tiles" id={segmentIdMap['tiles']?.toString() || 'tiles'} className="py-8 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {content.applications_title || "Main Applications"}
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {content.applications_description || "Photography and video camera systems cover a broad spectrum of applications that contribute to image quality, color accuracy and overall performance."}
-              </p>
+              {content.applications_title && (
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {content.applications_title}
+                </h2>
+              )}
+              {content.applications_description && (
+                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                  {content.applications_description}
+                </p>
+              )}
             </div>
           </div>
 
@@ -360,9 +364,11 @@ const Photography = () => {
       return (
         <section key="banner" id={segmentIdMap['banner']?.toString() || 'banner'} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
           <div className="container mx-auto px-6">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
-              {bannerTitle || "Automotive International Standards"}
-            </h2>
+            {bannerTitle && (
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
+                {bannerTitle}
+              </h2>
+            )}
             
             {bannerSubtext && (
               <p className="text-lg text-gray-600 mb-12 text-center mx-auto" style={{ maxWidth: '600px' }}>
@@ -437,9 +443,11 @@ const Photography = () => {
         <section key="solutions" className="py-20 bg-gray-50">
           <div className="w-full px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                {solutionsTitle || "Automotive Camera Test Solutions"}
-              </h2>
+              {solutionsTitle && (
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {solutionsTitle}
+                </h2>
+              )}
               {solutionsSubtext && (
                 <p className="text-xl text-gray-600 max-w-4xl mx-auto">
                   {solutionsSubtext}
@@ -609,9 +617,11 @@ const Photography = () => {
               )}
               
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  {segment.data.title || "Image & Text Section"}
-                </h2>
+                {segment.data.title && (
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.title}
+                  </h2>
+                )}
                 {segment.data.subtext && (
                   <p className="text-xl text-gray-600 max-w-4xl mx-auto">
                     {segment.data.subtext}
