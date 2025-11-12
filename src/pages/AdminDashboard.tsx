@@ -1705,37 +1705,31 @@ const AdminDashboard = () => {
                 </TabsTrigger>
               )}
 
-              {/* MANDATORY: Meta Navigation Tabs - Always Immediately After Hero */}
-              {tabOrder
-                .filter(tabId => {
-                  const segment = pageSegments.find(s => s.id === tabId);
-                  return segment && segment.type === 'meta-navigation';
-                })
-                .map((tabId) => {
-                  const segment = pageSegments.find(s => s.id === tabId);
-                  if (segment) {
-                    const segmentIndex = pageSegments.indexOf(segment);
-                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'meta-navigation').length;
-                    const displayNumber = sameTypeBefore + 1;
-                    const segmentId = segmentRegistry[tabId] || tabId;
-                    
-                    return (
-                      <TabsTrigger 
-                        key={tabId}
-                        value={tabId}
-                        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                      >
-                        ID {segmentId}: Meta Nav {displayNumber}
-                      </TabsTrigger>
-                    );
-                  }
-                  return null;
+              {/* MANDATORY: Meta Navigation - ALWAYS Second Position (Fixed, Non-Draggable) */}
+              {pageSegments
+                .filter(segment => segment.type === 'meta-navigation')
+                .map((segment) => {
+                  const segmentIndex = pageSegments.indexOf(segment);
+                  const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'meta-navigation').length;
+                  const displayNumber = sameTypeBefore + 1;
+                  const segmentId = segmentRegistry[segment.id] || segment.id;
+                  
+                  return (
+                    <TabsTrigger 
+                      key={segment.id}
+                      value={segment.id}
+                      className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                    >
+                      ID {segmentId}: Meta Nav {displayNumber}
+                    </TabsTrigger>
+                  );
                 })}
 
-              {/* Draggable Middle Tabs - Exclude Meta Navigation (already shown above) */}
+              {/* Draggable Middle Tabs - ALL segments EXCEPT Hero, Meta Navigation, and Footer */}
               <SortableContext
                 items={tabOrder.filter(tabId => {
                   const segment = pageSegments.find(s => s.id === tabId);
+                  // Exclude meta-navigation from draggable section
                   return !segment || segment.type !== 'meta-navigation';
                 })}
                 strategy={horizontalListSortingStrategy}
