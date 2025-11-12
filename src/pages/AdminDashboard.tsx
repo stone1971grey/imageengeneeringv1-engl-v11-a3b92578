@@ -3385,6 +3385,123 @@ const AdminDashboard = () => {
                                 </AlertDialog>
                               </div>
                               
+                              {/* Image Upload */}
+                              <div>
+                                <Label htmlFor={`dynamic_tile_image_${index}_${tileIndex}`} className="text-white">Tile Image (Optional)</Label>
+                                <p className="text-sm text-white mb-2">
+                                  {tile.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this tile (appears above the title)"}
+                                </p>
+                                {tile.imageUrl && (
+                                  <div className="mb-3">
+                                    <img 
+                                      src={tile.imageUrl} 
+                                      alt={`Tile ${tileIndex + 1}`} 
+                                      className="w-full h-[200px] object-cover rounded-lg border-2 border-gray-600"
+                                    />
+                                  </div>
+                                )}
+                                
+                                {tile.imageUrl ? (
+                                  <Button
+                                    type="button"
+                                    onClick={() => document.getElementById(`dynamic_tile_image_${index}_${tileIndex}`)?.click()}
+                                    disabled={uploading}
+                                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                                  >
+                                    {uploading ? "Uploading..." : "Replace Image"}
+                                  </Button>
+                                ) : null}
+                                
+                                <Input
+                                  id={`dynamic_tile_image_${index}_${tileIndex}`}
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={async (e) => {
+                                    if (!e.target.files || !e.target.files[0]) return;
+                                    
+                                    const file = e.target.files[0];
+                                    
+                                    if (!file.type.startsWith('image/')) {
+                                      toast.error("Please upload an image file");
+                                      return;
+                                    }
+
+                                    if (file.size > 5 * 1024 * 1024) {
+                                      toast.error("Image size must be less than 5MB");
+                                      return;
+                                    }
+
+                                    setUploading(true);
+
+                                    try {
+                                      const fileExt = file.name.split('.').pop();
+                                      const fileName = `dynamic-tile-${index}-${tileIndex}-${Date.now()}.${fileExt}`;
+                                      const filePath = `${fileName}`;
+
+                                      const { error: uploadError } = await supabase.storage
+                                        .from('page-images')
+                                        .upload(filePath, file, {
+                                          cacheControl: '3600',
+                                          upsert: false
+                                        });
+
+                                      if (uploadError) throw uploadError;
+
+                                      const { data: { publicUrl } } = supabase.storage
+                                        .from('page-images')
+                                        .getPublicUrl(filePath);
+
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data.items[tileIndex].imageUrl = publicUrl;
+                                      setPageSegments(newSegments);
+
+                                      toast.success("Tile image uploaded successfully!");
+                                    } catch (error: any) {
+                                      toast.error("Error uploading image: " + error.message);
+                                    } finally {
+                                      setUploading(false);
+                                    }
+                                  }}
+                                  disabled={uploading}
+                                  className={`border-2 border-gray-600 ${tile.imageUrl ? "hidden" : ""}`}
+                                />
+                              </div>
+                              
+                              {/* Icon Selection */}
+                              <div>
+                                <Label htmlFor={`dynamic_tile_icon_${index}_${tileIndex}`} className="text-white">Icon (Optional)</Label>
+                                <Select
+                                  value={tile.icon || "none"}
+                                  onValueChange={(value) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data.items[tileIndex].icon = value === "none" ? "" : value;
+                                    setPageSegments(newSegments);
+                                  }}
+                                >
+                                  <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                                    <SelectValue placeholder="Select an icon" className="text-black" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-white">
+                                    <SelectItem value="none" className="text-black">No Icon</SelectItem>
+                                    <SelectItem value="FileText" className="text-black">Document (FileText)</SelectItem>
+                                    <SelectItem value="Download" className="text-black">Download</SelectItem>
+                                    <SelectItem value="BarChart3" className="text-black">Bar Chart</SelectItem>
+                                    <SelectItem value="Zap" className="text-black">Lightning (Zap)</SelectItem>
+                                    <SelectItem value="Shield" className="text-black">Shield</SelectItem>
+                                    <SelectItem value="Eye" className="text-black">Eye</SelectItem>
+                                    <SelectItem value="Car" className="text-black">Car</SelectItem>
+                                    <SelectItem value="Smartphone" className="text-black">Smartphone</SelectItem>
+                                    <SelectItem value="Heart" className="text-black">Heart</SelectItem>
+                                    <SelectItem value="CheckCircle" className="text-black">Check Circle</SelectItem>
+                                    <SelectItem value="Lightbulb" className="text-black">Lightbulb</SelectItem>
+                                    <SelectItem value="Monitor" className="text-black">Monitor</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <p className="text-sm text-white mt-1">
+                                  Icon appears in a yellow circle above the title
+                                </p>
+                              </div>
+                              
                               <div>
                                 <Label htmlFor={`tile_${index}_${tileIndex}_title`} className="text-white">Title</Label>
                                 <Input
