@@ -59,6 +59,7 @@ const MedicalEndoscopy = () => {
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
   const [hasHeroContent, setHasHeroContent] = useState(false);
+  const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     loadContent();
@@ -69,6 +70,20 @@ const MedicalEndoscopy = () => {
       .from("page_content")
       .select("*")
       .eq("page_slug", "medical-endoscopy");
+
+    // Load segment registry for ID mapping
+    const { data: segmentData } = await supabase
+      .from("segment_registry")
+      .select("*")
+      .eq("page_slug", "medical-endoscopy");
+
+    if (segmentData) {
+      const idMap: Record<string, number> = {};
+      segmentData.forEach((seg: any) => {
+        idMap[seg.segment_key] = seg.segment_id;
+      });
+      setSegmentIdMap(idMap);
+    }
 
     if (!error && data) {
       const contentMap: Record<string, string> = {};
@@ -270,7 +285,7 @@ const MedicalEndoscopy = () => {
 
     if (segmentId === 'banner') {
       return (
-        <section key="banner" id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+        <section key="banner" id={segmentIdMap['banner']?.toString() || 'banner'} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
           <div className="container mx-auto px-6">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
               {bannerTitle || "International Standards"}
