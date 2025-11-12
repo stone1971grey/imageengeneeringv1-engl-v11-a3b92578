@@ -131,69 +131,111 @@ const ScannersArchiving = () => {
       if (!tilesData.title && tilesData.items.length === 0) return null;
       
       return (
-        <section key="tiles" className="w-full py-16 bg-background">
+        <section key="tiles" id="applications" className="py-8 bg-gray-50">
           <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                {tilesData.title}
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {tilesData.title || "Main Applications"}
               </h2>
-              {tilesData.subtext && (
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                  {tilesData.subtext}
-                </p>
-              )}
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {tilesData.items?.map((tile: any, idx: number) => {
-                const IconComponent = tile.icon ? iconMap[tile.icon] : null;
-                return (
-                  <Card key={idx} className="hover:shadow-lg transition-all">
-                    <CardContent className="p-6">
-                      {tile.imageUrl && (
-                        <div className="w-full h-[200px] mb-4 overflow-hidden rounded-md">
-                          <img 
-                            src={tile.imageUrl} 
-                            alt={tile.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      {IconComponent && (
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#f9dc24' }}>
-                          <IconComponent className="w-8 h-8 text-black" />
-                        </div>
-                      )}
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        {tile.title}
-                      </h3>
-                      <p className="text-muted-foreground mb-4">
-                        {tile.description}
-                      </p>
-                      {tile.ctaLink && (
-                        <button
-                          onClick={() => {
-                            if (tile.ctaLink.startsWith('http')) {
-                              window.open(tile.ctaLink, '_blank');
-                            } else {
-                              window.location.href = tile.ctaLink;
-                            }
-                          }}
-                          className="px-6 py-2 rounded-md font-medium transition-all"
-                          style={{
-                            backgroundColor: tile.ctaStyle === 'technical' ? '#1f2937' : '#f9dc24',
-                            color: tile.ctaStyle === 'technical' ? 'white' : 'black'
-                          }}
-                        >
-                          {tile.ctaText || "Learn More"}
-                        </button>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                {tilesData.subtext || ""}
+              </p>
             </div>
           </div>
-        </section>
+
+          <div className="container mx-auto px-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              {tilesData.items?.map((app: any, index: number) => {
+                const IconComponent = app.icon ? iconMap[app.icon] : null;
+                
+                return (
+                   <div 
+                     key={index}
+                     className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
+                   >
+                     {IconComponent && (
+                       <div className="w-full flex justify-center pt-8">
+                         <div className="relative">
+                           <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                             <IconComponent 
+                               size={36} 
+                               className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                               strokeWidth={1.8}
+                             />
+                           </div>
+                           <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
+                         </div>
+                       </div>
+                     )}
+                     
+                     {app.imageUrl && (
+                       <div className={`w-full h-[200px] overflow-hidden ${IconComponent ? 'mt-4' : ''}`}>
+                         <img 
+                           src={app.imageUrl} 
+                           alt={app.title} 
+                           className="w-full h-full object-cover"
+                         />
+                       </div>
+                     )}
+                     
+                     <div className={`p-8 flex flex-col items-center text-center flex-1 ${!IconComponent && !app.imageUrl ? 'pt-8' : ''}`}>
+                       <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
+                         {app.title}
+                       </h3>
+                       
+                       <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
+                         {app.description}
+                       </p>
+                     
+                     {app.ctaLink && app.ctaLink.trim() ? (
+                       app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
+                         <a 
+                           href={app.ctaLink}
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           className="w-full"
+                         >
+                           <button
+                             className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                             style={{
+                               backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                               color: app.ctaStyle === "technical" ? "white" : "black"
+                             }}
+                           >
+                             {app.ctaText || 'Learn More'}
+                           </button>
+                         </a>
+                       ) : (
+                         <a href={app.ctaLink} className="w-full">
+                           <button
+                             className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                             style={{
+                               backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                               color: app.ctaStyle === "technical" ? "white" : "black"
+                             }}
+                           >
+                             {app.ctaText || 'Learn More'}
+                           </button>
+                         </a>
+                       )
+                     ) : (
+                       <button
+                         className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                         style={{
+                           backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                           color: app.ctaStyle === "technical" ? "white" : "black"
+                         }}
+                       >
+                         {app.ctaText || 'Learn More'}
+                       </button>
+                     )}
+                   </div>
+                 </div>
+               );
+             })}
+           </div>
+         </div>
+       </section>
       );
     }
 
@@ -202,49 +244,73 @@ const ScannersArchiving = () => {
       if (!bannerData.title && bannerData.images.length === 0) return null;
       
       return (
-        <section key="banner" className="w-full py-16 bg-muted/30">
+        <section key="banner" id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
           <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                {bannerData.title}
-              </h2>
-              {bannerData.subtext && (
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-                  {bannerData.subtext}
-                </p>
-              )}
-            </div>
-            {bannerData.images && bannerData.images.length > 0 && (
-              <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
-                {bannerData.images.map((img: any, idx: number) => (
-                  <div key={idx} className="grayscale hover:grayscale-0 transition-all duration-300">
-                    <img 
-                      src={img.url} 
-                      alt={img.alt || `Banner image ${idx + 1}`}
-                      className="h-16 object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
+              {bannerData.title || ""}
+            </h2>
+            
+            {bannerData.subtext && (
+              <p className="text-lg text-gray-600 mb-12 text-center mx-auto" style={{ maxWidth: '600px' }}>
+                {bannerData.subtext}
+              </p>
             )}
+            
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
+              {bannerData.images.map((image: any, index: number) => (
+                <div key={index} className="flex items-center justify-center h-24 w-40">
+                  <img 
+                    src={image.url} 
+                    alt={image.alt || `Banner image ${index + 1}`}
+                    className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                  />
+                </div>
+              ))}
+            </div>
+
             {bannerData.buttonText && (
-              <div className="text-center">
-                <button
-                  onClick={() => {
-                    if (bannerData.buttonLink?.startsWith('http')) {
-                      window.open(bannerData.buttonLink, '_blank');
-                    } else if (bannerData.buttonLink) {
-                      window.location.href = bannerData.buttonLink;
-                    }
-                  }}
-                  className="px-8 py-3 rounded-md font-medium transition-all"
-                  style={{
-                    backgroundColor: bannerData.buttonStyle === 'technical' ? '#1f2937' : '#f9dc24',
-                    color: bannerData.buttonStyle === 'technical' ? 'white' : 'black'
-                  }}
-                >
-                  {bannerData.buttonText}
-                </button>
+              <div className="flex justify-center">
+                {bannerData.buttonLink ? (
+                  bannerData.buttonLink.startsWith('http://') || bannerData.buttonLink.startsWith('https://') ? (
+                    <a 
+                      href={bannerData.buttonLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <button
+                        className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                        style={{
+                          backgroundColor: bannerData.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                          color: bannerData.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                        }}
+                      >
+                        {bannerData.buttonText}
+                      </button>
+                    </a>
+                  ) : (
+                    <a href={bannerData.buttonLink}>
+                      <button
+                        className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                        style={{
+                          backgroundColor: bannerData.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                          color: bannerData.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                        }}
+                      >
+                        {bannerData.buttonText}
+                      </button>
+                    </a>
+                  )
+                ) : (
+                  <button
+                    className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                    style={{
+                      backgroundColor: bannerData.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                      color: bannerData.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                    }}
+                  >
+                    {bannerData.buttonText}
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -256,47 +322,43 @@ const ScannersArchiving = () => {
     if (segmentId === 'solutions') {
       if (!solutionsData.title && solutionsData.items.length === 0) return null;
       
-      const getLayoutClass = () => {
-        switch (solutionsData.layout) {
-          case '1-col': return 'grid-cols-1';
-          case '2-col': return 'grid-cols-1 md:grid-cols-2';
-          case '3-col': return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
-          default: return 'grid-cols-1 md:grid-cols-2';
-        }
-      };
-
       return (
-        <section key="solutions" className="w-full py-16 bg-background">
-          <div className="container mx-auto px-6">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                {solutionsData.title}
+        <section key="solutions" className="py-20 bg-gray-50">
+          <div className="w-full px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                {solutionsData.title || ""}
               </h2>
               {solutionsData.subtext && (
-                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                <p className="text-xl text-gray-600 max-w-4xl mx-auto">
                   {solutionsData.subtext}
                 </p>
               )}
             </div>
-            <div className={`grid ${getLayoutClass()} gap-8`}>
-              {solutionsData.items?.map((item: any, idx: number) => (
-                <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all">
-                  {item.imageUrl && (
-                    <div className="w-full h-[250px] overflow-hidden">
-                      <img 
-                        src={item.imageUrl} 
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
+
+            <div className={`grid gap-8 max-w-7xl mx-auto ${
+              solutionsData.layout === "1-col" ? "grid-cols-1" :
+              solutionsData.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+              "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {solutionsData.items?.map((item: any, index: number) => (
+                <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CardContent className="p-0">
+                    {item.imageUrl && (
+                      <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                        <img 
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="p-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                      <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                        {item.description}
+                      </div>
                     </div>
-                  )}
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold text-foreground mb-3">
-                      {item.title}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {item.description}
-                    </p>
                   </CardContent>
                 </Card>
               ))}
@@ -306,72 +368,113 @@ const ScannersArchiving = () => {
       );
     }
 
-    // Dynamic segments (tiles, banner, image-text)
-    if (segmentId.startsWith('segment-') || typeof segmentId === 'number' || (typeof segmentId === 'string' && segmentId.match(/^\d+$/))) {
-      const segment = pageSegments.find(s => s.id === segmentId || s.id === String(segmentId));
-      if (!segment) return null;
+    // Dynamic segments - find by ID
+    const segment = pageSegments.find(s => s.id === segmentId);
+    if (!segment) return null;
 
-      // Render based on segment type
-      if (segment.type === 'tiles') {
-        return (
-          <section key={segmentId} className="w-full py-16 bg-background">
+    if (segment.type === 'tiles') {
+      return (
+          <section key={segmentId} id={segmentId} className="py-8 bg-gray-50">
             <div className="container mx-auto px-6">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                  {segment.data.title}
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {segment.data.title || "Section Title"}
                 </h2>
-                {segment.data.subtext && (
-                  <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                    {segment.data.subtext}
+                {segment.data.description && (
+                  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    {segment.data.description}
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {segment.data.items?.map((tile: any, idx: number) => {
-                  const IconComponent = tile.icon ? iconMap[tile.icon] : null;
+            </div>
+
+            <div className="container mx-auto px-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                {segment.data.items?.map((item: any, itemIndex: number) => {
+                  const IconComponent = item.icon ? iconMap[item.icon] : null;
+                  
                   return (
-                    <Card key={idx} className="hover:shadow-lg transition-all">
-                      <CardContent className="p-6">
-                        {tile.imageUrl && (
-                          <div className="w-full h-[200px] mb-4 overflow-hidden rounded-md">
-                            <img 
-                              src={tile.imageUrl} 
-                              alt={tile.title}
-                              className="w-full h-full object-cover"
-                            />
+                    <div 
+                      key={itemIndex}
+                      className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
+                    >
+                      {item.imageUrl && (
+                        <div className="w-full h-[200px] overflow-hidden">
+                          <img 
+                            src={item.imageUrl} 
+                            alt={item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+
+                      {IconComponent && (
+                        <div className="w-full flex justify-center pt-8">
+                          <div className="relative">
+                            <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                              <IconComponent 
+                                size={36} 
+                                className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                                strokeWidth={1.8}
+                              />
+                            </div>
+                            <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
                           </div>
-                        )}
-                        {IconComponent && (
-                          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: '#f9dc24' }}>
-                            <IconComponent className="w-8 h-8 text-black" />
-                          </div>
-                        )}
-                        <h3 className="text-xl font-semibold text-foreground mb-3">
-                          {tile.title}
+                        </div>
+                      )}
+
+                      <div className="p-6 flex flex-col flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors group-hover:text-[#f9dc24]">
+                          {item.title}
                         </h3>
-                        <p className="text-muted-foreground mb-4">
-                          {tile.description}
+                        <p className="text-lg text-gray-600 leading-relaxed mb-6 flex-1">
+                          {item.description}
                         </p>
-                        {tile.ctaLink && (
+                        {item.ctaLink && (
+                          item.ctaLink.startsWith('http://') || item.ctaLink.startsWith('https://') ? (
+                            <a 
+                              href={item.ctaLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full"
+                            >
+                              <button
+                                className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                                style={{ 
+                                  backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: item.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {item.ctaText || 'Learn More'}
+                              </button>
+                            </a>
+                          ) : (
+                            <a href={item.ctaLink} className="w-full">
+                              <button
+                                className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                                style={{ 
+                                  backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: item.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {item.ctaText || 'Learn More'}
+                              </button>
+                            </a>
+                          )
+                        )}
+                        {!item.ctaLink && item.ctaText && (
                           <button
-                            onClick={() => {
-                              if (tile.ctaLink.startsWith('http')) {
-                                window.open(tile.ctaLink, '_blank');
-                              } else {
-                                window.location.href = tile.ctaLink;
-                              }
-                            }}
-                            className="px-6 py-2 rounded-md font-medium transition-all"
-                            style={{
-                              backgroundColor: tile.ctaStyle === 'technical' ? '#1f2937' : '#f9dc24',
-                              color: tile.ctaStyle === 'technical' ? 'white' : 'black'
+                            className="w-full px-8 py-3 text-lg font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-300"
+                            style={{ 
+                              backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                              color: item.ctaStyle === "technical" ? "white" : "black"
                             }}
                           >
-                            {tile.ctaText || "Learn More"}
+                            {item.ctaText}
                           </button>
                         )}
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
@@ -379,101 +482,55 @@ const ScannersArchiving = () => {
           </section>
         );
       }
-
-      if (segment.type === 'banner') {
-        return (
-          <section key={segmentId} className="w-full py-16 bg-muted/30">
-            <div className="container mx-auto px-6">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                  {segment.data.title}
-                </h2>
-                {segment.data.subtext && (
-                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-                    {segment.data.subtext}
-                  </p>
-                )}
-              </div>
-              {segment.data.images && segment.data.images.length > 0 && (
-                <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
-                  {segment.data.images.map((img: any, idx: number) => (
-                    <div key={idx} className="grayscale hover:grayscale-0 transition-all duration-300">
-                      <img 
-                        src={img.url} 
-                        alt={img.alt || `Banner image ${idx + 1}`}
-                        className="h-16 object-contain"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-              {segment.data.buttonText && (
-                <div className="text-center">
-                  <button
-                    onClick={() => {
-                      if (segment.data.buttonLink?.startsWith('http')) {
-                        window.open(segment.data.buttonLink, '_blank');
-                      } else if (segment.data.buttonLink) {
-                        window.location.href = segment.data.buttonLink;
-                      }
-                    }}
-                    className="px-8 py-3 rounded-md font-medium transition-all"
-                    style={{
-                      backgroundColor: segment.data.buttonStyle === 'technical' ? '#1f2937' : '#f9dc24',
-                      color: segment.data.buttonStyle === 'technical' ? 'white' : 'black'
-                    }}
-                  >
-                    {segment.data.buttonText}
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        );
-      }
-
+      
       if (segment.type === 'image-text') {
-        const getLayoutClass = () => {
-          switch (segment.data.layout) {
-            case '1-col': return 'grid-cols-1';
-            case '2-col': return 'grid-cols-1 md:grid-cols-2';
-            case '3-col': return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
-            default: return 'grid-cols-1 md:grid-cols-2';
-          }
-        };
-
         return (
-          <section key={segmentId} className="w-full py-16 bg-background">
-            <div className="container mx-auto px-6">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
-                  {segment.data.title}
+          <section key={segmentId} className="py-20 bg-gray-50">
+            <div className="w-full px-6">
+              {segment.data.heroImageUrl && (
+                <div className="mb-12 max-w-7xl mx-auto">
+                  <img 
+                    src={segment.data.heroImageUrl}
+                    alt={segment.data.title || "Section hero"}
+                    className="w-full h-[400px] object-cover rounded-lg shadow-lg"
+                  />
+                </div>
+              )}
+              
+              <div className="text-center mb-16">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {segment.data.title || "Image & Text Section"}
                 </h2>
                 {segment.data.subtext && (
-                  <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                  <p className="text-xl text-gray-600 max-w-4xl mx-auto">
                     {segment.data.subtext}
                   </p>
                 )}
               </div>
-              <div className={`grid ${getLayoutClass()} gap-8`}>
-                {segment.data.items?.map((item: any, idx: number) => (
-                  <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all">
-                    {item.imageUrl && (
-                      <div className="w-full h-[250px] overflow-hidden">
-                        <img 
-                          src={item.imageUrl} 
-                          alt={item.title}
-                          className="w-full h-full object-cover"
-                        />
+
+              <div className={`grid gap-8 max-w-7xl mx-auto ${
+                segment.data.layout === "1-col" ? "grid-cols-1" :
+                segment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+                "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              }`}>
+                {segment.data.items?.map((item: any, itemIndex: number) => (
+                  <Card key={itemIndex} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <CardContent className="p-0">
+                      {item.imageUrl && (
+                        <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                          <img 
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                        <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                          {item.description}
+                        </div>
                       </div>
-                    )}
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        {item.title}
-                      </h3>
-                      <p className="text-muted-foreground">
-                        {item.description}
-                      </p>
                     </CardContent>
                   </Card>
                 ))}
@@ -482,7 +539,82 @@ const ScannersArchiving = () => {
           </section>
         );
       }
-    }
+
+      if (segment.type === 'banner') {
+        return (
+          <section key={segmentId} id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+            <div className="container mx-auto px-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
+                {segment.data.title || ""}
+              </h2>
+              
+              {segment.data.subtext && (
+                <p className="text-lg text-gray-600 mb-12 text-center mx-auto" style={{ maxWidth: '600px' }}>
+                  {segment.data.subtext}
+                </p>
+              )}
+              
+              <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-12">
+                {segment.data.images?.map((image: any, index: number) => (
+                  <div key={index} className="flex items-center justify-center h-24 w-40">
+                    <img 
+                      src={image.url} 
+                      alt={image.alt || `Banner image ${index + 1}`}
+                      className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {segment.data.buttonText && (
+                <div className="flex justify-center">
+                  {segment.data.buttonLink ? (
+                    segment.data.buttonLink.startsWith('http://') || segment.data.buttonLink.startsWith('https://') ? (
+                      <a 
+                        href={segment.data.buttonLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <button
+                          className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                          style={{
+                            backgroundColor: segment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                            color: segment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                          }}
+                        >
+                          {segment.data.buttonText}
+                        </button>
+                      </a>
+                    ) : (
+                      <a href={segment.data.buttonLink}>
+                        <button
+                          className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                          style={{
+                            backgroundColor: segment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                            color: segment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                          }}
+                        >
+                          {segment.data.buttonText}
+                        </button>
+                      </a>
+                    )
+                  ) : (
+                    <button
+                      className="px-8 py-4 text-lg font-medium rounded-md border-0 shadow-soft hover:shadow-lg transition-all duration-300"
+                      style={{
+                        backgroundColor: segment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                        color: segment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                      }}
+                    >
+                      {segment.data.buttonText}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      }
 
     return null;
   };
