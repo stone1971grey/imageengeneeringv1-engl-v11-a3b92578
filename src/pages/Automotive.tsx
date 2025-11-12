@@ -86,13 +86,13 @@ const Automotive = () => {
       title: "Arcturus",
       description: "A high-intensity light source with unmatched stability and consistency.",
       image: arcturusProduct,
-      link: "/product/arcturus"
+      link: "/products/illumination-devices/arcturus"
     },
     {
       title: "LE7 VIS-IR",
       description: "A uniform light source for testing cameras in the near-infrared (NIR) range.",
       image: le7Image,
-      link: "/product/le7"
+      link: "/products/test-charts/le7"
     },
     {
       title: "GEOCAL",
