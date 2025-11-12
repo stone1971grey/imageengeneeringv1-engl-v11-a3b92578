@@ -3938,6 +3938,7 @@ const AdminDashboard = () => {
                           );
                           setPageSegments(updatedSegments);
                         }}
+                        onSave={() => handleSaveSegments()}
                       />
                     );
                   })()}

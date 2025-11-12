@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Save } from "lucide-react";
 
 interface VideoSegmentEditorProps {
   data: {
@@ -10,9 +11,10 @@ interface VideoSegmentEditorProps {
     caption?: string;
   };
   onChange: (data: any) => void;
+  onSave: () => void;
 }
 
-export const VideoSegmentEditor = ({ data, onChange }: VideoSegmentEditorProps) => {
+export const VideoSegmentEditor = ({ data, onChange, onSave }: VideoSegmentEditorProps) => {
   const handleChange = (field: string, value: string) => {
     onChange({
       ...data,
@@ -92,6 +94,17 @@ export const VideoSegmentEditor = ({ data, onChange }: VideoSegmentEditorProps) 
           </div>
         </div>
       )}
+
+      {/* Save Button */}
+      <div className="flex justify-end pt-6 border-t">
+        <Button
+          onClick={onSave}
+          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+        >
+          <Save className="h-4 w-4" />
+          Save Changes
+        </Button>
+      </div>
     </div>
   );
 };
