@@ -236,6 +236,7 @@ export type Database = {
       segment_registry: {
         Row: {
           created_at: string | null
+          deleted: boolean | null
           id: number
           is_static: boolean | null
           page_slug: string
@@ -245,6 +246,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          deleted?: boolean | null
           id?: number
           is_static?: boolean | null
           page_slug: string
@@ -254,6 +256,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          deleted?: boolean | null
           id?: number
           is_static?: boolean | null
           page_slug?: string

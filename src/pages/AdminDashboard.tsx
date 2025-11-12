@@ -319,12 +319,15 @@ const AdminDashboard = () => {
   };
 
   // Load segment registry to get all segment IDs
+  // IMPORTANT: Only load non-deleted segments (deleted=false or deleted IS NULL)
+  // to prevent showing deleted segments, but keep their IDs in registry forever
   const loadSegmentRegistry = async () => {
     try {
       const { data, error } = await supabase
         .from("segment_registry")
         .select("*")
-        .eq("page_slug", selectedPage);
+        .eq("page_slug", selectedPage)
+        .or("deleted.is.null,deleted.eq.false"); // Only load active segments
 
       if (error) {
         console.error("Error loading segment registry:", error);
@@ -660,6 +663,19 @@ const AdminDashboard = () => {
           break;
       }
 
+      // CRITICAL: Mark segment as deleted in registry instead of removing it
+      // This ensures the segment_id is NEVER reused, even after deletion
+      const { error: registryError } = await supabase
+        .from("segment_registry")
+        .update({ deleted: true })
+        .eq("segment_key", segmentType)
+        .eq("page_slug", selectedPage);
+
+      if (registryError) {
+        console.error("Error marking segment as deleted in registry:", registryError);
+        throw registryError;
+      }
+
       const { error } = await supabase
         .from("page_content")
         .delete()
@@ -686,7 +702,7 @@ const AdminDashboard = () => {
         });
 
       setTabOrder(updatedTabOrder);
-      toast.success("Segment deleted successfully!");
+      toast.success("Segment deleted successfully! (ID will never be reused)");
       
       // Reload content
       await loadContent();
@@ -1276,6 +1292,19 @@ const AdminDashboard = () => {
     const updatedTabOrder = tabOrder.filter(id => id !== segmentId);
 
     try {
+      // CRITICAL: Mark segment as deleted in registry instead of removing it
+      // This ensures the segment_id is NEVER reused, even after deletion
+      const { error: registryError } = await supabase
+        .from("segment_registry")
+        .update({ deleted: true })
+        .eq("segment_key", segmentId)
+        .eq("page_slug", selectedPage);
+
+      if (registryError) {
+        console.error("Error marking segment as deleted in registry:", registryError);
+        throw registryError;
+      }
+
       const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
@@ -1313,7 +1342,7 @@ const AdminDashboard = () => {
       const firstTab = updatedTabOrder[0] || 'tiles';
       setActiveTab(firstTab);
       
-      toast.success("Segment deleted successfully!");
+      toast.success("Segment deleted successfully! (ID will never be reused)");
     } catch (error: any) {
       toast.error("Error deleting segment: " + error.message);
     }
