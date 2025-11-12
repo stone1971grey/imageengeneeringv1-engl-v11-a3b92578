@@ -17,6 +17,7 @@ import ScannersArchiving from "./pages/ScannersArchiving";
 import MedicalEndoscopy from "./pages/MedicalEndoscopy";
 import MachineVision from "./pages/MachineVision";
 import WebCamera from "./pages/WebCamera";
+import MobilePhone from "./pages/MobilePhone";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import ProductArcturus from "./pages/ProductArcturus";
@@ -85,6 +86,7 @@ const App = () => (
         <Route path="/your-solution/medical-endoscopy" element={<MedicalEndoscopy />} />
         <Route path="/your-solution/machine-vision" element={<MachineVision />} />
         <Route path="/your-solution/web-camera" element={<WebCamera />} />
+        <Route path="/your-solution/mobile-phone" element={<MobilePhone />} />
         <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
         
         {/* Hierarchical Product Routes */}

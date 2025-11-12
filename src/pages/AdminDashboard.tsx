@@ -1751,6 +1751,7 @@ const AdminDashboard = () => {
                   'medical-endoscopy': '/your-solution/medical-endoscopy',
                   'web-camera': '/your-solution/web-camera',
                   'machine-vision': '/your-solution/machine-vision',
+                  'mobile-phone': '/your-solution/mobile-phone',
                   'test-charts': '/products/test-charts',
                   'illumination-devices': '/products/illumination-devices',
                   'le7': '/products/test-charts/le7',
