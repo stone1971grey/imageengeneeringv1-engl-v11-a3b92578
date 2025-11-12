@@ -15,6 +15,13 @@ interface PageSegment {
 
 const MedicalEndoscopy = () => {
   const [pageSegments, setPageSegments] = useState<PageSegment[]>([]);
+  const [content, setContent] = useState<Record<string, string>>({});
+  const [heroImageUrl, setHeroImageUrl] = useState<string>("");
+  const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
+  const [heroLayout, setHeroLayout] = useState<string>("2-5");
+  const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
+  const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications");
+  const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -31,11 +38,30 @@ const MedicalEndoscopy = () => {
       if (error) throw error;
 
       if (data) {
-        const segmentsData = data.find((item) => item.section_key === "page_segments");
-        if (segmentsData) {
-          const segments = JSON.parse(segmentsData.content_value);
-          setPageSegments(segments.sort((a: PageSegment, b: PageSegment) => a.position - b.position));
-        }
+        const contentMap: Record<string, string> = {};
+        
+        data.forEach((item: any) => {
+          if (item.section_key === "page_segments") {
+            const segments = JSON.parse(item.content_value);
+            setPageSegments(segments.sort((a: PageSegment, b: PageSegment) => a.position - b.position));
+          } else if (item.section_key === "hero_image_url") {
+            setHeroImageUrl(item.content_value);
+          } else if (item.section_key === "hero_image_position") {
+            setHeroImagePosition(item.content_value || "right");
+          } else if (item.section_key === "hero_layout") {
+            setHeroLayout(item.content_value || "2-5");
+          } else if (item.section_key === "hero_top_padding") {
+            setHeroTopPadding(item.content_value || "medium");
+          } else if (item.section_key === "hero_cta_link") {
+            setHeroCtaLink(item.content_value || "#applications");
+          } else if (item.section_key === "hero_cta_style") {
+            setHeroCtaStyle(item.content_value || "standard");
+          } else {
+            contentMap[item.section_key] = item.content_value;
+          }
+        });
+
+        setContent(contentMap);
       }
     } catch (error) {
       console.error("Error loading page content:", error);
@@ -92,20 +118,81 @@ const MedicalEndoscopy = () => {
     );
   }
 
+  const topSpacing = getTopSpacingClass(heroTopPadding);
+  const layoutClasses = getLayoutClasses(heroLayout, heroImagePosition);
+
   return (
     <div className="min-h-screen">
       <Navigation />
       
+      {/* Hero Section - from old format */}
+      {(heroImageUrl || content.hero_title) && (
+        <section className={`${topSpacing} pb-16`}>
+          <div className="container mx-auto px-4">
+            <div className={`flex ${layoutClasses.containerClass} gap-12 items-center`}>
+              <div className={`${layoutClasses.textClass}`}>
+                {content.hero_subtitle && (
+                  <p className="text-sm font-semibold text-primary mb-4 uppercase tracking-wide">
+                    {content.hero_subtitle}
+                  </p>
+                )}
+                <h1 className="text-4xl md:text-5xl font-bold mb-6">
+                  {content.hero_title || "Medical & Endoscopy Solutions"}
+                </h1>
+                <p className="text-lg text-muted-foreground mb-8">
+                  {content.hero_description || "Advanced image quality testing for medical imaging systems"}
+                </p>
+                {content.hero_cta && heroCtaLink && (
+                  <button
+                    onClick={() => {
+                      if (heroCtaLink.startsWith("http")) {
+                        window.open(heroCtaLink, "_blank");
+                      } else {
+                        window.location.href = heroCtaLink;
+                      }
+                    }}
+                    style={{
+                      backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                      color: heroCtaStyle === "technical" ? "#ffffff" : "#000000",
+                      padding: "0.75rem 2rem",
+                      borderRadius: "0.5rem",
+                      fontWeight: "600",
+                      border: "none",
+                      cursor: "pointer",
+                      transition: "opacity 0.2s",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                  >
+                    {content.hero_cta}
+                  </button>
+                )}
+              </div>
+              {heroImageUrl && (
+                <div className={`${layoutClasses.imageClass}`}>
+                  <img
+                    src={heroImageUrl}
+                    alt={content.hero_title || "Hero image"}
+                    className="w-full h-[500px] object-cover rounded-lg"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+      
+      {/* Dynamic Segments from new format */}
       {pageSegments.map((segment) => {
         if (segment.type === "hero") {
-          const topSpacing = getTopSpacingClass(segment.data.topSpacing);
-          const layoutClasses = getLayoutClasses(segment.data.layout, segment.data.imagePosition);
+          const segTopSpacing = getTopSpacingClass(segment.data.topSpacing);
+          const segLayoutClasses = getLayoutClasses(segment.data.layout, segment.data.imagePosition);
           
           return (
-            <section key={segment.id} className={`${topSpacing} pb-16`}>
+            <section key={segment.id} className={`${segTopSpacing} pb-16`}>
               <div className="container mx-auto px-4">
-                <div className={`flex ${layoutClasses.containerClass} gap-12 items-center`}>
-                  <div className={`${layoutClasses.textClass}`}>
+                <div className={`flex ${segLayoutClasses.containerClass} gap-12 items-center`}>
+                  <div className={`${segLayoutClasses.textClass}`}>
                     {segment.data.subtitle && (
                       <p className="text-sm font-semibold text-primary mb-4 uppercase tracking-wide">
                         {segment.data.subtitle}
@@ -139,7 +226,7 @@ const MedicalEndoscopy = () => {
                       </button>
                     )}
                   </div>
-                  <div className={`${layoutClasses.imageClass}`}>
+                  <div className={`${segLayoutClasses.imageClass}`}>
                     <img
                       src={segment.data.imageUrl}
                       alt={segment.data.title}
