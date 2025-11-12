@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Lightbulb, Zap, Shield, FileText, Download, BarChart3, Eye, Car, Smartphone, Heart, CheckCircle, Monitor } from "lucide-react";
 
@@ -93,6 +94,8 @@ const MedicalEndoscopy = () => {
 
   return (
     <div className="min-h-screen">
+      <Navigation />
+      
       {pageSegments.map((segment) => {
         if (segment.type === "hero") {
           const topSpacing = getTopSpacingClass(segment.data.topSpacing);
