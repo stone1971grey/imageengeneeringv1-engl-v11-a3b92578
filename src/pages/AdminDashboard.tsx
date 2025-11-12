@@ -1541,6 +1541,8 @@ const AdminDashboard = () => {
                   'photography': '/photography',
                   'scanners-archiving': '/scanners-archiving',
                   'medical-endoscopy': '/medical-endoscopy',
+                  'machine-vision': '/machine-vision',
+                  'web-camera': '/web-camera',
                   'your-solution': '/your-solution'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';

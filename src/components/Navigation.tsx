@@ -259,17 +259,17 @@ const Navigation = () => {
                          <span>{t.nav.mobilePhone}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredIndustry("Web Camera")}>
-                         <Camera className="h-5 w-5" />
-                         <span>{t.nav.webCamera}</span>
-                       </div>
-                       
-                       <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
-                         <Cog className="h-5 w-5" />
-                         <span>{t.nav.machineVision}</span>
-                       </div>
+                        <Link to={getLink("web-camera", "/web-camera")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Web Camera")}>
+                          <Camera className="h-5 w-5" />
+                          <span>{t.nav.webCamera}</span>
+                        </Link>
+                        
+                        <Link to={getLink("machine-vision", "/machine-vision")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                          onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
+                          <Cog className="h-5 w-5" />
+                          <span>{t.nav.machineVision}</span>
+                        </Link>
                        
                         <Link to={getLink("medical-endoscopy", "/medical-endoscopy")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
                           onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
@@ -884,17 +884,17 @@ const Navigation = () => {
                             </AccordionItem>
                           </Accordion>
                           
-                          {/* Web Camera */}
-                          <Accordion type="single" collapsible className="ml-2">
-                            <AccordionItem value="webcam" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                 <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                      <Camera className="h-4 w-4" />
-                                      <span>{t.nav.webCamera}</span>
-                                    </div>
-                                 </div>
-                               </AccordionTrigger>
+                           {/* Web Camera */}
+                           <Accordion type="single" collapsible className="ml-2">
+                             <AccordionItem value="webcam" className="border-none">
+                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
+                                  <div className="flex items-center justify-between w-full">
+                                     <Link to={getLink("web-camera", "/web-camera")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                       <Camera className="h-4 w-4" />
+                                       <span>{t.nav.webCamera}</span>
+                                     </Link>
+                                  </div>
+                                </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
                                    {industryData["Web Camera"].subgroups.map((item, idx) => (
@@ -911,17 +911,17 @@ const Navigation = () => {
                             </AccordionItem>
                           </Accordion>
                           
-                          {/* Machine Vision */}
-                          <Accordion type="single" collapsible className="ml-2">
-                            <AccordionItem value="machine-vision" className="border-none">
-                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                 <div className="flex items-center justify-between w-full">
-                                    <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                      <Cog className="h-4 w-4" />
-                                      <span>{t.nav.machineVision}</span>
-                                    </div>
-                                 </div>
-                               </AccordionTrigger>
+                           {/* Machine Vision */}
+                           <Accordion type="single" collapsible className="ml-2">
+                             <AccordionItem value="machine-vision" className="border-none">
+                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
+                                  <div className="flex items-center justify-between w-full">
+                                     <Link to={getLink("machine-vision", "/machine-vision")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                       <Cog className="h-4 w-4" />
+                                       <span>{t.nav.machineVision}</span>
+                                     </Link>
+                                  </div>
+                                </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
                                    {industryData["Machine Vision"].subgroups.map((item, idx) => (
