@@ -40,6 +40,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import MetaNavigationEditor from '@/components/admin/MetaNavigationEditor';
 import ProductHeroGalleryEditor from '@/components/admin/ProductHeroGalleryEditor';
+import FeatureOverviewEditor from '@/components/admin/FeatureOverviewEditor';
 
 interface ContentItem {
   id: string;
@@ -1235,6 +1236,18 @@ const AdminDashboard = () => {
             }
           ]
         };
+      case 'feature-overview':
+        return {
+          title: 'Key Benefits',
+          subtext: '',
+          layout: '3',
+          items: [
+            {
+              title: 'Feature Title',
+              description: 'Feature description text goes here...'
+            }
+          ]
+        };
       default:
         return {};
     }
@@ -1642,6 +1655,17 @@ const AdminDashboard = () => {
                       </Button>
                     </CardContent>
                   </Card>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('feature-overview')}>
+                    <CardHeader>
+                      <CardTitle>Feature Overview</CardTitle>
+                      <CardDescription>Grid layout with features/benefits</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        Add Feature Overview
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
               </DialogContent>
             </Dialog>
@@ -1776,6 +1800,7 @@ const AdminDashboard = () => {
                     if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
                     if (segment.type === 'banner') label = `Banner ${displayNumber}`;
                     if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
+                    if (segment.type === 'feature-overview') label = `Features ${displayNumber}`;
                     
                     const segmentId = segmentRegistry[tabId] || tabId;
                     
@@ -3086,6 +3111,7 @@ const AdminDashboard = () => {
                         {segment.type === 'tiles' && 'Tiles Template'}
                         {segment.type === 'banner' && 'Banner Template'}
                         {segment.type === 'image-text' && 'Image & Text Template'}
+                        {segment.type === 'feature-overview' && 'Feature Overview Template'}
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -3652,7 +3678,14 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type !== 'tiles' && segment.type !== 'image-text' && (
+                  {segment.type === 'feature-overview' && (
+                    <FeatureOverviewEditor
+                      segmentId={parseInt(segment.id)}
+                      pageSlug={selectedPage}
+                    />
+                  )}
+
+                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
                       <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.

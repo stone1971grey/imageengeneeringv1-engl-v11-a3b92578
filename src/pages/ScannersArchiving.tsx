@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
+import FeatureOverview from "@/components/segments/FeatureOverview";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
@@ -158,6 +159,9 @@ const ScannersArchiving = () => {
       }
       if (dynamicSegment.type === 'product-hero-gallery') {
         return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'feature-overview') {
+        return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 

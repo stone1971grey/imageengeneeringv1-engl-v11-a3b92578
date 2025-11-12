@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
+import FeatureOverview from "@/components/segments/FeatureOverview";
 import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, any> = {
@@ -161,6 +162,9 @@ const MachineVision = () => {
       }
       if (dynamicSegment.type === 'product-hero-gallery') {
         return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'feature-overview') {
+        return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 

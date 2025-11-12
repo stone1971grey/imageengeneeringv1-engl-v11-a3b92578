@@ -8,6 +8,7 @@ import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Footer from "@/components/Footer";
 import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
+import FeatureOverview from "@/components/segments/FeatureOverview";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
@@ -242,6 +243,9 @@ const Photography = () => {
       }
       if (dynamicSegment.type === 'product-hero-gallery') {
         return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'feature-overview') {
+        return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 
