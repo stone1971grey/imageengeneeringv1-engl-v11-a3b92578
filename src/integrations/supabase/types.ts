@@ -212,6 +212,33 @@ export type Database = {
         }
         Relationships: []
       }
+      page_registry: {
+        Row: {
+          created_at: string | null
+          id: number
+          page_id: number
+          page_slug: string
+          page_title: string
+          parent_slug: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          page_id: number
+          page_slug: string
+          page_title: string
+          parent_slug?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          page_id?: number
+          page_slug?: string
+          page_title?: string
+          parent_slug?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
