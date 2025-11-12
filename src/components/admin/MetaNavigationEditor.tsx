@@ -24,13 +24,19 @@ interface MetaNavigationData {
   links: MetaNavigationLink[];
 }
 
+interface AvailableSegment {
+  id: string;
+  title: string;
+}
+
 interface MetaNavigationEditorProps {
   data: MetaNavigationData;
   onChange: (data: MetaNavigationData) => void;
   onSave: () => void;
+  availableSegments: AvailableSegment[];
 }
 
-const MetaNavigationEditor = ({ data, onChange, onSave }: MetaNavigationEditorProps) => {
+const MetaNavigationEditor = ({ data, onChange, onSave, availableSegments }: MetaNavigationEditorProps) => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   const handleLinkChange = (index: number, field: keyof MetaNavigationLink, value: string) => {
@@ -98,15 +104,15 @@ const MetaNavigationEditor = ({ data, onChange, onSave }: MetaNavigationEditorPr
                   value={link.anchor}
                   onValueChange={(value) => handleLinkChange(index, 'anchor', value)}
                 >
-                  <SelectTrigger className="bg-gray-700 text-white border-gray-600">
+                  <SelectTrigger className="bg-white text-black border-gray-300">
                     <SelectValue placeholder="Select target segment" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-700 text-white border-gray-600 z-50">
-                    <SelectItem value="hero">Hero Section</SelectItem>
-                    <SelectItem value="tiles">Tiles Section</SelectItem>
-                    <SelectItem value="banner">Banner Section</SelectItem>
-                    <SelectItem value="solutions">Image & Text Section</SelectItem>
-                    <SelectItem value="footer">Footer</SelectItem>
+                  <SelectContent className="bg-white text-black border-gray-300 z-[100]">
+                    {availableSegments.map((segment) => (
+                      <SelectItem key={segment.id} value={segment.id} className="text-black">
+                        {segment.title}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

@@ -3120,17 +3120,73 @@ const AdminDashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  {segment.type === 'meta-navigation' && (
-                    <MetaNavigationEditor
-                      data={segment.data}
-                      onChange={(newData) => {
-                        const newSegments = [...pageSegments];
-                        newSegments[index].data = newData;
-                        setPageSegments(newSegments);
-                      }}
-                      onSave={() => handleSaveSegments()}
-                    />
-                  )}
+                  {segment.type === 'meta-navigation' && (() => {
+                    // Build available segments list with their titles
+                    const availableSegments = [];
+                    
+                    // Hero segment
+                    if (segmentRegistry['hero']) {
+                      availableSegments.push({
+                        id: 'hero',
+                        title: content.hero_title || 'Hero Section'
+                      });
+                    }
+                    
+                    // Tiles segment
+                    if (segmentRegistry['tiles']) {
+                      availableSegments.push({
+                        id: 'tiles',
+                        title: content.applications_title || 'Tiles Section'
+                      });
+                    }
+                    
+                    // Banner segment
+                    if (segmentRegistry['banner']) {
+                      availableSegments.push({
+                        id: 'banner',
+                        title: bannerTitle || 'Banner Section'
+                      });
+                    }
+                    
+                    // Solutions/Image & Text segment
+                    if (segmentRegistry['solutions']) {
+                      availableSegments.push({
+                        id: 'solutions',
+                        title: solutionsTitle || 'Image & Text Section'
+                      });
+                    }
+                    
+                    // Dynamic segments
+                    pageSegments.forEach((seg) => {
+                      if (seg.type !== 'meta-navigation' && seg.data?.title) {
+                        availableSegments.push({
+                          id: seg.id,
+                          title: seg.data.title
+                        });
+                      }
+                    });
+                    
+                    // Footer segment
+                    if (segmentRegistry['footer']) {
+                      availableSegments.push({
+                        id: 'footer',
+                        title: 'Footer'
+                      });
+                    }
+                    
+                    return (
+                      <MetaNavigationEditor
+                        data={segment.data}
+                        availableSegments={availableSegments}
+                        onChange={(newData) => {
+                          const newSegments = [...pageSegments];
+                          newSegments[index].data = newData;
+                          setPageSegments(newSegments);
+                        }}
+                        onSave={() => handleSaveSegments()}
+                      />
+                    );
+                  })()}
                   {segment.type === 'product-hero-gallery' && (
                     <ProductHeroGalleryEditor
                       data={segment.data}
