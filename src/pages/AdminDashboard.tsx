@@ -1516,7 +1516,7 @@ const AdminDashboard = () => {
                 const previewUrl = urlMap[selectedPage] || '/';
                 window.open(previewUrl, '_blank');
               }}
-              className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10 hover:text-[#f9dc24]"
+              className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10 hover:text-gray-600"
             >
               <Eye className="h-4 w-4" />
               Preview Frontend
