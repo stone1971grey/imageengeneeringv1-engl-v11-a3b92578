@@ -28,6 +28,9 @@ interface ProductHeroGalleryData {
   title: string;
   subtitle: string;
   description: string;
+  imagePosition: 'left' | 'right';
+  layoutRatio: '1-1' | '2-3' | '2-5';
+  topSpacing: 'small' | 'medium' | 'large' | 'extra-large';
   cta1Text: string;
   cta1Link: string;
   cta1Style: 'standard' | 'technical' | 'outline-white';
@@ -145,6 +148,53 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
             placeholder="Product description"
             rows={3}
           />
+        </div>
+      </div>
+
+      {/* Layout Settings */}
+      <div className="border-t pt-6 space-y-4">
+        <h4 className="font-medium">Layout Settings</h4>
+        
+        <div>
+          <Label>Image Position</Label>
+          <Select value={data.imagePosition} onValueChange={(value: any) => onChange({ ...data, imagePosition: value })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="left">Left</SelectItem>
+              <SelectItem value="right">Right</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label>Layout Ratio (Text:Image)</Label>
+          <Select value={data.layoutRatio} onValueChange={(value: any) => onChange({ ...data, layoutRatio: value })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1-1">50:50</SelectItem>
+              <SelectItem value="2-3">2/3:1/3</SelectItem>
+              <SelectItem value="2-5">2/5:3/5</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label>Top Spacing</Label>
+          <Select value={data.topSpacing} onValueChange={(value: any) => onChange({ ...data, topSpacing: value })}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="small">Small (PT-16)</SelectItem>
+              <SelectItem value="medium">Medium (PT-24)</SelectItem>
+              <SelectItem value="large">Large (PT-32)</SelectItem>
+              <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
