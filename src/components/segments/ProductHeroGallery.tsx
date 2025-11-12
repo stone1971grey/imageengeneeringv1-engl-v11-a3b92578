@@ -100,13 +100,11 @@ const ProductHeroGallery = ({ data }: ProductHeroGalleryProps) => {
           {/* Left Content */}
           <div className="space-y-8">
             <div>
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-medium text-gray-900 leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
                 {data.title}
+                <br />
+                <span className="font-medium text-gray-900">{data.subtitle}</span>
               </h1>
-              
-              <h2 className="text-2xl lg:text-3xl font-light text-gray-900 mb-6">
-                {data.subtitle}
-              </h2>
               
               <p className="text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-lg">
                 {data.description}
