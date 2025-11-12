@@ -665,6 +665,19 @@ const Photography = () => {
         );
       }
 
+      if (segment.type === 'feature-overview') {
+        return (
+          <FeatureOverview
+            key={segmentId}
+            id={segment.id?.toString() || segmentId}
+            title={segment.data.title}
+            subtext={segment.data.subtext}
+            layout={segment.data.layout}
+            items={segment.data.items}
+          />
+        );
+      }
+
     return null;
   };
 

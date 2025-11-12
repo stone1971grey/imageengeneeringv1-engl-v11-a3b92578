@@ -589,6 +589,19 @@ const ScannersArchiving = () => {
         );
       }
 
+      if (segment.type === 'feature-overview') {
+        return (
+          <FeatureOverview
+            key={segmentId}
+            id={segment.id?.toString() || segmentId}
+            title={segment.data.title}
+            subtext={segment.data.subtext}
+            layout={segment.data.layout}
+            items={segment.data.items}
+          />
+        );
+      }
+
       if (segment.type === 'banner') {
         return (
           <section key={segmentId} id="standards" className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
