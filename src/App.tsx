@@ -14,6 +14,10 @@ import Products from "./pages/Products";
 import Automotive from "./pages/Automotive";
 import Photography from "./pages/Photography";
 import ScannersArchiving from "./pages/ScannersArchiving";
+import MedicalEndoscopy from "./pages/MedicalEndoscopy";
+import MachineVision from "./pages/MachineVision";
+import WebCamera from "./pages/WebCamera";
+import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import ProductArcturus from "./pages/ProductArcturus";
 import ProductLE7 from "./pages/ProductLE7";
@@ -48,9 +52,6 @@ import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
 import ImageDownload from "./pages/ImageDownload";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
-import MedicalEndoscopy from "./pages/MedicalEndoscopy";
-import MachineVision from "./pages/MachineVision";
-import WebCamera from "./pages/WebCamera";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -71,11 +72,14 @@ const App = () => (
         <Route path="/your-solution" element={<YourSolution />} />
         <Route path="/products" element={<Products />} />
         <Route path="/automotive" element={<Automotive />} />
-        <Route path="/photography" element={<Photography />} />
-        <Route path="/medical-endoscopy" element={<MedicalEndoscopy />} />
-        <Route path="/machine-vision" element={<MachineVision />} />
-        <Route path="/web-camera" element={<WebCamera />} />
-        <Route path="/scanners-archiving" element={<ScannersArchiving />} />
+        
+        {/* Hierarchical Your Solution Routes */}
+        <Route path="/your-solution/photography" element={<Photography />} />
+        <Route path="/your-solution/medical-endoscopy" element={<MedicalEndoscopy />} />
+        <Route path="/your-solution/machine-vision" element={<MachineVision />} />
+        <Route path="/your-solution/web-camera" element={<WebCamera />} />
+        <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
+        
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/product/arcturus" element={<ProductArcturus />} />
          <Route path="/product/le7" element={<ProductLE7 />} />
@@ -109,10 +113,13 @@ const App = () => (
         <Route path="/icons-styleguide" element={<IconsStyleguide />} />
         <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
         <Route path="/image-download" element={<ImageDownload />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+         <Route path="/auth" element={<Auth />} />
+         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+           {/* Page ID Route - MUST be after all specific routes */}
+           <Route path="/:pageId" element={<PageIdRouter />} />
+           
+           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+           <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

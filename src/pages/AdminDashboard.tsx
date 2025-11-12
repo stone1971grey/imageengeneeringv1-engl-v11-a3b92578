@@ -1538,11 +1538,11 @@ const AdminDashboard = () => {
               variant="outline"
               onClick={() => {
                 const urlMap: Record<string, string> = {
-                  'photography': '/photography',
-                  'scanners-archiving': '/scanners-archiving',
-                  'medical-endoscopy': '/medical-endoscopy',
-                  'machine-vision': '/machine-vision',
-                  'web-camera': '/web-camera',
+                  'photography': '/your-solution/photography',
+                  'scanners-archiving': '/your-solution/scanners-archiving',
+                  'medical-endoscopy': '/your-solution/medical-endoscopy',
+                  'machine-vision': '/your-solution/machine-vision',
+                  'web-camera': '/your-solution/web-camera',
                   'your-solution': '/your-solution'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';

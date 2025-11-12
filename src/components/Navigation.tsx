@@ -259,31 +259,31 @@ const Navigation = () => {
                          <span>{t.nav.mobilePhone}</span>
                        </div>
                        
-                        <Link to={getLink("web-camera", "/web-camera")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                         <Link to={getLink("web-camera", "/your-solution/web-camera")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
                           onMouseEnter={() => setHoveredIndustry("Web Camera")}>
                           <Camera className="h-5 w-5" />
                           <span>{t.nav.webCamera}</span>
                         </Link>
                         
-                        <Link to={getLink("machine-vision", "/machine-vision")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                        <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
                           onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
                           <Cog className="h-5 w-5" />
                           <span>{t.nav.machineVision}</span>
                         </Link>
                        
-                        <Link to={getLink("medical-endoscopy", "/medical-endoscopy")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                        <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
                           onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
                           <Stethoscope className="h-5 w-5" />
                           <span>{t.nav.medicalEndoscopy}</span>
                         </Link>
                        
-                        <Link to={getLink("scanners-archiving", "/scanners-archiving")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                        <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
                           onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
                           <ScanLine className="h-5 w-5" />
                           <span>{t.nav.scannersArchiving}</span>
                         </Link>
                         
-                        <Link to={getLink("photography", "/photography")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                        <Link to={getLink("photography", "/your-solution/photography")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
                           onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
                           <Camera className="h-5 w-5" />
                           <span>{t.nav.photoVideo}</span>
@@ -888,12 +888,12 @@ const Navigation = () => {
                            <Accordion type="single" collapsible className="ml-2">
                              <AccordionItem value="webcam" className="border-none">
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                  <div className="flex items-center justify-between w-full">
-                                     <Link to={getLink("web-camera", "/web-camera")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                       <Camera className="h-4 w-4" />
-                                       <span>{t.nav.webCamera}</span>
-                                     </Link>
-                                  </div>
+                                   <div className="flex items-center justify-between w-full">
+                                      <Link to={getLink("web-camera", "/your-solution/web-camera")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                        <Camera className="h-4 w-4" />
+                                        <span>{t.nav.webCamera}</span>
+                                      </Link>
+                                   </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
@@ -915,12 +915,12 @@ const Navigation = () => {
                            <Accordion type="single" collapsible className="ml-2">
                              <AccordionItem value="machine-vision" className="border-none">
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                  <div className="flex items-center justify-between w-full">
-                                     <Link to={getLink("machine-vision", "/machine-vision")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                       <Cog className="h-4 w-4" />
-                                       <span>{t.nav.machineVision}</span>
-                                     </Link>
-                                  </div>
+                                   <div className="flex items-center justify-between w-full">
+                                      <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                        <Cog className="h-4 w-4" />
+                                        <span>{t.nav.machineVision}</span>
+                                      </Link>
+                                   </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
@@ -942,12 +942,12 @@ const Navigation = () => {
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="medical" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                 <div className="flex items-center justify-between w-full">
-                                     <Link to={getLink("medical-endoscopy", "/medical-endoscopy")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                       <Stethoscope className="h-4 w-4" />
-                                       <span>{t.nav.medicalEndoscopy}</span>
-                                     </Link>
-                                 </div>
+                                  <div className="flex items-center justify-between w-full">
+                                      <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                        <Stethoscope className="h-4 w-4" />
+                                        <span>{t.nav.medicalEndoscopy}</span>
+                                      </Link>
+                                  </div>
                                </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
@@ -969,12 +969,12 @@ const Navigation = () => {
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="scanning" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                 <div className="flex items-center justify-between w-full">
-                                    <Link to={getLink("scanners-archiving", "/scanners-archiving")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                      <ScanLine className="h-4 w-4" />
-                                      <span>{t.nav.scannersArchiving}</span>
-                                    </Link>
-                                 </div>
+                                  <div className="flex items-center justify-between w-full">
+                                     <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                       <ScanLine className="h-4 w-4" />
+                                       <span>{t.nav.scannersArchiving}</span>
+                                     </Link>
+                                  </div>
                                </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
@@ -996,12 +996,12 @@ const Navigation = () => {
                           <Accordion type="single" collapsible className="ml-2">
                             <AccordionItem value="photo-video" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
-                                 <div className="flex items-center justify-between w-full">
-                                    <Link to={getLink("photography", "/photography")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                      <Camera className="h-4 w-4" />
-                                      <span>{t.nav.photoVideo}</span>
-                                    </Link>
-                                 </div>
+                                  <div className="flex items-center justify-between w-full">
+                                     <Link to={getLink("photography", "/your-solution/photography")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                       <Camera className="h-4 w-4" />
+                                       <span>{t.nav.photoVideo}</span>
+                                     </Link>
+                                  </div>
                                </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
