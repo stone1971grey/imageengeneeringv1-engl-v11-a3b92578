@@ -3326,23 +3326,13 @@ const AdminDashboard = () => {
                                       className="border-2 border-gray-600"
                                     />
                                   </div>
-                                  {item.imageUrl && (
-                                    <div className="mt-2 relative inline-block">
+                                   {item.imageUrl && (
+                                    <div className="mt-2">
                                       <img 
                                         src={item.imageUrl} 
                                         alt={item.title} 
-                                        className="w-32 h-32 object-cover rounded border"
+                                        className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
                                       />
-                                      <button
-                                        onClick={() => {
-                                          const newSegments = [...pageSegments];
-                                          newSegments[index].data.items[itemIndex].imageUrl = '';
-                                          setPageSegments(newSegments);
-                                        }}
-                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                                      >
-                                        <X className="h-3 w-3" />
-                                      </button>
                                     </div>
                                   )}
                                 </div>
