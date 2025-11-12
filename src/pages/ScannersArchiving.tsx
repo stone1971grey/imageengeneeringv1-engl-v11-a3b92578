@@ -646,6 +646,15 @@ const ScannersArchiving = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+
+      {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return dynamicSegment && dynamicSegment.type === 'meta-navigation';
+        })
+        .map(segmentId => renderSegment(segmentId))}
+
       <AnnouncementBanner 
         message={content.banner_message || ""}
         ctaText={content.banner_cta || "Learn more"}
@@ -655,7 +664,7 @@ const ScannersArchiving = () => {
 
       {/* Hero Section - Product Hero Template - Only render if hero content exists */}
       {hasHeroContent && (
-        <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+        <section id="hero" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
         <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
           heroTopPadding === "small" ? "pt-16 lg:pt-16" :
           heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
@@ -761,8 +770,13 @@ const ScannersArchiving = () => {
       </section>
       )}
 
-      {/* Dynamic Segments */}
-      {tabOrder.map((segmentId) => renderSegment(segmentId))}
+      {/* Dynamic Segments (excluding meta-navigation already rendered above) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return !(dynamicSegment && dynamicSegment.type === 'meta-navigation');
+        })
+        .map((segmentId) => renderSegment(segmentId))}
 
       <Footer />
     </div>

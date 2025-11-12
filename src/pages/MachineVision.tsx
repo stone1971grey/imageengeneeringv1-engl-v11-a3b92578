@@ -575,9 +575,17 @@ const MachineVision = () => {
       {/* Navigation */}
       <Navigation />
 
+      {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return dynamicSegment && dynamicSegment.type === 'meta-navigation';
+        })
+        .map(segmentId => renderSegment(segmentId))}
+
       {/* Hero Section - Only render if hero content exists */}
       {hasHeroContent && (
-        <section id="introduction" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+        <section id="hero" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
         <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
           heroTopPadding === "small" ? "pt-16 lg:pt-16" :
           heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
@@ -677,8 +685,13 @@ const MachineVision = () => {
       {/* Better anchor point for smooth scrolling */}
       <div id="applications-start" className="scroll-mt-32"></div>
 
-      {/* Render all segments in tabOrder */}
-      {tabOrder.map((segmentId) => renderSegment(segmentId))}
+      {/* Render all segments in tabOrder (excluding meta-navigation already rendered above) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return !(dynamicSegment && dynamicSegment.type === 'meta-navigation');
+        })
+        .map((segmentId) => renderSegment(segmentId))}
 
       <Footer />
     </div>

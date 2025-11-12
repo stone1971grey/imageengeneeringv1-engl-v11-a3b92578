@@ -1705,12 +1705,47 @@ const AdminDashboard = () => {
                 </TabsTrigger>
               )}
 
-              {/* Draggable Middle Tabs */}
+              {/* MANDATORY: Meta Navigation Tabs - Always Immediately After Hero */}
+              {tabOrder
+                .filter(tabId => {
+                  const segment = pageSegments.find(s => s.id === tabId);
+                  return segment && segment.type === 'meta-navigation';
+                })
+                .map((tabId) => {
+                  const segment = pageSegments.find(s => s.id === tabId);
+                  if (segment) {
+                    const segmentIndex = pageSegments.indexOf(segment);
+                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'meta-navigation').length;
+                    const displayNumber = sameTypeBefore + 1;
+                    const segmentId = segmentRegistry[tabId] || tabId;
+                    
+                    return (
+                      <TabsTrigger 
+                        key={tabId}
+                        value={tabId}
+                        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                      >
+                        ID {segmentId}: Meta Nav {displayNumber}
+                      </TabsTrigger>
+                    );
+                  }
+                  return null;
+                })}
+
+              {/* Draggable Middle Tabs - Exclude Meta Navigation (already shown above) */}
               <SortableContext
-                items={tabOrder}
+                items={tabOrder.filter(tabId => {
+                  const segment = pageSegments.find(s => s.id === tabId);
+                  return !segment || segment.type !== 'meta-navigation';
+                })}
                 strategy={horizontalListSortingStrategy}
               >
-                {tabOrder.map((tabId) => {
+                {tabOrder
+                  .filter(tabId => {
+                    const segment = pageSegments.find(s => s.id === tabId);
+                    return !segment || segment.type !== 'meta-navigation'; // Exclude meta-navigation from draggable section
+                  })
+                  .map((tabId) => {
                   // Static tabs - only show if not deleted (in segmentRegistry)
                   if (tabId === 'tiles' && segmentRegistry['tiles']) {
                     return (
@@ -1734,7 +1769,7 @@ const AdminDashboard = () => {
                     );
                   }
                   
-                  // Dynamic segment tabs
+                  // Dynamic segment tabs (excluding meta-navigation which is already shown)
                   const segment = pageSegments.find(s => s.id === tabId);
                   if (segment) {
                     const segmentIndex = pageSegments.indexOf(segment);
@@ -1743,7 +1778,6 @@ const AdminDashboard = () => {
                     
                     let label = '';
                     if (segment.type === 'hero') label = `Hero ${displayNumber}`;
-                    if (segment.type === 'meta-navigation') label = `Meta Nav ${displayNumber}`;
                     if (segment.type === 'product-hero-gallery') label = `Product Gallery ${displayNumber}`;
                     if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
                     if (segment.type === 'banner') label = `Banner ${displayNumber}`;
