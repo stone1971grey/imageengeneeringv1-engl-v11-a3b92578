@@ -2693,7 +2693,7 @@ const AdminDashboard = () => {
                             <img 
                               src={app.imageUrl} 
                               alt={`Tile ${index + 1}`} 
-                              className="w-full h-[200px] object-cover rounded-lg border-2 border-gray-600"
+                              className="max-w-xs h-auto object-contain rounded-lg border-2 border-gray-600"
                             />
                           </div>
                         )}
