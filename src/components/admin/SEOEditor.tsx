@@ -90,9 +90,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     
     setIntroductionText({ title: introTitle, description: introDescription });
     
-    // Always sync introduction field with segment content
+    // Always sync introduction field with segment content (only if changed to avoid infinite loop)
     const combinedIntroText = [introTitle, introDescription].filter(Boolean).join('\n\n');
-    if (combinedIntroText) {
+    if (combinedIntroText && data.introduction !== combinedIntroText) {
       onChange({ ...data, introduction: combinedIntroText });
     }
 
