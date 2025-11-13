@@ -188,6 +188,79 @@ const WebCamera = () => {
       if (dynamicSegment.type === 'specification') {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
+      if (dynamicSegment.type === 'banner') {
+        return (
+          <section key={segmentId} id={segmentId} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+            <div className="container mx-auto px-4 text-center">
+              {dynamicSegment.data.title && (
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {dynamicSegment.data.title}
+                </h2>
+              )}
+              {dynamicSegment.data.subtext && (
+                <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
+                  {dynamicSegment.data.subtext}
+                </p>
+              )}
+              {dynamicSegment.data.images && dynamicSegment.data.images.length > 0 && (
+                <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
+                  {dynamicSegment.data.images.map((image: any, index: number) => (
+                    <div key={index} className="h-16 flex items-center">
+                      <img 
+                        src={image.url}
+                        alt={image.alt || `Banner image ${index + 1}`}
+                        className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {dynamicSegment.data.buttonText && (
+                <div className="flex justify-center">
+                  {dynamicSegment.data.buttonLink ? (
+                    dynamicSegment.data.buttonLink.startsWith('http://') || dynamicSegment.data.buttonLink.startsWith('https://') ? (
+                      <a
+                        href={dynamicSegment.data.buttonLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block px-8 py-4 rounded-md text-lg font-medium transition-all duration-300 hover:scale-105"
+                        style={{
+                          backgroundColor: dynamicSegment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                          color: dynamicSegment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                        }}
+                      >
+                        {dynamicSegment.data.buttonText}
+                      </a>
+                    ) : (
+                      <Link to={dynamicSegment.data.buttonLink}>
+                        <button 
+                          className="px-8 py-4 rounded-md text-lg font-medium transition-all duration-300 hover:scale-105"
+                          style={{
+                            backgroundColor: dynamicSegment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                            color: dynamicSegment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                          }}
+                        >
+                          {dynamicSegment.data.buttonText}
+                        </button>
+                      </Link>
+                    )
+                  ) : (
+                    <button 
+                      className="px-8 py-4 rounded-md text-lg font-medium transition-all duration-300 hover:scale-105"
+                      style={{
+                        backgroundColor: dynamicSegment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                        color: dynamicSegment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                      }}
+                    >
+                      {dynamicSegment.data.buttonText}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      }
       if (dynamicSegment.type === 'image-text') {
         return (
           <section key={segmentId} id={segmentId} className="bg-gray-50 py-20">
@@ -238,9 +311,6 @@ const WebCamera = () => {
             </div>
           </section>
         );
-      }
-      if (dynamicSegment.type === 'video') {
-        return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'tiles') {
         const tilesData = dynamicSegment.data;
