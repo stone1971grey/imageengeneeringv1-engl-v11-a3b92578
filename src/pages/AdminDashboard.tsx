@@ -2352,7 +2352,7 @@ const AdminDashboard = () => {
                     <img 
                       src={heroImageUrl} 
                       alt="Current hero" 
-                      className="w-full max-w-md rounded-lg border-2 border-gray-600"
+                      className="max-w-xs h-auto object-contain rounded-lg border-2 border-gray-600"
                     />
                   </div>
                 )}
