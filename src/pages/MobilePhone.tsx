@@ -581,11 +581,13 @@ const MobilePhone = () => {
         </section>
       )}
 
-      {/* Dynamic Segments (excluding meta-navigation which is already rendered above) */}
+      {/* Dynamic and Static Segments (excluding meta-navigation which is already rendered above) */}
       {tabOrder
         .filter(segmentId => {
           const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
-          return dynamicSegment && dynamicSegment.type !== 'meta-navigation';
+          // Include dynamic segments (except meta-navigation) OR static segments
+          return (dynamicSegment && dynamicSegment.type !== 'meta-navigation') || 
+                 (segmentId === 'tiles' || segmentId === 'banner' || segmentId === 'solutions');
         })
         .map((segmentId) => renderSegment(segmentId))}
 
