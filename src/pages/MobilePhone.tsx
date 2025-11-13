@@ -569,11 +569,11 @@ const MobilePhone = () => {
               heroLayout === "1-2" ? "lg:col-span-2" :
               "lg:col-span-3"
             } ${heroImagePosition === "left" ? "order-1" : "order-2"}`}>
-              <div className="aspect-[4/3] rounded-lg overflow-hidden relative group h-[500px]">
+              <div className="aspect-[4/3] rounded-lg relative group h-[500px]">
                 <img
                   src={heroImageUrl || photographyHeroDefault}
                   alt="Mobile Phone Camera Testing"
-                  className="w-full h-full object-cover transform transition-transform duration-700"
+                  className="w-full h-full object-contain transform transition-transform duration-700"
                 />
               </div>
             </div>
