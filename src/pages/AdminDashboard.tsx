@@ -149,6 +149,7 @@ const AdminDashboard = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
+  const [heroImageMetadata, setHeroImageMetadata] = useState<ImageMetadata | null>(null);
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
@@ -557,6 +558,13 @@ const AdminDashboard = () => {
         setBannerButtonStyle(item.content_value || "standard");
       } else if (item.section_key === "hero_image_url") {
         setHeroImageUrl(item.content_value);
+      } else if (item.section_key === "hero_image_metadata") {
+        try {
+          const metadata = JSON.parse(item.content_value);
+          setHeroImageMetadata(metadata);
+        } catch (e) {
+          console.error("Error parsing hero image metadata:", e);
+        }
       } else if (item.section_key === "hero_image_position") {
         setHeroImagePosition(item.content_value || "right");
       } else if (item.section_key === "hero_layout") {
@@ -776,9 +784,14 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      setHeroImageUrl(publicUrl);
+      // Extract image metadata
+      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
       
-      // Save to database
+      setHeroImageUrl(publicUrl);
+      setHeroImageMetadata(metadata);
+      
+      // Save URL to database
       const { error: dbError } = await supabase
         .from("page_content")
         .upsert({
@@ -793,6 +806,22 @@ const AdminDashboard = () => {
         });
 
       if (dbError) throw dbError;
+
+      // Save metadata to database
+      const { error: metadataError } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "hero_image_metadata",
+          content_type: "json",
+          content_value: JSON.stringify(metadata),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (metadataError) throw metadataError;
 
       toast.success("Image uploaded successfully!");
     } catch (error: any) {
@@ -1069,6 +1098,22 @@ const AdminDashboard = () => {
         }, {
           onConflict: 'page_slug,section_key'
         });
+
+      // Update hero image metadata if exists
+      if (heroImageMetadata) {
+        await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: selectedPage,
+            section_key: "hero_image_metadata",
+            content_type: "json",
+            content_value: JSON.stringify(heroImageMetadata),
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key'
+          });
+      }
 
       toast.success("Hero section saved successfully!");
       
@@ -2259,6 +2304,53 @@ const AdminDashboard = () => {
                   className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
                 />
                 {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
+                
+                {/* Image Metadata Display */}
+                {heroImageMetadata && (
+                  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                    <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <span className="text-gray-600">Original Name:</span>
+                        <p className="text-black font-medium">{heroImageMetadata.originalFileName}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Dimensions:</span>
+                        <p className="text-black font-medium">{heroImageMetadata.width} × {heroImageMetadata.height} px</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">File Size:</span>
+                        <p className="text-black font-medium">{formatFileSize(heroImageMetadata.fileSizeKB)}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Format:</span>
+                        <p className="text-black font-medium uppercase">{heroImageMetadata.format}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-gray-600">Upload Date:</span>
+                        <p className="text-black font-medium">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <Label htmlFor="hero_image_alt" className="text-black text-base">Alt Text (SEO)</Label>
+                      <Input
+                        id="hero_image_alt"
+                        type="text"
+                        value={heroImageMetadata.altText || ''}
+                        onChange={(e) => {
+                          if (heroImageMetadata) {
+                            const updatedMetadata = { ...heroImageMetadata, altText: e.target.value };
+                            setHeroImageMetadata(updatedMetadata);
+                          }
+                        }}
+                        placeholder="Describe this image for accessibility and SEO"
+                        className="mt-2 border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-black h-12"
+                      />
+                      <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
