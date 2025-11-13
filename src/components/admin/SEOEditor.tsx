@@ -267,12 +267,22 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           <Label className="flex items-center gap-2 text-base font-semibold">
             Introduction
             <Badge variant="outline" className="text-sm">SEO-relevant</Badge>
+            {checks.keywordInIntroduction && (
+              <Badge className="bg-green-500 text-white flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3" />
+                Keyword gefunden
+              </Badge>
+            )}
           </Label>
           <Textarea
             value={data.introduction || ''}
             onChange={(e) => onChange({ ...data, introduction: e.target.value })}
             placeholder="Erster Textabschnitt unter dem Hero (ca. 100-200 Wörter)"
-            className="mt-3 h-32 text-xl text-black placeholder:text-black border-2 border-gray-300 focus:border-[#f9dc24]"
+            className={`mt-3 h-32 text-xl text-black placeholder:text-black border-2 focus:border-[#f9dc24] ${
+              checks.keywordInIntroduction 
+                ? 'border-green-500 bg-green-50' 
+                : 'border-gray-300'
+            }`}
           />
           <p className="text-base text-white mt-3 leading-relaxed">
             Die Introduction sollte das Fokus-Keyword innerhalb der ersten 100 Wörter enthalten. Dies verbessert die SEO-Relevanz.
