@@ -34,14 +34,41 @@ export const CopySegmentDialog = ({
   const handleOpenChange = async (isOpen: boolean) => {
     onOpenChange(isOpen);
     if (isOpen) {
+      // Only load pages that have CMS segments (from segment_registry)
       const { data, error } = await supabase
-        .from('page_registry')
-        .select('page_slug, page_title')
+        .from('segment_registry')
+        .select('page_slug')
         .neq('page_slug', currentPageSlug)
-        .order('page_title');
+        .eq('deleted', false);
 
       if (!error && data) {
-        setPages(data);
+        // Get unique page slugs and map to readable titles
+        const uniquePages = [...new Set(data.map(item => item.page_slug))];
+        const pageTitleMap: Record<string, string> = {
+          'photography': 'Photo & Video',
+          'scanners-archiving': 'Scanners & Archiving',
+          'medical-endoscopy': 'Medical & Endoscopy',
+          'web-camera': 'Web Camera',
+          'machine-vision': 'Machine Vision',
+          'mobile-phone': 'Mobile Phone',
+          'automotive': 'Automotive',
+          'in-cabin-testing': 'In-Cabin Testing',
+          'arcturus': 'Arcturus',
+          'le7': 'LE7 Test Chart',
+          'your-solution': 'Your Solution'
+        };
+        
+        const pageList = uniquePages
+          .map(slug => ({
+            page_slug: slug,
+            page_title: pageTitleMap[slug] || slug
+          }))
+          .sort((a, b) => a.page_title.localeCompare(b.page_title));
+        
+        setPages(pageList);
+        console.log('Available pages for copy:', pageList);
+      } else {
+        console.error('Error loading pages:', error);
       }
     }
   };
