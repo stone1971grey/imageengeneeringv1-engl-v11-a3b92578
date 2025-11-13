@@ -168,57 +168,6 @@ const AdminDashboard = () => {
     twitterCard: 'summary_large_image'
   });
 
-  // Auto-save drafts to localStorage
-  useEffect(() => {
-    const draftKey = `admin_draft_${selectedPage}`;
-    const draft = {
-      content,
-      applications,
-      heroImageUrl,
-      heroImagePosition,
-      heroLayout,
-      heroTopPadding,
-      heroCtaLink,
-      heroCtaStyle,
-      bannerTitle,
-      bannerSubtext,
-      bannerImages,
-      bannerButtonText,
-      bannerButtonLink,
-      bannerButtonStyle,
-      solutionsTitle,
-      solutionsSubtext,
-      solutionsLayout,
-      solutionsItems,
-      pageSegments,
-      footerCtaTitle,
-      footerCtaDescription,
-      footerContactHeadline,
-      footerContactSubline,
-      footerContactDescription,
-      footerTeamImageUrl,
-      footerTeamQuote,
-      footerTeamName,
-      footerTeamTitle,
-      footerButtonText,
-      seoData
-    };
-    
-    // Debounce localStorage write
-    const timeoutId = setTimeout(() => {
-      localStorage.setItem(draftKey, JSON.stringify(draft));
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [
-    selectedPage, content, applications, heroImageUrl, heroImagePosition, heroLayout,
-    heroTopPadding, heroCtaLink, heroCtaStyle, bannerTitle, bannerSubtext, bannerImages,
-    bannerButtonText, bannerButtonLink, bannerButtonStyle, solutionsTitle, solutionsSubtext,
-    solutionsLayout, solutionsItems, pageSegments, footerCtaTitle, footerCtaDescription,
-    footerContactHeadline, footerContactSubline, footerContactDescription, footerTeamImageUrl,
-    footerTeamQuote, footerTeamName, footerTeamTitle, footerButtonText, seoData
-  ]);
-
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -612,50 +561,6 @@ const AdminDashboard = () => {
 
     setContent(contentMap);
     setApplications(apps);
-    
-    // Check for draft data in localStorage
-    const draftKey = `admin_draft_${selectedPage}`;
-    const savedDraft = localStorage.getItem(draftKey);
-    if (savedDraft) {
-      try {
-        const draft = JSON.parse(savedDraft);
-        // Restore all draft data
-        if (draft.content) setContent(draft.content);
-        if (draft.applications) setApplications(draft.applications);
-        if (draft.heroImageUrl !== undefined) setHeroImageUrl(draft.heroImageUrl);
-        if (draft.heroImagePosition) setHeroImagePosition(draft.heroImagePosition);
-        if (draft.heroLayout) setHeroLayout(draft.heroLayout);
-        if (draft.heroTopPadding) setHeroTopPadding(draft.heroTopPadding);
-        if (draft.heroCtaLink) setHeroCtaLink(draft.heroCtaLink);
-        if (draft.heroCtaStyle) setHeroCtaStyle(draft.heroCtaStyle);
-        if (draft.bannerTitle !== undefined) setBannerTitle(draft.bannerTitle);
-        if (draft.bannerSubtext !== undefined) setBannerSubtext(draft.bannerSubtext);
-        if (draft.bannerImages) setBannerImages(draft.bannerImages);
-        if (draft.bannerButtonText !== undefined) setBannerButtonText(draft.bannerButtonText);
-        if (draft.bannerButtonLink !== undefined) setBannerButtonLink(draft.bannerButtonLink);
-        if (draft.bannerButtonStyle) setBannerButtonStyle(draft.bannerButtonStyle);
-        if (draft.solutionsTitle !== undefined) setSolutionsTitle(draft.solutionsTitle);
-        if (draft.solutionsSubtext !== undefined) setSolutionsSubtext(draft.solutionsSubtext);
-        if (draft.solutionsLayout) setSolutionsLayout(draft.solutionsLayout);
-        if (draft.solutionsItems) setSolutionsItems(draft.solutionsItems);
-        if (draft.pageSegments) setPageSegments(draft.pageSegments);
-        if (draft.footerCtaTitle !== undefined) setFooterCtaTitle(draft.footerCtaTitle);
-        if (draft.footerCtaDescription !== undefined) setFooterCtaDescription(draft.footerCtaDescription);
-        if (draft.footerContactHeadline !== undefined) setFooterContactHeadline(draft.footerContactHeadline);
-        if (draft.footerContactSubline !== undefined) setFooterContactSubline(draft.footerContactSubline);
-        if (draft.footerContactDescription !== undefined) setFooterContactDescription(draft.footerContactDescription);
-        if (draft.footerTeamImageUrl !== undefined) setFooterTeamImageUrl(draft.footerTeamImageUrl);
-        if (draft.footerTeamQuote !== undefined) setFooterTeamQuote(draft.footerTeamQuote);
-        if (draft.footerTeamName !== undefined) setFooterTeamName(draft.footerTeamName);
-        if (draft.footerTeamTitle !== undefined) setFooterTeamTitle(draft.footerTeamTitle);
-        if (draft.footerButtonText !== undefined) setFooterButtonText(draft.footerButtonText);
-        if (draft.seoData) setSeoData(draft.seoData);
-        
-        toast.info("Unsaved changes restored");
-      } catch (error) {
-        console.error("Error loading draft:", error);
-      }
-    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -992,10 +897,6 @@ const AdminDashboard = () => {
         });
 
       toast.success("Hero section saved successfully!");
-      
-      // Clear draft data after successful save
-      const draftKey = `admin_draft_${selectedPage}`;
-      localStorage.removeItem(draftKey);
     } catch (error: any) {
       toast.error("Error saving hero section: " + error.message);
     } finally {
@@ -1610,11 +1511,6 @@ const AdminDashboard = () => {
         });
 
       if (error) throw error;
-      
-      // Clear draft data after successful save
-      const draftKey = `admin_draft_${selectedPage}`;
-      localStorage.removeItem(draftKey);
-      
       toast.success("Segment saved successfully!");
     } catch (error: any) {
       toast.error("Error saving segment: " + error.message);
@@ -1643,11 +1539,6 @@ const AdminDashboard = () => {
         });
 
       if (error) throw error;
-      
-      // Clear draft data after successful save
-      const draftKey = `admin_draft_${selectedPage}`;
-      localStorage.removeItem(draftKey);
-      
       toast.success("SEO Settings saved successfully!");
     } catch (error: any) {
       toast.error("Error saving SEO settings: " + error.message);
@@ -1700,10 +1591,6 @@ const AdminDashboard = () => {
 
       if (appsError) throw appsError;
 
-      // Clear draft data after successful save
-      const draftKey = `admin_draft_${selectedPage}`;
-      localStorage.removeItem(draftKey);
-
       toast.success("Applications section saved successfully!");
     } catch (error: any) {
       toast.error("Error saving applications section: " + error.message);
@@ -1744,10 +1631,6 @@ const AdminDashboard = () => {
             onConflict: 'page_slug,section_key'
           });
       }
-
-      // Clear draft data after successful save
-      const draftKey = `admin_draft_${selectedPage}`;
-      localStorage.removeItem(draftKey);
 
       toast.success("Footer section saved successfully!");
     } catch (error: any) {

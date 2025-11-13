@@ -16,7 +16,6 @@ interface SEOData {
   robotsIndex?: 'index' | 'noindex';
   robotsFollow?: 'follow' | 'nofollow';
   focusKeyword?: string;
-  introductionText?: string;
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
@@ -31,7 +30,6 @@ interface SEOEditorProps {
 }
 
 export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) => {
-  const [serpView, setSerpView] = useState<'desktop' | 'mobile'>('desktop');
   const [checks, setChecks] = useState({
     titleLength: false,
     descriptionLength: false,
@@ -39,7 +37,6 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
     keywordInTitle: false,
     keywordInDescription: false,
     keywordInSlug: false,
-    keywordInIntroduction: false,
   });
 
   useEffect(() => {
@@ -50,7 +47,6 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
     const keywordInTitle = keyword ? (data.title?.toLowerCase().includes(keyword) || false) : false;
     const keywordInDescription = keyword ? (data.metaDescription?.toLowerCase().includes(keyword) || false) : false;
     const keywordInSlug = keyword ? (data.slug?.toLowerCase().includes(keyword.replace(/\s+/g, '-')) || false) : false;
-    const keywordInIntroduction = keyword ? (data.introductionText?.toLowerCase().includes(keyword) || false) : false;
 
     setChecks({
       titleLength,
@@ -59,7 +55,6 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
       keywordInTitle,
       keywordInDescription,
       keywordInSlug,
-      keywordInIntroduction,
     });
   }, [data]);
 
@@ -91,11 +86,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
           </h3>
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
             <div className={`h-3 w-3 rounded-full ${
-              Object.values(checks).filter(Boolean).length >= 6 ? 'bg-green-500 animate-pulse' : 
-              Object.values(checks).filter(Boolean).length >= 4 ? 'bg-yellow-500' : 'bg-red-500'
+              Object.values(checks).filter(Boolean).length >= 5 ? 'bg-green-500 animate-pulse' : 
+              Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
             }`} />
             <span className="text-sm font-semibold text-gray-700">
-              {Object.values(checks).filter(Boolean).length}/7 Checks
+              {Object.values(checks).filter(Boolean).length}/6 Checks
             </span>
           </div>
         </div>
@@ -136,96 +131,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             {getStatusIcon(checks.hasH1)}
             <span className="text-base font-medium text-gray-900">H1 Present</span>
           </div>
-          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
-            checks.keywordInIntroduction ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
-          }`}>
-            {getStatusIcon(checks.keywordInIntroduction)}
-            <span className="text-base font-medium text-gray-900">FKW in Introduction</span>
-          </div>
         </div>
-      </Card>
-
-      {/* SERP Preview */}
-      <Card className="p-8 bg-white border-2 border-gray-300 shadow-lg">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-bold text-gray-900">Google SERP Vorschau</h3>
-          <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
-            <button
-              onClick={() => setSerpView('desktop')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                serpView === 'desktop'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Desktop
-            </button>
-            <button
-              onClick={() => setSerpView('mobile')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                serpView === 'mobile'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Mobile
-            </button>
-          </div>
-        </div>
-        <div className={`bg-white rounded-lg p-6 border border-gray-200 ${serpView === 'mobile' ? 'max-w-md mx-auto' : ''}`}>
-          {serpView === 'desktop' ? (
-            <>
-              {/* Desktop SERP */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-6 h-6 rounded-full bg-gray-200"></div>
-                <div className="text-sm text-gray-600">www.image-engineering.de</div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-1 text-sm">
-                  <span className="text-gray-600">https://www.image-engineering.de</span>
-                  <span className="text-gray-600"> › </span>
-                  <span className="text-gray-900">{data.slug || pageSlug}</span>
-                </div>
-                
-                <h4 className="text-xl text-[#1a0dab] hover:underline cursor-pointer line-clamp-1">
-                  {data.title || 'Ihr SEO Title erscheint hier'}
-                </h4>
-                
-                <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                  {data.metaDescription || 'Ihre Meta Description erscheint hier. Beschreiben Sie Ihre Seite in 120-160 Zeichen, um optimale Darstellung in Suchergebnissen zu gewährleisten.'}
-                </p>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Mobile SERP */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-5 h-5 rounded-full bg-gray-200"></div>
-                  <div className="text-xs text-gray-600">image-engineering.de</div>
-                </div>
-                
-                <h4 className="text-lg text-[#1a0dab] hover:underline cursor-pointer line-clamp-2 leading-snug">
-                  {data.title || 'Ihr SEO Title erscheint hier'}
-                </h4>
-                
-                <div className="text-xs text-gray-600 truncate">
-                  https://www.image-engineering.de/{data.slug || pageSlug}
-                </div>
-                
-                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
-                  {data.metaDescription || 'Ihre Meta Description erscheint hier. Beschreiben Sie Ihre Seite in 120-160 Zeichen, um optimale Darstellung in Suchergebnissen zu gewährleisten.'}
-                </p>
-              </div>
-            </>
-          )}
-        </div>
-        <p className="text-sm text-gray-600 mt-4 leading-relaxed">
-          {serpView === 'desktop' 
-            ? 'So erscheint Ihre Seite in Desktop-Suchergebnissen auf Google.'
-            : 'So erscheint Ihre Seite in mobilen Suchergebnissen auf Google. Mobile Titel werden oft kürzer angezeigt.'}
-        </p>
       </Card>
 
       {/* Basic SEO Fields */}
@@ -240,28 +146,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.focusKeyword || ''}
             onChange={(e) => handleChange('focusKeyword', e.target.value)}
             placeholder="z.B. camera testing software"
-            className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
           />
           <p className="text-base text-white mt-3 leading-relaxed">
-            Hauptkeyword für diese Seite - sollte in Title, Description, Slug und Introduction vorkommen
-          </p>
-        </div>
-
-        <div>
-          <Label htmlFor="introduction-text" className="flex items-center gap-2 text-base font-semibold">
-            Introduction Text (erster Textabschnitt)
-            <Badge variant="outline" className="text-sm">Empfohlen</Badge>
-          </Label>
-          <Textarea
-            id="introduction-text"
-            value={data.introductionText || ''}
-            onChange={(e) => handleChange('introductionText', e.target.value)}
-            placeholder="z.B. Main Applications – Photography and video camera systems cover a broad spectrum of applications that contribute to image quality, color accuracy and overall performance!"
-            className="mt-3 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-2xl text-black placeholder:text-2xl placeholder:text-black"
-            rows={3}
-          />
-          <p className="text-base text-white mt-3 leading-relaxed">
-            Der erste Textabschnitt unter dem Hero - FKW sollte hier in den ersten ~100 Wörtern vorkommen
+            Hauptkeyword für diese Seite - sollte in Title, Description und Slug vorkommen
           </p>
         </div>
 
@@ -275,7 +163,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.title || ''}
             onChange={(e) => handleChange('title', e.target.value)}
             placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
-            className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             maxLength={70}
           />
           <div className="mt-3 space-y-2">
@@ -338,7 +226,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.metaDescription || ''}
             onChange={(e) => handleChange('metaDescription', e.target.value)}
             placeholder="z.B. Discover professional camera testing solutions with Image Engineering. Industry-leading test charts, analysis software, and illumination devices for precise image quality measurement."
-            className="mt-3 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+            className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black placeholder:text-black"
             rows={4}
             maxLength={170}
           />
@@ -398,7 +286,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             <Badge variant="outline" className="text-sm">Pflicht</Badge>
           </Label>
           <div className="flex items-center mt-3">
-            <span className="text-2xl text-black px-5 py-3 bg-gray-100 rounded-l-md border-2 border-r-0 border-gray-300 font-medium h-14 flex items-center">
+            <span className="text-xl text-black px-5 py-3 bg-gray-100 rounded-l-md border-2 border-r-0 border-gray-300 font-medium h-12 flex items-center">
               /
             </span>
             <Input
@@ -406,7 +294,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.slug || ''}
               onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-'))}
               placeholder={pageSlug}
-              className="rounded-l-none h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+              className="rounded-l-none text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             />
           </div>
           <p className="text-base text-white mt-3 leading-relaxed">
@@ -424,7 +312,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.canonical || ''}
             onChange={(e) => handleChange('canonical', e.target.value)}
             placeholder="https://www.image-engineering.de/your-solution/machine-vision"
-            className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
           />
           <p className="text-base text-white mt-3 leading-relaxed">
             Verhindert Duplicate Content. Leer lassen = aktuelle URL verwenden.
@@ -440,7 +328,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.robotsIndex || 'index'}
             onValueChange={(value: 'index' | 'noindex') => handleChange('robotsIndex', value)}
           >
-            <SelectTrigger className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-2xl text-black">
+            <SelectTrigger className="mt-3 h-12 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-black">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -456,7 +344,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.robotsFollow || 'follow'}
             onValueChange={(value: 'follow' | 'nofollow') => handleChange('robotsFollow', value)}
           >
-            <SelectTrigger className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-2xl text-black">
+            <SelectTrigger className="mt-3 h-12 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-black">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -478,7 +366,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.ogTitle || ''}
               onChange={(e) => handleChange('ogTitle', e.target.value)}
               placeholder="Leer lassen = SEO Title verwenden"
-              className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             />
           </div>
 
@@ -489,7 +377,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.ogDescription || ''}
               onChange={(e) => handleChange('ogDescription', e.target.value)}
               placeholder="Leer lassen = Meta Description verwenden"
-              className="mt-3 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+              className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black placeholder:text-black"
               rows={3}
             />
           </div>
@@ -501,7 +389,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.ogImage || ''}
               onChange={(e) => handleChange('ogImage', e.target.value)}
               placeholder="https://... (empfohlen: 1200×630px)"
-              className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             />
           </div>
 
@@ -511,7 +399,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.twitterCard || 'summary_large_image'}
               onValueChange={(value: 'summary' | 'summary_large_image') => handleChange('twitterCard', value)}
             >
-            <SelectTrigger className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-2xl text-black">
+              <SelectTrigger className="mt-3 h-12 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-black">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
