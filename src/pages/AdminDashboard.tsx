@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import {
@@ -46,6 +46,7 @@ import FAQEditor from '@/components/admin/FAQEditor';
 import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
+import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
@@ -169,6 +170,11 @@ const AdminDashboard = () => {
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
+  const [copyHeroDialogOpen, setCopyHeroDialogOpen] = useState(false);
+  const [copyTilesDialogOpen, setCopyTilesDialogOpen] = useState(false);
+  const [copyBannerDialogOpen, setCopyBannerDialogOpen] = useState(false);
+  const [copySolutionsDialogOpen, setCopySolutionsDialogOpen] = useState(false);
+  const [copyFooterDialogOpen, setCopyFooterDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("hero");
   const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
@@ -2568,7 +2574,16 @@ const AdminDashboard = () => {
                 </select>
               </div>
 
-              <div className="flex justify-end pt-4 border-t">
+              <div className="flex justify-between items-center pt-4 border-t">
+                <Button
+                  onClick={() => setCopyHeroDialogOpen(true)}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy to Page...
+                </Button>
+                
                 <Button
                   onClick={handleSaveHero}
                   disabled={saving}
@@ -2578,6 +2593,27 @@ const AdminDashboard = () => {
                   {saving ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
+
+              <CopySegmentDialog
+                open={copyHeroDialogOpen}
+                onOpenChange={setCopyHeroDialogOpen}
+                currentPageSlug={selectedPage}
+                segmentId={segmentRegistry['hero']?.toString() || '1'}
+                segmentType="hero"
+                segmentData={{
+                  hero_title: content.hero_title,
+                  hero_subtitle: content.hero_subtitle,
+                  hero_description: content.hero_description,
+                  hero_image_url: heroImageUrl,
+                  hero_image_metadata: heroImageMetadata,
+                  hero_cta_text: content.hero_cta,
+                  hero_cta_link: heroCtaLink,
+                  hero_cta_style: heroCtaStyle,
+                  hero_image_position: heroImagePosition,
+                  hero_layout_ratio: heroLayout,
+                  hero_top_spacing: heroTopPadding
+                }}
+              />
             </CardContent>
           </Card>
           </TabsContent>
@@ -2928,7 +2964,16 @@ const AdminDashboard = () => {
                 ))}
               </div>
 
-              <div className="flex justify-end pt-4 border-t">
+              <div className="flex justify-between items-center pt-4 border-t">
+                <Button
+                  onClick={() => setCopyTilesDialogOpen(true)}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy to Page...
+                </Button>
+                
                 <Button
                   onClick={handleSaveApplications}
                   disabled={saving}
@@ -2938,6 +2983,20 @@ const AdminDashboard = () => {
                   {saving ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
+
+              <CopySegmentDialog
+                open={copyTilesDialogOpen}
+                onOpenChange={setCopyTilesDialogOpen}
+                currentPageSlug={selectedPage}
+                segmentId={segmentRegistry['tiles']?.toString() || '2'}
+                segmentType="tiles"
+                segmentData={{
+                  tiles_title: content.applications_title,
+                  tiles_description: content.applications_description,
+                  tiles_columns: tilesColumns,
+                  tiles: applications
+                }}
+              />
             </CardContent>
           </Card>
           </TabsContent>
