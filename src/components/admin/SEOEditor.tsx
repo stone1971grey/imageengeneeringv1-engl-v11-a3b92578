@@ -21,6 +21,8 @@ interface SEOData {
   ogDescription?: string;
   ogImage?: string;
   twitterCard?: 'summary' | 'summary_large_image';
+  introduction?: string;
+  h1?: string;
 }
 
 interface SEOEditorProps {
@@ -263,31 +265,17 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
         <div>
           <Label className="flex items-center gap-2 text-base font-semibold">
-            Introduction (Erstes Content-Segment)
-            <Badge variant="outline" className="text-sm">Info</Badge>
+            Introduction
+            <Badge variant="outline" className="text-sm">SEO-relevant</Badge>
           </Label>
-          <div className="mt-3 border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
-            {introductionText.title || introductionText.description ? (
-              <>
-                {introductionText.title && (
-                  <div className="mb-3">
-                    <span className="text-sm font-medium text-gray-600">Section Title:</span>
-                    <p className="text-lg text-black font-semibold mt-1">{introductionText.title}</p>
-                  </div>
-                )}
-                {introductionText.description && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-600">Section Description:</span>
-                    <p className="text-base text-black mt-1 leading-relaxed">{introductionText.description}</p>
-                  </div>
-                )}
-              </>
-            ) : (
-              <p className="text-gray-400 italic">Kein Introduction-Segment gefunden. Fügen Sie ein Tiles- oder Image & Text-Segment hinzu, um Inhalt anzuzeigen.</p>
-            )}
-          </div>
+          <Textarea
+            value={data.introduction || ''}
+            onChange={(e) => onChange({ ...data, introduction: e.target.value })}
+            placeholder="Erster Textabschnitt unter dem Hero (ca. 100-200 Wörter)"
+            className="mt-3 h-32 text-xl text-black placeholder:text-black border-2 border-gray-300 focus:border-[#f9dc24]"
+          />
           <p className="text-base text-white mt-3 leading-relaxed">
-            Dieser Inhalt wird automatisch aus dem ersten Tiles-, Image & Text- oder Solutions-Segment Ihrer Seite gezogen.
+            Die Introduction sollte das Fokus-Keyword innerhalb der ersten 100 Wörter enthalten. Dies verbessert die SEO-Relevanz.
           </p>
         </div>
 
