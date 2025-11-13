@@ -2655,6 +2655,9 @@ const AdminDashboard = () => {
                   hero_top_spacing: heroTopPadding
                 }}
                 availablePages={availablePages}
+                onCopySuccess={(targetPageSlug) => {
+                  navigate(`/admin-dashboard?page=${targetPageSlug}`);
+                }}
               />
             </CardContent>
           </Card>
@@ -3039,6 +3042,9 @@ const AdminDashboard = () => {
                   tiles: applications
                 }}
                 availablePages={availablePages}
+                onCopySuccess={(targetPageSlug) => {
+                  navigate(`/admin-dashboard?page=${targetPageSlug}`);
+                }}
               />
             </CardContent>
           </Card>

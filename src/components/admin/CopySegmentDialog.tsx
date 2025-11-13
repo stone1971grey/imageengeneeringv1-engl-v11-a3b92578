@@ -15,6 +15,7 @@ interface CopySegmentDialogProps {
   segmentType: string;
   segmentData: any;
   availablePages?: Array<{ page_slug: string; page_title: string }>;
+  onCopySuccess?: (targetPageSlug: string) => void;
 }
 
 export const CopySegmentDialog = ({
@@ -24,7 +25,8 @@ export const CopySegmentDialog = ({
   segmentId,
   segmentType,
   segmentData,
-  availablePages = []
+  availablePages = [],
+  onCopySuccess
 }: CopySegmentDialogProps) => {
   const [targetPage, setTargetPage] = useState<string>('');
   const [position, setPosition] = useState<'start' | 'end'>('end');
@@ -171,11 +173,7 @@ export const CopySegmentDialog = ({
 
       // Success!
       const targetPageTitle = pages.find(p => p.page_slug === targetPage)?.page_title || targetPage;
-      toast({
-        title: "Segment copied successfully",
-        description: `Segment copied to ${targetPageTitle} (ID: ${newSegmentId}). Reload the target page to see changes.`,
-      });
-
+      
       onOpenChange(false);
       setTargetPage('');
       setPosition('end');
@@ -186,6 +184,18 @@ export const CopySegmentDialog = ({
         newSegmentKey,
         position
       });
+
+      toast({
+        title: "Segment copied successfully",
+        description: `Segment copied to ${targetPageTitle} (ID: ${newSegmentId}). Switching to ${targetPageTitle}...`,
+      });
+
+      // Call success callback to trigger page switch
+      if (onCopySuccess) {
+        setTimeout(() => {
+          onCopySuccess(targetPage);
+        }, 500);
+      }
 
     } catch (error) {
       console.error('Error copying segment:', error);
