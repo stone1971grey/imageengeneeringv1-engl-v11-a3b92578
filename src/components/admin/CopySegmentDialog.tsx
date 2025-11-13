@@ -14,6 +14,7 @@ interface CopySegmentDialogProps {
   segmentId: string;
   segmentType: string;
   segmentData: any;
+  availablePages?: Array<{ page_slug: string; page_title: string }>;
 }
 
 export const CopySegmentDialog = ({
@@ -22,77 +23,16 @@ export const CopySegmentDialog = ({
   currentPageSlug,
   segmentId,
   segmentType,
-  segmentData
+  segmentData,
+  availablePages = []
 }: CopySegmentDialogProps) => {
   const [targetPage, setTargetPage] = useState<string>('');
   const [position, setPosition] = useState<'start' | 'end'>('end');
-  const [pages, setPages] = useState<Array<{ page_slug: string; page_title: string }>>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  // Load pages when dialog opens
-  const handleOpenChange = async (isOpen: boolean) => {
-    onOpenChange(isOpen);
-    if (isOpen) {
-      console.log('Dialog opened, currentPageSlug:', currentPageSlug);
-      
-      // Load pages from page_registry that have CMS segments
-      const { data: registryData, error: registryError } = await supabase
-        .from('segment_registry')
-        .select('page_slug')
-        .eq('deleted', false);
-
-      if (registryError) {
-        console.error('Error loading segment registry:', registryError);
-        toast({
-          title: "Error loading pages",
-          description: "Could not load available pages",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Get unique page slugs from segment_registry (these are the CMS-enabled pages)
-      const cmsPages = [...new Set(registryData?.map(item => item.page_slug) || [])];
-      console.log('CMS-enabled pages from segment_registry:', cmsPages);
-      
-      // Filter out current page
-      const availablePages = cmsPages.filter(slug => slug !== currentPageSlug);
-      console.log('Available pages after filtering current page:', availablePages);
-
-      const pageTitleMap: Record<string, string> = {
-        'photography': 'Photo & Video',
-        'scanners-archiving': 'Scanners & Archiving',
-        'medical-endoscopy': 'Medical & Endoscopy',
-        'web-camera': 'Web Camera',
-        'machine-vision': 'Machine Vision',
-        'mobile-phone': 'Mobile Phone',
-        'automotive': 'Automotive',
-        'in-cabin-testing': 'In-Cabin Testing',
-        'arcturus': 'Arcturus',
-        'le7': 'LE7 Test Chart',
-        'your-solution': 'Your Solution'
-      };
-      
-      const pageList = availablePages
-        .map(slug => ({
-          page_slug: slug,
-          page_title: pageTitleMap[slug] || slug
-        }))
-        .sort((a, b) => a.page_title.localeCompare(b.page_title));
-      
-      setPages(pageList);
-      console.log('Final page list for dropdown:', pageList);
-      
-      if (pageList.length === 0) {
-        toast({
-          title: "No pages available",
-          description: "No other CMS pages found to copy to",
-          variant: "destructive"
-        });
-      }
-    }
-  };
+  // Use pre-loaded pages filtered for current page
+  const pages = availablePages.filter(page => page.page_slug !== currentPageSlug);
 
   const handleCopy = async () => {
     if (!targetPage) {
@@ -202,7 +142,7 @@ export const CopySegmentDialog = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Copy Segment to Another Page</DialogTitle>
