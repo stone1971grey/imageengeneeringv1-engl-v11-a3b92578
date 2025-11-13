@@ -7,6 +7,7 @@ import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
+import Specification from "@/components/segments/Specification";
 import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -179,6 +180,9 @@ const ScannersArchiving = () => {
       }
       if (dynamicSegment.type === 'faq') {
         return <FAQ key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'specification') {
+        return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 

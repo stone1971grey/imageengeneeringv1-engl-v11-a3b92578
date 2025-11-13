@@ -12,6 +12,7 @@ import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
 import { Video } from "@/components/segments/Video";
+import Specification from "@/components/segments/Specification";
 import { SEOHead } from "@/components/SEOHead";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
@@ -209,6 +210,9 @@ const MobilePhone = () => {
       }
       if (dynamicSegment.type === 'video') {
         return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'specification') {
+        return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
     }
 
