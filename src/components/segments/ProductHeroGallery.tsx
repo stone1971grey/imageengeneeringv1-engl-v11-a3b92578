@@ -139,7 +139,7 @@ const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
 
   const imageGallery = (
     <div className="relative">
-      <div className="relative overflow-hidden rounded-lg shadow-soft group cursor-pointer" onClick={() => setIsModalOpen(true)}>
+      <div className="relative rounded-lg shadow-soft group cursor-pointer" onClick={() => setIsModalOpen(true)}>
         {/* Animated glow effect behind image */}
         <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
         
