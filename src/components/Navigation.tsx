@@ -111,7 +111,6 @@ const Navigation = () => {
   // URL to page_slug mapping for admin links
   const urlToPageSlug: { [key: string]: string } = {
     '/products/test-charts/le7': 'le7',
-    '/products/illumination-devices/arcturus': 'arcturus',
     '/your-solution/photography': 'photography',
     '/your-solution/scanners-archiving': 'scanners-archiving',
     '/your-solution/medical-endoscopy': 'medical-endoscopy',
