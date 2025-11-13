@@ -1541,16 +1541,17 @@ const AdminDashboard = () => {
     switch (templateType) {
       case 'hero':
         return {
-          title: 'New Hero Section',
-          subtitle: '',
-          description: '',
-          cta: 'Learn More',
-          imageUrl: '',
-          imagePosition: 'right',
-          layout: '2-5',
-          topPadding: 'medium',
-          ctaLink: '',
-          ctaStyle: 'standard'
+          hero_title: 'New Hero Section',
+          hero_subtitle: '',
+          hero_description: '',
+          hero_cta_text: 'Learn More',
+          hero_image_url: '',
+          hero_image_metadata: null,
+          hero_image_position: 'right',
+          hero_layout_ratio: '2-5',
+          hero_top_spacing: 'medium',
+          hero_cta_link: '#',
+          hero_cta_style: 'standard'
         };
       case 'meta-navigation':
         return {
