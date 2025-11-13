@@ -640,13 +640,43 @@ const AdminDashboard = () => {
         try {
           const order = JSON.parse(item.content_value);
           // Convert old segment-X format to new IDs if needed
-          const updatedOrder = (order || ['tiles', 'banner', 'solutions']).map((tabId: string) => {
+          let updatedOrder = (order || ['tiles', 'banner', 'solutions']).map((tabId: string) => {
             if (tabId.startsWith('segment-')) {
               // This will be fixed by the useEffect sync after segments load
               return tabId;
             }
             return tabId;
           });
+          
+          // CRITICAL: Filter out deleted segments automatically
+          // Check against segmentRegistry - remove any segment that doesn't exist
+          // or is marked as deleted in the registry
+          updatedOrder = updatedOrder.filter((tabId: string) => {
+            // Keep static segment keys if they exist in registry
+            if (['hero', 'tiles', 'banner', 'solutions', 'footer'].includes(tabId)) {
+              return segmentRegistry[tabId] !== undefined;
+            }
+            // Keep dynamic segments if they exist in registry
+            return segmentRegistry[tabId] !== undefined;
+          });
+          
+          // If we filtered anything out, save the cleaned tab_order back to database
+          if (updatedOrder.length !== order.length && user) {
+            console.log("🧹 Cleaning tab_order: Removed deleted segments", order.filter((id: string) => !updatedOrder.includes(id)));
+            supabase
+              .from("page_content")
+              .upsert({
+                page_slug: selectedPage,
+                section_key: "tab_order",
+                content_type: "json",
+                content_value: JSON.stringify(updatedOrder),
+                updated_at: new Date().toISOString(),
+                updated_by: user.id
+              }, {
+                onConflict: 'page_slug,section_key'
+              });
+          }
+          
           setTabOrder(updatedOrder);
         } catch {
           setTabOrder(['tiles', 'banner', 'solutions']);
