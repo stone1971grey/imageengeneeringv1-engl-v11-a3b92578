@@ -125,7 +125,17 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     
     // Always sync introduction field with segment content (only if changed to avoid infinite loop)
     const combinedIntroText = [introTitle, introDescription].filter(Boolean).join('\n\n');
+    console.log('[SEO Editor] Introduction sync:', {
+      pageSlug,
+      introTitle,
+      introDescription,
+      combinedIntroText,
+      currentIntroduction: data.introduction,
+      shouldUpdate: combinedIntroText && data.introduction !== combinedIntroText
+    });
+    
     if (combinedIntroText && data.introduction !== combinedIntroText) {
+      console.log('[SEO Editor] Updating introduction field with:', combinedIntroText);
       onChange({ ...data, introduction: combinedIntroText });
     }
 
@@ -138,7 +148,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInSlug,
       keywordInIntroduction,
     });
-  }, [data, pageSegments, pageContent, onChange]);
+  }, [data, pageSegments, pageContent]);
 
   const handleChange = (field: keyof SEOData, value: string) => {
     onChange({
