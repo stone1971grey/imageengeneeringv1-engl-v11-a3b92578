@@ -175,6 +175,7 @@ const AdminDashboard = () => {
   const [copyBannerDialogOpen, setCopyBannerDialogOpen] = useState(false);
   const [copySolutionsDialogOpen, setCopySolutionsDialogOpen] = useState(false);
   const [copyFooterDialogOpen, setCopyFooterDialogOpen] = useState(false);
+  const [availablePages, setAvailablePages] = useState<Array<{ page_slug: string; page_title: string }>>([]);
   const [activeTab, setActiveTab] = useState<string>("hero");
   const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
@@ -319,6 +320,46 @@ const AdminDashboard = () => {
       checkUserAccess();
     }
   }, [user]);
+
+  // Load available pages once on mount for Copy functionality
+  useEffect(() => {
+    if (user && (isAdmin || isEditor)) {
+      loadAvailablePages();
+    }
+  }, [user, isAdmin, isEditor]);
+
+  const loadAvailablePages = async () => {
+    const { data: registryData } = await supabase
+      .from('segment_registry')
+      .select('page_slug')
+      .eq('deleted', false);
+
+    if (registryData) {
+      const cmsPages = [...new Set(registryData.map(item => item.page_slug))];
+      const pageTitleMap: Record<string, string> = {
+        'photography': 'Photo & Video',
+        'scanners-archiving': 'Scanners & Archiving',
+        'medical-endoscopy': 'Medical & Endoscopy',
+        'web-camera': 'Web Camera',
+        'machine-vision': 'Machine Vision',
+        'mobile-phone': 'Mobile Phone',
+        'automotive': 'Automotive',
+        'in-cabin-testing': 'In-Cabin Testing',
+        'arcturus': 'Arcturus',
+        'le7': 'LE7 Test Chart',
+        'your-solution': 'Your Solution'
+      };
+      
+      const pageList = cmsPages
+        .map(slug => ({
+          page_slug: slug,
+          page_title: pageTitleMap[slug] || slug
+        }))
+        .sort((a, b) => a.page_title.localeCompare(b.page_title));
+      
+      setAvailablePages(pageList);
+    }
+  };
 
   useEffect(() => {
     if (user && (isAdmin || isEditor)) {
@@ -2613,6 +2654,7 @@ const AdminDashboard = () => {
                   hero_layout_ratio: heroLayout,
                   hero_top_spacing: heroTopPadding
                 }}
+                availablePages={availablePages}
               />
             </CardContent>
           </Card>
@@ -2996,6 +3038,7 @@ const AdminDashboard = () => {
                   tiles_columns: tilesColumns,
                   tiles: applications
                 }}
+                availablePages={availablePages}
               />
             </CardContent>
           </Card>
