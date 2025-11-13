@@ -422,7 +422,7 @@ const WebCamera = () => {
     // Static segments
     if (segmentId === 'tiles') {
       return (
-        <section key="tiles" id={segmentIdMap['tiles']?.toString() || 'tiles'} className="py-8 bg-gray-50">
+        <section key="tiles" id={segmentIdMap['tiles']?.toString() || 'tiles'} className="pt-8 pb-0 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               {content.applications_title && (
