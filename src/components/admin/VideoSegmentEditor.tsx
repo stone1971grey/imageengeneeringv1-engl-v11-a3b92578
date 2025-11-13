@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Save } from "lucide-react";
+import { Save, Copy } from "lucide-react";
+import { CopySegmentDialog } from "./CopySegmentDialog";
 
 interface VideoSegmentEditorProps {
   data: {
@@ -12,9 +14,13 @@ interface VideoSegmentEditorProps {
   };
   onChange: (data: any) => void;
   onSave: () => void;
+  currentPageSlug: string;
+  segmentId: string;
 }
 
-export const VideoSegmentEditor = ({ data, onChange, onSave }: VideoSegmentEditorProps) => {
+export const VideoSegmentEditor = ({ data, onChange, onSave, currentPageSlug, segmentId }: VideoSegmentEditorProps) => {
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
+
   const handleChange = (field: string, value: string) => {
     onChange({
       ...data,
@@ -95,8 +101,17 @@ export const VideoSegmentEditor = ({ data, onChange, onSave }: VideoSegmentEdito
         </div>
       )}
 
-      {/* Save Button */}
-      <div className="flex justify-end pt-6 border-t">
+      {/* Action Buttons */}
+      <div className="flex justify-between items-center pt-6 border-t">
+        <Button
+          onClick={() => setCopyDialogOpen(true)}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <Copy className="h-4 w-4" />
+          Copy to Page...
+        </Button>
+        
         <Button
           onClick={onSave}
           className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
@@ -105,6 +120,16 @@ export const VideoSegmentEditor = ({ data, onChange, onSave }: VideoSegmentEdito
           Save Changes
         </Button>
       </div>
+
+      {/* Copy Segment Dialog */}
+      <CopySegmentDialog
+        open={copyDialogOpen}
+        onOpenChange={setCopyDialogOpen}
+        currentPageSlug={currentPageSlug}
+        segmentId={segmentId}
+        segmentType="video"
+        segmentData={data}
+      />
     </div>
   );
 };

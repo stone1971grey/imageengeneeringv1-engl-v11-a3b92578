@@ -4738,6 +4738,8 @@ const AdminDashboard = () => {
                           setPageSegments(newSegments);
                         }}
                         onSave={() => handleSaveSegments()}
+                        currentPageSlug={selectedPage}
+                        segmentId={segment.id}
                       />
                     );
                   })()}
@@ -4757,6 +4759,8 @@ const AdminDashboard = () => {
                           setPageSegments(newSegments);
                         }}
                         onSave={() => handleSaveSegments()}
+                        currentPageSlug={selectedPage}
+                        segmentId={segment.id}
                       />
                     );
                   })()}
@@ -4776,6 +4780,8 @@ const AdminDashboard = () => {
                           setPageSegments(newSegments);
                         }}
                         onSave={() => handleSaveSegments()}
+                        currentPageSlug={selectedPage}
+                        segmentId={segment.id}
                       />
                     );
                   })()}
@@ -4796,6 +4802,8 @@ const AdminDashboard = () => {
                           setPageSegments(updatedSegments);
                         }}
                         onSave={() => handleSaveSegments()}
+                        currentPageSlug={selectedPage}
+                        segmentId={segment.id}
                       />
                     );
                   })()}
@@ -4818,6 +4826,7 @@ const AdminDashboard = () => {
                         }}
                         onSave={() => handleSaveSegments()}
                         saving={saving}
+                        currentPageSlug={selectedPage}
                       />
                     );
                   })()}
