@@ -635,9 +635,11 @@ const AdminDashboard = () => {
       } else if (item.section_key === "page_segments") {
         try {
           const segments = JSON.parse(item.content_value);
+          console.log('Loading page_segments for', selectedPage, ':', segments);
           // Ensure all segments have numeric IDs
           let needsUpdate = false;
           const segmentsWithIds = (segments || []).map((seg: any, idx: number) => {
+            console.log('Processing segment:', seg);
             if (!seg.id || typeof seg.id !== 'number' && !seg.id.match(/^\d+$/)) {
               needsUpdate = true;
               // Assign sequential IDs starting after static segments (1-4)
@@ -653,6 +655,7 @@ const AdminDashboard = () => {
             };
           });
           
+          console.log('Final segmentsWithIds:', segmentsWithIds);
           setPageSegments(segmentsWithIds);
           
           // If we added IDs, save back to database immediately
@@ -3997,8 +4000,10 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   {segment.type === 'hero' && (() => {
+                    console.log('Rendering hero segment:', segment.id, 'with data:', segment.data);
                     // Initialize with default data if needed
                     if (!segment.data || !segment.data.hero_title) {
+                      console.log('Initializing default data for hero segment:', segment.id);
                       segment.data = {
                         hero_title: '',
                         hero_subtitle: '',
@@ -4012,6 +4017,8 @@ const AdminDashboard = () => {
                         hero_layout_ratio: '2-5',
                         hero_top_spacing: 'medium'
                       };
+                    } else {
+                      console.log('Hero segment has existing data:', segment.data);
                     }
                     
                     return (
