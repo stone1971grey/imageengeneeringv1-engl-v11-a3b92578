@@ -33,6 +33,14 @@ export const CopySegmentDialog = ({
 
   // Use pre-loaded pages filtered for current page
   const pages = availablePages.filter(page => page.page_slug !== currentPageSlug);
+  
+  // Debug logging
+  console.log('CopySegmentDialog rendered:', {
+    open,
+    currentPageSlug,
+    availablePages,
+    filteredPages: pages
+  });
 
   const handleCopy = async () => {
     if (!targetPage) {
