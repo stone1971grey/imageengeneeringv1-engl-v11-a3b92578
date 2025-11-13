@@ -211,7 +211,8 @@ const AdminDashboard = () => {
       heroTopPadding,
       heroCtaLink,
       heroCtaStyle,
-      heroImageUrl
+      heroImageUrl,
+      heroImageMetadata
     },
     enabled: !!user && (isAdmin || isEditor)
   });
@@ -313,6 +314,7 @@ const AdminDashboard = () => {
     if (user && (isAdmin || isEditor)) {
       // Reset all state when changing pages
       setHeroImageUrl("");
+      setHeroImageMetadata(null);
       setHeroImagePosition("right");
       setHeroLayout("2-5");
       setHeroTopPadding("medium");
@@ -707,6 +709,7 @@ const AdminDashboard = () => {
           if (data.heroCtaLink) setHeroCtaLink(data.heroCtaLink);
           if (data.heroCtaStyle) setHeroCtaStyle(data.heroCtaStyle);
           if (data.heroImageUrl) setHeroImageUrl(data.heroImageUrl);
+          if (data.heroImageMetadata) setHeroImageMetadata(data.heroImageMetadata);
         } else if (section === 'tiles' && data) {
           if (data.applications) setApplications(data.applications);
           if (data.content) setContent(prev => ({ ...prev, ...data.content }));
