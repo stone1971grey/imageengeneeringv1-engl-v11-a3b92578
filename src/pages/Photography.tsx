@@ -272,6 +272,60 @@ const Photography = () => {
       if (dynamicSegment.type === 'specification') {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
+      if (dynamicSegment.type === 'image-text') {
+        return (
+          <section key={segmentId} id={segmentId} className="bg-gray-50 py-20">
+            <div className="w-full px-6">
+              {(dynamicSegment.data.title || dynamicSegment.data.subtext) && (
+                <div className="text-center mb-16">
+                  {dynamicSegment.data.title && (
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                      {dynamicSegment.data.title}
+                    </h2>
+                  )}
+                  {dynamicSegment.data.subtext && (
+                    <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                      {dynamicSegment.data.subtext}
+                    </p>
+                  )}
+                </div>
+              )}
+              {dynamicSegment.data.items && dynamicSegment.data.items.length > 0 && (
+                <div className={`grid gap-8 max-w-7xl mx-auto ${
+                  dynamicSegment.data.layout === "1-col" ? "grid-cols-1" :
+                  dynamicSegment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+                  "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                }`}>
+                  {dynamicSegment.data.items.map((item: any, index: number) => (
+                    <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                      <CardContent className="p-0">
+                        {item.imageUrl && (
+                          <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                            <img 
+                              src={item.imageUrl}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="p-8">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                          <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                            {item.description}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      }
+      if (dynamicSegment.type === 'video') {
+        return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
+      }
     }
 
     // Static segments
