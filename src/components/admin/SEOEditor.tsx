@@ -16,6 +16,7 @@ interface SEOData {
   robotsIndex?: 'index' | 'noindex';
   robotsFollow?: 'follow' | 'nofollow';
   focusKeyword?: string;
+  introductionText?: string;
   ogTitle?: string;
   ogDescription?: string;
   ogImage?: string;
@@ -38,6 +39,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
     keywordInTitle: false,
     keywordInDescription: false,
     keywordInSlug: false,
+    keywordInIntroduction: false,
   });
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
     const keywordInTitle = keyword ? (data.title?.toLowerCase().includes(keyword) || false) : false;
     const keywordInDescription = keyword ? (data.metaDescription?.toLowerCase().includes(keyword) || false) : false;
     const keywordInSlug = keyword ? (data.slug?.toLowerCase().includes(keyword.replace(/\s+/g, '-')) || false) : false;
+    const keywordInIntroduction = keyword ? (data.introductionText?.toLowerCase().includes(keyword) || false) : false;
 
     setChecks({
       titleLength,
@@ -56,6 +59,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
       keywordInTitle,
       keywordInDescription,
       keywordInSlug,
+      keywordInIntroduction,
     });
   }, [data]);
 
@@ -87,11 +91,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
           </h3>
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
             <div className={`h-3 w-3 rounded-full ${
-              Object.values(checks).filter(Boolean).length >= 5 ? 'bg-green-500 animate-pulse' : 
-              Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
+              Object.values(checks).filter(Boolean).length >= 6 ? 'bg-green-500 animate-pulse' : 
+              Object.values(checks).filter(Boolean).length >= 4 ? 'bg-yellow-500' : 'bg-red-500'
             }`} />
             <span className="text-sm font-semibold text-gray-700">
-              {Object.values(checks).filter(Boolean).length}/6 Checks
+              {Object.values(checks).filter(Boolean).length}/7 Checks
             </span>
           </div>
         </div>
@@ -131,6 +135,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
           }`}>
             {getStatusIcon(checks.hasH1)}
             <span className="text-base font-medium text-gray-900">H1 Present</span>
+          </div>
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.keywordInIntroduction ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
+            {getStatusIcon(checks.keywordInIntroduction)}
+            <span className="text-base font-medium text-gray-900">FKW in Introduction</span>
           </div>
         </div>
       </Card>
@@ -233,7 +243,25 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             className="mt-3 h-14 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-2xl text-black placeholder:text-2xl placeholder:text-black"
           />
           <p className="text-base text-white mt-3 leading-relaxed">
-            Hauptkeyword für diese Seite - sollte in Title, Description und Slug vorkommen
+            Hauptkeyword für diese Seite - sollte in Title, Description, Slug und Introduction vorkommen
+          </p>
+        </div>
+
+        <div>
+          <Label htmlFor="introduction-text" className="flex items-center gap-2 text-base font-semibold">
+            Introduction Text (erster Textabschnitt)
+            <Badge variant="outline" className="text-sm">Empfohlen</Badge>
+          </Label>
+          <Textarea
+            id="introduction-text"
+            value={data.introductionText || ''}
+            onChange={(e) => handleChange('introductionText', e.target.value)}
+            placeholder="z.B. Main Applications – Photography and video camera systems cover a broad spectrum of applications that contribute to image quality, color accuracy and overall performance!"
+            className="mt-3 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-2xl text-black placeholder:text-2xl placeholder:text-black"
+            rows={3}
+          />
+          <p className="text-base text-white mt-3 leading-relaxed">
+            Der erste Textabschnitt unter dem Hero - FKW sollte hier in den ersten ~100 Wörtern vorkommen
           </p>
         </div>
 
