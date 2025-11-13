@@ -99,7 +99,6 @@ export const navigationDataDe = {
     "Illumination Devices": {
       description: "Professionelle LED-Beleuchtungssysteme und gleichmäßige Lichtquellen für stabile Testumgebungen",
       subgroups: [
-        { name: "ARCTURUS LED", link: "/products/illumination-devices/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "Produktionslinienkalibrierung", link: "#" },
@@ -167,14 +166,6 @@ export const navigationDataDe = {
 
   // Solution Packages
   solutionPackages: {
-    "Arcturus HDR Test Bundle": {
-      description: "HDR-Testbundle mit Arcturus LED, Vega-Software und Testcharts – ideal für Automotive & Mobile.",
-      subline: "Komplettpaket: Beleuchtung + Software + Charts"
-    },
-    "Arcturus LED + Vega Software + Test Charts": {
-      description: "Komplettlösung für Beleuchtungstests",
-      subline: "Hardware + Software + Charts Bundle"
-    },
     "Camera Calibration Package": {
       description: "Beleuchtungssystem, Charts, Software – speziell für kalibrierte Tests",
       subline: "Komplette Kalibrierungslösung"

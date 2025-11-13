@@ -99,7 +99,6 @@ export const navigationDataZh = {
     "Illumination Devices": {
       description: "专业LED照明系统和均匀光源，用于稳定的测试环境",
       subgroups: [
-        { name: "ARCTURUS LED", link: "/products/illumination-devices/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "生产线校准", link: "#" },
@@ -167,14 +166,6 @@ export const navigationDataZh = {
 
   // Solution Packages - 解决方案套餐
   solutionPackages: {
-    "Arcturus HDR Test Bundle": {
-      description: "HDR测试套装，包含Arcturus LED、Vega软件和测试图卡 - 适用于汽车和移动应用。",
-      subline: "完整套装：照明+软件+图卡"
-    },
-    "Arcturus LED + Vega Software + Test Charts": {
-      description: "照明测试的完整解决方案",
-      subline: "硬件+软件+图卡套装"
-    },
     "Camera Calibration Package": {
       description: "照明系统、图卡、软件 - 专为校准测试设计",
       subline: "完整校准解决方案"

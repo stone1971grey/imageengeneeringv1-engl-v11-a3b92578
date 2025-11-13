@@ -28,13 +28,11 @@ import industryMachineVision from "@/assets/industry-machine-vision.jpg";
 import industryMedical from "@/assets/industry-medical.jpg";
 import industryScanning from "@/assets/industry-scanning.jpg";
 import industryLabTesting from "@/assets/industry-lab-testing.jpg";
-import arcturusMainProduct from "@/assets/arcturus-main-product.png";
 import iqAnalyzerIntro from "@/assets/iq-analyzer-intro.png";
 import productBundleIeee from "@/assets/product-bundle-ieee.png";
 import iqLedIllumination from "@/assets/iq-led-illumination.png";
 import technology2025 from "@/assets/technology-2025.png";
 import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
-import arcturusSetupVegaLaptop from "@/assets/arcturus-setup-vega-laptop.jpg";
 
 const Navigation = () => {
   const { t } = useTranslation();
@@ -193,7 +191,7 @@ const Navigation = () => {
   const productData = {
     "Test Charts": { ...navData.products["Test Charts"], image: "/images/custom-chart.png" },
     "Illumination Devices": { ...navData.products["Illumination Devices"], image: iqLedIllumination },
-    "Measurement Devices": { ...navData.products["Measurement Devices"], image: arcturusMainProduct },
+    "Measurement Devices": { ...navData.products["Measurement Devices"], image: iqAnalyzerIntro },
     "Software & APIs": { ...navData.products["Software & APIs"], image: iqAnalyzerIntro },
     "Product Accessories": { ...navData.products["Product Accessories"], image: "/images/chart-case.png" }
   };
@@ -208,8 +206,6 @@ const Navigation = () => {
   };
 
   const solutionPackages = {
-    "Arcturus HDR Test Bundle": { ...navData.solutionPackages["Arcturus HDR Test Bundle"], image: arcturusSetupVegaLaptop },
-    "Arcturus LED + Vega Software + Test Charts": { ...navData.solutionPackages["Arcturus LED + Vega Software + Test Charts"], image: arcturusMainProduct },
     "Camera Calibration Package": { ...navData.solutionPackages["Camera Calibration Package"], image: "/images/custom-chart.png" },
     "Laboratory Complete Solution": { ...navData.solutionPackages["Laboratory Complete Solution"], image: industryLabTesting },
     "Spectral Measurement & Analysis Set": { ...navData.solutionPackages["Spectral Measurement & Analysis Set"], image: iqAnalyzerIntro }
