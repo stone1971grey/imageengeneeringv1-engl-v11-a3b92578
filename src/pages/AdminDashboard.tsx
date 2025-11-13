@@ -1260,8 +1260,12 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, publicUrl);
+
       const newSegments = [...pageSegments];
       newSegments[segmentIndex].data.heroImageUrl = publicUrl;
+      newSegments[segmentIndex].data.heroImageMetadata = { ...metadata, altText: '' };
       setPageSegments(newSegments);
 
       toast.success("Hero image uploaded successfully!");
@@ -4329,12 +4333,61 @@ const AdminDashboard = () => {
                                 onClick={() => {
                                   const newSegments = [...pageSegments];
                                   newSegments[index].data.heroImageUrl = '';
+                                  newSegments[index].data.heroImageMetadata = null;
                                   setPageSegments(newSegments);
                                 }}
                                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                               >
                                 <X className="h-3 w-3" />
                               </button>
+                            </div>
+                          )}
+                          
+                          {/* Image Metadata Display */}
+                          {segment.data.heroImageMetadata && (
+                            <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                              <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                  <span className="text-gray-600">Original Name:</span>
+                                  <p className="text-black font-medium">{segment.data.heroImageMetadata.originalFileName}</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Dimensions:</span>
+                                  <p className="text-black font-medium">{segment.data.heroImageMetadata.width} × {segment.data.heroImageMetadata.height} px</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">File Size:</span>
+                                  <p className="text-black font-medium">{formatFileSize(segment.data.heroImageMetadata.fileSizeKB)}</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Format:</span>
+                                  <p className="text-black font-medium uppercase">{segment.data.heroImageMetadata.format}</p>
+                                </div>
+                                <div className="col-span-2">
+                                  <span className="text-gray-600">Upload Date:</span>
+                                  <p className="text-black font-medium">{formatUploadDate(segment.data.heroImageMetadata.uploadDate)}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-4">
+                                <Label htmlFor={`image_text_hero_alt_${index}`} className="text-black text-base">Alt Text (SEO)</Label>
+                                <Input
+                                  id={`image_text_hero_alt_${index}`}
+                                  type="text"
+                                  value={segment.data.heroImageMetadata.altText || ''}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    if (newSegments[index].data.heroImageMetadata) {
+                                      newSegments[index].data.heroImageMetadata.altText = e.target.value;
+                                      setPageSegments(newSegments);
+                                    }
+                                  }}
+                                  placeholder="Describe this image for accessibility and SEO"
+                                  className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                                />
+                                <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                              </div>
                             </div>
                           )}
                         </div>
@@ -4477,6 +4530,54 @@ const AdminDashboard = () => {
                                         alt={item.title} 
                                         className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
                                       />
+                                    </div>
+                                  )}
+                                  
+                                  {/* Image Metadata Display */}
+                                  {item.metadata && (
+                                    <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                                      <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                                      <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                          <span className="text-gray-600">Original Name:</span>
+                                          <p className="text-black font-medium">{item.metadata.originalFileName}</p>
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">Dimensions:</span>
+                                          <p className="text-black font-medium">{item.metadata.width} × {item.metadata.height} px</p>
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">File Size:</span>
+                                          <p className="text-black font-medium">{formatFileSize(item.metadata.fileSizeKB)}</p>
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">Format:</span>
+                                          <p className="text-black font-medium uppercase">{item.metadata.format}</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                          <span className="text-gray-600">Upload Date:</span>
+                                          <p className="text-black font-medium">{formatUploadDate(item.metadata.uploadDate)}</p>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="mt-4">
+                                        <Label htmlFor={`image_text_item_alt_${index}_${itemIndex}`} className="text-black text-base">Alt Text (SEO)</Label>
+                                        <Input
+                                          id={`image_text_item_alt_${index}_${itemIndex}`}
+                                          type="text"
+                                          value={item.metadata.altText || ''}
+                                          onChange={(e) => {
+                                            const newSegments = [...pageSegments];
+                                            if (newSegments[index].data.items[itemIndex].metadata) {
+                                              newSegments[index].data.items[itemIndex].metadata.altText = e.target.value;
+                                              setPageSegments(newSegments);
+                                            }
+                                          }}
+                                          placeholder="Describe this image for accessibility and SEO"
+                                          className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                                        />
+                                        <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
