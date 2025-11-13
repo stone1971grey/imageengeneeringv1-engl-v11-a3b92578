@@ -15,7 +15,7 @@ const Specification = ({ id, title = "Detailed Specifications", rows = [] }: Spe
   return (
     <section id={id} className="pb-20 bg-gray-50">
       <div className="w-full px-6">
-        <div className="max-w-5xl mx-auto">
+        <div className="grid gap-8 max-w-7xl mx-auto grid-cols-1">
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 hover:shadow-md transition-shadow duration-300">
             {title && (
               <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">{title}</h2>
