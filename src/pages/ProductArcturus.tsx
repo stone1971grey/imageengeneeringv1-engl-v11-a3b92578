@@ -380,55 +380,6 @@ const ProductArcturus = () => {
 
         {/* Render other segments (excluding meta-navigation) based on tab_order */}
         {tabOrder.map((segmentId) => {
-            // Handle static hero segment
-            if (segmentId === 'hero') {
-              return (
-                <section key="hero" id="74" className="relative py-20 bg-background">
-                  <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                      <div className="space-y-6">
-                        <div>
-                          <h1 className="text-5xl font-bold mb-4 text-foreground">
-                            {content.hero_title || "ARCTURUS"}
-                          </h1>
-                          {content.hero_subtitle && (
-                            <p className="text-2xl text-muted-foreground mb-6">
-                              {content.hero_subtitle}
-                            </p>
-                          )}
-                        </div>
-                        <p className="text-lg text-muted-foreground leading-relaxed">
-                          {content.hero_description || ""}
-                        </p>
-                        <div className="flex flex-wrap gap-4">
-                          {content.hero_cta_text && (
-                            <Button 
-                              size="lg"
-                              style={{ backgroundColor: '#f9dc24', color: 'black' }}
-                              asChild
-                            >
-                              <a href={content.hero_cta_link || "#"}>
-                                {content.hero_cta_text}
-                              </a>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                      <div className="relative">
-                        {content.hero_image_url && (
-                          <img 
-                            src={content.hero_image_url}
-                            alt={content.hero_title || "Arcturus"}
-                            className="w-full h-auto rounded-lg shadow-xl"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              );
-            }
-
             // Handle dynamic segments
             const segment = segments.find((s) => s.id === segmentId);
             if (segment && segment.type !== 'meta-navigation') {
