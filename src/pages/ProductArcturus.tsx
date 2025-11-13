@@ -136,7 +136,7 @@ const ProductArcturus = () => {
 
               {/* Right Product Image */}
               <div className="relative">
-                <div className="relative overflow-hidden rounded-lg shadow-soft">
+                <div className="relative rounded-lg shadow-soft">
                   {/* Animated glow effect behind image */}
                   <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
                   
