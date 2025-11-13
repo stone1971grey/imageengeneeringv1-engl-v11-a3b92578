@@ -13,10 +13,10 @@ const Specification = ({ id, title = "Detailed Specifications", rows = [] }: Spe
   if (!title && rows.length === 0) return null;
 
   return (
-    <section id={id} className="container mx-auto px-4 pb-20 scroll-mt-[170px]">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
+    <section id={id} className="py-12 bg-white scroll-mt-[170px]">
+      <div className="container mx-auto px-6">
         {title && (
-          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">{title}</h2>
+          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-8">{title}</h2>
         )}
         {rows.length > 0 && (
           <div className="overflow-x-auto">
