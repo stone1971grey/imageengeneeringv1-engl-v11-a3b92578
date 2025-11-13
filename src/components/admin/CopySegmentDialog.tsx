@@ -55,69 +55,39 @@ export const CopySegmentDialog = ({
     setLoading(true);
 
     try {
-      // Check if target page has a deleted static segment of the same type
-      const { data: existingSegment } = await supabase
+      // ALWAYS create new segment with next sequential ID - NEVER reuse deleted IDs
+      const { data: maxSegment } = await supabase
         .from('segment_registry')
-        .select('segment_id, segment_key, deleted, is_static')
-        .eq('page_slug', targetPage)
-        .eq('segment_type', segmentType)
-        .eq('is_static', true)
-        .maybeSingle();
+        .select('segment_id')
+        .order('segment_id', { ascending: false })
+        .limit(1)
+        .single();
 
-      let targetSegmentId: number;
-      let targetSegmentKey: string;
-      
-      if (existingSegment && existingSegment.deleted) {
-        // Reactivate deleted static segment
-        targetSegmentId = existingSegment.segment_id;
-        targetSegmentKey = existingSegment.segment_key;
-        
-        const { error: reactivateError } = await supabase
-          .from('segment_registry')
-          .update({ deleted: false })
-          .eq('segment_id', targetSegmentId);
-          
-        if (reactivateError) throw reactivateError;
-        
-        console.log('Reactivated static segment:', targetSegmentId);
-      } else {
-        // Create new dynamic segment
-        const { data: maxSegment } = await supabase
-          .from('segment_registry')
-          .select('segment_id')
-          .order('segment_id', { ascending: false })
-          .limit(1)
-          .single();
+      const newSegmentId = (maxSegment?.segment_id || 0) + 1;
+      const newSegmentKey = `${segmentType}-${newSegmentId}`;
 
-        targetSegmentId = (maxSegment?.segment_id || 0) + 1;
-        targetSegmentKey = `${segmentType}-${targetSegmentId}`;
+      // Create new segment_registry entry (always dynamic, never static)
+      const { error: registryError } = await supabase
+        .from('segment_registry')
+        .insert({
+          segment_id: newSegmentId,
+          page_slug: targetPage,
+          segment_type: segmentType,
+          segment_key: newSegmentKey,
+          is_static: false,
+          deleted: false
+        });
 
-        const { error: registryError } = await supabase
-          .from('segment_registry')
-          .insert({
-            segment_id: targetSegmentId,
-            page_slug: targetPage,
-            segment_type: segmentType,
-            segment_key: targetSegmentKey,
-            is_static: false,
-            deleted: false
-          });
+      if (registryError) throw registryError;
 
-        if (registryError) throw registryError;
-        
-        console.log('Created new dynamic segment:', targetSegmentId);
-      }
-
-      // Update or create page_content entry
+      // Copy page_content entry
       const { error: contentError } = await supabase
         .from('page_content')
-        .upsert({
+        .insert({
           page_slug: targetPage,
-          section_key: targetSegmentKey,
+          section_key: newSegmentKey,
           content_type: 'json',
           content_value: JSON.stringify(segmentData)
-        }, {
-          onConflict: 'page_slug,section_key'
         });
 
       if (contentError) throw contentError;
@@ -139,12 +109,9 @@ export const CopySegmentDialog = ({
         }
       }
 
-      // Remove the segment from tab_order if it exists (in case of reactivation)
-      currentTabOrder = currentTabOrder.filter(id => id !== targetSegmentKey && id !== targetSegmentId.toString());
-
       const newTabOrder = position === 'start' 
-        ? [targetSegmentId.toString(), ...currentTabOrder]
-        : [...currentTabOrder, targetSegmentId.toString()];
+        ? [newSegmentId.toString(), ...currentTabOrder]
+        : [...currentTabOrder, newSegmentId.toString()];
 
       const { error: tabOrderError } = await supabase
         .from('page_content')
@@ -163,7 +130,7 @@ export const CopySegmentDialog = ({
       const targetPageTitle = pages.find(p => p.page_slug === targetPage)?.page_title || targetPage;
       toast({
         title: "Segment copied successfully",
-        description: `Segment copied to ${targetPageTitle} (ID: ${targetSegmentId}). Reload the target page to see changes.`,
+        description: `Segment copied to ${targetPageTitle} (ID: ${newSegmentId}). Reload the target page to see changes.`,
       });
 
       onOpenChange(false);
@@ -171,11 +138,10 @@ export const CopySegmentDialog = ({
       setPosition('end');
       
       console.log('Segment copied successfully:', {
-        targetSegmentId,
+        newSegmentId,
         targetPage,
-        targetSegmentKey,
-        position,
-        wasReactivated: existingSegment?.deleted || false
+        newSegmentKey,
+        position
       });
 
     } catch (error) {
