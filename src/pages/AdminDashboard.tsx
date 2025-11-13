@@ -338,6 +338,7 @@ const AdminDashboard = () => {
       setTilesColumns("3");
       setPageSegments([]);
       setTabOrder(['tiles', 'banner', 'solutions']);
+      setSegmentRegistry({}); // Reset segment registry to prevent cross-page ID contamination
       setFooterCtaTitle("");
       setFooterCtaDescription("");
       setFooterContactHeadline("");
