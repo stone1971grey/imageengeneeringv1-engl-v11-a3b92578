@@ -134,6 +134,41 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
         </div>
       </Card>
 
+      {/* SERP Preview */}
+      <Card className="p-8 bg-white border-2 border-gray-300 shadow-lg">
+        <h3 className="text-2xl font-bold mb-6 text-gray-900">Google SERP Vorschau</h3>
+        <div className="bg-white rounded-lg p-6 border border-gray-200">
+          {/* Google Logo Placeholder */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-6 h-6 rounded-full bg-gray-200"></div>
+            <div className="text-sm text-gray-600">www.image-engineering.de</div>
+          </div>
+          
+          {/* SERP Result */}
+          <div className="space-y-2">
+            {/* URL Breadcrumb */}
+            <div className="flex items-center gap-1 text-sm">
+              <span className="text-gray-600">https://www.image-engineering.de</span>
+              <span className="text-gray-600"> › </span>
+              <span className="text-gray-900">{data.slug || pageSlug}</span>
+            </div>
+            
+            {/* Title */}
+            <h4 className="text-xl text-[#1a0dab] hover:underline cursor-pointer line-clamp-1">
+              {data.title || 'Ihr SEO Title erscheint hier'}
+            </h4>
+            
+            {/* Description */}
+            <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+              {data.metaDescription || 'Ihre Meta Description erscheint hier. Beschreiben Sie Ihre Seite in 120-160 Zeichen, um optimale Darstellung in Suchergebnissen zu gewährleisten.'}
+            </p>
+          </div>
+        </div>
+        <p className="text-sm text-gray-600 mt-4 leading-relaxed">
+          So erscheint Ihre Seite in Google Suchergebnissen. Die Darstellung kann je nach Gerät und Suchkontext variieren.
+        </p>
+      </Card>
+
       {/* Basic SEO Fields */}
       <div className="space-y-6">
         <div>
