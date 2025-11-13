@@ -178,6 +178,7 @@ const AdminDashboard = () => {
   const [footerContactSubline, setFooterContactSubline] = useState<string>("");
   const [footerContactDescription, setFooterContactDescription] = useState<string>("");
   const [footerTeamImageUrl, setFooterTeamImageUrl] = useState<string>("");
+  const [footerTeamImageMetadata, setFooterTeamImageMetadata] = useState<ImageMetadata | null>(null);
   const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
   const [footerTeamName, setFooterTeamName] = useState<string>("");
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
@@ -879,9 +880,13 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Update applications array
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, publicUrl);
+
+      // Update applications array with URL and metadata
       const newApps = [...applications];
       newApps[tileIndex].imageUrl = publicUrl;
+      newApps[tileIndex].metadata = { ...metadata, altText: '' };
       setApplications(newApps);
 
       toast.success("Image uploaded successfully!");
@@ -1206,8 +1211,12 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, publicUrl);
+
       const newItems = [...solutionsItems];
       newItems[index].imageUrl = publicUrl;
+      newItems[index].metadata = { ...metadata, altText: '' };
       setSolutionsItems(newItems);
 
       toast.success("Solution image uploaded successfully!");
@@ -1296,8 +1305,12 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, publicUrl);
+
       const newSegments = [...pageSegments];
       newSegments[segmentIndex].data.items[itemIndex].imageUrl = publicUrl;
+      newSegments[segmentIndex].data.items[itemIndex].metadata = { ...metadata, altText: '' };
       setPageSegments(newSegments);
 
       toast.success("Item image uploaded successfully!");
@@ -1343,7 +1356,11 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, publicUrl);
+
       setFooterTeamImageUrl(publicUrl);
+      setFooterTeamImageMetadata({ ...metadata, altText: '' });
       
       // Save to database
       const { error: dbError } = await supabase
@@ -1419,8 +1436,12 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, publicUrl);
+
       const newImages = [...bannerImages];
       newImages[index].url = publicUrl;
+      newImages[index].metadata = { ...metadata, altText: newImages[index].alt || '' };
       setBannerImages(newImages);
 
       toast.success("Banner image uploaded successfully!");
@@ -2691,6 +2712,54 @@ const AdminDashboard = () => {
                           disabled={uploading}
                           className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
                         />
+                        
+                        {/* Image Metadata Display */}
+                        {app.metadata && (
+                          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                            <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <span className="text-gray-600">Original Name:</span>
+                                <p className="text-black font-medium">{app.metadata.originalFileName}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Dimensions:</span>
+                                <p className="text-black font-medium">{app.metadata.width} × {app.metadata.height} px</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">File Size:</span>
+                                <p className="text-black font-medium">{formatFileSize(app.metadata.fileSizeKB)}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Format:</span>
+                                <p className="text-black font-medium uppercase">{app.metadata.format}</p>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-gray-600">Upload Date:</span>
+                                <p className="text-black font-medium">{formatUploadDate(app.metadata.uploadDate)}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-4">
+                              <Label htmlFor={`app_image_alt_${index}`} className="text-black text-base">Alt Text (SEO)</Label>
+                              <Input
+                                id={`app_image_alt_${index}`}
+                                type="text"
+                                value={app.metadata.altText || ''}
+                                onChange={(e) => {
+                                  const newApps = [...applications];
+                                  if (newApps[index].metadata) {
+                                    newApps[index].metadata.altText = e.target.value;
+                                    setApplications(newApps);
+                                  }
+                                }}
+                                placeholder="Describe this image for accessibility and SEO"
+                                className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                              />
+                              <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       
                       {/* Icon Selection */}
@@ -2984,6 +3053,35 @@ const AdminDashboard = () => {
                           />
                         </div>
 
+                        {/* Image Metadata Display */}
+                        {image.metadata && (
+                          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                            <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <span className="text-gray-600">Original Name:</span>
+                                <p className="text-black font-medium">{image.metadata.originalFileName}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Dimensions:</span>
+                                <p className="text-black font-medium">{image.metadata.width} × {image.metadata.height} px</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">File Size:</span>
+                                <p className="text-black font-medium">{formatFileSize(image.metadata.fileSizeKB)}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Format:</span>
+                                <p className="text-black font-medium uppercase">{image.metadata.format}</p>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-gray-600">Upload Date:</span>
+                                <p className="text-black font-medium">{formatUploadDate(image.metadata.uploadDate)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         <div>
                           <Label htmlFor={`banner_image_alt_${index}`} className="text-white">Alt Text</Label>
                           <Input
@@ -2992,6 +3090,9 @@ const AdminDashboard = () => {
                             onChange={(e) => {
                               const newImages = [...bannerImages];
                               newImages[index].alt = e.target.value;
+                              if (newImages[index].metadata) {
+                                newImages[index].metadata.altText = e.target.value;
+                              }
                               setBannerImages(newImages);
                             }}
                             placeholder="Image description for accessibility"
@@ -3299,6 +3400,54 @@ const AdminDashboard = () => {
                             disabled={uploading}
                             className="border-2 border-gray-600"
                           />
+                          
+                          {/* Image Metadata Display */}
+                          {item.metadata && (
+                            <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                              <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                  <span className="text-gray-600">Original Name:</span>
+                                  <p className="text-black font-medium">{item.metadata.originalFileName}</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Dimensions:</span>
+                                  <p className="text-black font-medium">{item.metadata.width} × {item.metadata.height} px</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">File Size:</span>
+                                  <p className="text-black font-medium">{formatFileSize(item.metadata.fileSizeKB)}</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Format:</span>
+                                  <p className="text-black font-medium uppercase">{item.metadata.format}</p>
+                                </div>
+                                <div className="col-span-2">
+                                  <span className="text-gray-600">Upload Date:</span>
+                                  <p className="text-black font-medium">{formatUploadDate(item.metadata.uploadDate)}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-4">
+                                <Label htmlFor={`solution_image_alt_${index}`} className="text-black text-base">Alt Text (SEO)</Label>
+                                <Input
+                                  id={`solution_image_alt_${index}`}
+                                  type="text"
+                                  value={item.metadata.altText || ''}
+                                  onChange={(e) => {
+                                    const newItems = [...solutionsItems];
+                                    if (newItems[index].metadata) {
+                                      newItems[index].metadata.altText = e.target.value;
+                                      setSolutionsItems(newItems);
+                                    }
+                                  }}
+                                  placeholder="Describe this image for accessibility and SEO"
+                                  className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                                />
+                                <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         {/* Title */}
@@ -3533,6 +3682,53 @@ const AdminDashboard = () => {
                           >
                             <X className="h-3 w-3" />
                           </button>
+                        </div>
+                      )}
+                      
+                      {/* Image Metadata Display */}
+                      {footerTeamImageMetadata && (
+                        <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                          <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-600">Original Name:</span>
+                              <p className="text-black font-medium">{footerTeamImageMetadata.originalFileName}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Dimensions:</span>
+                              <p className="text-black font-medium">{footerTeamImageMetadata.width} × {footerTeamImageMetadata.height} px</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">File Size:</span>
+                              <p className="text-black font-medium">{formatFileSize(footerTeamImageMetadata.fileSizeKB)}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-600">Format:</span>
+                              <p className="text-black font-medium uppercase">{footerTeamImageMetadata.format}</p>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-gray-600">Upload Date:</span>
+                              <p className="text-black font-medium">{formatUploadDate(footerTeamImageMetadata.uploadDate)}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4">
+                            <Label htmlFor="footer_image_alt" className="text-black text-base">Alt Text (SEO)</Label>
+                            <Input
+                              id="footer_image_alt"
+                              type="text"
+                              value={footerTeamImageMetadata.altText || ''}
+                              onChange={(e) => {
+                                if (footerTeamImageMetadata) {
+                                  const updatedMetadata = { ...footerTeamImageMetadata, altText: e.target.value };
+                                  setFooterTeamImageMetadata(updatedMetadata);
+                                }
+                              }}
+                              placeholder="Describe this image for accessibility and SEO"
+                              className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                            />
+                            <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -4092,7 +4288,7 @@ const AdminDashboard = () => {
                       <div className="space-y-4">
                         {/* Hero Image Upload */}
                         <div>
-                          <Label className="text-white">Hero Image (optional)</Label>
+                          <Label className="text-white">Section Image (optional)</Label>
                           <div className="flex gap-2 items-start">
                             <Input
                               type="file"
