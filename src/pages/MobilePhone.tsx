@@ -396,49 +396,58 @@ const MobilePhone = () => {
     }
 
     if (segmentId === 'solutions') {
+      // Only render if there's content (title, subtext, or items)
+      if (!solutionsTitle && !solutionsSubtext && solutionsItems.length === 0) {
+        return null;
+      }
+
       return (
         <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="py-20 bg-gray-50">
           <div className="w-full px-6">
-            <div className="text-center mb-16">
-              {solutionsTitle && (
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  {solutionsTitle}
-                </h2>
-              )}
-              {solutionsSubtext && (
-                <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                  {solutionsSubtext}
-                </p>
-              )}
-            </div>
+            {(solutionsTitle || solutionsSubtext) && (
+              <div className="text-center mb-16">
+                {solutionsTitle && (
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {solutionsTitle}
+                  </h2>
+                )}
+                {solutionsSubtext && (
+                  <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                    {solutionsSubtext}
+                  </p>
+                )}
+              </div>
+            )}
 
-            <div className={`grid gap-8 max-w-7xl mx-auto ${
-              solutionsLayout === "1-col" ? "grid-cols-1" :
-              solutionsLayout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
-              "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            }`}>
-              {solutionsItems.map((item: any, index: number) => (
-                <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
-                  <CardContent className="p-0">
-                    {item.imageUrl && (
-                      <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
-                        <img 
-                          src={item.imageUrl}
-                          alt={item.title}
-                          className="w-full h-full object-cover"
-                        />
+            {solutionsItems.length > 0 && (
+              <div className={`grid gap-8 max-w-7xl mx-auto ${
+                solutionsLayout === "1-col" ? "grid-cols-1" :
+                solutionsLayout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+                "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              }`}>
+                {solutionsItems.map((item: any, index: number) => (
+                  <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                    <CardContent className="p-0">
+                      {item.imageUrl && (
+                        <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                          <img 
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                        <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                          {item.description}
+                        </div>
                       </div>
-                    )}
-                    <div className="p-8">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
-                      <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                        {item.description}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       );
