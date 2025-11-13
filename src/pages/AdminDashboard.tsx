@@ -284,6 +284,13 @@ const AdminDashboard = () => {
     enabled: !!user && (isAdmin || isEditor)
   });
 
+  // Autosave for dynamic segments (including Table)
+  useAdminAutosave({
+    key: `${selectedPage}_pageSegments`,
+    data: pageSegments,
+    enabled: !!user && (isAdmin || isEditor) && pageSegments.length > 0
+  });
+
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -747,6 +754,15 @@ const AdminDashboard = () => {
         }
       }
     });
+    
+    // Check for autosaved dynamic segments (including Table)
+    if (hasAutosavedData(`${autosaveKey}_pageSegments`)) {
+      hasAnyAutosave = true;
+      const savedSegments = loadAutosavedData(`${autosaveKey}_pageSegments`);
+      if (savedSegments && Array.isArray(savedSegments) && savedSegments.length > 0) {
+        setPageSegments(savedSegments);
+      }
+    }
     
     if (hasAnyAutosave) {
       toast.info("Restored unsaved changes from previous session", {
@@ -1779,6 +1795,9 @@ const AdminDashboard = () => {
 
       if (error) throw error;
       toast.success("Segment saved successfully!");
+      
+      // Clear autosaved data after successful save
+      clearAutosavedData(`${selectedPage}_pageSegments`);
     } catch (error: any) {
       toast.error("Error saving segment: " + error.message);
     } finally {
