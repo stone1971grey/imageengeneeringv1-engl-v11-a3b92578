@@ -396,57 +396,45 @@ const MobilePhone = () => {
     }
 
     if (segmentId === 'solutions') {
-      const getColsClass = () => {
-        switch (solutionsLayout) {
-          case '1-col':
-            return 'grid-cols-1';
-          case '2-col':
-            return 'md:grid-cols-2';
-          case '3-col':
-            return 'md:grid-cols-2 lg:grid-cols-3';
-          default:
-            return 'md:grid-cols-2';
-        }
-      };
-
       return (
-        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="py-16 bg-white">
-          <div className="container mx-auto px-6">
-            {solutionsTitle && (
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
-                {solutionsTitle}
-              </h2>
-            )}
-            
-            {solutionsSubtext && (
-              <p className="text-lg text-gray-600 mb-12 text-center mx-auto max-w-3xl">
-                {solutionsSubtext}
-              </p>
-            )}
+        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="py-20 bg-gray-50">
+          <div className="w-full px-6">
+            <div className="text-center mb-16">
+              {solutionsTitle && (
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {solutionsTitle}
+                </h2>
+              )}
+              {solutionsSubtext && (
+                <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                  {solutionsSubtext}
+                </p>
+              )}
+            </div>
 
-            <div className={`grid ${getColsClass()} gap-8`}>
-              {solutionsItems.map((item: any, idx: number) => (
-                <Card key={idx} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  {item.imageUrl && (
-                    <div className="w-full h-48 overflow-hidden">
-                      <img 
-                        src={item.imageUrl} 
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <CardContent className="p-6">
-                    {item.title && (
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">
-                        {item.title}
-                      </h3>
+            <div className={`grid gap-8 max-w-7xl mx-auto ${
+              solutionsLayout === "1-col" ? "grid-cols-1" :
+              solutionsLayout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+              "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            }`}>
+              {solutionsItems.map((item: any, index: number) => (
+                <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  <CardContent className="p-0">
+                    {item.imageUrl && (
+                      <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                        <img 
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     )}
-                    {item.description && (
-                      <p className="text-gray-600 leading-relaxed">
+                    <div className="p-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                      <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
                         {item.description}
-                      </p>
-                    )}
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
