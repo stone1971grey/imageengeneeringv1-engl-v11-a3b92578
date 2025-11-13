@@ -141,16 +141,53 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             className="mt-3 text-lg h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4"
             maxLength={70}
           />
-          <div className="flex justify-between items-center mt-2">
-            <p className={`text-base font-medium ${
-              (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
-                ? 'text-green-600'
-                : (data.title?.length || 0) > 60
-                ? 'text-red-600'
-                : 'text-gray-600'
-            }`}>
-              {data.title?.length || 0} / 60 Zeichen (optimal: 50-60)
-            </p>
+          <div className="mt-3 space-y-2">
+            {/* Progress Bar */}
+            <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all duration-300 ${
+                  (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
+                    ? 'bg-green-500'
+                    : (data.title?.length || 0) > 60
+                    ? 'bg-red-500'
+                    : (data.title?.length || 0) >= 40
+                    ? 'bg-yellow-500'
+                    : 'bg-red-400'
+                }`}
+                style={{ width: `${Math.min(((data.title?.length || 0) / 70) * 100, 100)}%` }}
+              />
+            </div>
+            {/* Character Count */}
+            <div className="flex justify-between items-center">
+              <p className={`text-base font-medium ${
+                (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
+                  ? 'text-green-600'
+                  : (data.title?.length || 0) > 60
+                  ? 'text-red-600'
+                  : (data.title?.length || 0) >= 40
+                  ? 'text-yellow-600'
+                  : 'text-red-500'
+              }`}>
+                {data.title?.length || 0} / 60 Zeichen
+              </p>
+              <span className={`text-sm font-medium ${
+                (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
+                  ? 'text-green-600'
+                  : (data.title?.length || 0) > 60
+                  ? 'text-red-600'
+                  : (data.title?.length || 0) >= 40
+                  ? 'text-yellow-600'
+                  : 'text-red-500'
+              }`}>
+                {(data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
+                  ? '✓ Optimal'
+                  : (data.title?.length || 0) > 60
+                  ? '⚠ Zu lang'
+                  : (data.title?.length || 0) >= 40
+                  ? '→ Fast optimal'
+                  : '⚠ Zu kurz'}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -168,16 +205,53 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             rows={4}
             maxLength={170}
           />
-          <div className="flex justify-between items-center mt-2">
-            <p className={`text-base font-medium ${
-              (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                ? 'text-green-600'
-                : (data.metaDescription?.length || 0) > 160
-                ? 'text-red-600'
-                : 'text-gray-600'
-            }`}>
-              {data.metaDescription?.length || 0} / 160 Zeichen (optimal: 120-160)
-            </p>
+          <div className="mt-3 space-y-2">
+            {/* Progress Bar */}
+            <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all duration-300 ${
+                  (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                    ? 'bg-green-500'
+                    : (data.metaDescription?.length || 0) > 160
+                    ? 'bg-red-500'
+                    : (data.metaDescription?.length || 0) >= 100
+                    ? 'bg-yellow-500'
+                    : 'bg-red-400'
+                }`}
+                style={{ width: `${Math.min(((data.metaDescription?.length || 0) / 170) * 100, 100)}%` }}
+              />
+            </div>
+            {/* Character Count */}
+            <div className="flex justify-between items-center">
+              <p className={`text-base font-medium ${
+                (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                  ? 'text-green-600'
+                  : (data.metaDescription?.length || 0) > 160
+                  ? 'text-red-600'
+                  : (data.metaDescription?.length || 0) >= 100
+                  ? 'text-yellow-600'
+                  : 'text-red-500'
+              }`}>
+                {data.metaDescription?.length || 0} / 160 Zeichen
+              </p>
+              <span className={`text-sm font-medium ${
+                (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                  ? 'text-green-600'
+                  : (data.metaDescription?.length || 0) > 160
+                  ? 'text-red-600'
+                  : (data.metaDescription?.length || 0) >= 100
+                  ? 'text-yellow-600'
+                  : 'text-red-500'
+              }`}>
+                {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                  ? '✓ Optimal'
+                  : (data.metaDescription?.length || 0) > 160
+                  ? '⚠ Zu lang'
+                  : (data.metaDescription?.length || 0) >= 100
+                  ? '→ Fast optimal'
+                  : '⚠ Zu kurz'}
+              </span>
+            </div>
           </div>
         </div>
 
