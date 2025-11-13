@@ -86,7 +86,7 @@ const Automotive = () => {
       title: "Arcturus",
       description: "A high-intensity light source with unmatched stability and consistency.",
       image: arcturusProduct,
-      link: "/products/illumination-devices/arcturus"
+      link: "/our-solution/mobile-phone"
     },
     {
       title: "LE7 VIS-IR",
