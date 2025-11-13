@@ -147,6 +147,7 @@ const AdminDashboard = () => {
   const searchParams = new URLSearchParams(location.search);
   const selectedPage = searchParams.get('page') || 'photography';
   const [applications, setApplications] = useState<any[]>([]);
+  const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
@@ -223,6 +224,7 @@ const AdminDashboard = () => {
     key: `${selectedPage}_tiles`,
     data: {
       applications,
+      tilesColumns,
       content: {
         applications_title: content.applications_title,
         applications_description: content.applications_description
@@ -332,6 +334,7 @@ const AdminDashboard = () => {
       setSolutionsLayout("2-col");
       setSolutionsItems([]);
       setApplications([]);
+      setTilesColumns("3");
       setPageSegments([]);
       setTabOrder(['tiles', 'banner', 'solutions']);
       setFooterCtaTitle("");
@@ -539,6 +542,8 @@ const AdminDashboard = () => {
     data?.forEach((item: ContentItem) => {
       if (item.section_key === "applications_items") {
         apps = JSON.parse(item.content_value);
+      } else if (item.section_key === "tiles_columns") {
+        setTilesColumns(item.content_value || "3");
       } else if (item.section_key === "solutions_title") {
         setSolutionsTitle(item.content_value);
       } else if (item.section_key === "solutions_subtext") {
@@ -1830,6 +1835,22 @@ const AdminDashboard = () => {
 
       if (appsError) throw appsError;
 
+      // Save tiles columns setting
+      const { error: columnsError } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "tiles_columns",
+          content_type: "text",
+          content_value: tilesColumns,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (columnsError) throw columnsError;
+
       toast.success("Applications section saved successfully!");
       
       // Clear autosaved data after successful save
@@ -2571,6 +2592,19 @@ const AdminDashboard = () => {
                   rows={3}
                   className="border-2 border-gray-600"
                 />
+              </div>
+              <div>
+                <Label htmlFor="tiles_columns" className="text-white">Number of Columns</Label>
+                <Select value={tilesColumns} onValueChange={setTilesColumns}>
+                  <SelectTrigger className="border-2 border-gray-600 text-black h-12">
+                    <SelectValue placeholder="Select columns" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2">2 Columns</SelectItem>
+                    <SelectItem value="3">3 Columns</SelectItem>
+                    <SelectItem value="4">4 Columns</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Application Items */}
