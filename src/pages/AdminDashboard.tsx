@@ -4365,35 +4365,38 @@ const AdminDashboard = () => {
                         {/* Hero Image Upload */}
                         <div>
                           <Label className="text-white">Section Image (optional)</Label>
-                          <div className="flex gap-2 items-start">
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleImageTextHeroImageUpload(index, e)}
-                              disabled={uploading}
-                              className="border-2 border-gray-600"
-                            />
-                          </div>
+                          <p className="text-sm text-white mb-2">
+                            {segment.data.heroImageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this section"}
+                          </p>
                           {segment.data.heroImageUrl && (
-                            <div className="mt-2 relative inline-block">
+                            <div className="mb-3 max-w-xs">
                               <img 
                                 src={segment.data.heroImageUrl} 
-                                alt="Hero" 
-                                className="w-32 h-32 object-cover rounded border"
+                                alt="Section Image" 
+                                className="w-full h-auto object-contain rounded-lg border-2 border-gray-600"
                               />
-                              <button
-                                onClick={() => {
-                                  const newSegments = [...pageSegments];
-                                  newSegments[index].data.heroImageUrl = '';
-                                  newSegments[index].data.heroImageMetadata = null;
-                                  setPageSegments(newSegments);
-                                }}
-                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
                             </div>
                           )}
+                          
+                          {segment.data.heroImageUrl ? (
+                            <Button
+                              type="button"
+                              onClick={() => document.getElementById(`image_text_hero_${index}`)?.click()}
+                              disabled={uploading}
+                              className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                            >
+                              {uploading ? "Uploading..." : "Replace Image"}
+                            </Button>
+                          ) : null}
+                          
+                          <Input
+                            id={`image_text_hero_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleImageTextHeroImageUpload(index, e)}
+                            disabled={uploading}
+                            className={`border-2 border-gray-600 ${segment.data.heroImageUrl ? "hidden" : ""}`}
+                          />
                           
                           {/* Image Metadata Display */}
                           {segment.data.heroImageMetadata && (
@@ -4566,24 +4569,38 @@ const AdminDashboard = () => {
 
                                 <div>
                                   <Label className="text-white">Item Image (optional)</Label>
-                                  <div className="flex gap-2 items-start">
-                                    <Input
-                                      type="file"
-                                      accept="image/*"
-                                      onChange={(e) => handleImageTextItemImageUpload(index, itemIndex, e)}
-                                      disabled={uploading}
-                                      className="border-2 border-gray-600"
-                                    />
-                                  </div>
-                                   {item.imageUrl && (
-                                    <div className="mt-2">
+                                  <p className="text-sm text-white mb-2">
+                                    {item.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this item"}
+                                  </p>
+                                  {item.imageUrl && (
+                                    <div className="mb-3 max-w-xs">
                                       <img 
                                         src={item.imageUrl} 
                                         alt={item.title} 
-                                        className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
+                                        className="w-full h-auto object-contain rounded-lg border-2 border-gray-600"
                                       />
                                     </div>
                                   )}
+                                  
+                                  {item.imageUrl ? (
+                                    <Button
+                                      type="button"
+                                      onClick={() => document.getElementById(`image_text_item_${index}_${itemIndex}`)?.click()}
+                                      disabled={uploading}
+                                      className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                                    >
+                                      {uploading ? "Uploading..." : "Replace Image"}
+                                    </Button>
+                                  ) : null}
+                                  
+                                  <Input
+                                    id={`image_text_item_${index}_${itemIndex}`}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageTextItemImageUpload(index, itemIndex, e)}
+                                    disabled={uploading}
+                                    className={`border-2 border-gray-600 ${item.imageUrl ? "hidden" : ""}`}
+                                  />
                                   
                                   {/* Image Metadata Display */}
                                   {item.metadata && (
