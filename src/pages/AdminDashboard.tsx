@@ -2348,7 +2348,7 @@ const AdminDashboard = () => {
                           }
                         }}
                         placeholder="Describe this image for accessibility and SEO"
-                        className="mt-2 border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-black h-12"
+                        className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
                       />
                       <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
                     </div>
