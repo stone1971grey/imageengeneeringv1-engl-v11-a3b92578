@@ -11,6 +11,8 @@ import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
+import arcturusProduct from "@/assets/arcturus-main-product-new.png";
+import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation.jpg";
 import testLabServices from "@/assets/test-lab-services.jpg";
 import te42Image from "@/assets/te42-ll.jpg";
 import le7Image from "@/assets/le7-product.png";
@@ -80,6 +82,12 @@ const Automotive = () => {
   ];
 
   const products = [
+    {
+      title: "Arcturus",
+      description: "A high-intensity light source with unmatched stability and consistency.",
+      image: arcturusProduct,
+      link: "/products/illumination-devices/arcturus"
+    },
     {
       title: "LE7 VIS-IR",
       description: "A uniform light source for testing cameras in the near-infrared (NIR) range.",
@@ -321,7 +329,7 @@ const Automotive = () => {
                       Advanced Driver Assistance Systems (ADAS) refer to the camera and sensor systems that assist drivers with various movement adjustments and safety warnings. These systems require a broad range of test methods and metrics to evaluate to ensure high performance and safety. Our test solutions closely follow the test method guidelines established in the IEEE-P2020 standard for ADAS image quality performance.
                     </p>
                     <p>
-                      A few of the key performance indicators (KPIs) outlined in the P2020 standard include contrast indicators – contrast transfer accuracy (CTA) and contrast signal-to-noise ratio (CSNR) -, dynamic range, and flicker response. These KPIs require powerful light sources that can simulate the high intensities experienced by ADAS systems. We offer multiple light sources, including Vega, that can generate dynamic test scenes with extremely high stability and consistency.
+                      A few of the key performance indicators (KPIs) outlined in the P2020 standard include contrast indicators – contrast transfer accuracy (CTA) and contrast signal-to-noise ratio (CSNR) -, dynamic range, and flicker response. These KPIs require powerful light sources that can simulate the high intensities experienced by ADAS systems. We offer multiple light sources, including Vega and Arcturus, that can generate dynamic test scenes with extremely high stability and consistency.
                     </p>
                   </div>
                 </div>
@@ -405,7 +413,7 @@ const Automotive = () => {
                        alt={product.title}
                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                      />
-                      {product.title === "LE7 VIS-IR" && (
+                      {(product.title === "Arcturus" || product.title === "LE7 VIS-IR") && (
                         <div className="absolute top-2 right-2">
                           <span className="bg-[#f9dc24] text-black px-3 py-1 rounded-full text-sm font-bold">
                             ACTIVE

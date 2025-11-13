@@ -19,6 +19,8 @@ import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
 import manufacturersImage from "@/assets/manufacturers-image.png";
 import suppliersImage from "@/assets/suppliers-image.png";
+import arcturusProduct from "@/assets/arcturus-main-product-new.png";
+import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation.jpg";
 import testLabServices from "@/assets/test-lab-services.jpg";
 import te42Image from "@/assets/te42-ll.jpg";
 import le7Image from "@/assets/le7-product.png";
