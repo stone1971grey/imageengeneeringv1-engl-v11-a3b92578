@@ -21,6 +21,7 @@ import MobilePhone from "./pages/MobilePhone";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import ProductLE7 from "./pages/ProductLE7";
+import ProductIQLED from "./pages/ProductIQLED";
 import HiddenSegments from "./pages/HiddenSegments";
 import Backlog from "./pages/Backlog";
 import Charts from "./pages/Charts";
