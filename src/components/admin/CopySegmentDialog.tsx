@@ -34,41 +34,62 @@ export const CopySegmentDialog = ({
   const handleOpenChange = async (isOpen: boolean) => {
     onOpenChange(isOpen);
     if (isOpen) {
-      // Only load pages that have CMS segments (from segment_registry)
-      const { data, error } = await supabase
+      console.log('Dialog opened, currentPageSlug:', currentPageSlug);
+      
+      // Load pages from page_registry that have CMS segments
+      const { data: registryData, error: registryError } = await supabase
         .from('segment_registry')
         .select('page_slug')
-        .neq('page_slug', currentPageSlug)
         .eq('deleted', false);
 
-      if (!error && data) {
-        // Get unique page slugs and map to readable titles
-        const uniquePages = [...new Set(data.map(item => item.page_slug))];
-        const pageTitleMap: Record<string, string> = {
-          'photography': 'Photo & Video',
-          'scanners-archiving': 'Scanners & Archiving',
-          'medical-endoscopy': 'Medical & Endoscopy',
-          'web-camera': 'Web Camera',
-          'machine-vision': 'Machine Vision',
-          'mobile-phone': 'Mobile Phone',
-          'automotive': 'Automotive',
-          'in-cabin-testing': 'In-Cabin Testing',
-          'arcturus': 'Arcturus',
-          'le7': 'LE7 Test Chart',
-          'your-solution': 'Your Solution'
-        };
-        
-        const pageList = uniquePages
-          .map(slug => ({
-            page_slug: slug,
-            page_title: pageTitleMap[slug] || slug
-          }))
-          .sort((a, b) => a.page_title.localeCompare(b.page_title));
-        
-        setPages(pageList);
-        console.log('Available pages for copy:', pageList);
-      } else {
-        console.error('Error loading pages:', error);
+      if (registryError) {
+        console.error('Error loading segment registry:', registryError);
+        toast({
+          title: "Error loading pages",
+          description: "Could not load available pages",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Get unique page slugs from segment_registry (these are the CMS-enabled pages)
+      const cmsPages = [...new Set(registryData?.map(item => item.page_slug) || [])];
+      console.log('CMS-enabled pages from segment_registry:', cmsPages);
+      
+      // Filter out current page
+      const availablePages = cmsPages.filter(slug => slug !== currentPageSlug);
+      console.log('Available pages after filtering current page:', availablePages);
+
+      const pageTitleMap: Record<string, string> = {
+        'photography': 'Photo & Video',
+        'scanners-archiving': 'Scanners & Archiving',
+        'medical-endoscopy': 'Medical & Endoscopy',
+        'web-camera': 'Web Camera',
+        'machine-vision': 'Machine Vision',
+        'mobile-phone': 'Mobile Phone',
+        'automotive': 'Automotive',
+        'in-cabin-testing': 'In-Cabin Testing',
+        'arcturus': 'Arcturus',
+        'le7': 'LE7 Test Chart',
+        'your-solution': 'Your Solution'
+      };
+      
+      const pageList = availablePages
+        .map(slug => ({
+          page_slug: slug,
+          page_title: pageTitleMap[slug] || slug
+        }))
+        .sort((a, b) => a.page_title.localeCompare(b.page_title));
+      
+      setPages(pageList);
+      console.log('Final page list for dropdown:', pageList);
+      
+      if (pageList.length === 0) {
+        toast({
+          title: "No pages available",
+          description: "No other CMS pages found to copy to",
+          variant: "destructive"
+        });
       }
     }
   };
