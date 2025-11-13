@@ -1937,7 +1937,7 @@ const AdminDashboard = () => {
                     Select a template to add a new segment to the page
                   </DialogDescription>
                 </DialogHeader>
-                <div className="grid grid-cols-2 gap-4 mt-4 pb-4">
+                <div className="grid grid-cols-3 gap-4 mt-4 pb-4">
                   <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('meta-navigation')}>
                     <CardHeader>
                       <CardTitle>Meta Navigation</CardTitle>
