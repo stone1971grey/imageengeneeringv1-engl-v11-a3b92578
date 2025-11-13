@@ -346,7 +346,8 @@ const AdminDashboard = () => {
         'automotive': 'Automotive',
         'in-cabin-testing': 'In-Cabin Testing',
         'le7': 'LE7 Test Chart',
-        'your-solution': 'Your Solution'
+        'your-solution': 'Your Solution',
+        'iq-led': 'iQ-LED Illumination'
       };
       
       const pageList = cmsPages
@@ -2036,13 +2037,23 @@ const AdminDashboard = () => {
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-2">
-              Editing: <span className="font-semibold">
-                {selectedPage === 'photography' ? 'Photo & Video' : 
-                 selectedPage === 'scanners-archiving' ? 'Scanners & Archiving' :
-                 selectedPage === 'your-solution' ? 'Your Solution' : selectedPage}
-              </span>
-            </p>
+            <div className="flex items-center gap-4 mt-2">
+              <p className="text-gray-600">
+                Editing:
+              </p>
+              <Select value={selectedPage} onValueChange={(value) => navigate(`/admin-dashboard?page=${value}`)}>
+                <SelectTrigger className="w-[280px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availablePages.map((page) => (
+                    <SelectItem key={page.page_slug} value={page.page_slug}>
+                      {page.page_title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <Button
