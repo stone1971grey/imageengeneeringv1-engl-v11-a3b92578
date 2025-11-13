@@ -67,42 +67,67 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
 
   const getStatusIcon = (status: boolean) => {
     return status ? (
-      <CheckCircle2 className="h-4 w-4 text-green-600" />
+      <CheckCircle2 className="h-5 w-5 text-green-600 animate-scale-in" />
     ) : (
-      <AlertCircle className="h-4 w-4 text-red-600" />
+      <AlertCircle className="h-5 w-5 text-red-600" />
     );
   };
 
   return (
     <div className="space-y-6">
       {/* SEO Score Overview */}
-      <Card className="p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-indigo-200">
-        <h3 className="text-2xl font-semibold mb-6 flex items-center gap-3 text-gray-900">
-          <AlertTriangle className="h-7 w-7 text-indigo-600" />
-          SEO Health Check
-        </h3>
+      <Card className="p-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 border-2 border-indigo-200 shadow-lg animate-fade-in">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold flex items-center gap-3 text-gray-900">
+            <div className="p-2 bg-white rounded-lg shadow-sm">
+              <AlertTriangle className="h-7 w-7 text-indigo-600" />
+            </div>
+            SEO Health Check
+          </h3>
+          <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
+            <div className={`h-3 w-3 rounded-full ${
+              Object.values(checks).filter(Boolean).length >= 5 ? 'bg-green-500 animate-pulse' : 
+              Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
+            }`} />
+            <span className="text-sm font-semibold text-gray-700">
+              {Object.values(checks).filter(Boolean).length}/6 Checks
+            </span>
+          </div>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.titleLength ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
             {getStatusIcon(checks.titleLength)}
             <span className="text-base font-medium text-gray-900">Title Length</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.descriptionLength ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
             {getStatusIcon(checks.descriptionLength)}
             <span className="text-base font-medium text-gray-900">Description Length</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.keywordInTitle ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
             {getStatusIcon(checks.keywordInTitle)}
             <span className="text-base font-medium text-gray-900">FKW in Title</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.keywordInDescription ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
             {getStatusIcon(checks.keywordInDescription)}
             <span className="text-base font-medium text-gray-900">FKW in Description</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.keywordInSlug ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
             {getStatusIcon(checks.keywordInSlug)}
             <span className="text-base font-medium text-gray-900">FKW in Slug</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.hasH1 ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
             {getStatusIcon(checks.hasH1)}
             <span className="text-base font-medium text-gray-900">H1 Present</span>
           </div>
