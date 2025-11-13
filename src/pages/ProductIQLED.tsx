@@ -47,8 +47,13 @@ const ProductIQLED = () => {
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
           segments = JSON.parse(item.content_value);
-        } else if (item.section_key === "seo") {
-          setSeoData(JSON.parse(item.content_value));
+        } else if (item.section_key === "seo_settings") {
+          try {
+            const seoSettings = JSON.parse(item.content_value);
+            setSeoData(seoSettings);
+          } catch {
+            // Keep empty seo data
+          }
         }
       });
 
@@ -57,25 +62,24 @@ const ProductIQLED = () => {
     setLoading(false);
   };
 
-  const renderSegment = (segmentKey: string) => {
-    const segmentType = segmentKey.split('-')[0];
-    const segmentId = segmentKey.split('-').pop();
+  const renderSegment = (segment: any) => {
+    if (!segment || !segment.type) return null;
 
-    switch (segmentType) {
-      case 'meta':
-        return <MetaNavigation key={segmentKey} pageSlug="iq-led" segmentIdMap={segmentIdMap} />;
-      case 'product':
-        return <ProductHeroGallery key={segmentKey} pageSlug="iq-led" segmentKey={segmentKey} />;
-      case 'feature':
-        return <FeatureOverview key={segmentKey} pageSlug="iq-led" segmentKey={segmentKey} />;
+    switch (segment.type) {
+      case 'meta-navigation':
+        return <MetaNavigation key={segment.id} data={segment.data} segmentIdMap={segmentIdMap} />;
+      case 'product-hero-gallery':
+        return <ProductHeroGallery key={segment.id} id={segment.id} data={segment.data} />;
+      case 'feature-overview':
+        return <FeatureOverview key={segment.id} id={segment.id} {...segment.data} />;
       case 'specification':
-        return <Specification key={segmentKey} pageSlug="iq-led" segmentKey={segmentKey} />;
+        return <Specification key={segment.id} id={segment.id} {...segment.data} />;
       case 'table':
-        return <Table key={segmentKey} pageSlug="iq-led" segmentKey={segmentKey} />;
+        return <Table key={segment.id} id={segment.id} {...segment.data} />;
       case 'video':
-        return <Video key={segmentKey} pageSlug="iq-led" segmentKey={segmentKey} />;
+        return <Video key={segment.id} id={segment.id} data={segment.data} />;
       case 'faq':
-        return <FAQ key={segmentKey} pageSlug="iq-led" segmentKey={segmentKey} />;
+        return <FAQ key={segment.id} id={segment.id} {...segment.data} />;
       default:
         return null;
     }
@@ -105,7 +109,7 @@ const ProductIQLED = () => {
       <div className="min-h-screen bg-background">
         <Navigation />
         
-        {pageSegments.map((segmentKey) => renderSegment(segmentKey))}
+        {pageSegments.map((segment) => renderSegment(segment))}
         
         <Footer />
       </div>
