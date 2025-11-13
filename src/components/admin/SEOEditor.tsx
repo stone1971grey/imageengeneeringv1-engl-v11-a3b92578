@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Save, AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SEOData {
   title?: string;
@@ -45,6 +46,23 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
   });
 
   const [introductionText, setIntroductionText] = useState({ title: '', description: '' });
+  const [pageContent, setPageContent] = useState<any[]>([]);
+
+  // Load page content for static segments
+  useEffect(() => {
+    const loadPageContent = async () => {
+      const { data: contentData, error } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug);
+      
+      if (!error && contentData) {
+        setPageContent(contentData);
+      }
+    };
+    
+    loadPageContent();
+  }, [pageSlug]);
 
   useEffect(() => {
     const titleLength = (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60;
@@ -60,7 +78,22 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     let introTitle = '';
     let introDescription = '';
     
-    if (pageSegments.length > 0) {
+    // First check for static tiles segment (applications_title/description)
+    const staticTilesTitle = pageContent.find(item => item.section_key === 'applications_title');
+    const staticTilesDesc = pageContent.find(item => item.section_key === 'applications_description');
+    
+    if (staticTilesTitle || staticTilesDesc) {
+      // Static tiles segment exists (this is typically ID 2, first after Hero)
+      introTitle = staticTilesTitle?.content_value || '';
+      introDescription = staticTilesDesc?.content_value || '';
+      
+      if (keyword) {
+        const titleLower = introTitle.toLowerCase();
+        const descLower = introDescription.toLowerCase();
+        keywordInIntroduction = titleLower.includes(keyword) || descLower.includes(keyword);
+      }
+    } else if (pageSegments.length > 0) {
+      // Fallback: check dynamic segments if no static tiles found
       // Sort segments by position to find the first one after Hero
       const sortedSegments = [...pageSegments].sort((a, b) => (a.position || 0) - (b.position || 0));
       
@@ -105,7 +138,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInSlug,
       keywordInIntroduction,
     });
-  }, [data, pageSegments, onChange]);
+  }, [data, pageSegments, pageContent, onChange]);
 
   const handleChange = (field: keyof SEOData, value: string) => {
     onChange({
