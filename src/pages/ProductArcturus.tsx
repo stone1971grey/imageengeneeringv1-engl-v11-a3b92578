@@ -96,6 +96,63 @@ const ProductArcturus = () => {
     const segmentData = segment.data;
 
     switch (segment.type) {
+      case "hero":
+        return (
+          <section key={segment.id} id={segment.id} className={`py-${
+            segmentData.hero_top_spacing === 'small' ? '16' :
+            segmentData.hero_top_spacing === 'large' ? '32' :
+            segmentData.hero_top_spacing === 'extra-large' ? '40' :
+            '24'
+          }`}>
+            <div className="container mx-auto px-4">
+              <div className={`grid gap-8 items-center ${
+                segmentData.hero_layout_ratio === '1-1' ? 'grid-cols-1 lg:grid-cols-2' :
+                segmentData.hero_layout_ratio === '2-3' ? 'lg:grid-cols-[2fr_3fr]' :
+                segmentData.hero_layout_ratio === '3-2' ? 'lg:grid-cols-[3fr_2fr]' :
+                'lg:grid-cols-[2fr_5fr]'
+              } ${segmentData.hero_image_position === 'left' ? 'lg:flex-row-reverse' : ''}`}>
+                <div className={segmentData.hero_image_position === 'left' ? 'lg:order-2' : ''}>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
+                    {segmentData.hero_title}
+                  </h1>
+                  {segmentData.hero_subtitle && (
+                    <p className="text-xl md:text-2xl text-muted-foreground mb-6">
+                      {segmentData.hero_subtitle}
+                    </p>
+                  )}
+                  {segmentData.hero_description && (
+                    <p className="text-lg text-muted-foreground mb-8">
+                      {segmentData.hero_description}
+                    </p>
+                  )}
+                  {segmentData.hero_cta_text && segmentData.hero_cta_link && (
+                    <Button
+                      asChild
+                      size="lg"
+                      className={
+                        segmentData.hero_cta_style === 'technical'
+                          ? 'bg-[#1f2937] text-white hover:bg-[#1f2937]/90'
+                          : 'bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90'
+                      }
+                    >
+                      <Link to={segmentData.hero_cta_link}>{segmentData.hero_cta_text}</Link>
+                    </Button>
+                  )}
+                </div>
+                {segmentData.hero_image_url && (
+                  <div className={segmentData.hero_image_position === 'left' ? 'lg:order-1' : ''}>
+                    <img
+                      src={segmentData.hero_image_url}
+                      alt={segmentData.hero_image_metadata?.altText || segmentData.hero_title}
+                      className="w-full h-auto rounded-lg shadow-lg"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+
       case "meta-navigation":
         return (
           <MetaNavigation
