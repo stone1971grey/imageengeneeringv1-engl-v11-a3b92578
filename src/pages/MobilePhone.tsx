@@ -465,7 +465,7 @@ const MobilePhone = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F9FB]">
+    <div className="min-h-screen bg-gray-50">
       {/* SEO Meta Tags */}
       <SEOHead
         title={seoData.title}
