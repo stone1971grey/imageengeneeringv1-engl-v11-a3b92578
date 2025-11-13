@@ -1496,6 +1496,7 @@ const AdminDashboard = () => {
         return {
           title: 'New Tiles Section',
           description: 'Section description text',
+          columns: '3',
           items: [
             {
               title: 'New Application',
@@ -3970,6 +3971,25 @@ const AdminDashboard = () => {
                             rows={3}
                             className="border-2 border-gray-600"
                           />
+                        </div>
+
+                        {/* Column Layout */}
+                        <div>
+                          <Label htmlFor={`segment_${index}_columns`} className="text-white">Number of Columns</Label>
+                          <select
+                            id={`segment_${index}_columns`}
+                            value={segment.data.columns || "3"}
+                            onChange={(e) => {
+                              const newSegments = [...pageSegments];
+                              newSegments[index].data.columns = e.target.value;
+                              setPageSegments(newSegments);
+                            }}
+                            className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                          >
+                            <option value="2">2 Columns</option>
+                            <option value="3">3 Columns</option>
+                            <option value="4">4 Columns</option>
+                          </select>
                         </div>
 
                         {/* Tiles */}
