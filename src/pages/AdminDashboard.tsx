@@ -4001,25 +4001,20 @@ const AdminDashboard = () => {
                 <CardContent>
                   {segment.type === 'hero' && (() => {
                     console.log('Rendering hero segment:', segment.id, 'with data:', segment.data);
-                    // Initialize with default data if needed
-                    if (!segment.data || !segment.data.hero_title) {
-                      console.log('Initializing default data for hero segment:', segment.id);
-                      segment.data = {
-                        hero_title: '',
-                        hero_subtitle: '',
-                        hero_description: '',
-                        hero_image_url: '',
-                        hero_image_metadata: null,
-                        hero_cta_text: '',
-                        hero_cta_link: '#',
-                        hero_cta_style: 'standard',
-                        hero_image_position: 'right',
-                        hero_layout_ratio: '2-5',
-                        hero_top_spacing: 'medium'
-                      };
-                    } else {
-                      console.log('Hero segment has existing data:', segment.data);
-                    }
+                    // Get data or use defaults WITHOUT mutating the original
+                    const heroData = segment.data || {
+                      hero_title: '',
+                      hero_subtitle: '',
+                      hero_description: '',
+                      hero_image_url: '',
+                      hero_image_metadata: null,
+                      hero_cta_text: '',
+                      hero_cta_link: '#',
+                      hero_cta_style: 'standard',
+                      hero_image_position: 'right',
+                      hero_layout_ratio: '2-5',
+                      hero_top_spacing: 'medium'
+                    };
                     
                     return (
                       <div className="space-y-6">
@@ -4031,10 +4026,13 @@ const AdminDashboard = () => {
                           <div>
                             <Label className="text-white">Title</Label>
                             <Input
-                              value={segment.data.hero_title || ''}
+                              value={heroData.hero_title || ''}
                               onChange={(e) => {
                                 const newSegments = [...pageSegments];
-                                newSegments[index].data.hero_title = e.target.value;
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_title: e.target.value
+                                };
                                 setPageSegments(newSegments);
                               }}
                               className="border-2 border-gray-600 text-black"
@@ -4044,10 +4042,13 @@ const AdminDashboard = () => {
                           <div>
                             <Label className="text-white">Subtitle (Optional)</Label>
                             <Input
-                              value={segment.data.hero_subtitle || ''}
+                              value={heroData.hero_subtitle || ''}
                               onChange={(e) => {
                                 const newSegments = [...pageSegments];
-                                newSegments[index].data.hero_subtitle = e.target.value;
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_subtitle: e.target.value
+                                };
                                 setPageSegments(newSegments);
                               }}
                               className="border-2 border-gray-600 text-black"
@@ -4057,10 +4058,13 @@ const AdminDashboard = () => {
                           <div>
                             <Label className="text-white">Description</Label>
                             <Textarea
-                              value={segment.data.hero_description || ''}
+                              value={heroData.hero_description || ''}
                               onChange={(e) => {
                                 const newSegments = [...pageSegments];
-                                newSegments[index].data.hero_description = e.target.value;
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_description: e.target.value
+                                };
                                 setPageSegments(newSegments);
                               }}
                               className="border-2 border-gray-600 text-black min-h-[100px]"
