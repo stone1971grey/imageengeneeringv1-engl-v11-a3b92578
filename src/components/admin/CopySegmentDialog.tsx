@@ -198,7 +198,7 @@ export const CopySegmentDialog = ({
               <SelectTrigger id="target-page">
                 <SelectValue placeholder="Select a page" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white z-50">
                 {pages.map(page => (
                   <SelectItem key={page.page_slug} value={page.page_slug}>
                     {page.page_title}
@@ -214,7 +214,7 @@ export const CopySegmentDialog = ({
               <SelectTrigger id="position">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white z-50">
                 <SelectItem value="start">At the beginning (first segment)</SelectItem>
                 <SelectItem value="end">At the end (last segment)</SelectItem>
               </SelectContent>
