@@ -45,6 +45,7 @@ import TableEditor from '@/components/admin/TableEditor';
 import FAQEditor from '@/components/admin/FAQEditor';
 import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
+import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
@@ -1542,6 +1543,16 @@ const AdminDashboard = () => {
           videoUrl: '',
           caption: ''
         };
+      case 'specification':
+        return {
+          title: 'Detailed Specifications',
+          rows: [
+            {
+              specification: 'Specification Name',
+              value: 'Value'
+            }
+          ]
+        };
       default:
         return {};
     }
@@ -2197,6 +2208,7 @@ const AdminDashboard = () => {
                     if (segment.type === 'table') label = `Table ${displayNumber}`;
                     if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
                     if (segment.type === 'video') label = `Video ${displayNumber}`;
+                    if (segment.type === 'specification') label = `Specification ${displayNumber}`;
                     
                     const segmentId = segmentRegistry[tabId] || tabId;
                     
@@ -3564,6 +3576,7 @@ const AdminDashboard = () => {
                         {segment.type === 'table' && 'Table Template'}
                         {segment.type === 'faq' && 'FAQ Template'}
                         {segment.type === 'video' && 'Video Template'}
+                        {segment.type === 'specification' && 'Specification Template'}
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -4325,7 +4338,29 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && segment.type !== 'video' && (
+                  {segment.type === 'specification' && (() => {
+                    // Initialize data if missing
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('specification');
+                    }
+                    
+                    return (
+                      <SpecificationEditor
+                        segmentId={segment.id}
+                        title={segment.data.title || 'Detailed Specifications'}
+                        rows={segment.data.rows || []}
+                        onUpdate={(newData) => {
+                          const newSegments = [...pageSegments];
+                          newSegments[index].data = newData;
+                          setPageSegments(newSegments);
+                        }}
+                        onSave={() => handleSaveSegments()}
+                        saving={saving}
+                      />
+                    );
+                  })()}
+
+                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && segment.type !== 'video' && segment.type !== 'specification' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
                       <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.
