@@ -76,78 +76,78 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
   return (
     <div className="space-y-6">
       {/* SEO Score Overview */}
-      <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-indigo-600" />
+      <Card className="p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-indigo-200">
+        <h3 className="text-2xl font-semibold mb-6 flex items-center gap-3 text-gray-900">
+          <AlertTriangle className="h-7 w-7 text-indigo-600" />
           SEO Health Check
         </h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div className="flex items-center gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="flex items-center gap-3">
             {getStatusIcon(checks.titleLength)}
-            <span className="text-sm">Title Length</span>
+            <span className="text-base font-medium text-gray-900">Title Length</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {getStatusIcon(checks.descriptionLength)}
-            <span className="text-sm">Description Length</span>
+            <span className="text-base font-medium text-gray-900">Description Length</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {getStatusIcon(checks.keywordInTitle)}
-            <span className="text-sm">FKW in Title</span>
+            <span className="text-base font-medium text-gray-900">FKW in Title</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {getStatusIcon(checks.keywordInDescription)}
-            <span className="text-sm">FKW in Description</span>
+            <span className="text-base font-medium text-gray-900">FKW in Description</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {getStatusIcon(checks.keywordInSlug)}
-            <span className="text-sm">FKW in Slug</span>
+            <span className="text-base font-medium text-gray-900">FKW in Slug</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {getStatusIcon(checks.hasH1)}
-            <span className="text-sm">H1 Present</span>
+            <span className="text-base font-medium text-gray-900">H1 Present</span>
           </div>
         </div>
       </Card>
 
       {/* Basic SEO Fields */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div>
-          <Label htmlFor="focus-keyword" className="flex items-center gap-2">
+          <Label htmlFor="focus-keyword" className="flex items-center gap-2 text-base font-semibold">
             Fokus Keyword (FKW)
-            <Badge variant="outline" className="text-xs">Empfohlen</Badge>
+            <Badge variant="outline" className="text-sm">Empfohlen</Badge>
           </Label>
           <Input
             id="focus-keyword"
             value={data.focusKeyword || ''}
             onChange={(e) => handleChange('focusKeyword', e.target.value)}
             placeholder="z.B. camera testing software"
-            className="mt-2"
+            className="mt-3 text-base h-11"
           />
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-base text-gray-600 mt-2">
             Hauptkeyword für diese Seite - sollte in Title, Description und Slug vorkommen
           </p>
         </div>
 
         <div>
-          <Label htmlFor="seo-title" className="flex items-center gap-2">
+          <Label htmlFor="seo-title" className="flex items-center gap-2 text-base font-semibold">
             SEO Title (Meta Title)
-            <Badge variant="outline" className="text-xs">Pflicht</Badge>
+            <Badge variant="outline" className="text-sm">Pflicht</Badge>
           </Label>
           <Input
             id="seo-title"
             value={data.title || ''}
             onChange={(e) => handleChange('title', e.target.value)}
             placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
-            className="mt-2"
+            className="mt-3 text-base h-11"
             maxLength={70}
           />
-          <div className="flex justify-between items-center mt-1">
-            <p className={`text-sm ${
+          <div className="flex justify-between items-center mt-2">
+            <p className={`text-base font-medium ${
               (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
                 ? 'text-green-600'
                 : (data.title?.length || 0) > 60
                 ? 'text-red-600'
-                : 'text-gray-500'
+                : 'text-gray-600'
             }`}>
               {data.title?.length || 0} / 60 Zeichen (optimal: 50-60)
             </p>
@@ -155,26 +155,26 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
         </div>
 
         <div>
-          <Label htmlFor="meta-description" className="flex items-center gap-2">
+          <Label htmlFor="meta-description" className="flex items-center gap-2 text-base font-semibold">
             Meta Description
-            <Badge variant="outline" className="text-xs">Pflicht</Badge>
+            <Badge variant="outline" className="text-sm">Pflicht</Badge>
           </Label>
           <Textarea
             id="meta-description"
             value={data.metaDescription || ''}
             onChange={(e) => handleChange('metaDescription', e.target.value)}
             placeholder="z.B. Discover professional camera testing solutions with Image Engineering. Industry-leading test charts, analysis software, and illumination devices for precise image quality measurement."
-            className="mt-2"
-            rows={3}
+            className="mt-3 text-base"
+            rows={4}
             maxLength={170}
           />
-          <div className="flex justify-between items-center mt-1">
-            <p className={`text-sm ${
+          <div className="flex justify-between items-center mt-2">
+            <p className={`text-base font-medium ${
               (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
                 ? 'text-green-600'
                 : (data.metaDescription?.length || 0) > 160
                 ? 'text-red-600'
-                : 'text-gray-500'
+                : 'text-gray-600'
             }`}>
               {data.metaDescription?.length || 0} / 160 Zeichen (optimal: 120-160)
             </p>
@@ -182,12 +182,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
         </div>
 
         <div>
-          <Label htmlFor="slug" className="flex items-center gap-2">
+          <Label htmlFor="slug" className="flex items-center gap-2 text-base font-semibold">
             URL Slug
-            <Badge variant="outline" className="text-xs">Pflicht</Badge>
+            <Badge variant="outline" className="text-sm">Pflicht</Badge>
           </Label>
-          <div className="flex items-center mt-2">
-            <span className="text-sm text-gray-500 px-3 py-2 bg-gray-100 rounded-l-md border border-r-0">
+          <div className="flex items-center mt-3">
+            <span className="text-base text-gray-700 px-4 py-2.5 bg-gray-100 rounded-l-md border border-r-0 font-medium">
               /
             </span>
             <Input
@@ -195,117 +195,117 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.slug || ''}
               onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-'))}
               placeholder={pageSlug}
-              className="rounded-l-none"
+              className="rounded-l-none text-base h-11"
             />
           </div>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-base text-gray-600 mt-2">
             Nur Kleinbuchstaben, Zahlen und Bindestriche. FKW sollte enthalten sein.
           </p>
         </div>
 
         <div>
-          <Label htmlFor="canonical" className="flex items-center gap-2">
+          <Label htmlFor="canonical" className="flex items-center gap-2 text-base font-semibold">
             Canonical URL
-            <Badge variant="outline" className="text-xs">Empfohlen</Badge>
+            <Badge variant="outline" className="text-sm">Empfohlen</Badge>
           </Label>
           <Input
             id="canonical"
             value={data.canonical || ''}
             onChange={(e) => handleChange('canonical', e.target.value)}
             placeholder="https://www.image-engineering.de/your-solution/machine-vision"
-            className="mt-2"
+            className="mt-3 text-base h-11"
           />
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-base text-gray-600 mt-2">
             Verhindert Duplicate Content. Leer lassen = aktuelle URL verwenden.
           </p>
         </div>
       </div>
 
       {/* Robots Settings */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-6">
         <div>
-          <Label htmlFor="robots-index">Robots Index</Label>
+          <Label htmlFor="robots-index" className="text-base font-semibold">Robots Index</Label>
           <Select
             value={data.robotsIndex || 'index'}
             onValueChange={(value: 'index' | 'noindex') => handleChange('robotsIndex', value)}
           >
-            <SelectTrigger className="mt-2">
+            <SelectTrigger className="mt-3 h-11 text-base">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="index">index (empfohlen)</SelectItem>
-              <SelectItem value="noindex">noindex</SelectItem>
+              <SelectItem value="index" className="text-base">index (empfohlen)</SelectItem>
+              <SelectItem value="noindex" className="text-base">noindex</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="robots-follow">Robots Follow</Label>
+          <Label htmlFor="robots-follow" className="text-base font-semibold">Robots Follow</Label>
           <Select
             value={data.robotsFollow || 'follow'}
             onValueChange={(value: 'follow' | 'nofollow') => handleChange('robotsFollow', value)}
           >
-            <SelectTrigger className="mt-2">
+            <SelectTrigger className="mt-3 h-11 text-base">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="follow">follow (empfohlen)</SelectItem>
-              <SelectItem value="nofollow">nofollow</SelectItem>
+              <SelectItem value="follow" className="text-base">follow (empfohlen)</SelectItem>
+              <SelectItem value="nofollow" className="text-base">nofollow</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
       {/* Open Graph / Social Media */}
-      <div className="border-t pt-6">
-        <h3 className="text-lg font-semibold mb-4">Open Graph / Social Media</h3>
-        <div className="space-y-4">
+      <div className="border-t pt-8">
+        <h3 className="text-2xl font-semibold mb-6 text-gray-900">Open Graph / Social Media</h3>
+        <div className="space-y-6">
           <div>
-            <Label htmlFor="og-title">OG Title</Label>
+            <Label htmlFor="og-title" className="text-base font-semibold">OG Title</Label>
             <Input
               id="og-title"
               value={data.ogTitle || ''}
               onChange={(e) => handleChange('ogTitle', e.target.value)}
               placeholder="Leer lassen = SEO Title verwenden"
-              className="mt-2"
+              className="mt-3 text-base h-11"
             />
           </div>
 
           <div>
-            <Label htmlFor="og-description">OG Description</Label>
+            <Label htmlFor="og-description" className="text-base font-semibold">OG Description</Label>
             <Textarea
               id="og-description"
               value={data.ogDescription || ''}
               onChange={(e) => handleChange('ogDescription', e.target.value)}
               placeholder="Leer lassen = Meta Description verwenden"
-              className="mt-2"
-              rows={2}
+              className="mt-3 text-base"
+              rows={3}
             />
           </div>
 
           <div>
-            <Label htmlFor="og-image">OG Image URL</Label>
+            <Label htmlFor="og-image" className="text-base font-semibold">OG Image URL</Label>
             <Input
               id="og-image"
               value={data.ogImage || ''}
               onChange={(e) => handleChange('ogImage', e.target.value)}
               placeholder="https://... (empfohlen: 1200×630px)"
-              className="mt-2"
+              className="mt-3 text-base h-11"
             />
           </div>
 
           <div>
-            <Label htmlFor="twitter-card">Twitter Card Type</Label>
+            <Label htmlFor="twitter-card" className="text-base font-semibold">Twitter Card Type</Label>
             <Select
               value={data.twitterCard || 'summary_large_image'}
               onValueChange={(value: 'summary' | 'summary_large_image') => handleChange('twitterCard', value)}
             >
-              <SelectTrigger className="mt-2">
+              <SelectTrigger className="mt-3 h-11 text-base">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="summary_large_image">Summary Large Image (empfohlen)</SelectItem>
-                <SelectItem value="summary">Summary</SelectItem>
+                <SelectItem value="summary_large_image" className="text-base">Summary Large Image (empfohlen)</SelectItem>
+                <SelectItem value="summary" className="text-base">Summary</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -313,12 +313,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-6 border-t">
+      <div className="flex justify-end pt-8 border-t">
         <Button
           onClick={onSave}
-          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-3 text-base h-12 px-6"
         >
-          <Save className="h-4 w-4" />
+          <Save className="h-5 w-5" />
           SEO Settings speichern
         </Button>
       </div>
