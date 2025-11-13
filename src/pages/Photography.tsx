@@ -12,6 +12,7 @@ import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
 import { Video } from "@/components/segments/Video";
+import { SEOHead } from "@/components/SEOHead";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
@@ -87,6 +88,7 @@ const Photography = () => {
   const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
   const [hasHeroContent, setHasHeroContent] = useState(false);
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
+  const [seoData, setSeoData] = useState<any>({});
 
   useEffect(() => {
     loadContent();
@@ -167,6 +169,13 @@ const Photography = () => {
         } else if (item.section_key === "hero_title") {
           contentMap[item.section_key] = item.content_value;
           heroExists = true;
+        } else if (item.section_key === "seo_settings") {
+          try {
+            const seoSettings = JSON.parse(item.content_value);
+            setSeoData(seoSettings);
+          } catch {
+            // Keep empty seo data
+          }
         } else {
           contentMap[item.section_key] = item.content_value;
         }
@@ -732,6 +741,19 @@ const Photography = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* SEO Meta Tags */}
+      <SEOHead
+        title={seoData.title}
+        description={seoData.metaDescription}
+        canonical={seoData.canonical}
+        ogTitle={seoData.ogTitle}
+        ogDescription={seoData.ogDescription}
+        ogImage={seoData.ogImage}
+        twitterCard={seoData.twitterCard}
+        robotsIndex={seoData.robotsIndex}
+        robotsFollow={seoData.robotsFollow}
+      />
+      
       {/* Navigation */}
       <Navigation />
 
