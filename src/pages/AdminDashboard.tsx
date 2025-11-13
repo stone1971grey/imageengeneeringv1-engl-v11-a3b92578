@@ -4133,8 +4133,12 @@ const AdminDashboard = () => {
                                         .from('page-images')
                                         .getPublicUrl(filePath);
 
+                                      // Extract image metadata
+                                      const metadata = await extractImageMetadata(file, publicUrl);
+
                                       const newSegments = [...pageSegments];
                                       newSegments[index].data.items[tileIndex].imageUrl = publicUrl;
+                                      newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
                                       setPageSegments(newSegments);
 
                                       toast.success("Tile image uploaded successfully!");
@@ -4147,6 +4151,54 @@ const AdminDashboard = () => {
                                   disabled={uploading}
                                   className={`border-2 border-gray-600 ${tile.imageUrl ? "hidden" : ""}`}
                                 />
+                                
+                                {/* Image Metadata Display */}
+                                {tile.metadata && (
+                                  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                                    <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                                    <div className="grid grid-cols-2 gap-3 text-sm">
+                                      <div>
+                                        <span className="text-gray-600">Original Name:</span>
+                                        <p className="text-black font-medium">{tile.metadata.originalFileName}</p>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-600">Dimensions:</span>
+                                        <p className="text-black font-medium">{tile.metadata.width} × {tile.metadata.height} px</p>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-600">File Size:</span>
+                                        <p className="text-black font-medium">{formatFileSize(tile.metadata.fileSizeKB)}</p>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-600">Format:</span>
+                                        <p className="text-black font-medium uppercase">{tile.metadata.format}</p>
+                                      </div>
+                                      <div className="col-span-2">
+                                        <span className="text-gray-600">Upload Date:</span>
+                                        <p className="text-black font-medium">{formatUploadDate(tile.metadata.uploadDate)}</p>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="mt-4">
+                                      <Label htmlFor={`dynamic_tile_alt_${index}_${tileIndex}`} className="text-black text-base">Alt Text (SEO)</Label>
+                                      <Input
+                                        id={`dynamic_tile_alt_${index}_${tileIndex}`}
+                                        type="text"
+                                        value={tile.metadata.altText || ''}
+                                        onChange={(e) => {
+                                          const newSegments = [...pageSegments];
+                                          if (newSegments[index].data.items[tileIndex].metadata) {
+                                            newSegments[index].data.items[tileIndex].metadata.altText = e.target.value;
+                                            setPageSegments(newSegments);
+                                          }
+                                        }}
+                                        placeholder="Describe this image for accessibility and SEO"
+                                        className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                                      />
+                                      <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                               
                               {/* Icon Selection */}
