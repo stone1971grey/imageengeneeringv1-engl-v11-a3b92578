@@ -416,7 +416,7 @@ const MobilePhone = () => {
       }
 
       return (
-        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="pb-20 bg-gray-50">
+        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="bg-gray-50 pb-20">
           <div className="w-full px-6">
             {(solutionsTitle || solutionsSubtext) && (
               <div className="text-center mb-16">
