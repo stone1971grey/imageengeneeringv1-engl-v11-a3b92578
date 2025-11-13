@@ -99,7 +99,7 @@ export const navigationDataDe = {
     "Illumination Devices": {
       description: "Professionelle LED-Beleuchtungssysteme und gleichmäßige Lichtquellen für stabile Testumgebungen",
       subgroups: [
-        { name: "iQ-LED", link: "#" },
+        { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
         { name: "IEEE-P2020", link: "#" },
         { name: "Produktionslinienkalibrierung", link: "#" },
         { name: "Flicker (PWM/MMP)", link: "#" },
