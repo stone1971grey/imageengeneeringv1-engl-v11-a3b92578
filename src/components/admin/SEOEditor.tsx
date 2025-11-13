@@ -30,6 +30,7 @@ interface SEOEditorProps {
 }
 
 export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) => {
+  const [serpView, setSerpView] = useState<'desktop' | 'mobile'>('desktop');
   const [checks, setChecks] = useState({
     titleLength: false,
     descriptionLength: false,
@@ -136,36 +137,84 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
 
       {/* SERP Preview */}
       <Card className="p-8 bg-white border-2 border-gray-300 shadow-lg">
-        <h3 className="text-2xl font-bold mb-6 text-gray-900">Google SERP Vorschau</h3>
-        <div className="bg-white rounded-lg p-6 border border-gray-200">
-          {/* Google Logo Placeholder */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-6 h-6 rounded-full bg-gray-200"></div>
-            <div className="text-sm text-gray-600">www.image-engineering.de</div>
-          </div>
-          
-          {/* SERP Result */}
-          <div className="space-y-2">
-            {/* URL Breadcrumb */}
-            <div className="flex items-center gap-1 text-sm">
-              <span className="text-gray-600">https://www.image-engineering.de</span>
-              <span className="text-gray-600"> › </span>
-              <span className="text-gray-900">{data.slug || pageSlug}</span>
-            </div>
-            
-            {/* Title */}
-            <h4 className="text-xl text-[#1a0dab] hover:underline cursor-pointer line-clamp-1">
-              {data.title || 'Ihr SEO Title erscheint hier'}
-            </h4>
-            
-            {/* Description */}
-            <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-              {data.metaDescription || 'Ihre Meta Description erscheint hier. Beschreiben Sie Ihre Seite in 120-160 Zeichen, um optimale Darstellung in Suchergebnissen zu gewährleisten.'}
-            </p>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold text-gray-900">Google SERP Vorschau</h3>
+          <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
+            <button
+              onClick={() => setSerpView('desktop')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                serpView === 'desktop'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Desktop
+            </button>
+            <button
+              onClick={() => setSerpView('mobile')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                serpView === 'mobile'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Mobile
+            </button>
           </div>
         </div>
+        <div className={`bg-white rounded-lg p-6 border border-gray-200 ${serpView === 'mobile' ? 'max-w-md mx-auto' : ''}`}>
+          {serpView === 'desktop' ? (
+            <>
+              {/* Desktop SERP */}
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-6 h-6 rounded-full bg-gray-200"></div>
+                <div className="text-sm text-gray-600">www.image-engineering.de</div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center gap-1 text-sm">
+                  <span className="text-gray-600">https://www.image-engineering.de</span>
+                  <span className="text-gray-600"> › </span>
+                  <span className="text-gray-900">{data.slug || pageSlug}</span>
+                </div>
+                
+                <h4 className="text-xl text-[#1a0dab] hover:underline cursor-pointer line-clamp-1">
+                  {data.title || 'Ihr SEO Title erscheint hier'}
+                </h4>
+                
+                <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                  {data.metaDescription || 'Ihre Meta Description erscheint hier. Beschreiben Sie Ihre Seite in 120-160 Zeichen, um optimale Darstellung in Suchergebnissen zu gewährleisten.'}
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Mobile SERP */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-5 h-5 rounded-full bg-gray-200"></div>
+                  <div className="text-xs text-gray-600">image-engineering.de</div>
+                </div>
+                
+                <h4 className="text-lg text-[#1a0dab] hover:underline cursor-pointer line-clamp-2 leading-snug">
+                  {data.title || 'Ihr SEO Title erscheint hier'}
+                </h4>
+                
+                <div className="text-xs text-gray-600 truncate">
+                  https://www.image-engineering.de/{data.slug || pageSlug}
+                </div>
+                
+                <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                  {data.metaDescription || 'Ihre Meta Description erscheint hier. Beschreiben Sie Ihre Seite in 120-160 Zeichen, um optimale Darstellung in Suchergebnissen zu gewährleisten.'}
+                </p>
+              </div>
+            </>
+          )}
+        </div>
         <p className="text-sm text-gray-600 mt-4 leading-relaxed">
-          So erscheint Ihre Seite in Google Suchergebnissen. Die Darstellung kann je nach Gerät und Suchkontext variieren.
+          {serpView === 'desktop' 
+            ? 'So erscheint Ihre Seite in Desktop-Suchergebnissen auf Google.'
+            : 'So erscheint Ihre Seite in mobilen Suchergebnissen auf Google. Mobile Titel werden oft kürzer angezeigt.'}
         </p>
       </Card>
 
