@@ -55,19 +55,28 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     const keywordInDescription = keyword ? (data.metaDescription?.toLowerCase().includes(keyword) || false) : false;
     const keywordInSlug = keyword ? (data.slug?.toLowerCase().includes(keyword.replace(/\s+/g, '-')) || false) : false;
 
-    // Check for keyword in introduction (first non-Hero segment)
+    // Check for keyword in introduction (ONLY first segment after Hero, if it's tiles or image-text)
     let keywordInIntroduction = false;
     let introTitle = '';
     let introDescription = '';
     
     if (pageSegments.length > 0) {
-      // Find first non-hero segment (tiles or image-text)
-      const introSegment = pageSegments.find(seg => 
-        seg.type === 'tiles' || seg.type === 'image-text' || seg.type === 'solutions'
+      // Sort segments by position to find the first one after Hero
+      const sortedSegments = [...pageSegments].sort((a, b) => (a.position || 0) - (b.position || 0));
+      
+      // Find Hero position
+      const heroIndex = sortedSegments.findIndex(seg => 
+        seg.type === 'hero' || seg.type === 'product-hero' || seg.type === 'product-hero-gallery'
       );
       
-      if (introSegment) {
-        const segmentData = introSegment.data || {};
+      // Get the segment immediately after Hero (if exists)
+      const firstAfterHero = heroIndex >= 0 && heroIndex + 1 < sortedSegments.length 
+        ? sortedSegments[heroIndex + 1] 
+        : sortedSegments[0]; // fallback to first segment if no hero found
+      
+      // Only count as introduction if it's tiles or image-text (NOT banner, NOT solutions, NOT other types)
+      if (firstAfterHero && (firstAfterHero.type === 'tiles' || firstAfterHero.type === 'image-text')) {
+        const segmentData = firstAfterHero.data || {};
         introTitle = segmentData.title || segmentData.sectionTitle || '';
         introDescription = segmentData.description || segmentData.sectionDescription || segmentData.subtext || '';
         
