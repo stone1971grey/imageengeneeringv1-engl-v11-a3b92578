@@ -205,7 +205,7 @@ const ProductIQLED = () => {
         
         {/* Hero Section - Segment ID 81 */}
         {hasHeroContent && (
-          <section id={segmentIdMap['hero']?.toString() || '81'} className={`w-full bg-gradient-to-b from-gray-50 to-white ${getPaddingClass()} pb-12 md:pb-20`}>
+          <section id="81" className={`w-full bg-gradient-to-b from-gray-50 to-white ${getPaddingClass()} pb-12 md:pb-20`}>
             <div className="w-full px-6">
               <div className={`grid grid-cols-1 ${getLayoutClasses()} gap-8 md:gap-12 items-center max-w-7xl mx-auto`}>
                 {heroImagePosition === "left" && heroImageUrl && (
@@ -259,7 +259,7 @@ const ProductIQLED = () => {
 
         {/* Tiles Section - Segment ID 82 */}
         {applications.length > 0 && (
-          <section id={segmentIdMap['tiles']?.toString() || '82'} className="py-20 bg-white">
+          <section id="82" className="py-20 bg-white">
             <div className="w-full px-6">
               <div className={`grid gap-8 max-w-7xl mx-auto grid-cols-1 ${tilesColumns === "2" ? "md:grid-cols-2" : tilesColumns === "4" ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"}`}>
                 {applications.map((app, index) => {
@@ -297,7 +297,7 @@ const ProductIQLED = () => {
 
         {/* Banner Section - Segment ID 83 */}
         {bannerTitle && (
-          <section id={segmentIdMap['banner']?.toString() || '83'} className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+          <section id="83" className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
             <div className="w-full px-6">
               <div className="text-center mb-16">
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -354,7 +354,7 @@ const ProductIQLED = () => {
 
         {/* Solutions/Image-Text Section - Segment ID 84 */}
         {solutionsItems && solutionsItems.length > 0 && (
-          <section id={segmentIdMap['solutions']?.toString() || '84'} className="bg-gray-50 py-20">
+          <section id="84" className="bg-gray-50 py-20">
             <div className="w-full px-6">
               {(solutionsTitle || solutionsSubtext) && (
                 <div className="text-center mb-16">
