@@ -92,6 +92,49 @@ export const CopySegmentDialog = ({
 
       if (contentError) throw contentError;
 
+      // Add segment to page_segments array
+      const { data: pageSegmentsData } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', targetPage)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+
+      let pageSegments: any[] = [];
+      if (pageSegmentsData?.content_value) {
+        try {
+          pageSegments = JSON.parse(pageSegmentsData.content_value);
+        } catch (e) {
+          console.error('Error parsing page_segments:', e);
+        }
+      }
+
+      // Add new segment to page_segments
+      const newSegment = {
+        id: newSegmentId.toString(),
+        type: segmentType,
+        data: segmentData
+      };
+
+      if (position === 'start') {
+        pageSegments.unshift(newSegment);
+      } else {
+        pageSegments.push(newSegment);
+      }
+
+      const { error: segmentsError } = await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: targetPage,
+          section_key: 'page_segments',
+          content_type: 'json',
+          content_value: JSON.stringify(pageSegments)
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (segmentsError) throw segmentsError;
+
       // Update tab_order of target page
       const { data: tabOrderData } = await supabase
         .from('page_content')
