@@ -3,8 +3,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, Copy } from "lucide-react";
 import { useState } from "react";
+import { CopySegmentDialog } from "./CopySegmentDialog";
 
 interface SpecificationRow {
   specification: string;
@@ -18,6 +19,7 @@ interface SpecificationEditorProps {
   onUpdate: (data: { title: string; rows: SpecificationRow[] }) => void;
   onSave: () => void;
   saving: boolean;
+  currentPageSlug: string;
 }
 
 const SpecificationEditor = ({
@@ -26,7 +28,8 @@ const SpecificationEditor = ({
   rows: initialRows,
   onUpdate,
   onSave,
-  saving
+  saving,
+  currentPageSlug
 }: SpecificationEditorProps) => {
   const [title, setTitle] = useState(initialTitle || "Detailed Specifications");
   const [rows, setRows] = useState<SpecificationRow[]>(
@@ -34,6 +37,7 @@ const SpecificationEditor = ({
       ? initialRows
       : [{ specification: "Specification Name", value: "Value" }]
   );
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   const handleTitleChange = (newTitle: string) => {
     setTitle(newTitle);
@@ -165,8 +169,17 @@ const SpecificationEditor = ({
           ))}
         </div>
 
-        {/* Save Button */}
-        <div className="flex justify-end pt-4 border-t border-gray-700">
+        {/* Action Buttons */}
+        <div className="flex justify-between items-center pt-4 border-t border-gray-700">
+          <Button
+            onClick={() => setCopyDialogOpen(true)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Copy className="h-4 w-4" />
+            Copy to Page...
+          </Button>
+          
           <Button
             onClick={onSave}
             disabled={saving}
@@ -176,6 +189,15 @@ const SpecificationEditor = ({
             {saving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
+
+        <CopySegmentDialog
+          open={copyDialogOpen}
+          onOpenChange={setCopyDialogOpen}
+          currentPageSlug={currentPageSlug}
+          segmentId={segmentId}
+          segmentType="specification"
+          segmentData={{ title, rows }}
+        />
       </CardContent>
     </Card>
   );
