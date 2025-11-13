@@ -146,7 +146,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.focusKeyword || ''}
             onChange={(e) => handleChange('focusKeyword', e.target.value)}
             placeholder="z.B. camera testing software"
-            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black"
+            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
           />
           <p className="text-base text-white mt-3 leading-relaxed">
             Hauptkeyword für diese Seite - sollte in Title, Description und Slug vorkommen
@@ -163,7 +163,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.title || ''}
             onChange={(e) => handleChange('title', e.target.value)}
             placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
-            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black"
+            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             maxLength={70}
           />
           <div className="mt-3 space-y-2">
@@ -226,7 +226,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.metaDescription || ''}
             onChange={(e) => handleChange('metaDescription', e.target.value)}
             placeholder="z.B. Discover professional camera testing solutions with Image Engineering. Industry-leading test charts, analysis software, and illumination devices for precise image quality measurement."
-            className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black"
+            className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black placeholder:text-black"
             rows={4}
             maxLength={170}
           />
@@ -294,7 +294,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.slug || ''}
               onChange={(e) => handleChange('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-/]/g, '-'))}
               placeholder={pageSlug}
-              className="rounded-l-none text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black"
+              className="rounded-l-none text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             />
           </div>
           <p className="text-base text-white mt-3 leading-relaxed">
@@ -312,7 +312,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
             value={data.canonical || ''}
             onChange={(e) => handleChange('canonical', e.target.value)}
             placeholder="https://www.image-engineering.de/your-solution/machine-vision"
-            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black"
+            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
           />
           <p className="text-base text-white mt-3 leading-relaxed">
             Verhindert Duplicate Content. Leer lassen = aktuelle URL verwenden.
@@ -366,7 +366,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.ogTitle || ''}
               onChange={(e) => handleChange('ogTitle', e.target.value)}
               placeholder="Leer lassen = SEO Title verwenden"
-              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black"
+              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             />
           </div>
 
@@ -377,7 +377,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.ogDescription || ''}
               onChange={(e) => handleChange('ogDescription', e.target.value)}
               placeholder="Leer lassen = Meta Description verwenden"
-              className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black"
+              className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black placeholder:text-black"
               rows={3}
             />
           </div>
@@ -389,7 +389,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               value={data.ogImage || ''}
               onChange={(e) => handleChange('ogImage', e.target.value)}
               placeholder="https://... (empfohlen: 1200×630px)"
-              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black"
+              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
             />
           </div>
 
