@@ -28,9 +28,10 @@ interface SEOEditorProps {
   data: SEOData;
   onChange: (data: SEOData) => void;
   onSave: () => void;
+  pageSegments?: any[];
 }
 
-export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) => {
+export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] }: SEOEditorProps) => {
   const [checks, setChecks] = useState({
     titleLength: false,
     descriptionLength: false,
@@ -38,6 +39,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
     keywordInTitle: false,
     keywordInDescription: false,
     keywordInSlug: false,
+    keywordInIntroduction: false,
   });
 
   useEffect(() => {
@@ -49,6 +51,28 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
     const keywordInDescription = keyword ? (data.metaDescription?.toLowerCase().includes(keyword) || false) : false;
     const keywordInSlug = keyword ? (data.slug?.toLowerCase().includes(keyword.replace(/\s+/g, '-')) || false) : false;
 
+    // Check for keyword in introduction (first non-Hero segment)
+    let keywordInIntroduction = false;
+    if (keyword && pageSegments.length > 0) {
+      // Find first non-hero segment (tiles or image-text)
+      const introSegment = pageSegments.find(seg => 
+        seg.type === 'tiles' || seg.type === 'image-text' || seg.type === 'solutions'
+      );
+      
+      if (introSegment) {
+        const segmentData = introSegment.data || {};
+        const sectionTitle = (segmentData.title || segmentData.sectionTitle || '').toLowerCase();
+        const sectionDescription = (
+          segmentData.description || 
+          segmentData.sectionDescription || 
+          segmentData.subtext || 
+          ''
+        ).toLowerCase();
+        
+        keywordInIntroduction = sectionTitle.includes(keyword) || sectionDescription.includes(keyword);
+      }
+    }
+
     setChecks({
       titleLength,
       descriptionLength,
@@ -56,8 +80,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
       keywordInTitle,
       keywordInDescription,
       keywordInSlug,
+      keywordInIntroduction,
     });
-  }, [data]);
+  }, [data, pageSegments]);
 
   const handleChange = (field: keyof SEOData, value: string) => {
     onChange({
@@ -91,7 +116,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
               Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
             }`} />
             <span className="text-sm font-semibold text-gray-700">
-              {Object.values(checks).filter(Boolean).length}/6 Checks
+              {Object.values(checks).filter(Boolean).length}/7 Checks
             </span>
           </div>
         </div>
@@ -131,6 +156,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
           }`}>
             {getStatusIcon(checks.hasH1)}
             <span className="text-base font-medium text-gray-900">H1 Present</span>
+          </div>
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.keywordInIntroduction ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
+            {getStatusIcon(checks.keywordInIntroduction)}
+            <span className="text-base font-medium text-gray-900">FKW in Introduction</span>
           </div>
         </div>
       </Card>
