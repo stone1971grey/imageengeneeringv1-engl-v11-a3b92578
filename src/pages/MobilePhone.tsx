@@ -232,7 +232,6 @@ const MobilePhone = () => {
                   )}
                 </div>
               )}
-
               {dynamicSegment.data.items && dynamicSegment.data.items.length > 0 && (
                 <div className={`grid gap-8 max-w-7xl mx-auto ${
                   dynamicSegment.data.layout === "1-col" ? "grid-cols-1" :
@@ -265,6 +264,9 @@ const MobilePhone = () => {
             </div>
           </section>
         );
+      }
+      if (dynamicSegment.type === 'video') {
+        return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
       }
     }
 
