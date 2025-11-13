@@ -4074,11 +4074,11 @@ const AdminDashboard = () => {
                                   {tile.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this tile (appears above the title)"}
                                 </p>
                                 {tile.imageUrl && (
-                                  <div className="mb-3">
+                                  <div className="mb-3 max-w-xs">
                                     <img 
                                       src={tile.imageUrl} 
                                       alt={`Tile ${tileIndex + 1}`} 
-                                      className="w-full h-[200px] object-cover rounded-lg border-2 border-gray-600"
+                                      className="w-full h-auto object-contain rounded-lg border-2 border-gray-600"
                                     />
                                   </div>
                                 )}
