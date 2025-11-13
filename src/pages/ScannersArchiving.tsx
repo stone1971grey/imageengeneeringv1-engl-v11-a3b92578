@@ -34,6 +34,7 @@ const iconMap: Record<string, any> = {
 const ScannersArchiving = () => {
   const [content, setContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImagePosition, setHeroImagePosition] = useState<string>("center");
   const [heroLayout, setHeroLayout] = useState<string>("1-1");
@@ -115,6 +116,8 @@ const ScannersArchiving = () => {
           } catch {
             setTilesData((prev: any) => ({ ...prev, items: [] }));
           }
+        } else if (item.section_key === "tiles_columns") {
+          setTilesColumns(item.content_value || "3");
         } else if (item.section_key === "banner_title") {
           setBannerData((prev: any) => ({ ...prev, title: item.content_value }));
         } else if (item.section_key === "banner_subtext") {
@@ -329,7 +332,11 @@ const ScannersArchiving = () => {
               </div>
             </div>
             <div className="container mx-auto px-6">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              <div className={`grid gap-8 max-w-7xl mx-auto ${
+                tilesData.columns === "2" ? "md:grid-cols-2" :
+                tilesData.columns === "4" ? "md:grid-cols-2 lg:grid-cols-4" :
+                "md:grid-cols-2 lg:grid-cols-3"
+              }`}>
                 {tilesData.items?.map((app: any, index: number) => {
                   const IconComponent = app.icon ? iconMap[app.icon] : null;
                   return (
@@ -432,7 +439,11 @@ const ScannersArchiving = () => {
           </div>
 
           <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <div className={`grid gap-8 max-w-7xl mx-auto ${
+              tilesColumns === "2" ? "md:grid-cols-2" :
+              tilesColumns === "4" ? "md:grid-cols-2 lg:grid-cols-4" :
+              "md:grid-cols-2 lg:grid-cols-3"
+            }`}>
               {tilesData.items?.map((app: any, index: number) => {
                 const IconComponent = app.icon ? iconMap[app.icon] : null;
                 
