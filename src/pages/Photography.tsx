@@ -326,6 +326,104 @@ const Photography = () => {
       if (dynamicSegment.type === 'video') {
         return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
       }
+      if (dynamicSegment.type === 'tiles') {
+        const tilesData = dynamicSegment.data;
+        return (
+          <section key={segmentId} id={segmentId} className="py-8 bg-gray-50">
+            <div className="container mx-auto px-6">
+              <div className="text-center mb-16">
+                {tilesData.title && (
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {tilesData.title}
+                  </h2>
+                )}
+                {tilesData.description && (
+                  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    {tilesData.description}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="container mx-auto px-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                {tilesData.items?.map((app: any, index: number) => {
+                  const IconComponent = app.icon ? iconMap[app.icon] : null;
+                  return (
+                    <div 
+                      key={index}
+                      className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
+                    >
+                      {IconComponent && (
+                        <div className="w-full flex justify-center pt-8">
+                          <div className="relative">
+                            <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
+                              <IconComponent 
+                                size={36} 
+                                className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
+                                strokeWidth={1.8}
+                              />
+                            </div>
+                            <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
+                          </div>
+                        </div>
+                      )}
+                      {app.imageUrl && (
+                        <div className={`w-full h-[200px] overflow-hidden ${IconComponent ? 'mt-4' : ''}`}>
+                          <img 
+                            src={app.imageUrl} 
+                            alt={app.title} 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className={`p-8 flex flex-col items-center text-center flex-1 ${!IconComponent && !app.imageUrl ? 'pt-8' : ''}`}>
+                        <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
+                          {app.title}
+                        </h3>
+                        <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
+                          {app.description}
+                        </p>
+                        {app.ctaLink && app.ctaLink.trim() ? (
+                          app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
+                            <a 
+                              href={app.ctaLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full"
+                            >
+                              <button
+                                className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                                style={{
+                                  backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: app.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {app.ctaText || 'Learn More'}
+                              </button>
+                            </a>
+                          ) : (
+                            <Link to={app.ctaLink} className="w-full">
+                              <button
+                                className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                                style={{
+                                  backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: app.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {app.ctaText || 'Learn More'}
+                              </button>
+                            </Link>
+                          )
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      }
     }
 
     // Static segments
