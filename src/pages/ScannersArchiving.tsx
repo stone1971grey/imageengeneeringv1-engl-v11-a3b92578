@@ -7,6 +7,7 @@ import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
+import { SEOHead } from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
@@ -43,6 +44,7 @@ const ScannersArchiving = () => {
   const [solutionsData, setSolutionsData] = useState<any>({ title: "", subtext: "", layout: "2-col", items: [] });
   const [hasHeroContent, setHasHeroContent] = useState(false);
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
+  const [seoData, setSeoData] = useState<any>({});
 
   useEffect(() => {
     loadContent();
@@ -139,6 +141,13 @@ const ScannersArchiving = () => {
             setSolutionsData((prev: any) => ({ ...prev, items: items || [] }));
           } catch {
             setSolutionsData((prev: any) => ({ ...prev, items: [] }));
+          }
+        } else if (item.section_key === "seo_settings") {
+          try {
+            const seoSettings = JSON.parse(item.content_value);
+            setSeoData(seoSettings);
+          } catch {
+            // Keep empty seo data
           }
         } else {
           contentMap[item.section_key] = item.content_value;
@@ -708,6 +717,19 @@ const ScannersArchiving = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* SEO Meta Tags */}
+      <SEOHead
+        title={seoData.title}
+        description={seoData.metaDescription}
+        canonical={seoData.canonical}
+        ogTitle={seoData.ogTitle}
+        ogDescription={seoData.ogDescription}
+        ogImage={seoData.ogImage}
+        twitterCard={seoData.twitterCard}
+        robotsIndex={seoData.robotsIndex}
+        robotsFollow={seoData.robotsFollow}
+      />
+      
       <Navigation />
 
       {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
