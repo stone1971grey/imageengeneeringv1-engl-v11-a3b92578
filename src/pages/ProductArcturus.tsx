@@ -1,645 +1,380 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, Download, FileText, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, ChevronLeft, ChevronRight, Expand, X, Lightbulb, Monitor } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain, FileText, Download, BarChart3, Smartphone, Heart, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
+import Footer from "@/components/Footer";
+import MetaNavigation from "@/components/segments/MetaNavigation";
+import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
+import FeatureOverview from "@/components/segments/FeatureOverview";
+import Table from "@/components/segments/Table";
+import FAQ from "@/components/segments/FAQ";
+import { Video } from "@/components/segments/Video";
+import Specification from "@/components/segments/Specification";
+import { SEOHead } from "@/components/SEOHead";
+import { supabase } from "@/integrations/supabase/client";
 
-import arcturusMain from "@/assets/arcturus-main-product.png";
-import arcturusMainGithub from "@/assets/arcturus-main-github.png";
-import arcturusHeroProfessional from "@/assets/arcturus-hero-professional.jpg";
-import arcturusRealisticLab from "@/assets/arcturus-realistic-lab.jpg";
-import arcturusController from "@/assets/arcturus-controller.jpg";
-import arcturusSetup from "@/assets/arcturus-setup-vega.jpg";
-import arcturusCharts from "@/assets/arcturus-vega-charts.jpg";
-import arcturusAutomotiveLab from "@/assets/arcturus-automotive-lab-installation.jpg";
+const iconMap: Record<string, any> = {
+  FileText,
+  Download,
+  BarChart3,
+  Zap,
+  Shield,
+  Eye,
+  Car,
+  Smartphone,
+  Heart,
+  CheckCircle,
+  Lightbulb,
+  Monitor,
+};
 
 const ProductArcturus = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  const productImages = [
-    {
-      src: arcturusMain,
-      title: "Arcturus LED System",
-      description: "Professional high-performance LED lighting system"
-    },
-    {
-      src: arcturusController,
-      title: "Controller Unit",
-      description: "Precision control interface for light power management"
-    },
-    {
-      src: arcturusSetup,
-      title: "Laboratory Setup",
-      description: "Complete testing environment with Vega software integration"
-    },
-    {
-      src: arcturusCharts,
-      title: "Test Charts & Analysis",
-      description: "Vega software displays comprehensive image quality metrics"
+  const [content, setContent] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [segments, setSegments] = useState<any[]>([]);
+  const [tabOrder, setTabOrder] = useState<string[]>([]);
+  const [seoData, setSeoData] = useState<any>(null);
+
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", "arcturus");
+
+      if (error) throw error;
+
+      if (data) {
+        const contentMap: Record<string, string> = {};
+        let loadedSegments: any[] = [];
+        let loadedTabOrder: string[] = [];
+
+        data.forEach((item) => {
+          if (item.section_key === "page_segments") {
+            try {
+              loadedSegments = JSON.parse(item.content_value);
+            } catch (e) {
+              console.error("Error parsing page_segments:", e);
+            }
+          } else if (item.section_key === "tab_order") {
+            try {
+              loadedTabOrder = JSON.parse(item.content_value);
+            } catch (e) {
+              console.error("Error parsing tab_order:", e);
+            }
+          } else if (item.section_key === "seo_config") {
+            try {
+              setSeoData(JSON.parse(item.content_value));
+            } catch (e) {
+              console.error("Error parsing seo_config:", e);
+            }
+          } else {
+            contentMap[item.section_key] = item.content_value;
+          }
+        });
+
+        setContent(contentMap);
+        setSegments(loadedSegments);
+        setTabOrder(loadedTabOrder);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading content:", error);
+      setLoading(false);
     }
-  ];
-
-  const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
   };
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
-  };
-  return (
-    <div className="min-h-screen bg-[#F7F9FB]">
-      <Navigation />
-      
-      {/* Main content wrapper with top margin to clear fixed navigation */}
-      <div className="pt-[140px]">
-        {/* Quick Navigation */}
-        <nav className="sticky top-[85px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
-          <div className="container mx-auto px-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
-              <div className="flex flex-wrap gap-6 justify-center text-lg">
-                 <a href="#overview" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth" 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('overview')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Overview</a>
-                  <a href="#benefits" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('benefits')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Benefits</a>
-                  <a href="#specifications" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('specifications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Specifications</a>
-                  <a href="#applications" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('applications')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Applications</a>
-                  <a href="#gallery" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('gallery')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Gallery</a>
-                  <a href="#downloads" className="text-[#f9dc24] hover:text-[#f9dc24]/80 font-medium transition-colors scroll-smooth"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      document.getElementById('downloads')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }}>Downloads</a>
-              </div>
-            </div>
-          </div>
-        </nav>
+  const renderSegment = (segment: any) => {
+    const segmentData = segment.data;
 
-        {/* Hero Section */}
-        <section id="overview" className="min-h-[60vh] bg-scandi-white font-roboto scroll-mt-[170px] relative overflow-hidden">
-          {/* Animated background light effects */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-soft-blue/20 to-accent-soft-blue/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-gradient-to-l from-soft-blue/15 to-accent-soft-blue/15 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-accent-soft-blue/10 to-soft-blue/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
-          </div>
-          
-          <div className="container mx-auto px-6 py-6 lg:py-10 pt-3 md:pt-14 relative z-10">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
-              
-              {/* Left Content */}
-              <div className="space-y-8">
-                <div>
-                        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-gray-900 leading-[0.9] tracking-tight mb-6 mt-8 md:mt-0">
-                          ARCTURUS
-                          <br />
-                          <span className="font-medium text-gray-900">LED</span>
-                        </h1>
-                        
-                        <p className="text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-lg">
-                          Today's image sensors and High Dynamic Range configurations make testing at or near sensor saturation challenging. With Arcturus, we can generate more than enough intensity to challenge these sensors with much higher sensitivity than currently possible.
-                        </p>
-                </div>
-                
-                <div className="pt-4">
-                  <Button 
-                    size="lg"
-                    className="border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group"
-                    style={{ backgroundColor: '#f9dc24', color: 'black' }}
-                  >
-                    Learn More
-                    <ArrowLeft className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-              </div>
+    switch (segment.type) {
+      case "meta-navigation":
+        return (
+          <MetaNavigation
+            key={segment.id}
+            data={segmentData}
+          />
+        );
 
-              {/* Right Product Image */}
-              <div className="relative">
-                <div className="relative rounded-lg shadow-soft">
-                  {/* Animated glow effect behind image */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse"></div>
-                  
-                  <img 
-                    src={arcturusMainGithub} 
-                    alt="Arcturus LED System"
-                    className="w-full h-auto max-h-[400px] lg:max-h-[450px] object-contain bg-white relative z-10"
-                  />
-                  
-                  {/* Subtle overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-20"></div>
-                  
-                  {/* Moving light beam effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[slide-in-right_3s_ease-in-out_infinite] z-30"></div>
-                </div>
-                
-                {/* Floating feature highlight */}
-                <div className="absolute -bottom-6 -left-6 bg-scandi-white p-6 rounded-lg shadow-soft border border-scandi-light-grey z-40">
-                  <div className="text-sm text-scandi-grey font-light mb-1">IEEE P2020</div>
-                  <div className="text-2xl font-medium text-light-foreground">Compatible</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Main Benefits */}
-          <div id="benefits" className="bg-gradient-to-br from-gray-50 to-blue-50 py-16 scroll-mt-[170px]">
+      case "product-hero-gallery":
+        return (
+          <ProductHeroGallery
+            key={segment.id}
+            id={segment.id}
+            data={segmentData}
+          />
+        );
+
+      case "feature-overview":
+        return (
+          <FeatureOverview
+            key={segment.id}
+            id={segment.id}
+            title={segmentData.title || ""}
+            subtext={segmentData.subtext || ""}
+            rows={segmentData.rows || "2"}
+            layout={segmentData.layout || "3"}
+            items={segmentData.items || []}
+          />
+        );
+
+      case "table":
+        return (
+          <Table
+            key={segment.id}
+            id={segment.id}
+            title={segmentData.title || ""}
+            subtext={segmentData.subtext || ""}
+            headers={segmentData.headers || []}
+            rows={segmentData.rows || []}
+          />
+        );
+
+      case "faq":
+        return (
+          <FAQ
+            key={segment.id}
+            id={segment.id}
+            title={segmentData.title || ""}
+            subtext={segmentData.subtext || ""}
+            items={segmentData.items || []}
+          />
+        );
+
+      case "video":
+        return (
+          <Video
+            key={segment.id}
+            id={segment.id}
+            data={segmentData}
+          />
+        );
+
+      case "specification":
+        return (
+          <Specification
+            key={segment.id}
+            id={segment.id}
+            title={segmentData.title || ""}
+            rows={segmentData.rows || []}
+          />
+        );
+
+      case "tiles":
+        return (
+          <section key={segment.id} id={segment.id} className="py-20 bg-background">
             <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Key Benefits of Arcturus</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Maximum Illuminance</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Up to 1 Mcd/m² - more than enough intensity to challenge even the most sensitive image sensors.
+              <div className="text-center mb-16">
+                <h2 className="text-4xl font-bold mb-4 text-foreground">
+                  {segmentData.title || ""}
+                </h2>
+                {segmentData.description && (
+                  <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                    {segmentData.description}
                   </p>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flicker-Free</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    DC-powered LED technology ensures flicker-free operation for consistent, reliable test results.
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">High Stability</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Extremely high stability and consistency for reproducible test conditions and accurate measurements.
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">True HDR Scenes</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Create true HDR scenes in combination with other Vega devices for comprehensive test scenarios.
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Wide Dynamic Range</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Change intensity across a wide dynamic range with constant spectral properties.
-                  </p>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Flexible Control</h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Control via UI software, API and Python scripts for Windows and Linux systems.
-                  </p>
-                </div>
+                )}
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* Product Video */}
-        <section className="container mx-auto px-4 pb-20">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Arcturus in Action</h2>
-            <div className="flex justify-center">
-              <div className="w-full max-w-4xl">
-                <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg">
-                  <iframe
-                    src="https://www.youtube.com/embed/DIqRMU7gGNw?start=1"
-                    title="Arcturus LED System Product Video"
-                    className="w-full h-full"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-                <p className="text-center text-[#555] mt-4 text-sm">
-                  See how Arcturus delivers maximum illuminance for challenging image sensor test scenarios
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-      {/* Use Case: Simulate Bright Sunlight */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
-          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Simulate Bright Sunlight - Use Case</h2>
-          <p className="text-[#555] mb-6 leading-relaxed">
-            Automotive camera systems must be tested in numerous lighting environments, especially those following the newly established <strong>IEEE-P2020</strong> standard. One of the most challenging scenarios to test is how the camera system performs under direct, bright sunlight, as this intensity level is often difficult to generate in a testing laboratory.
-          </p>
-          <p className="text-[#555] leading-relaxed">
-            Arcturus can simulate the intensity of bright sunlight illumination with very high stability compared to other light sources. This capability makes it possible to evaluate camera systems more efficiently in a testing laboratory.
-          </p>
-        </div>
-      </section>
-
-      {/* Detailed Specifications */}
-      <section id="specifications" className="container mx-auto px-4 pb-20 scroll-mt-[170px]">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10">
-          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">Detailed Specifications</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Specification</th>
-                  <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Arcturus</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Principle</td>
-                  <td className="py-3 px-4 text-[#555]">High-stable light source with large field of view based on iQ-LED technology</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Light Source</td>
-                  <td className="py-3 px-4 text-[#555]">36 temperature-controlled LEDs based on DC (direct current) technology</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Correlated Color Temperature (CCT)</td>
-                  <td className="py-3 px-4 text-[#555]">Approx. 4900 K (± 200 K)</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Color Rendering Index (CRI)</td>
-                  <td className="py-3 px-4 text-[#555]">≥ 95</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Maximum Luminance</td>
-                  <td className="py-3 px-4 text-[#555]">≥ 1Mcd/m²</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-3 px-4 text-[#555]">Dimming Function</td>
-                  <td className="py-3 px-4 text-[#555]">Software-based / 10⁶ - 10 levels</td>
-                </tr>
-                <tr>
-                  <td className="py-3 px-4 text-[#555]">Flicker Frequency Range</td>
-                  <td className="py-3 px-4 text-[#555]">1 – 1000 Hz (Square), 10 – 1000 Hz (Sine / Triangle)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      {/* Software & Control */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">Arcturus Software</h3>
-            <p className="text-[#555] mb-4 leading-relaxed">
-              Arcturus uses the same control software as our Vega light source. This software allows you to control up to seven devices (Arcturus + Vega) simultaneously.
-            </p>
-            <p className="text-[#555] leading-relaxed">
-              APIs are also available (sold separately) for seamless integration into custom designs. We offer C, C++ and Python APIs.
-            </p>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">Evaluation Software</h3>
-            <p className="text-[#555] mb-4 leading-relaxed">
-              Similar to Vega, Arcturus uses VLS evaluation software to analyze camera performance based on standards (IEEE-P2020) and KPIs.
-            </p>
-            <p className="text-[#555] leading-relaxed">
-              Includes analyses for CTA, MMP/Flicker and CSNR measurements for comprehensive image quality assessment.
-            </p>
-          </div>
-        </div>
-      </section>
-
-
-      {/* Typical Applications */}
-      <section id="applications" className="container mx-auto px-4 pb-20 scroll-mt-[320px]">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Typical Applications</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Car className="text-[#f9dc24]" size={32} />
-              </div>
-              <CardTitle className="text-[#2D2D2D]">Automotive Testing</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-[#555] text-center">
-                IEEE-P2020 compliant tests for automotive camera systems, including simulation of bright sunlight
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Smartphone className="text-[#f9dc24]" size={32} />
-              </div>
-              <CardTitle className="text-[#2D2D2D]">High-End Sensors</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-[#555] text-center">
-                Testing at or near sensor saturation with High Dynamic Range configurations and maximum intensity
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center pb-4">
-              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="text-[#f9dc24]" size={32} />
-              </div>
-              <CardTitle className="text-[#2D2D2D]">HDR Scene Creation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-[#555] text-center">
-                Create true HDR scenes in combination with other Vega devices for comprehensive test scenarios
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Product Image Gallery */}
-      <section id="gallery" className="container mx-auto px-4 pb-20 scroll-mt-[310px]">
-        <h2 className="text-3xl font-bold text-gray-800 mb-12 text-center">Product Gallery</h2>
-        
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            
-            {/* Left Side - Details */}
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">DETAILS</h3>
-                <div className="w-12 h-1 bg-red-600 mb-6"></div>
-                
-                <div className="space-y-4 text-[#555] leading-relaxed">
-                  <p>
-                    The core of Arcturus technology is the high-performance LED module that 
-                    generates more than enough intensity to challenge today's most sensitive image sensors. 
-                    The system is powered by a highly stable continuous DC power supply 
-                    in a temperature-controlled housing.
-                  </p>
-                  
-                  <p>
-                    The Arcturus LED system is designed to maximize lighting efficiency 
-                    in a large field of view while ensuring the highest stability 
-                    for automotive camera testing. It operates with flicker-free DC technology 
-                    and enables users to precisely control intensity across a wide dynamic range.
-                  </p>
-                  
-                  <p>
-                    Arcturus is best suited for testing high-end sensors that 
-                    require maximum illuminance levels. It is particularly effective for measuring 
-                    automotive camera systems according to IEEE-P2020 standards, while 
-                    rapidly changing signals can be captured with precise timing control.
-                  </p>
-                  
-                  <p className="font-medium text-[#2D2D2D]">
-                    The lighting efficiency typically reaches up to 1 Mcd/m².
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Right Side - Product Images */}
-            <div className="space-y-6">
-              {/* Main Product Image */}
-              <div className="relative group cursor-pointer" onClick={() => setIsModalOpen(true)}>
-                <div className="aspect-[4/3] bg-gray-50 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <img 
-                    src={productImages[currentImageIndex].src} 
-                    alt={productImages[currentImageIndex].title}
-                    className="w-full h-full object-contain bg-white"
-                  />
-                  
-                  {/* Expand Icon Overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 rounded-full p-3 shadow-lg">
-                      <Expand className="w-6 h-6 text-[#2D2D2D]" />
-                    </div>
-                  </div>
-                  
-                  {/* Navigation Arrows */}
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300"
-                  >
-                    <ChevronLeft className="w-5 h-5 text-[#2D2D2D]" />
-                  </button>
-                  
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300"
-                  >
-                    <ChevronRight className="w-5 h-5 text-[#2D2D2D]" />
-                  </button>
-                </div>
-              </div>
-              
-              {/* Thumbnail Navigation */}
-              <div className="flex justify-center gap-3">
-                {productImages.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`relative aspect-[4/3] w-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
-                      currentImageIndex === index 
-                        ? 'border-[#3D7BA2] shadow-md' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <img 
-                      src={image.src} 
-                      alt={image.title}
-                      className="w-full h-full object-contain bg-white"
-                    />
-                    
-                    {/* Video Play Button for Demo */}
-                    {index === 1 && (
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                        <div className="bg-white/90 rounded-full p-1">
-                          <div className="w-4 h-4 bg-red-600 rounded-full flex items-center justify-center">
-                            <div className="w-0 h-0 border-l-[6px] border-l-white border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent ml-0.5"></div>
+              <div className={`grid gap-8 ${
+                segmentData.columns === "2" ? "grid-cols-1 md:grid-cols-2" :
+                segmentData.columns === "3" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" :
+                segmentData.columns === "4" ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-4" :
+                "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              }`}>
+                {(segmentData.items || []).map((item: any, index: number) => {
+                  const IconComponent = iconMap[item.icon] || FileText;
+                  return (
+                    <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-2 border-border/50 hover:border-primary/50">
+                      <CardContent className="p-8">
+                        <div className="flex flex-col items-start gap-4">
+                          <div className="w-16 h-16 rounded-xl bg-[#f9dc24] flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                            <IconComponent className="h-8 w-8 text-black" />
                           </div>
+                          <h3 className="text-2xl font-bold text-foreground">{item.title}</h3>
+                          <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                          {item.ctaText && item.ctaLink && (
+                            <Button
+                              asChild
+                              variant={item.ctaStyle === "technical" ? "outline" : "default"}
+                              className={
+                                item.ctaStyle === "technical"
+                                  ? "w-full bg-[#1f2937] text-white hover:bg-[#1f2937]/90 border-[#1f2937]"
+                                  : "w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+                              }
+                            >
+                              <Link to={item.ctaLink}>{item.ctaText}</Link>
+                            </Button>
+                          )}
                         </div>
-                      </div>
-                    )}
-                  </button>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+
+      case "banner":
+        return (
+          <section key={segment.id} id={segment.id} className="py-20 bg-background">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold mb-4 text-foreground">
+                  {segmentData.title || ""}
+                </h2>
+                {segmentData.subtext && (
+                  <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    {segmentData.subtext}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-wrap justify-center items-center gap-12 mb-12">
+                {(segmentData.images || []).map((image: any, index: number) => (
+                  <div
+                    key={index}
+                    className="grayscale hover:grayscale-0 transition-all duration-300"
+                  >
+                    <img
+                      src={image.imageUrl}
+                      alt={image.alt || `Logo ${index + 1}`}
+                      className="h-20 w-auto object-contain"
+                    />
+                  </div>
                 ))}
               </div>
-              
-              {/* Image Description */}
-              <div className="text-center">
-                <h4 className="font-medium text-[#2D2D2D] mb-1">
-                  {productImages[currentImageIndex].title}
-                </h4>
-                <p className="text-sm text-[#555]">
-                  {productImages[currentImageIndex].description}
-                </p>
+
+              {segmentData.buttonText && segmentData.buttonLink && (
+                <div className="text-center">
+                  <Button
+                    asChild
+                    size="lg"
+                    variant={segmentData.buttonStyle === "technical" ? "outline" : "default"}
+                    className={
+                      segmentData.buttonStyle === "technical"
+                        ? "bg-[#1f2937] text-white hover:bg-[#1f2937]/90 px-8 py-6 text-lg"
+                        : "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 px-8 py-6 text-lg"
+                    }
+                  >
+                    <Link to={segmentData.buttonLink}>{segmentData.buttonText}</Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+
+      case "image-text":
+      case "solutions":
+        const layoutClass =
+          segmentData.layout === "1-col"
+            ? "grid-cols-1"
+            : segmentData.layout === "2-col"
+            ? "grid-cols-1 lg:grid-cols-2"
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+
+        return (
+          <section key={segment.id} id={segment.id} className="py-20 bg-background">
+            <div className="container mx-auto px-4">
+              {segmentData.title && (
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold mb-4 text-foreground">
+                    {segmentData.title}
+                  </h2>
+                  {segmentData.subtext && (
+                    <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                      {segmentData.subtext}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
+                {(segmentData.items || []).map((item: any, index: number) => (
+                  <Card key={index} className="group hover:shadow-xl transition-all duration-300">
+                    <CardContent className="p-0">
+                      {item.imageUrl && (
+                        <div className="relative h-64 overflow-hidden">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.metadata?.altText || item.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+                      <div className="p-8">
+                        <h3 className="text-2xl font-bold mb-4 text-foreground">{item.title}</h3>
+                        <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                          {item.description}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
-          </div>
+          </section>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading Arcturus content...</p>
         </div>
-
-        {/* Modal for image enlargement */}
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="max-w-7xl w-[95vw] h-[95vh] p-2 bg-black/95 border-none">
-            <div className="relative w-full h-full flex items-center justify-center">
-              <img 
-                src={productImages[currentImageIndex].src} 
-                alt={productImages[currentImageIndex].title}
-                className="max-w-full max-h-full object-contain"
-              />
-              
-              {/* Navigation in Modal */}
-              <button 
-                onClick={prevImage}
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all"
-              >
-                <ChevronLeft className="w-6 h-6 text-white" />
-              </button>
-              
-              <button 
-                onClick={nextImage}
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 rounded-full p-3 transition-all"
-              >
-                <ChevronRight className="w-6 h-6 text-white" />
-              </button>
-              
-              {/* Image Info in Modal */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-center text-white">
-                <h3 className="font-medium mb-1">{productImages[currentImageIndex].title}</h3>
-                <p className="text-sm text-white/80">{productImages[currentImageIndex].description}</p>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </section>
-
-      {/* Automotive Laboratory Installation */}
-      <section className="container mx-auto px-4 pb-20">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="aspect-video relative">
-            <img 
-              src={arcturusAutomotiveLab} 
-              alt="Typical Arcturus installation in automotive camera testing laboratory"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="p-6">
-            <h3 className="text-xl font-semibold text-[#2D2D2D] mb-3">Professional Laboratory Installation</h3>
-            <p className="text-[#555] leading-relaxed">
-              Typical Arcturus installation in an automotive camera testing laboratory, showing uniform lighting pattern across the test chart area with precise color reproduction capabilities. The setup demonstrates how Arcturus seamlessly integrates into existing testing environments for IEEE-P2020 compliant automotive camera testing.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Related Downloads */}
-      <section id="downloads" className="container mx-auto px-4 pb-20 scroll-mt-[170px]">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Related Downloads</h2>
-        <div className="grid md:grid-cols-4 gap-6">
-          <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f9dc24]" size={32} />
-              </div>
-              <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (DE)</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <CardDescription className="text-[#555] mb-4">
-                Complete German datasheet with technical specifications
-              </CardDescription>
-              <Button 
-                variant="technical"
-                onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Arcturus_Lightsource-Datenblatt.pdf')}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                PDF Download
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f9dc24]" size={32} />
-              </div>
-              <CardTitle className="text-[#2D2D2D] text-lg">Arcturus Datasheet (EN)</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <CardDescription className="text-[#555] mb-4">
-                Complete English datasheet with technical specifications
-              </CardDescription>
-              <Button 
-                variant="technical"
-                onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Arcturus_Lightsource-Datasheet.pdf')}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                PDF Download
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f9dc24]" size={32} />
-              </div>
-              <CardTitle className="text-[#2D2D2D] text-lg">Controller Datasheet (DE)</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <CardDescription className="text-[#555] mb-4">
-                German datasheet for Lightcube Controller specifications
-              </CardDescription>
-              <Button 
-                variant="technical"
-                onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/DE_Lightcube-Controller-Datenblatt.pdf')}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                PDF Download
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border-gray-100 hover:shadow-lg transition-shadow">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-[#f9dc24]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-[#f9dc24]" size={32} />
-              </div>
-              <CardTitle className="text-[#2D2D2D] text-lg">Controller Datasheet (EN)</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <CardDescription className="text-[#555] mb-4">
-                English datasheet for Lightcube Controller specifications
-              </CardDescription>
-              <Button 
-                variant="technical"
-                onClick={() => window.open('https://raw.githubusercontent.com/stone1971grey/image-engeering/main/EN_Lightcube-Controller-Datasheet.pdf')}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                PDF Download
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <Footer />
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <>
+      <SEOHead
+        title={seoData?.title || "Arcturus LED System"}
+        description={seoData?.description || "High-performance LED illumination system"}
+        canonical={seoData?.canonicalUrl}
+        ogTitle={seoData?.ogTitle}
+        ogDescription={seoData?.ogDescription}
+        ogImage={seoData?.ogImage}
+        twitterCard={seoData?.twitterCard}
+        robotsIndex={seoData?.robotsIndex}
+        robotsFollow={seoData?.robotsFollow}
+      />
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <AnnouncementBanner 
+          message="Visit us at IBC 2025"
+          ctaText="Learn more"
+          ctaLink="#"
+          icon="calendar"
+        />
+
+        {/* Render dynamic segments based on tab_order */}
+        {tabOrder.map((segmentId) => {
+          const segment = segments.find((s) => s.id === segmentId);
+          if (segment) {
+            return renderSegment(segment);
+          }
+          return null;
+        })}
+
+        <Footer />
+      </div>
+    </>
   );
 };
 
