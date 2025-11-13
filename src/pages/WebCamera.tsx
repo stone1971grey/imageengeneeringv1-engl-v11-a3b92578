@@ -44,6 +44,7 @@ interface Application {
 const WebCamera = () => {
   const [content, setContent] = useState<Record<string, string>>({});
   const [applications, setApplications] = useState<any[]>([]);
+  const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [loading, setLoading] = useState(true);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");

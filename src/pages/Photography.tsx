@@ -68,6 +68,7 @@ const Photography = () => {
   const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
   const [content, setContent] = useState<Record<string, string>>({});
   const [applications, setApplications] = useState<any[]>([]);
+  const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [loading, setLoading] = useState(true);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
@@ -134,6 +135,8 @@ const Photography = () => {
           }
         } else if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);
+        } else if (item.section_key === "tiles_columns") {
+          setTilesColumns(item.content_value || "3");
         } else if (item.section_key === "solutions_title") {
           setSolutionsTitle(item.content_value);
         } else if (item.section_key === "solutions_subtext") {
@@ -418,7 +421,11 @@ const Photography = () => {
               </div>
             </div>
             <div className="container mx-auto px-6">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              <div className={`grid gap-8 max-w-7xl mx-auto ${
+                tilesData.columns === "2" ? "md:grid-cols-2" :
+                tilesData.columns === "4" ? "md:grid-cols-2 lg:grid-cols-4" :
+                "md:grid-cols-2 lg:grid-cols-3"
+              }`}>
                 {tilesData.items?.map((app: any, index: number) => {
                   const IconComponent = app.icon ? iconMap[app.icon] : null;
                   return (
@@ -519,7 +526,11 @@ const Photography = () => {
           </div>
 
           <div className="container mx-auto px-6">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <div className={`grid gap-8 max-w-7xl mx-auto ${
+              tilesColumns === "2" ? "md:grid-cols-2" :
+              tilesColumns === "4" ? "md:grid-cols-2 lg:grid-cols-4" :
+              "md:grid-cols-2 lg:grid-cols-3"
+            }`}>
               {applications.map((app: Application, index) => {
                 const IconComponent = app.icon ? iconMap[app.icon] : null;
                 
