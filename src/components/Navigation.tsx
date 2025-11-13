@@ -110,13 +110,32 @@ const Navigation = () => {
     checkUserRole();
   }, [user]);
 
+  // URL to page_slug mapping for admin links
+  const urlToPageSlug: { [key: string]: string } = {
+    '/products/test-charts/le7': 'le7',
+    '/products/illumination-devices/arcturus': 'arcturus',
+    '/your-solution/photography': 'photography',
+    '/your-solution/scanners-archiving': 'scanners-archiving',
+    '/your-solution/medical-endoscopy': 'medical-endoscopy',
+    '/your-solution/web-camera': 'web-camera',
+    '/your-solution/machine-vision': 'machine-vision',
+    '/your-solution/mobile-phone': 'mobile-phone',
+    '/your-solution/automotive': 'automotive',
+    '/your-solution/automotive/in-cabin-testing': 'in-cabin-testing'
+  };
+
   // Helper function to get admin link if user is admin/editor
-  const getLink = (pageSlug: string, defaultPath: string) => {
-    if (!isAdminOrEditor) return defaultPath;
+  const getLink = (pageSlugOrPath: string, defaultPath?: string) => {
+    const path = defaultPath || pageSlugOrPath;
+    
+    if (!isAdminOrEditor) return path;
+    
+    // Try to find page_slug from URL mapping
+    const pageSlug = urlToPageSlug[path] || pageSlugOrPath;
     
     // For editors, check if they have access to this page
     if (allowedPages.length > 0 && !allowedPages.includes(pageSlug)) {
-      return defaultPath;
+      return path;
     }
     
     return `/admin-dashboard?page=${pageSlug}`;
@@ -401,20 +420,20 @@ const Navigation = () => {
                        </h4>
                        
                        {/* Conditional Rendering of Subgroups */}
-                       {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
-                         <div className="space-y-3">
-                           {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
-                             <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f9dc24]">
-                               <ChevronRight className="h-4 w-4" />
-                               {subgroup.link === "#" ? (
-                                 <span>{subgroup.name}</span>
-                               ) : (
-                                 <Link to={subgroup.link}>{subgroup.name}</Link>
-                               )}
-                             </div>
-                           ))}
-                         </div>
-                       )}
+                        {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
+                          <div className="space-y-3">
+                            {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
+                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:text-[#f9dc24]">
+                                <ChevronRight className="h-4 w-4" />
+                                {subgroup.link === "#" ? (
+                                  <span>{subgroup.name}</span>
+                                ) : (
+                                  <Link to={getLink(subgroup.link)}>{subgroup.name}</Link>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                        
                        {/* Default state when no product is hovered */}
                        {!hoveredProduct && (
@@ -1053,16 +1072,16 @@ const Navigation = () => {
                                    </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                 <div className="space-y-2">
-                                   {productData["Test Charts"].subgroups.map((item, idx) => (
-                                     item.link === "#" ? (
-                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
-                                     ) : (
-                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                         {item.name}
-                                       </Link>
-                                     )
-                                   ))}
+                                  <div className="space-y-2">
+                                    {productData["Test Charts"].subgroups.map((item, idx) => (
+                                      item.link === "#" ? (
+                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                      ) : (
+                                        <Link key={idx} to={getLink(item.link)} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                          {item.name}
+                                        </Link>
+                                      )
+                                    ))}
                                  </div>
                                </AccordionContent>
                              </AccordionItem>
@@ -1080,16 +1099,16 @@ const Navigation = () => {
                                    </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                  <div className="space-y-2">
-                                    {productData["Illumination Devices"].subgroups.map((item, idx) => (
-                                      item.link === "#" ? (
-                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
-                                      ) : (
-                                        <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                          {item.name}
-                                        </Link>
-                                      )
-                                    ))}
+                                   <div className="space-y-2">
+                                     {productData["Illumination Devices"].subgroups.map((item, idx) => (
+                                       item.link === "#" ? (
+                                         <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                       ) : (
+                                         <Link key={idx} to={getLink(item.link)} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                           {item.name}
+                                         </Link>
+                                       )
+                                     ))}
                                   </div>
                                </AccordionContent>
                              </AccordionItem>
@@ -1107,16 +1126,16 @@ const Navigation = () => {
                                    </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                  <div className="space-y-2">
-                                    {productData["Measurement Devices"].subgroups.map((item, idx) => (
-                                      item.link === "#" ? (
-                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
-                                      ) : (
-                                        <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                          {item.name}
-                                        </Link>
-                                      )
-                                    ))}
+                                   <div className="space-y-2">
+                                     {productData["Measurement Devices"].subgroups.map((item, idx) => (
+                                       item.link === "#" ? (
+                                         <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                       ) : (
+                                         <Link key={idx} to={getLink(item.link)} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                           {item.name}
+                                         </Link>
+                                       )
+                                     ))}
                                   </div>
                                </AccordionContent>
                              </AccordionItem>
@@ -1134,16 +1153,16 @@ const Navigation = () => {
                                    </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                 <div className="space-y-2">
-                                   {productData["Software & APIs"].subgroups.map((item, idx) => (
-                                     item.link === "#" ? (
-                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
-                                     ) : (
-                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                         {item.name}
-                                       </Link>
-                                     )
-                                   ))}
+                                  <div className="space-y-2">
+                                    {productData["Software & APIs"].subgroups.map((item, idx) => (
+                                      item.link === "#" ? (
+                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                      ) : (
+                                        <Link key={idx} to={getLink(item.link)} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                          {item.name}
+                                        </Link>
+                                      )
+                                    ))}
                                  </div>
                                </AccordionContent>
                              </AccordionItem>
@@ -1161,16 +1180,16 @@ const Navigation = () => {
                                    </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
-                                 <div className="space-y-2">
-                                   {productData["Product Accessories"].subgroups.map((item, idx) => (
-                                     item.link === "#" ? (
-                                       <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
-                                     ) : (
-                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                         {item.name}
-                                       </Link>
-                                     )
-                                   ))}
+                                  <div className="space-y-2">
+                                    {productData["Product Accessories"].subgroups.map((item, idx) => (
+                                      item.link === "#" ? (
+                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
+                                      ) : (
+                                        <Link key={idx} to={getLink(item.link)} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                          {item.name}
+                                        </Link>
+                                      )
+                                    ))}
                                  </div>
                                </AccordionContent>
                             </AccordionItem>
