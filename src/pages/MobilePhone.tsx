@@ -459,43 +459,6 @@ const MobilePhone = () => {
     return null;
   };
 
-  // Get padding class based on heroTopPadding
-  const getPaddingClass = () => {
-    switch (heroTopPadding) {
-      case 'small': return 'pt-16';
-      case 'medium': return 'pt-24';
-      case 'large': return 'pt-32';
-      case 'extra-large': return 'pt-40';
-      default: return 'pt-24';
-    }
-  };
-
-  // Get layout flex classes
-  const getLayoutClasses = () => {
-    const isImageLeft = heroImagePosition === "left";
-    let textBasis = 'basis-2/5';
-    let imageBasis = 'basis-3/5';
-
-    if (heroLayout === '1-1') {
-      textBasis = 'basis-1/2';
-      imageBasis = 'basis-1/2';
-    } else if (heroLayout === '2-3') {
-      textBasis = 'basis-2/5';
-      imageBasis = 'basis-3/5';
-    } else if (heroLayout === '2-5') {
-      textBasis = 'basis-2/5';
-      imageBasis = 'basis-3/5';
-    }
-
-    return {
-      container: isImageLeft ? 'flex-row-reverse' : 'flex-row',
-      textBasis,
-      imageBasis
-    };
-  };
-
-  const layoutClasses = getLayoutClasses();
-
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
@@ -517,61 +480,96 @@ const MobilePhone = () => {
       
       <Navigation />
       
-      {/* Hero Section */}
+      {/* Hero Section - Only render if hero content exists */}
       {hasHeroContent && (
-        <section id={segmentIdMap['hero']?.toString() || 'hero'} className={`${getPaddingClass()} pb-16 bg-background`}>
-          <div className="container mx-auto px-6">
-            <div className={`flex ${layoutClasses.container} gap-12 items-center`}>
-              <div className={`${layoutClasses.textBasis} space-y-6`}>
-                {content.hero_title && (
-                  <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                    {content.hero_title}
-                  </h1>
-                )}
-                {content.hero_subtitle && (
-                  <p className="text-xl text-gray-600 leading-relaxed">
-                    {content.hero_subtitle}
-                  </p>
-                )}
-                {heroCtaLink && (
-                  heroCtaLink.startsWith('http://') || heroCtaLink.startsWith('https://') ? (
-                    <a href={heroCtaLink} target="_blank" rel="noopener noreferrer">
-                      <Button
-                        size="lg"
-                        className="text-lg px-8"
-                        style={{
-                          backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                          color: heroCtaStyle === "technical" ? "white" : "black"
-                        }}
-                      >
-                        Learn More
-                      </Button>
-                    </a>
-                  ) : (
-                    <Link to={heroCtaLink}>
-                      <Button
-                        size="lg"
-                        className="text-lg px-8"
-                        style={{
-                          backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                          color: heroCtaStyle === "technical" ? "white" : "black"
-                        }}
-                      >
-                        Learn More
-                      </Button>
-                    </Link>
-                  )
+        <section id={segmentIdMap['hero']?.toString() || 'hero'} className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+        <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
+          heroTopPadding === "small" ? "pt-16 lg:pt-16" :
+          heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
+          heroTopPadding === "large" ? "pt-32 lg:pt-32" :
+          heroTopPadding === "xlarge" ? "pt-40 lg:pt-40" :
+          "pt-32 lg:pt-32"
+        }`}>
+          <div className={`grid gap-16 items-center ${
+            heroLayout === "50-50" ? "lg:grid-cols-2" : 
+            heroLayout === "2-3" ? "lg:grid-cols-5" :
+            heroLayout === "1-2" ? "lg:grid-cols-3" :
+            "lg:grid-cols-5"
+          }`}>
+            
+            {/* Text Content */}
+            <div className={`space-y-8 ${
+              heroLayout === "50-50" ? "" :
+              heroLayout === "2-3" ? "lg:col-span-2" :
+              heroLayout === "1-2" ? "" :
+              "lg:col-span-2"
+            } ${heroImagePosition === "left" ? "order-2" : "order-1"}`}>
+              <div>
+                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
+                  {content.hero_title || "Mobile Phone"}
+                  <br />
+                  <span className="font-medium text-black">{content.hero_subtitle || "Image Quality"}</span>
+                </h1>
+                
+                <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
+                  {content.hero_description || "Precision-engineered camera system test solutions for mobile phone cameras."}
+                </p>
+              </div>
+              
+              <div className="pt-4">
+                {heroCtaLink.startsWith('http://') || heroCtaLink.startsWith('https://') ? (
+                  <a 
+                    href={heroCtaLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button 
+                      size="lg"
+                      className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                        heroCtaStyle === "technical" ? "text-white" : "text-black"
+                      }`}
+                      style={{ 
+                        backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                      }}
+                    >
+                      {content.hero_cta || "Discover Solutions"}
+                    </Button>
+                  </a>
+                ) : (
+                  <Link to={heroCtaLink}>
+                    <Button 
+                      size="lg"
+                      className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                        heroCtaStyle === "technical" ? "text-white" : "text-black"
+                      }`}
+                      style={{ 
+                        backgroundColor: heroCtaStyle === "technical" ? "#1f2937" : "#f9dc24"
+                      }}
+                    >
+                      {content.hero_cta || "Discover Solutions"}
+                    </Button>
+                  </Link>
                 )}
               </div>
-              <div className={`${layoutClasses.imageBasis}`}>
+            </div>
+
+            {/* Image Content */}
+            <div className={`relative ${
+              heroLayout === "50-50" ? "" :
+              heroLayout === "2-3" ? "lg:col-span-3" :
+              heroLayout === "1-2" ? "lg:col-span-2" :
+              "lg:col-span-3"
+            } ${heroImagePosition === "left" ? "order-1" : "order-2"}`}>
+              <div className="aspect-[4/3] rounded-lg overflow-hidden relative group h-[500px]">
                 <img
                   src={heroImageUrl || photographyHeroDefault}
-                  alt="Hero"
-                  className="w-full h-auto rounded-lg shadow-xl"
+                  alt="Mobile Phone Camera Testing"
+                  className="w-full h-full object-cover transform transition-transform duration-700"
                 />
               </div>
             </div>
           </div>
+        </div>
         </section>
       )}
 
