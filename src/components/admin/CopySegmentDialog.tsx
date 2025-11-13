@@ -216,24 +216,24 @@ export const CopySegmentDialog = ({
           <div className="space-y-2">
             <Label htmlFor="target-page">Target Page</Label>
             <Select value={targetPage} onValueChange={setTargetPage}>
-              <SelectTrigger id="target-page" className="bg-white border-2 border-gray-300">
+              <SelectTrigger id="target-page" className="bg-white border-2 border-gray-300 text-black">
                 <SelectValue placeholder="Select a page" />
               </SelectTrigger>
               <SelectContent 
-                className="bg-white z-[100] shadow-lg border-2 border-gray-300 max-h-[300px] overflow-auto"
+                className="bg-white z-[9999] shadow-xl border-2 border-gray-300 min-w-[200px]"
                 position="popper"
                 sideOffset={5}
               >
                 {pages.length === 0 ? (
-                  <div className="p-4 text-center text-gray-500">
-                    No pages available
+                  <div className="p-4 text-center text-gray-500 text-sm">
+                    Loading pages...
                   </div>
                 ) : (
                   pages.map(page => (
                     <SelectItem 
                       key={page.page_slug} 
                       value={page.page_slug}
-                      className="cursor-pointer hover:bg-gray-100"
+                      className="cursor-pointer hover:bg-gray-100 text-black py-2 px-3"
                     >
                       {page.page_title}
                     </SelectItem>
@@ -246,18 +246,18 @@ export const CopySegmentDialog = ({
           <div className="space-y-2">
             <Label htmlFor="position">Position</Label>
             <Select value={position} onValueChange={(val) => setPosition(val as 'start' | 'end')}>
-              <SelectTrigger id="position" className="bg-white border-2 border-gray-300">
+              <SelectTrigger id="position" className="bg-white border-2 border-gray-300 text-black">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent 
-                className="bg-white z-[100] shadow-lg border-2 border-gray-300"
+                className="bg-white z-[9999] shadow-xl border-2 border-gray-300 min-w-[200px]"
                 position="popper"
                 sideOffset={5}
               >
-                <SelectItem value="start" className="cursor-pointer hover:bg-gray-100">
+                <SelectItem value="start" className="cursor-pointer hover:bg-gray-100 text-black py-2 px-3">
                   At the beginning (first segment)
                 </SelectItem>
-                <SelectItem value="end" className="cursor-pointer hover:bg-gray-100">
+                <SelectItem value="end" className="cursor-pointer hover:bg-gray-100 text-black py-2 px-3">
                   At the end (last segment)
                 </SelectItem>
               </SelectContent>
