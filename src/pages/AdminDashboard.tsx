@@ -1855,7 +1855,7 @@ const AdminDashboard = () => {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>SEO Settings for {selectedPage}</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xl text-white">
                 Konfiguriere alle SEO-relevanten Einstellungen für diese Seite
               </CardDescription>
             </CardHeader>
