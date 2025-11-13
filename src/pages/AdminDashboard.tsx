@@ -1930,14 +1930,14 @@ const AdminDashboard = () => {
                   Add New Segment
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Choose a Template</DialogTitle>
                   <DialogDescription>
                     Select a template to add a new segment to the page
                   </DialogDescription>
                 </DialogHeader>
-                <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="grid grid-cols-2 gap-4 mt-4 pb-4">
                   <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('meta-navigation')}>
                     <CardHeader>
                       <CardTitle>Meta Navigation</CardTitle>
