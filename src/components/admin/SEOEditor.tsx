@@ -42,6 +42,8 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     keywordInIntroduction: false,
   });
 
+  const [introductionText, setIntroductionText] = useState({ title: '', description: '' });
+
   useEffect(() => {
     const titleLength = (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60;
     const descriptionLength = (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160;
@@ -53,7 +55,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
     // Check for keyword in introduction (first non-Hero segment)
     let keywordInIntroduction = false;
-    if (keyword && pageSegments.length > 0) {
+    let introTitle = '';
+    let introDescription = '';
+    
+    if (pageSegments.length > 0) {
       // Find first non-hero segment (tiles or image-text)
       const introSegment = pageSegments.find(seg => 
         seg.type === 'tiles' || seg.type === 'image-text' || seg.type === 'solutions'
@@ -61,17 +66,18 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       
       if (introSegment) {
         const segmentData = introSegment.data || {};
-        const sectionTitle = (segmentData.title || segmentData.sectionTitle || '').toLowerCase();
-        const sectionDescription = (
-          segmentData.description || 
-          segmentData.sectionDescription || 
-          segmentData.subtext || 
-          ''
-        ).toLowerCase();
+        introTitle = segmentData.title || segmentData.sectionTitle || '';
+        introDescription = segmentData.description || segmentData.sectionDescription || segmentData.subtext || '';
         
-        keywordInIntroduction = sectionTitle.includes(keyword) || sectionDescription.includes(keyword);
+        if (keyword) {
+          const titleLower = introTitle.toLowerCase();
+          const descLower = introDescription.toLowerCase();
+          keywordInIntroduction = titleLower.includes(keyword) || descLower.includes(keyword);
+        }
       }
     }
+    
+    setIntroductionText({ title: introTitle, description: introDescription });
 
     setChecks({
       titleLength,
@@ -253,6 +259,36 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </span>
             </div>
           </div>
+        </div>
+
+        <div>
+          <Label className="flex items-center gap-2 text-base font-semibold">
+            Introduction (Erstes Content-Segment)
+            <Badge variant="outline" className="text-sm">Info</Badge>
+          </Label>
+          <div className="mt-3 border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
+            {introductionText.title || introductionText.description ? (
+              <>
+                {introductionText.title && (
+                  <div className="mb-3">
+                    <span className="text-sm font-medium text-gray-600">Section Title:</span>
+                    <p className="text-lg text-black font-semibold mt-1">{introductionText.title}</p>
+                  </div>
+                )}
+                {introductionText.description && (
+                  <div>
+                    <span className="text-sm font-medium text-gray-600">Section Description:</span>
+                    <p className="text-base text-black mt-1 leading-relaxed">{introductionText.description}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-400 italic">Kein Introduction-Segment gefunden. Fügen Sie ein Tiles- oder Image & Text-Segment hinzu, um Inhalt anzuzeigen.</p>
+            )}
+          </div>
+          <p className="text-base text-white mt-3 leading-relaxed">
+            Dieser Inhalt wird automatisch aus dem ersten Tiles-, Image & Text- oder Solutions-Segment Ihrer Seite gezogen.
+          </p>
         </div>
 
         <div>
