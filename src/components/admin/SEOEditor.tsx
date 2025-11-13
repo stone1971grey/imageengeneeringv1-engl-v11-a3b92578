@@ -282,6 +282,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           <Label className="flex items-center gap-2 text-base font-semibold">
             Introduction
             <Badge variant="outline" className="text-sm">SEO-relevant</Badge>
+            <Badge variant="secondary" className="text-sm">Auto-Sync</Badge>
             {checks.keywordInIntroduction && (
               <Badge className="bg-green-500 text-white flex items-center gap-1">
                 <CheckCircle2 className="h-3 w-3" />
@@ -291,16 +292,16 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </Label>
           <Textarea
             value={data.introduction || ''}
-            onChange={(e) => onChange({ ...data, introduction: e.target.value })}
-            placeholder="Erster Textabschnitt unter dem Hero (ca. 100-200 Wörter)"
-            className={`mt-3 h-32 text-xl text-black placeholder:text-black border-2 focus:border-[#f9dc24] ${
+            disabled
+            placeholder="Automatisch aus erstem Segment nach Hero (Tiles oder Image & Text)"
+            className={`mt-3 h-32 text-xl text-black placeholder:text-gray-500 border-2 cursor-not-allowed opacity-75 ${
               checks.keywordInIntroduction 
                 ? 'border-green-500 bg-green-50' 
-                : 'border-gray-300'
+                : 'border-gray-300 bg-gray-50'
             }`}
           />
           <p className="text-base text-white mt-3 leading-relaxed">
-            Die Introduction sollte das Fokus-Keyword innerhalb der ersten 100 Wörter enthalten. Dies verbessert die SEO-Relevanz.
+            <strong>Automatisch synchronisiert:</strong> Der Introduction-Text wird automatisch aus dem Section Title & Subtext/Description des ersten Segments nach dem Hero geladen (nur Tiles oder Image & Text Template). Die Introduction sollte das Fokus-Keyword enthalten.
           </p>
         </div>
 
