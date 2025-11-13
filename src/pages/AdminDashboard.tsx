@@ -345,7 +345,6 @@ const AdminDashboard = () => {
         'mobile-phone': 'Mobile Phone',
         'automotive': 'Automotive',
         'in-cabin-testing': 'In-Cabin Testing',
-        'arcturus': 'Arcturus',
         'le7': 'LE7 Test Chart',
         'your-solution': 'Your Solution'
       };
@@ -2216,8 +2215,7 @@ const AdminDashboard = () => {
                   'mobile-phone': '/your-solution/mobile-phone',
                   'test-charts': '/products/test-charts',
                   'illumination-devices': '/products/illumination-devices',
-                  'le7': '/products/test-charts/le7',
-                  'arcturus': '/products/illumination-devices/arcturus'
+                  'le7': '/products/test-charts/le7'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';
                 window.open(previewUrl, '_blank');

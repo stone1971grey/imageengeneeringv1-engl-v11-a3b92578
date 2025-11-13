@@ -20,9 +20,7 @@ import WebCamera from "./pages/WebCamera";
 import MobilePhone from "./pages/MobilePhone";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
-import ProductArcturus from "./pages/ProductArcturus";
 import ProductLE7 from "./pages/ProductLE7";
-import SolutionArcturusBundle from "./pages/SolutionArcturusBundle";
 import HiddenSegments from "./pages/HiddenSegments";
 import Backlog from "./pages/Backlog";
 import Charts from "./pages/Charts";
@@ -76,7 +74,6 @@ const App = () => (
         {/* Redirects for old URLs */}
         <Route path="/automotive" element={<Navigate to="/your-solution/automotive" replace />} />
         <Route path="/product/le7" element={<Navigate to="/products/test-charts/le7" replace />} />
-        <Route path="/product/arcturus" element={<Navigate to="/products/illumination-devices/arcturus" replace />} />
         <Route path="/in-cabin-testing" element={<Navigate to="/your-solution/automotive/in-cabin-testing" replace />} />
         
         {/* Hierarchical Your Solution Routes */}
@@ -91,10 +88,8 @@ const App = () => (
         
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
-        <Route path="/products/illumination-devices/arcturus" element={<ProductArcturus />} />
         
         <Route path="/downloads" element={<Downloads />} />
-         <Route path="/solution/arcturus-bundle" element={<SolutionArcturusBundle />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
          <Route path="/backlog" element={<Backlog />} />
         <Route path="/charts" element={<Navigate to="/products/charts" replace />} />
