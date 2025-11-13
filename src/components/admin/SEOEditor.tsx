@@ -76,7 +76,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
   return (
     <div className="space-y-6">
       {/* SEO Score Overview */}
-      <Card className="p-8 bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50 border-2 border-indigo-200 shadow-lg animate-fade-in">
+      <Card className="p-8 bg-white border-2 border-indigo-200 shadow-lg animate-fade-in">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold flex items-center gap-3 text-gray-900">
             <div className="p-2 bg-white rounded-lg shadow-sm">
