@@ -89,6 +89,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     }
     
     setIntroductionText({ title: introTitle, description: introDescription });
+    
+    // Auto-fill introduction field with segment content
+    const combinedIntroText = [introTitle, introDescription].filter(Boolean).join('\n\n');
+    if (combinedIntroText && !data.introduction) {
+      onChange({ ...data, introduction: combinedIntroText });
+    }
 
     setChecks({
       titleLength,
@@ -99,7 +105,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInSlug,
       keywordInIntroduction,
     });
-  }, [data, pageSegments]);
+  }, [data, pageSegments, onChange]);
 
   const handleChange = (field: keyof SEOData, value: string) => {
     onChange({
