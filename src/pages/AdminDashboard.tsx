@@ -2048,6 +2048,17 @@ const AdminDashboard = () => {
                       </Button>
                     </CardContent>
                   </Card>
+                  <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleAddSegment('specification')}>
+                    <CardHeader>
+                      <CardTitle>Specification</CardTitle>
+                      <CardDescription>Two-column specification table</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                        Add Specification
+                      </Button>
+                    </CardContent>
+                  </Card>
                 </div>
               </DialogContent>
             </Dialog>
