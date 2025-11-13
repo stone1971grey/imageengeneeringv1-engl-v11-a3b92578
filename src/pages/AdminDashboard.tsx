@@ -3996,6 +3996,84 @@ const AdminDashboard = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
+                  {segment.type === 'hero' && (() => {
+                    // Initialize with default data if needed
+                    if (!segment.data || !segment.data.hero_title) {
+                      segment.data = {
+                        hero_title: '',
+                        hero_subtitle: '',
+                        hero_description: '',
+                        hero_image_url: '',
+                        hero_image_metadata: null,
+                        hero_cta_text: '',
+                        hero_cta_link: '#',
+                        hero_cta_style: 'standard',
+                        hero_image_position: 'right',
+                        hero_layout_ratio: '2-5',
+                        hero_top_spacing: 'medium'
+                      };
+                    }
+                    
+                    return (
+                      <div className="space-y-6">
+                        <p className="text-sm text-white mb-4">
+                          This is a dynamically copied Hero segment. Edit the content below:
+                        </p>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <Label className="text-white">Title</Label>
+                            <Input
+                              value={segment.data.hero_title || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data.hero_title = e.target.value;
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-black"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label className="text-white">Subtitle (Optional)</Label>
+                            <Input
+                              value={segment.data.hero_subtitle || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data.hero_subtitle = e.target.value;
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-black"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label className="text-white">Description</Label>
+                            <Textarea
+                              value={segment.data.hero_description || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data.hero_description = e.target.value;
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-black min-h-[100px]"
+                            />
+                          </div>
+                          
+                          <div className="flex justify-end pt-4 border-t border-gray-600">
+                            <Button
+                              onClick={() => handleSaveSegments()}
+                              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                            >
+                              <Save className="h-4 w-4" />
+                              Save Changes
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  
                   {segment.type === 'meta-navigation' && (() => {
                     // Build available segments list with their titles
                     // IMPORTANT: Use numeric segment_id from segmentRegistry, not string keys
