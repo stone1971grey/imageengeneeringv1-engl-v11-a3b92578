@@ -479,6 +479,14 @@ const MobilePhone = () => {
       />
       
       <Navigation />
+
+      {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return dynamicSegment && dynamicSegment.type === 'meta-navigation';
+        })
+        .map(segmentId => renderSegment(segmentId))}
       
       {/* Hero Section - Only render if hero content exists */}
       {hasHeroContent && (
@@ -573,8 +581,13 @@ const MobilePhone = () => {
         </section>
       )}
 
-      {/* Dynamic Segments based on tabOrder */}
-      {tabOrder.map((segmentId) => renderSegment(segmentId))}
+      {/* Dynamic Segments (excluding meta-navigation which is already rendered above) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return dynamicSegment && dynamicSegment.type !== 'meta-navigation';
+        })
+        .map((segmentId) => renderSegment(segmentId))}
 
       <Footer />
     </div>
