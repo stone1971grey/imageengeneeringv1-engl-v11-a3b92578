@@ -13,36 +13,34 @@ const Specification = ({ id, title = "Detailed Specifications", rows = [] }: Spe
   if (!title && rows.length === 0) return null;
 
   return (
-    <section id={id} className="py-8 bg-gray-50 scroll-mt-[170px]">
-      <div className="container mx-auto px-6 max-w-4xl">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          {title && (
-            <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">{title}</h2>
-          )}
-          {rows.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Specification</th>
-                    <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Value</th>
+    <section id={id} className="py-12 bg-white scroll-mt-[170px]">
+      <div className="w-full px-12">
+        {title && (
+          <h2 className="text-2xl font-semibold text-[#2D2D2D] mb-6">{title}</h2>
+        )}
+        {rows.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Specification</th>
+                  <th className="text-left py-3 px-4 font-semibold text-[#2D2D2D]">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row, index) => (
+                  <tr 
+                    key={index} 
+                    className={index !== rows.length - 1 ? "border-b border-gray-100" : ""}
+                  >
+                    <td className="py-3 px-4 text-[#555]">{row.specification}</td>
+                    <td className="py-3 px-4 text-[#555]">{row.value}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row, index) => (
-                    <tr 
-                      key={index} 
-                      className={index !== rows.length - 1 ? "border-b border-gray-100" : ""}
-                    >
-                      <td className="py-3 px-4 text-[#555]">{row.specification}</td>
-                      <td className="py-3 px-4 text-[#555]">{row.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </section>
   );
