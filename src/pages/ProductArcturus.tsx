@@ -279,48 +279,52 @@ const ProductArcturus = () => {
           segmentData.layout === "1-col"
             ? "grid-cols-1"
             : segmentData.layout === "2-col"
-            ? "grid-cols-1 lg:grid-cols-2"
+            ? "grid-cols-1 md:grid-cols-2"
             : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
         return (
-          <section key={segment.id} id={segment.id} className="py-20 bg-background">
-            <div className="container mx-auto px-4">
-              {segmentData.title && (
+          <section key={segment.id} id={segment.id} className="bg-gray-50 py-20">
+            <div className="w-full px-6">
+              {(segmentData.title || segmentData.subtext) && (
                 <div className="text-center mb-16">
-                  <h2 className="text-4xl font-bold mb-4 text-foreground">
-                    {segmentData.title}
-                  </h2>
+                  {segmentData.title && (
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                      {segmentData.title}
+                    </h2>
+                  )}
                   {segmentData.subtext && (
-                    <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                    <p className="text-xl text-gray-600 max-w-4xl mx-auto">
                       {segmentData.subtext}
                     </p>
                   )}
                 </div>
               )}
 
-              <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
-                {(segmentData.items || []).map((item: any, index: number) => (
-                  <Card key={index} className="group hover:shadow-xl transition-all duration-300">
-                    <CardContent className="p-0">
-                      {item.imageUrl && (
-                        <div className="relative h-64 overflow-hidden">
-                          <img
-                            src={item.imageUrl}
-                            alt={item.metadata?.altText || item.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
+              {(segmentData.items || []).length > 0 && (
+                <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
+                  {(segmentData.items || []).map((item: any, index: number) => (
+                    <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                      <CardContent className="p-0">
+                        {item.imageUrl && (
+                          <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                            <img
+                              src={item.imageUrl}
+                              alt={item.metadata?.altText || item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="p-8">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                          <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                            {item.description}
+                          </div>
                         </div>
-                      )}
-                      <div className="p-8">
-                        <h3 className="text-2xl font-bold mb-4 text-foreground">{item.title}</h3>
-                        <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                          {item.description}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         );
@@ -363,14 +367,30 @@ const ProductArcturus = () => {
           icon="calendar"
         />
 
-        {/* Render dynamic segments based on tab_order */}
-        {tabOrder.map((segmentId) => {
-          const segment = segments.find((s) => s.id === segmentId);
-          if (segment) {
-            return renderSegment(segment);
-          }
-          return null;
-        })}
+        {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
+        {tabOrder
+          .filter(segmentId => {
+            const segment = segments.find((s) => s.id === segmentId);
+            return segment && segment.type === 'meta-navigation';
+          })
+          .map((segmentId) => {
+            const segment = segments.find((s) => s.id === segmentId);
+            return segment ? renderSegment(segment) : null;
+          })}
+
+        {/* Render other segments (excluding meta-navigation) based on tab_order */}
+        {tabOrder
+          .filter(segmentId => {
+            const segment = segments.find((s) => s.id === segmentId);
+            return segment && segment.type !== 'meta-navigation';
+          })
+          .map((segmentId) => {
+            const segment = segments.find((s) => s.id === segmentId);
+            if (segment) {
+              return renderSegment(segment);
+            }
+            return null;
+          })}
 
         <Footer />
       </div>
