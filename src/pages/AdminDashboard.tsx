@@ -45,6 +45,7 @@ import TableEditor from '@/components/admin/TableEditor';
 import FAQEditor from '@/components/admin/FAQEditor';
 import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
+import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
 
 interface ContentItem {
   id: string;
@@ -166,6 +167,89 @@ const AdminDashboard = () => {
     ogDescription: '',
     ogImage: '',
     twitterCard: 'summary_large_image'
+  });
+
+  // Autosave for Hero section - only saves to localStorage
+  useAdminAutosave({
+    key: `${selectedPage}_hero`,
+    data: {
+      content: {
+        hero_title: content.hero_title,
+        hero_subtitle: content.hero_subtitle,
+        hero_description: content.hero_description,
+        hero_cta: content.hero_cta
+      },
+      heroImagePosition,
+      heroLayout,
+      heroTopPadding,
+      heroCtaLink,
+      heroCtaStyle,
+      heroImageUrl
+    },
+    enabled: !!user && (isAdmin || isEditor)
+  });
+
+  // Autosave for Tiles/Applications section
+  useAdminAutosave({
+    key: `${selectedPage}_tiles`,
+    data: {
+      applications,
+      content: {
+        applications_title: content.applications_title,
+        applications_description: content.applications_description
+      }
+    },
+    enabled: !!user && (isAdmin || isEditor)
+  });
+
+  // Autosave for Banner section
+  useAdminAutosave({
+    key: `${selectedPage}_banner`,
+    data: {
+      bannerTitle,
+      bannerSubtext,
+      bannerImages,
+      bannerButtonText,
+      bannerButtonLink,
+      bannerButtonStyle
+    },
+    enabled: !!user && (isAdmin || isEditor)
+  });
+
+  // Autosave for Solutions/Image & Text section
+  useAdminAutosave({
+    key: `${selectedPage}_solutions`,
+    data: {
+      solutionsTitle,
+      solutionsSubtext,
+      solutionsLayout,
+      solutionsItems
+    },
+    enabled: !!user && (isAdmin || isEditor)
+  });
+
+  // Autosave for Footer section
+  useAdminAutosave({
+    key: `${selectedPage}_footer`,
+    data: {
+      footerCtaTitle,
+      footerCtaDescription,
+      footerContactHeadline,
+      footerContactSubline,
+      footerContactDescription,
+      footerTeamQuote,
+      footerTeamName,
+      footerTeamTitle,
+      footerButtonText
+    },
+    enabled: !!user && (isAdmin || isEditor)
+  });
+
+  // Autosave for SEO settings
+  useAdminAutosave({
+    key: `${selectedPage}_seo`,
+    data: seoData,
+    enabled: !!user && (isAdmin || isEditor)
   });
 
   useEffect(() => {
@@ -561,6 +645,70 @@ const AdminDashboard = () => {
 
     setContent(contentMap);
     setApplications(apps);
+    
+    // Check for autosaved data and restore if available
+    setTimeout(() => {
+      restoreAutosavedDataIfAvailable();
+    }, 100);
+  };
+  
+  const restoreAutosavedDataIfAvailable = () => {
+    const autosaveKey = `${selectedPage}`;
+    
+    // Check each section for autosaved data
+    const sections = ['hero', 'tiles', 'banner', 'solutions', 'footer', 'seo'];
+    let hasAnyAutosave = false;
+    
+    sections.forEach(section => {
+      if (hasAutosavedData(`${autosaveKey}_${section}`)) {
+        hasAnyAutosave = true;
+        const data = loadAutosavedData(`${autosaveKey}_${section}`);
+        
+        // Restore the data for this section
+        if (section === 'hero' && data) {
+          if (data.content) setContent(prev => ({ ...prev, ...data.content }));
+          if (data.heroImagePosition) setHeroImagePosition(data.heroImagePosition);
+          if (data.heroLayout) setHeroLayout(data.heroLayout);
+          if (data.heroTopPadding) setHeroTopPadding(data.heroTopPadding);
+          if (data.heroCtaLink) setHeroCtaLink(data.heroCtaLink);
+          if (data.heroCtaStyle) setHeroCtaStyle(data.heroCtaStyle);
+          if (data.heroImageUrl) setHeroImageUrl(data.heroImageUrl);
+        } else if (section === 'tiles' && data) {
+          if (data.applications) setApplications(data.applications);
+          if (data.content) setContent(prev => ({ ...prev, ...data.content }));
+        } else if (section === 'banner' && data) {
+          if (data.bannerTitle) setBannerTitle(data.bannerTitle);
+          if (data.bannerSubtext) setBannerSubtext(data.bannerSubtext);
+          if (data.bannerImages) setBannerImages(data.bannerImages);
+          if (data.bannerButtonText) setBannerButtonText(data.bannerButtonText);
+          if (data.bannerButtonLink) setBannerButtonLink(data.bannerButtonLink);
+          if (data.bannerButtonStyle) setBannerButtonStyle(data.bannerButtonStyle);
+        } else if (section === 'solutions' && data) {
+          if (data.solutionsTitle) setSolutionsTitle(data.solutionsTitle);
+          if (data.solutionsSubtext) setSolutionsSubtext(data.solutionsSubtext);
+          if (data.solutionsLayout) setSolutionsLayout(data.solutionsLayout);
+          if (data.solutionsItems) setSolutionsItems(data.solutionsItems);
+        } else if (section === 'footer' && data) {
+          if (data.footerCtaTitle) setFooterCtaTitle(data.footerCtaTitle);
+          if (data.footerCtaDescription) setFooterCtaDescription(data.footerCtaDescription);
+          if (data.footerContactHeadline) setFooterContactHeadline(data.footerContactHeadline);
+          if (data.footerContactSubline) setFooterContactSubline(data.footerContactSubline);
+          if (data.footerContactDescription) setFooterContactDescription(data.footerContactDescription);
+          if (data.footerTeamQuote) setFooterTeamQuote(data.footerTeamQuote);
+          if (data.footerTeamName) setFooterTeamName(data.footerTeamName);
+          if (data.footerTeamTitle) setFooterTeamTitle(data.footerTeamTitle);
+          if (data.footerButtonText) setFooterButtonText(data.footerButtonText);
+        } else if (section === 'seo' && data) {
+          setSeoData(prev => ({ ...prev, ...data }));
+        }
+      }
+    });
+    
+    if (hasAnyAutosave) {
+      toast.info("Restored unsaved changes from previous session", {
+        duration: 5000,
+      });
+    }
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -897,6 +1045,9 @@ const AdminDashboard = () => {
         });
 
       toast.success("Hero section saved successfully!");
+      
+      // Clear autosaved data after successful save
+      clearAutosavedData(`${selectedPage}_hero`);
     } catch (error: any) {
       toast.error("Error saving hero section: " + error.message);
     } finally {
@@ -1540,6 +1691,9 @@ const AdminDashboard = () => {
 
       if (error) throw error;
       toast.success("SEO Settings saved successfully!");
+      
+      // Clear autosaved data after successful save
+      clearAutosavedData(`${selectedPage}_seo`);
     } catch (error: any) {
       toast.error("Error saving SEO settings: " + error.message);
     } finally {
@@ -1592,6 +1746,9 @@ const AdminDashboard = () => {
       if (appsError) throw appsError;
 
       toast.success("Applications section saved successfully!");
+      
+      // Clear autosaved data after successful save
+      clearAutosavedData(`${selectedPage}_tiles`);
     } catch (error: any) {
       toast.error("Error saving applications section: " + error.message);
     } finally {
@@ -1633,6 +1790,9 @@ const AdminDashboard = () => {
       }
 
       toast.success("Footer section saved successfully!");
+      
+      // Clear autosaved data after successful save
+      clearAutosavedData(`${selectedPage}_footer`);
     } catch (error: any) {
       toast.error("Error saving footer section: " + error.message);
     } finally {
@@ -2777,6 +2937,9 @@ const AdminDashboard = () => {
                         if (error) throw error;
 
                         toast.success("Banner content saved successfully!");
+                        
+                        // Clear autosaved data after successful save
+                        clearAutosavedData(`${selectedPage}_banner`);
                       } catch (error: any) {
                         toast.error("Error saving banner content: " + error.message);
                       } finally {
@@ -3045,6 +3208,9 @@ const AdminDashboard = () => {
                         if (error) throw error;
 
                         toast.success("Image & Text content saved successfully!");
+                        
+                        // Clear autosaved data after successful save
+                        clearAutosavedData(`${selectedPage}_solutions`);
                       } catch (error: any) {
                         toast.error("Error saving image & text content: " + error.message);
                       } finally {
