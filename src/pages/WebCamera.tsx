@@ -376,50 +376,38 @@ const WebCamera = () => {
                         <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
                           {app.description}
                         </p>
-                        {app.ctaText && (
-                          app.ctaLink && app.ctaLink.trim() ? (
-                            app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
-                              <a 
-                                href={app.ctaLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full"
-                              >
-                                <button
-                                  className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                                  style={{
-                                    backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                                    color: app.ctaStyle === "technical" ? "white" : "black"
-                                  }}
-                                >
-                                  {app.ctaText || 'Learn More'}
-                                </button>
-                              </a>
-                            ) : (
-                              <Link to={app.ctaLink} className="w-full">
-                                <button
-                                  className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                                  style={{
-                                    backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                                    color: app.ctaStyle === "technical" ? "white" : "black"
-                                  }}
-                                >
-                                  {app.ctaText || 'Learn More'}
-                                </button>
-                              </Link>
-                            )
-                          ) : (
-                            <button
-                              className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                              style={{
-                                backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
-                                color: app.ctaStyle === "technical" ? "white" : "black"
-                              }}
+                        {app.ctaLink && app.ctaLink.trim() ? (
+                          app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
+                            <a 
+                              href={app.ctaLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full"
                             >
-                              {app.ctaText || 'Learn More'}
-                            </button>
+                              <button
+                                className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                                style={{
+                                  backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: app.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {app.ctaText || 'Learn More'}
+                              </button>
+                            </a>
+                          ) : (
+                            <Link to={app.ctaLink} className="w-full">
+                              <button
+                                className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
+                                style={{
+                                  backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                  color: app.ctaStyle === "technical" ? "white" : "black"
+                                }}
+                              >
+                                {app.ctaText || 'Learn More'}
+                              </button>
+                            </Link>
                           )
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   );
