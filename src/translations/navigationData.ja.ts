@@ -99,7 +99,7 @@ export const navigationDataJa = {
     "Illumination Devices": {
       description: "安定したテスト環境のためのプロフェッショナルLED照明システムと均一光源",
       subgroups: [
-        { name: "iQ-LED", link: "#" },
+        { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
         { name: "IEEE-P2020", link: "#" },
         { name: "生産ラインキャリブレーション", link: "#" },
         { name: "フリッカ(PWM/MMP)", link: "#" },

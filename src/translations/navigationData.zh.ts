@@ -99,7 +99,7 @@ export const navigationDataZh = {
     "Illumination Devices": {
       description: "专业LED照明系统和均匀光源，用于稳定的测试环境",
       subgroups: [
-        { name: "iQ-LED", link: "#" },
+        { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
         { name: "IEEE-P2020", link: "#" },
         { name: "生产线校准", link: "#" },
         { name: "闪烁(PWM/MMP)", link: "#" },

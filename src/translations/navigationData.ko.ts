@@ -99,7 +99,7 @@ export const navigationDataKo = {
     "Illumination Devices": {
       description: "안정적인 테스트 환경을 위한 전문 LED 조명 시스템 및 균일 광원",
       subgroups: [
-        { name: "iQ-LED", link: "#" },
+        { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
         { name: "IEEE-P2020", link: "#" },
         { name: "생산 라인 캘리브레이션", link: "#" },
         { name: "플리커(PWM/MMP)", link: "#" },
