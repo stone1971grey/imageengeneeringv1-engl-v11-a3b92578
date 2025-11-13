@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Save, AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
+import { SERPPreview } from "./SERPPreview";
 
 interface SEOData {
   title?: string;
@@ -133,6 +134,13 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave }: SEOEditorProps) 
           </div>
         </div>
       </Card>
+
+      {/* SERP Preview */}
+      <SERPPreview
+        title={data.title || ''}
+        description={data.metaDescription || ''}
+        url={data.slug ? `www.image-engineering.de › ${data.slug}` : 'www.image-engineering.de › your-page-slug'}
+      />
 
       {/* Basic SEO Fields */}
       <div className="space-y-6">
