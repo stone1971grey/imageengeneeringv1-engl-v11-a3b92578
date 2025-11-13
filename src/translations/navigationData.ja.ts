@@ -99,7 +99,6 @@ export const navigationDataJa = {
     "Illumination Devices": {
       description: "安定したテスト環境のためのプロフェッショナルLED照明システムと均一光源",
       subgroups: [
-        { name: "ARCTURUS LED", link: "/products/illumination-devices/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "生産ラインキャリブレーション", link: "#" },
@@ -167,14 +166,6 @@ export const navigationDataJa = {
 
   // Solution Packages
   solutionPackages: {
-    "Arcturus HDR Test Bundle": {
-      description: "Arcturus LED、Vegaソフトウェア、テストチャートを含むHDRテストバンドル - 自動車・モバイルに最適",
-      subline: "完全パッケージ：照明+ソフトウェア+チャート"
-    },
-    "Arcturus LED + Vega Software + Test Charts": {
-      description: "照明テストの完全ソリューション",
-      subline: "ハードウェア+ソフトウェア+チャートバンドル"
-    },
     "Camera Calibration Package": {
       description: "照明システム、チャート、ソフトウェア - キャリブレーションテスト専用",
       subline: "完全キャリブレーションソリューション"

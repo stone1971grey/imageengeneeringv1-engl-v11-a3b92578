@@ -99,7 +99,6 @@ export const navigationDataKo = {
     "Illumination Devices": {
       description: "안정적인 테스트 환경을 위한 전문 LED 조명 시스템 및 균일 광원",
       subgroups: [
-        { name: "ARCTURUS LED", link: "/products/illumination-devices/arcturus" },
         { name: "iQ-LED", link: "#" },
         { name: "IEEE-P2020", link: "#" },
         { name: "생산 라인 캘리브레이션", link: "#" },
@@ -167,14 +166,6 @@ export const navigationDataKo = {
 
   // Solution Packages
   solutionPackages: {
-    "Arcturus HDR Test Bundle": {
-      description: "Arcturus LED, Vega 소프트웨어, 테스트 차트를 포함한 HDR 테스트 번들 - 자동차 및 모바일에 이상적",
-      subline: "완전 패키지: 조명 + 소프트웨어 + 차트"
-    },
-    "Arcturus LED + Vega Software + Test Charts": {
-      description: "조명 테스트를 위한 완벽한 솔루션",
-      subline: "하드웨어 + 소프트웨어 + 차트 번들"
-    },
     "Camera Calibration Package": {
       description: "조명 시스템, 차트, 소프트웨어 - 교정 테스트 전용",
       subline: "완전 캘리브레이션 솔루션"
