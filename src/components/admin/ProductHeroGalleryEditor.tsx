@@ -17,11 +17,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
 interface ProductImage {
   imageUrl: string;
   title: string;
   description: string;
+  metadata?: ImageMetadata;
 }
 
 interface ProductHeroGalleryData {
@@ -79,8 +81,19 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
         .from('page-images')
         .getPublicUrl(fileName);
 
+      // Extract image metadata
+      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      const fullMetadata: ImageMetadata = {
+        ...baseMetadata,
+        altText: data.images[index]?.metadata?.altText || ''
+      };
+
       const updatedImages = [...data.images];
-      updatedImages[index] = { ...updatedImages[index], imageUrl: publicUrl };
+      updatedImages[index] = { 
+        ...updatedImages[index], 
+        imageUrl: publicUrl,
+        metadata: fullMetadata
+      };
       onChange({ ...data, images: updatedImages });
 
       toast.success('Image uploaded successfully');
@@ -313,8 +326,72 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                 {uploadingIndex === index && <span className="text-sm text-gray-500">Uploading...</span>}
               </div>
               {image.imageUrl && (
-                <img src={image.imageUrl} alt={`Gallery ${index + 1}`} className="mt-2 h-20 object-contain" />
+                <img src={image.imageUrl} alt={image.metadata?.altText || `Gallery ${index + 1}`} className="mt-2 h-20 object-contain" />
               )}
+            </div>
+
+            {/* Image Metadata Display */}
+            {image.metadata && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-2">
+                <h5 className="font-medium text-sm text-gray-700">Image Information</h5>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-600">Original Name:</span>
+                    <p className="text-gray-800 truncate" title={image.metadata.originalFileName}>
+                      {image.metadata.originalFileName}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Dimensions:</span>
+                    <p className="text-gray-800">{image.metadata.width} × {image.metadata.height} px</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">File Size:</span>
+                    <p className="text-gray-800">{formatFileSize(image.metadata.fileSizeKB)}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Format:</span>
+                    <p className="text-gray-800">{image.metadata.format}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Uploaded:</span>
+                    <p className="text-gray-800">{formatUploadDate(image.metadata.uploadDate)}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-600">Storage URL:</span>
+                    <p className="text-gray-800 text-xs truncate" title={image.metadata.url}>
+                      {image.metadata.url.split('/').pop()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Alt Text Field */}
+            <div>
+              <Label>Alt Text (for SEO & Accessibility) *</Label>
+              <Input
+                value={image.metadata?.altText || ''}
+                onChange={(e) => {
+                  const updatedImages = [...data.images];
+                  if (updatedImages[index].metadata) {
+                    updatedImages[index].metadata!.altText = e.target.value;
+                  } else {
+                    updatedImages[index].metadata = {
+                      url: image.imageUrl,
+                      originalFileName: '',
+                      width: 0,
+                      height: 0,
+                      fileSizeKB: 0,
+                      format: '',
+                      uploadDate: new Date().toISOString(),
+                      altText: e.target.value
+                    };
+                  }
+                  onChange({ ...data, images: updatedImages });
+                }}
+                placeholder="Describe this image for accessibility and SEO"
+              />
             </div>
 
             <div>

@@ -46,6 +46,32 @@ import FAQEditor from '@/components/admin/FAQEditor';
 import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
+import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
+
+// Type definitions for CMS content structures
+interface TileItem {
+  title: string;
+  description: string;
+  ctaLink: string;
+  ctaStyle: string;
+  ctaText: string;
+  imageUrl: string;
+  icon: string;
+  metadata?: ImageMetadata;
+}
+
+interface BannerImage {
+  imageUrl: string;
+  altText: string;
+  metadata?: ImageMetadata;
+}
+
+interface SolutionItem {
+  imageUrl: string;
+  title: string;
+  description: string;
+  metadata?: ImageMetadata;
+}
 
 interface ContentItem {
   id: string;
