@@ -6,7 +6,7 @@ export const navigationDataEn = {
       subgroups: [
         { name: "Advanced Driver Assistance Systems (ADAS)", link: "/automotive" },
         { name: "In-Cabin Testing", link: "/your-solution/automotive/in-cabin-testing", active: true },
-        { name: "IEEE-P2020 Testing", link: "#" },
+        { name: "IEEE-P2020 Testing", link: "/products/standards/ieee-p2020" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "Near-Infrared (NIR)", link: "#" },
         { name: "Geometric Calibration", link: "#" }
@@ -100,7 +100,7 @@ export const navigationDataEn = {
       description: "Professional LED lighting systems and uniform light sources for stable testing environments",
       subgroups: [
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
-        { name: "IEEE-P2020", link: "#" },
+        { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "Production Line Calibration", link: "#" },
         { name: "Flicker (PWM/MMP)", link: "#" },
         { name: "Test Chart Illumination", link: "#" },
@@ -237,7 +237,7 @@ export const navigationDataEn = {
     "Standardized": {
       description: "Testing services according to international standards and protocols",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "#" },
+        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
         { name: "VCX (Mobile/Webcam)", link: "#" },
         { name: "IEC 62676-5 (Security)", link: "#" },
         { name: "EMVA 1288 (Machine Vision)", link: "#" },

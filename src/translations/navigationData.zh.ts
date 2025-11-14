@@ -100,7 +100,7 @@ export const navigationDataZh = {
       description: "专业LED照明系统和均匀光源，用于稳定的测试环境",
       subgroups: [
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
-        { name: "IEEE-P2020", link: "#" },
+        { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "生产线校准", link: "#" },
         { name: "闪烁(PWM/MMP)", link: "#" },
         { name: "测试图卡照明", link: "#" },
@@ -237,7 +237,7 @@ export const navigationDataZh = {
     "Standardized": {
       description: "根据国际标准和协议的测试服务",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "#" },
+        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
         { name: "VCX (移动/网络摄像头)", link: "#" },
         { name: "IEC 62676-5 (安防)", link: "#" },
         { name: "EMVA 1288 (机器视觉)", link: "#" },

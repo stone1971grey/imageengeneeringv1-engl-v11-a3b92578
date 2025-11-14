@@ -100,7 +100,7 @@ export const navigationDataJa = {
       description: "安定したテスト環境のためのプロフェッショナルLED照明システムと均一光源",
       subgroups: [
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
-        { name: "IEEE-P2020", link: "#" },
+        { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "生産ラインキャリブレーション", link: "#" },
         { name: "フリッカ(PWM/MMP)", link: "#" },
         { name: "テストチャート照明", link: "#" },
@@ -237,7 +237,7 @@ export const navigationDataJa = {
     "Standardized": {
       description: "国際標準とプロトコルに基づくテストサービス",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "#" },
+        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
         { name: "VCX (モバイル/Webcam)", link: "#" },
         { name: "IEC 62676-5 (セキュリティ)", link: "#" },
         { name: "EMVA 1288 (マシンビジョン)", link: "#" },
