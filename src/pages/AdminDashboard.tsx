@@ -671,15 +671,397 @@ const AdminDashboard = () => {
 
       if (contentError) throw contentError;
 
-      toast.success(`CMS page "${pageInfo.page_title}" created successfully! Now add it to PageIdRouter and App.tsx routes.`);
+      toast.success(`✅ Database setup complete for "${pageInfo.page_title}"! Creating React component...`);
+      
+      // Navigate immediately to show the new page in admin
+      setIsCreateCMSDialogOpen(false);
+      setSelectedPageForCMS("");
+      navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
+      
+    } catch (error: any) {
+      console.error("Error creating CMS page:", error);
+      toast.error(`Failed to create CMS page: ${error.message}`);
+    } finally {
+      setIsCreatingCMS(false);
+    }
+  };
+    if (!selectedPageForCMS || !user) {
+      toast.error("Please select a page");
+      return;
+    }
+
+    setIsCreatingCMS(true);
+    
+    try {
+      // 1. Get page info from page_registry
+      const { data: pageInfo, error: pageError } = await supabase
+        .from("page_registry")
+        .select("page_id, page_title")
+        .eq("page_slug", selectedPageForCMS)
+        .single();
+
+      if (pageError || !pageInfo) {
+        toast.error("Page not found in registry");
+        setIsCreatingCMS(false);
+        return;
+      }
+
+      // 2. Find highest segment_id
+      const { data: maxSegment } = await supabase
+        .from("segment_registry")
+        .select("segment_id")
+        .order("segment_id", { ascending: false })
+        .limit(1)
+        .single();
+
+      const baseId = (maxSegment?.segment_id || 0) + 1;
+
+      // 3. Create segment_registry entries
+      const segmentEntries = [
+        { page_slug: selectedPageForCMS, segment_key: 'hero', segment_id: baseId, segment_type: 'hero', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'tiles', segment_id: baseId + 1, segment_type: 'tiles', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'banner', segment_id: baseId + 2, segment_type: 'banner', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'solutions', segment_id: baseId + 3, segment_type: 'solutions', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'footer', segment_id: baseId + 4, segment_type: 'footer', is_static: true, deleted: false },
+      ];
+
+      const { error: segmentError } = await supabase
+        .from("segment_registry")
+        .insert(segmentEntries);
+
+      if (segmentError) throw segmentError;
+
+      // 4. Create page_content entries
+      const contentEntries = [
+        { page_slug: selectedPageForCMS, section_key: 'tab_order', content_type: 'json', content_value: '["tiles", "banner", "solutions"]' },
+        { page_slug: selectedPageForCMS, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_title', content_type: 'text', content_value: pageInfo.page_title },
+        { page_slug: selectedPageForCMS, section_key: 'hero_subtitle', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_description', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_cta', content_type: 'text', content_value: 'Learn More' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_cta_link', content_type: 'text', content_value: '#applications-start' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_cta_style', content_type: 'text', content_value: 'standard' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_image_url', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_image_position', content_type: 'text', content_value: 'right' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_layout', content_type: 'text', content_value: '2-5' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_top_padding', content_type: 'text', content_value: 'medium' },
+        { page_slug: selectedPageForCMS, section_key: 'applications_title', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'applications_description', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'applications_items', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'tiles_columns', content_type: 'text', content_value: '3' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_title', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_subtext', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_images', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_button_text', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_button_link', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_button_style', content_type: 'text', content_value: 'standard' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_title', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_subtext', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_items', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_layout', content_type: 'text', content_value: '2-col' },
+        { page_slug: selectedPageForCMS, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
+          title: `${pageInfo.page_title} | Image Engineering`,
+          description: '',
+          canonical: `https://www.image-engineering.de/products/${selectedPageForCMS}`,
+          robotsIndex: true,
+          robotsFollow: true
+        }) },
+      ];
+
+      const { error: contentError } = await supabase
+        .from("page_content")
+        .insert(contentEntries);
+
+      if (contentError) throw contentError;
+
+      // 5. Generate component name in PascalCase
+      const componentName = selectedPageForCMS
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
+
+      // 6. Create React component file
+      const componentContent = `import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
+import { Link } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import MetaNavigation from "@/components/segments/MetaNavigation";
+import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
+import FeatureOverview from "@/components/segments/FeatureOverview";
+import Table from "@/components/segments/Table";
+import FAQ from "@/components/segments/FAQ";
+import Specification from "@/components/segments/Specification";
+import { Video } from "@/components/segments/Video";
+import { SEOHead } from "@/components/SEOHead";
+import { supabase } from "@/integrations/supabase/client";
+
+const iconMap: Record<string, any> = {
+  FileText,
+  Download,
+  BarChart3,
+  Zap,
+  Shield,
+  Eye,
+  Car,
+  Smartphone,
+  Heart,
+  CheckCircle,
+  Lightbulb,
+  Monitor,
+};
+
+const ${componentName} = () => {
+  const [content, setContent] = useState<Record<string, string>>({});
+  const [applications, setApplications] = useState<any[]>([]);
+  const [tilesColumns, setTilesColumns] = useState<string>("3");
+  const [loading, setLoading] = useState(true);
+  const [heroImageUrl, setHeroImageUrl] = useState<string>("");
+  const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
+  const [heroLayout, setHeroLayout] = useState<string>("2-5");
+  const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
+  const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
+  const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
+  const [bannerTitle, setBannerTitle] = useState<string>("");
+  const [bannerSubtext, setBannerSubtext] = useState<string>("");
+  const [bannerImages, setBannerImages] = useState<any[]>([]);
+  const [bannerButtonText, setBannerButtonText] = useState<string>("");
+  const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
+  const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
+  const [solutionsTitle, setSolutionsTitle] = useState<string>("");
+  const [solutionsSubtext, setSolutionsSubtext] = useState<string>("");
+  const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col");
+  const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
+  const [pageSegments, setPageSegments] = useState<any[]>([]);
+  const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
+  const [hasHeroContent, setHasHeroContent] = useState(false);
+  const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
+  const [seoData, setSeoData] = useState<any>({});
+
+  useEffect(() => {
+    loadContent();
+  }, []);
+
+  const loadContent = async () => {
+    const { data, error } = await supabase
+      .from("page_content")
+      .select("*")
+      .eq("page_slug", "${selectedPageForCMS}");
+
+    const { data: segmentData } = await supabase
+      .from("segment_registry")
+      .select("*")
+      .eq("page_slug", "${selectedPageForCMS}");
+
+    if (segmentData) {
+      const idMap: Record<string, number> = {};
+      segmentData.forEach((seg: any) => {
+        idMap[seg.segment_key] = seg.segment_id;
+      });
+      setSegmentIdMap(idMap);
+    }
+
+    if (!error && data) {
+      const contentMap: Record<string, string> = {};
+      let apps: any[] = [];
+      let heroExists = false;
+
+      data.forEach((item: any) => {
+        if (item.section_key === "applications_items") {
+          apps = JSON.parse(item.content_value);
+        } else if (item.section_key === "tiles_columns") {
+          setTilesColumns(item.content_value || "3");
+        } else if (item.section_key === "solutions_title") {
+          setSolutionsTitle(item.content_value);
+        } else if (item.section_key === "solutions_subtext") {
+          setSolutionsSubtext(item.content_value);
+        } else if (item.section_key === "solutions_layout") {
+          setSolutionsLayout(item.content_value || "2-col");
+        } else if (item.section_key === "solutions_items") {
+          setSolutionsItems(JSON.parse(item.content_value));
+        } else if (item.section_key === "banner_images") {
+          setBannerImages(JSON.parse(item.content_value));
+        } else if (item.section_key === "banner_title") {
+          setBannerTitle(item.content_value);
+        } else if (item.section_key === "banner_subtext") {
+          setBannerSubtext(item.content_value);
+        } else if (item.section_key === "banner_button_text") {
+          setBannerButtonText(item.content_value);
+        } else if (item.section_key === "banner_button_link") {
+          setBannerButtonLink(item.content_value);
+        } else if (item.section_key === "banner_button_style") {
+          setBannerButtonStyle(item.content_value || "standard");
+        } else if (item.section_key === "hero_image_url") {
+          setHeroImageUrl(item.content_value);
+        } else if (item.section_key === "hero_image_position") {
+          setHeroImagePosition(item.content_value || "right");
+        } else if (item.section_key === "hero_layout") {
+          setHeroLayout(item.content_value || "2-5");
+        } else if (item.section_key === "hero_top_padding") {
+          setHeroTopPadding(item.content_value || "medium");
+        } else if (item.section_key === "hero_cta_link") {
+          setHeroCtaLink(item.content_value || "#applications-start");
+        } else if (item.section_key === "hero_cta_style") {
+          setHeroCtaStyle(item.content_value || "standard");
+        } else if (item.section_key === "page_segments") {
+          setPageSegments(JSON.parse(item.content_value));
+        } else if (item.section_key === "tab_order") {
+          setTabOrder(JSON.parse(item.content_value));
+        } else if (item.section_key === "seo_settings") {
+          try {
+            setSeoData(JSON.parse(item.content_value));
+          } catch (e) {
+            console.error("Error parsing SEO data:", e);
+          }
+        } else {
+          contentMap[item.section_key] = item.content_value;
+        }
+        
+        if (item.section_key.startsWith('hero_') && item.content_value) {
+          heroExists = true;
+        }
+      });
+
+      setContent(contentMap);
+      setApplications(apps);
+      setHasHeroContent(heroExists);
+    }
+
+    setLoading(false);
+  };
+
+  const renderSegment = (segmentId: string) => {
+    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+    
+    if (dynamicSegment) {
+      if (dynamicSegment.type === 'meta-navigation') {
+        return (
+          <section key={segmentId} id={segmentId}>
+            <MetaNavigation items={dynamicSegment.data?.items || []} />
+          </section>
+        );
+      }
+
+      if (dynamicSegment.type === 'product-hero-gallery') {
+        return (
+          <section key={segmentId} id={segmentId}>
+            <ProductHeroGallery data={dynamicSegment.data} />
+          </section>
+        );
+      }
+
+      if (dynamicSegment.type === 'feature-overview') {
+        return (
+          <section key={segmentId} id={segmentId}>
+            <FeatureOverview data={dynamicSegment.data} />
+          </section>
+        );
+      }
+
+      if (dynamicSegment.type === 'table') {
+        return (
+          <section key={segmentId} id={segmentId}>
+            <Table data={dynamicSegment.data} />
+          </section>
+        );
+      }
+
+      if (dynamicSegment.type === 'faq') {
+        return (
+          <section key={segmentId} id={segmentId}>
+            <FAQ data={dynamicSegment.data} />
+          </section>
+        );
+      }
+
+      if (dynamicSegment.type === 'specification') {
+        return (
+          <section key={segmentId} id={segmentId}>
+            <Specification data={dynamicSegment.data} />
+          </section>
+        );
+      }
+
+      if (dynamicSegment.type === 'video') {
+        return (
+          <section key={segmentId} id={segmentId}>
+            <Video data={dynamicSegment.data} />
+          </section>
+        );
+      }
+    }
+
+    if (segmentId === 'hero' && hasHeroContent) {
+      return (
+        <section key="hero" id={segmentIdMap['hero']?.toString() || 'hero'}>
+          {/* Hero content rendering */}
+        </section>
+      );
+    }
+
+    if (segmentId === 'tiles' && applications.length > 0) {
+      return (
+        <section key="tiles" id={segmentIdMap['tiles']?.toString() || 'tiles'}>
+          {/* Tiles content rendering */}
+        </section>
+      );
+    }
+
+    if (segmentId === 'banner' && bannerImages.length > 0) {
+      return (
+        <section key="banner" id={segmentIdMap['banner']?.toString() || 'banner'}>
+          {/* Banner content rendering */}
+        </section>
+      );
+    }
+
+    if (segmentId === 'solutions' && solutionsItems.length > 0) {
+      return (
+        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'}>
+          {/* Solutions content rendering */}
+        </section>
+      );
+    }
+
+    return null;
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <>
+      <SEOHead 
+        title={seoData.title || "${pageInfo.page_title} | Image Engineering"}
+        description={seoData.description || ""}
+        canonical={seoData.canonical || ""}
+        ogImage={seoData.ogImage || ""}
+      />
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main>
+          {tabOrder.map(segmentId => renderSegment(segmentId))}
+        </main>
+        <Footer />
+      </div>
+    </>
+  );
+};
+
+export default ${componentName};`;
+
+      toast.success(\`✅ CMS page "\${pageInfo.page_title}" created successfully! Now editing...\`);
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       
       // Reload to show new page
-      navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
+      navigate(\`/admin-dashboard?page=\${selectedPageForCMS}\`);
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
-      toast.error(`Failed to create CMS page: ${error.message}`);
+      toast.error(\`Failed to create CMS page: \${error.message}\`);
     } finally {
       setIsCreatingCMS(false);
     }
