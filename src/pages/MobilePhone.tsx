@@ -13,6 +13,8 @@ import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
 import { Video } from "@/components/segments/Video";
 import Specification from "@/components/segments/Specification";
+import FullHero from "@/components/segments/FullHero";
+import Intro from "@/components/segments/Intro";
 import { SEOHead } from "@/components/SEOHead";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
@@ -213,6 +215,12 @@ const MobilePhone = () => {
       }
       if (dynamicSegment.type === 'specification') {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'full-hero') {
+        return <FullHero key={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'intro') {
+        return <Intro key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (
