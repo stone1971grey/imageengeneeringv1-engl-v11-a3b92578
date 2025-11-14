@@ -49,6 +49,7 @@ import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
+import { FullHeroEditor } from '@/components/admin/FullHeroEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
 import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelect';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
@@ -1797,6 +1798,23 @@ const AdminDashboard = () => {
           videoUrl: '',
           caption: ''
         };
+      case 'full-hero':
+        return {
+          titleLine1: 'Precision Engineering for',
+          titleLine2: 'Image Quality Testing',
+          subtitle: 'Professional solutions for testing and calibrating camera systems with precision and accuracy.',
+          button1Text: 'Find Your Solution',
+          button1Link: '#applications-start',
+          button1Color: 'yellow',
+          button2Text: '',
+          button2Link: '',
+          button2Color: 'black',
+          backgroundType: 'image',
+          imageUrl: '',
+          videoUrl: '',
+          kenBurnsEffect: 'standard',
+          overlayOpacity: 15
+        };
       case 'specification':
         return {
           title: 'Detailed Specifications',
@@ -2415,6 +2433,25 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Full Hero Segment */}
+                  <div 
+                    className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                    onClick={() => handleAddSegment('full-hero')}
+                  >
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Eye className="h-7 w-7 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Full Hero</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Full-screen hero with two-line title, buttons, and Ken Burns effect
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                   </div>
 
                   {/* Specification Segment */}
@@ -4525,6 +4562,7 @@ const AdminDashboard = () => {
                         {segment.type === 'tiles' && `Tiles Section ${segment.position + 1}`}
                         {segment.type === 'banner' && `Banner Section ${segment.position + 1}`}
                         {segment.type === 'image-text' && `Image & Text Section ${segment.position + 1}`}
+                        {segment.type === 'full-hero' && `Full Hero ${segment.position + 1}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
@@ -4545,6 +4583,7 @@ const AdminDashboard = () => {
                         {segment.type === 'table' && 'Table Template'}
                         {segment.type === 'faq' && 'FAQ Template'}
                         {segment.type === 'video' && 'Video Template'}
+                        {segment.type === 'full-hero' && 'Full Hero Template'}
                         {segment.type === 'specification' && 'Specification Template'}
                       </div>
                       <AlertDialog>
@@ -5585,6 +5624,14 @@ const AdminDashboard = () => {
                       />
                     );
                   })()}
+
+                  {segment.type === 'full-hero' && (
+                    <FullHeroEditor
+                      pageSlug={selectedPage}
+                      segmentId={segment.id}
+                      onSave={() => handleSaveSegments()}
+                    />
+                  )}
 
                   {segment.type === 'specification' && (() => {
                     // Initialize data if missing

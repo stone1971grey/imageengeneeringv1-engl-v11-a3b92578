@@ -182,6 +182,27 @@ export default {
 					"80%": { transform: "scale(1.28) translate(3%, -1%)" },
 					"100%": { transform: "scale(1.2) translate(-1%, 3%)" }
 				},
+				'ken-burns-slow': {
+					"0%": { transform: "scale(1) translate(0, 0)" },
+					"50%": { transform: "scale(1.15) translate(-2%, -1%)" },
+					"100%": { transform: "scale(1.1) translate(1%, 1%)" }
+				},
+				'ken-burns-fast': {
+					"0%": { transform: "scale(1) translate(0, 0)" },
+					"100%": { transform: "scale(1.4) translate(-3%, 2%)" }
+				},
+				'ken-burns-zoom-out': {
+					"0%": { transform: "scale(1.3)" },
+					"100%": { transform: "scale(1)" }
+				},
+				'ken-burns-pan-left': {
+					"0%": { transform: "scale(1.2) translateX(0)" },
+					"100%": { transform: "scale(1.2) translateX(-10%)" }
+				},
+				'ken-burns-pan-right': {
+					"0%": { transform: "scale(1.2) translateX(0)" },
+					"100%": { transform: "scale(1.2) translateX(10%)" }
+				},
 				'slide-in-right': {
 					"0%": { transform: "translateX(-100%)" },
 					"100%": { transform: "translateX(100%)" }
@@ -194,6 +215,11 @@ export default {
 				'hover-lift': 'hover-lift 0.3s ease-out',
 				'fade-in': 'fade-in 1.2s ease-out',
 				'ken-burns': 'ken-burns 40s ease-in-out 1 forwards',
+				'ken-burns-slow': 'ken-burns-slow 60s ease-in-out 1 forwards',
+				'ken-burns-fast': 'ken-burns-fast 20s ease-in-out 1 forwards',
+				'ken-burns-zoom-out': 'ken-burns-zoom-out 30s ease-out 1 forwards',
+				'ken-burns-pan-left': 'ken-burns-pan-left 40s linear infinite alternate',
+				'ken-burns-pan-right': 'ken-burns-pan-right 40s linear infinite alternate',
 				'slide-in-right': 'slide-in-right 3s ease-in-out infinite'
 			}
 		}
