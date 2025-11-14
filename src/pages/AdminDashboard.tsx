@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -2543,56 +2543,35 @@ const AdminDashboard = () => {
             </Card>
 
             {/* Quick Start Guide */}
-            <Card className="border-[#f9dc24] border-2 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-[#f9dc24]/10 to-yellow-50">
-                <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-[#f9dc24] flex items-center justify-center">
-                    <svg className="h-6 w-6 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  Quick Start
-                </CardTitle>
+            <Card className="border-2 border-gray-200 shadow-sm">
+              <CardHeader className="bg-white">
+                <CardTitle className="text-2xl font-bold text-gray-900">Quick Start</CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
-                <ol className="space-y-4">
-                  <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
-                      1
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-semibold">Select a Page</p>
-                      <p className="text-sm text-gray-600">Choose a CMS page from the dropdown menu above</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
-                      2
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-semibold">Edit Content</p>
-                      <p className="text-sm text-gray-600">Use the segment tabs to modify your page content</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
-                      3
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-semibold">Preview Changes</p>
-                      <p className="text-sm text-gray-600">Click Preview Frontend to see your changes live</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-4">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
-                      4
-                    </div>
-                    <div>
-                      <p className="text-gray-900 font-semibold">Add Segments</p>
-                      <p className="text-sm text-gray-600">Use Add New Segment to extend your pages</p>
-                    </div>
-                  </li>
-                </ol>
+              <CardContent className="p-8">
+                <div className="space-y-6">
+                  {[
+                    { num: "1", title: "Wähle eine Seite", desc: "Wähle eine Seite aus dem Dropdown oben", icon: MousePointer },
+                    { num: "2", title: "Füge Segmente hinzu", desc: "Nutze Drag & Drop um neue Segmente hinzuzufügen", icon: Layers },
+                    { num: "3", title: "Bearbeite Inhalte", desc: "Bearbeite die Inhalte direkt im Editor", icon: Pencil },
+                    { num: "4", title: "Vorschau", desc: "Klicke auf Preview Frontend um deine Änderungen live zu sehen", icon: PlayCircle }
+                  ].map((step) => {
+                    const Icon = step.icon;
+                    return (
+                      <div key={step.num} className="flex items-center gap-5 p-5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 group border border-gray-200">
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#f9dc24] flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-200">
+                          <span className="text-xl font-black text-gray-900">{step.num}</span>
+                        </div>
+                        <div className="flex items-center gap-4 flex-1">
+                          <Icon className="w-6 h-6 text-gray-400 flex-shrink-0" strokeWidth={2} />
+                          <div>
+                            <p className="text-base font-bold text-gray-900 mb-1">{step.title}</p>
+                            <p className="text-sm text-gray-600">{step.desc}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </CardContent>
             </Card>
           </div>
