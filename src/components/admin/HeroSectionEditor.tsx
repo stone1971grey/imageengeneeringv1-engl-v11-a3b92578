@@ -6,18 +6,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Save, Trash2, Upload } from "lucide-react";
-import { uploadImageToStorage } from "./ImageUploadUtils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
+import { useState } from "react";
 
 interface HeroSectionEditorProps {
   content: Record<string, string>;
   heroImageUrl: string;
+  heroImageMetadata?: ImageMetadata;
   heroImagePosition: string;
   heroLayout: string;
   heroTopPadding: string;
   heroCtaLink: string;
   heroCtaStyle: string;
   onContentChange: (key: string, value: string) => void;
-  onHeroImageUrlChange: (url: string) => void;
+  onHeroImageUrlChange: (url: string, metadata?: ImageMetadata) => void;
   onHeroImagePositionChange: (position: string) => void;
   onHeroLayoutChange: (layout: string) => void;
   onHeroTopPaddingChange: (padding: string) => void;
@@ -30,6 +34,7 @@ interface HeroSectionEditorProps {
 export const HeroSectionEditor = ({
   content,
   heroImageUrl,
+  heroImageMetadata,
   heroImagePosition,
   heroLayout,
   heroTopPadding,
@@ -45,14 +50,53 @@ export const HeroSectionEditor = ({
   onSave,
   onDelete,
 }: HeroSectionEditorProps) => {
+  const [uploading, setUploading] = useState(false);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
 
     const file = e.target.files[0];
-    const publicUrl = await uploadImageToStorage(file, 'hero-images');
     
-    if (publicUrl) {
-      onHeroImageUrlChange(publicUrl);
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `hero-images/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(fileName);
+
+      // Extract metadata
+      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      const fullMetadata: ImageMetadata = {
+        ...baseMetadata,
+        altText: heroImageMetadata?.altText || ''
+      };
+
+      onHeroImageUrlChange(publicUrl, fullMetadata);
+      toast.success('Image uploaded successfully');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image: ' + error.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -138,7 +182,11 @@ export const HeroSectionEditor = ({
                 onChange={(e) => onHeroImageUrlChange(e.target.value)}
                 placeholder="Image URL"
               />
-              <Button variant="outline" onClick={() => document.getElementById('hero_image_file')?.click()}>
+              <Button 
+                variant="outline" 
+                onClick={() => document.getElementById('hero_image_file')?.click()}
+                disabled={uploading}
+              >
                 <Upload className="h-4 w-4" />
               </Button>
               <input
@@ -149,8 +197,54 @@ export const HeroSectionEditor = ({
                 onChange={handleImageUpload}
               />
             </div>
+            {uploading && <p className="text-sm text-gray-500 mt-2">Uploading...</p>}
             {heroImageUrl && (
-              <img src={heroImageUrl} alt="Hero preview" className="mt-2 w-full h-32 object-cover rounded" />
+              <div className="mt-2 space-y-2">
+                <img src={heroImageUrl} alt="Hero preview" className="w-full h-32 object-cover rounded" />
+                
+                {/* Image Metadata Display */}
+                {heroImageMetadata && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-2">
+                    <h5 className="font-medium text-sm text-gray-700">Image Information</h5>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-600">Original Name:</span>
+                        <p className="text-gray-800 truncate" title={heroImageMetadata.originalFileName}>
+                          {heroImageMetadata.originalFileName}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600">Dimensions:</span>
+                        <p className="text-gray-800">{heroImageMetadata.width} × {heroImageMetadata.height} px</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600">File Size:</span>
+                        <p className="text-gray-800">{formatFileSize(heroImageMetadata.fileSizeKB)}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600">Format:</span>
+                        <p className="text-gray-800">{heroImageMetadata.format}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600">Uploaded:</span>
+                        <p className="text-gray-800">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600">Alt Text:</span>
+                        <Input
+                          value={heroImageMetadata.altText || ''}
+                          onChange={(e) => {
+                            const updatedMetadata = { ...heroImageMetadata, altText: e.target.value };
+                            onHeroImageUrlChange(heroImageUrl, updatedMetadata);
+                          }}
+                          placeholder="Descriptive alt text"
+                          className="h-7 text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
