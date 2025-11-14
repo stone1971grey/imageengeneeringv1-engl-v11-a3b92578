@@ -3020,6 +3020,46 @@ const AdminDashboard = () => {
             />
           </TabsContent>
 
+          {/* Banner Section Tab */}
+          <TabsContent value="banner">
+            <BannerSectionEditor
+              bannerTitle={bannerTitle}
+              bannerSubtext={bannerSubtext}
+              bannerImages={bannerImages}
+              bannerButtonText={bannerButtonText}
+              bannerButtonLink={bannerButtonLink}
+              bannerButtonStyle={bannerButtonStyle}
+              onBannerTitleChange={setBannerTitle}
+              onBannerSubtextChange={setBannerSubtext}
+              onBannerImagesChange={setBannerImages}
+              onBannerButtonTextChange={setBannerButtonText}
+              onBannerButtonLinkChange={setBannerButtonLink}
+              onBannerButtonStyleChange={setBannerButtonStyle}
+              onSave={async () => {
+                if (!user) return;
+                setSaving(true);
+                try {
+                  const updates = [
+                    { page_slug: selectedPage, section_key: 'banner_title', content_type: 'text', content_value: bannerTitle, updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'banner_subtext', content_type: 'text', content_value: bannerSubtext, updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'banner_images', content_type: 'json', content_value: JSON.stringify(bannerImages), updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'banner_button_text', content_type: 'text', content_value: bannerButtonText, updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'banner_button_link', content_type: 'text', content_value: bannerButtonLink, updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'banner_button_style', content_type: 'text', content_value: bannerButtonStyle, updated_at: new Date().toISOString(), updated_by: user.id },
+                  ];
+                  const { error } = await supabase.from("page_content").upsert(updates, { onConflict: 'page_slug,section_key' });
+                  if (error) throw error;
+                  toast.success("Banner section saved successfully!");
+                  clearAutosavedData(`${selectedPage}_banner`);
+                } catch (error: any) {
+                  toast.error("Error saving banner section: " + error.message);
+                } finally {
+                  setSaving(false);
+                }
+              }}
+            />
+          </TabsContent>
+
           {/* Image & Text Template Tab */}
           <TabsContent value="solutions">
             <SolutionsSectionEditor
