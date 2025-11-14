@@ -3018,321 +3018,36 @@ const AdminDashboard = () => {
 
           {/* Image & Text Template Tab */}
           <TabsContent value="solutions">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-white">Image & Text Template</CardTitle>
-                    <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
-                    <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
-                      ID: {segmentRegistry['solutions'] || 4}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
-                      Image & Text Template
-                    </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="flex items-center gap-2"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Delete Segment
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Image & Text Segment?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently delete the entire Image & Text section and all its content. This action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteStaticSegment('solutions')}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Title */}
-                <div>
-                  <Label htmlFor="solutions_title" className="text-white">Section Title</Label>
-                  <Input
-                    id="solutions_title"
-                    value={solutionsTitle}
-                    onChange={(e) => setSolutionsTitle(e.target.value)}
-                    placeholder="e.g., Automotive Camera Test Solutions"
-                    className="border-2 border-gray-600"
-                  />
-                </div>
-
-                {/* Subtext */}
-                <div>
-                  <Label htmlFor="solutions_subtext" className="text-white">Subtext (Optional)</Label>
-                  <Textarea
-                    id="solutions_subtext"
-                    value={solutionsSubtext}
-                    onChange={(e) => setSolutionsSubtext(e.target.value)}
-                    placeholder="Optional description text below the title"
-                    rows={3}
-                    className="border-2 border-gray-600"
-                  />
-                </div>
-
-                {/* Layout Selection */}
-                <div>
-                  <Label htmlFor="solutions_layout" className="text-white">Column Layout</Label>
-                  <Select
-                    value={solutionsLayout}
-                    onValueChange={(value) => setSolutionsLayout(value)}
-                  >
-                    <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                      <SelectValue placeholder="Select layout" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="1-col" className="text-black">1 Column (Full Width)</SelectItem>
-                      <SelectItem value="2-col" className="text-black">2 Columns</SelectItem>
-                      <SelectItem value="3-col" className="text-black">3 Columns</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Solution Items */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-white text-lg font-semibold">Solution Items</Label>
-                    <Button
-                      onClick={handleAddSolutionItem}
-                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Item
-                    </Button>
-                  </div>
-
-                  {solutionsItems.map((item, index) => (
-                    <Card key={index} className="bg-gray-700 border-gray-600">
-                      <CardContent className="pt-6 space-y-3">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md">
-                            Item {index + 1}
-                          </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                className="flex items-center gap-2"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This will permanently delete "Item {index + 1}". This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDeleteSolutionItem(index)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-
-                        {/* Image Upload */}
-                        <div>
-                          <Label htmlFor={`solution_image_${index}`} className="text-white">Image (Optional - Full Width)</Label>
-                          {item.imageUrl && (
-                            <div className="mb-3">
-                              <img 
-                                src={item.imageUrl} 
-                                alt={`Solution ${index + 1}`} 
-                                className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
-                              />
-                            </div>
-                          )}
-                          <Input
-                            id={`solution_image_${index}`}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleSolutionImageUpload(e, index)}
-                            disabled={uploading}
-                            className="border-2 border-gray-600"
-                          />
-                          
-                          {/* Image Metadata Display */}
-                          {item.metadata && (
-                            <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
-                              <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
-                              <div className="grid grid-cols-2 gap-3 text-sm">
-                                <div>
-                                  <span className="text-gray-600">Original Name:</span>
-                                  <p className="text-black font-medium">{item.metadata.originalFileName}</p>
-                                </div>
-                                <div>
-                                  <span className="text-gray-600">Dimensions:</span>
-                                  <p className="text-black font-medium">{item.metadata.width} × {item.metadata.height} px</p>
-                                </div>
-                                <div>
-                                  <span className="text-gray-600">File Size:</span>
-                                  <p className="text-black font-medium">{formatFileSize(item.metadata.fileSizeKB)}</p>
-                                </div>
-                                <div>
-                                  <span className="text-gray-600">Format:</span>
-                                  <p className="text-black font-medium uppercase">{item.metadata.format}</p>
-                                </div>
-                                <div className="col-span-2">
-                                  <span className="text-gray-600">Upload Date:</span>
-                                  <p className="text-black font-medium">{formatUploadDate(item.metadata.uploadDate)}</p>
-                                </div>
-                              </div>
-                              
-                              <div className="mt-4">
-                                <Label htmlFor={`solution_image_alt_${index}`} className="text-black text-base">Alt Text (SEO)</Label>
-                                <Input
-                                  id={`solution_image_alt_${index}`}
-                                  type="text"
-                                  value={item.metadata.altText || ''}
-                                  onChange={(e) => {
-                                    const newItems = [...solutionsItems];
-                                    if (newItems[index].metadata) {
-                                      newItems[index].metadata.altText = e.target.value;
-                                      setSolutionsItems(newItems);
-                                    }
-                                  }}
-                                  placeholder="Describe this image for accessibility and SEO"
-                                  className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
-                                />
-                                <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Title */}
-                        <div>
-                          <Label htmlFor={`solution_title_${index}`} className="text-white">Title</Label>
-                          <Input
-                            id={`solution_title_${index}`}
-                            value={item.title}
-                            onChange={(e) => {
-                              const newItems = [...solutionsItems];
-                              newItems[index].title = e.target.value;
-                              setSolutionsItems(newItems);
-                            }}
-                            placeholder="e.g., In-Cabin Testing"
-                            className="border-2 border-gray-600"
-                          />
-                        </div>
-
-                        {/* Description */}
-                        <div>
-                          <Label htmlFor={`solution_desc_${index}`} className="text-white">Description</Label>
-                          <Textarea
-                            id={`solution_desc_${index}`}
-                            value={item.description}
-                            onChange={(e) => {
-                              const newItems = [...solutionsItems];
-                              newItems[index].description = e.target.value;
-                              setSolutionsItems(newItems);
-                            }}
-                            rows={6}
-                            placeholder="Detailed description..."
-                            className="border-2 border-gray-600"
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                <div className="flex justify-end pt-4 border-t border-gray-600">
-                  <Button
-                    onClick={async () => {
-                      setSaving(true);
-                      try {
-                        const updates = [
-                          {
-                            page_slug: selectedPage,
-                            section_key: "solutions_title",
-                            content_type: "heading",
-                            content_value: solutionsTitle,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: selectedPage,
-                            section_key: "solutions_subtext",
-                            content_type: "text",
-                            content_value: solutionsSubtext,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: selectedPage,
-                            section_key: "solutions_layout",
-                            content_type: "text",
-                            content_value: solutionsLayout,
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          },
-                          {
-                            page_slug: selectedPage,
-                            section_key: "solutions_items",
-                            content_type: "json",
-                            content_value: JSON.stringify(solutionsItems),
-                            updated_at: new Date().toISOString(),
-                            updated_by: user?.id
-                          }
-                        ];
-
-                        const { error } = await supabase
-                          .from("page_content")
-                          .upsert(updates, {
-                            onConflict: 'page_slug,section_key'
-                          });
-
-                        if (error) throw error;
-
-                        toast.success("Image & Text content saved successfully!");
-                        
-                        // Clear autosaved data after successful save
-                        clearAutosavedData(`${selectedPage}_solutions`);
-                      } catch (error: any) {
-                        toast.error("Error saving image & text content: " + error.message);
-                      } finally {
-                        setSaving(false);
-                      }
-                    }}
-                    disabled={saving}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                  >
-                    <Save className="h-4 w-4" />
-                    {saving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <SolutionsSectionEditor
+              solutionsTitle={solutionsTitle}
+              solutionsSubtext={solutionsSubtext}
+              solutionsLayout={solutionsLayout}
+              solutionsItems={solutionsItems}
+              onSolutionsTitleChange={setSolutionsTitle}
+              onSolutionsSubtextChange={setSolutionsSubtext}
+              onSolutionsLayoutChange={setSolutionsLayout}
+              onSolutionsItemsChange={setSolutionsItems}
+              onSave={async () => {
+                if (!user) return;
+                setSaving(true);
+                try {
+                  const updates = [
+                    { page_slug: selectedPage, section_key: 'solutions_title', content_type: 'text', content_value: solutionsTitle, updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'solutions_subtext', content_type: 'text', content_value: solutionsSubtext, updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'solutions_layout', content_type: 'text', content_value: solutionsLayout, updated_at: new Date().toISOString(), updated_by: user.id },
+                    { page_slug: selectedPage, section_key: 'solutions_items', content_type: 'json', content_value: JSON.stringify(solutionsItems), updated_at: new Date().toISOString(), updated_by: user.id },
+                  ];
+                  const { error } = await supabase.from("page_content").upsert(updates, { onConflict: 'page_slug,section_key' });
+                  if (error) throw error;
+                  toast.success("Solutions section saved successfully!");
+                  clearAutosavedData(`${selectedPage}_solutions`);
+                } catch (error: any) {
+                  toast.error("Error saving solutions section: " + error.message);
+                } finally {
+                  setSaving(false);
+                }
+              }}
+            />
           </TabsContent>
 
           {/* Footer Tab */}
