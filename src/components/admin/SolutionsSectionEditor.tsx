@@ -22,6 +22,8 @@ interface SolutionsSectionEditorProps {
   solutionsSubtext: string;
   solutionsLayout: string;
   solutionsItems: SolutionItem[];
+  segmentId?: number;
+  pageSlug?: string;
   onSolutionsTitleChange: (title: string) => void;
   onSolutionsSubtextChange: (subtext: string) => void;
   onSolutionsLayoutChange: (layout: string) => void;
@@ -34,6 +36,8 @@ export const SolutionsSectionEditor = ({
   solutionsSubtext,
   solutionsLayout,
   solutionsItems,
+  segmentId,
+  pageSlug,
   onSolutionsTitleChange,
   onSolutionsSubtextChange,
   onSolutionsLayoutChange,
@@ -75,12 +79,17 @@ export const SolutionsSectionEditor = ({
   };
 
   return (
-    <Card>
+    <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Solutions / Image-Text Section</CardTitle>
-            <CardDescription>Grid of solution items with images and descriptions</CardDescription>
+          <div className="flex-1">
+            <CardTitle className="text-white">Solutions / Image-Text Section</CardTitle>
+            <CardDescription className="text-gray-300">Grid of solution items with images and descriptions{pageSlug && ` for ${pageSlug}`}</CardDescription>
+            {segmentId && (
+              <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                ID: {segmentId}
+              </div>
+            )}
           </div>
           <Button onClick={handleAddItem} size="sm" variant="outline">
             <Plus className="mr-2 h-4 w-4" />

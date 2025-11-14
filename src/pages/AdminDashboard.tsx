@@ -2992,6 +2992,8 @@ const AdminDashboard = () => {
               heroTopPadding={heroTopPadding}
               heroCtaLink={heroCtaLink}
               heroCtaStyle={heroCtaStyle}
+              segmentId={segmentRegistry['hero']}
+              pageSlug={selectedPage}
               onContentChange={(key, value) => setContent({ ...content, [key]: value })}
               onHeroImageUrlChange={(url, metadata) => {
                 setHeroImageUrl(url);
@@ -3013,6 +3015,8 @@ const AdminDashboard = () => {
               content={content}
               applications={applications}
               tilesColumns={tilesColumns}
+              segmentId={segmentRegistry['tiles']}
+              pageSlug={selectedPage}
               onContentChange={(key, value) => setContent({ ...content, [key]: value })}
               onApplicationsChange={setApplications}
               onTilesColumnsChange={setTilesColumns}
@@ -3029,6 +3033,8 @@ const AdminDashboard = () => {
               bannerButtonText={bannerButtonText}
               bannerButtonLink={bannerButtonLink}
               bannerButtonStyle={bannerButtonStyle}
+              segmentId={segmentRegistry['banner']}
+              pageSlug={selectedPage}
               onBannerTitleChange={setBannerTitle}
               onBannerSubtextChange={setBannerSubtext}
               onBannerImagesChange={setBannerImages}
@@ -3067,6 +3073,8 @@ const AdminDashboard = () => {
               solutionsSubtext={solutionsSubtext}
               solutionsLayout={solutionsLayout}
               solutionsItems={solutionsItems}
+              segmentId={segmentRegistry['solutions']}
+              pageSlug={selectedPage}
               onSolutionsTitleChange={setSolutionsTitle}
               onSolutionsSubtextChange={setSolutionsSubtext}
               onSolutionsLayoutChange={setSolutionsLayout}

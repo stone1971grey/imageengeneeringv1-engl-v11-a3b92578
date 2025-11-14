@@ -21,6 +21,8 @@ interface TilesSectionEditorProps {
   content: Record<string, string>;
   applications: TileItem[];
   tilesColumns: string;
+  segmentId?: number;
+  pageSlug?: string;
   onContentChange: (key: string, value: string) => void;
   onApplicationsChange: (apps: TileItem[]) => void;
   onTilesColumnsChange: (cols: string) => void;
@@ -31,6 +33,8 @@ export const TilesSectionEditor = ({
   content,
   applications,
   tilesColumns,
+  segmentId,
+  pageSlug,
   onContentChange,
   onApplicationsChange,
   onTilesColumnsChange,
@@ -71,12 +75,17 @@ export const TilesSectionEditor = ({
   };
 
   return (
-    <Card>
+    <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Tiles / Applications Section</CardTitle>
-            <CardDescription>Grid of application tiles with icons or images</CardDescription>
+          <div className="flex-1">
+            <CardTitle className="text-white">Tiles / Applications Section</CardTitle>
+            <CardDescription className="text-gray-300">Grid of application tiles with icons or images{pageSlug && ` for ${pageSlug}`}</CardDescription>
+            {segmentId && (
+              <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                ID: {segmentId}
+              </div>
+            )}
           </div>
           <Button onClick={handleAddTile} size="sm" variant="outline">
             <Plus className="mr-2 h-4 w-4" />
