@@ -922,3 +922,27 @@ Bei Problemen: Vergleiche IMMER mit Machine Vision - das ist die funktionierende
 - Betrifft Container-div mit Hero-Content (Zeile 124)
 - **Grund:** Mehr Abstand zwischen Navigation und Hero-Content schaffen
 - **Betroffene Seiten:** Alle Seiten mit Full Hero Segment (z.B. ISO21550)
+
+### 2025-11-14: Neues Intro Segment erstellt
+**Segment:** Intro (`src/components/segments/Intro.tsx`)  
+**Funktion:** Einfacher Intro-Bereich mit Titel und Beschreibung  
+**Features:**
+- Titel als H1 oder H2 definierbar (im Editor auswählbar)
+- Beschreibungstext
+- Zentrierte Anzeige
+- Design orientiert an Startseite "Your Partner for Objective Camera & Sensor Testing"
+- Standard: H2 mit max-width für Text
+
+**Implementierung:**
+- Segment-Komponente: `src/components/segments/Intro.tsx`
+- Editor: `src/components/admin/IntroEditor.tsx`
+- Registriert in: AdminDashboard.tsx
+- Rendering hinzugefügt in: MachineVision.tsx, ISO21550.tsx
+
+**Standard-Werte:**
+- Title: "Your Partner for Objective Camera & Sensor Testing"
+- Description: "Industry-leading solutions for comprehensive camera and sensor evaluation"
+- Heading Level: h2
+
+**Verwendung:**
+Im CMS Admin Dashboard als "Intro" Segment verfügbar. Ideal für Einleitungstexte auf Landingpages.

@@ -50,6 +50,7 @@ import { SEOEditor } from '@/components/admin/SEOEditor';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { FullHeroEditor } from '@/components/admin/FullHeroEditor';
+import IntroEditor from '@/components/admin/IntroEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
 import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelect';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
@@ -1830,6 +1831,12 @@ const AdminDashboard = () => {
             }
           ]
         };
+      case 'intro':
+        return {
+          title: 'Your Partner for Objective Camera & Sensor Testing',
+          description: 'Industry-leading solutions for comprehensive camera and sensor evaluation',
+          headingLevel: 'h2'
+        };
       default:
         return {};
     }
@@ -2459,6 +2466,27 @@ const AdminDashboard = () => {
                     <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                   </div>
 
+                  {/* Intro Segment */}
+                  <div 
+                    className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                    onClick={() => handleAddSegment('intro')}
+                  >
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Intro</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Simple title and description section with H1 or H2 heading
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
                   {/* Specification Segment */}
                   <div 
                     className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
@@ -2980,6 +3008,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'video') label = `Video ${displayNumber}`;
                       if (segment.type === 'specification') label = `Specification ${displayNumber}`;
                       if (segment.type === 'full-hero') label = `Full Hero ${displayNumber}`;
+                      if (segment.type === 'intro') label = `Intro ${displayNumber}`;
                     }
                     
                     return (
@@ -4576,6 +4605,7 @@ const AdminDashboard = () => {
                         {segment.type === 'banner' && `Banner Section ${segment.position + 1}`}
                         {segment.type === 'image-text' && `Image & Text Section ${segment.position + 1}`}
                         {segment.type === 'full-hero' && `Full Hero ${segment.position + 1}`}
+                        {segment.type === 'intro' && `Intro ${segment.position + 1}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
@@ -4598,6 +4628,7 @@ const AdminDashboard = () => {
                         {segment.type === 'video' && 'Video Template'}
                         {segment.type === 'full-hero' && 'Full Hero Template'}
                         {segment.type === 'specification' && 'Specification Template'}
+                        {segment.type === 'intro' && 'Intro Template'}
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -5642,6 +5673,14 @@ const AdminDashboard = () => {
                     <FullHeroEditor
                       pageSlug={selectedPage}
                       segmentId={segment.id}
+                      onSave={() => handleSaveSegments()}
+                    />
+                  )}
+
+                  {segment.type === 'intro' && (
+                    <IntroEditor
+                      pageSlug={selectedPage}
+                      segmentKey={segment.id}
                       onSave={() => handleSaveSegments()}
                     />
                   )}
