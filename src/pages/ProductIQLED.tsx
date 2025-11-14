@@ -113,11 +113,11 @@ const ProductIQLED = () => {
           } catch {
             setTabOrder(['tiles', 'banner', 'solutions']);
           }
-        } else if (item.section_key === "applications") {
+        } else if (item.section_key === "applications_items") {
           try {
             apps = JSON.parse(item.content_value);
           } catch (e) {
-            console.error("Error parsing applications:", e);
+            console.error("Error parsing applications_items:", e);
           }
         } else if (item.section_key === "banner_images") {
           try {
