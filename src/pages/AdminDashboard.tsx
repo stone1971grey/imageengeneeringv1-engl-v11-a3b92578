@@ -2526,19 +2526,19 @@ const AdminDashboard = () => {
             </Card>
 
             {/* Create New CMS Page Section */}
-            <Card className="border-none shadow-2xl bg-gradient-to-br from-[#f9dc24] via-yellow-400 to-[#f9dc24] overflow-hidden relative">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-50"></div>
+            <Card className="border-none shadow-2xl bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 overflow-hidden relative">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50"></div>
               <CardContent className="p-10 relative z-10">
                 <div className="flex items-center justify-between gap-8">
                   <div className="flex items-start gap-6 flex-1">
-                    <div className="h-16 w-16 rounded-2xl bg-gray-900 flex items-center justify-center shadow-2xl flex-shrink-0">
-                      <Plus className="h-9 w-9 text-[#f9dc24]" />
+                    <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center shadow-2xl flex-shrink-0">
+                      <Plus className="h-9 w-9 text-gray-900" />
                     </div>
                     <div>
-                      <h3 className="text-3xl font-black text-gray-900 mb-3 tracking-tight">
+                      <h3 className="text-3xl font-black text-white mb-3 tracking-tight">
                         Create New CMS Page
                       </h3>
-                      <p className="text-lg text-gray-800 max-w-2xl leading-relaxed font-medium">
+                      <p className="text-lg text-gray-300 max-w-2xl leading-relaxed font-medium">
                         Automatically set up a complete CMS-enabled page with database entries, 
                         segment registry, and initial content. Select any page from the dropdown to convert it.
                       </p>
@@ -2547,7 +2547,7 @@ const AdminDashboard = () => {
                   <Button
                     onClick={() => setIsCreateCMSDialogOpen(true)}
                     size="lg"
-                    className="bg-gray-900 hover:bg-gray-800 text-white font-bold shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-300 px-8 py-6 text-base flex-shrink-0 hover:scale-105"
+                    className="bg-white hover:bg-gray-100 text-gray-900 font-bold shadow-2xl hover:shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all duration-300 px-8 py-6 text-base flex-shrink-0 hover:scale-105"
                   >
                     <Plus className="mr-3 h-6 w-6" />
                     Create Page
