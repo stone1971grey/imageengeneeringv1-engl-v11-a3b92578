@@ -2238,7 +2238,8 @@ const AdminDashboard = () => {
                   'mobile-phone': '/your-solution/mobile-phone',
                   'test-charts': '/products/test-charts',
                   'illumination-devices': '/products/illumination-devices',
-                  'le7': '/products/test-charts/le7'
+                  'le7': '/products/test-charts/le7',
+                  'iq-led': '/products/illumination/iq-led'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';
                 window.open(previewUrl, '_blank');
