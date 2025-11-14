@@ -241,7 +241,7 @@ const ProductIQLED = () => {
               {applications.map((app, index) => {
                 const IconComponent = iconMap[app.icon] || Camera;
                 return (
-                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-[#f9dc24]">
+                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-[#f9dc24] bg-white">
                     <CardContent className="p-6 h-full flex flex-col">
                       <div className="mb-4 text-gray-900">
                         <IconComponent className="w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
