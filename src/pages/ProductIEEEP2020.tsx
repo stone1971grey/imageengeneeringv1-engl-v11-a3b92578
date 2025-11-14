@@ -755,18 +755,28 @@ const ProductIEEEP2020 = () => {
   return (
     <>
       <SEOHead {...seoData} />
-      <Navigation />
       
-      {/* Meta-Navigation (Position 0 segments) */}
-      {pageSegments
-        .filter(seg => seg.position === 0)
-        .map(seg => renderSegment(seg.id))}
+      {/* Navigation */}
+      <Navigation />
+
+      {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return dynamicSegment && dynamicSegment.type === 'meta-navigation';
+        })
+        .map(segmentId => renderSegment(segmentId))}
       
       {/* Hero Section */}
       {renderSegment('hero')}
       
-      {/* Dynamic segments in order */}
-      {tabOrder.map(segmentKey => renderSegment(segmentKey))}
+      {/* Render all segments in tabOrder (excluding meta-navigation already rendered above) */}
+      {tabOrder
+        .filter(segmentId => {
+          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+          return !(dynamicSegment && dynamicSegment.type === 'meta-navigation');
+        })
+        .map((segmentId) => renderSegment(segmentId))}
       
       {/* Footer */}
       {renderSegment('footer')}
