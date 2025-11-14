@@ -636,27 +636,39 @@ const AdminDashboard = () => {
         try {
           const segments = JSON.parse(item.content_value);
           console.log('Loading page_segments for', selectedPage, ':', segments);
-          // Ensure all segments have numeric IDs
+          
           let needsUpdate = false;
-          const segmentsWithIds = (segments || []).map((seg: any, idx: number) => {
-            console.log('Processing segment:', seg);
-            if (!seg.id || typeof seg.id !== 'number' && !seg.id.match(/^\d+$/)) {
-              needsUpdate = true;
-              // Assign sequential IDs starting after static segments (1-4)
+          let segmentsWithIds: any[] = [];
+          
+          // Only process non-empty segments array
+          if (segments && segments.length > 0) {
+            // Ensure all segments have numeric IDs from segment_registry
+            segmentsWithIds = segments.map((seg: any, idx: number) => {
+              console.log('Processing segment:', seg);
+              if (!seg.id || typeof seg.id !== 'number' && !seg.id.match(/^\d+$/)) {
+                needsUpdate = true;
+                // Find this segment's ID from segmentRegistry
+                const registryKey = `${selectedPage}-${seg.type || 'unknown'}`;
+                const registryId = segmentRegistry[registryKey];
+                return {
+                  ...seg,
+                  id: registryId || String(nextSegmentId + idx),
+                  position: idx
+                };
+              }
               return {
                 ...seg,
-                id: String(5 + idx), // Start from 5 for dynamic segments
                 position: idx
               };
-            }
-            return {
-              ...seg,
-              position: idx
-            };
-          });
-          
-          console.log('Final segmentsWithIds:', segmentsWithIds);
-          setPageSegments(segmentsWithIds);
+            });
+            
+            console.log('Final segmentsWithIds:', segmentsWithIds);
+            setPageSegments(segmentsWithIds);
+          } else {
+            // Empty segments array - this is normal for pages with only static segments
+            console.log('No dynamic segments for', selectedPage);
+            setPageSegments([]);
+          }
           
           // If we added IDs, save back to database immediately
           if (needsUpdate && user) {
