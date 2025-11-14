@@ -2240,7 +2240,8 @@ const AdminDashboard = () => {
                   'test-charts': '/products/test-charts',
                   'illumination-devices': '/products/illumination-devices',
                   'le7': '/products/test-charts/le7',
-                  'iq-led': '/products/illumination/iq-led'
+                  'iq-led': '/products/illumination/iq-led',
+                  'ieee-p2020': '/products/standards/ieee-p2020'
                 };
                 const previewUrl = urlMap[selectedPage] || '/';
                 window.open(previewUrl, '_blank');

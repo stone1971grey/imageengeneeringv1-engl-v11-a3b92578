@@ -223,6 +223,29 @@ import ProductMYPRODUCT from "@/pages/ProductMYPRODUCT";
 <Route path="/products/category/my-product" element={<ProductMYPRODUCT />} />
 ```
 
+### 3.2 Preview-Button im AdminDashboard aktualisieren
+**WICHTIG:** Nach dem Hinzufügen der Route MUSS die Preview-URL im AdminDashboard eingetragen werden!
+
+**Datei:** `src/pages/AdminDashboard.tsx` (ca. Zeile 2240+)
+
+**Füge die neue Route zum `urlMap` hinzu:**
+```typescript
+const urlMap: Record<string, string> = {
+  'photography': '/your-solution/photography',
+  'machine-vision': '/your-solution/machine-vision',
+  'le7': '/products/test-charts/le7',
+  'iq-led': '/products/illumination/iq-led',
+  'my-product': '/products/category/my-product'  // <-- DEINE NEUE ROUTE
+};
+```
+
+**Ohne diesen Schritt:** Preview-Button führt zur Startseite (`/`) statt zur richtigen Seite!
+
+**Beispiel IEEE-P2020:**
+```typescript
+'ieee-p2020': '/products/standards/ieee-p2020'
+```
+
 ---
 
 ## Phase 4: Admin-Dashboard-Zugriff
@@ -246,6 +269,7 @@ INSERT INTO editor_page_access (user_id, page_slug) VALUES
 - [ ] `loadContent()` prüft auf `applications_items` (NICHT `applications`)
 - [ ] SEOHead mit korrekten Props
 - [ ] Route in App.tsx eingetragen
+- [ ] **Preview-Button Route in AdminDashboard.tsx eingetragen** (urlMap)
 
 ### Datenbank-Ebene
 - [ ] Segment Registry Einträge für alle Segmente
@@ -315,6 +339,18 @@ if (segmentId === 'tiles') { // KEIN && applications.length > 0
 **Problem:** Segment-Typ hat keinen Editor im AdminDashboard
 **Status prüfen:** Siehe Tabelle "Verfügbare Segment-Typen & Editoren" oben
 **Für neue Editoren:** Editor-Komponente erstellen und in AdminDashboard.tsx einbinden (ca. Zeile 5057+)
+
+### ❌ FEHLER 7: Preview-Button führt zur Startseite
+**Problem:** Neue Seite nicht im `urlMap` des AdminDashboards eingetragen  
+**Symptom:** Klick auf "Preview Frontend" öffnet `/` statt `/products/category/my-product`  
+**Lösung:** In `src/pages/AdminDashboard.tsx` (ca. Zeile 2240+):
+```typescript
+const urlMap: Record<string, string> = {
+  // ... bestehende Routes
+  'my-product': '/products/category/my-product'  // <-- HINZUFÜGEN
+};
+```
+**Testen:** Nach Fix: Preview-Button klicken → korrekte Seite öffnet sich
 
 ---
 
