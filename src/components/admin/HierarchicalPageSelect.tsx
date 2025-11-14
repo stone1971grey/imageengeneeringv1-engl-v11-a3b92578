@@ -85,12 +85,21 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
 
     // Your Solution (industries in data structure)
     Object.entries(navigationData.industries).forEach(([categoryName, category]: [string, any]) => {
+      // Special mapping for categories that have different slugs in the database
+      const slugMapping: Record<string, string> = {
+        'photo-video': 'photography',
+      };
+      
       // Add main category page
-      const categorySlug = categoryName
+      let categorySlug = categoryName
         .toLowerCase()
         .replace(/\s*&\s*/g, '-')  // Replace " & " with single "-"
         .replace(/\s+/g, '-')       // Replace spaces with "-"
         .replace(/-+/g, '-');       // Replace multiple "-" with single "-"
+      
+      // Apply mapping if exists
+      categorySlug = slugMapping[categorySlug] || categorySlug;
+      
       const categoryUrl = `/your-solution/${categorySlug}`;
       
       statuses.push({
