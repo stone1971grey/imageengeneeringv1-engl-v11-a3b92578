@@ -2082,8 +2082,8 @@ const AdminDashboard = () => {
               </DialogTrigger>
               <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-6">
-                  <DialogTitle className="text-3xl font-bold text-gray-900">Choose a Segment</DialogTitle>
-                  <DialogDescription className="text-base text-gray-600 mt-2">
+                  <DialogTitle className="text-3xl font-bold text-white">Choose a Segment</DialogTitle>
+                  <DialogDescription className="text-base text-white/80 mt-2">
                     Select a content segment to add to your page
                   </DialogDescription>
                 </DialogHeader>
