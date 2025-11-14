@@ -20,6 +20,8 @@ interface HeroSectionEditorProps {
   heroTopPadding: string;
   heroCtaLink: string;
   heroCtaStyle: string;
+  segmentId?: number;
+  pageSlug?: string;
   onContentChange: (key: string, value: string) => void;
   onHeroImageUrlChange: (url: string, metadata?: ImageMetadata) => void;
   onHeroImagePositionChange: (position: string) => void;
@@ -40,6 +42,8 @@ export const HeroSectionEditor = ({
   heroTopPadding,
   heroCtaLink,
   heroCtaStyle,
+  segmentId,
+  pageSlug,
   onContentChange,
   onHeroImageUrlChange,
   onHeroImagePositionChange,
@@ -101,15 +105,24 @@ export const HeroSectionEditor = ({
   };
 
   return (
-    <Card>
+    <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
-        <CardTitle>Hero Section</CardTitle>
-        <CardDescription>Main hero section at the top of the page</CardDescription>
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <CardTitle className="text-white">Hero Section</CardTitle>
+            <CardDescription className="text-gray-300">Main hero section at the top of the page{pageSlug && ` for ${pageSlug}`}</CardDescription>
+            {segmentId && (
+              <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                ID: {segmentId}
+              </div>
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="hero_title">Title</Label>
+            <Label htmlFor="hero_title" className="text-white">Title</Label>
             <Input
               id="hero_title"
               value={content.hero_title || ''}
@@ -118,7 +131,7 @@ export const HeroSectionEditor = ({
             />
           </div>
           <div>
-            <Label htmlFor="hero_subtitle">Subtitle</Label>
+            <Label htmlFor="hero_subtitle" className="text-white">Subtitle</Label>
             <Input
               id="hero_subtitle"
               value={content.hero_subtitle || ''}
@@ -129,7 +142,7 @@ export const HeroSectionEditor = ({
         </div>
 
         <div>
-          <Label htmlFor="hero_description">Description</Label>
+          <Label htmlFor="hero_description" className="text-white">Description</Label>
           <Textarea
             id="hero_description"
             value={content.hero_description || ''}
@@ -141,7 +154,7 @@ export const HeroSectionEditor = ({
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="hero_cta">CTA Text</Label>
+            <Label htmlFor="hero_cta" className="text-white">CTA Text</Label>
             <Input
               id="hero_cta"
               value={content.hero_cta || ''}
@@ -150,7 +163,7 @@ export const HeroSectionEditor = ({
             />
           </div>
           <div>
-            <Label htmlFor="hero_cta_link">CTA Link</Label>
+            <Label htmlFor="hero_cta_link" className="text-white">CTA Link</Label>
             <Input
               id="hero_cta_link"
               value={heroCtaLink}
@@ -159,7 +172,7 @@ export const HeroSectionEditor = ({
             />
           </div>
           <div>
-            <Label htmlFor="hero_cta_style">CTA Style</Label>
+            <Label htmlFor="hero_cta_style" className="text-white">CTA Style</Label>
             <Select value={heroCtaStyle} onValueChange={onHeroCtaStyleChange}>
               <SelectTrigger>
                 <SelectValue />
@@ -174,7 +187,7 @@ export const HeroSectionEditor = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="hero_image_url">Hero Image</Label>
+            <Label htmlFor="hero_image_url" className="text-white">Hero Image</Label>
             <div className="flex gap-2">
               <Input
                 id="hero_image_url"
@@ -249,7 +262,7 @@ export const HeroSectionEditor = ({
           </div>
 
           <div>
-            <Label htmlFor="hero_image_position">Image Position</Label>
+            <Label htmlFor="hero_image_position" className="text-white">Image Position</Label>
             <Select value={heroImagePosition} onValueChange={onHeroImagePositionChange}>
               <SelectTrigger>
                 <SelectValue />
@@ -264,7 +277,7 @@ export const HeroSectionEditor = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="hero_layout">Layout</Label>
+            <Label htmlFor="hero_layout" className="text-white">Layout</Label>
             <Select value={heroLayout} onValueChange={onHeroLayoutChange}>
               <SelectTrigger>
                 <SelectValue />
@@ -279,7 +292,7 @@ export const HeroSectionEditor = ({
           </div>
 
           <div>
-            <Label htmlFor="hero_top_padding">Top Padding</Label>
+            <Label htmlFor="hero_top_padding" className="text-white">Top Padding</Label>
             <Select value={heroTopPadding} onValueChange={onHeroTopPaddingChange}>
               <SelectTrigger>
                 <SelectValue />

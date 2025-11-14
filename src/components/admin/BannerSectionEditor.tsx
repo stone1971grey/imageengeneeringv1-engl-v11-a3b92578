@@ -19,6 +19,8 @@ interface BannerSectionEditorProps {
   bannerButtonText: string;
   bannerButtonLink: string;
   bannerButtonStyle: string;
+  segmentId?: number;
+  pageSlug?: string;
   onBannerTitleChange: (title: string) => void;
   onBannerSubtextChange: (subtext: string) => void;
   onBannerImagesChange: (images: BannerImage[]) => void;
@@ -35,6 +37,8 @@ export const BannerSectionEditor = ({
   bannerButtonText,
   bannerButtonLink,
   bannerButtonStyle,
+  segmentId,
+  pageSlug,
   onBannerTitleChange,
   onBannerSubtextChange,
   onBannerImagesChange,
@@ -73,12 +77,17 @@ export const BannerSectionEditor = ({
   };
 
   return (
-    <Card>
+    <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Banner / Logo Section</CardTitle>
-            <CardDescription>Partner logos or certification badges</CardDescription>
+          <div className="flex-1">
+            <CardTitle className="text-white">Banner / Logo Section</CardTitle>
+            <CardDescription className="text-gray-300">Partner logos or certification badges{pageSlug && ` for ${pageSlug}`}</CardDescription>
+            {segmentId && (
+              <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                ID: {segmentId}
+              </div>
+            )}
           </div>
           <Button onClick={handleAddImage} size="sm" variant="outline">
             <Plus className="mr-2 h-4 w-4" />
