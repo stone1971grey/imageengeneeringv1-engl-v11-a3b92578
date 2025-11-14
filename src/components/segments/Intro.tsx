@@ -15,10 +15,10 @@ const Intro = ({
     <section className="py-20 bg-white">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <HeadingTag className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
+          <HeadingTag className="text-4xl md:text-5xl font-bold text-light-foreground mb-6 tracking-tight">
             {title}
           </HeadingTag>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light whitespace-pre-line">
+          <p className="text-xl text-light-muted max-w-2xl mx-auto font-light whitespace-pre-line">
             {description}
           </p>
         </div>
