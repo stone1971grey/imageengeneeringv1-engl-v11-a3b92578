@@ -119,7 +119,7 @@ const FullHero = ({
       <div className="h-16"></div>
       
       {/* Hero Content */}
-      <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
+      <div className="container mx-auto px-6 pt-28 pb-16 lg:pt-36 lg:pb-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
         <div className="flex items-center justify-start min-h-full">
           
           {/* Left-aligned Content */}
