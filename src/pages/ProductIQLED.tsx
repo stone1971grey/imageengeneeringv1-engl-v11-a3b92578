@@ -5,6 +5,13 @@ import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import MetaNavigation from "@/components/segments/MetaNavigation";
+import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
+import FeatureOverview from "@/components/segments/FeatureOverview";
+import Table from "@/components/segments/Table";
+import FAQ from "@/components/segments/FAQ";
+import Specification from "@/components/segments/Specification";
+import { Video } from "@/components/segments/Video";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -58,6 +65,8 @@ const ProductIQLED = () => {
   const [hasHeroContent, setHasHeroContent] = useState(false);
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
   const [seoData, setSeoData] = useState<any>({});
+  const [pageSegments, setPageSegments] = useState<any[]>([]);
+  const [tabOrder, setTabOrder] = useState<string[]>([]);
 
   useEffect(() => {
     loadContent();
@@ -89,7 +98,22 @@ const ProductIQLED = () => {
       let heroExists = false;
 
       data.forEach((item: any) => {
-        if (item.section_key === "applications") {
+        if (item.section_key === "page_segments") {
+          try {
+            const segments = JSON.parse(item.content_value);
+            console.log("Loading page_segments:", segments);
+            setPageSegments(segments);
+          } catch (e) {
+            console.error("Error parsing page_segments:", e);
+          }
+        } else if (item.section_key === "tab_order") {
+          try {
+            const order = JSON.parse(item.content_value);
+            setTabOrder(order || ['tiles', 'banner', 'solutions']);
+          } catch {
+            setTabOrder(['tiles', 'banner', 'solutions']);
+          }
+        } else if (item.section_key === "applications") {
           try {
             apps = JSON.parse(item.content_value);
           } catch (e) {
@@ -109,7 +133,7 @@ const ProductIQLED = () => {
           } catch (e) {
             console.error("Error parsing solutions items:", e);
           }
-        } else if (item.section_key === "seo_settings") {
+        } else if (item.section_key === "seo") {
           try {
             const seoSettings = JSON.parse(item.content_value);
             setSeoData(seoSettings);
@@ -179,6 +203,38 @@ const ProductIQLED = () => {
     return "inline-flex items-center justify-center px-8 py-4 rounded-md text-lg font-medium transition-all duration-300 hover:scale-105 bg-[#f9dc24] text-black hover:bg-[#e5ca20]";
   };
 
+  // Helper function to render segment by ID
+  const renderSegment = (segmentId: string) => {
+    // Check if it's a dynamic segment
+    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+    if (dynamicSegment) {
+      if (dynamicSegment.type === 'meta-navigation') {
+        return <MetaNavigation key={segmentId} data={dynamicSegment.data} segmentIdMap={segmentIdMap} />;
+      }
+      if (dynamicSegment.type === 'product-hero-gallery') {
+        return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'feature-overview') {
+        return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'table') {
+        return <Table key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'faq') {
+        return <FAQ key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'specification') {
+        return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'video') {
+        return <Video key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+    }
+
+    // Default static segments
+    return null;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -202,6 +258,11 @@ const ProductIQLED = () => {
       />
       <div className="min-h-screen bg-background">
         <Navigation />
+        
+        {/* Render dynamic segments from page_segments */}
+        {pageSegments
+          .filter(seg => seg.position === 0) // Only render segments with position 0 (before hero)
+          .map(seg => renderSegment(seg.id))}
         
         {/* Hero Section - Segment ID 108 */}
         {hasHeroContent && (
@@ -355,62 +416,17 @@ const ProductIQLED = () => {
         {/* Solutions/Image-Text Section - Segment ID 111 */}
         {solutionsItems && solutionsItems.length > 0 && (
           <section id="111" className="bg-gray-50 py-20">
-            <div className="w-full px-6">
-              {(solutionsTitle || solutionsSubtext) && (
-                <div className="text-center mb-16">
-                  {solutionsTitle && (
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                      {solutionsTitle}
-                    </h2>
-                  )}
-                  {solutionsSubtext && (
-                    <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                      {solutionsSubtext}
-                    </p>
-                  )}
-                </div>
-              )}
-              <div className={`grid gap-12 max-w-7xl mx-auto ${solutionsLayout === "1-col" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
-                {solutionsItems.map((item: any, index: number) => {
-                  const IconComponent = iconMap[item.icon] || Monitor;
-                  return (
-                    <div
-                      key={index}
-                      className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 hover:shadow-md transition-shadow duration-300"
-                    >
-                      <div className="mb-6">
-                        <div className="w-16 h-16 bg-[#f9dc24] rounded-full flex items-center justify-center mb-4">
-                          <IconComponent className="w-8 h-8 text-gray-900" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3">{item.title}</h3>
-                        <p className="text-gray-600 leading-relaxed mb-6">{item.description}</p>
-                        {item.ctaText && item.ctaLink && (
-                          <Link to={item.ctaLink}>
-                            <Button
-                              variant={item.ctaStyle === "technical" ? "default" : "outline"}
-                              className={item.ctaStyle === "technical" ? "bg-gray-900 hover:bg-gray-800" : "border-2 border-[#f9dc24] hover:bg-[#f9dc24]"}
-                            >
-                              {item.ctaText}
-                            </Button>
-                          </Link>
-                        )}
-                      </div>
-                      {item.imageUrl && (
-                        <div className="mt-6">
-                          <img
-                            src={item.imageUrl}
-                            alt={item.title}
-                            className="w-full h-auto object-cover rounded-lg"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+...
           </section>
         )}
+
+        {/* Render all segments in tabOrder */}
+        {tabOrder
+          .filter(segmentId => {
+            const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+            return !(dynamicSegment && dynamicSegment.type === 'meta-navigation');
+          })
+          .map((segmentId) => renderSegment(segmentId))}
 
         {/* Footer - Segment ID 85 */}
         <Footer />
