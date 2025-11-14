@@ -2386,7 +2386,7 @@ const AdminDashboard = () => {
         )}
 
         {/* Welcome Screen - Show when no page is selected or page has no segments */}
-        {(!selectedPage || pageSegments.length === 0) ? (
+        {(!selectedPage || (pageSegments.length === 0 && Object.keys(segmentRegistry).length === 0)) ? (
           <div className="space-y-6">
             {/* Hero Section */}
             <Card className="border-none shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
