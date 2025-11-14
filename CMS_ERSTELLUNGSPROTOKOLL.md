@@ -6,6 +6,41 @@ Dieses Dokument beschreibt Schritt für Schritt, wie eine neue CMS-fähige Produ
 ## Referenz-Seite
 **Machine Vision** (`src/pages/MachineVision.tsx`) ist die Referenzimplementierung. Alle neuen CMS-Seiten sollten dieser Struktur folgen.
 
+## Verfügbare Segment-Typen & Editoren
+
+### Im AdminDashboard verfügbare Editoren
+Diese Segment-Typen können vollständig über das Admin-Dashboard bearbeitet werden:
+
+| Segment-Typ | Editor | Komponente | Verwendung |
+|------------|--------|------------|------------|
+| `meta-navigation` | ✅ Aktiv | MetaNavigationEditor | Inhaltsverzeichnis mit Sprungmarken |
+| `product-hero-gallery` | ✅ Aktiv | ProductHeroGalleryEditor | Hero mit Produktgalerie |
+| `tiles` | ✅ Aktiv | Inline Editor | Kachel-Grid für Applications |
+| `banner` | ✅ Aktiv | BannerEditor | Logo-Banner mit optionalem CTA |
+| `image-text` | ✅ Aktiv | Inline Editor | Bild-Text-Kombinationen (Solutions) |
+| `feature-overview` | ✅ Aktiv | FeatureOverviewEditor | Feature-Listen ohne Bilder |
+| `table` | ✅ Aktiv | TableEditor | Tabellen mit Daten |
+| `faq` | ✅ Aktiv | FAQEditor | FAQ-Accordion |
+| `video` | ✅ Aktiv | VideoSegmentEditor | Video-Einbettung |
+| `specification` | ✅ Aktiv | SpecificationEditor | Technische Spezifikationen |
+
+### Statische Segmente (im Code definiert)
+Diese Segmente werden NICHT über das Admin-Dashboard bearbeitet:
+
+| Segment-Typ | Status | Bearbeitung |
+|------------|--------|-------------|
+| `hero` | ❌ Kein Editor | Direkt in page_content (hero_title, hero_subtitle, etc.) |
+
+### Segment-Typ Mapping (wichtig für Verständnis!)
+- **`applications`** = wird als **`tiles`** Segment gerendert
+- **`solutions`** = wird als **`image-text`** Segment gerendert
+
+### Editor-Status Meldung
+Wenn im Admin-Dashboard die Meldung erscheint:
+> "Segment editor for [type] coming soon. This segment has been saved."
+
+Bedeutet das: Der Segment-Typ existiert und wird gespeichert, aber es fehlt noch ein Editor im AdminDashboard (Zeile 5078+). Die Daten werden trotzdem auf der Frontend-Seite korrekt angezeigt.
+
 ---
 
 ## Phase 1: Datenbank-Setup
@@ -276,6 +311,135 @@ if (segmentId === 'tiles') { // KEIN && applications.length > 0
   .map(seg => renderSegment(seg.id))}
 ```
 
+### ❌ FEHLER 6: Editor zeigt "coming soon"
+**Problem:** Segment-Typ hat keinen Editor im AdminDashboard
+**Status prüfen:** Siehe Tabelle "Verfügbare Segment-Typen & Editoren" oben
+**Für neue Editoren:** Editor-Komponente erstellen und in AdminDashboard.tsx einbinden (ca. Zeile 5057+)
+
+---
+
+## Segment-Typen im Detail
+
+### Meta-Navigation (`meta-navigation`)
+**Verwendung:** Inhaltsverzeichnis mit Sprungmarken  
+**Position:** Immer Position 0 (oberhalb Hero)  
+**Datenstruktur:**
+```json
+{
+  "links": [
+    { "label": "Overview", "anchor": "segment-id-100" },
+    { "label": "Applications", "anchor": "segment-id-101" }
+  ]
+}
+```
+**Editor:** ✅ MetaNavigationEditor
+
+### Product Hero Gallery (`product-hero-gallery`)
+**Verwendung:** Hero-Sektion mit Produktbildern in Galerie  
+**Position:** Beliebig (meist nach Meta-Navigation)  
+**Datenstruktur:**
+```json
+{
+  "title": "Produktname",
+  "subtitle": "Produktvarianten",
+  "description": "Beschreibung",
+  "imagePosition": "right",
+  "layoutRatio": "1-1",
+  "topSpacing": "medium",
+  "cta1Text": "Contact Sales",
+  "cta1Link": "#contact",
+  "cta1Style": "standard",
+  "images": [
+    {
+      "imageUrl": "https://...",
+      "title": "Variante 1",
+      "description": "Beschreibung"
+    }
+  ]
+}
+```
+**Editor:** ✅ ProductHeroGalleryEditor
+
+### Tiles (`tiles`)
+**Verwendung:** Kachel-Grid für Applications/Features  
+**Segment-Key in DB:** `applications` oder `tiles`  
+**Datenstruktur in page_content:**
+```sql
+('my-product', 'applications_title', 'text', 'Anwendungsbereiche'),
+('my-product', 'applications_description', 'text', 'Beschreibung'),
+('my-product', 'applications_items', 'json', '[...]'),
+('my-product', 'tiles_columns', 'text', '3')
+```
+**Editor:** ✅ Inline Editor im AdminDashboard  
+**Rendering:** Siehe Machine Vision Zeile 318-427
+
+### Banner (`banner`)
+**Verwendung:** Logo-Streifen mit optionalem CTA-Button  
+**Hintergrund:** Immer `#f3f3f5`  
+**Datenstruktur:**
+```json
+{
+  "title": "Banner Titel",
+  "subtext": "Optionaler Untertitel",
+  "images": [
+    { "url": "https://...", "alt": "Logo 1" }
+  ],
+  "buttonText": "Learn More",
+  "buttonLink": "https://...",
+  "buttonStyle": "standard"
+}
+```
+**Editor:** ✅ BannerEditor  
+**Rendering:** Siehe Machine Vision Zeile 194-265
+
+### Image-Text (`image-text`)
+**Verwendung:** Bild-Text-Kombinationen (z.B. Solutions)  
+**Segment-Key in DB:** `solutions` oder `image-text`  
+**Layout-Optionen:** `1-col`, `2-col`, `3-col`  
+**Datenstruktur:**
+```json
+{
+  "title": "Lösungen",
+  "subtext": "Optionaler Untertitel",
+  "layout": "2-col",
+  "items": [
+    {
+      "imageUrl": "https://...",
+      "title": "Lösung 1",
+      "description": "Beschreibung"
+    }
+  ]
+}
+```
+**Editor:** ✅ Inline Editor im AdminDashboard  
+**Rendering:** Siehe Machine Vision Zeile 267-316
+
+### Feature Overview (`feature-overview`)
+**Verwendung:** Feature-Listen OHNE Bilder  
+**Layout-Optionen:** `2`, `3`, `4` (Spalten)  
+**Editor:** ✅ FeatureOverviewEditor  
+**Komponente:** `src/components/segments/FeatureOverview.tsx`
+
+### Table (`table`)
+**Verwendung:** Daten-Tabellen mit Kopfzeile  
+**Editor:** ✅ TableEditor  
+**Komponente:** `src/components/segments/Table.tsx`
+
+### FAQ (`faq`)
+**Verwendung:** Accordion mit Fragen & Antworten  
+**Editor:** ✅ FAQEditor  
+**Komponente:** `src/components/segments/FAQ.tsx`
+
+### Video (`video`)
+**Verwendung:** Video-Einbettung (YouTube, Vimeo)  
+**Editor:** ✅ VideoSegmentEditor  
+**Komponente:** `src/components/segments/Video.tsx`
+
+### Specification (`specification`)
+**Verwendung:** Technische Spezifikationen in Tabelle  
+**Editor:** ✅ SpecificationEditor  
+**Komponente:** `src/components/segments/Specification.tsx`
+
 ---
 
 ## Workflow-Zusammenfassung
@@ -329,6 +493,17 @@ if (segmentId === 'tiles') { // KEIN && applications.length > 0
 1. Prüfen: page_segments in DB mit position: 0?
 2. Prüfen: Filter für position 0 VOR Hero?
 3. Prüfen: segmentIdMap wird korrekt geladen?
+
+### Editor zeigt "coming soon"
+1. Prüfen: Ist der Segment-Typ in der Editor-Tabelle oben aufgeführt?
+2. Wenn Editor fehlt: In `src/pages/AdminDashboard.tsx` (Zeile 5057+) nachsehen
+3. Neue Editoren: In `src/components/admin/` erstellen und in AdminDashboard einbinden
+4. Wichtig: Doppelte meta-navigation Editoren vermeiden (einer mit availableSegments bei ~Zeile 4114)
+
+### Bilder werden nicht hochgeladen
+1. Prüfen: Supabase Storage Bucket `page-images` existiert und ist public
+2. Prüfen: `extractImageMetadata` erhält 2 Parameter: `(file, url)`
+3. Prüfen: Metadata enthält `altText` Feld (erforderlich)
 
 ---
 
