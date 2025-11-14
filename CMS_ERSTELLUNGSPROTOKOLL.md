@@ -909,3 +909,16 @@ if (dynamicSegment.type === 'meta-navigation') {
 - **Design-System:** `src/index.css`, `tailwind.config.ts`
 
 Bei Problemen: Vergleiche IMMER mit Machine Vision - das ist die funktionierende Vorlage!
+
+---
+
+## 📝 Änderungsprotokoll: Segment-Anpassungen
+
+### 2025-11-14: Full Hero Segment - Content Padding Anpassung
+**Segment:** Full Hero (`src/components/segments/FullHero.tsx`)  
+**Änderung:** Content-Bereich startet jetzt 50px tiefer  
+**Details:**
+- Padding-top erhöht von `py-16 lg:py-24` zu `pt-28 pb-16 lg:pt-36 lg:pb-24`
+- Betrifft Container-div mit Hero-Content (Zeile 124)
+- **Grund:** Mehr Abstand zwischen Navigation und Hero-Content schaffen
+- **Betroffene Seiten:** Alle Seiten mit Full Hero Segment (z.B. ISO21550)
