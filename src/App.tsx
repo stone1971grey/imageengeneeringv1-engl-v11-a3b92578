@@ -19,7 +19,6 @@ import MachineVision from "./pages/MachineVision";
 import WebCamera from "./pages/WebCamera";
 import MobilePhone from "./pages/MobilePhone";
 import ISO21550 from "./pages/ISO21550";
-import GeometricCalibrationAutomotive from "./pages/GeometricCalibrationAutomotive";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import ProductLE7 from "./pages/ProductLE7";
@@ -83,7 +82,6 @@ const App = () => (
         {/* Hierarchical Your Solution Routes */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
         <Route path="/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
-        <Route path="/your-solution/automotive/geometric-calibration-automotive" element={<GeometricCalibrationAutomotive />} />
         <Route path="/your-solution/photography" element={<Photography />} />
         <Route path="/your-solution/medical-endoscopy" element={<MedicalEndoscopy />} />
         <Route path="/your-solution/machine-vision" element={<MachineVision />} />

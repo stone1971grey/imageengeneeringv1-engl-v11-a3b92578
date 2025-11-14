@@ -51,11 +51,6 @@ import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
 import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelect';
-import { CMSPageCreator } from '@/components/admin/CMSPageCreator';
-import { HeroSectionEditor } from '@/components/admin/HeroSectionEditor';
-import { TilesSectionEditor } from '@/components/admin/TilesSectionEditor';
-import { SolutionsSectionEditor } from '@/components/admin/SolutionsSectionEditor';
-import { BannerSectionEditor } from '@/components/admin/BannerSectionEditor';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
@@ -678,45 +673,23 @@ const AdminDashboard = () => {
 
       toast.success(`✅ Database setup complete for "${pageInfo.page_title}"!`);
       
-      // 5. Create React component automatically
+      // 5. Create React component file
       const componentName = selectedPageForCMS
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join('');
       
+      // Component will be created in next step
       toast.success(`Creating React component ${componentName}...`);
-      
-      // Read MachineVision.tsx template and create new component
-      try {
-        const templateResponse = await fetch('/src/pages/MachineVision.tsx');
-        const templateContent = await templateResponse.text();
-        
-        // Replace all occurrences of machine-vision with new page_slug
-        const newComponentContent = templateContent
-          .replace(/machine-vision/g, selectedPageForCMS)
-          .replace(/MachineVision/g, componentName)
-          .replace(/Machine Vision/g, pageInfo.page_title);
-        
-        // Write new component file
-        // Note: This would need a backend endpoint to write files
-        // For now, show success and instructions
-        toast.success(`✅ Component template ready!`);
-        
-      } catch (error) {
-        console.error('Error creating component:', error);
-        toast.error('Could not auto-create component file');
-      }
       
       // Navigate and let user know about manual steps
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
       
-      // Show final instructions
+      // Show info about what was created
       setTimeout(() => {
-        toast.success(`✅ CMS setup complete!\n\nManual steps:\n1. Copy MachineVision.tsx → ${componentName}.tsx\n2. Replace "machine-vision" with "${selectedPageForCMS}"\n3. Replace "MachineVision" with "${componentName}"\n4. Add to App.tsx: import ${componentName} from "./pages/${componentName}"\n5. Add route: <Route path="/your-solution/.../${selectedPageForCMS}" element={<${componentName} />} />`, {
-          duration: 10000
-        });
+        toast.success(`✅ CMS setup complete! Now create:\n1. src/pages/${componentName}.tsx (copy from MachineVision.tsx)\n2. Add import in App.tsx\n3. Add route in App.tsx\n4. Add to PageIdRouter.tsx`);
       }, 1000);
       
     } catch (error: any) {
@@ -2983,123 +2956,1332 @@ const AdminDashboard = () => {
 
           {/* Hero Section Tab */}
           <TabsContent value="hero">
-            <HeroSectionEditor
-              content={content}
-              heroImageUrl={heroImageUrl}
-              heroImageMetadata={heroImageMetadata}
-              heroImagePosition={heroImagePosition}
-              heroLayout={heroLayout}
-              heroTopPadding={heroTopPadding}
-              heroCtaLink={heroCtaLink}
-              heroCtaStyle={heroCtaStyle}
-              segmentId={segmentRegistry['hero']}
-              pageSlug={selectedPage}
-              onContentChange={(key, value) => setContent({ ...content, [key]: value })}
-              onHeroImageUrlChange={(url, metadata) => {
-                setHeroImageUrl(url);
-                if (metadata) setHeroImageMetadata(metadata);
-              }}
-              onHeroImagePositionChange={setHeroImagePosition}
-              onHeroLayoutChange={setHeroLayout}
-              onHeroTopPaddingChange={setHeroTopPadding}
-              onHeroCtaLinkChange={setHeroCtaLink}
-              onHeroCtaStyleChange={setHeroCtaStyle}
-              onDelete={() => handleDeleteStaticSegment('hero')}
-              onSave={handleSaveHero}
-            />
+            <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <CardTitle className="text-white">Hero Section</CardTitle>
+                  <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
+                  <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                    ID: {segmentRegistry['hero'] || 1}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                    Produkt-Hero Template
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Segment
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Hero Segment?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the entire Hero section and all its content. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteStaticSegment('hero')}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Hero Image Upload */}
+              <div>
+                <Label htmlFor="hero_image" className="text-white">Hero Image</Label>
+                <p className="text-sm text-white mb-2">
+                  {heroImageUrl ? "Current hero image - click 'Replace Image' to upload a new one" : "Upload a custom hero image (replaces the interactive hotspot image)"}
+                </p>
+                {heroImageUrl && (
+                  <div className="mb-4">
+                    <img 
+                      src={heroImageUrl} 
+                      alt="Current hero" 
+                      className="max-w-xs h-auto object-contain rounded-lg border-2 border-gray-600"
+                    />
+                  </div>
+                )}
+                
+                {heroImageUrl ? (
+                  <Button
+                    type="button"
+                    onClick={() => document.getElementById('hero_image')?.click()}
+                    disabled={uploading}
+                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                  >
+                    {uploading ? "Uploading..." : "Replace Image"}
+                  </Button>
+                ) : null}
+                
+                <Input
+                  id="hero_image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
+                />
+                {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
+                
+                {/* Image Metadata Display */}
+                {heroImageMetadata && (
+                  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                    <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <span className="text-gray-600">Original Name:</span>
+                        <p className="text-black font-medium">{heroImageMetadata.originalFileName}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Dimensions:</span>
+                        <p className="text-black font-medium">{heroImageMetadata.width} × {heroImageMetadata.height} px</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">File Size:</span>
+                        <p className="text-black font-medium">{formatFileSize(heroImageMetadata.fileSizeKB)}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Format:</span>
+                        <p className="text-black font-medium uppercase">{heroImageMetadata.format}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-gray-600">Upload Date:</span>
+                        <p className="text-black font-medium">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <Label htmlFor="hero_image_alt" className="text-black text-base">Alt Text (SEO)</Label>
+                      <Input
+                        id="hero_image_alt"
+                        type="text"
+                        value={heroImageMetadata.altText || ''}
+                        onChange={(e) => {
+                          if (heroImageMetadata) {
+                            const updatedMetadata = { ...heroImageMetadata, altText: e.target.value };
+                            setHeroImageMetadata(updatedMetadata);
+                          }
+                        }}
+                        placeholder="Describe this image for accessibility and SEO"
+                        className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                      />
+                      <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="hero_image_position" className="text-white">Image Position</Label>
+                  <select
+                    id="hero_image_position"
+                    value={heroImagePosition}
+                    onChange={(e) => setHeroImagePosition(e.target.value)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                  </select>
+                </div>
+
+                <div>
+                  <Label htmlFor="hero_layout" className="text-white">Layout Ratio</Label>
+                  <select
+                    id="hero_layout"
+                    value={heroLayout}
+                    onChange={(e) => setHeroLayout(e.target.value)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="50-50">50:50 (Equal)</option>
+                    <option value="2-3">2:3 (Text:Image)</option>
+                    <option value="1-2">1:2 (Text:Image)</option>
+                    <option value="2-5">2:5 (Text:Image)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_top_padding" className="text-white">Top Spacing</Label>
+                <select
+                  id="hero_top_padding"
+                  value={heroTopPadding}
+                  onChange={(e) => setHeroTopPadding(e.target.value)}
+                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                >
+                  <option value="small">Small (PT-16)</option>
+                  <option value="medium">Medium (PT-24)</option>
+                  <option value="large">Large (PT-32)</option>
+                  <option value="xlarge">Extra Large (PT-40)</option>
+                </select>
+                <p className="text-sm text-white mt-1">Controls the spacing from the top of the hero section</p>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_title" className="text-white">Title</Label>
+                <Input
+                  id="hero_title"
+                  value={content.hero_title || ""}
+                  onChange={(e) => setContent({ ...content, hero_title: e.target.value })}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_subtitle" className="text-white">Subtitle</Label>
+                <Input
+                  id="hero_subtitle"
+                  value={content.hero_subtitle || ""}
+                  onChange={(e) => setContent({ ...content, hero_subtitle: e.target.value })}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_description" className="text-white">Description</Label>
+                <Textarea
+                  id="hero_description"
+                  value={content.hero_description || ""}
+                  onChange={(e) => setContent({ ...content, hero_description: e.target.value })}
+                  rows={3}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_cta" className="text-white">CTA Button Text</Label>
+                <Input
+                  id="hero_cta"
+                  value={content.hero_cta || ""}
+                  onChange={(e) => setContent({ ...content, hero_cta: e.target.value })}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="hero_cta_link" className="text-white">CTA Button Link</Label>
+                <Input
+                  id="hero_cta_link"
+                  value={heroCtaLink}
+                  onChange={(e) => setHeroCtaLink(e.target.value)}
+                  placeholder="#applications-start, /page-url, or https://example.com"
+                  className="border-2 border-gray-600"
+                />
+                <p className="text-sm text-white mt-1">
+                  Use '#section-id' for same page links, '/path' for internal pages, or 'https://...' for external URLs (opens in new tab)
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_cta_style" className="text-white">CTA Button Style</Label>
+                <select
+                  id="hero_cta_style"
+                  value={heroCtaStyle}
+                  onChange={(e) => setHeroCtaStyle(e.target.value)}
+                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                >
+                  <option value="standard">Standard (Yellow with Black Text)</option>
+                  <option value="technical">Technical (Dark Gray with White Text)</option>
+                </select>
+              </div>
+
+              <div className="flex justify-between items-center pt-4 border-t">
+                <Button
+                  onClick={() => setCopyHeroDialogOpen(true)}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy to Page...
+                </Button>
+                
+                <Button
+                  onClick={handleSaveHero}
+                  disabled={saving}
+                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {saving ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+
+              <CopySegmentDialog
+                open={copyHeroDialogOpen}
+                onOpenChange={setCopyHeroDialogOpen}
+                currentPageSlug={selectedPage}
+                segmentId={segmentRegistry['hero']?.toString() || '1'}
+                segmentType="hero"
+                segmentData={{
+                  hero_title: content.hero_title,
+                  hero_subtitle: content.hero_subtitle,
+                  hero_description: content.hero_description,
+                  hero_image_url: heroImageUrl,
+                  hero_image_metadata: heroImageMetadata,
+                  hero_cta_text: content.hero_cta,
+                  hero_cta_link: heroCtaLink,
+                  hero_cta_style: heroCtaStyle,
+                  hero_image_position: heroImagePosition,
+                  hero_layout_ratio: heroLayout,
+                  hero_top_spacing: heroTopPadding
+                }}
+                availablePages={availablePages}
+                onCopySuccess={(targetPageSlug) => {
+                  navigate(`/admin-dashboard?page=${targetPageSlug}`);
+                }}
+              />
+            </CardContent>
+          </Card>
           </TabsContent>
 
           {/* Applications Section Tab */}
           <TabsContent value="tiles">
-            <TilesSectionEditor
-              content={content}
-              applications={applications}
-              tilesColumns={tilesColumns}
-              segmentId={segmentRegistry['tiles']}
-              pageSlug={selectedPage}
-              onContentChange={(key, value) => setContent({ ...content, [key]: value })}
-              onApplicationsChange={setApplications}
-              onTilesColumnsChange={setTilesColumns}
-              onSave={handleSaveApplications}
-            />
+            <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <CardTitle className="text-white">Tiles Template</CardTitle>
+                  <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
+                  <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                    ID: {segmentRegistry['tiles'] || 2}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                    Tiles Template
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex items-center gap-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete Segment
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Tiles Segment?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the entire Tiles section and all its tiles. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDeleteStaticSegment('tiles')}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="applications_title" className="text-white">Section Title</Label>
+                <Input
+                  id="applications_title"
+                  value={content.applications_title || ""}
+                  onChange={(e) => setContent({ ...content, applications_title: e.target.value })}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="applications_description" className="text-white">Section Description</Label>
+                <Textarea
+                  id="applications_description"
+                  value={content.applications_description || ""}
+                  onChange={(e) => setContent({ ...content, applications_description: e.target.value })}
+                  rows={3}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="tiles_columns" className="text-white">Number of Columns</Label>
+                <Select value={tilesColumns} onValueChange={setTilesColumns}>
+                  <SelectTrigger className="border-2 border-gray-600 text-black h-12">
+                    <SelectValue placeholder="Select columns" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2">2 Columns</SelectItem>
+                    <SelectItem value="3">3 Columns</SelectItem>
+                    <SelectItem value="4">4 Columns</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Application Items */}
+              <div className="space-y-4 mt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Application Items</h3>
+                  <Button
+                    onClick={handleAddTile}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add New Tile
+                  </Button>
+                </div>
+                {applications.map((app, index) => (
+                  <Card key={index} className={`border-2 ${index % 2 === 0 ? 'bg-gray-600 border-gray-500' : 'bg-gray-800 border-gray-700'}`}>
+                    <CardContent className="pt-6 space-y-3">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className={`px-4 py-2 ${index % 2 === 0 ? 'bg-[#f9dc24]' : 'bg-orange-400'} text-black text-base font-bold rounded-md shadow-lg`}>
+                          Tile {index + 1}
+                        </div>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="flex items-center gap-2"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete "Tile {index + 1}". This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteTile(index)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                      {/* Image Upload */}
+                      <div>
+                        <Label htmlFor={`app_image_${index}`} className="text-white">Tile Image (Optional)</Label>
+                        <p className="text-sm text-white mb-2">
+                          {app.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this tile (appears above the title)"}
+                        </p>
+                        {app.imageUrl && (
+                          <div className="mb-3">
+                            <img 
+                              src={app.imageUrl} 
+                              alt={`Tile ${index + 1}`} 
+                              className="max-w-xs h-auto object-contain rounded-lg border-2 border-gray-600"
+                            />
+                          </div>
+                        )}
+                        
+                        {app.imageUrl ? (
+                          <Button
+                            type="button"
+                            onClick={() => document.getElementById(`app_image_${index}`)?.click()}
+                            disabled={uploading}
+                            className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                          >
+                            {uploading ? "Uploading..." : "Replace Image"}
+                          </Button>
+                        ) : null}
+                        
+                        <Input
+                          id={`app_image_${index}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleTileImageUpload(e, index)}
+                          disabled={uploading}
+                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
+                        />
+                        
+                        {/* Image Metadata Display */}
+                        {app.metadata && (
+                          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                            <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <span className="text-gray-600">Original Name:</span>
+                                <p className="text-black font-medium">{app.metadata.originalFileName}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Dimensions:</span>
+                                <p className="text-black font-medium">{app.metadata.width} × {app.metadata.height} px</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">File Size:</span>
+                                <p className="text-black font-medium">{formatFileSize(app.metadata.fileSizeKB)}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Format:</span>
+                                <p className="text-black font-medium uppercase">{app.metadata.format}</p>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-gray-600">Upload Date:</span>
+                                <p className="text-black font-medium">{formatUploadDate(app.metadata.uploadDate)}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-4">
+                              <Label htmlFor={`app_image_alt_${index}`} className="text-black text-base">Alt Text (SEO)</Label>
+                              <Input
+                                id={`app_image_alt_${index}`}
+                                type="text"
+                                value={app.metadata.altText || ''}
+                                onChange={(e) => {
+                                  const newApps = [...applications];
+                                  if (newApps[index].metadata) {
+                                    newApps[index].metadata.altText = e.target.value;
+                                    setApplications(newApps);
+                                  }
+                                }}
+                                placeholder="Describe this image for accessibility and SEO"
+                                className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                              />
+                              <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Icon Selection */}
+                      <div>
+                        <Label htmlFor={`app_icon_${index}`} className="text-white">Icon (Optional)</Label>
+                        <Select
+                          value={app.icon || "none"}
+                          onValueChange={(value) => {
+                            const newApps = [...applications];
+                            newApps[index].icon = value === "none" ? "" : value;
+                            setApplications(newApps);
+                          }}
+                        >
+                          <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                            <SelectValue placeholder="Select an icon" className="text-black" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white">
+                            <SelectItem value="none" className="text-black">No Icon</SelectItem>
+                            <SelectItem value="FileText" className="text-black">Document (FileText)</SelectItem>
+                            <SelectItem value="Download" className="text-black">Download</SelectItem>
+                            <SelectItem value="BarChart3" className="text-black">Bar Chart</SelectItem>
+                            <SelectItem value="Zap" className="text-black">Lightning (Zap)</SelectItem>
+                            <SelectItem value="Shield" className="text-black">Shield</SelectItem>
+                            <SelectItem value="Eye" className="text-black">Eye</SelectItem>
+                            <SelectItem value="Car" className="text-black">Car</SelectItem>
+                            <SelectItem value="Smartphone" className="text-black">Smartphone</SelectItem>
+                            <SelectItem value="Heart" className="text-black">Heart</SelectItem>
+                            <SelectItem value="CheckCircle" className="text-black">Check Circle</SelectItem>
+                            <SelectItem value="Lightbulb" className="text-black">Lightbulb</SelectItem>
+                            <SelectItem value="Monitor" className="text-black">Monitor</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-sm text-white mt-1">
+                          Icon appears in a yellow circle above the title
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor={`app_title_${index}`} className="text-white">Application {index + 1} Title</Label>
+                        <Input
+                          id={`app_title_${index}`}
+                          value={app.title}
+                          onChange={(e) => {
+                            const newApps = [...applications];
+                            newApps[index].title = e.target.value;
+                            setApplications(newApps);
+                          }}
+                          className="border-2 border-gray-600"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`app_desc_${index}`} className="text-white">Application {index + 1} Description</Label>
+                        <Textarea
+                          id={`app_desc_${index}`}
+                          value={app.description}
+                          onChange={(e) => {
+                            const newApps = [...applications];
+                            newApps[index].description = e.target.value;
+                            setApplications(newApps);
+                          }}
+                          rows={3}
+                          className="border-2 border-gray-600"
+                        />
+                      </div>
+                      
+                      {/* Button Settings */}
+                      <div className="pt-3 border-t border-gray-600">
+                        <h4 className="text-sm font-semibold text-white mb-3">Button Settings</h4>
+                        
+                        <div className="space-y-3">
+                          <div>
+                            <Label htmlFor={`app_cta_link_${index}`} className="text-white">Button Link</Label>
+                            <Input
+                              id={`app_cta_link_${index}`}
+                              value={app.ctaLink || ""}
+                              onChange={(e) => {
+                                const newApps = [...applications];
+                                newApps[index].ctaLink = e.target.value;
+                                setApplications(newApps);
+                              }}
+                              placeholder="/page-url or https://example.com"
+                              className="border-2 border-gray-600"
+                            />
+                            <p className="text-sm text-white mt-1">
+                              Use '/path' for internal pages or 'https://...' for external URLs
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor={`app_cta_text_${index}`} className="text-white">Button Text</Label>
+                            <Input
+                              id={`app_cta_text_${index}`}
+                              value={app.ctaText || ""}
+                              onChange={(e) => {
+                                const newApps = [...applications];
+                                newApps[index].ctaText = e.target.value;
+                                setApplications(newApps);
+                              }}
+                              placeholder="Learn More"
+                              className="border-2 border-gray-600"
+                            />
+                            <p className="text-sm text-white mt-1">
+                              Text displayed on the button (default: "Learn More")
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
+                            <Select
+                              value={app.ctaStyle || "standard"}
+                              onValueChange={(value) => {
+                                const newApps = [...applications];
+                                newApps[index].ctaStyle = value;
+                                setApplications(newApps);
+                              }}
+                            >
+                              <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                                <SelectValue placeholder="Select button style" className="text-black" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white">
+                                <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
+                                <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="flex justify-between items-center pt-4 border-t">
+                <Button
+                  onClick={() => setCopyTilesDialogOpen(true)}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy to Page...
+                </Button>
+                
+                <Button
+                  onClick={handleSaveApplications}
+                  disabled={saving}
+                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  {saving ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+
+              <CopySegmentDialog
+                open={copyTilesDialogOpen}
+                onOpenChange={setCopyTilesDialogOpen}
+                currentPageSlug={selectedPage}
+                segmentId={segmentRegistry['tiles']?.toString() || '2'}
+                segmentType="tiles"
+                segmentData={{
+                  tiles_title: content.applications_title,
+                  tiles_description: content.applications_description,
+                  tiles_columns: tilesColumns,
+                  tiles: applications
+                }}
+                availablePages={availablePages}
+                onCopySuccess={(targetPageSlug) => {
+                  navigate(`/admin-dashboard?page=${targetPageSlug}`);
+                }}
+              />
+            </CardContent>
+          </Card>
           </TabsContent>
 
-          {/* Banner Section Tab */}
+          {/* Banner Template Tab */}
           <TabsContent value="banner">
-            <BannerSectionEditor
-              bannerTitle={bannerTitle}
-              bannerSubtext={bannerSubtext}
-              bannerImages={bannerImages}
-              bannerButtonText={bannerButtonText}
-              bannerButtonLink={bannerButtonLink}
-              bannerButtonStyle={bannerButtonStyle}
-              segmentId={segmentRegistry['banner']}
-              pageSlug={selectedPage}
-              onBannerTitleChange={setBannerTitle}
-              onBannerSubtextChange={setBannerSubtext}
-              onBannerImagesChange={setBannerImages}
-              onBannerButtonTextChange={setBannerButtonText}
-              onBannerButtonLinkChange={setBannerButtonLink}
-              onBannerButtonStyleChange={setBannerButtonStyle}
-              onSave={async () => {
-                if (!user) return;
-                setSaving(true);
-                try {
-                  const updates = [
-                    { page_slug: selectedPage, section_key: 'banner_title', content_type: 'text', content_value: bannerTitle, updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'banner_subtext', content_type: 'text', content_value: bannerSubtext, updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'banner_images', content_type: 'json', content_value: JSON.stringify(bannerImages), updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'banner_button_text', content_type: 'text', content_value: bannerButtonText, updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'banner_button_link', content_type: 'text', content_value: bannerButtonLink, updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'banner_button_style', content_type: 'text', content_value: bannerButtonStyle, updated_at: new Date().toISOString(), updated_by: user.id },
-                  ];
-                  const { error } = await supabase.from("page_content").upsert(updates, { onConflict: 'page_slug,section_key' });
-                  if (error) throw error;
-                  toast.success("Banner section saved successfully!");
-                  clearAutosavedData(`${selectedPage}_banner`);
-                } catch (error: any) {
-                  toast.error("Error saving banner section: " + error.message);
-                } finally {
-                  setSaving(false);
-                }
-              }}
-            />
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-white">Banner Template Section</CardTitle>
+                    <CardDescription className="text-gray-300">Edit the banner section with title, subtext, images, and button</CardDescription>
+                    <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                      ID: {segmentRegistry['banner'] || 3}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                      Banner Template
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete Segment
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Banner Segment?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete the entire Banner section and all its content. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteStaticSegment('banner')}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Title */}
+                <div>
+                  <Label htmlFor="banner_title" className="text-white">Section Title</Label>
+                  <Input
+                    id="banner_title"
+                    value={bannerTitle}
+                    onChange={(e) => setBannerTitle(e.target.value)}
+                    placeholder="e.g., Automotive International Standards"
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
+                {/* Subtext */}
+                <div>
+                  <Label htmlFor="banner_subtext" className="text-white">Subtext (Optional)</Label>
+                  <Textarea
+                    id="banner_subtext"
+                    value={bannerSubtext}
+                    onChange={(e) => setBannerSubtext(e.target.value)}
+                    placeholder="Optional description text (max width 600px, centered)"
+                    rows={3}
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
+                {/* Banner Images */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white text-lg font-semibold">Banner Images</Label>
+                    <Button
+                      onClick={handleAddBannerImage}
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Image
+                    </Button>
+                  </div>
+
+                  {bannerImages.map((image, index) => (
+                    <Card key={index} className="bg-gray-700 border-gray-600">
+                      <CardContent className="pt-6 space-y-3">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md">
+                            Image {index + 1}
+                          </div>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="flex items-center gap-2"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete "Image {index + 1}". This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteBannerImage(index)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+
+                        {image.url && (
+                          <div className="mb-3">
+                            <img 
+                              src={image.url} 
+                              alt={`Banner ${index + 1}`} 
+                              className="w-40 h-24 object-contain rounded-lg border-2 border-gray-600 bg-white p-2"
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <Label htmlFor={`banner_image_${index}`} className="text-white">Image File</Label>
+                          <Input
+                            id={`banner_image_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleBannerImageUpload(e, index)}
+                            disabled={uploading}
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+
+                        {/* Image Metadata Display */}
+                        {image.metadata && (
+                          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                            <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div>
+                                <span className="text-gray-600">Original Name:</span>
+                                <p className="text-black font-medium">{image.metadata.originalFileName}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Dimensions:</span>
+                                <p className="text-black font-medium">{image.metadata.width} × {image.metadata.height} px</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">File Size:</span>
+                                <p className="text-black font-medium">{formatFileSize(image.metadata.fileSizeKB)}</p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600">Format:</span>
+                                <p className="text-black font-medium uppercase">{image.metadata.format}</p>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-gray-600">Upload Date:</span>
+                                <p className="text-black font-medium">{formatUploadDate(image.metadata.uploadDate)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        <div>
+                          <Label htmlFor={`banner_image_alt_${index}`} className="text-white">Alt Text</Label>
+                          <Input
+                            id={`banner_image_alt_${index}`}
+                            value={image.alt}
+                            onChange={(e) => {
+                              const newImages = [...bannerImages];
+                              newImages[index].alt = e.target.value;
+                              if (newImages[index].metadata) {
+                                newImages[index].metadata.altText = e.target.value;
+                              }
+                              setBannerImages(newImages);
+                            }}
+                            placeholder="Image description for accessibility"
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Button Settings */}
+                <div className="pt-4 border-t border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4">Button Settings</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="banner_button_text" className="text-white">Button Text</Label>
+                      <Input
+                        id="banner_button_text"
+                        value={bannerButtonText}
+                        onChange={(e) => setBannerButtonText(e.target.value)}
+                        placeholder="e.g., View Standards"
+                        className="border-2 border-gray-600"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="banner_button_link" className="text-white">Button Link</Label>
+                      <Input
+                        id="banner_button_link"
+                        value={bannerButtonLink}
+                        onChange={(e) => setBannerButtonLink(e.target.value)}
+                        placeholder="/page-url or https://example.com"
+                        className="border-2 border-gray-600"
+                      />
+                      <p className="text-sm text-white mt-1">
+                        Use '/path' for internal pages or 'https://...' for external URLs
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="banner_button_style" className="text-white">Button Style</Label>
+                      <Select
+                        value={bannerButtonStyle}
+                        onValueChange={(value) => setBannerButtonStyle(value)}
+                      >
+                        <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                          <SelectValue placeholder="Select button style" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
+                          <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-gray-600">
+                  <Button
+                    onClick={async () => {
+                      setSaving(true);
+                      try {
+                        const updates = [
+                          {
+                            page_slug: selectedPage,
+                            section_key: "banner_title",
+                            content_type: "heading",
+                            content_value: bannerTitle,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "banner_subtext",
+                            content_type: "text",
+                            content_value: bannerSubtext,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "banner_images",
+                            content_type: "json",
+                            content_value: JSON.stringify(bannerImages),
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "banner_button_text",
+                            content_type: "text",
+                            content_value: bannerButtonText,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "banner_button_link",
+                            content_type: "text",
+                            content_value: bannerButtonLink,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "banner_button_style",
+                            content_type: "text",
+                            content_value: bannerButtonStyle,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          }
+                        ];
+
+                        const { error } = await supabase
+                          .from("page_content")
+                          .upsert(updates, {
+                            onConflict: 'page_slug,section_key'
+                          });
+
+                        if (error) throw error;
+
+                        toast.success("Banner content saved successfully!");
+                        
+                        // Clear autosaved data after successful save
+                        clearAutosavedData(`${selectedPage}_banner`);
+                      } catch (error: any) {
+                        toast.error("Error saving banner content: " + error.message);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    disabled={saving}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Image & Text Template Tab */}
           <TabsContent value="solutions">
-            <SolutionsSectionEditor
-              solutionsTitle={solutionsTitle}
-              solutionsSubtext={solutionsSubtext}
-              solutionsLayout={solutionsLayout}
-              solutionsItems={solutionsItems}
-              segmentId={segmentRegistry['solutions']}
-              pageSlug={selectedPage}
-              onSolutionsTitleChange={setSolutionsTitle}
-              onSolutionsSubtextChange={setSolutionsSubtext}
-              onSolutionsLayoutChange={setSolutionsLayout}
-              onSolutionsItemsChange={setSolutionsItems}
-              onSave={async () => {
-                if (!user) return;
-                setSaving(true);
-                try {
-                  const updates = [
-                    { page_slug: selectedPage, section_key: 'solutions_title', content_type: 'text', content_value: solutionsTitle, updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'solutions_subtext', content_type: 'text', content_value: solutionsSubtext, updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'solutions_layout', content_type: 'text', content_value: solutionsLayout, updated_at: new Date().toISOString(), updated_by: user.id },
-                    { page_slug: selectedPage, section_key: 'solutions_items', content_type: 'json', content_value: JSON.stringify(solutionsItems), updated_at: new Date().toISOString(), updated_by: user.id },
-                  ];
-                  const { error } = await supabase.from("page_content").upsert(updates, { onConflict: 'page_slug,section_key' });
-                  if (error) throw error;
-                  toast.success("Solutions section saved successfully!");
-                  clearAutosavedData(`${selectedPage}_solutions`);
-                } catch (error: any) {
-                  toast.error("Error saving solutions section: " + error.message);
-                } finally {
-                  setSaving(false);
-                }
-              }}
-            />
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-white">Image & Text Template</CardTitle>
+                    <CardDescription className="text-gray-300">Edit image & text section with flexible column layout (1/2/3 columns)</CardDescription>
+                    <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
+                      ID: {segmentRegistry['solutions'] || 4}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
+                      Image & Text Template
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete Segment
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Image & Text Segment?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete the entire Image & Text section and all its content. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteStaticSegment('solutions')}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Title */}
+                <div>
+                  <Label htmlFor="solutions_title" className="text-white">Section Title</Label>
+                  <Input
+                    id="solutions_title"
+                    value={solutionsTitle}
+                    onChange={(e) => setSolutionsTitle(e.target.value)}
+                    placeholder="e.g., Automotive Camera Test Solutions"
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
+                {/* Subtext */}
+                <div>
+                  <Label htmlFor="solutions_subtext" className="text-white">Subtext (Optional)</Label>
+                  <Textarea
+                    id="solutions_subtext"
+                    value={solutionsSubtext}
+                    onChange={(e) => setSolutionsSubtext(e.target.value)}
+                    placeholder="Optional description text below the title"
+                    rows={3}
+                    className="border-2 border-gray-600"
+                  />
+                </div>
+
+                {/* Layout Selection */}
+                <div>
+                  <Label htmlFor="solutions_layout" className="text-white">Column Layout</Label>
+                  <Select
+                    value={solutionsLayout}
+                    onValueChange={(value) => setSolutionsLayout(value)}
+                  >
+                    <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                      <SelectValue placeholder="Select layout" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="1-col" className="text-black">1 Column (Full Width)</SelectItem>
+                      <SelectItem value="2-col" className="text-black">2 Columns</SelectItem>
+                      <SelectItem value="3-col" className="text-black">3 Columns</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Solution Items */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white text-lg font-semibold">Solution Items</Label>
+                    <Button
+                      onClick={handleAddSolutionItem}
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Item
+                    </Button>
+                  </div>
+
+                  {solutionsItems.map((item, index) => (
+                    <Card key={index} className="bg-gray-700 border-gray-600">
+                      <CardContent className="pt-6 space-y-3">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="px-4 py-2 bg-[#f9dc24] text-black text-base font-bold rounded-md">
+                            Item {index + 1}
+                          </div>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="flex items-center gap-2"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete "Item {index + 1}". This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteSolutionItem(index)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div>
+                          <Label htmlFor={`solution_image_${index}`} className="text-white">Image (Optional - Full Width)</Label>
+                          {item.imageUrl && (
+                            <div className="mb-3">
+                              <img 
+                                src={item.imageUrl} 
+                                alt={`Solution ${index + 1}`} 
+                                className="w-full h-32 object-cover rounded-lg border-2 border-gray-600"
+                              />
+                            </div>
+                          )}
+                          <Input
+                            id={`solution_image_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleSolutionImageUpload(e, index)}
+                            disabled={uploading}
+                            className="border-2 border-gray-600"
+                          />
+                          
+                          {/* Image Metadata Display */}
+                          {item.metadata && (
+                            <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                              <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                              <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                  <span className="text-gray-600">Original Name:</span>
+                                  <p className="text-black font-medium">{item.metadata.originalFileName}</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Dimensions:</span>
+                                  <p className="text-black font-medium">{item.metadata.width} × {item.metadata.height} px</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">File Size:</span>
+                                  <p className="text-black font-medium">{formatFileSize(item.metadata.fileSizeKB)}</p>
+                                </div>
+                                <div>
+                                  <span className="text-gray-600">Format:</span>
+                                  <p className="text-black font-medium uppercase">{item.metadata.format}</p>
+                                </div>
+                                <div className="col-span-2">
+                                  <span className="text-gray-600">Upload Date:</span>
+                                  <p className="text-black font-medium">{formatUploadDate(item.metadata.uploadDate)}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-4">
+                                <Label htmlFor={`solution_image_alt_${index}`} className="text-black text-base">Alt Text (SEO)</Label>
+                                <Input
+                                  id={`solution_image_alt_${index}`}
+                                  type="text"
+                                  value={item.metadata.altText || ''}
+                                  onChange={(e) => {
+                                    const newItems = [...solutionsItems];
+                                    if (newItems[index].metadata) {
+                                      newItems[index].metadata.altText = e.target.value;
+                                      setSolutionsItems(newItems);
+                                    }
+                                  }}
+                                  placeholder="Describe this image for accessibility and SEO"
+                                  className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                                />
+                                <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Title */}
+                        <div>
+                          <Label htmlFor={`solution_title_${index}`} className="text-white">Title</Label>
+                          <Input
+                            id={`solution_title_${index}`}
+                            value={item.title}
+                            onChange={(e) => {
+                              const newItems = [...solutionsItems];
+                              newItems[index].title = e.target.value;
+                              setSolutionsItems(newItems);
+                            }}
+                            placeholder="e.g., In-Cabin Testing"
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+
+                        {/* Description */}
+                        <div>
+                          <Label htmlFor={`solution_desc_${index}`} className="text-white">Description</Label>
+                          <Textarea
+                            id={`solution_desc_${index}`}
+                            value={item.description}
+                            onChange={(e) => {
+                              const newItems = [...solutionsItems];
+                              newItems[index].description = e.target.value;
+                              setSolutionsItems(newItems);
+                            }}
+                            rows={6}
+                            placeholder="Detailed description..."
+                            className="border-2 border-gray-600"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                <div className="flex justify-end pt-4 border-t border-gray-600">
+                  <Button
+                    onClick={async () => {
+                      setSaving(true);
+                      try {
+                        const updates = [
+                          {
+                            page_slug: selectedPage,
+                            section_key: "solutions_title",
+                            content_type: "heading",
+                            content_value: solutionsTitle,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "solutions_subtext",
+                            content_type: "text",
+                            content_value: solutionsSubtext,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "solutions_layout",
+                            content_type: "text",
+                            content_value: solutionsLayout,
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          },
+                          {
+                            page_slug: selectedPage,
+                            section_key: "solutions_items",
+                            content_type: "json",
+                            content_value: JSON.stringify(solutionsItems),
+                            updated_at: new Date().toISOString(),
+                            updated_by: user?.id
+                          }
+                        ];
+
+                        const { error } = await supabase
+                          .from("page_content")
+                          .upsert(updates, {
+                            onConflict: 'page_slug,section_key'
+                          });
+
+                        if (error) throw error;
+
+                        toast.success("Image & Text content saved successfully!");
+                        
+                        // Clear autosaved data after successful save
+                        clearAutosavedData(`${selectedPage}_solutions`);
+                      } catch (error: any) {
+                        toast.error("Error saving image & text content: " + error.message);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    disabled={saving}
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Save className="h-4 w-4" />
+                    {saving ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Footer Tab */}
@@ -4521,9 +5703,8 @@ const AdminDashboard = () => {
                 <ul className="space-y-1 text-sm text-blue-800">
                   <li>1️⃣ Copy src/pages/MachineVision.tsx to src/pages/{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}.tsx</li>
                   <li>2️⃣ Update page_slug in the new file (2 places)</li>
-                  <li>3️⃣ <strong>App.tsx</strong>: Add import: <code className="text-xs bg-white px-1 rounded">import {selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')} from "./pages/{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}"</code></li>
-                  <li>4️⃣ <strong>App.tsx</strong>: Add route: <code className="text-xs bg-white px-1 rounded">&lt;Route path="/your-solution/.../{ selectedPageForCMS}" element=&#123;&lt;{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')} /&gt;&#125; /&gt;</code></li>
-                  <li>5️⃣ <strong>PageIdRouter.tsx</strong>: Add to pageComponentMap if using page_id routing</li>
+                  <li>3️⃣ Add import and route in App.tsx</li>
+                  <li>4️⃣ Add to PageIdRouter.tsx mapping</li>
                 </ul>
               </div>
             )}
