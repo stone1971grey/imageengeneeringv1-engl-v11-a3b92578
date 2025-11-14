@@ -671,12 +671,26 @@ const AdminDashboard = () => {
 
       if (contentError) throw contentError;
 
-      toast.success(`✅ Database setup complete for "${pageInfo.page_title}"! Creating React component...`);
+      toast.success(`✅ Database setup complete for "${pageInfo.page_title}"!`);
       
-      // Navigate immediately to show the new page in admin
+      // 5. Create React component file
+      const componentName = selectedPageForCMS
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
+      
+      // Component will be created in next step
+      toast.success(`Creating React component ${componentName}...`);
+      
+      // Navigate and let user know about manual steps
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
+      
+      // Show info about what was created
+      setTimeout(() => {
+        toast.success(`✅ CMS setup complete! Now create:\n1. src/pages/${componentName}.tsx (copy from MachineVision.tsx)\n2. Add import in App.tsx\n3. Add route in App.tsx\n4. Add to PageIdRouter.tsx`);
+      }, 1000);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
@@ -5677,14 +5691,20 @@ const AdminDashboard = () => {
               </p>
             </div>
 
-            {selectedPageForCMS && (
-              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
-                <h4 className="font-semibold text-yellow-900 mb-2">What will be created:</h4>
-                <ul className="space-y-1 text-sm text-yellow-800">
+              {selectedPageForCMS && (
+              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                <h4 className="font-semibold text-blue-900 mb-2">What will be created automatically:</h4>
+                <ul className="space-y-1 text-sm text-blue-800 mb-4">
                   <li>✓ 5 entries in segment_registry (hero, tiles, banner, solutions, footer)</li>
                   <li>✓ 27 entries in page_content (all required fields)</li>
                   <li>✓ SEO settings initialized</li>
-                  <li>⚠ You'll need to add the page to PageIdRouter.tsx and App.tsx manually</li>
+                </ul>
+                <h4 className="font-semibold text-blue-900 mb-2">Manual steps after creation:</h4>
+                <ul className="space-y-1 text-sm text-blue-800">
+                  <li>1️⃣ Copy src/pages/MachineVision.tsx to src/pages/{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}.tsx</li>
+                  <li>2️⃣ Update page_slug in the new file (2 places)</li>
+                  <li>3️⃣ Add import and route in App.tsx</li>
+                  <li>4️⃣ Add to PageIdRouter.tsx mapping</li>
                 </ul>
               </div>
             )}
