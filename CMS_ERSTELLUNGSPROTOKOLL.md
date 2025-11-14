@@ -513,6 +513,79 @@ if (segmentId === 'tiles') {
 2. Link klicken → smooth scroll zu Segment
 3. Browser-Inspektor: Section hat numerische ID (z.B. `id="121"`)
 
+### ❌ FEHLER 9: Meta-Navigation wird nicht angezeigt / funktioniert nicht
+**Problem:** Meta-Navigation existiert in DB, wird aber nicht gerendert oder Links funktionieren nicht  
+**Mögliche Ursachen:**
+
+**Ursache 1: Meta-Nav nicht in tab_order**
+```sql
+-- Prüfen
+SELECT content_value FROM page_content 
+WHERE page_slug = 'my-product' AND section_key = 'tab_order';
+
+-- Sollte enthalten: "125" (oder die Meta-Nav segment_id)
+-- Fix: Meta-Nav ID als ERSTES Element hinzufügen
+UPDATE page_content 
+SET content_value = '["125","tiles","banner","solutions"]'
+WHERE page_slug = 'my-product' AND section_key = 'tab_order';
+```
+
+**Ursache 2: Falsche Anker in Meta-Nav Daten**
+```sql
+-- Prüfen
+SELECT content_value FROM page_content 
+WHERE page_slug = 'my-product' AND section_key = 'page_segments';
+
+-- FALSCH: Links zeigen auf nicht-existierende Segmente
+{"links":[
+  {"label":"Test","anchor":"benefits"},  // ❌ "benefits" existiert nicht
+  {"label":"Cases","anchor":"124"}       // ❌ "124" = footer, nicht content
+]}
+
+-- RICHTIG: Links zeigen auf segment_key (nicht segment_id!)
+{"links":[
+  {"label":"Overview","anchor":"hero"},      // ✅ segment_key
+  {"label":"Applications","anchor":"tiles"}, // ✅ segment_key
+  {"label":"Standards","anchor":"banner"},   // ✅ segment_key
+  {"label":"Solutions","anchor":"solutions"} // ✅ segment_key
+]}
+
+-- Fix:
+UPDATE page_content 
+SET content_value = '[{
+  "id":"125",
+  "type":"meta-navigation",
+  "position":0,
+  "data":{
+    "links":[
+      {"label":"Overview","anchor":"hero"},
+      {"label":"Applications","anchor":"tiles"},
+      {"label":"Standards","anchor":"banner"},
+      {"label":"Solutions","anchor":"solutions"}
+    ]
+  }
+}]'
+WHERE page_slug = 'my-product' AND section_key = 'page_segments';
+```
+
+**Ursache 3: segmentIdMap wird nicht übergeben**
+```typescript
+// ❌ FALSCH
+<MetaNavigation data={dynamicSegment.data} />
+
+// ✅ RICHTIG
+<MetaNavigation 
+  data={dynamicSegment.data} 
+  segmentIdMap={segmentIdMap}  // <-- KRITISCH!
+/>
+```
+
+**Debug-Tipps:**
+1. Browser Console öffnen
+2. Suche nach "MetaNav: Resolving anchor"
+3. Check ob segmentIdMap korrekte IDs enthält
+4. Check ob Sections die richtigen IDs haben (Browser Inspector)
+
 ---
 
 ## Segment-Typen im Detail
