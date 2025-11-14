@@ -25,21 +25,24 @@ interface PageStatus {
   category?: string;
   subcategory?: string;
   isMainCategory?: boolean;
+  pageId?: number;
 }
 
 export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPageSelectProps) => {
   const navigationData = useNavigationData();
   const [cmsPages, setCmsPages] = useState<Set<string>>(new Set());
   const [pageStatuses, setPageStatuses] = useState<PageStatus[]>([]);
+  const [pageIdMap, setPageIdMap] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
     loadCMSPages();
+    loadPageIds();
   }, []);
 
   useEffect(() => {
     // Always build page statuses when data changes, even if no CMS pages exist yet
     buildPageStatuses();
-  }, [cmsPages, navigationData]);
+  }, [cmsPages, navigationData, pageIdMap]);
 
   const loadCMSPages = async () => {
     const { data } = await supabase
@@ -50,6 +53,17 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     if (data) {
       const uniqueSlugs = new Set(data.map(item => item.page_slug));
       setCmsPages(uniqueSlugs);
+    }
+  };
+
+  const loadPageIds = async () => {
+    const { data } = await supabase
+      .from('page_registry')
+      .select('page_slug, page_id');
+
+    if (data) {
+      const mapping = new Map(data.map(item => [item.page_slug, item.page_id]));
+      setPageIdMap(mapping);
     }
   };
 
@@ -80,6 +94,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       statuses.push({
         ...page,
         isCMS: cmsPages.has(page.slug),
+        pageId: pageIdMap.get(page.slug),
       });
     });
 
@@ -111,6 +126,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         category: 'Your Solution',
         subcategory: categoryName,
         isMainCategory: true,
+        pageId: pageIdMap.get(categorySlug),
       });
       
       // Add subpages
@@ -129,6 +145,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           category: 'Your Solution',
           subcategory: categoryName,
           isMainCategory: false,
+          pageId: pageIdMap.get(displaySlug),
         });
       });
     });
@@ -152,6 +169,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         category: 'Products',
         subcategory: categoryName,
         isMainCategory: true,
+        pageId: pageIdMap.get(categorySlug),
       });
       
       // Add subpages
@@ -170,6 +188,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           category: 'Products',
           subcategory: categoryName,
           isMainCategory: false,
+          pageId: pageIdMap.get(displaySlug),
         });
       });
     });
@@ -190,6 +209,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             isStatic: false,
             category: 'Solutions',
             subcategory: categoryName,
+            pageId: pageIdMap.get(displaySlug),
           });
         });
       }
@@ -207,6 +227,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             isStatic: false,
             category: 'Solutions',
             subcategory: categoryName,
+            pageId: pageIdMap.get(displaySlug),
           });
         });
       }
@@ -226,7 +247,10 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   };
 
   const getItemLabel = (status: PageStatus) => {
-    let label = `${status.title} [${status.slug}]`;
+    let label = status.title;
+    if (status.pageId !== undefined) {
+      label += ` [${status.pageId}]`;
+    }
     if (status.isCMS) {
       label += " ✓";
     }
