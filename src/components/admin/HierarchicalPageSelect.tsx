@@ -87,7 +87,11 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     // Your Solution (industries in data structure)
     Object.entries(navigationData.industries).forEach(([categoryName, category]: [string, any]) => {
       // Add main category page
-      const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '');
+      const categorySlug = categoryName
+        .toLowerCase()
+        .replace(/\s*&\s*/g, '-')  // Replace " & " with single "-"
+        .replace(/\s+/g, '-')       // Replace spaces with "-"
+        .replace(/-+/g, '-');       // Replace multiple "-" with single "-"
       const categoryUrl = `/your-solution/${categorySlug}`;
       
       statuses.push({
@@ -124,7 +128,11 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     // Products
     Object.entries(navigationData.products).forEach(([categoryName, category]: [string, any]) => {
       // Add main category page
-      const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '');
+      const categorySlug = categoryName
+        .toLowerCase()
+        .replace(/\s*&\s*/g, '-')  // Replace " & " with single "-"
+        .replace(/\s+/g, '-')       // Replace spaces with "-"
+        .replace(/-+/g, '-');       // Replace multiple "-" with single "-"
       const categoryUrl = `/products/${categorySlug}`;
       
       statuses.push({
