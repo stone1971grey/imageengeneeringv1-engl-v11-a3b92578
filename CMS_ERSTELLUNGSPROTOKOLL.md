@@ -182,34 +182,52 @@ const renderSegment = (segmentId: string) => {
 - `#f9dc24` für Akzentfarbe (gelb)
 - `#1f2937` für technische Buttons (dunkelgrau)
 
-### 2.4 JSX-Struktur (Standard-Pattern)
+### 2.4 JSX-Struktur (MANDATORY Pattern)
+
+**WICHTIG: Meta-Navigation IMMER direkt nach Haupt-Navigation!**
+
 ```typescript
 return (
   <>
     <SEOHead {...seoData} />
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      
-      {/* Position 0 Segmente (Meta-Navigation) */}
-      {pageSegments
-        .filter(seg => seg.position === 0)
-        .map(seg => renderSegment(seg.id))}
-      
-      {/* Hero Section (optional) */}
-      {hasHeroContent && (
-        <section id={segmentIdMap['hero']?.toString() || 'hero'}>
-          {/* Hero Content */}
-        </section>
-      )}
+    
+    {/* Navigation */}
+    <Navigation />
 
-      {/* Alle Segmente gemäß tabOrder */}
-      {tabOrder.map((segmentId) => renderSegment(segmentId))}
+    {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
+    {tabOrder
+      .filter(segmentId => {
+        const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+        return dynamicSegment && dynamicSegment.type === 'meta-navigation';
+      })
+      .map(segmentId => renderSegment(segmentId))}
+    
+    {/* Hero Section (optional) */}
+    {hasHeroContent && (
+      <section id={segmentIdMap['hero']?.toString() || 'hero'}>
+        {/* Hero Content */}
+      </section>
+    )}
 
-      <Footer />
-    </div>
+    {/* Render all segments in tabOrder (excluding meta-navigation) */}
+    {tabOrder
+      .filter(segmentId => {
+        const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+        return !(dynamicSegment && dynamicSegment.type === 'meta-navigation');
+      })
+      .map((segmentId) => renderSegment(segmentId))}
+
+    <Footer />
   </>
 );
 ```
+
+**Kritische Regeln:**
+1. ✅ **Meta-Navigation ZUERST** - direkt nach `<Navigation />`
+2. ✅ **Hero DANACH** - falls vorhanden
+3. ✅ **Alle anderen Segmente** - in tabOrder, aber meta-navigation ausfiltern
+4. ❌ **NICHT** `pageSegments.filter(seg => seg.position === 0)` verwenden
+5. ❌ **NICHT** `tabOrder.map()` ohne Filter (rendert meta-nav doppelt)
 
 ---
 
@@ -347,14 +365,49 @@ if (segmentId === 'tiles') { // KEIN && applications.length > 0
 - Banner: `py-16`
 - Solutions: `py-20`
 
-### ❌ FEHLER 5: Meta-Navigation fehlt
-**Problem:** Position 0 Segmente nicht gerendert
-**Lösung:** VOR dem Hero:
+### ❌ FEHLER 5: Meta-Navigation falsch positioniert
+**Problem:** Meta-Navigation wird nicht direkt nach Haupt-Navigation gerendert  
+**Symptom:** Meta-Nav erscheint irgendwo auf der Seite oder gar nicht  
+**KRITISCH:** Meta-Navigation MUSS IMMER direkt nach `<Navigation />` kommen!
+
+**❌ FALSCHE Lösungen:**
 ```typescript
-{pageSegments
-  .filter(seg => seg.position === 0)
-  .map(seg => renderSegment(seg.id))}
+// FALSCH 1: Position-Filter (veraltet)
+{pageSegments.filter(seg => seg.position === 0).map(seg => renderSegment(seg.id))}
+
+// FALSCH 2: Ohne Filter (rendert doppelt)
+{tabOrder.map(segmentId => renderSegment(segmentId))}
 ```
+
+**✅ RICHTIGE Lösung:**
+```typescript
+{/* Navigation */}
+<Navigation />
+
+{/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
+{tabOrder
+  .filter(segmentId => {
+    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+    return dynamicSegment && dynamicSegment.type === 'meta-navigation';
+  })
+  .map(segmentId => renderSegment(segmentId))}
+
+{/* Hero Section DANACH */}
+{renderSegment('hero')}
+
+{/* Alle anderen Segmente (meta-navigation ausfiltern!) */}
+{tabOrder
+  .filter(segmentId => {
+    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+    return !(dynamicSegment && dynamicSegment.type === 'meta-navigation');
+  })
+  .map(segmentId => renderSegment(segmentId))}
+```
+
+**Warum wichtig:**
+- Meta-Navigation = Inhaltsverzeichnis mit Sprungmarken
+- MUSS unter Haupt-Navigation sichtbar sein
+- Nutzer erwarten es dort (UX-Standard)
 
 ### ❌ FEHLER 6: Editor zeigt "coming soon"
 **Problem:** Segment-Typ hat keinen Editor im AdminDashboard
