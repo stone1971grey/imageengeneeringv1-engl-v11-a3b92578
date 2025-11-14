@@ -14,6 +14,8 @@ import { User, Session } from "@supabase/supabase-js";
 import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import lovableIcon from "@/assets/lovable-icon.png";
+import lovableLogo from "@/assets/lovable-logo.png";
 import {
   Select,
   SelectContent,
@@ -2284,14 +2286,19 @@ const AdminDashboard = () => {
               <CardContent className="p-12">
                 <div className="flex items-center justify-between">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-2xl bg-[#f9dc24] flex items-center justify-center shadow-lg">
-                        <span className="text-3xl font-black text-gray-900">L</span>
-                      </div>
+                    <div className="flex items-center gap-6">
+                      <img 
+                        src={lovableIcon} 
+                        alt="Lovable" 
+                        className="h-20 w-20 object-contain"
+                      />
                       <div>
-                        <h1 className="text-5xl font-black text-white tracking-tight">
-                          Love CMS
-                        </h1>
+                        <div className="flex items-baseline gap-3">
+                          <h1 className="text-5xl font-black text-white tracking-tight">
+                            Lovable
+                          </h1>
+                          <span className="text-3xl font-bold text-[#f9dc24]">CMS</span>
+                        </div>
                         <p className="text-xl text-gray-400 mt-1">Content Management System</p>
                       </div>
                     </div>
