@@ -235,7 +235,7 @@ const ProductIQLED = () => {
                       {content.hero_description}
                     </p>
                   )}
-                  {content.hero_cta_text && (
+                  {content.hero_cta_text && heroCtaLink && (
                     <a href={heroCtaLink} className={getButtonClasses(heroCtaStyle)}>
                       {content.hero_cta_text}
                     </a>
