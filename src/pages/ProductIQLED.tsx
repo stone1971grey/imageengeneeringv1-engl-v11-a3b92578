@@ -271,11 +271,11 @@ const ProductIQLED = () => {
               <div className={`grid grid-cols-1 ${getLayoutClasses()} gap-8 md:gap-12 items-center max-w-7xl mx-auto`}>
                 {heroImagePosition === "left" && heroImageUrl && (
                   <div className="w-full flex justify-center items-center order-1 md:order-1">
-                    <div className="relative w-full max-w-2xl">
+                    <div className="relative w-full aspect-video overflow-hidden rounded-lg">
                       <img
                         src={heroImageUrl}
                         alt={content.hero_title || "Hero"}
-                        className="w-full h-auto object-contain rounded-lg"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
@@ -296,19 +296,19 @@ const ProductIQLED = () => {
                       {content.hero_description}
                     </p>
                   )}
-                  {content.hero_cta_text && (
+                  {content.hero_cta && (
                     <a href={heroCtaLink} className={getButtonClasses(heroCtaStyle)}>
-                      {content.hero_cta_text}
+                      {content.hero_cta}
                     </a>
                   )}
                 </div>
                 {heroImagePosition === "right" && heroImageUrl && (
                   <div className="w-full flex justify-center items-center order-1 md:order-2">
-                    <div className="relative w-full max-w-2xl">
+                    <div className="relative w-full aspect-video overflow-hidden rounded-lg">
                       <img
                         src={heroImageUrl}
                         alt={content.hero_title || "Hero"}
-                        className="w-full h-auto object-contain rounded-lg"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
