@@ -433,12 +433,12 @@ const AdminDashboard = () => {
 
   // Sync tabOrder with pageSegments - ensure consistency
   useEffect(() => {
-    if (!user || !selectedPage || pageSegments.length === 0) return;
+    if (!user || !selectedPage) return;
     
-    // Get all current segment IDs
+    // Get all current segment IDs from pageSegments
     const segmentIds = pageSegments.map(seg => seg.id);
     
-    // Remove deleted segments from tabOrder
+    // Remove deleted/non-existent segments from tabOrder
     const validTabOrder = tabOrder.filter(id => segmentIds.includes(id));
     
     // Add any new segments that aren't in tabOrder yet
@@ -462,7 +462,7 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
     }
-  }, [pageSegments, selectedPage, user]);
+  }, [pageSegments, selectedPage, user, tabOrder]);
 
   const checkUserAccess = async () => {
     if (!user) return;

@@ -1015,8 +1015,9 @@ const MachineVision = () => {
       {/* Render all segments in tabOrder (excluding meta-navigation already rendered above) */}
       {tabOrder
         .filter(segmentId => {
+          // Only render segments that actually exist in pageSegments
           const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
-          return !(dynamicSegment && dynamicSegment.type === 'meta-navigation');
+          return dynamicSegment && dynamicSegment.type !== 'meta-navigation';
         })
         .map((segmentId) => renderSegment(segmentId))}
 
