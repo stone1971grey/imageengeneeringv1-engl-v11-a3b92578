@@ -183,7 +183,7 @@ const AdminDashboard = () => {
   const [copyFooterDialogOpen, setCopyFooterDialogOpen] = useState(false);
   const [availablePages, setAvailablePages] = useState<Array<{ page_slug: string; page_title: string }>>([]);
   const [activeTab, setActiveTab] = useState<string>("hero");
-  const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
+  const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
   const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
@@ -393,7 +393,7 @@ const AdminDashboard = () => {
       setApplications([]);
       setTilesColumns("3");
       setPageSegments([]);
-      setTabOrder(['tiles', 'banner', 'solutions']);
+      setTabOrder([]);
       setSegmentRegistry({}); // Reset segment registry to prevent cross-page ID contamination
       setFooterCtaTitle("");
       setFooterCtaDescription("");
@@ -431,24 +431,21 @@ const AdminDashboard = () => {
     }
   }, [user, selectedPage, isAdmin, isEditor]);
 
-  // Sync tabOrder with pageSegments - ensure all segment IDs are in tabOrder
+  // Sync tabOrder with pageSegments - ensure consistency
   useEffect(() => {
-    if (!user || !selectedPage) return;
+    if (!user || !selectedPage || pageSegments.length === 0) return;
     
-    const staticTabs = ['tiles', 'banner', 'solutions'];
-    const segmentIds = pageSegments.map(seg => seg.id || `segment-${seg.position}`);
+    // Get all current segment IDs
+    const segmentIds = pageSegments.map(seg => seg.id);
     
-    // Build complete list of all tabs that should exist
-    const allTabs = [...staticTabs, ...segmentIds];
+    // Remove deleted segments from tabOrder
+    const validTabOrder = tabOrder.filter(id => segmentIds.includes(id));
     
-    // Filter current order to only include valid tabs
-    const validOrder = tabOrder.filter(id => allTabs.includes(id));
+    // Add any new segments that aren't in tabOrder yet
+    const missingSegments = segmentIds.filter(id => !validTabOrder.includes(id));
     
-    // Find missing tabs
-    const missingTabs = allTabs.filter(id => !validOrder.includes(id));
-    
-    if (missingTabs.length > 0) {
-      const newOrder = [...validOrder, ...missingTabs];
+    if (missingSegments.length > 0 || validTabOrder.length !== tabOrder.length) {
+      const newOrder = [...validTabOrder, ...missingSegments];
       setTabOrder(newOrder);
       
       // Save to database
@@ -465,7 +462,7 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
     }
-  }, [pageSegments, user, selectedPage]);
+  }, [pageSegments, selectedPage, user]);
 
   const checkUserAccess = async () => {
     if (!user) return;
@@ -834,37 +831,22 @@ const AdminDashboard = () => {
       } else if (item.section_key === "tab_order") {
         try {
           const order = JSON.parse(item.content_value);
-          // Convert old segment-X format to new IDs if needed
-          let updatedOrder = (order || ['tiles', 'banner', 'solutions']).map((tabId: string) => {
-            if (tabId.startsWith('segment-')) {
-              // This will be fixed by the useEffect sync after segments load
-              return tabId;
-            }
-            return tabId;
-          });
           
-          // CRITICAL: Filter out deleted segments automatically
-          // Check against segmentRegistry - remove any segment that doesn't exist
-          // or is marked as deleted in the registry
-          updatedOrder = updatedOrder.filter((tabId: string) => {
-            // Keep static segment keys if they exist in registry
-            if (['hero', 'tiles', 'banner', 'solutions', 'footer'].includes(tabId)) {
-              return segmentRegistry[tabId] !== undefined;
-            }
-            // Keep dynamic segments if they exist in registry
+          // Filter out deleted segments using segmentRegistry
+          const validOrder = (order || []).filter((tabId: string) => {
             return segmentRegistry[tabId] !== undefined;
           });
           
           // If we filtered anything out, save the cleaned tab_order back to database
-          if (updatedOrder.length !== order.length && user) {
-            console.log("🧹 Cleaning tab_order: Removed deleted segments", order.filter((id: string) => !updatedOrder.includes(id)));
+          if (validOrder.length !== order.length && user) {
+            console.log("🧹 Cleaning tab_order: Removed deleted segments");
             supabase
               .from("page_content")
               .upsert({
                 page_slug: selectedPage,
                 section_key: "tab_order",
                 content_type: "json",
-                content_value: JSON.stringify(updatedOrder),
+                content_value: JSON.stringify(validOrder),
                 updated_at: new Date().toISOString(),
                 updated_by: user.id
               }, {
@@ -872,9 +854,9 @@ const AdminDashboard = () => {
               });
           }
           
-          setTabOrder(updatedOrder);
+          setTabOrder(validOrder.length > 0 ? validOrder : []);
         } catch {
-          setTabOrder(['tiles', 'banner', 'solutions']);
+          setTabOrder([]);
         }
       } else if (item.section_key === "footer_cta_title") {
         setFooterCtaTitle(item.content_value);
@@ -1853,27 +1835,34 @@ const AdminDashboard = () => {
     const newSegment = {
       id: String(segmentId),
       type: templateType,
-      position: templateType === 'meta-navigation' ? 1 : pageSegments.length,
       data: getDefaultSegmentData(templateType)
     };
 
     const updatedSegments = [...pageSegments, newSegment];
     
-    // Update tab order to include new segment
+    // Add new segment to end of tab order
+    // Meta-navigation should be at the beginning after hero if it exists
     let updatedTabOrder: string[];
     if (templateType === 'meta-navigation') {
-      // Insert meta-navigation right after hero
-      const heroIndex = tabOrder.findIndex(id => id === 'hero');
+      // Check if there's a hero or full-hero segment
+      const heroIndex = tabOrder.findIndex(id => {
+        const seg = pageSegments.find(s => s.id === id);
+        return seg && (seg.type === 'hero' || seg.type === 'full-hero');
+      });
+      
       if (heroIndex !== -1) {
+        // Insert after hero
         updatedTabOrder = [
           ...tabOrder.slice(0, heroIndex + 1),
           String(segmentId),
           ...tabOrder.slice(heroIndex + 1)
         ];
       } else {
+        // Put at beginning
         updatedTabOrder = [String(segmentId), ...tabOrder];
       }
     } else {
+      // Add to end
       updatedTabOrder = [...tabOrder, String(segmentId)];
     }
 
@@ -1943,15 +1932,10 @@ const AdminDashboard = () => {
   const handleDeleteSegment = async (segmentId: string) => {
     if (!user) return;
 
-    // Remove the segment with this ID
-    const updatedSegments = pageSegments
-      .filter(seg => seg.id !== segmentId)
-      .map((seg, idx) => ({
-        ...seg,
-        position: idx  // Renumber positions sequentially
-      }));
+    // Remove the segment with this ID (no need to renumber positions)
+    const updatedSegments = pageSegments.filter(seg => seg.id !== segmentId);
     
-    // Remove from tab order (IDs stay the same, just remove this one)
+    // Remove from tab order
     const updatedTabOrder = tabOrder.filter(id => id !== segmentId);
 
     try {

@@ -65,7 +65,7 @@ const ISO21550 = () => {
   const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col");
   const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
-  const [tabOrder, setTabOrder] = useState<string[]>(['tiles', 'banner', 'solutions']);
+  const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [hasHeroContent, setHasHeroContent] = useState(false);
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
   const [seoData, setSeoData] = useState<any>({});
@@ -119,9 +119,9 @@ const ISO21550 = () => {
         } else if (item.section_key === "tab_order") {
           try {
             const order = JSON.parse(item.content_value);
-            setTabOrder(order || ['tiles', 'banner', 'solutions']);
+            setTabOrder(order || []);
           } catch {
-            setTabOrder(['tiles', 'banner', 'solutions']);
+            setTabOrder([]);
           }
         } else if (item.section_key === "applications_items") {
           apps = JSON.parse(item.content_value);

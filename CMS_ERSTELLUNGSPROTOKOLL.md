@@ -946,3 +946,57 @@ Bei Problemen: Vergleiche IMMER mit Machine Vision - das ist die funktionierende
 
 **Verwendung:**
 Im CMS Admin Dashboard als "Intro" Segment verfügbar. Ideal für Einleitungstexte auf Landingpages.
+
+---
+
+### 2025-11-14: Segment-Reihenfolge Logik refaktoriert
+
+**Problem:**
+Die Verwaltung der Segment-Reihenfolge war inkonsistent mit mehreren Quellen der Wahrheit:
+- `tabOrder` bestimmte die Anzeigereihenfolge
+- `position` Feld in Segmenten wurde ebenfalls verwaltet
+- Statische Tabs wurden immer angenommen, existierten aber nicht in allen Seiten
+- Sync-Logik zwischen tabOrder und pageSegments war komplex und fehleranfällig
+
+**Lösung:**
+Vereinfachte Architektur mit einer einzigen Quelle der Wahrheit:
+
+1. **tabOrder ist die einzige Quelle der Wahrheit**
+   - Bestimmt ausschließlich die Reihenfolge der Segmente
+   - Wird in `page_content` als JSON Array gespeichert
+   - Enthält nur IDs von existierenden Segmenten
+
+2. **Position-Feld entfernt**
+   - `position` wird nicht mehr manuell verwaltet
+   - Kann bei Bedarf aus tabOrder Index abgeleitet werden
+   - Keine Renummerierung mehr beim Löschen von Segmenten
+
+3. **Statische Tabs entfernt**
+   - Keine Hardcoded `['tiles', 'banner', 'solutions']` mehr
+   - Initiale tabOrder ist `[]`
+   - Wird dynamisch aufgebaut basierend auf tatsächlich existierenden Segmenten
+
+4. **Sync-Logik vereinfacht**
+   - `useEffect` in AdminDashboard synchronisiert tabOrder mit pageSegments
+   - Entfernt gelöschte Segmente automatisch aus tabOrder
+   - Fügt neue Segmente am Ende hinzu
+   - Keine Race Conditions mehr
+
+**Geänderte Dateien:**
+- `src/pages/AdminDashboard.tsx`: Sync-Logik vereinfacht, Initialisierung angepasst
+- `src/pages/ISO21550.tsx`: tabOrder Initialisierung auf `[]` geändert
+- `src/pages/MachineVision.tsx`: tabOrder Initialisierung auf `[]` geändert
+
+**Vorteile:**
+- Klare, einfache Architektur
+- Eine einzige Quelle der Wahrheit
+- Weniger Fehleranfälligkeit
+- Einfachere Wartung
+- Bessere Performance durch weniger unnötige Updates
+
+**Drag & Drop:**
+Funktioniert weiterhin einwandfrei - ändert nur die Reihenfolge in tabOrder.
+
+**Meta-Navigation Spezialbehandlung:**
+Meta-Navigation Segmente werden immer am Anfang platziert (direkt nach Hero, falls vorhanden).
+
