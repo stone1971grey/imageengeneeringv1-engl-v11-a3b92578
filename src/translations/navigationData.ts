@@ -4,12 +4,12 @@ export const navigationDataEn = {
     "Automotive": {
       description: "Camera systems in vehicles, driver assistance and autonomous driving",
       subgroups: [
-        { name: "Advanced Driver Assistance Systems (ADAS)", link: "/automotive" },
+        { name: "Advanced Driver Assistance Systems (ADAS)", link: "/your-solution/automotive/adas" },
         { name: "In-Cabin Testing", link: "/your-solution/automotive/in-cabin-testing", active: true },
         { name: "IEEE-P2020 Testing", link: "/products/standards/ieee-p2020" },
-        { name: "High Dynamic Range (HDR)", link: "#" },
-        { name: "Near-Infrared (NIR)", link: "#" },
-        { name: "Geometric Calibration", link: "#" }
+        { name: "High Dynamic Range (HDR)", link: "/your-solution/automotive/hdr-automotive" },
+        { name: "Near-Infrared (NIR)", link: "/your-solution/automotive/nir-automotive" },
+        { name: "Geometric Calibration", link: "/your-solution/automotive/geometric-calibration-automotive" }
       ]
     },
     "Security & Surveillance": {
