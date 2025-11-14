@@ -59,10 +59,17 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const loadPageIds = async () => {
     const { data } = await supabase
       .from('page_registry')
-      .select('page_slug, page_id');
+      .select('page_slug, page_id, page_title');
 
     if (data) {
-      const mapping = new Map(data.map(item => [item.page_slug, item.page_id]));
+      // Map both by slug AND by normalized title for fallback
+      const mapping = new Map<string, number>();
+      data.forEach(item => {
+        mapping.set(item.page_slug, item.page_id);
+        // Also map by normalized title as fallback
+        const normalizedTitle = item.page_title.toLowerCase().replace(/[^a-z0-9]/g, '');
+        mapping.set(`title:${normalizedTitle}`, item.page_id);
+      });
       setPageIdMap(mapping);
     }
   };
@@ -246,10 +253,24 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     return "text-gray-300 bg-gray-900"; // Light gray - Not yet created
   };
 
+  const getPageIdForStatus = (status: { slug: string; title: string }) => {
+    // First try direct slug lookup
+    let pageId = pageIdMap.get(status.slug);
+    
+    // If not found, try normalized title lookup
+    if (pageId === undefined) {
+      const normalizedTitle = status.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+      pageId = pageIdMap.get(`title:${normalizedTitle}`);
+    }
+    
+    return pageId;
+  };
+
   const getItemLabel = (status: PageStatus) => {
     let label = status.title;
-    if (status.pageId !== undefined) {
-      label += ` [${status.pageId}]`;
+    const pageId = status.pageId ?? getPageIdForStatus(status);
+    if (pageId !== undefined) {
+      label += ` [${pageId}]`;
     }
     if (status.isCMS) {
       label += " ✓";
