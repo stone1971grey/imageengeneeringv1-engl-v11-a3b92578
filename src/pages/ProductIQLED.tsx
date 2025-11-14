@@ -232,7 +232,167 @@ const ProductIQLED = () => {
       }
     }
 
-    // Default static segments
+    // Static segments
+    if (segmentId === 'tiles' && applications.length > 0) {
+      return (
+        <section key="tiles" id={segmentIdMap['tiles']?.toString() || '109'} className="py-20 bg-white">
+          <div className="w-full px-6">
+            <div className={`grid gap-8 max-w-7xl mx-auto grid-cols-1 ${tilesColumns === "2" ? "md:grid-cols-2" : tilesColumns === "4" ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"}`}>
+              {applications.map((app, index) => {
+                const IconComponent = iconMap[app.icon] || Camera;
+                return (
+                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-[#f9dc24]">
+                    <CardContent className="p-6 h-full flex flex-col">
+                      <div className="mb-4 text-gray-900">
+                        <IconComponent className="w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-[#f9dc24] transition-colors duration-300">
+                        {app.title}
+                      </h3>
+                      <p className="text-gray-600 mb-6 flex-grow leading-relaxed">
+                        {app.description}
+                      </p>
+                      {app.ctaText && app.ctaLink && (
+                        <Link to={app.ctaLink}>
+                          <Button
+                            variant={app.ctaStyle === "technical" ? "default" : "outline"}
+                            className={`w-full ${app.ctaStyle === "technical" ? "bg-gray-900 hover:bg-gray-800 text-white" : "border-2 border-[#f9dc24] hover:bg-[#f9dc24] text-gray-900"}`}
+                          >
+                            {app.ctaText}
+                          </Button>
+                        </Link>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    if (segmentId === 'banner' && bannerTitle) {
+      return (
+        <section key="banner" id={segmentIdMap['banner']?.toString() || '110'} className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+          <div className="w-full px-6">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                {bannerTitle}
+              </h2>
+              {bannerSubtext && (
+                <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+                  {bannerSubtext}
+                </p>
+              )}
+            </div>
+            {bannerImages && bannerImages.length > 0 && (
+              <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
+                {bannerImages.map((image: any, index: number) => (
+                  <div key={index} className="h-16 flex items-center">
+                    <img 
+                      src={image.url}
+                      alt={image.alt || `Banner image ${index + 1}`}
+                      className="max-h-full max-w-full object-contain filter brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            {bannerButtonText && (
+              <div className="flex justify-center">
+                {bannerButtonLink ? (
+                  bannerButtonLink.startsWith('http://') || bannerButtonLink.startsWith('https://') ? (
+                    <a
+                      href={bannerButtonLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={getButtonClasses(bannerButtonStyle)}
+                    >
+                      {bannerButtonText}
+                    </a>
+                  ) : (
+                    <Link to={bannerButtonLink}>
+                      <button className={getButtonClasses(bannerButtonStyle)}>
+                        {bannerButtonText}
+                      </button>
+                    </Link>
+                  )
+                ) : (
+                  <button className={getButtonClasses(bannerButtonStyle)}>
+                    {bannerButtonText}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    if (segmentId === 'solutions' && solutionsItems && solutionsItems.length > 0) {
+      return (
+        <section key="solutions" id={segmentIdMap['solutions']?.toString() || '111'} className="bg-gray-50 py-20">
+          <div className="w-full px-6">
+            {(solutionsTitle || solutionsSubtext) && (
+              <div className="text-center mb-16">
+                {solutionsTitle && (
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {solutionsTitle}
+                  </h2>
+                )}
+                {solutionsSubtext && (
+                  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    {solutionsSubtext}
+                  </p>
+                )}
+              </div>
+            )}
+            <div className={`max-w-7xl mx-auto space-y-16 ${solutionsLayout === "1-col" ? "" : ""}`}>
+              {solutionsItems.map((item: any, index: number) => (
+                <div
+                  key={index}
+                  className={`grid ${solutionsLayout === "1-col" ? "grid-cols-1" : "md:grid-cols-2"} gap-8 items-center ${
+                    index % 2 === 0 ? "" : solutionsLayout === "1-col" ? "" : "md:grid-flow-dense"
+                  }`}
+                >
+                  <div className={index % 2 === 0 || solutionsLayout === "1-col" ? "" : "md:col-start-2"}>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                      {item.title}
+                    </h3>
+                    <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                      {item.description}
+                    </p>
+                    {item.ctaText && item.ctaLink && (
+                      <Link to={item.ctaLink}>
+                        <Button
+                          variant={item.ctaStyle === "technical" ? "default" : "outline"}
+                          className={`${item.ctaStyle === "technical" ? "bg-gray-900 hover:bg-gray-800 text-white" : "border-2 border-[#f9dc24] hover:bg-[#f9dc24] text-gray-900"}`}
+                        >
+                          {item.ctaText}
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                  {item.imageUrl && (
+                    <div className={index % 2 === 0 || solutionsLayout === "1-col" ? "" : "md:col-start-1 md:row-start-1"}>
+                      <div className="relative aspect-video overflow-hidden rounded-lg">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     return null;
   };
 
@@ -319,109 +479,7 @@ const ProductIQLED = () => {
           </section>
         )}
 
-        {/* Tiles Section - Segment ID 109 */}
-        {applications.length > 0 && (
-          <section id="109" className="py-20 bg-white">
-            <div className="w-full px-6">
-              <div className={`grid gap-8 max-w-7xl mx-auto grid-cols-1 ${tilesColumns === "2" ? "md:grid-cols-2" : tilesColumns === "4" ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"}`}>
-                {applications.map((app, index) => {
-                  const IconComponent = iconMap[app.icon] || Camera;
-                  return (
-                    <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-[#f9dc24]">
-                      <CardContent className="p-6 h-full flex flex-col">
-                        <div className="mb-4 text-gray-900">
-                          <IconComponent className="w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
-                        </div>
-                        <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-[#f9dc24] transition-colors duration-300">
-                          {app.title}
-                        </h3>
-                        <p className="text-gray-600 mb-6 flex-grow leading-relaxed">
-                          {app.description}
-                        </p>
-                        {app.ctaText && app.ctaLink && (
-                          <Link to={app.ctaLink}>
-                            <Button
-                              variant={app.ctaStyle === "technical" ? "default" : "outline"}
-                              className={`w-full ${app.ctaStyle === "technical" ? "bg-gray-900 hover:bg-gray-800 text-white" : "border-2 border-[#f9dc24] hover:bg-[#f9dc24] text-gray-900"}`}
-                            >
-                              {app.ctaText}
-                            </Button>
-                          </Link>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Banner Section - Segment ID 110 */}
-        {bannerTitle && (
-          <section id="110" className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-            <div className="w-full px-6">
-              <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  {bannerTitle}
-                </h2>
-                {bannerSubtext && (
-                  <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-                    {bannerSubtext}
-                  </p>
-                )}
-              </div>
-              {bannerImages && bannerImages.length > 0 && (
-                <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
-                  {bannerImages.map((image: any, index: number) => (
-                    <div key={index} className="h-16 flex items-center">
-                      <img 
-                        src={image.url}
-                        alt={image.alt || `Banner image ${index + 1}`}
-                        className="max-h-full max-w-full object-contain filter brightness-0 invert opacity-60 hover:opacity-100 transition-all duration-300"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-              {bannerButtonText && (
-                <div className="flex justify-center">
-                  {bannerButtonLink ? (
-                    bannerButtonLink.startsWith('http://') || bannerButtonLink.startsWith('https://') ? (
-                      <a
-                        href={bannerButtonLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={getButtonClasses(bannerButtonStyle)}
-                      >
-                        {bannerButtonText}
-                      </a>
-                    ) : (
-                      <Link to={bannerButtonLink}>
-                        <button className={getButtonClasses(bannerButtonStyle)}>
-                          {bannerButtonText}
-                        </button>
-                      </Link>
-                    )
-                  ) : (
-                    <button className={getButtonClasses(bannerButtonStyle)}>
-                      {bannerButtonText}
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        {/* Solutions/Image-Text Section - Segment ID 111 */}
-        {solutionsItems && solutionsItems.length > 0 && (
-          <section id="111" className="bg-gray-50 py-20">
-...
-          </section>
-        )}
-
-        {/* Render all segments in tabOrder */}
+        {/* Render all segments in tabOrder (except meta-navigation which is rendered at position 0) */}
         {tabOrder
           .filter(segmentId => {
             const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
