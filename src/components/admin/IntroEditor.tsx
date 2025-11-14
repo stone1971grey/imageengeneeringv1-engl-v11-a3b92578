@@ -30,22 +30,18 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
     try {
       const { data, error } = await supabase
         .from('page_content')
-        .select('content_value, content_type')
+        .select('content_value')
         .eq('page_slug', pageSlug)
-        .eq('section_key', segmentKey);
+        .eq('section_key', segmentKey)
+        .maybeSingle();
 
       if (error) throw error;
 
-      if (data && data.length > 0) {
-        data.forEach((item) => {
-          if (item.content_type === 'intro_title') {
-            setTitle(item.content_value);
-          } else if (item.content_type === 'intro_description') {
-            setDescription(item.content_value);
-          } else if (item.content_type === 'intro_heading_level') {
-            setHeadingLevel(item.content_value as 'h1' | 'h2');
-          }
-        });
+      if (data) {
+        const content = JSON.parse(data.content_value);
+        setTitle(content.title || "");
+        setDescription(content.description || "");
+        setHeadingLevel(content.headingLevel || 'h2');
       }
     } catch (error) {
       console.error('Error loading content:', error);
@@ -59,19 +55,26 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
     }
   };
 
-  const saveContent = async (type: string, value: string) => {
+  const saveContent = async () => {
     try {
       setIsSaving(true);
+      
+      const content = {
+        title,
+        description,
+        headingLevel
+      };
+
       const { error } = await supabase
         .from('page_content')
         .upsert({
           page_slug: pageSlug,
           section_key: segmentKey,
-          content_type: type,
-          content_value: value,
+          content_type: 'json',
+          content_value: JSON.stringify(content),
           updated_at: new Date().toISOString(),
         }, {
-          onConflict: 'page_slug,section_key,content_type'
+          onConflict: 'page_slug,section_key'
         });
 
       if (error) throw error;
@@ -92,12 +95,6 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleSaveAll = async () => {
-    await saveContent('intro_title', title);
-    await saveContent('intro_description', description);
-    await saveContent('intro_heading_level', headingLevel);
   };
 
   const handleTitleChange = (value: string) => {
@@ -155,7 +152,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
       </div>
 
       <Button 
-        onClick={handleSaveAll}
+        onClick={saveContent}
         disabled={isSaving}
         className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
       >

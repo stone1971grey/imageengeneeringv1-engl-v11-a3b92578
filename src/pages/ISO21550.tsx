@@ -209,7 +209,7 @@ const ISO21550 = () => {
         return <FullHero key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'intro') {
-        return <Intro key={segmentId} pageSlug="iso-21550" segmentKey={segmentId} {...dynamicSegment.data} />;
+        return <Intro key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (

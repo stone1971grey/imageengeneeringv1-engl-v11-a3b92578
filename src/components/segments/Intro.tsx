@@ -1,6 +1,4 @@
 interface IntroProps {
-  pageSlug: string;
-  segmentKey: string;
   title?: string;
   description?: string;
   headingLevel?: 'h1' | 'h2';
