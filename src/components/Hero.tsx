@@ -6,7 +6,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 const Hero = () => {
   const { t } = useTranslation();
   return (
-    <section className="relative overflow-hidden -mt-12" style={{ height: 'calc(100vh - 220px)' }}>
+    <section className="relative overflow-hidden" style={{ minHeight: 'calc(100vh - 220px)' }}>
       {/* Hero Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 animate-fade-in">
         <img 
@@ -24,13 +24,13 @@ const Hero = () => {
       <div className="h-16"></div>
       
       {/* Hero Content */}
-      <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10">
-        <div className="flex items-center justify-start min-h-[80vh]">
+      <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
+        <div className="flex items-center justify-start min-h-full">
           
           {/* Left-aligned Content */}
-          <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0 -mt-[170px] md:-mt-[50px]">
+          <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0">
             <div>
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6 pt-20 md:pt-0">
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6">
                 {t.hero.title}
                 <br />
                 <span className="font-medium">{t.hero.subtitle}</span>

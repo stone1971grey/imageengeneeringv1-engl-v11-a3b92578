@@ -165,11 +165,11 @@ const ProductIQLED = () => {
   const getPaddingClass = () => {
     const paddings: Record<string, string> = {
       none: "pt-0",
-      small: "pt-8 md:pt-12",
-      medium: "pt-12 md:pt-20",
-      large: "pt-16 md:pt-28",
+      small: "pt-32 md:pt-40",
+      medium: "pt-40 md:pt-56",
+      large: "pt-56 md:pt-64",
     };
-    return paddings[heroTopPadding] || "pt-12 md:pt-20";
+    return paddings[heroTopPadding] || "pt-40 md:pt-56";
   };
 
   const getButtonClasses = (style: string) => {
