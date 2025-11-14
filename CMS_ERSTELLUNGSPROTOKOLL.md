@@ -431,18 +431,63 @@ const urlMap: Record<string, string> = {
 ## Segment-Typen im Detail
 
 ### Meta-Navigation (`meta-navigation`)
-**Verwendung:** Inhaltsverzeichnis mit Sprungmarken  
-**Position:** Immer Position 0 (oberhalb Hero)  
+
+**Verwendung:** Sticky Inhaltsverzeichnis mit Sprungmarken zu Segmenten  
+**Position:** Direkt nach Haupt-Navigation (MANDATORY)  
+**Technische Details:**
+- Sticky: `top-[85px]` - klebt unter Haupt-Navigation
+- Smooth Scroll mit Offset-Berechnung (Navigation-Höhen)
+- Automatische Anchor-Auflösung: `segment_key` → `segment_id`
+
 **Datenstruktur:**
 ```json
 {
   "links": [
-    { "label": "Overview", "anchor": "segment-id-100" },
-    { "label": "Applications", "anchor": "segment-id-101" }
+    { "label": "Overview", "anchor": "hero" },
+    { "label": "Applications", "anchor": "tiles" },
+    { "label": "Standards", "anchor": "banner" }
   ]
 }
 ```
+
+**Wichtig:**
+- `anchor` kann entweder `segment_key` (z.B. "tiles") oder direkt `segment_id` (z.B. "101") sein
+- Komponente resolved automatisch via `segmentIdMap` (wird von Page übergeben)
+- Scroll-Offset berücksichtigt Navbar (85px) + Meta-Nav (85px) = 170px
+
+**Funktionsweise:**
+1. User klickt Link → `href="#tiles"`
+2. `resolveAnchor()` → wandelt "tiles" in "101" um (via segmentIdMap)
+3. Smooth Scroll zu Element mit `id="101"`
+4. Offset 170px damit Element unter Meta-Nav sichtbar
+
 **Editor:** ✅ MetaNavigationEditor
+
+**Code-Integration (erforderlich in jeder CMS-Page):**
+```typescript
+// 1. segmentIdMap aus segment_registry laden
+const { data: segmentData } = await supabase
+  .from("segment_registry")
+  .select("*")
+  .eq("page_slug", "my-product");
+
+const idMap: Record<string, number> = {};
+segmentData.forEach((seg: any) => {
+  idMap[seg.segment_key] = seg.segment_id;
+});
+setSegmentIdMap(idMap);
+
+// 2. MetaNavigation mit segmentIdMap rendern
+if (dynamicSegment.type === 'meta-navigation') {
+  return <MetaNavigation 
+    key={segmentId} 
+    data={dynamicSegment.data} 
+    segmentIdMap={segmentIdMap} 
+  />;
+}
+```
+
+---
 
 ### Product Hero Gallery (`product-hero-gallery`)
 **Verwendung:** Hero-Sektion mit Produktbildern in Galerie  
