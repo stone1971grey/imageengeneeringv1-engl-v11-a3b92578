@@ -2047,8 +2047,8 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
-      <div className="container mx-auto px-6 py-32">
-        <div className="flex justify-between items-start mb-8 gap-12">
+      <div className="container mx-auto px-6 py-32 max-w-[1600px]">
+        <div className="flex items-start mb-8 gap-6">
           <div className="flex-shrink-0">
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
             <div className="flex items-center gap-4 mt-6">
@@ -2061,7 +2061,7 @@ const AdminDashboard = () => {
               />
             </div>
           </div>
-          <div className="flex items-center gap-3 pt-2 flex-shrink-0">
+          <div className="flex items-center gap-3 pt-2 ml-auto">
             <Button
               onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
               variant={isSEOEditorOpen ? "default" : "outline"}
