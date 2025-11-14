@@ -89,6 +89,7 @@ const App = () => (
         
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
+        <Route path="/products/illumination/iq-led" element={<ProductIQLED />} />
         
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
