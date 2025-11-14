@@ -37,9 +37,8 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   }, []);
 
   useEffect(() => {
-    if (cmsPages.size > 0) {
-      buildPageStatuses();
-    }
+    // Always build page statuses when data changes, even if no CMS pages exist yet
+    buildPageStatuses();
   }, [cmsPages, navigationData]);
 
   const loadCMSPages = async () => {
@@ -50,7 +49,6 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
 
     if (data) {
       const uniqueSlugs = new Set(data.map(item => item.page_slug));
-      console.log('Loaded CMS pages:', Array.from(uniqueSlugs));
       setCmsPages(uniqueSlugs);
     }
   };
@@ -94,8 +92,6 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         .replace(/\s+/g, '-')       // Replace spaces with "-"
         .replace(/-+/g, '-');       // Replace multiple "-" with single "-"
       const categoryUrl = `/your-solution/${categorySlug}`;
-      
-      console.log(`Category: ${categoryName} -> Slug: ${categorySlug}, isCMS: ${cmsPages.has(categorySlug)}`);
       
       statuses.push({
         slug: categorySlug,
