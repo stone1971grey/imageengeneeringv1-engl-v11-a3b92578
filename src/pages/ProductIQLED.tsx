@@ -241,22 +241,22 @@ const ProductIQLED = () => {
               {applications.map((app, index) => {
                 const IconComponent = iconMap[app.icon] || Camera;
                 return (
-                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-[#f9dc24] bg-white">
+                  <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-2 border-light-border hover:border-orange bg-light-card">
                     <CardContent className="p-6 h-full flex flex-col">
-                      <div className="mb-4 text-gray-900">
+                      <div className="mb-4 text-light-foreground">
                         <IconComponent className="w-12 h-12 group-hover:scale-110 transition-transform duration-300" />
                       </div>
-                      <h3 className="text-xl font-bold mb-3 text-gray-900 group-hover:text-[#f9dc24] transition-colors duration-300">
+                      <h3 className="text-xl font-bold mb-3 text-light-foreground group-hover:text-orange transition-colors duration-300">
                         {app.title}
                       </h3>
-                      <p className="text-gray-600 mb-6 flex-grow leading-relaxed">
+                      <p className="text-light-muted mb-6 flex-grow leading-relaxed">
                         {app.description}
                       </p>
                       {app.ctaText && app.ctaLink && (
                         <Link to={app.ctaLink}>
                           <Button
                             variant={app.ctaStyle === "technical" ? "default" : "outline"}
-                            className={`w-full ${app.ctaStyle === "technical" ? "bg-gray-900 hover:bg-gray-800 text-white" : "border-2 border-[#f9dc24] hover:bg-[#f9dc24] text-gray-900"}`}
+                            className={`w-full ${app.ctaStyle === "technical" ? "bg-gray-900 hover:bg-gray-800 text-white" : "border-2 border-orange hover:bg-orange text-light-foreground"}`}
                           >
                             {app.ctaText}
                           </Button>
