@@ -939,10 +939,23 @@ Bei Problemen: Vergleiche IMMER mit Machine Vision - das ist die funktionierende
 - Registriert in: AdminDashboard.tsx
 - Rendering hinzugefügt in: MachineVision.tsx, ISO21550.tsx
 
+**Datenstruktur:**
+Speichert alle Daten als JSON in `page_content`:
+```json
+{
+  "title": "Your Partner for...",
+  "description": "Industry-leading solutions...",
+  "headingLevel": "h2"
+}
+```
+
 **Standard-Werte:**
 - Title: "Your Partner for Objective Camera & Sensor Testing"
 - Description: "Industry-leading solutions for comprehensive camera and sensor evaluation"
 - Heading Level: h2
+
+**Bugfix (2025-11-14):**
+IntroEditor hatte anfangs einen Fehler beim Speichern - versuchte drei separate Zeilen mit unterschiedlichen `content_type` zu speichern, aber die `page_content` Tabelle erlaubt nur eine Zeile pro `(page_slug, section_key)`. Gelöst durch Speicherung aller Daten als einzelnes JSON-Objekt (wie andere Editoren).
 
 **Verwendung:**
 Im CMS Admin Dashboard als "Intro" Segment verfügbar. Ideal für Einleitungstexte auf Landingpages.

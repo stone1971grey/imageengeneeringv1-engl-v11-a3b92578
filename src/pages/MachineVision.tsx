@@ -193,7 +193,7 @@ const MachineVision = () => {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'intro') {
-        return <Intro key={segmentId} pageSlug="machine-vision" segmentKey={segmentId} {...dynamicSegment.data} />;
+        return <Intro key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (
