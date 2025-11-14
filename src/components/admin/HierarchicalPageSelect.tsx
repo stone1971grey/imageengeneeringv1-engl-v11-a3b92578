@@ -22,6 +22,8 @@ interface PageStatus {
   url: string;
   isCMS: boolean;
   isStatic: boolean;
+  category?: string;
+  subcategory?: string;
 }
 
 export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPageSelectProps) => {
@@ -91,10 +93,12 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         
         statuses.push({
           slug: displaySlug,
-          title: `Your Solution → ${categoryName} → ${subgroup.name}`,
+          title: subgroup.name,
           url: subgroup.link,
           isCMS: slug ? cmsPages.has(slug) : false,
           isStatic: false,
+          category: 'Your Solution',
+          subcategory: categoryName,
         });
       });
     });
@@ -109,10 +113,12 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         
         statuses.push({
           slug: displaySlug,
-          title: `Products → ${categoryName} → ${subgroup.name}`,
+          title: subgroup.name,
           url: subgroup.link,
           isCMS: slug ? cmsPages.has(slug) : false,
           isStatic: false,
+          category: 'Products',
+          subcategory: categoryName,
         });
       });
     });
@@ -127,10 +133,12 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           
           statuses.push({
             slug: displaySlug,
-            title: `${categoryName} → ${solution.name}`,
+            title: solution.name,
             url: solution.link,
             isCMS: slug ? cmsPages.has(slug) : false,
             isStatic: false,
+            category: 'Solutions',
+            subcategory: categoryName,
           });
         });
       }
@@ -142,10 +150,12 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           
           statuses.push({
             slug: displaySlug,
-            title: `${categoryName} → ${service.name}`,
+            title: service.name,
             url: service.link,
             isCMS: slug ? cmsPages.has(slug) : false,
             isStatic: false,
+            category: 'Solutions',
+            subcategory: categoryName,
           });
         });
       }
@@ -172,28 +182,49 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     return label;
   };
 
-  // Group by main category
-  const groupedStatuses = {
-    static: pageStatuses.filter(p => p.isStatic),
-    yourSolution: pageStatuses.filter(p => !p.isStatic && p.title.startsWith('Your Solution →')),
-    products: pageStatuses.filter(p => !p.isStatic && p.title.startsWith('Products →')),
-    solutions: pageStatuses.filter(p => !p.isStatic && !p.title.startsWith('Your Solution →') && 
-      !p.title.startsWith('Products →') && p.title.includes('→')),
-  };
+  // Group by main category and subcategory
+  const static_pages = pageStatuses.filter(p => p.isStatic);
+  
+  // Group Your Solution by subcategory
+  const yourSolutionPages = pageStatuses.filter(p => p.category === 'Your Solution');
+  const yourSolutionBySubcat = yourSolutionPages.reduce((acc, page) => {
+    const subcat = page.subcategory || 'Other';
+    if (!acc[subcat]) acc[subcat] = [];
+    acc[subcat].push(page);
+    return acc;
+  }, {} as Record<string, PageStatus[]>);
+
+  // Group Products by subcategory
+  const productsPages = pageStatuses.filter(p => p.category === 'Products');
+  const productsBySubcat = productsPages.reduce((acc, page) => {
+    const subcat = page.subcategory || 'Other';
+    if (!acc[subcat]) acc[subcat] = [];
+    acc[subcat].push(page);
+    return acc;
+  }, {} as Record<string, PageStatus[]>);
+
+  // Group Solutions by subcategory
+  const solutionsPages = pageStatuses.filter(p => p.category === 'Solutions');
+  const solutionsBySubcat = solutionsPages.reduce((acc, page) => {
+    const subcat = page.subcategory || 'Other';
+    if (!acc[subcat]) acc[subcat] = [];
+    acc[subcat].push(page);
+    return acc;
+  }, {} as Record<string, PageStatus[]>);
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[650px] bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
+      <SelectTrigger className="w-[700px] bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
         <SelectValue placeholder="Select a page to edit..." />
       </SelectTrigger>
-      <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] w-[650px] z-50 shadow-2xl">
+      <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] w-[700px] z-50 shadow-2xl">
         {/* Static Pages */}
-        {groupedStatuses.static.length > 0 && (
+        {static_pages.length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2">
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 bg-gray-800/50">
               Static Pages
             </SelectLabel>
-            {groupedStatuses.static.map((status) => (
+            {static_pages.map((status) => (
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
@@ -206,55 +237,76 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         )}
 
         {/* Your Solution */}
-        {groupedStatuses.yourSolution.length > 0 && (
+        {Object.keys(yourSolutionBySubcat).length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2 bg-gray-800/50">
               Your Solution
             </SelectLabel>
-            {groupedStatuses.yourSolution.map((status) => (
-              <SelectItem 
-                key={status.slug} 
-                value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
-              >
-                {getItemLabel(status)}
-              </SelectItem>
+            {Object.entries(yourSolutionBySubcat).map(([subcategory, pages]) => (
+              <div key={subcategory}>
+                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  {subcategory}
+                </div>
+                {pages.map((status) => (
+                  <SelectItem 
+                    key={status.slug} 
+                    value={status.slug}
+                    className={`${getItemClassName(status)} hover:bg-gray-800 pl-10 pr-3 py-2 cursor-pointer transition-colors text-sm`}
+                  >
+                    {getItemLabel(status)}
+                  </SelectItem>
+                ))}
+              </div>
             ))}
           </SelectGroup>
         )}
 
         {/* Products */}
-        {groupedStatuses.products.length > 0 && (
+        {Object.keys(productsBySubcat).length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2 bg-gray-800/50">
               Products
             </SelectLabel>
-            {groupedStatuses.products.map((status) => (
-              <SelectItem 
-                key={status.slug} 
-                value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
-              >
-                {getItemLabel(status)}
-              </SelectItem>
+            {Object.entries(productsBySubcat).map(([subcategory, pages]) => (
+              <div key={subcategory}>
+                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  {subcategory}
+                </div>
+                {pages.map((status) => (
+                  <SelectItem 
+                    key={status.slug} 
+                    value={status.slug}
+                    className={`${getItemClassName(status)} hover:bg-gray-800 pl-10 pr-3 py-2 cursor-pointer transition-colors text-sm`}
+                  >
+                    {getItemLabel(status)}
+                  </SelectItem>
+                ))}
+              </div>
             ))}
           </SelectGroup>
         )}
 
         {/* Solutions */}
-        {groupedStatuses.solutions.length > 0 && (
+        {Object.keys(solutionsBySubcat).length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2 bg-gray-800/50">
               Solutions & Services
             </SelectLabel>
-            {groupedStatuses.solutions.map((status) => (
-              <SelectItem 
-                key={status.slug} 
-                value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
-              >
-                {getItemLabel(status)}
-              </SelectItem>
+            {Object.entries(solutionsBySubcat).map(([subcategory, pages]) => (
+              <div key={subcategory}>
+                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  {subcategory}
+                </div>
+                {pages.map((status) => (
+                  <SelectItem 
+                    key={status.slug} 
+                    value={status.slug}
+                    className={`${getItemClassName(status)} hover:bg-gray-800 pl-10 pr-3 py-2 cursor-pointer transition-colors text-sm`}
+                  >
+                    {getItemLabel(status)}
+                  </SelectItem>
+                ))}
+              </div>
             ))}
           </SelectGroup>
         )}
