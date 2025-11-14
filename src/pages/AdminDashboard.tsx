@@ -433,7 +433,7 @@ const AdminDashboard = () => {
 
   // Sync tabOrder with pageSegments - ensure consistency
   useEffect(() => {
-    if (!user || !selectedPage) return;
+    if (!user || !selectedPage || pageSegments.length === 0) return;
     
     // Get all current segment IDs from pageSegments
     const segmentIds = pageSegments.map(seg => seg.id);
@@ -441,28 +441,38 @@ const AdminDashboard = () => {
     // Remove deleted/non-existent segments from tabOrder
     const validTabOrder = tabOrder.filter(id => segmentIds.includes(id));
     
-    // Add any new segments that aren't in tabOrder yet
+    // Add any new segments that aren't in tabOrder yet (append to end)
     const missingSegments = segmentIds.filter(id => !validTabOrder.includes(id));
     
-    if (missingSegments.length > 0 || validTabOrder.length !== tabOrder.length) {
+    // Only update if there are actual changes needed
+    const hasChanges = missingSegments.length > 0 || validTabOrder.length !== tabOrder.length;
+    
+    if (hasChanges) {
       const newOrder = [...validTabOrder, ...missingSegments];
-      setTabOrder(newOrder);
       
-      // Save to database
-      supabase
-        .from("page_content")
-        .upsert({
-          page_slug: selectedPage,
-          section_key: "tab_order",
-          content_type: "json",
-          content_value: JSON.stringify(newOrder),
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
+      // Check if the order is actually different before updating
+      const isDifferent = JSON.stringify(newOrder) !== JSON.stringify(tabOrder);
+      
+      if (isDifferent) {
+        console.log("Updating tabOrder due to segment changes:", { old: tabOrder, new: newOrder });
+        setTabOrder(newOrder);
+        
+        // Save to database
+        supabase
+          .from("page_content")
+          .upsert({
+            page_slug: selectedPage,
+            section_key: "tab_order",
+            content_type: "json",
+            content_value: JSON.stringify(newOrder),
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key'
+          });
+      }
     }
-  }, [pageSegments, selectedPage, user, tabOrder]);
+  }, [pageSegments, selectedPage, user]);
 
   const checkUserAccess = async () => {
     if (!user) return;
