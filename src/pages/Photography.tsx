@@ -13,6 +13,8 @@ import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
 import { Video } from "@/components/segments/Video";
 import Specification from "@/components/segments/Specification";
+import FullHero from "@/components/segments/FullHero";
+import Intro from "@/components/segments/Intro";
 import { SEOHead } from "@/components/SEOHead";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
@@ -124,6 +126,24 @@ const Photography = () => {
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
           const segments = JSON.parse(item.content_value);
+          
+          // Merge full-hero and intro data from separate entries
+          segments.forEach((segment: any) => {
+            if (segment.type === 'full-hero') {
+              const fullHeroKey = `full_hero_${segment.id}`;
+              const fullHeroData = data.find((d: any) => d.section_key === fullHeroKey);
+              if (fullHeroData) {
+                segment.data = JSON.parse(fullHeroData.content_value);
+              }
+            }
+            if (segment.type === 'intro') {
+              const introData = data.find((d: any) => d.section_key === segment.id);
+              if (introData) {
+                segment.data = JSON.parse(introData.content_value);
+              }
+            }
+          });
+          
           console.log("Loading page_segments:", segments);
           setPageSegments(segments);
         } else if (item.section_key === "tab_order") {
@@ -271,6 +291,12 @@ const Photography = () => {
       }
       if (dynamicSegment.type === 'specification') {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'full-hero') {
+        return <FullHero key={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'intro') {
+        return <Intro key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (
