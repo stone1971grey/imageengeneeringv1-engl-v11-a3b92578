@@ -544,11 +544,16 @@ const AdminDashboard = () => {
 
       // Create a map of segment_key to segment_id
       const registry: Record<string, number> = {};
+      // Create a reverse map of segment_id to segment_key for dynamic labels
+      const reverseRegistry: Record<string, string> = {};
       data?.forEach((item: any) => {
         registry[item.segment_key] = item.segment_id;
+        reverseRegistry[String(item.segment_id)] = item.segment_key;
       });
 
       setSegmentRegistry(registry);
+      // Store reverse registry in a separate state or use it directly below
+      (window as any).__segmentKeyRegistry = reverseRegistry;
       console.log("✅ Loaded segment registry for", selectedPage, ":", registry);
     } catch (error) {
       console.error("Error loading segment registry:", error);
@@ -2955,19 +2960,27 @@ const AdminDashboard = () => {
                     const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === segment.type).length;
                     const displayNumber = sameTypeBefore + 1;
                     
-                    let label = '';
-                    if (segment.type === 'hero') label = `Hero ${displayNumber}`;
-                    if (segment.type === 'product-hero-gallery') label = `Product Gallery ${displayNumber}`;
-                    if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
-                    if (segment.type === 'banner') label = `Banner ${displayNumber}`;
-                    if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
-                    if (segment.type === 'feature-overview') label = `Features ${displayNumber}`;
-                    if (segment.type === 'table') label = `Table ${displayNumber}`;
-                    if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
-                    if (segment.type === 'video') label = `Video ${displayNumber}`;
-                    if (segment.type === 'specification') label = `Specification ${displayNumber}`;
-                    
                     const segmentId = segmentRegistry[tabId] || tabId;
+                    const reverseRegistry = (window as any).__segmentKeyRegistry || {};
+                    const customKey = reverseRegistry[String(segmentId)];
+                    
+                    let label = '';
+                    // Use custom segment_key if available, otherwise use type-based label
+                    if (customKey && customKey !== String(segmentId)) {
+                      label = customKey;
+                    } else {
+                      if (segment.type === 'hero') label = `Hero ${displayNumber}`;
+                      if (segment.type === 'product-hero-gallery') label = `Product Gallery ${displayNumber}`;
+                      if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
+                      if (segment.type === 'banner') label = `Banner ${displayNumber}`;
+                      if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
+                      if (segment.type === 'feature-overview') label = `Features ${displayNumber}`;
+                      if (segment.type === 'table') label = `Table ${displayNumber}`;
+                      if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
+                      if (segment.type === 'video') label = `Video ${displayNumber}`;
+                      if (segment.type === 'specification') label = `Specification ${displayNumber}`;
+                      if (segment.type === 'full-hero') label = `Full Hero ${displayNumber}`;
+                    }
                     
                     return (
                       <SortableTab key={tabId} id={tabId} value={tabId}>
