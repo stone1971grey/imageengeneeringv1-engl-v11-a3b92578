@@ -48,6 +48,7 @@ import { SEOEditor } from '@/components/admin/SEOEditor';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
+import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelect';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
@@ -2054,18 +2055,10 @@ const AdminDashboard = () => {
               <p className="text-gray-600">
                 Editing:
               </p>
-              <Select value={selectedPage} onValueChange={(value) => navigate(`/admin-dashboard?page=${value}`)}>
-                <SelectTrigger className="w-[280px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {availablePages.map((page) => (
-                    <SelectItem key={page.page_slug} value={page.page_slug}>
-                      {page.page_title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <HierarchicalPageSelect 
+                value={selectedPage} 
+                onValueChange={(value) => navigate(`/admin-dashboard?page=${value}`)}
+              />
             </div>
           </div>
           <div className="flex items-center gap-4">
