@@ -81,19 +81,19 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       });
     });
 
-    // Industries
+    // Your Solution (industries in data structure)
     Object.entries(navigationData.industries).forEach(([categoryName, category]: [string, any]) => {
       category.subgroups.forEach((subgroup: any) => {
-        if (!subgroup.link || subgroup.link === '#') return;
-        
         const slug = extractSlugFromUrl(subgroup.link);
-        if (!slug) return;
-
+        
+        // Include all pages, even those with '#' link (show as not created)
+        const displaySlug = slug || `${categoryName.toLowerCase().replace(/\s+/g, '-')}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
+        
         statuses.push({
-          slug,
-          title: `${categoryName} → ${subgroup.name}`,
+          slug: displaySlug,
+          title: `Your Solution → ${categoryName} → ${subgroup.name}`,
           url: subgroup.link,
-          isCMS: cmsPages.has(slug),
+          isCMS: slug ? cmsPages.has(slug) : false,
           isStatic: false,
         });
       });
@@ -102,16 +102,16 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     // Products
     Object.entries(navigationData.products).forEach(([categoryName, category]: [string, any]) => {
       category.subgroups.forEach((subgroup: any) => {
-        if (!subgroup.link || subgroup.link === '#') return;
-        
         const slug = extractSlugFromUrl(subgroup.link);
-        if (!slug) return;
-
+        
+        // Include all pages, even those with '#' link (show as not created)
+        const displaySlug = slug || `${categoryName.toLowerCase().replace(/\s+/g, '-')}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
+        
         statuses.push({
-          slug,
-          title: `${categoryName} → ${subgroup.name}`,
+          slug: displaySlug,
+          title: `Products → ${categoryName} → ${subgroup.name}`,
           url: subgroup.link,
-          isCMS: cmsPages.has(slug),
+          isCMS: slug ? cmsPages.has(slug) : false,
           isStatic: false,
         });
       });
@@ -121,32 +121,30 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     Object.entries(navigationData.solutions).forEach(([categoryName, category]: [string, any]) => {
       if (category.solutions) {
         category.solutions.forEach((solution: any) => {
-          if (!solution.link || solution.link === '#') return;
-          
           const slug = extractSlugFromUrl(solution.link);
-          if (!slug) return;
-
+          
+          const displaySlug = slug || `${categoryName.toLowerCase().replace(/\s+/g, '-')}-${solution.name.toLowerCase().replace(/\s+/g, '-')}`;
+          
           statuses.push({
-            slug,
+            slug: displaySlug,
             title: `${categoryName} → ${solution.name}`,
             url: solution.link,
-            isCMS: cmsPages.has(slug),
+            isCMS: slug ? cmsPages.has(slug) : false,
             isStatic: false,
           });
         });
       }
       if (category.services) {
         category.services.forEach((service: any) => {
-          if (!service.link || service.link === '#') return;
-          
           const slug = extractSlugFromUrl(service.link);
-          if (!slug) return;
-
+          
+          const displaySlug = slug || `${categoryName.toLowerCase().replace(/\s+/g, '-')}-${service.name.toLowerCase().replace(/\s+/g, '-')}`;
+          
           statuses.push({
-            slug,
+            slug: displaySlug,
             title: `${categoryName} → ${service.name}`,
             url: service.link,
-            isCMS: cmsPages.has(slug),
+            isCMS: slug ? cmsPages.has(slug) : false,
             isStatic: false,
           });
         });
@@ -177,20 +175,18 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   // Group by main category
   const groupedStatuses = {
     static: pageStatuses.filter(p => p.isStatic),
-    industries: pageStatuses.filter(p => !p.isStatic && p.title.includes('→') && 
-      Object.keys(navigationData.industries).some(cat => p.title.startsWith(cat))),
-    products: pageStatuses.filter(p => !p.isStatic && p.title.includes('→') && 
-      Object.keys(navigationData.products).some(cat => p.title.startsWith(cat))),
-    solutions: pageStatuses.filter(p => !p.isStatic && p.title.includes('→') && 
-      Object.keys(navigationData.solutions).some(cat => p.title.startsWith(cat))),
+    yourSolution: pageStatuses.filter(p => !p.isStatic && p.title.startsWith('Your Solution →')),
+    products: pageStatuses.filter(p => !p.isStatic && p.title.startsWith('Products →')),
+    solutions: pageStatuses.filter(p => !p.isStatic && !p.title.startsWith('Your Solution →') && 
+      !p.title.startsWith('Products →') && p.title.includes('→')),
   };
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[450px] bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
+      <SelectTrigger className="w-[650px] bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
         <SelectValue placeholder="Select a page to edit..." />
       </SelectTrigger>
-      <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] z-50 shadow-2xl">
+      <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] w-[650px] z-50 shadow-2xl">
         {/* Static Pages */}
         {groupedStatuses.static.length > 0 && (
           <SelectGroup>
@@ -201,7 +197,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
               >
                 {getItemLabel(status)}
               </SelectItem>
@@ -209,17 +205,17 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           </SelectGroup>
         )}
 
-        {/* Industries */}
-        {groupedStatuses.industries.length > 0 && (
+        {/* Your Solution */}
+        {groupedStatuses.yourSolution.length > 0 && (
           <SelectGroup>
             <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
-              Industries
+              Your Solution
             </SelectLabel>
-            {groupedStatuses.industries.map((status) => (
+            {groupedStatuses.yourSolution.map((status) => (
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
               >
                 {getItemLabel(status)}
               </SelectItem>
@@ -237,7 +233,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
               >
                 {getItemLabel(status)}
               </SelectItem>
@@ -249,13 +245,13 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         {groupedStatuses.solutions.length > 0 && (
           <SelectGroup>
             <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
-              Solutions
+              Solutions & Services
             </SelectLabel>
             {groupedStatuses.solutions.map((status) => (
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
               >
                 {getItemLabel(status)}
               </SelectItem>
