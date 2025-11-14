@@ -223,28 +223,49 @@ import ProductMYPRODUCT from "@/pages/ProductMYPRODUCT";
 <Route path="/products/category/my-product" element={<ProductMYPRODUCT />} />
 ```
 
-### 3.2 Preview-Button im AdminDashboard aktualisieren
-**WICHTIG:** Nach dem Hinzufügen der Route MUSS die Preview-URL im AdminDashboard eingetragen werden!
+### 3.3 Navigation-Links aktualisieren
+**WICHTIG:** Nach dem Hinzufügen der Route MUSS die Seite in der Navigation verlinkt werden!
 
-**Datei:** `src/pages/AdminDashboard.tsx` (ca. Zeile 2240+)
+**Dateien:** `src/translations/navigationData*.ts` (alle 5 Sprachen: en, de, zh, ja, ko)
 
-**Füge die neue Route zum `urlMap` hinzu:**
+**Wo die Seite verlinkt werden sollte:**
+1. **Industries > [passende Industrie]** - wenn Seite branchenspezifisch
+2. **Products > [passende Kategorie]** - für Produktseiten
+3. **Services > Standardized** - wenn Standards-konform
+
+**Beispiel IEEE-P2020 (3 Stellen in jeder Sprach-Datei):**
+
 ```typescript
-const urlMap: Record<string, string> = {
-  'photography': '/your-solution/photography',
-  'machine-vision': '/your-solution/machine-vision',
-  'le7': '/products/test-charts/le7',
-  'iq-led': '/products/illumination/iq-led',
-  'my-product': '/products/category/my-product'  // <-- DEINE NEUE ROUTE
-};
+// 1. Industries > Automotive
+"Automotive": {
+  subgroups: [
+    { name: "IEEE-P2020 Testing", link: "/products/standards/ieee-p2020" }
+  ]
+}
+
+// 2. Products > Illumination Devices (oder passende Kategorie)
+"Illumination Devices": {
+  subgroups: [
+    { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" }
+  ]
+}
+
+// 3. Services > Standardized
+"Standardized": {
+  services: [
+    { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" }
+  ]
+}
 ```
 
-**Ohne diesen Schritt:** Preview-Button führt zur Startseite (`/`) statt zur richtigen Seite!
+**Alle 5 Sprach-Dateien aktualisieren:**
+- `navigationData.ts` (EN)
+- `navigationData.de.ts` (DE)
+- `navigationData.zh.ts` (ZH)
+- `navigationData.ja.ts` (JA)
+- `navigationData.ko.ts` (KO)
 
-**Beispiel IEEE-P2020:**
-```typescript
-'ieee-p2020': '/products/standards/ieee-p2020'
-```
+**Ohne diesen Schritt:** Seite ist nicht über Navigation erreichbar, nur via direkter URL!
 
 ---
 

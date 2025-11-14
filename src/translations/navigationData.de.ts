@@ -100,7 +100,7 @@ export const navigationDataDe = {
       description: "Professionelle LED-Beleuchtungssysteme und gleichmäßige Lichtquellen für stabile Testumgebungen",
       subgroups: [
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
-        { name: "IEEE-P2020", link: "#" },
+        { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "Produktionslinienkalibrierung", link: "#" },
         { name: "Flicker (PWM/MMP)", link: "#" },
         { name: "Testchart-Beleuchtung", link: "#" },
@@ -237,7 +237,7 @@ export const navigationDataDe = {
     "Standardized": {
       description: "Testdienstleistungen nach internationalen Standards und Protokollen",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "#" },
+        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
         { name: "VCX (Mobile/Webcam)", link: "#" },
         { name: "IEC 62676-5 (Sicherheit)", link: "#" },
         { name: "EMVA 1288 (Maschinelles Sehen)", link: "#" },

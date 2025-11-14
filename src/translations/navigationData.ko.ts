@@ -100,7 +100,7 @@ export const navigationDataKo = {
       description: "안정적인 테스트 환경을 위한 전문 LED 조명 시스템 및 균일 광원",
       subgroups: [
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
-        { name: "IEEE-P2020", link: "#" },
+        { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "생산 라인 캘리브레이션", link: "#" },
         { name: "플리커(PWM/MMP)", link: "#" },
         { name: "테스트 차트 조명", link: "#" },
@@ -237,7 +237,7 @@ export const navigationDataKo = {
     "Standardized": {
       description: "국제 표준 및 프로토콜에 따른 테스트 서비스",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "#" },
+        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
         { name: "VCX (모바일/웹캠)", link: "#" },
         { name: "IEC 62676-5 (보안)", link: "#" },
         { name: "EMVA 1288 (머신 비전)", link: "#" },
