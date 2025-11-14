@@ -63,7 +63,7 @@ export const navigationDataEn = {
     "Scanners & Archiving": {
       description: "Quality assurance in digitization of documents, books, photos",
       subgroups: [
-        { name: "ISO 21550", link: "#" },
+        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "Universal Test Target", link: "#" },
         { name: "Multispectral Illumination", link: "#" },
         { name: "Scanner Dynamic Range", link: "#" },

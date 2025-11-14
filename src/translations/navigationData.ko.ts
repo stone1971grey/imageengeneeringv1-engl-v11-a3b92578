@@ -63,7 +63,7 @@ export const navigationDataKo = {
     "Scanners & Archiving": {
       description: "문서, 책, 사진 디지털화의 품질 보증",
       subgroups: [
-        { name: "ISO 21550", link: "#" },
+        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "범용 테스트 타겟", link: "#" },
         { name: "다중 스펙트럼 조명", link: "#" },
         { name: "스캐너 다이내믹 레인지", link: "#" },
