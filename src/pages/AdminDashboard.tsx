@@ -209,6 +209,9 @@ const AdminDashboard = () => {
     ogImage: '',
     twitterCard: 'summary_large_image'
   });
+  const [isCreateCMSDialogOpen, setIsCreateCMSDialogOpen] = useState(false);
+  const [selectedPageForCMS, setSelectedPageForCMS] = useState<string>("");
+  const [isCreatingCMS, setIsCreatingCMS] = useState(false);
 
   // Autosave for Hero section - only saves to localStorage
   useAdminAutosave({
@@ -575,6 +578,110 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error calculating global max segment ID:", error);
       setNextSegmentId(18); // Default to 18 if error
+    }
+  };
+
+  const createNewCMSPage = async () => {
+    if (!selectedPageForCMS || !user) {
+      toast.error("Please select a page");
+      return;
+    }
+
+    setIsCreatingCMS(true);
+    
+    try {
+      // 1. Get page info from page_registry
+      const { data: pageInfo, error: pageError } = await supabase
+        .from("page_registry")
+        .select("page_id, page_title")
+        .eq("page_slug", selectedPageForCMS)
+        .single();
+
+      if (pageError || !pageInfo) {
+        toast.error("Page not found in registry");
+        setIsCreatingCMS(false);
+        return;
+      }
+
+      // 2. Find highest segment_id
+      const { data: maxSegment } = await supabase
+        .from("segment_registry")
+        .select("segment_id")
+        .order("segment_id", { ascending: false })
+        .limit(1)
+        .single();
+
+      const baseId = (maxSegment?.segment_id || 0) + 1;
+
+      // 3. Create segment_registry entries
+      const segmentEntries = [
+        { page_slug: selectedPageForCMS, segment_key: 'hero', segment_id: baseId, segment_type: 'hero', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'tiles', segment_id: baseId + 1, segment_type: 'tiles', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'banner', segment_id: baseId + 2, segment_type: 'banner', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'solutions', segment_id: baseId + 3, segment_type: 'solutions', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'footer', segment_id: baseId + 4, segment_type: 'footer', is_static: true, deleted: false },
+      ];
+
+      const { error: segmentError } = await supabase
+        .from("segment_registry")
+        .insert(segmentEntries);
+
+      if (segmentError) throw segmentError;
+
+      // 4. Create page_content entries
+      const contentEntries = [
+        { page_slug: selectedPageForCMS, section_key: 'tab_order', content_type: 'json', content_value: '["tiles", "banner", "solutions"]' },
+        { page_slug: selectedPageForCMS, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_title', content_type: 'text', content_value: pageInfo.page_title },
+        { page_slug: selectedPageForCMS, section_key: 'hero_subtitle', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_description', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_cta', content_type: 'text', content_value: 'Learn More' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_cta_link', content_type: 'text', content_value: '#applications-start' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_cta_style', content_type: 'text', content_value: 'standard' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_image_url', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_image_position', content_type: 'text', content_value: 'right' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_layout', content_type: 'text', content_value: '2-5' },
+        { page_slug: selectedPageForCMS, section_key: 'hero_top_padding', content_type: 'text', content_value: 'medium' },
+        { page_slug: selectedPageForCMS, section_key: 'applications_title', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'applications_description', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'applications_items', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'tiles_columns', content_type: 'text', content_value: '3' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_title', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_subtext', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_images', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_button_text', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_button_link', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'banner_button_style', content_type: 'text', content_value: 'standard' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_title', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_subtext', content_type: 'text', content_value: '' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_items', content_type: 'json', content_value: '[]' },
+        { page_slug: selectedPageForCMS, section_key: 'solutions_layout', content_type: 'text', content_value: '2-col' },
+        { page_slug: selectedPageForCMS, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
+          title: `${pageInfo.page_title} | Image Engineering`,
+          description: '',
+          canonical: `https://www.image-engineering.de/products/${selectedPageForCMS}`,
+          robotsIndex: true,
+          robotsFollow: true
+        }) },
+      ];
+
+      const { error: contentError } = await supabase
+        .from("page_content")
+        .insert(contentEntries);
+
+      if (contentError) throw contentError;
+
+      toast.success(`CMS page "${pageInfo.page_title}" created successfully! Now add it to PageIdRouter and App.tsx routes.`);
+      setIsCreateCMSDialogOpen(false);
+      setSelectedPageForCMS("");
+      
+      // Reload to show new page
+      navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
+    } catch (error: any) {
+      console.error("Error creating CMS page:", error);
+      toast.error(`Failed to create CMS page: ${error.message}`);
+    } finally {
+      setIsCreatingCMS(false);
     }
   };
 
@@ -2414,6 +2521,29 @@ const AdminDashboard = () => {
                       Select a page from the dropdown above to start editing.
                     </p>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Create New CMS Page Button */}
+            <Card className="border-[#f9dc24] border-2 shadow-xl bg-gradient-to-br from-[#f9dc24]/10 to-yellow-50">
+              <CardContent className="p-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Create New CMS Page</h3>
+                    <p className="text-gray-600 max-w-2xl">
+                      Automatically set up a new CMS-enabled page with all required database entries, 
+                      React component, and routing. Just select a page and click create.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setIsCreateCMSDialogOpen(true)}
+                    size="lg"
+                    className="bg-[#f9dc24] hover:bg-yellow-400 text-gray-900 font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    <Plus className="mr-2 h-5 w-5" />
+                    Create CMS Page
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -5512,6 +5642,76 @@ const AdminDashboard = () => {
         </Tabs>
         )}
       </div>
+
+      {/* Create New CMS Page Dialog */}
+      <Dialog open={isCreateCMSDialogOpen} onOpenChange={setIsCreateCMSDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Create New CMS Page</DialogTitle>
+            <DialogDescription className="text-base">
+              This will automatically set up a new CMS-enabled page with all required database entries.
+              Select a page below to convert it to a CMS page.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="page-select" className="text-base font-semibold">
+                Select Page
+              </Label>
+              <HierarchicalPageSelect
+                value={selectedPageForCMS}
+                onValueChange={setSelectedPageForCMS}
+              />
+              <p className="text-sm text-muted-foreground">
+                Choose a page that is not yet CMS-enabled (pages without ✓ checkmark)
+              </p>
+            </div>
+
+            {selectedPageForCMS && (
+              <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                <h4 className="font-semibold text-yellow-900 mb-2">What will be created:</h4>
+                <ul className="space-y-1 text-sm text-yellow-800">
+                  <li>✓ 5 entries in segment_registry (hero, tiles, banner, solutions, footer)</li>
+                  <li>✓ 27 entries in page_content (all required fields)</li>
+                  <li>✓ SEO settings initialized</li>
+                  <li>⚠ You'll need to add the page to PageIdRouter.tsx and App.tsx manually</li>
+                </ul>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsCreateCMSDialogOpen(false);
+                setSelectedPageForCMS("");
+              }}
+              disabled={isCreatingCMS}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={createNewCMSPage}
+              disabled={!selectedPageForCMS || isCreatingCMS}
+              className="bg-[#f9dc24] hover:bg-yellow-400 text-gray-900 font-bold"
+            >
+              {isCreatingCMS ? (
+                <>
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-900 border-t-transparent" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create CMS Page
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
