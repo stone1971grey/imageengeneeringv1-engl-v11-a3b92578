@@ -158,12 +158,12 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
 
   const getItemClassName = (status: PageStatus) => {
     if (status.isCMS) {
-      return "text-[#f9dc24] font-semibold"; // Yellow - CMS pages
+      return "text-[#f9dc24] font-semibold bg-gray-900"; // Yellow - CMS pages
     }
     if (status.isStatic) {
-      return "text-gray-500"; // Gray - Static pages
+      return "text-gray-500 bg-gray-900"; // Gray - Static pages
     }
-    return "text-gray-900"; // Black - Not yet created
+    return "text-gray-300 bg-gray-900"; // Light gray - Not yet created
   };
 
   const getItemLabel = (status: PageStatus) => {
@@ -187,19 +187,21 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[400px] bg-white">
+      <SelectTrigger className="w-[450px] bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
         <SelectValue placeholder="Select a page to edit..." />
       </SelectTrigger>
-      <SelectContent className="bg-white max-h-[500px] z-50">
+      <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] z-50 shadow-2xl">
         {/* Static Pages */}
         {groupedStatuses.static.length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-sm font-bold text-gray-700">Static Pages</SelectLabel>
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2">
+              Static Pages
+            </SelectLabel>
             {groupedStatuses.static.map((status) => (
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={getItemClassName(status)}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
               >
                 {getItemLabel(status)}
               </SelectItem>
@@ -210,12 +212,14 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         {/* Industries */}
         {groupedStatuses.industries.length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-sm font-bold text-gray-700">Industries</SelectLabel>
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
+              Industries
+            </SelectLabel>
             {groupedStatuses.industries.map((status) => (
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={getItemClassName(status)}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
               >
                 {getItemLabel(status)}
               </SelectItem>
@@ -226,12 +230,14 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         {/* Products */}
         {groupedStatuses.products.length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-sm font-bold text-gray-700">Products</SelectLabel>
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
+              Products
+            </SelectLabel>
             {groupedStatuses.products.map((status) => (
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={getItemClassName(status)}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
               >
                 {getItemLabel(status)}
               </SelectItem>
@@ -242,12 +248,14 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         {/* Solutions */}
         {groupedStatuses.solutions.length > 0 && (
           <SelectGroup>
-            <SelectLabel className="text-sm font-bold text-gray-700">Solutions</SelectLabel>
+            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2">
+              Solutions
+            </SelectLabel>
             {groupedStatuses.solutions.map((status) => (
               <SelectItem 
                 key={status.slug} 
                 value={status.slug}
-                className={getItemClassName(status)}
+                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors`}
               >
                 {getItemLabel(status)}
               </SelectItem>
@@ -256,18 +264,25 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         )}
 
         {/* Legend */}
-        <div className="px-2 py-3 border-t border-gray-200 text-xs space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[#f9dc24] font-semibold">✓ Yellow</span>
-            <span className="text-gray-600">= CMS Page (editable)</span>
+        <div className="px-4 py-4 border-t border-gray-700 bg-gray-950 text-xs space-y-2 mt-2">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#f9dc24]"></div>
+              <span className="text-[#f9dc24] font-semibold">✓</span>
+            </div>
+            <span className="text-gray-400">CMS Page (editable)</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-500">Gray</span>
-            <span className="text-gray-600">= Static Page</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+            </div>
+            <span className="text-gray-400">Static Page</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-900">Black</span>
-            <span className="text-gray-600">= Not yet created</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gray-300"></div>
+            </div>
+            <span className="text-gray-400">Not yet created</span>
           </div>
         </div>
       </SelectContent>
