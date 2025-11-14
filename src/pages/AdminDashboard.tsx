@@ -148,7 +148,7 @@ const AdminDashboard = () => {
   
   // Get selected page from URL parameter
   const searchParams = new URLSearchParams(location.search);
-  const selectedPage = searchParams.get('page') || 'photography';
+  const selectedPage = searchParams.get('page') || '';
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [saving, setSaving] = useState(false);
@@ -2256,7 +2256,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* SEO Editor - Conditional Rendering */}
-        {isSEOEditorOpen && (
+        {isSEOEditorOpen && selectedPage && (
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>SEO Settings for {selectedPage}</CardTitle>
@@ -2276,6 +2276,90 @@ const AdminDashboard = () => {
           </Card>
         )}
 
+        {/* Welcome Screen - Show when no page is selected */}
+        {!selectedPage && (
+          <Card className="mb-8 border-2 border-[#f9dc24]">
+            <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+              <CardTitle className="text-3xl flex items-center gap-3">
+                <span className="text-[#f9dc24]">👋</span> Welcome to the CMS Admin Dashboard
+              </CardTitle>
+              <CardDescription className="text-lg text-gray-300 mt-2">
+                Your central hub for managing all CMS pages
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">🚀 Getting Started</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Select a page from the dropdown above to start editing its content. 
+                    Pages marked in <span className="text-[#f9dc24] font-semibold">yellow</span> are CMS-managed and fully editable.
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <h3 className="text-xl font-semibold mb-3 text-gray-900">📋 Available Features</h3>
+                  <ul className="space-y-2 text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f9dc24] font-bold">•</span>
+                      <span><strong>Hero Section:</strong> Edit main page hero with image, title, description</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f9dc24] font-bold">•</span>
+                      <span><strong>Tiles:</strong> Create feature cards with icons and CTAs</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f9dc24] font-bold">•</span>
+                      <span><strong>Banner:</strong> Add promotional banners with images</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f9dc24] font-bold">•</span>
+                      <span><strong>Solutions:</strong> Showcase product solutions</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f9dc24] font-bold">•</span>
+                      <span><strong>Meta Navigation:</strong> In-page navigation anchors</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-[#f9dc24] font-bold">•</span>
+                      <span><strong>SEO Settings:</strong> Configure meta tags, descriptions, and keywords</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                  <h3 className="text-xl font-semibold mb-3 text-blue-900">💡 Pro Tips</h3>
+                  <ul className="space-y-2 text-blue-900">
+                    <li className="flex items-start gap-2">
+                      <span className="font-bold">1.</span>
+                      <span>Use the <strong>Preview Frontend</strong> button to see your changes live</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-bold">2.</span>
+                      <span>Changes are auto-saved as you work</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-bold">3.</span>
+                      <span>Drag tabs to reorder page segments</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="font-bold">4.</span>
+                      <span>Use <strong>Add New Segment</strong> to extend pages with more content types</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="text-center pt-4">
+                  <p className="text-gray-600 text-lg">
+                    Ready to start? Select a page from the dropdown above! 👆
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedPage && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <DndContext
             sensors={sensors}
@@ -5093,7 +5177,7 @@ const AdminDashboard = () => {
 
                   {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && segment.type !== 'video' && segment.type !== 'specification' && segment.type !== 'product-hero-gallery' && segment.type !== 'meta-navigation' && segment.type !== 'banner' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
-                      <p className="text-white text-center">
+                       <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.
                       </p>
                     </div>
@@ -5103,6 +5187,7 @@ const AdminDashboard = () => {
             </TabsContent>
           ))}
         </Tabs>
+        )}
       </div>
     </div>
   );
