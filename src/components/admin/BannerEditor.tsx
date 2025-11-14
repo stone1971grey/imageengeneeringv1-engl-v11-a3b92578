@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
+import { extractImageMetadata, ImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
 interface BannerImage {
   url: string;
@@ -186,12 +186,56 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                   )}
                 </div>
 
+                {/* Image Metadata Display */}
+                {image.metadata && (
+                  <div className="bg-gray-800 border border-gray-600 rounded-lg p-3 space-y-2">
+                    <h5 className="font-medium text-sm text-[#f9dc24]">Image Information</h5>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-400">Original Name:</span>
+                        <p className="text-white truncate" title={image.metadata.originalFileName}>
+                          {image.metadata.originalFileName}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-400">Dimensions:</span>
+                        <p className="text-white">{image.metadata.width} × {image.metadata.height} px</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-400">File Size:</span>
+                        <p className="text-white">{formatFileSize(image.metadata.fileSizeKB)}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-400">Format:</span>
+                        <p className="text-white">{image.metadata.format}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-400">Uploaded:</span>
+                        <p className="text-white">{formatUploadDate(image.metadata.uploadDate)}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="font-medium text-gray-400">Storage URL:</span>
+                        <p className="text-white text-xs truncate" title={image.metadata.url}>
+                          {image.metadata.url.split('/').pop()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Alt Text */}
                 <div>
-                  <Label className="text-white mb-2 block">Alt Text</Label>
+                  <Label className="text-white mb-2 block">Alt Text (SEO & Accessibility)</Label>
                   <Input
-                    value={image.alt || ''}
-                    onChange={(e) => handleImageChange(index, 'alt', e.target.value)}
+                    value={image.metadata?.altText || image.alt || ''}
+                    onChange={(e) => {
+                      const updatedImages = [...data.images];
+                      if (updatedImages[index].metadata) {
+                        updatedImages[index].metadata!.altText = e.target.value;
+                      }
+                      updatedImages[index].alt = e.target.value;
+                      onChange({ ...data, images: updatedImages });
+                    }}
                     placeholder="Descriptive alt text"
                     className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black placeholder:text-gray-400"
                   />

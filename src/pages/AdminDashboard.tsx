@@ -2986,13 +2986,17 @@ const AdminDashboard = () => {
             <HeroSectionEditor
               content={content}
               heroImageUrl={heroImageUrl}
+              heroImageMetadata={heroImageMetadata}
               heroImagePosition={heroImagePosition}
               heroLayout={heroLayout}
               heroTopPadding={heroTopPadding}
               heroCtaLink={heroCtaLink}
               heroCtaStyle={heroCtaStyle}
               onContentChange={(key, value) => setContent({ ...content, [key]: value })}
-              onHeroImageUrlChange={setHeroImageUrl}
+              onHeroImageUrlChange={(url, metadata) => {
+                setHeroImageUrl(url);
+                if (metadata) setHeroImageMetadata(metadata);
+              }}
               onHeroImagePositionChange={setHeroImagePosition}
               onHeroLayoutChange={setHeroLayout}
               onHeroTopPaddingChange={setHeroTopPadding}
