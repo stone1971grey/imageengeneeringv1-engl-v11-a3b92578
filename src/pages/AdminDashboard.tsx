@@ -2278,85 +2278,317 @@ const AdminDashboard = () => {
 
         {/* Welcome Screen - Show when no page is selected or page has no segments */}
         {(!selectedPage || pageSegments.length === 0) ? (
-          <Card className="mb-8 border-2 border-[#f9dc24]">
-            <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
-              <CardTitle className="text-3xl flex items-center gap-3">
-                <span className="text-[#f9dc24]">👋</span> Welcome to the CMS Admin Dashboard
-              </CardTitle>
-              <CardDescription className="text-lg text-gray-300 mt-2">
-                Your central hub for managing all CMS pages
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-8">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">🚀 Getting Started</h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    Select a page from the dropdown above to start editing its content. 
-                    Pages marked in <span className="text-[#f9dc24] font-semibold">yellow</span> are CMS-managed and fully editable.
-                  </p>
+          <div className="space-y-6">
+            {/* Hero Section */}
+            <Card className="border-none shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
+              <CardContent className="p-12">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-16 w-16 rounded-2xl bg-[#f9dc24] flex items-center justify-center shadow-lg">
+                        <span className="text-3xl font-black text-gray-900">L</span>
+                      </div>
+                      <div>
+                        <h1 className="text-5xl font-black text-white tracking-tight">
+                          Love CMS
+                        </h1>
+                        <p className="text-xl text-gray-400 mt-1">Content Management System</p>
+                      </div>
+                    </div>
+                    <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
+                      Welcome to your central hub for managing all CMS pages. 
+                      Select a page from the dropdown above to start editing.
+                    </p>
+                  </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <h3 className="text-xl font-semibold mb-3 text-gray-900">📋 Available Features</h3>
-                  <ul className="space-y-2 text-gray-700">
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f9dc24] font-bold">•</span>
-                      <span><strong>Hero Section:</strong> Edit main page hero with image, title, description</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f9dc24] font-bold">•</span>
-                      <span><strong>Tiles:</strong> Create feature cards with icons and CTAs</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f9dc24] font-bold">•</span>
-                      <span><strong>Banner:</strong> Add promotional banners with images</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f9dc24] font-bold">•</span>
-                      <span><strong>Solutions:</strong> Showcase product solutions</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f9dc24] font-bold">•</span>
-                      <span><strong>Meta Navigation:</strong> In-page navigation anchors</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-[#f9dc24] font-bold">•</span>
-                      <span><strong>SEO Settings:</strong> Configure meta tags, descriptions, and keywords</span>
-                    </li>
-                  </ul>
-                </div>
+            {/* Available Segments Grid */}
+            <Card className="border-gray-200 shadow-lg">
+              <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-[#f9dc24] flex items-center justify-center">
+                    <Plus className="h-6 w-6 text-gray-900" />
+                  </div>
+                  Available Content Segments
+                </CardTitle>
+                <CardDescription className="text-base text-gray-600 mt-2">
+                  Build your pages using these powerful content segments
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Hero Segment */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[#f9dc24] to-yellow-300 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Eye className="h-7 w-7 text-gray-900" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Hero Section</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Main page hero with image, title, description and CTA button
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#f9dc24] to-yellow-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
 
-                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                  <h3 className="text-xl font-semibold mb-3 text-blue-900">💡 Pro Tips</h3>
-                  <ul className="space-y-2 text-blue-900">
-                    <li className="flex items-start gap-2">
-                      <span className="font-bold">1.</span>
-                      <span>Use the <strong>Preview Frontend</strong> button to see your changes live</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="font-bold">2.</span>
-                      <span>Changes are auto-saved as you work</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="font-bold">3.</span>
-                      <span>Drag tabs to reorder page segments</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="font-bold">4.</span>
-                      <span>Use <strong>Add New Segment</strong> to extend pages with more content types</span>
-                    </li>
-                  </ul>
-                </div>
+                  {/* Tiles Segment */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <GripVertical className="h-7 w-7 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Tiles</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Feature cards with icons, titles, descriptions and CTA links
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
 
-                <div className="text-center pt-4">
-                  <p className="text-gray-600 text-lg">
-                    Ready to start? Select a page from the dropdown above! 👆
-                  </p>
+                  {/* Banner Segment */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Banner</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Promotional banners with images, title and call-to-action
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Solutions Segment */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Solutions</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Showcase product solutions with images and descriptions
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-green-500 to-green-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Meta Navigation */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Meta Navigation</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          In-page navigation with anchor links to content sections
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Product Hero Gallery */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Product Gallery</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Image gallery carousel for product showcase
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Feature Overview */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Feature Overview</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Highlight key features with icons and descriptions
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Table */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Table</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Structured data tables with customizable columns and rows
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* FAQ */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-red-500 to-red-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">FAQ</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Frequently asked questions with expandable answers
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-red-500 to-red-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Video */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Video</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Embedded video player with preview image and controls
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Specification */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Specification</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Technical specifications with detailed parameters
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-500 to-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
+
+                  {/* Image-Text */}
+                  <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                    <div className="p-6 space-y-4">
+                      <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-lime-500 to-lime-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">Image-Text</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Combined image and text content with flexible layouts
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-lime-500 to-lime-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Quick Start Guide */}
+            <Card className="border-[#f9dc24] border-2 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-[#f9dc24]/10 to-yellow-50">
+                <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-[#f9dc24] flex items-center justify-center">
+                    <svg className="h-6 w-6 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  Quick Start
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <ol className="space-y-4">
+                  <li className="flex items-start gap-4">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
+                      1
+                    </div>
+                    <div>
+                      <p className="text-gray-900 font-semibold">Select a Page</p>
+                      <p className="text-sm text-gray-600">Choose a CMS page from the dropdown menu above</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
+                      2
+                    </div>
+                    <div>
+                      <p className="text-gray-900 font-semibold">Edit Content</p>
+                      <p className="text-sm text-gray-600">Use the segment tabs to modify your page content</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
+                      3
+                    </div>
+                    <div>
+                      <p className="text-gray-900 font-semibold">Preview Changes</p>
+                      <p className="text-sm text-gray-600">Click Preview Frontend to see your changes live</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-4">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-[#f9dc24] flex items-center justify-center font-bold text-gray-900">
+                      4
+                    </div>
+                    <div>
+                      <p className="text-gray-900 font-semibold">Add Segments</p>
+                      <p className="text-sm text-gray-600">Use Add New Segment to extend your pages</p>
+                    </div>
+                  </li>
+                </ol>
+              </CardContent>
+            </Card>
+          </div>
         ) : (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <DndContext
