@@ -689,7 +689,7 @@ const AdminDashboard = () => {
       
       // Show info about what was created
       setTimeout(() => {
-        toast.success(`✅ CMS setup complete! Now create:\n1. src/pages/${componentName}.tsx (copy from MachineVision.tsx)\n2. Add import in App.tsx\n3. Add route in App.tsx\n4. Add to PageIdRouter.tsx`);
+        toast.success(`✅ CMS setup complete! Now:\n1. Copy MachineVision.tsx → ${componentName}.tsx\n2. Update page_slug (2x)\n3. App.tsx: import ${componentName}\n4. App.tsx: <Route path="/your-solution/.../${selectedPageForCMS}" element={<${componentName} />} />\n5. PageIdRouter.tsx: Add to pageComponentMap`);
       }, 1000);
       
     } catch (error: any) {
@@ -5703,8 +5703,9 @@ const AdminDashboard = () => {
                 <ul className="space-y-1 text-sm text-blue-800">
                   <li>1️⃣ Copy src/pages/MachineVision.tsx to src/pages/{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}.tsx</li>
                   <li>2️⃣ Update page_slug in the new file (2 places)</li>
-                  <li>3️⃣ Add import and route in App.tsx</li>
-                  <li>4️⃣ Add to PageIdRouter.tsx mapping</li>
+                  <li>3️⃣ <strong>App.tsx</strong>: Add import: <code className="text-xs bg-white px-1 rounded">import {selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')} from "./pages/{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}"</code></li>
+                  <li>4️⃣ <strong>App.tsx</strong>: Add route: <code className="text-xs bg-white px-1 rounded">&lt;Route path="/your-solution/.../{ selectedPageForCMS}" element=&#123;&lt;{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')} /&gt;&#125; /&gt;</code></li>
+                  <li>5️⃣ <strong>PageIdRouter.tsx</strong>: Add to pageComponentMap if using page_id routing</li>
                 </ul>
               </div>
             )}
