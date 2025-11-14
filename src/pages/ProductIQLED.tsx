@@ -176,6 +176,7 @@ const ProductIQLED = () => {
 
   const getLayoutClasses = () => {
     const layouts: Record<string, string> = {
+      "50-50": "md:grid-cols-2",
       "1-6": "md:grid-cols-[1fr_6fr]",
       "2-5": "md:grid-cols-[2fr_5fr]",
       "3-4": "md:grid-cols-[3fr_4fr]",
@@ -189,11 +190,11 @@ const ProductIQLED = () => {
   const getPaddingClass = () => {
     const paddings: Record<string, string> = {
       none: "pt-0",
-      small: "pt-32 md:pt-40",
-      medium: "pt-40 md:pt-56",
-      large: "pt-56 md:pt-64",
+      small: "pt-8 md:pt-12",
+      medium: "pt-16 md:pt-20",
+      large: "pt-24 md:pt-32",
     };
-    return paddings[heroTopPadding] || "pt-40 md:pt-56";
+    return paddings[heroTopPadding] || "pt-16 md:pt-20";
   };
 
   const getButtonClasses = (style: string) => {
