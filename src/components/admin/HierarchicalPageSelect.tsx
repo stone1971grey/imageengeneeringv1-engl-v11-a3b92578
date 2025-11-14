@@ -226,7 +226,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   };
 
   const getItemLabel = (status: PageStatus) => {
-    let label = status.title;
+    let label = `${status.title} [${status.slug}]`;
     if (status.isCMS) {
       label += " ✓";
     }
