@@ -40,11 +40,11 @@ const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
 
   const getTopPaddingClass = () => {
     switch (topSpacing) {
-      case 'small': return 'pt-16';
-      case 'medium': return 'pt-24';
-      case 'large': return 'pt-32';
-      case 'extra-large': return 'pt-40';
-      default: return 'pt-24';
+      case 'small': return 'pt-32 md:pt-40';
+      case 'medium': return 'pt-40 md:pt-56';
+      case 'large': return 'pt-56 md:pt-64';
+      case 'extra-large': return 'pt-64 md:pt-72';
+      default: return 'pt-40 md:pt-56';
     }
   };
 
