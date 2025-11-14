@@ -101,7 +101,19 @@ const ISO21550 = () => {
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
           const segments = JSON.parse(item.content_value);
-          console.log("Loading page_segments:", segments);
+          
+          // Merge full-hero data from separate entries
+          segments.forEach((segment: any) => {
+            if (segment.type === 'full-hero') {
+              const fullHeroKey = `full_hero_${segment.id}`;
+              const fullHeroData = data.find((d: any) => d.section_key === fullHeroKey);
+              if (fullHeroData) {
+                segment.data = JSON.parse(fullHeroData.content_value);
+              }
+            }
+          });
+          
+          console.log("Loading page_segments with merged data:", segments);
           setPageSegments(segments);
         } else if (item.section_key === "tab_order") {
           try {
