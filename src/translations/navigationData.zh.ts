@@ -63,7 +63,7 @@ export const navigationDataZh = {
     "Scanners & Archiving": {
       description: "文档、书籍、照片数字化的质量保证",
       subgroups: [
-        { name: "ISO 21550", link: "#" },
+        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "通用测试目标", link: "#" },
         { name: "多光谱照明", link: "#" },
         { name: "扫描仪动态范围", link: "#" },

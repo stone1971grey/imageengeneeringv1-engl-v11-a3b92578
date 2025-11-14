@@ -63,7 +63,7 @@ export const navigationDataJa = {
     "Scanners & Archiving": {
       description: "文書、書籍、写真のデジタル化における品質保証",
       subgroups: [
-        { name: "ISO 21550", link: "#" },
+        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "ユニバーサルテストターゲット", link: "#" },
         { name: "マルチスペクトル照明", link: "#" },
         { name: "スキャナーダイナミックレンジ", link: "#" },

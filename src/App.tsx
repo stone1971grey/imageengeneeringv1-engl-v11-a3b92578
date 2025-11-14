@@ -18,6 +18,7 @@ import MedicalEndoscopy from "./pages/MedicalEndoscopy";
 import MachineVision from "./pages/MachineVision";
 import WebCamera from "./pages/WebCamera";
 import MobilePhone from "./pages/MobilePhone";
+import ISO21550 from "./pages/ISO21550";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import ProductLE7 from "./pages/ProductLE7";
@@ -87,6 +88,7 @@ const App = () => (
         <Route path="/your-solution/web-camera" element={<WebCamera />} />
         <Route path="/your-solution/mobile-phone" element={<MobilePhone />} />
         <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
+        <Route path="/your-solution/scanners-archiving/iso-21550" element={<ISO21550 />} />
         
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />

@@ -63,7 +63,7 @@ export const navigationDataDe = {
     "Scanners & Archiving": {
       description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos",
       subgroups: [
-        { name: "ISO 21550", link: "#" },
+        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "Universelles Testziel", link: "#" },
         { name: "Multispektrale Beleuchtung", link: "#" },
         { name: "Scanner-Dynamikbereich", link: "#" },

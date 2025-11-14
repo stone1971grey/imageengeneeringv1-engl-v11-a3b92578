@@ -2334,6 +2334,7 @@ const AdminDashboard = () => {
                   'in-cabin-testing': '/your-solution/automotive/in-cabin-testing',
                   'photography': '/your-solution/photography',
                   'scanners-archiving': '/your-solution/scanners-archiving',
+                  'iso-21550': '/your-solution/scanners-archiving/iso-21550',
                   'medical-endoscopy': '/your-solution/medical-endoscopy',
                   'web-camera': '/your-solution/web-camera',
                   'machine-vision': '/your-solution/machine-vision',
