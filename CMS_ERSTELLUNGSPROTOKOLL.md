@@ -146,8 +146,9 @@ Erstelle `src/pages/ProductMYPRODUCT.tsx` (PascalCase)
 const ProductMYPRODUCT = () => {
 ```
 
-### 2.3 Segment-Rendering-Logik (NICHT ÄNDERN!)
-Die `renderSegment()` Funktion MUSS exakt wie in Machine Vision sein:
+### 2.3 Segment-Rendering-Logik (KRITISCH für Anker!)
+
+**WICHTIG:** Statische Segmente MÜSSEN `segmentIdMap` verwenden für IDs!
 
 ```typescript
 const renderSegment = (segmentId: string) => {
@@ -155,24 +156,58 @@ const renderSegment = (segmentId: string) => {
   const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
   if (dynamicSegment) {
     // Meta-Navigation, Tables, FAQs, etc.
-    // ... exakter Code wie in MachineVision.tsx
   }
 
-  // 2. Statische Segmente
+  // 2. Statische Segmente - KRITISCH: segmentIdMap verwenden!
+  if (segmentId === 'hero') {
+    return (
+      <section id={segmentIdMap['hero']?.toString() || 'hero'}>
+        {/* Hero Content */}
+      </section>
+    );
+  }
+
   if (segmentId === 'tiles') {
-    // ... exakter Code wie in MachineVision.tsx
+    return (
+      <section id={segmentIdMap['tiles']?.toString() || 'tiles'}>
+        {/* Tiles Content */}
+      </section>
+    );
   }
   
   if (segmentId === 'banner') {
-    // ... exakter Code wie in MachineVision.tsx
+    return (
+      <section id={segmentIdMap['banner']?.toString() || 'banner'}>
+        {/* Banner Content */}
+      </section>
+    );
   }
   
   if (segmentId === 'solutions') {
-    // ... exakter Code wie in MachineVision.tsx
+    return (
+      <section id={segmentIdMap['solutions']?.toString() || 'solutions'}>
+        {/* Solutions Content */}
+      </section>
+    );
   }
 
   return null;
 };
+```
+
+**Warum kritisch:**
+- Meta-Navigation resolved "tiles" → segment_id (z.B. "121")
+- Section muss `id="121"` haben, nicht `id="tiles"`
+- Ohne segmentIdMap funktioniert Anker-Scrolling NICHT
+
+**Typischer Fehler:**
+```typescript
+// ❌ FALSCH - Anker funktioniert nicht
+<section id={segmentId}> // segmentId = "tiles"
+
+// ✅ RICHTIG - Anker funktioniert
+<section id={segmentIdMap['tiles']?.toString() || 'tiles'}> // = "121"
+```
 ```
 
 **KRITISCH:** Die statischen Segmente verwenden:
@@ -425,6 +460,58 @@ const urlMap: Record<string, string> = {
 };
 ```
 **Testen:** Nach Fix: Preview-Button klicken → korrekte Seite öffnet sich
+
+### ❌ FEHLER 8: Anker-Scrolling funktioniert nicht
+**Problem:** Meta-Navigation-Links scrollen nicht zu Segmenten  
+**Symptom:** Klick auf Meta-Nav Link → nichts passiert oder Seite scrollt nicht  
+**Root Cause:** Statische Segmente verwenden `id={segmentId}` statt `id={segmentIdMap[segmentId]}`
+
+**Wie es schief geht:**
+1. Meta-Navigation resolved "tiles" → segment_id "121" (aus DB)
+2. Link wird zu `<a href="#121">`
+3. Section hat aber `id="tiles"` → Element wird nicht gefunden!
+
+**❌ FALSCHER Code:**
+```typescript
+if (segmentId === 'tiles') {
+  return (
+    <section id={segmentId}> // id="tiles" - FALSCH!
+      {/* Content */}
+    </section>
+  );
+}
+```
+
+**✅ RICHTIGER Code:**
+```typescript
+if (segmentId === 'tiles') {
+  return (
+    <section id={segmentIdMap['tiles']?.toString() || 'tiles'}> // id="121" - KORREKT!
+      {/* Content */}
+    </section>
+  );
+}
+```
+
+**Alle statischen Segmente fixen:**
+```typescript
+// Hero
+<section id={segmentIdMap['hero']?.toString() || 'hero'}>
+
+// Tiles
+<section id={segmentIdMap['tiles']?.toString() || 'tiles'}>
+
+// Banner
+<section id={segmentIdMap['banner']?.toString() || 'banner'}>
+
+// Solutions
+<section id={segmentIdMap['solutions']?.toString() || 'solutions'}>
+```
+
+**Testen:**
+1. Meta-Navigation anlegen mit Links zu hero, tiles, banner, solutions
+2. Link klicken → smooth scroll zu Segment
+3. Browser-Inspektor: Section hat numerische ID (z.B. `id="121"`)
 
 ---
 

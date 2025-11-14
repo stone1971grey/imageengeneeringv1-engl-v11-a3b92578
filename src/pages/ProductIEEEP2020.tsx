@@ -433,7 +433,7 @@ const ProductIEEEP2020 = () => {
       };
       
       return (
-        <section key={segmentId} id={segmentId} className={`relative ${heroData.hero_top_padding === 'none' ? 'pt-16' : heroData.hero_top_padding === 'small' ? 'pt-24' : heroData.hero_top_padding === 'large' ? 'pt-32' : 'pt-28'} md:${heroData.hero_top_padding === 'none' ? 'pt-20' : heroData.hero_top_padding === 'small' ? 'pt-28' : heroData.hero_top_padding === 'large' ? 'pt-40' : 'pt-32'} pb-16 bg-gray-50`}>
+        <section key={segmentId} id={segmentIdMap['hero']?.toString() || 'hero'} className={`relative ${heroData.hero_top_padding === 'none' ? 'pt-16' : heroData.hero_top_padding === 'small' ? 'pt-24' : heroData.hero_top_padding === 'large' ? 'pt-32' : 'pt-28'} md:${heroData.hero_top_padding === 'none' ? 'pt-20' : heroData.hero_top_padding === 'small' ? 'pt-28' : heroData.hero_top_padding === 'large' ? 'pt-40' : 'pt-32'} pb-16 bg-gray-50`}>
           <div className="container mx-auto px-6">
             <div className={`grid gap-12 items-center ${
               heroData.hero_layout === '1-1' ? 'md:grid-cols-2' :
@@ -512,7 +512,7 @@ const ProductIEEEP2020 = () => {
 
     if (segmentId === 'tiles') {
       return (
-        <section key={segmentId} id={segmentId} className="py-8 bg-gray-50">
+        <section key={segmentId} id={segmentIdMap['tiles']?.toString() || 'tiles'} className="py-8 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               {content.applications_title && (
@@ -614,7 +614,7 @@ const ProductIEEEP2020 = () => {
 
     if (segmentId === 'banner') {
       return (
-        <section key={segmentId} id={segmentId} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+        <section key={segmentId} id={segmentIdMap['banner']?.toString() || 'banner'} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
           <div className="container mx-auto px-4 text-center">
             {bannerTitle && (
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -687,7 +687,7 @@ const ProductIEEEP2020 = () => {
 
     if (segmentId === 'solutions') {
       return (
-        <section key={segmentId} id={segmentId} className="bg-gray-50 py-20">
+        <section key={segmentId} id={segmentIdMap['solutions']?.toString() || 'solutions'} className="bg-gray-50 py-20">
           <div className="w-full px-6">
             {(solutionsTitle || solutionsSubtext) && (
               <div className="text-center mb-16">
