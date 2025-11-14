@@ -2276,8 +2276,8 @@ const AdminDashboard = () => {
           </Card>
         )}
 
-        {/* Welcome Screen - Show when no page is selected */}
-        {!selectedPage && (
+        {/* Welcome Screen - Show when no page is selected or page has no segments */}
+        {(!selectedPage || pageSegments.length === 0) && (
           <Card className="mb-8 border-2 border-[#f9dc24]">
             <CardHeader className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
               <CardTitle className="text-3xl flex items-center gap-3">
@@ -2359,7 +2359,7 @@ const AdminDashboard = () => {
           </Card>
         )}
 
-        {selectedPage && (
+        {selectedPage && pageSegments.length > 0 && (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <DndContext
             sensors={sensors}
