@@ -24,6 +24,7 @@ interface PageStatus {
   isStatic: boolean;
   category?: string;
   subcategory?: string;
+  isMainCategory?: boolean;
 }
 
 export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPageSelectProps) => {
@@ -85,11 +86,27 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
 
     // Your Solution (industries in data structure)
     Object.entries(navigationData.industries).forEach(([categoryName, category]: [string, any]) => {
+      // Add main category page
+      const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '');
+      const categoryUrl = `/your-solution/${categorySlug}`;
+      
+      statuses.push({
+        slug: categorySlug,
+        title: categoryName,
+        url: categoryUrl,
+        isCMS: cmsPages.has(categorySlug),
+        isStatic: false,
+        category: 'Your Solution',
+        subcategory: categoryName,
+        isMainCategory: true,
+      });
+      
+      // Add subpages
       category.subgroups.forEach((subgroup: any) => {
         const slug = extractSlugFromUrl(subgroup.link);
         
         // Include all pages, even those with '#' link (show as not created)
-        const displaySlug = slug || `${categoryName.toLowerCase().replace(/\s+/g, '-')}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
+        const displaySlug = slug || `${categorySlug}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
         
         statuses.push({
           slug: displaySlug,
@@ -99,17 +116,34 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           isStatic: false,
           category: 'Your Solution',
           subcategory: categoryName,
+          isMainCategory: false,
         });
       });
     });
 
     // Products
     Object.entries(navigationData.products).forEach(([categoryName, category]: [string, any]) => {
+      // Add main category page
+      const categorySlug = categoryName.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '');
+      const categoryUrl = `/products/${categorySlug}`;
+      
+      statuses.push({
+        slug: categorySlug,
+        title: categoryName,
+        url: categoryUrl,
+        isCMS: cmsPages.has(categorySlug),
+        isStatic: false,
+        category: 'Products',
+        subcategory: categoryName,
+        isMainCategory: true,
+      });
+      
+      // Add subpages
       category.subgroups.forEach((subgroup: any) => {
         const slug = extractSlugFromUrl(subgroup.link);
         
         // Include all pages, even those with '#' link (show as not created)
-        const displaySlug = slug || `${categoryName.toLowerCase().replace(/\s+/g, '-')}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
+        const displaySlug = slug || `${categorySlug}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
         
         statuses.push({
           slug: displaySlug,
@@ -119,6 +153,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           isStatic: false,
           category: 'Products',
           subcategory: categoryName,
+          isMainCategory: false,
         });
       });
     });
@@ -242,22 +277,36 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2 bg-gray-800/50">
               Your Solution
             </SelectLabel>
-            {Object.entries(yourSolutionBySubcat).map(([subcategory, pages]) => (
-              <div key={subcategory}>
-                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  {subcategory}
+            {Object.entries(yourSolutionBySubcat).map(([subcategory, pages]) => {
+              const mainPage = pages.find(p => p.isMainCategory);
+              const subPages = pages.filter(p => !p.isMainCategory);
+              
+              return (
+                <div key={subcategory}>
+                  <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    {subcategory}
+                  </div>
+                  {mainPage && (
+                    <SelectItem 
+                      key={mainPage.slug} 
+                      value={mainPage.slug}
+                      className={`${getItemClassName(mainPage)} hover:bg-gray-800 pl-8 pr-3 py-2.5 cursor-pointer transition-colors text-sm font-medium`}
+                    >
+                      {getItemLabel(mainPage)} (Overview)
+                    </SelectItem>
+                  )}
+                  {subPages.map((status) => (
+                    <SelectItem 
+                      key={status.slug} 
+                      value={status.slug}
+                      className={`${getItemClassName(status)} hover:bg-gray-800 pl-12 pr-3 py-2 cursor-pointer transition-colors text-sm`}
+                    >
+                      {getItemLabel(status)}
+                    </SelectItem>
+                  ))}
                 </div>
-                {pages.map((status) => (
-                  <SelectItem 
-                    key={status.slug} 
-                    value={status.slug}
-                    className={`${getItemClassName(status)} hover:bg-gray-800 pl-10 pr-3 py-2 cursor-pointer transition-colors text-sm`}
-                  >
-                    {getItemLabel(status)}
-                  </SelectItem>
-                ))}
-              </div>
-            ))}
+              );
+            })}
           </SelectGroup>
         )}
 
@@ -267,22 +316,36 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2 bg-gray-800/50">
               Products
             </SelectLabel>
-            {Object.entries(productsBySubcat).map(([subcategory, pages]) => (
-              <div key={subcategory}>
-                <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  {subcategory}
+            {Object.entries(productsBySubcat).map(([subcategory, pages]) => {
+              const mainPage = pages.find(p => p.isMainCategory);
+              const subPages = pages.filter(p => !p.isMainCategory);
+              
+              return (
+                <div key={subcategory}>
+                  <div className="px-6 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    {subcategory}
+                  </div>
+                  {mainPage && (
+                    <SelectItem 
+                      key={mainPage.slug} 
+                      value={mainPage.slug}
+                      className={`${getItemClassName(mainPage)} hover:bg-gray-800 pl-8 pr-3 py-2.5 cursor-pointer transition-colors text-sm font-medium`}
+                    >
+                      {getItemLabel(mainPage)} (Overview)
+                    </SelectItem>
+                  )}
+                  {subPages.map((status) => (
+                    <SelectItem 
+                      key={status.slug} 
+                      value={status.slug}
+                      className={`${getItemClassName(status)} hover:bg-gray-800 pl-12 pr-3 py-2 cursor-pointer transition-colors text-sm`}
+                    >
+                      {getItemLabel(status)}
+                    </SelectItem>
+                  ))}
                 </div>
-                {pages.map((status) => (
-                  <SelectItem 
-                    key={status.slug} 
-                    value={status.slug}
-                    className={`${getItemClassName(status)} hover:bg-gray-800 pl-10 pr-3 py-2 cursor-pointer transition-colors text-sm`}
-                  >
-                    {getItemLabel(status)}
-                  </SelectItem>
-                ))}
-              </div>
-            ))}
+              );
+            })}
           </SelectGroup>
         )}
 
