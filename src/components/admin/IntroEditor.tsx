@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Save } from "lucide-react";
 
 interface IntroEditorProps {
   pageSlug: string;
@@ -18,6 +20,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
   const [description, setDescription] = useState("");
   const [headingLevel, setHeadingLevel] = useState<'h1' | 'h2'>('h2');
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -58,6 +61,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
 
   const saveContent = async (type: string, value: string) => {
     try {
+      setIsSaving(true);
       const { error } = await supabase
         .from('page_content')
         .upsert({
@@ -72,6 +76,11 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
 
       if (error) throw error;
       
+      toast({
+        title: "Gespeichert",
+        description: "Die Änderungen wurden erfolgreich gespeichert.",
+      });
+      
       if (onSave) onSave();
     } catch (error) {
       console.error('Error saving content:', error);
@@ -80,22 +89,27 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         description: "Der Inhalt konnte nicht gespeichert werden.",
         variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
     }
+  };
+
+  const handleSaveAll = async () => {
+    await saveContent('intro_title', title);
+    await saveContent('intro_description', description);
+    await saveContent('intro_heading_level', headingLevel);
   };
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
-    saveContent('intro_title', value);
   };
 
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
-    saveContent('intro_description', value);
   };
 
   const handleHeadingLevelChange = (value: 'h1' | 'h2') => {
     setHeadingLevel(value);
-    saveContent('intro_heading_level', value);
   };
 
   if (isLoading) {
@@ -139,6 +153,15 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
           rows={4}
         />
       </div>
+
+      <Button 
+        onClick={handleSaveAll}
+        disabled={isSaving}
+        className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+      >
+        <Save className="h-4 w-4 mr-2" />
+        {isSaving ? "Speichere..." : "Änderungen speichern"}
+      </Button>
     </div>
   );
 };
