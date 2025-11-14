@@ -51,6 +51,11 @@ import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
 import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelect';
+import { CMSPageCreator } from '@/components/admin/CMSPageCreator';
+import { HeroSectionEditor } from '@/components/admin/HeroSectionEditor';
+import { TilesSectionEditor } from '@/components/admin/TilesSectionEditor';
+import { SolutionsSectionEditor } from '@/components/admin/SolutionsSectionEditor';
+import { BannerSectionEditor } from '@/components/admin/BannerSectionEditor';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
