@@ -782,8 +782,22 @@ const AdminDashboard = () => {
           
           // Only process non-empty segments array
           if (segments && segments.length > 0) {
-            // Sort segments by position FIRST to maintain correct order
-            const sortedSegments = [...segments].sort((a, b) => (a.position || 0) - (b.position || 0));
+            // CRITICAL: Log raw segments before sorting
+            console.log('[POSITION DEBUG] Raw segments before sorting:', JSON.stringify(segments.map(s => ({ id: s.id, type: s.type, position: s.position }))));
+            
+            // CRITICAL: Robust sort by position with fallback to original array order
+            const sortedSegments = [...segments].sort((a, b) => {
+              const posA = typeof a.position === 'number' ? a.position : 999;
+              const posB = typeof b.position === 'number' ? b.position : 999;
+              
+              // If positions are equal or both undefined, maintain original order by using array index
+              if (posA === posB) {
+                return segments.indexOf(a) - segments.indexOf(b);
+              }
+              return posA - posB;
+            });
+            
+            console.log('[POSITION DEBUG] Sorted segments:', JSON.stringify(sortedSegments.map(s => ({ id: s.id, type: s.type, position: s.position }))));
             
             // Ensure all segments have numeric IDs from segment_registry
             segmentsWithIds = sortedSegments.map((seg: any, idx: number) => {
@@ -804,6 +818,8 @@ const AdminDashboard = () => {
                 position: idx // ALWAYS use sorted array index for stable positions
               };
             });
+            
+            console.log('[POSITION DEBUG] Final segments with positions:', JSON.stringify(segmentsWithIds.map(s => ({ id: s.id, type: s.type, position: s.position }))));
             
             console.log('Final segmentsWithIds (sorted):', segmentsWithIds);
             setPageSegments(segmentsWithIds);
@@ -2014,11 +2030,13 @@ const AdminDashboard = () => {
     setSaving(true);
 
     try {
-      // Ensure all segments have correct positions based on current order
+      // CRITICAL: Ensure all segments have correct positions based on current order
       const segmentsWithPositions = pageSegments.map((seg, idx) => ({
         ...seg,
         position: idx
       }));
+      
+      console.log('[POSITION DEBUG] Saving segments with positions:', JSON.stringify(segmentsWithPositions.map(s => ({ id: s.id, type: s.type, position: s.position }))));
       
       const { error } = await supabase
         .from("page_content")
@@ -2037,6 +2055,8 @@ const AdminDashboard = () => {
       
       // Update local state with new positions
       setPageSegments(segmentsWithPositions);
+      
+      console.log('[POSITION DEBUG] Segments saved successfully');
       
       toast.success("Segment saved successfully!");
     } catch (error: any) {

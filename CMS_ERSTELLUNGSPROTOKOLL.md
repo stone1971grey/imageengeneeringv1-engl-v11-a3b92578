@@ -21,12 +21,26 @@
 ### Problem: Segmente wechseln Position nach Speichern
 **Symptom:** Nach dem Speichern ändern Segmente ihre Reihenfolge (z.B. Full Hero und Intro tauschen Plätze)
 
-**Ursache:** Die Position wird beim Laden nicht konsequent auf den sortierten Array-Index gesetzt
+**Ursache:** 
+1. Die Position wird beim Laden nicht konsequent auf den sortierten Array-Index gesetzt
+2. Der Sort-Algorithmus war nicht robust genug für undefined/null Positionen
+3. Race Conditions zwischen dem Laden von segment_registry und page_segments
 
 **Lösung (bereits implementiert in AdminDashboard.tsx):**
 ```javascript
-// RICHTIG: Beim Laden IMMER position = sortedIndex verwenden
-const sortedSegments = [...segments].sort((a, b) => (a.position || 0) - (b.position || 0));
+// RICHTIG: Robuster Sort mit Fallback für undefined positions
+const sortedSegments = [...segments].sort((a, b) => {
+  const posA = typeof a.position === 'number' ? a.position : 999;
+  const posB = typeof b.position === 'number' ? b.position : 999;
+  
+  // Wenn Positionen gleich sind, Original-Reihenfolge beibehalten
+  if (posA === posB) {
+    return segments.indexOf(a) - segments.indexOf(b);
+  }
+  return posA - posB;
+});
+
+// IMMER position = sortedIndex beim Laden setzen
 segmentsWithIds = sortedSegments.map((seg: any, idx: number) => ({
   ...seg,
   position: idx  // IMMER den sortierten Index verwenden
@@ -39,10 +53,15 @@ const segmentsWithPositions = pageSegments.map((seg, idx) => ({
 }));
 ```
 
+**Debugging:**
+- Console Logs mit `[POSITION DEBUG]` zeigen die Position-Änderungen
+- Überprüfe die Browser-Konsole für Details beim Laden/Speichern
+
 **Wichtig:** 
 - Position MUSS beim Laden auf den Index im sortierten Array gesetzt werden
 - Position MUSS beim Speichern auf den aktuellen Array-Index gesetzt werden
 - NIE `seg.position !== undefined ? seg.position : idx` verwenden - das führt zu instabilen Positionen!
+- Der Sort muss undefined/null positions korrekt behandeln
 
 ---
 
