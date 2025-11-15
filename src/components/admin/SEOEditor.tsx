@@ -48,6 +48,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
   const [introductionText, setIntroductionText] = useState({ title: '', description: '' });
   const [pageContent, setPageContent] = useState<any[]>([]);
   const [segmentRegistry, setSegmentRegistry] = useState<any[]>([]);
+  const [heroImageUrl, setHeroImageUrl] = useState<string>('');
 
   // Load page content and segment registry
   useEffect(() => {
@@ -60,6 +61,40 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       
       if (!contentError && contentData) {
         setPageContent(contentData);
+        
+        // Find hero image from content
+        let foundHeroImage = '';
+        
+        // Look for full_hero image
+        const fullHeroEntry = contentData.find(item => item.section_key.startsWith('full_hero_'));
+        if (fullHeroEntry) {
+          try {
+            const fullHeroData = JSON.parse(fullHeroEntry.content_value);
+            foundHeroImage = fullHeroData.imageUrl || '';
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse full hero data:', e);
+          }
+        }
+        
+        // Fallback: Look for other hero types
+        if (!foundHeroImage) {
+          const heroImageEntry = contentData.find(item => 
+            item.section_key === 'hero_image_url' || 
+            item.section_key === 'hero_image'
+          );
+          if (heroImageEntry) {
+            foundHeroImage = heroImageEntry.content_value;
+          }
+        }
+        
+        console.log('[SEO Editor] Found hero image:', foundHeroImage);
+        setHeroImageUrl(foundHeroImage);
+        
+        // Auto-set OG image if empty and hero image exists
+        if (foundHeroImage && !data.ogImage) {
+          console.log('[SEO Editor] Auto-setting OG image from hero');
+          onChange({ ...data, ogImage: foundHeroImage });
+        }
       }
 
       // Load segment registry to check for deleted segments
@@ -577,14 +612,27 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           <div>
-            <Label htmlFor="og-image" className="text-base font-semibold">OG Image URL</Label>
+            <Label htmlFor="og-image" className="flex items-center gap-2 text-base font-semibold">
+              OG Image URL
+              <Badge variant="secondary" className="text-sm">Auto</Badge>
+              {heroImageUrl && !data.ogImage && (
+                <Badge className="bg-green-500 text-white">Aus Hero übernommen</Badge>
+              )}
+            </Label>
             <Input
               id="og-image"
-              value={data.ogImage || ''}
+              value={data.ogImage || heroImageUrl || ''}
               onChange={(e) => handleChange('ogImage', e.target.value)}
-              placeholder="https://... (empfohlen: 1200×630px)"
-              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
+              placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
+              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-gray-500"
             />
+            <p className="text-base text-white mt-2">
+              {heroImageUrl && !data.ogImage ? (
+                <>✓ Hero-Bild wird automatisch als OG Image verwendet. Überschreibe es bei Bedarf.</>
+              ) : (
+                <>Empfohlene Größe: 1200×630px. Dies wird beim Teilen auf Social Media angezeigt.</>
+              )}
+            </p>
           </div>
 
           <div>

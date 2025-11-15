@@ -915,7 +915,7 @@ const ISO21550 = () => {
         canonical={seoData.canonical}
         ogTitle={seoData.ogTitle}
         ogDescription={seoData.ogDescription}
-        ogImage={seoData.ogImage}
+        ogImage={seoData.ogImage || heroImageUrl}
         twitterCard={seoData.twitterCard}
         robotsIndex={seoData.robotsIndex}
         robotsFollow={seoData.robotsFollow}
