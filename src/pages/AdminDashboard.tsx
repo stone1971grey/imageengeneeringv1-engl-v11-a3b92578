@@ -2638,14 +2638,14 @@ const AdminDashboard = () => {
             <div className="flex items-center gap-3">
               <Button
                 onClick={() => navigate("/admin-dashboard/news")}
-                className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-2"
+                className="!bg-indigo-600 !text-white hover:!bg-indigo-700 flex items-center gap-2 border-0"
               >
                 <Pencil className="h-4 w-4" />
                 Manage News
               </Button>
               <Button
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
-                className={isSEOEditorOpen ? "bg-orange-600 text-white hover:bg-orange-700" : "bg-orange-600 text-white hover:bg-orange-700"}
+                className="!bg-teal-600 !text-white hover:!bg-teal-700 border-0"
               >
                 SEO Settings
               </Button>
