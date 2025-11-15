@@ -473,7 +473,7 @@ const AdminDashboard = () => {
           });
       }
     }
-  }, [pageSegments, selectedPage, user]);
+  }, [pageSegments, selectedPage, user, tabOrder]);
 
   const checkUserAccess = async () => {
     if (!user) return;
