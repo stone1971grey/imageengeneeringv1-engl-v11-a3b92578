@@ -2,47 +2,40 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
-import emvaLogo from "@/assets/news-emva-1288-logo.png";
-import te300Image from "@/assets/news-te300.png";
-import iqAnalyzerImage from "@/assets/news-iq-analyzer-x.png";
-import geocalImage from "@/assets/news-geocal-xl.png";
-
-const newsItems = [
-  {
-    id: 1,
-    slug: "emva-1288-iso-24942",
-    date: "July 21, 2025",
-    headline: "EMVA 1288 becoming ISO 24942",
-    teaser: "Dietmar Wueller is leading the international effort to migrate EMVA 1288 into ISO 24942, enhancing global standards for image quality testing.",
-    image: emvaLogo
-  },
-  {
-    id: 2,
-    slug: "te300-skin-tone-chart",
-    date: "June 20, 2025",
-    headline: "TE300 – A new skin tone test chart",
-    teaser: "Introducing the TE300 Skin Tone Checker: a modern tool for assessing skin tone accuracy in camera systems with real-world spectral data.",
-    image: te300Image
-  },
-  {
-    id: 3,
-    slug: "iq-analyzer-x-ai",
-    date: "May 27, 2025",
-    headline: "AI-powered image quality analysis software",
-    teaser: "The iQ-Analyzer-X introduces advanced AI-powered tools for chart detection, automation, and video file analysis to streamline workflows.",
-    image: iqAnalyzerImage
-  },
-  {
-    id: 4,
-    slug: "geometric-camera-calibration",
-    date: "July 21, 2025",
-    headline: "Geometric Camera Calibration",
-    teaser: "GEOCAL offers a compact, laser-based solution for geometric calibration, improving accuracy compared to traditional checkerboard targets.",
-    image: geocalImage
-  }
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const NewsSection = () => {
+  const { data: newsItems, isLoading } = useQuery({
+    queryKey: ["news-articles-published"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("news_articles")
+        .select("*")
+        .eq("published", true)
+        .order("date", { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-24 bg-[#373737]">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-foreground">Loading news...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!newsItems || newsItems.length === 0) {
+    return null;
+  }
   return (
     <section className="py-24 bg-[#373737]">
       <div className="container mx-auto px-4">
@@ -70,8 +63,8 @@ const NewsSection = () => {
                     <CardContent className="p-0 flex flex-col h-full">
                       <div className="aspect-video overflow-hidden rounded-t-lg relative">
                         <img
-                          src={item.image}
-                          alt={item.headline}
+                          src={item.image_url}
+                          alt={item.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         {item.slug === 'geometric-camera-calibration' && (
@@ -85,7 +78,7 @@ const NewsSection = () => {
                           {item.date}
                         </div>
                         <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 leading-tight">
-                          {item.headline}
+                          {item.title}
                         </h3>
                         <p className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed flex-1">
                           {item.teaser}
