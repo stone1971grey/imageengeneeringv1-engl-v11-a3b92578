@@ -2587,17 +2587,31 @@ const AdminDashboard = () => {
                 // Fetch page data from page_registry to build correct URL
                 const { data: pageData, error } = await supabase
                   .from('page_registry')
-                  .select('page_slug, parent_slug')
+                  .select('page_slug, parent_slug, parent_id')
                   .eq('page_slug', selectedPage)
                   .maybeSingle();
 
                 let previewUrl = '/';
                 
                 if (pageData) {
-                  // Build URL from parent_slug and page_slug
+                  // Build URL with full hierarchy
                   if (pageData.parent_slug) {
-                    previewUrl = `/${pageData.parent_slug}/${pageData.page_slug}`;
+                    // Check if parent needs grandparent (e.g., scanners-archiving needs your-solution)
+                    const { data: parentData } = await supabase
+                      .from('page_registry')
+                      .select('parent_slug')
+                      .eq('page_slug', pageData.parent_slug)
+                      .maybeSingle();
+                    
+                    if (parentData?.parent_slug) {
+                      // Three-level hierarchy: /grandparent/parent/page
+                      previewUrl = `/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                    } else {
+                      // Two-level hierarchy: /parent/page
+                      previewUrl = `/${pageData.parent_slug}/${pageData.page_slug}`;
+                    }
                   } else {
+                    // Top-level page
                     previewUrl = `/${pageData.page_slug}`;
                   }
                 } else {
@@ -2615,6 +2629,7 @@ const AdminDashboard = () => {
                   previewUrl = urlMap[selectedPage] || '/';
                 }
 
+                console.log('Preview URL:', previewUrl);
                 window.open(previewUrl, '_blank');
               }}
               className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10 hover:text-gray-600"
