@@ -83,11 +83,35 @@ content_value: string (JSON mit title, description, headingLevel)
 2. Fallback: Bestehender Content im Intro Segment (nur wenn keine SEO Description vorhanden)
 3. Keine Übernahme: Content aus gelöschten Segmenten
 
+### Bidirektionale Synchronisation (Update 15.11.2024)
+
+**Problem**: Introduction Segment wird nicht in SERP Preview angezeigt, wenn Meta Description leer ist.
+
+**Lösung**: Bidirektionale Synchronisation implementiert:
+
+#### Synchronisationslogik:
+1. **PRIORITÄT 1**: Wenn Meta Description existiert → Diese wird in Introduction übernommen
+2. **PRIORITÄT 2 (Fallback)**: Wenn Meta Description leer ist ABER Introduction existiert → Introduction wird als Meta Description verwendet (für SERP Preview)
+
+#### Code-Anpassungen:
+```typescript
+// SEOEditor.tsx - Zeilen 124-147
+if (!data.metaDescription && introDescription) {
+  onChange({ ...data, metaDescription: introDescription });
+}
+```
+
+**Vorteil**: 
+- Redakteure können mit Introduction beginnen und haben sofort SERP Preview
+- Meta Description kann später hinzugefügt werden und überschreibt dann die Introduction
+- Kein manuelles Copy-Paste notwendig
+
 ### Status
 ✅ **Abgeschlossen**
 - Intro Component erstellt
 - Intro Editor mit SEO-Integration
 - Automatische Synchronisation
+- Bidirektionale Sync-Logik
 - Protokoll erstellt
 
 ### Nächste Schritte
@@ -119,4 +143,5 @@ content_value: string (JSON mit title, description, headingLevel)
 - Initial Setup der SEO Suite
 - Introduction Segment Implementation
 - SEO Editor Integration
+- Bidirektionale Synchronisation: Introduction ↔ Meta Description
 - Protokoll erstellt
