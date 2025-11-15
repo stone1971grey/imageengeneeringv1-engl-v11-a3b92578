@@ -436,8 +436,10 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!user || !selectedPage || pageSegments.length === 0) return;
     
-    // Get all current segment IDs from pageSegments
-    const segmentIds = pageSegments.map(seg => seg.id);
+    // Get all current segment IDs from pageSegments (excluding fixed-position segments)
+    const segmentIds = pageSegments
+      .filter(seg => seg.type !== 'meta-navigation' && seg.type !== 'full-hero')
+      .map(seg => seg.id);
     
     // Remove deleted/non-existent segments from tabOrder
     const validTabOrder = tabOrder.filter(id => segmentIds.includes(id));
@@ -1885,28 +1887,13 @@ const AdminDashboard = () => {
     const updatedSegments = [...pageSegments, newSegment];
     
     // Add new segment to end of tab order
-    // Meta-navigation should be at the beginning after hero if it exists
+    // Meta-navigation and full-hero are fixed position and NOT added to tabOrder
     let updatedTabOrder: string[];
-    if (templateType === 'meta-navigation') {
-      // Check if there's a hero or full-hero segment
-      const heroIndex = tabOrder.findIndex(id => {
-        const seg = pageSegments.find(s => s.id === id);
-        return seg && (seg.type === 'hero' || seg.type === 'full-hero');
-      });
-      
-      if (heroIndex !== -1) {
-        // Insert after hero
-        updatedTabOrder = [
-          ...tabOrder.slice(0, heroIndex + 1),
-          String(segmentId),
-          ...tabOrder.slice(heroIndex + 1)
-        ];
-      } else {
-        // Put at beginning
-        updatedTabOrder = [String(segmentId), ...tabOrder];
-      }
+    if (templateType === 'meta-navigation' || templateType === 'full-hero') {
+      // Fixed position segments don't go in tabOrder
+      updatedTabOrder = tabOrder;
     } else {
-      // Add to end
+      // Add all other segments to end
       updatedTabOrder = [...tabOrder, String(segmentId)];
     }
 
@@ -3028,6 +3015,26 @@ const AdminDashboard = () => {
                   );
                 })}
 
+              {/* Full Hero - Fixed Position (After Meta Nav if exists, otherwise first) */}
+              {pageSegments
+                .filter(segment => segment.type === 'full-hero')
+                .map((segment) => {
+                  const segmentIndex = pageSegments.indexOf(segment);
+                  const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'full-hero').length;
+                  const displayNumber = sameTypeBefore + 1;
+                  const segmentId = segmentRegistry[segment.id] || segment.id;
+                  
+                  return (
+                    <TabsTrigger 
+                      key={segment.id}
+                      value={segment.id}
+                      className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                    >
+                      ID {segmentId}: Full Hero {displayNumber}
+                    </TabsTrigger>
+                  );
+                })}
+
               {/* Hero Tab - Fixed Second Position (After Meta Nav) */}
               {segmentRegistry['hero'] && (
                 <TabsTrigger 
@@ -3038,19 +3045,20 @@ const AdminDashboard = () => {
                 </TabsTrigger>
               )}
 
-              {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Hero, and Footer */}
+              {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Hero, and Footer */}
               <SortableContext
                 items={tabOrder.filter(tabId => {
                   const segment = pageSegments.find(s => s.id === tabId);
-                  // Exclude meta-navigation from draggable section
-                  return !segment || segment.type !== 'meta-navigation';
+                  // Exclude meta-navigation and full-hero from draggable section
+                  return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero');
                 })}
                 strategy={horizontalListSortingStrategy}
               >
                 {tabOrder
                   .filter(tabId => {
                     const segment = pageSegments.find(s => s.id === tabId);
-                    return !segment || segment.type !== 'meta-navigation'; // Exclude meta-navigation from draggable section
+                    // Exclude meta-navigation and full-hero from draggable section
+                    return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero');
                   })
                   .map((tabId) => {
                   // Static tabs - only show if not deleted (in segmentRegistry)
