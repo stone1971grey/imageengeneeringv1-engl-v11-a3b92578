@@ -384,6 +384,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             <span className="text-base font-medium text-gray-900">H1 Present</span>
           </div>
           <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.keywordInH1 ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
+            {getStatusIcon(checks.keywordInH1)}
+            <span className="text-base font-medium text-gray-900">FKW in H1</span>
+          </div>
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
             checks.keywordInIntroduction ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
           }`}>
             {getStatusIcon(checks.keywordInIntroduction)}
