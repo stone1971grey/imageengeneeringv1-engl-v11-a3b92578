@@ -645,152 +645,258 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
         </div>
       </div>
+        </TabsContent>
 
-      {/* Open Graph / Social Media */}
-      <div className="p-6 bg-background border rounded-lg space-y-6">
-        <h3 className="text-lg font-semibold">Open Graph / Social Media</h3>
-        
-        <div>
-          <Label htmlFor="og-title" className="font-medium">OG Title</Label>
-          <Input
-            id="og-title"
-            value={data.ogTitle || ''}
-            onChange={(e) => handleChange('ogTitle', e.target.value)}
-            placeholder="Leer lassen = SEO Title verwenden"
-            className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="og-description" className="font-medium">OG Description</Label>
-          <Textarea
-            id="og-description"
-            value={data.ogDescription || ''}
-            onChange={(e) => handleChange('ogDescription', e.target.value)}
-            placeholder="Leer lassen = Meta Description verwenden"
-            className="mt-2 min-h-[80px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
-            rows={3}
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="og-image" className="flex items-center gap-2 font-medium">
-            OG Image URL
-            <Badge variant="secondary" className="text-xs">Auto</Badge>
-            {heroImageUrl && !data.ogImage && (
-              <Badge className="bg-green-500 text-white text-xs">Aus Hero übernommen</Badge>
-            )}
-          </Label>
-          
-          <div className="flex gap-2 mt-2">
-            <Input
-              id="og-image"
-              value={data.ogImage || heroImageUrl || ''}
-              onChange={(e) => handleChange('ogImage', e.target.value)}
-              placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
-              className="flex-1 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-            />
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  
-                  try {
-                    const fileName = `og-${pageSlug}-${Date.now()}.${file.name.split('.').pop()}`;
-                    const { data: uploadData, error: uploadError } = await supabase.storage
-                      .from('og-images')
-                      .upload(fileName, file);
-                    
-                    if (uploadError) throw uploadError;
-                    
-                    const { data: { publicUrl } } = supabase.storage
-                      .from('og-images')
-                      .getPublicUrl(fileName);
-                    
-                    handleChange('ogImage', publicUrl);
-                  } catch (error) {
-                    console.error('Upload error:', error);
-                    alert('Fehler beim Hochladen: ' + (error instanceof Error ? error.message : 'Unbekannter Fehler'));
-                  }
-                }}
+        {/* Social Media Tab */}
+        <TabsContent value="social" className="space-y-6">
+          {/* Open Graph / Social Media */}
+          <div className="p-6 bg-background border rounded-lg space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-medium flex items-center gap-2">
+                Open Graph / Social Media
+                <Badge variant="outline" className="text-xs">Optional</Badge>
+              </h4>
+            </div>
+            
+            <div>
+              <Label htmlFor="og-title" className="font-medium">OG Title</Label>
+              <Input
+                id="og-title"
+                value={data.ogTitle || ''}
+                onChange={(e) => handleChange('ogTitle', e.target.value)}
+                placeholder="Leer lassen = SEO Title verwenden"
+                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
               />
-              <Button type="button" variant="outline" size="sm" className="h-10">
-                Upload
-              </Button>
-            </label>
-            {data.ogImage && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-10"
-                onClick={() => handleChange('ogImage', '')}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-          
-          {/* Image Preview */}
-          {(data.ogImage || heroImageUrl) && (
-            <div className="mt-3 border-2 border-border rounded-lg overflow-hidden bg-muted w-full max-w-[400px]">
-              <div className="p-2 bg-muted border-b border-border">
-                <p className="text-xs font-medium">OG Image Preview</p>
-              </div>
-              <div className="relative aspect-[1200/630] bg-muted">
-                <img 
-                  src={data.ogImage || heroImageUrl || ''}
-                  alt="OG Image Preview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"%3E%3Crect fill="%23e5e7eb" width="1200" height="630"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%236b7280" font-size="24" font-family="sans-serif"%3EBild nicht gefunden%3C/text%3E%3C/svg%3E';
-                  }}
+              <p className="text-sm text-muted-foreground mt-2">
+                Titel für Social Media Shares. Falls leer, wird der SEO Title verwendet.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="og-description" className="font-medium">OG Description</Label>
+              <Textarea
+                id="og-description"
+                value={data.ogDescription || ''}
+                onChange={(e) => handleChange('ogDescription', e.target.value)}
+                placeholder="Leer lassen = Meta Description verwenden"
+                className="mt-2 min-h-[80px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
+                rows={3}
+              />
+              <p className="text-sm text-muted-foreground mt-2">
+                Beschreibung für Social Media Shares. Falls leer, wird die Meta Description verwendet.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="og-image" className="flex items-center gap-2 font-medium">
+                OG Image URL
+                {heroImageUrl && (
+                  <Badge variant="secondary" className="text-xs">Auto-detected from Hero</Badge>
+                )}
+              </Label>
+              
+              <div className="flex gap-2 mt-2">
+                <Input
+                  id="og-image"
+                  value={data.ogImage || heroImageUrl || ''}
+                  onChange={(e) => handleChange('ogImage', e.target.value)}
+                  placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
+                  className="flex-1 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
                 />
-                <div className="absolute top-1 right-1 bg-black/70 text-white px-2 py-0.5 rounded text-xs font-medium">
-                  {data.ogImage ? 'Manuell' : 'Hero'}
+                <label className="cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      
+                      try {
+                        const fileName = `og-${pageSlug}-${Date.now()}.${file.name.split('.').pop()}`;
+                        const { data: uploadData, error: uploadError } = await supabase.storage
+                          .from('og-images')
+                          .upload(fileName, file);
+                        
+                        if (uploadError) throw uploadError;
+                        
+                        const { data: { publicUrl } } = supabase.storage
+                          .from('og-images')
+                          .getPublicUrl(fileName);
+                        
+                        handleChange('ogImage', publicUrl);
+                      } catch (error) {
+                        console.error('Upload error:', error);
+                      }
+                    }}
+                  />
+                  <Button type="button" variant="outline" size="sm" className="h-10">
+                    Upload
+                  </Button>
+                </label>
+                {data.ogImage && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-10"
+                    onClick={() => handleChange('ogImage', '')}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Bild für Social Media Shares (1200x630px empfohlen). Falls leer, wird das Hero Image verwendet.
+              </p>
+              
+              {/* Image Preview */}
+              {(data.ogImage || heroImageUrl) && (
+                <div className="mt-4 p-4 border-2 border-border rounded-lg bg-muted/30">
+                  <p className="text-sm font-medium mb-3">Preview</p>
+                  <img 
+                    src={data.ogImage || heroImageUrl} 
+                    alt="OG Image Preview" 
+                    className="w-full max-w-md rounded-lg border-2 border-border shadow-sm"
+                    onError={(e) => {
+                      e.currentTarget.src = '/placeholder.svg';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="twitter-card" className="font-medium">Twitter Card Type</Label>
+              <Select
+                value={data.twitterCard || 'summary_large_image'}
+                onValueChange={(value: 'summary' | 'summary_large_image') => handleChange('twitterCard', value)}
+              >
+                <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="summary_large_image">Summary Large Image</SelectItem>
+                  <SelectItem value="summary">Summary</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-sm text-muted-foreground mt-2">
+                Art der Twitter Card für Shares. "Summary Large Image" wird empfohlen.
+              </p>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Advanced Tab */}
+        <TabsContent value="advanced" className="space-y-6">
+          {/* Introduction (Read-only) */}
+          <div className="p-6 bg-background border rounded-lg space-y-6">
+            <div>
+              <Label className="flex items-center gap-2 font-medium">
+                Introduction Text
+                <Badge variant="secondary" className="text-xs">Auto-detected (Read-only)</Badge>
+              </Label>
+              <div className="mt-2 p-4 bg-muted/50 border-2 border-border rounded-lg">
+                {introductionText.title && (
+                  <div className="mb-3">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Title:</p>
+                    <p className="text-sm">{highlightKeyword(introductionText.title, data.focusKeyword || '')}</p>
+                  </div>
+                )}
+                {introductionText.description && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Description:</p>
+                    <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
+                  </div>
+                )}
+                {!introductionText.title && !introductionText.description && (
+                  <p className="text-sm text-muted-foreground italic">
+                    Kein Introduction Text gefunden. Füge ein Intro, Tiles oder Image-Text Segment hinzu.
+                  </p>
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Wird automatisch vom ersten Intro-, Tiles- oder Image-Text-Segment erkannt. Dieser Text wird für SEO-Prüfungen verwendet.
+              </p>
+            </div>
+          </div>
+
+          {/* Canonical URL */}
+          <div className="p-6 bg-background border rounded-lg space-y-6">
+            <div>
+              <Label htmlFor="canonical" className="flex items-center gap-2 font-medium">
+                Canonical URL
+                <Badge variant="outline" className="text-xs">Optional</Badge>
+              </Label>
+              <Input
+                id="canonical"
+                value={data.canonical || ''}
+                onChange={(e) => handleChange('canonical', e.target.value)}
+                placeholder="https://www.image-engineering.de/your-page"
+                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
+              />
+              <p className="text-sm text-muted-foreground mt-2">
+                Wenn diese Seite eine Kopie einer anderen ist, gib hier die Original-URL an. Leer lassen für normale Seiten.
+              </p>
+            </div>
+          </div>
+
+          {/* Robots Settings */}
+          <div className="p-6 bg-background border rounded-lg space-y-6">
+            <div>
+              <h4 className="font-medium mb-4">Robots Meta Tags</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="robots-index" className="font-medium">Index</Label>
+                  <Select
+                    value={data.robotsIndex || 'index'}
+                    onValueChange={(value: 'index' | 'noindex') => handleChange('robotsIndex', value)}
+                  >
+                    <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="index">index</SelectItem>
+                      <SelectItem value="noindex">noindex</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    "noindex" verhindert Indexierung in Suchmaschinen
+                  </p>
+                </div>
+                
+                <div>
+                  <Label htmlFor="robots-follow" className="font-medium">Follow</Label>
+                  <Select
+                    value={data.robotsFollow || 'follow'}
+                    onValueChange={(value: 'follow' | 'nofollow') => handleChange('robotsFollow', value)}
+                  >
+                    <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="follow">follow</SelectItem>
+                      <SelectItem value="nofollow">nofollow</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    "nofollow" verhindert das Folgen von Links auf dieser Seite
+                  </p>
                 </div>
               </div>
             </div>
-          )}
-          
-          <p className="text-sm text-muted-foreground mt-2">
-            {heroImageUrl && !data.ogImage ? (
-              <>✓ Hero-Bild wird automatisch verwendet. Überschreibe es mit Upload oder URL.</>
-            ) : (
-              <>Empfohlene Größe: 1200×630px für optimale Darstellung auf Social Media.</>
-            )}
-          </p>
-        </div>
-
-        <div>
-          <Label htmlFor="twitter-card" className="font-medium">Twitter Card Type</Label>
-          <Select
-            value={data.twitterCard || 'summary_large_image'}
-            onValueChange={(value: 'summary' | 'summary_large_image') => handleChange('twitterCard', value)}
-          >
-            <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="summary_large_image">Summary Large Image (empfohlen)</SelectItem>
-              <SelectItem value="summary">Summary</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Save Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-4 border-t">
         <Button 
           onClick={onSave}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
+          className="gap-2"
         >
           <Save className="h-4 w-4" />
-          SEO Settings speichern
+          SEO Änderungen speichern
         </Button>
       </div>
     </div>
