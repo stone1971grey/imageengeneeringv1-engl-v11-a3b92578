@@ -2232,40 +2232,30 @@ const AdminDashboard = () => {
       <Navigation />
       
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
+        <div className="flex items-start justify-between mb-8">
+          <div>
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4 mt-4">
               <p className="text-gray-600">Editing:</p>
               <HierarchicalPageSelect 
                 value={selectedPage} 
                 onValueChange={(value) => navigate(`/admin-dashboard?page=${value}`)}
               />
             </div>
-            <Button
-              onClick={() => navigate("/admin-dashboard/news")}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Pencil className="h-4 w-4" />
-              Manage News
-            </Button>
-            <Button
-              onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
-              variant={isSEOEditorOpen ? "default" : "outline"}
-              className={isSEOEditorOpen ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" : ""}
-            >
-              SEO Settings
-            </Button>
-            <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add New Segment
-                </Button>
-              </DialogTrigger>
+          </div>
+          
+          <div className="flex flex-col items-end gap-3">
+            {/* Erste Reihe: Add New Segment, Preview, Logout */}
+            <div className="flex items-center gap-3">
+              <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add New Segment
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-6">
                   <DialogTitle className="text-3xl font-bold text-white">Choose a Segment</DialogTitle>
@@ -2580,70 +2570,89 @@ const AdminDashboard = () => {
                   </TabsContent>
                 </Tabs>
               </DialogContent>
-            </Dialog>
-            <Button
-              variant="outline"
-              onClick={async () => {
-                if (!selectedPage) {
-                  toast.error('Please select a page first');
-                  return;
-                }
+              </Dialog>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  if (!selectedPage) {
+                    toast.error('Please select a page first');
+                    return;
+                  }
 
-                const { data: pageData } = await supabase
-                  .from('page_registry')
-                  .select('page_slug, parent_slug, parent_id')
-                  .eq('page_slug', selectedPage)
-                  .maybeSingle();
+                  const { data: pageData } = await supabase
+                    .from('page_registry')
+                    .select('page_slug, parent_slug, parent_id')
+                    .eq('page_slug', selectedPage)
+                    .maybeSingle();
 
-                let previewUrl = '/';
-                
-                if (pageData) {
-                  if (pageData.parent_slug) {
-                    const { data: parentData } = await supabase
-                      .from('page_registry')
-                      .select('parent_slug')
-                      .eq('page_slug', pageData.parent_slug)
-                      .maybeSingle();
-                    
-                    if (parentData?.parent_slug) {
-                      previewUrl = `/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                  let previewUrl = '/';
+                  
+                  if (pageData) {
+                    if (pageData.parent_slug) {
+                      const { data: parentData } = await supabase
+                        .from('page_registry')
+                        .select('parent_slug')
+                        .eq('page_slug', pageData.parent_slug)
+                        .maybeSingle();
+                      
+                      if (parentData?.parent_slug) {
+                        previewUrl = `/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                      } else {
+                        previewUrl = `/${pageData.parent_slug}/${pageData.page_slug}`;
+                      }
                     } else {
-                      previewUrl = `/${pageData.parent_slug}/${pageData.page_slug}`;
+                      previewUrl = `/${pageData.page_slug}`;
                     }
                   } else {
-                    previewUrl = `/${pageData.page_slug}`;
+                    const urlMap: Record<string, string> = {
+                      'index': '/',
+                      'your-solution': '/your-solution',
+                      'products': '/products',
+                      'downloads': '/downloads',
+                      'events': '/events',
+                      'news': '/news',
+                      'inside-lab': '/inside-lab',
+                      'contact': '/contact'
+                    };
+                    previewUrl = urlMap[selectedPage] || '/';
                   }
-                } else {
-                  const urlMap: Record<string, string> = {
-                    'index': '/',
-                    'your-solution': '/your-solution',
-                    'products': '/products',
-                    'downloads': '/downloads',
-                    'events': '/events',
-                    'news': '/news',
-                    'inside-lab': '/inside-lab',
-                    'contact': '/contact'
-                  };
-                  previewUrl = urlMap[selectedPage] || '/';
-                }
 
-                window.open(previewUrl, '_blank');
-              }}
-              className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10"
-            >
-              <Eye className="h-4 w-4" />
-              Preview
-            </Button>
+                  window.open(previewUrl, '_blank');
+                }}
+                className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10"
+              >
+                <Eye className="h-4 w-4" />
+                Preview
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+            
+            {/* Zweite Reihe: Manage News, SEO Settings */}
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => navigate("/admin-dashboard/news")}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Pencil className="h-4 w-4" />
+                Manage News
+              </Button>
+              <Button
+                onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
+                variant={isSEOEditorOpen ? "default" : "outline"}
+                className={isSEOEditorOpen ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" : ""}
+              >
+                SEO Settings
+              </Button>
+            </div>
           </div>
-          
-          <Button
-            onClick={handleLogout}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Button>
         </div>
 
         {/* SEO Editor - Conditional Rendering */}
