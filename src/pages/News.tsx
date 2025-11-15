@@ -4,65 +4,26 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
-import emvaLogo from "@/assets/news-emva-1288-logo.png";
-import te300Image from "@/assets/news-te300.png";
-import iqAnalyzerImage from "@/assets/news-iq-analyzer-x.png";
-import geocalImage from "@/assets/news-geocal-xl.png";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import industriesHero from "@/assets/industries-hero.jpg";
-
-const newsItems = [
-  {
-    id: 1,
-    slug: "emva-1288-iso-24942",
-    date: "July 21, 2025",
-    headline: "EMVA 1288 becoming ISO 24942",
-    teaser: "Dietmar Wueller is leading the international effort to migrate EMVA 1288 into ISO 24942, enhancing global standards for image quality testing.",
-    image: emvaLogo
-  },
-  {
-    id: 2,
-    slug: "te300-skin-tone-chart",
-    date: "June 20, 2025",
-    headline: "TE300 – A new skin tone test chart",
-    teaser: "Introducing the TE300 Skin Tone Checker: a modern tool for assessing skin tone accuracy in camera systems with real-world spectral data.",
-    image: te300Image
-  },
-  {
-    id: 3,
-    slug: "iq-analyzer-x-ai",
-    date: "May 27, 2025",
-    headline: "AI-powered image quality analysis software",
-    teaser: "The iQ-Analyzer-X introduces advanced AI-powered tools for chart detection, automation, and video file analysis to streamline workflows.",
-    image: iqAnalyzerImage
-  },
-  {
-    id: 4,
-    slug: "geometric-camera-calibration",
-    date: "July 21, 2025",
-    headline: "Geometric Camera Calibration",
-    teaser: "GEOCAL offers a compact, laser-based solution for geometric calibration, improving accuracy compared to traditional checkerboard targets.",
-    image: geocalImage
-  },
-  {
-    id: 5,
-    slug: "emva-1288-iso-24942",
-    date: "June 15, 2025",
-    headline: "Advanced HDR Testing Solutions",
-    teaser: "New HDR test methodologies for automotive and mobile applications, enabling more accurate dynamic range assessments in real-world conditions.",
-    image: emvaLogo
-  },
-  {
-    id: 6,
-    slug: "emva-1288-iso-24942",
-    date: "May 10, 2025",
-    headline: "Partnership with Leading Automotive OEMs",
-    teaser: "Expanding our collaboration with major automotive manufacturers to develop next-generation camera testing standards for autonomous vehicles.",
-    image: te300Image
-  }
-];
 
 const News = () => {
   const { t } = useTranslation();
+
+  const { data: newsItems, isLoading } = useQuery({
+    queryKey: ["news-articles-all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("news_articles")
+        .select("*")
+        .eq("published", true)
+        .order("date", { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
   
   return (
     <div className="min-h-screen bg-white">
@@ -101,31 +62,36 @@ const News = () => {
             </div>
             
             {/* 3-Column Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {newsItems.map((item) => (
-                <Card key={item.id} className={`h-full hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group bg-white flex flex-col ${
-                  item.slug === 'geometric-camera-calibration' ? 'ring-2 ring-[#0f407b] border-[#0f407b] shadow-lg' : 'border border-gray-200'
-                }`}>
-                  <CardContent className="p-0 flex flex-col h-full">
-                    <div className="aspect-video overflow-hidden rounded-t-lg relative">
-                      <img
-                        src={item.image}
-                        alt={item.headline}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {item.slug === 'geometric-camera-calibration' && (
-                        <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
-                          ACTIVE
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-6 flex flex-col flex-1">
-                      <div className="text-sm text-gray-500 mb-2 font-medium">
-                        {item.date}
+            {isLoading ? (
+              <div className="text-center py-12">
+                <p className="text-gray-600">Loading news articles...</p>
+              </div>
+            ) : newsItems && newsItems.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {newsItems.map((item) => (
+                  <Card key={item.id} className={`h-full hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group bg-white flex flex-col ${
+                    item.slug === 'geometric-camera-calibration' ? 'ring-2 ring-[#0f407b] border-[#0f407b] shadow-lg' : 'border border-gray-200'
+                  }`}>
+                    <CardContent className="p-0 flex flex-col h-full">
+                      <div className="aspect-video overflow-hidden rounded-t-lg relative">
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {item.slug === 'geometric-camera-calibration' && (
+                          <div className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                            ACTIVE
+                          </div>
+                        )}
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">
-                        {item.headline}
-                      </h3>
+                      <div className="p-6 flex flex-col flex-1">
+                        <div className="text-sm text-gray-500 mb-2 font-medium">
+                          {item.date}
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">
+                          {item.title}
+                        </h3>
                       <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed flex-1">
                         {item.teaser}
                       </p>
@@ -141,6 +107,11 @@ const News = () => {
                 </Card>
               ))}
             </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No news articles available yet.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
