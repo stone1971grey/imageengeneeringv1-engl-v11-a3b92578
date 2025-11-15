@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Save, AlertCircle, CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
@@ -367,7 +368,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
   return (
     <div className="space-y-6">
-      {/* SEO Score Overview */}
+      {/* SEO Score Overview - Always visible */}
       <div className="p-6 bg-background border rounded-lg">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold flex items-center gap-2">
@@ -436,12 +437,23 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         </div>
       </div>
 
-      {/* SERP Preview */}
+      {/* SERP Preview - Always visible */}
       <SERPPreview
         title={data.title || ''}
         description={data.metaDescription || ''}
         url={data.slug ? `www.image-engineering.de › ${data.slug}` : 'www.image-engineering.de › your-page-slug'}
       />
+
+      {/* Tabs for different sections */}
+      <Tabs defaultValue="basics" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsTrigger value="basics">Grundlagen</TabsTrigger>
+          <TabsTrigger value="social">Social Media</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+        </TabsList>
+
+        {/* Basics Tab */}
+        <TabsContent value="basics" className="space-y-6">
 
       {/* Basic SEO Fields */}
       <div className="p-6 bg-background border rounded-lg space-y-6">
