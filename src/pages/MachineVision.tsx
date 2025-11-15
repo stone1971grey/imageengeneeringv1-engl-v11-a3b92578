@@ -13,6 +13,7 @@ import FAQ from "@/components/segments/FAQ";
 import Specification from "@/components/segments/Specification";
 import { Video } from "@/components/segments/Video";
 import Intro from "@/components/segments/Intro";
+import IndustriesSegment from "@/components/segments/IndustriesSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -212,6 +213,9 @@ const MachineVision = () => {
       }
       if (dynamicSegment.type === 'intro') {
         return <Intro key={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'industries') {
+        return <IndustriesSegment key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (
