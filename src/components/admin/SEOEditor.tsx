@@ -123,10 +123,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     
     setIntroductionText({ title: introTitle, description: introDescription });
     
-    // Bidirectional sync logic:
-    // 1. PRIORITY: If metaDescription exists, it takes priority (for Introduction segment)
-    // 2. FALLBACK: If metaDescription is empty BUT introduction content exists, use introduction for SERP preview
-    
+    // Always sync introduction field with segment content (only if changed to avoid infinite loop)
     const combinedIntroText = [introTitle, introDescription].filter(Boolean).join('\n\n');
     console.log('[SEO Editor] Introduction sync:', {
       pageSlug,
@@ -134,20 +131,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       introDescription,
       combinedIntroText,
       currentIntroduction: data.introduction,
-      currentMetaDescription: data.metaDescription,
       shouldUpdate: combinedIntroText && data.introduction !== combinedIntroText
     });
     
-    // Update introduction field with segment content
     if (combinedIntroText && data.introduction !== combinedIntroText) {
       console.log('[SEO Editor] Updating introduction field with:', combinedIntroText);
       onChange({ ...data, introduction: combinedIntroText });
-    }
-    
-    // FALLBACK: If Meta Description is empty, use Introduction description for SERP preview
-    if (!data.metaDescription && introDescription && data.metaDescription !== introDescription) {
-      console.log('[SEO Editor] Meta Description empty - using Introduction as fallback:', introDescription);
-      onChange({ ...data, metaDescription: introDescription });
     }
 
     setChecks({

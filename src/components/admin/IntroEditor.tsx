@@ -28,7 +28,6 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
 
   const loadContent = async () => {
     try {
-      // Load intro segment content
       const { data, error } = await supabase
         .from('page_content')
         .select('content_value')
@@ -38,42 +37,12 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
 
       if (error) throw error;
 
-      // Load SEO meta description (HIGHEST PRIORITY)
-      const { data: seoData, error: seoError } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', 'seo_meta')
-        .maybeSingle();
-
-      let introTitle = "";
-      let introDescription = "";
-      let introHeadingLevel: 'h1' | 'h2' = 'h2';
-
-      // Load existing intro content if available
       if (data) {
         const content = JSON.parse(data.content_value);
-        introTitle = content.title || "";
-        introDescription = content.description || "";
-        introHeadingLevel = content.headingLevel || 'h2';
+        setTitle(content.title || "");
+        setDescription(content.description || "");
+        setHeadingLevel(content.headingLevel || 'h2');
       }
-
-      // PRIORITY: Override description with SEO Meta Description
-      if (!seoError && seoData) {
-        try {
-          const seoContent = JSON.parse(seoData.content_value);
-          if (seoContent.metaDescription) {
-            introDescription = seoContent.metaDescription;
-            console.log('[IntroEditor] Using SEO Meta Description as primary source:', seoContent.metaDescription);
-          }
-        } catch (e) {
-          console.error('Error parsing SEO data:', e);
-        }
-      }
-
-      setTitle(introTitle);
-      setDescription(introDescription);
-      setHeadingLevel(introHeadingLevel);
     } catch (error) {
       console.error('Error loading content:', error);
       toast({
@@ -172,12 +141,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="intro-description">
-          Beschreibung
-          <span className="ml-2 text-xs text-muted-foreground font-normal">
-            (automatisch aus SEO Meta Description)
-          </span>
-        </Label>
+        <Label htmlFor="intro-description">Beschreibung</Label>
         <Textarea
           id="intro-description"
           value={description}
@@ -185,9 +149,6 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
           placeholder="Industry-leading solutions for comprehensive camera and sensor evaluation"
           rows={4}
         />
-        <p className="text-xs text-muted-foreground">
-          💡 Diese Beschreibung wird automatisch aus der SEO Meta Description übernommen und hat höchste Priorität.
-        </p>
       </div>
 
       <Button 
