@@ -115,10 +115,18 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     if (activeSegmentType && activeSegmentKey) {
       if (activeSegmentType === 'intro') {
         // For intro: ONLY use description (no title) - highest priority
-        const introDescContent = pageContent.find(item => item.section_key === 'intro_description');
+        // Intro segment stores data as JSON in a single content field
+        const introContent = pageContent.find(item => item.section_key === activeSegmentKey);
         
-        introTitle = ''; // Never use title for Intro segment
-        introDescription = introDescContent?.content_value || '';
+        if (introContent) {
+          try {
+            const introData = JSON.parse(introContent.content_value);
+            introTitle = ''; // Never use title for Intro segment
+            introDescription = introData.description || '';
+          } catch (e) {
+            console.error('[SEO Editor] Failed to parse intro content:', e);
+          }
+        }
       } else if (activeSegmentType === 'tiles') {
         // For tiles, look for applications_title/description in page_content
         const staticTilesTitle = pageContent.find(item => item.section_key === 'applications_title');
