@@ -174,7 +174,16 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           <Alert className="border-primary/50 bg-primary/5">
             <Heading1 className="h-4 w-4" />
             <AlertDescription>
-              Dieser Hero trägt die H1-Überschrift für SEO-Optimierung (Titel Zeile 1 + Titel Zeile 2)
+              Die Titelzeilen (Title Line 1 + Title Line 2) tragen die H1-Überschrift für SEO-Optimierung
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {!isH1Segment && (
+          <Alert className="border-muted bg-muted/20">
+            <Heading1 className="h-4 w-4" />
+            <AlertDescription>
+              Die Titelzeilen (Title Line 1 + Title Line 2) werden als H2 dargestellt, da ein Intro-Segment die H1 trägt
             </AlertDescription>
           </Alert>
         )}
@@ -188,7 +197,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
           <TabsContent value="content" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="titleLine1">Title Line 1 (Light)</Label>
+              <Label htmlFor="titleLine1">
+                Title Line 1 (Light) {isH1Segment ? '- H1' : '- H2'}
+              </Label>
               <Input
                 id="titleLine1"
                 value={titleLine1}
@@ -198,7 +209,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="titleLine2">Title Line 2 (Bold)</Label>
+              <Label htmlFor="titleLine2">
+                Title Line 2 (Bold) {isH1Segment ? '- H1' : '- H2'}
+              </Label>
               <Input
                 id="titleLine2"
                 value={titleLine2}
