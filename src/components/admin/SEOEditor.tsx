@@ -392,9 +392,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             )}
           </Label>
           <Textarea
-            value={data.introduction || ''}
+            value={[introductionText.title, introductionText.description].filter(Boolean).join('\n\n')}
             disabled
-            placeholder="Automatisch aus erstem Segment nach Hero (Tiles oder Image & Text)"
+            placeholder="Automatisch aus Intro, Tiles oder Image & Text Segment (nur Description bei Intro)"
             className={`mt-3 h-32 text-xl text-black placeholder:text-gray-500 border-2 cursor-not-allowed opacity-75 ${
               checks.keywordInIntroduction 
                 ? 'border-green-500 bg-green-50' 
@@ -402,7 +402,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             }`}
           />
           <p className="text-base text-white mt-3 leading-relaxed">
-            <strong>Automatisch synchronisiert:</strong> Der Introduction-Text wird automatisch aus dem Section Title & Subtext/Description des ersten Segments nach dem Hero geladen (nur Tiles oder Image & Text Template). Die Introduction sollte das Fokus-Keyword enthalten.
+            <strong>Automatisch synchronisiert:</strong> Der Introduction-Text wird automatisch aus den Segmenten geladen (Priorität: Intro [nur Description] &gt; Tiles &gt; Image & Text). Die Introduction sollte das Fokus-Keyword enthalten.
           </p>
         </div>
 
