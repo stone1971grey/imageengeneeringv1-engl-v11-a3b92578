@@ -635,6 +635,29 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
               className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-gray-500"
             />
+            
+            {/* Image Preview */}
+            {(data.ogImage || heroImageUrl) && (
+              <div className="mt-4 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                <div className="p-3 bg-gray-100 border-b border-gray-200">
+                  <p className="text-sm font-medium text-gray-700">OG Image Preview (1200×630px)</p>
+                </div>
+                <div className="relative aspect-[1200/630] bg-gray-200">
+                  <img 
+                    src={data.ogImage || heroImageUrl || ''}
+                    alt="OG Image Preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"%3E%3Crect fill="%23e5e7eb" width="1200" height="630"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%236b7280" font-size="24" font-family="sans-serif"%3EBild konnte nicht geladen werden%3C/text%3E%3C/svg%3E';
+                    }}
+                  />
+                  <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs font-medium">
+                    {data.ogImage ? 'Manuell' : 'Hero-Bild'}
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <p className="text-base text-white mt-2">
               {heroImageUrl && !data.ogImage ? (
                 <>✓ Hero-Bild wird automatisch als OG Image verwendet. Überschreibe es bei Bedarf.</>
