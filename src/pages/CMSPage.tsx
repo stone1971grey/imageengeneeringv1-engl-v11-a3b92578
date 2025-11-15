@@ -178,17 +178,106 @@ const CMSPage = () => {
       {tabOrder.filter((segmentId) => { const seg = pageSegments.find((s) => s.id === segmentId); return seg && seg.type === "meta-navigation"; }).map((segmentId) => renderSegment(segmentId))}
       {pageSegments.filter((seg) => seg.position === 0).map((seg) => renderSegment(seg.id))}
       {hasHeroContent && (
-        <section id="hero" className={`min-h-[60vh] bg-white relative overflow-hidden py-8 ${getPaddingClass(heroTopPadding)}`}>
-          <div className="container mx-auto px-6 pb-8 lg:pb-12 relative z-10">
-            <div className={`grid ${getLayoutClasses(heroLayout)} gap-8 lg:gap-12 items-center`}>
-              {heroImagePosition === "left" && content.hero_image && <div className="order-1"><img src={content.hero_image} alt={content.hero_title} className="w-full h-auto rounded-lg shadow-2xl" /></div>}
-              <div className={heroImagePosition === "left" ? "order-2" : "order-1"}>
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">{content.hero_title}</h1>
-                {content.hero_subtitle && <p className="text-xl lg:text-2xl text-gray-700 mb-8">{content.hero_subtitle}</p>}
-                {content.hero_description && <p className="text-lg text-gray-600 mb-8">{content.hero_description}</p>}
-                {content.hero_cta && content.hero_cta_link && <a href={content.hero_cta_link} className="bg-[#f9dc24] text-black hover:bg-[#e5ca1f] px-8 py-6 text-lg font-semibold rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl">{content.hero_cta}</a>}
+        <section id="hero" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
+          <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
+            heroTopPadding === "small" ? "pt-16 lg:pt-16" :
+            heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
+            heroTopPadding === "large" ? "pt-32 lg:pt-32" :
+            heroTopPadding === "xlarge" ? "pt-40 lg:pt-40" :
+            "pt-32 lg:pt-32"
+          }`}>
+            <div className={`grid gap-16 items-center ${
+              heroLayout === "1-1" ? "lg:grid-cols-2" : 
+              heroLayout === "2-5" ? "lg:grid-cols-5" :
+              heroLayout === "5-2" ? "lg:grid-cols-5" :
+              heroLayout === "1-2" ? "lg:grid-cols-3" :
+              heroLayout === "2-1" ? "lg:grid-cols-3" :
+              "lg:grid-cols-5"
+            }`}>
+              
+              {/* Text Content */}
+              <div className={`space-y-8 ${
+                heroLayout === "1-1" ? "" :
+                heroLayout === "2-5" ? "lg:col-span-2" :
+                heroLayout === "5-2" ? "lg:col-span-3" :
+                heroLayout === "1-2" ? "" :
+                heroLayout === "2-1" ? "lg:col-span-2" :
+                "lg:col-span-2"
+              } ${heroImagePosition === "left" ? "order-2" : "order-1"}`}>
+                <div>
+                  <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
+                    {content.hero_title}
+                    {content.hero_subtitle && (
+                      <>
+                        <br />
+                        <span className="font-medium text-black">{content.hero_subtitle}</span>
+                      </>
+                    )}
+                  </h1>
+                  
+                  {content.hero_description && (
+                    <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
+                      {content.hero_description}
+                    </p>
+                  )}
+                </div>
+                
+                {content.hero_cta && content.hero_cta_link && (
+                  <div className="pt-4">
+                    {content.hero_cta_link.startsWith('http://') || content.hero_cta_link.startsWith('https://') ? (
+                      <a 
+                        href={content.hero_cta_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button 
+                          size="lg"
+                          className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                            content.hero_cta_style === "yellow"
+                              ? "bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                              : "bg-white hover:bg-gray-50 text-black"
+                          }`}
+                        >
+                          {content.hero_cta}
+                        </Button>
+                      </a>
+                    ) : (
+                      <Link to={content.hero_cta_link}>
+                        <Button 
+                          size="lg"
+                          className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
+                            content.hero_cta_style === "yellow"
+                              ? "bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                              : "bg-white hover:bg-gray-50 text-black"
+                          }`}
+                        >
+                          {content.hero_cta}
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
-              {heroImagePosition === "right" && content.hero_image && <div className="order-2"><img src={content.hero_image} alt={content.hero_title} className="w-full h-auto rounded-lg shadow-2xl" /></div>}
+
+              {/* Image */}
+              {content.hero_image && (
+                <div className={`${
+                  heroLayout === "1-1" ? "" :
+                  heroLayout === "2-5" ? "lg:col-span-3" :
+                  heroLayout === "5-2" ? "lg:col-span-2" :
+                  heroLayout === "1-2" ? "lg:col-span-2" :
+                  heroLayout === "2-1" ? "" :
+                  "lg:col-span-3"
+                } ${heroImagePosition === "left" ? "order-1" : "order-2"}`}>
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl">
+                    <img 
+                      src={content.hero_image} 
+                      alt={content.hero_title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
