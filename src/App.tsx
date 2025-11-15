@@ -90,6 +90,7 @@ const App = () => (
         <Route path="/your-solution/mobile-phone" element={<MobilePhone />} />
         <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
         <Route path="/your-solution/scanners-archiving/iso-21550" element={<ISO21550 />} />
+        <Route path="/your-solution/scanners-archiving/universal-test-target" element={<CMSPage />} />
         
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
@@ -127,9 +128,6 @@ const App = () => (
         <Route path="/image-download" element={<ImageDownload />} />
          <Route path="/auth" element={<Auth />} />
          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-           {/* CMS Dynamic Routes - MUST be before Page ID Route */}
-           <Route path="/:parentSlug/:pageSlug" element={<CMSPage />} />
-           
            {/* Page ID Route - MUST be after all specific routes */}
            <Route path="/:pageId" element={<PageIdRouter />} />
            
