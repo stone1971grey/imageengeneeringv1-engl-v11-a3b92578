@@ -7,9 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, X } from "lucide-react";
+import { Upload, X, Heading1 } from "lucide-react";
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -33,10 +34,32 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [kenBurnsEffect, setKenBurnsEffect] = useState<string>('standard');
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [isUploading, setIsUploading] = useState(false);
+  const [isH1Segment, setIsH1Segment] = useState(false);
 
   useEffect(() => {
     loadContent();
+    checkIfH1Segment();
   }, [pageSlug, segmentId]);
+
+  const checkIfH1Segment = async () => {
+    const { data: segments } = await supabase
+      .from("segment_registry")
+      .select("*")
+      .eq("page_slug", pageSlug)
+      .eq("deleted", false)
+      .order("position", { ascending: true });
+
+    if (!segments) return;
+
+    const hasIntroSegment = segments.some(s => s.segment_type === "Intro");
+    const currentSegmentKey = `full_hero_${segmentId}`;
+    const firstContentSegment = segments[0];
+    
+    const isThisSegmentH1 = !hasIntroSegment && 
+                            firstContentSegment?.segment_key === currentSegmentKey && 
+                            firstContentSegment?.segment_type === "FullHero";
+    setIsH1Segment(isThisSegmentH1);
+  };
 
   const loadContent = async () => {
     const { data, error } = await supabase
@@ -147,6 +170,15 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {isH1Segment && (
+          <Alert className="border-primary/50 bg-primary/5">
+            <Heading1 className="h-4 w-4" />
+            <AlertDescription>
+              Dieser Hero trägt die H1-Überschrift für SEO-Optimierung (Titel Zeile 1 + Titel Zeile 2)
+            </AlertDescription>
+          </Alert>
+        )}
+        
         <Tabs defaultValue="content">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="content">Content</TabsTrigger>
