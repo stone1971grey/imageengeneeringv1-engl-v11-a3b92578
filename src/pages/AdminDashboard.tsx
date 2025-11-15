@@ -2578,32 +2578,43 @@ const AdminDashboard = () => {
             </Dialog>
             <Button
               variant="outline"
-              onClick={() => {
-                const urlMap: Record<string, string> = {
-                  'index': '/',
-                  'your-solution': '/your-solution',
-                  'products': '/products',
-                  'downloads': '/downloads',
-                  'events': '/events',
-                  'news': '/news',
-                  'inside-lab': '/inside-lab',
-                  'contact': '/contact',
-                  'automotive': '/your-solution/automotive',
-                  'in-cabin-testing': '/your-solution/automotive/in-cabin-testing',
-                  'photography': '/your-solution/photography',
-                  'scanners-archiving': '/your-solution/scanners-archiving',
-                  'iso-21550': '/your-solution/scanners-archiving/iso-21550',
-                  'medical-endoscopy': '/your-solution/medical-endoscopy',
-                  'web-camera': '/your-solution/web-camera',
-                  'machine-vision': '/your-solution/machine-vision',
-                  'mobile-phone': '/your-solution/mobile-phone',
-                  'test-charts': '/products/test-charts',
-                  'illumination-devices': '/products/illumination-devices',
-                  'le7': '/products/test-charts/le7',
-                  'iq-led': '/products/illumination/iq-led',
-                  'ieee-p2020': '/products/standards/ieee-p2020'
-                };
-                const previewUrl = urlMap[selectedPage] || '/';
+              onClick={async () => {
+                if (!selectedPage) {
+                  toast.error('Please select a page first');
+                  return;
+                }
+
+                // Fetch page data from page_registry to build correct URL
+                const { data: pageData, error } = await supabase
+                  .from('page_registry')
+                  .select('page_slug, parent_slug')
+                  .eq('page_slug', selectedPage)
+                  .maybeSingle();
+
+                let previewUrl = '/';
+                
+                if (pageData) {
+                  // Build URL from parent_slug and page_slug
+                  if (pageData.parent_slug) {
+                    previewUrl = `/${pageData.parent_slug}/${pageData.page_slug}`;
+                  } else {
+                    previewUrl = `/${pageData.page_slug}`;
+                  }
+                } else {
+                  // Fallback to static map for non-CMS pages
+                  const urlMap: Record<string, string> = {
+                    'index': '/',
+                    'your-solution': '/your-solution',
+                    'products': '/products',
+                    'downloads': '/downloads',
+                    'events': '/events',
+                    'news': '/news',
+                    'inside-lab': '/inside-lab',
+                    'contact': '/contact'
+                  };
+                  previewUrl = urlMap[selectedPage] || '/';
+                }
+
                 window.open(previewUrl, '_blank');
               }}
               className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10 hover:text-gray-600"
