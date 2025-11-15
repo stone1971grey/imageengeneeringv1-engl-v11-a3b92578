@@ -342,7 +342,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
             }`} />
             <span className="text-sm font-semibold text-gray-700">
-              {Object.values(checks).filter(Boolean).length}/7 Checks
+              {Object.values(checks).filter(Boolean).length}/8 Checks
             </span>
           </div>
         </div>
@@ -388,6 +388,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           }`}>
             {getStatusIcon(checks.keywordInIntroduction)}
             <span className="text-base font-medium text-gray-900">FKW in Introduction</span>
+          </div>
+          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+            checks.keywordInH1 ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
+          }`}>
+            {getStatusIcon(checks.keywordInH1)}
+            <span className="text-base font-medium text-gray-900">FKW in H1</span>
           </div>
         </div>
       </Card>
