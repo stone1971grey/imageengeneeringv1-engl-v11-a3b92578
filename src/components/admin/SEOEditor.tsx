@@ -326,7 +326,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     );
   };
 
-  // Highlight FKW in text with green background
+  // Highlight FKW in text with better contrast
   const highlightKeyword = (text: string, keyword: string) => {
     if (!keyword || !text) return text;
     
@@ -346,10 +346,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         parts.push(searchText.substring(lastIndex, index));
       }
       
-      // Add highlighted keyword with green background
+      // Add highlighted keyword with green background and dark text
       const actualKeyword = searchText.substring(index, index + keyword.length);
       parts.push(
-        <span key={`kw-${index}`} className="bg-green-200 dark:bg-green-800 font-semibold px-1 rounded">
+        <span key={`kw-${index}`} className="bg-green-500 text-white font-semibold px-1.5 py-0.5 rounded">
           {actualKeyword}
         </span>
       );
@@ -492,6 +492,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
                 className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
               />
+              {data.title && data.focusKeyword && (
+                <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm">
+                  <span className="font-medium text-muted-foreground mr-2">Preview:</span>
+                  {highlightKeyword(data.title, data.focusKeyword)}
+                </div>
+              )}
               <div className="flex items-center justify-between mt-2">
             <p className={`text-sm font-medium ${
               (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
@@ -546,6 +552,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             className="mt-2 min-h-[100px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
             rows={4}
           />
+          {data.metaDescription && data.focusKeyword && (
+            <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm">
+              <span className="font-medium text-muted-foreground mr-2">Preview:</span>
+              {highlightKeyword(data.metaDescription, data.focusKeyword)}
+            </div>
+          )}
           <div className="flex items-center justify-between mt-2">
             <p className={`text-sm font-medium ${
               (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
@@ -626,6 +638,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             disabled
             className="mt-2 h-10 bg-muted/50 border-2 border-border cursor-not-allowed"
           />
+          {data.h1 && data.focusKeyword && (
+            <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm">
+              <span className="font-medium text-muted-foreground mr-2">Preview:</span>
+              {highlightKeyword(data.h1, data.focusKeyword)}
+            </div>
+          )}
           <p className="text-sm text-muted-foreground mt-2">
             Wird automatisch vom Intro-Titel oder Hero-Titel erkannt. Nur ein H1 pro Seite erlaubt.
           </p>
