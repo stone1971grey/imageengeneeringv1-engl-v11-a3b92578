@@ -15,6 +15,7 @@ import { Video } from "@/components/segments/Video";
 import Specification from "@/components/segments/Specification";
 import FullHero from "@/components/segments/FullHero";
 import Intro from "@/components/segments/Intro";
+import IndustriesSegment from "@/components/segments/IndustriesSegment";
 import { SEOHead } from "@/components/SEOHead";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
@@ -297,6 +298,9 @@ const Photography = () => {
       }
       if (dynamicSegment.type === 'intro') {
         return <Intro key={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'industries') {
+        return <IndustriesSegment key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (
