@@ -782,8 +782,11 @@ const AdminDashboard = () => {
           
           // Only process non-empty segments array
           if (segments && segments.length > 0) {
+            // Sort segments by position FIRST to maintain correct order
+            const sortedSegments = [...segments].sort((a, b) => (a.position || 0) - (b.position || 0));
+            
             // Ensure all segments have numeric IDs from segment_registry
-            segmentsWithIds = segments.map((seg: any, idx: number) => {
+            segmentsWithIds = sortedSegments.map((seg: any, idx: number) => {
               console.log('Processing segment:', seg);
               if (!seg.id || typeof seg.id !== 'number' && !seg.id.match(/^\d+$/)) {
                 needsUpdate = true;
@@ -793,16 +796,16 @@ const AdminDashboard = () => {
                 return {
                   ...seg,
                   id: registryId || String(nextSegmentId + idx),
-                  position: idx
+                  position: seg.position !== undefined ? seg.position : idx // Keep original position
                 };
               }
               return {
                 ...seg,
-                position: idx
+                position: seg.position !== undefined ? seg.position : idx // Keep original position
               };
             });
             
-            console.log('Final segmentsWithIds:', segmentsWithIds);
+            console.log('Final segmentsWithIds (sorted):', segmentsWithIds);
             setPageSegments(segmentsWithIds);
           } else {
             // Empty segments array - this is normal for pages with only static segments
@@ -2011,13 +2014,19 @@ const AdminDashboard = () => {
     setSaving(true);
 
     try {
+      // Ensure all segments have correct positions based on current order
+      const segmentsWithPositions = pageSegments.map((seg, idx) => ({
+        ...seg,
+        position: idx
+      }));
+      
       const { error } = await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
           section_key: "page_segments",
           content_type: "json",
-          content_value: JSON.stringify(pageSegments),
+          content_value: JSON.stringify(segmentsWithPositions),
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
@@ -2025,6 +2034,10 @@ const AdminDashboard = () => {
         });
 
       if (error) throw error;
+      
+      // Update local state with new positions
+      setPageSegments(segmentsWithPositions);
+      
       toast.success("Segment saved successfully!");
     } catch (error: any) {
       toast.error("Error saving segment: " + error.message);
@@ -5240,13 +5253,19 @@ const AdminDashboard = () => {
                           onClick={async () => {
                             setSaving(true);
     try {
+      // Ensure all segments have correct positions based on current order
+      const segmentsWithPositions = pageSegments.map((seg, idx) => ({
+        ...seg,
+        position: idx
+      }));
+      
       const { error } = await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
           section_key: "page_segments",
                                   content_type: "json",
-                                  content_value: JSON.stringify(pageSegments),
+                                  content_value: JSON.stringify(segmentsWithPositions),
                                   updated_at: new Date().toISOString(),
                                   updated_by: user?.id
                                 }, {
@@ -5254,6 +5273,10 @@ const AdminDashboard = () => {
                                 });
 
                               if (error) throw error;
+                              
+                              // Update local state with new positions
+                              setPageSegments(segmentsWithPositions);
+                              
                               toast.success("Tiles segment saved successfully!");
                             } catch (error: any) {
                               toast.error("Error saving segment: " + error.message);
@@ -5580,13 +5603,19 @@ const AdminDashboard = () => {
                             onClick={async () => {
                               setSaving(true);
                               try {
+                                // Ensure all segments have correct positions based on current order
+                                const segmentsWithPositions = pageSegments.map((seg, idx) => ({
+                                  ...seg,
+                                  position: idx
+                                }));
+                                
                                 const { error } = await supabase
                                   .from("page_content")
                                   .upsert({
                                     page_slug: selectedPage,
                                     section_key: "page_segments",
                                     content_type: "json",
-                                    content_value: JSON.stringify(pageSegments),
+                                    content_value: JSON.stringify(segmentsWithPositions),
                                     updated_at: new Date().toISOString(),
                                     updated_by: user?.id
                                   }, {
@@ -5594,6 +5623,10 @@ const AdminDashboard = () => {
                                   });
 
                                 if (error) throw error;
+                                
+                                // Update local state with new positions
+                                setPageSegments(segmentsWithPositions);
+                                
                                 toast.success("Image & Text segment saved successfully!");
                               } catch (error: any) {
                                 toast.error("Error saving segment: " + error.message);
