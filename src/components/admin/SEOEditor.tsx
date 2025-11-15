@@ -47,21 +47,33 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
 
   const [introductionText, setIntroductionText] = useState({ title: '', description: '' });
   const [pageContent, setPageContent] = useState<any[]>([]);
+  const [segmentRegistry, setSegmentRegistry] = useState<any[]>([]);
 
-  // Load page content for static segments
+  // Load page content and segment registry
   useEffect(() => {
-    const loadPageContent = async () => {
-      const { data: contentData, error } = await supabase
+    const loadPageData = async () => {
+      // Load page content
+      const { data: contentData, error: contentError } = await supabase
         .from('page_content')
         .select('*')
         .eq('page_slug', pageSlug);
       
-      if (!error && contentData) {
+      if (!contentError && contentData) {
         setPageContent(contentData);
+      }
+
+      // Load segment registry to check for deleted segments
+      const { data: registryData, error: registryError } = await supabase
+        .from('segment_registry')
+        .select('*')
+        .eq('page_slug', pageSlug);
+      
+      if (!registryError && registryData) {
+        setSegmentRegistry(registryData);
       }
     };
     
-    loadPageContent();
+    loadPageData();
   }, [pageSlug]);
 
   useEffect(() => {
@@ -73,69 +85,86 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     const keywordInDescription = keyword ? (data.metaDescription?.toLowerCase().includes(keyword) || false) : false;
     const keywordInSlug = keyword ? (data.slug?.toLowerCase().includes(keyword.replace(/\s+/g, '-')) || false) : false;
 
-    // Check for keyword in introduction (ONLY first segment after Hero, if it's tiles or image-text)
+    // Check for keyword in introduction (ONLY from tiles or image-text segments that are NOT deleted)
     let keywordInIntroduction = false;
     let introTitle = '';
     let introDescription = '';
     
-    // First check for static tiles segment (applications_title/description)
-    const staticTilesTitle = pageContent.find(item => item.section_key === 'applications_title');
-    const staticTilesDesc = pageContent.find(item => item.section_key === 'applications_description');
+    // Check if tiles or image-text segment exists and is NOT deleted
+    const tilesRegistry = segmentRegistry.find(seg => seg.segment_type === 'tiles');
+    const imageTextRegistry = segmentRegistry.find(seg => seg.segment_type === 'image-text');
+    const introRegistry = segmentRegistry.find(seg => seg.segment_type === 'intro');
     
-    if (staticTilesTitle || staticTilesDesc) {
-      // Static tiles segment exists (this is typically ID 2, first after Hero)
-      introTitle = staticTilesTitle?.content_value || '';
-      introDescription = staticTilesDesc?.content_value || '';
+    // Priority: Tiles > Image-Text > Intro (but only if NOT deleted)
+    let activeSegmentType = null;
+    let activeSegmentKey = null;
+    
+    if (tilesRegistry && !tilesRegistry.deleted) {
+      activeSegmentType = 'tiles';
+      activeSegmentKey = tilesRegistry.segment_key;
+    } else if (imageTextRegistry && !imageTextRegistry.deleted) {
+      activeSegmentType = 'image-text';
+      activeSegmentKey = imageTextRegistry.segment_key;
+    } else if (introRegistry && !introRegistry.deleted) {
+      activeSegmentType = 'intro';
+      activeSegmentKey = introRegistry.segment_key;
+    }
+    
+    // If we found an active segment, get its content
+    if (activeSegmentType && activeSegmentKey) {
+      if (activeSegmentType === 'tiles') {
+        // For tiles, look for applications_title/description in page_content
+        const staticTilesTitle = pageContent.find(item => item.section_key === 'applications_title');
+        const staticTilesDesc = pageContent.find(item => item.section_key === 'applications_description');
+        
+        introTitle = staticTilesTitle?.content_value || '';
+        introDescription = staticTilesDesc?.content_value || '';
+      } else if (activeSegmentType === 'image-text') {
+        // For image-text, look for segment-specific title/description
+        const titleKey = `${activeSegmentKey}_title`;
+        const descKey = `${activeSegmentKey}_description`;
+        
+        const imageTextTitle = pageContent.find(item => item.section_key === titleKey);
+        const imageTextDesc = pageContent.find(item => item.section_key === descKey);
+        
+        introTitle = imageTextTitle?.content_value || '';
+        introDescription = imageTextDesc?.content_value || '';
+      } else if (activeSegmentType === 'intro') {
+        // For intro, look for intro_title/description
+        const introTitleContent = pageContent.find(item => item.section_key === 'intro_title');
+        const introDescContent = pageContent.find(item => item.section_key === 'intro_description');
+        
+        introTitle = introTitleContent?.content_value || '';
+        introDescription = introDescContent?.content_value || '';
+      }
       
-      if (keyword) {
+      // Check for keyword
+      if (keyword && (introTitle || introDescription)) {
         const titleLower = introTitle.toLowerCase();
         const descLower = introDescription.toLowerCase();
         keywordInIntroduction = titleLower.includes(keyword) || descLower.includes(keyword);
-      }
-    } else if (pageSegments.length > 0) {
-      // Fallback: check dynamic segments if no static tiles found
-      // Sort segments by position to find the first one after Hero
-      const sortedSegments = [...pageSegments].sort((a, b) => (a.position || 0) - (b.position || 0));
-      
-      // Find Hero position
-      const heroIndex = sortedSegments.findIndex(seg => 
-        seg.type === 'hero' || seg.type === 'product-hero' || seg.type === 'product-hero-gallery'
-      );
-      
-      // Get the segment immediately after Hero (if exists)
-      const firstAfterHero = heroIndex >= 0 && heroIndex + 1 < sortedSegments.length 
-        ? sortedSegments[heroIndex + 1] 
-        : sortedSegments[0]; // fallback to first segment if no hero found
-      
-      // Only count as introduction if it's tiles or image-text (NOT banner, NOT solutions, NOT other types)
-      if (firstAfterHero && (firstAfterHero.type === 'tiles' || firstAfterHero.type === 'image-text')) {
-        const segmentData = firstAfterHero.data || {};
-        introTitle = segmentData.title || segmentData.sectionTitle || '';
-        introDescription = segmentData.description || segmentData.sectionDescription || segmentData.subtext || '';
-        
-        if (keyword) {
-          const titleLower = introTitle.toLowerCase();
-          const descLower = introDescription.toLowerCase();
-          keywordInIntroduction = titleLower.includes(keyword) || descLower.includes(keyword);
-        }
       }
     }
     
     setIntroductionText({ title: introTitle, description: introDescription });
     
     // Always sync introduction field with segment content (only if changed to avoid infinite loop)
+    // If no active segments found, clear the introduction
     const combinedIntroText = [introTitle, introDescription].filter(Boolean).join('\n\n');
     console.log('[SEO Editor] Introduction sync:', {
       pageSlug,
+      activeSegmentType,
+      activeSegmentKey,
       introTitle,
       introDescription,
       combinedIntroText,
       currentIntroduction: data.introduction,
-      shouldUpdate: combinedIntroText && data.introduction !== combinedIntroText
+      shouldUpdate: data.introduction !== combinedIntroText
     });
     
-    if (combinedIntroText && data.introduction !== combinedIntroText) {
-      console.log('[SEO Editor] Updating introduction field with:', combinedIntroText);
+    // Update introduction field if it differs (including clearing it if no segments found)
+    if (data.introduction !== combinedIntroText) {
+      console.log('[SEO Editor] Updating introduction field with:', combinedIntroText || '(empty)');
       onChange({ ...data, introduction: combinedIntroText });
     }
 
@@ -148,7 +177,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInSlug,
       keywordInIntroduction,
     });
-  }, [data, pageSegments, pageContent]);
+  }, [data, pageSegments, pageContent, segmentRegistry]);
 
   const handleChange = (field: keyof SEOData, value: string) => {
     onChange({
