@@ -58,7 +58,7 @@ const Industries = () => {
   ];
 
   return (
-    <section className="py-20 bg-slate-50">
+    <section className="pt-12 pb-20 bg-slate-50">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-20">
