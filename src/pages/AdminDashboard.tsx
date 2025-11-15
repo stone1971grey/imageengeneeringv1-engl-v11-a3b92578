@@ -2232,21 +2232,16 @@ const AdminDashboard = () => {
       <Navigation />
       
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
-        <div className="flex items-start justify-between mb-8">
-          <div>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
             <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
-            <div className="flex items-center gap-4 mt-6">
-              <p className="text-gray-600">
-                Editing:
-              </p>
+            <div className="flex items-center gap-2">
+              <p className="text-gray-600">Editing:</p>
               <HierarchicalPageSelect 
                 value={selectedPage} 
                 onValueChange={(value) => navigate(`/admin-dashboard?page=${value}`)}
               />
             </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
             <Button
               onClick={() => navigate("/admin-dashboard/news")}
               variant="outline"
@@ -2594,8 +2589,7 @@ const AdminDashboard = () => {
                   return;
                 }
 
-                // Fetch page data from page_registry to build correct URL
-                const { data: pageData, error } = await supabase
+                const { data: pageData } = await supabase
                   .from('page_registry')
                   .select('page_slug, parent_slug, parent_id')
                   .eq('page_slug', selectedPage)
@@ -2604,9 +2598,7 @@ const AdminDashboard = () => {
                 let previewUrl = '/';
                 
                 if (pageData) {
-                  // Build URL with full hierarchy
                   if (pageData.parent_slug) {
-                    // Check if parent needs grandparent (e.g., scanners-archiving needs your-solution)
                     const { data: parentData } = await supabase
                       .from('page_registry')
                       .select('parent_slug')
@@ -2614,18 +2606,14 @@ const AdminDashboard = () => {
                       .maybeSingle();
                     
                     if (parentData?.parent_slug) {
-                      // Three-level hierarchy: /grandparent/parent/page
                       previewUrl = `/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
                     } else {
-                      // Two-level hierarchy: /parent/page
                       previewUrl = `/${pageData.parent_slug}/${pageData.page_slug}`;
                     }
                   } else {
-                    // Top-level page
                     previewUrl = `/${pageData.page_slug}`;
                   }
                 } else {
-                  // Fallback to static map for non-CMS pages
                   const urlMap: Record<string, string> = {
                     'index': '/',
                     'your-solution': '/your-solution',
@@ -2639,13 +2627,12 @@ const AdminDashboard = () => {
                   previewUrl = urlMap[selectedPage] || '/';
                 }
 
-                console.log('Preview URL:', previewUrl);
                 window.open(previewUrl, '_blank');
               }}
-              className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10 hover:text-gray-600"
+              className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10"
             >
               <Eye className="h-4 w-4" />
-              Preview Frontend
+              Preview
             </Button>
           </div>
           
