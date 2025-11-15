@@ -127,6 +127,9 @@ const App = () => (
         <Route path="/image-download" element={<ImageDownload />} />
          <Route path="/auth" element={<Auth />} />
          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+           {/* CMS Dynamic Routes - MUST be before Page ID Route */}
+           <Route path="/:parentSlug/:pageSlug" element={<CMSPage />} />
+           
            {/* Page ID Route - MUST be after all specific routes */}
            <Route path="/:pageId" element={<PageIdRouter />} />
            
