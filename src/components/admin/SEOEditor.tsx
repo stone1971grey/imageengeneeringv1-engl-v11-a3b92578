@@ -43,6 +43,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     keywordInDescription: false,
     keywordInSlug: false,
     keywordInIntroduction: false,
+    keywordInH1: false,
   });
 
   const [introductionText, setIntroductionText] = useState({ title: '', description: '' });
@@ -207,6 +208,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       onChange({ ...data, h1: autoH1 });
     }
     
+    // Check if keyword is in H1
+    const keywordInH1 = keyword && autoH1 ? autoH1.toLowerCase().includes(keyword) : false;
+    
     // If we found an active segment, get its content for Introduction
     if (activeSegmentType && activeSegmentKey) {
       if (activeSegmentType === 'intro') {
@@ -287,6 +291,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInDescription,
       keywordInSlug,
       keywordInIntroduction,
+      keywordInH1,
     });
   }, [data, pageSegments, pageContent, segmentRegistry]);
 
@@ -468,17 +473,38 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             {data.h1 && (
               <Badge className="bg-green-500 text-white">✓ Gesetzt</Badge>
             )}
+            {checks.keywordInH1 && (
+              <Badge className="bg-green-500 text-white flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3" />
+                FKW in H1
+              </Badge>
+            )}
+            {!checks.keywordInH1 && data.focusKeyword && data.h1 && (
+              <Badge className="bg-yellow-500 text-white flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                FKW fehlt in H1
+              </Badge>
+            )}
           </Label>
           <Input
             value={data.h1 || ''}
             disabled
             placeholder="Automatisch: Intro Titel oder Hero Titelzeilen"
-            className="mt-3 h-12 text-xl text-black placeholder:text-gray-500 border-2 cursor-not-allowed opacity-75 bg-gray-50"
+            className={`mt-3 h-12 text-xl text-black placeholder:text-gray-500 border-2 cursor-not-allowed opacity-75 ${
+              checks.keywordInH1 
+                ? 'border-green-500 bg-green-50' 
+                : data.focusKeyword && data.h1
+                ? 'border-yellow-500 bg-yellow-50'
+                : 'border-gray-300 bg-gray-50'
+            }`}
           />
           <p className="text-base text-white mt-2 leading-relaxed">
             <strong>Automatisch synchronisiert:</strong><br/>
             <span className="ml-4 block mt-1">• <strong>Intro vorhanden</strong>: H1 = Intro Titel</span>
             <span className="ml-4 block">• <strong>Kein Intro</strong>: H1 = Hero Titelzeile 1 + 2</span>
+            {data.focusKeyword && (
+              <span className="ml-4 block mt-2">• <strong>SEO Check</strong>: Das Fokus-Keyword sollte in der H1 enthalten sein</span>
+            )}
           </p>
         </div>
 
