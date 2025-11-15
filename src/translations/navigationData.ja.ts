@@ -64,7 +64,7 @@ export const navigationDataJa = {
       description: "文書、書籍、写真のデジタル化における品質保証",
       subgroups: [
         { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
-        { name: "ユニバーサルテストターゲット", link: "#" },
+        { name: "ユニバーサルテストターゲット", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
         { name: "マルチスペクトル照明", link: "#" },
         { name: "スキャナーダイナミックレンジ", link: "#" },
         { name: "分光感度", link: "#" }
