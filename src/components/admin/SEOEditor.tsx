@@ -402,7 +402,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             }`}
           />
           <p className="text-base text-white mt-3 leading-relaxed">
-            <strong>Automatisch synchronisiert:</strong> Der Introduction-Text wird automatisch aus den Segmenten geladen (Priorität: Intro [nur Description] &gt; Tiles &gt; Image & Text). Die Introduction sollte das Fokus-Keyword enthalten.
+            <strong>Automatisch synchronisiert:</strong> Der Introduction-Text wird automatisch aus den Segmenten geladen:<br/>
+            <span className="ml-4 block mt-1">• <strong>Intro Segment</strong> (höchste Priorität): Nur die Beschreibung wird verwendet</span>
+            <span className="ml-4 block">• <strong>Tiles Segment</strong>: Titel + Beschreibung werden verwendet</span>
+            <span className="ml-4 block">• <strong>Image & Text Segment</strong>: Titel + Beschreibung werden verwendet</span>
+            <span className="block mt-2">Gelöschte Segmente werden automatisch ignoriert. Die Introduction sollte das Fokus-Keyword enthalten.</span>
           </p>
         </div>
 
