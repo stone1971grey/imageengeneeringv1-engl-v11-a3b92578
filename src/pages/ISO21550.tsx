@@ -193,6 +193,10 @@ const ISO21550 = () => {
     // Check if it's a dynamic segment
     const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
     if (dynamicSegment) {
+      // Determine index for H1 logic
+      const sortedSegments = [...pageSegments].sort((a, b) => (a.position || 0) - (b.position || 0));
+      const idx = sortedSegments.findIndex(s => s.id === segmentId);
+      
       if (dynamicSegment.type === 'meta-navigation') {
         return <MetaNavigation key={segmentId} data={dynamicSegment.data} segmentIdMap={segmentIdMap} />;
       }
@@ -212,10 +216,16 @@ const ISO21550 = () => {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'full-hero') {
-        return <FullHero key={segmentId} {...dynamicSegment.data} />;
+        // Determine if this full-hero should use h1 (if no intro segment exists before it)
+        const hasIntroBeforeThis = sortedSegments.slice(0, idx).some(s => s.type === 'intro');
+        return <FullHero key={segmentId} {...dynamicSegment.data} useH1={!hasIntroBeforeThis} />;
       }
       if (dynamicSegment.type === 'intro') {
-        return <Intro key={segmentId} {...dynamicSegment.data} />;
+        // Intro should use h1 if it's the first content segment (after heroes)
+        const isFirstContentSegment = sortedSegments.slice(0, idx).every(s => 
+          s.type === 'hero' || s.type === 'full-hero' || s.type === 'meta-navigation'
+        );
+        return <Intro key={segmentId} {...dynamicSegment.data} headingLevel={isFirstContentSegment ? 'h1' : 'h2'} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (

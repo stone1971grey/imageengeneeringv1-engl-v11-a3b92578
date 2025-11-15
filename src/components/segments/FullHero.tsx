@@ -16,6 +16,7 @@ interface FullHeroProps {
   videoUrl?: string;
   kenBurnsEffect?: 'none' | 'standard' | 'slow' | 'fast' | 'zoom-out' | 'pan-left' | 'pan-right';
   overlayOpacity?: number;
+  useH1?: boolean; // NEW: determines if title should be h1 or div
 }
 
 const FullHero = ({
@@ -33,6 +34,7 @@ const FullHero = ({
   videoUrl,
   kenBurnsEffect = 'standard',
   overlayOpacity = 15,
+  useH1 = false, // Default to false for backwards compatibility
 }: FullHeroProps) => {
   
   const getButtonStyle = (color: 'yellow' | 'black' | 'white') => {
@@ -125,11 +127,18 @@ const FullHero = ({
           {/* Left-aligned Content */}
           <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0">
             <div>
-              {/* Two-line title */}
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl leading-[0.9] tracking-tight mb-6">
-                <span className="font-light text-white block">{titleLine1}</span>
-                <span className="font-medium text-white block">{titleLine2}</span>
-              </h1>
+              {/* Two-line title - dynamic h1 or div based on useH1 prop */}
+              {useH1 ? (
+                <h1 className="text-5xl lg:text-6xl xl:text-7xl leading-[0.9] tracking-tight mb-6">
+                  <span className="font-light text-white block">{titleLine1}</span>
+                  <span className="font-medium text-white block">{titleLine2}</span>
+                </h1>
+              ) : (
+                <div className="text-5xl lg:text-6xl xl:text-7xl leading-[0.9] tracking-tight mb-6">
+                  <span className="font-light text-white block">{titleLine1}</span>
+                  <span className="font-medium text-white block">{titleLine2}</span>
+                </div>
+              )}
               
               {/* Subtitle */}
               {subtitle && (

@@ -169,7 +169,45 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     
     console.log('[SEO Editor] Active segment determined:', { activeSegmentType, activeSegmentKey });
     
-    // If we found an active segment, get its content
+    // Determine H1 heading dynamically
+    let autoH1 = '';
+    
+    // Priority for H1: Intro Title > Hero Title Lines
+    if (introRegistry && !introRegistry.deleted) {
+      // Get Intro title for H1
+      const introContent = pageContent.find(item => item.section_key === introRegistry.segment_key);
+      if (introContent) {
+        try {
+          const introData = JSON.parse(introContent.content_value);
+          autoH1 = introData.title || '';
+          console.log('[SEO Editor] H1 from Intro title:', autoH1);
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse intro for H1:', e);
+        }
+      }
+    } else {
+      // Fallback: Get Full Hero title lines
+      const fullHeroEntry = pageContent.find(item => item.section_key.startsWith('full_hero_'));
+      if (fullHeroEntry) {
+        try {
+          const fullHeroData = JSON.parse(fullHeroEntry.content_value);
+          const titleLine1 = fullHeroData.titleLine1 || '';
+          const titleLine2 = fullHeroData.titleLine2 || '';
+          autoH1 = [titleLine1, titleLine2].filter(Boolean).join(' ');
+          console.log('[SEO Editor] H1 from Hero titles:', autoH1);
+        } catch (e) {
+          console.error('[SEO Editor] Failed to parse hero for H1:', e);
+        }
+      }
+    }
+    
+    // Auto-set H1 if different
+    if (autoH1 && data.h1 !== autoH1) {
+      console.log('[SEO Editor] Auto-setting H1 to:', autoH1);
+      onChange({ ...data, h1: autoH1 });
+    }
+    
+    // If we found an active segment, get its content for Introduction
     if (activeSegmentType && activeSegmentKey) {
       if (activeSegmentType === 'intro') {
         // For intro: ONLY use description (no title) - highest priority
@@ -421,6 +459,27 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </span>
             </div>
           </div>
+        </div>
+
+        <div>
+          <Label className="flex items-center gap-2 text-base font-semibold">
+            H1 Heading
+            <Badge variant="secondary" className="text-sm">Auto</Badge>
+            {data.h1 && (
+              <Badge className="bg-green-500 text-white">✓ Gesetzt</Badge>
+            )}
+          </Label>
+          <Input
+            value={data.h1 || ''}
+            disabled
+            placeholder="Automatisch: Intro Titel oder Hero Titelzeilen"
+            className="mt-3 h-12 text-xl text-black placeholder:text-gray-500 border-2 cursor-not-allowed opacity-75 bg-gray-50"
+          />
+          <p className="text-base text-white mt-2 leading-relaxed">
+            <strong>Automatisch synchronisiert:</strong><br/>
+            <span className="ml-4 block mt-1">• <strong>Intro vorhanden</strong>: H1 = Intro Titel</span>
+            <span className="ml-4 block">• <strong>Kein Intro</strong>: H1 = Hero Titelzeile 1 + 2</span>
+          </p>
         </div>
 
         <div>
