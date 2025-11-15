@@ -315,6 +315,7 @@ export type Database = {
           id: number
           is_static: boolean | null
           page_slug: string
+          position: number | null
           segment_id: number
           segment_key: string
           segment_type: string
@@ -325,6 +326,7 @@ export type Database = {
           id?: number
           is_static?: boolean | null
           page_slug: string
+          position?: number | null
           segment_id: number
           segment_key: string
           segment_type: string
@@ -335,6 +337,7 @@ export type Database = {
           id?: number
           is_static?: boolean | null
           page_slug?: string
+          position?: number | null
           segment_id?: number
           segment_key?: string
           segment_type?: string
