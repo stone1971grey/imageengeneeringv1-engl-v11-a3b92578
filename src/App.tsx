@@ -90,12 +90,15 @@ const App = () => (
         <Route path="/your-solution/mobile-phone" element={<MobilePhone />} />
         <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
         <Route path="/your-solution/scanners-archiving/iso-21550" element={<ISO21550 />} />
-        <Route path="/your-solution/scanners-archiving/universal-test-target" element={<CMSPage />} />
         
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
         <Route path="/products/illumination/iq-led" element={<ProductIQLED />} />
         <Route path="/products/standards/ieee-p2020" element={<ProductIEEEP2020 />} />
+        
+        {/* CMS Dynamic Routes - Must be after specific routes */}
+        <Route path="/your-solution/:parentSlug/:pageSlug" element={<CMSPage />} />
+        <Route path="/products/:parentSlug/:pageSlug" element={<CMSPage />} />
         
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />

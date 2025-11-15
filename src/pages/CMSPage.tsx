@@ -42,7 +42,12 @@ interface PageSegment {
 
 const CMSPage = () => {
   const { pageSlug, parentSlug } = useParams<{ pageSlug: string; parentSlug?: string }>();
-  const actualPageSlug = pageSlug || parentSlug || '';
+  // For 3-level URLs like /your-solution/scanners-archiving/universal-test-target
+  // pageSlug will be "universal-test-target", parentSlug will be "scanners-archiving"
+  // We want the actual page slug which is the last segment
+  const actualPageSlug = pageSlug || '';
+  
+  console.log('CMSPage params:', { pageSlug, parentSlug, actualPageSlug });
   
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<Record<string, string>>({});
@@ -57,25 +62,34 @@ const CMSPage = () => {
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
+    console.log('CMSPage useEffect triggered, actualPageSlug:', actualPageSlug);
     if (actualPageSlug) {
       loadContent();
+    } else {
+      console.error('No actualPageSlug found!');
+      setLoading(false);
     }
   }, [actualPageSlug]);
 
   const loadContent = async () => {
+    console.log('loadContent called for:', actualPageSlug);
     setLoading(true);
 
-    const { data: contentData } = await supabase
+    const { data: contentData, error: contentError } = await supabase
       .from("page_content")
       .select("*")
       .eq("page_slug", actualPageSlug);
 
-    const { data: segmentRegistryData } = await supabase
+    console.log('Content data:', contentData, 'Error:', contentError);
+
+    const { data: segmentRegistryData, error: segmentError } = await supabase
       .from("segment_registry")
       .select("*")
       .eq("page_slug", actualPageSlug)
       .eq("deleted", false)
       .order("position", { ascending: true });
+
+    console.log('Segment data:', segmentRegistryData, 'Error:', segmentError);
 
     if (contentData && segmentRegistryData) {
       const contentMap: Record<string, string> = {};
