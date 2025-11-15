@@ -2247,6 +2247,14 @@ const AdminDashboard = () => {
           </div>
           <div className="flex items-center gap-3 pt-2 ml-auto">
             <Button
+              onClick={() => navigate("/admin-dashboard/news")}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Pencil className="h-4 w-4" />
+              Manage News
+            </Button>
+            <Button
               onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
               variant={isSEOEditorOpen ? "default" : "outline"}
               className={isSEOEditorOpen ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" : ""}
