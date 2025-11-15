@@ -2250,7 +2250,7 @@ const AdminDashboard = () => {
               <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
+                    className="bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     Add New Segment
@@ -2638,16 +2638,14 @@ const AdminDashboard = () => {
             <div className="flex items-center gap-3">
               <Button
                 onClick={() => navigate("/admin-dashboard/news")}
-                variant="outline"
-                className="flex items-center gap-2"
+                className="bg-purple-600 text-white hover:bg-purple-700 flex items-center gap-2"
               >
                 <Pencil className="h-4 w-4" />
                 Manage News
               </Button>
               <Button
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
-                variant={isSEOEditorOpen ? "default" : "outline"}
-                className={isSEOEditorOpen ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" : ""}
+                className={isSEOEditorOpen ? "bg-orange-600 text-white hover:bg-orange-700" : "bg-orange-600 text-white hover:bg-orange-700"}
               >
                 SEO Settings
               </Button>
