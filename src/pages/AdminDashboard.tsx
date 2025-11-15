@@ -2250,7 +2250,7 @@ const AdminDashboard = () => {
               <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     Add New Segment
@@ -2572,7 +2572,7 @@ const AdminDashboard = () => {
               </DialogContent>
               </Dialog>
               <Button
-                variant="outline"
+                variant="default"
                 onClick={async () => {
                   if (!selectedPage) {
                     toast.error('Please select a page first');
@@ -2619,14 +2619,14 @@ const AdminDashboard = () => {
 
                   window.open(previewUrl, '_blank');
                 }}
-                className="flex items-center gap-2 border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24]/10"
+                className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
               >
                 <Eye className="h-4 w-4" />
                 Preview
               </Button>
               <Button
                 onClick={handleLogout}
-                variant="outline"
+                variant="destructive"
                 className="flex items-center gap-2"
               >
                 <LogOut className="h-4 w-4" />
