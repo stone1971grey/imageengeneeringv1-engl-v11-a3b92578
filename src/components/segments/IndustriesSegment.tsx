@@ -116,10 +116,10 @@ const IndustriesSegment = ({
 
                 {/* Text Content */}
                 <div className="text-center space-y-1">
-                  <h3 className="text-base md:text-lg font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
+                  <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed px-2">
+                  <p className="text-xs text-gray-600 font-light leading-relaxed px-2">
                     {item.description}
                   </p>
                 </div>
