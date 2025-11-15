@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Save, AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Save, AlertCircle, CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { SERPPreview } from "./SERPPreview";
 import { supabase } from "@/integrations/supabase/client";
@@ -628,19 +628,64 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 <Badge className="bg-green-500 text-white">Aus Hero übernommen</Badge>
               )}
             </Label>
-            <Input
-              id="og-image"
-              value={data.ogImage || heroImageUrl || ''}
-              onChange={(e) => handleChange('ogImage', e.target.value)}
-              placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
-              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-gray-500"
-            />
+            
+            <div className="flex gap-3 mt-3">
+              <Input
+                id="og-image"
+                value={data.ogImage || heroImageUrl || ''}
+                onChange={(e) => handleChange('ogImage', e.target.value)}
+                placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
+                className="flex-1 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-gray-500"
+              />
+              <label className="cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    
+                    try {
+                      const fileName = `og-${pageSlug}-${Date.now()}.${file.name.split('.').pop()}`;
+                      const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('og-images')
+                        .upload(fileName, file);
+                      
+                      if (uploadError) throw uploadError;
+                      
+                      const { data: { publicUrl } } = supabase.storage
+                        .from('og-images')
+                        .getPublicUrl(fileName);
+                      
+                      handleChange('ogImage', publicUrl);
+                    } catch (error) {
+                      console.error('Upload error:', error);
+                      alert('Fehler beim Hochladen: ' + (error instanceof Error ? error.message : 'Unbekannter Fehler'));
+                    }
+                  }}
+                />
+                <Button type="button" variant="outline" className="h-12 px-4">
+                  Upload
+                </Button>
+              </label>
+              {data.ogImage && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-12 px-4"
+                  onClick={() => handleChange('ogImage', '')}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
             
             {/* Image Preview */}
             {(data.ogImage || heroImageUrl) && (
-              <div className="mt-4 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
-                <div className="p-3 bg-gray-100 border-b border-gray-200">
-                  <p className="text-sm font-medium text-gray-700">OG Image Preview (1200×630px)</p>
+              <div className="mt-4 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50 w-[400px]">
+                <div className="p-2 bg-gray-100 border-b border-gray-200">
+                  <p className="text-xs font-medium text-gray-700">OG Image Preview</p>
                 </div>
                 <div className="relative aspect-[1200/630] bg-gray-200">
                   <img 
@@ -648,11 +693,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                     alt="OG Image Preview"
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"%3E%3Crect fill="%23e5e7eb" width="1200" height="630"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%236b7280" font-size="24" font-family="sans-serif"%3EBild konnte nicht geladen werden%3C/text%3E%3C/svg%3E';
+                      e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"%3E%3Crect fill="%23e5e7eb" width="1200" height="630"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%236b7280" font-size="24" font-family="sans-serif"%3EBild nicht gefunden%3C/text%3E%3C/svg%3E';
                     }}
                   />
-                  <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs font-medium">
-                    {data.ogImage ? 'Manuell' : 'Hero-Bild'}
+                  <div className="absolute top-1 right-1 bg-black/70 text-white px-2 py-0.5 rounded text-xs font-medium">
+                    {data.ogImage ? 'Manuell' : 'Hero'}
                   </div>
                 </div>
               </div>
@@ -660,9 +705,9 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             
             <p className="text-base text-white mt-2">
               {heroImageUrl && !data.ogImage ? (
-                <>✓ Hero-Bild wird automatisch als OG Image verwendet. Überschreibe es bei Bedarf.</>
+                <>✓ Hero-Bild wird automatisch verwendet. Überschreibe es mit Upload oder URL.</>
               ) : (
-                <>Empfohlene Größe: 1200×630px. Dies wird beim Teilen auf Social Media angezeigt.</>
+                <>Empfohlene Größe: 1200×630px für optimale Darstellung auf Social Media.</>
               )}
             </p>
           </div>
