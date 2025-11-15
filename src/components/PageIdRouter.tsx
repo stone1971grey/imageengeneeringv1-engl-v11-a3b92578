@@ -10,14 +10,14 @@ import MachineVision from "@/pages/MachineVision";
 import WebCamera from "@/pages/WebCamera";
 import UniversalTestTarget from "@/pages/UniversalTestTarget";
 
-// Page ID to Component mapping
+// Page ID to Component mapping (must match page_registry table)
 const pageComponentMap: Record<number, React.ComponentType> = {
-  1: Photography,
-  2: ScannersArchiving,
-  3: MedicalEndoscopy,
-  4: MachineVision,
-  5: WebCamera,
-  261: UniversalTestTarget,
+  9: Photography,           // photography
+  10: ScannersArchiving,    // scanners-archiving
+  11: MedicalEndoscopy,     // medical-endoscopy
+  12: WebCamera,            // web-camera
+  13: MachineVision,        // machine-vision
+  261: UniversalTestTarget, // universal-test-target
 };
 
 const PageIdRouter = () => {
