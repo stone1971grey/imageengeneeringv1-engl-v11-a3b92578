@@ -14,9 +14,10 @@ interface IndustriesSegmentEditorProps {
     items?: IndustryItem[];
   };
   onChange: (data: any) => void;
+  onSave?: () => void;
 }
 
-export const IndustriesSegmentEditor = ({ data, onChange }: IndustriesSegmentEditorProps) => {
+export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSegmentEditorProps) => {
   const items = data.items || [];
   const columns = data.columns || 4;
 
@@ -186,6 +187,18 @@ export const IndustriesSegmentEditor = ({ data, onChange }: IndustriesSegmentEdi
           </div>
         )}
       </div>
+
+      {/* Save Button */}
+      {onSave && (
+        <div className="flex justify-end pt-4 border-t">
+          <Button
+            onClick={onSave}
+            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+          >
+            Speichern
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
