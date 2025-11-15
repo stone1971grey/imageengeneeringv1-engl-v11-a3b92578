@@ -19,7 +19,6 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
   const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [headingLevel, setHeadingLevel] = useState<'h1' | 'h2'>('h2');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
@@ -59,7 +58,6 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         const content = JSON.parse(data.content_value);
         setTitle(content.title || "");
         setDescription(content.description || "");
-        setHeadingLevel(content.headingLevel || 'h2');
       }
     } catch (error) {
       console.error('Error loading content:', error);
@@ -80,7 +78,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
       const content = {
         title,
         description,
-        headingLevel
+        headingLevel: 'h1'
       };
 
       const { error } = await supabase
@@ -123,10 +121,6 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
     setDescription(value);
   };
 
-  const handleHeadingLevelChange = (value: 'h1' | 'h2') => {
-    setHeadingLevel(value);
-  };
-
   if (isLoading) {
     return <div className="p-4">Lade...</div>;
   }
@@ -139,26 +133,13 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         <Alert className="border-primary/50 bg-primary/5">
           <Heading1 className="h-4 w-4" />
           <AlertDescription>
-            Dieses Intro trägt die H1-Überschrift für SEO-Optimierung
+            Der Titel dieses Intro trägt die H1-Überschrift für SEO-Optimierung
           </AlertDescription>
         </Alert>
       )}
       
       <div className="space-y-2">
-        <Label htmlFor="heading-level">Überschrift-Level</Label>
-        <Select value={headingLevel} onValueChange={handleHeadingLevelChange}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="h1">H1 (Hauptüberschrift)</SelectItem>
-            <SelectItem value="h2">H2 (Unterüberschrift)</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="intro-title">Titel</Label>
+        <Label htmlFor="intro-title">Titel (H1)</Label>
         <Input
           id="intro-title"
           value={title}
