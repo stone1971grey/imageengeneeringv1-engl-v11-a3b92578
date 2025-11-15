@@ -90,29 +90,36 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     let introTitle = '';
     let introDescription = '';
     
-    // Check if tiles or image-text segment exists and is NOT deleted
+    // Check if tiles, image-text or intro segment exists and is NOT deleted
     const tilesRegistry = segmentRegistry.find(seg => seg.segment_type === 'tiles');
     const imageTextRegistry = segmentRegistry.find(seg => seg.segment_type === 'image-text');
     const introRegistry = segmentRegistry.find(seg => seg.segment_type === 'intro');
     
-    // Priority: Tiles > Image-Text > Intro (but only if NOT deleted)
+    // Priority: Intro > Tiles > Image-Text (but only if NOT deleted)
+    // INTRO has highest priority and ONLY uses description (no title)
     let activeSegmentType = null;
     let activeSegmentKey = null;
     
-    if (tilesRegistry && !tilesRegistry.deleted) {
+    if (introRegistry && !introRegistry.deleted) {
+      activeSegmentType = 'intro';
+      activeSegmentKey = introRegistry.segment_key;
+    } else if (tilesRegistry && !tilesRegistry.deleted) {
       activeSegmentType = 'tiles';
       activeSegmentKey = tilesRegistry.segment_key;
     } else if (imageTextRegistry && !imageTextRegistry.deleted) {
       activeSegmentType = 'image-text';
       activeSegmentKey = imageTextRegistry.segment_key;
-    } else if (introRegistry && !introRegistry.deleted) {
-      activeSegmentType = 'intro';
-      activeSegmentKey = introRegistry.segment_key;
     }
     
     // If we found an active segment, get its content
     if (activeSegmentType && activeSegmentKey) {
-      if (activeSegmentType === 'tiles') {
+      if (activeSegmentType === 'intro') {
+        // For intro: ONLY use description (no title) - highest priority
+        const introDescContent = pageContent.find(item => item.section_key === 'intro_description');
+        
+        introTitle = ''; // Never use title for Intro segment
+        introDescription = introDescContent?.content_value || '';
+      } else if (activeSegmentType === 'tiles') {
         // For tiles, look for applications_title/description in page_content
         const staticTilesTitle = pageContent.find(item => item.section_key === 'applications_title');
         const staticTilesDesc = pageContent.find(item => item.section_key === 'applications_description');
@@ -129,13 +136,6 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         
         introTitle = imageTextTitle?.content_value || '';
         introDescription = imageTextDesc?.content_value || '';
-      } else if (activeSegmentType === 'intro') {
-        // For intro, look for intro_title/description
-        const introTitleContent = pageContent.find(item => item.section_key === 'intro_title');
-        const introDescContent = pageContent.find(item => item.section_key === 'intro_description');
-        
-        introTitle = introTitleContent?.content_value || '';
-        introDescription = introDescContent?.content_value || '';
       }
       
       // Check for keyword
