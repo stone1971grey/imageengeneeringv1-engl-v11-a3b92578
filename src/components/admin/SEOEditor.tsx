@@ -95,6 +95,15 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     const imageTextRegistry = segmentRegistry.find(seg => seg.segment_type === 'image-text');
     const introRegistry = segmentRegistry.find(seg => seg.segment_type === 'intro');
     
+    console.log('[SEO Editor] Segment Registry Check:', {
+      pageSlug,
+      segmentRegistryLength: segmentRegistry.length,
+      tilesRegistry,
+      imageTextRegistry,
+      introRegistry,
+      pageContentLength: pageContent.length
+    });
+    
     // Priority: Intro > Tiles > Image-Text (but only if NOT deleted)
     // INTRO has highest priority and ONLY uses description (no title)
     let activeSegmentType = null;
@@ -103,13 +112,18 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     if (introRegistry && !introRegistry.deleted) {
       activeSegmentType = 'intro';
       activeSegmentKey = introRegistry.segment_key;
+      console.log('[SEO Editor] Using INTRO segment:', { activeSegmentKey, deleted: introRegistry.deleted });
     } else if (tilesRegistry && !tilesRegistry.deleted) {
       activeSegmentType = 'tiles';
       activeSegmentKey = tilesRegistry.segment_key;
+      console.log('[SEO Editor] Using TILES segment:', { activeSegmentKey, deleted: tilesRegistry.deleted });
     } else if (imageTextRegistry && !imageTextRegistry.deleted) {
       activeSegmentType = 'image-text';
       activeSegmentKey = imageTextRegistry.segment_key;
+      console.log('[SEO Editor] Using IMAGE-TEXT segment:', { activeSegmentKey, deleted: imageTextRegistry.deleted });
     }
+    
+    console.log('[SEO Editor] Active segment determined:', { activeSegmentType, activeSegmentKey });
     
     // If we found an active segment, get its content
     if (activeSegmentType && activeSegmentKey) {
@@ -118,14 +132,21 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         // Intro segment stores data as JSON in a single content field
         const introContent = pageContent.find(item => item.section_key === activeSegmentKey);
         
+        console.log('[SEO Editor] Looking for intro content with key:', activeSegmentKey);
+        console.log('[SEO Editor] Found intro content:', introContent);
+        
         if (introContent) {
           try {
             const introData = JSON.parse(introContent.content_value);
+            console.log('[SEO Editor] Parsed intro data:', introData);
             introTitle = ''; // Never use title for Intro segment
             introDescription = introData.description || '';
+            console.log('[SEO Editor] Extracted intro description:', introDescription);
           } catch (e) {
             console.error('[SEO Editor] Failed to parse intro content:', e);
           }
+        } else {
+          console.warn('[SEO Editor] No intro content found for key:', activeSegmentKey);
         }
       } else if (activeSegmentType === 'tiles') {
         // For tiles, look for applications_title/description in page_content
