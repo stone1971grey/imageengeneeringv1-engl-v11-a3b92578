@@ -51,6 +51,7 @@ import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { FullHeroEditor } from '@/components/admin/FullHeroEditor';
 import IntroEditor from '@/components/admin/IntroEditor';
+import { IndustriesSegmentEditor } from '@/components/admin/IndustriesSegmentEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
 import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelect';
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
@@ -1848,6 +1849,20 @@ const AdminDashboard = () => {
           description: 'Industry-leading solutions for comprehensive camera and sensor evaluation',
           headingLevel: 'h2'
         };
+      case 'industries':
+        return {
+          title: 'Trusted Across All Industries',
+          subtitle: 'Professional solutions for diverse applications',
+          columns: 4,
+          items: [
+            {
+              icon: 'Camera',
+              title: 'Photography',
+              description: 'Professional camera testing',
+              link: ''
+            }
+          ]
+        };
       default:
         return {};
     }
@@ -3070,6 +3085,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'specification') label = `Specification ${displayNumber}`;
                       if (segment.type === 'full-hero') label = `Full Hero ${displayNumber}`;
                       if (segment.type === 'intro') label = `Intro ${displayNumber}`;
+                      if (segment.type === 'industries') label = `Industries ${displayNumber}`;
                     }
                     
                     return (
@@ -4667,6 +4683,7 @@ const AdminDashboard = () => {
                         {segment.type === 'image-text' && `Image & Text Section ${segment.position + 1}`}
                         {segment.type === 'full-hero' && `Full Hero ${segment.position + 1}`}
                         {segment.type === 'intro' && `Intro ${segment.position + 1}`}
+                        {segment.type === 'industries' && `Industries ${segment.position + 1}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
@@ -4690,6 +4707,7 @@ const AdminDashboard = () => {
                         {segment.type === 'full-hero' && 'Full Hero Template'}
                         {segment.type === 'specification' && 'Specification Template'}
                         {segment.type === 'intro' && 'Intro Template'}
+                        {segment.type === 'industries' && 'Industries Template'}
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -5763,6 +5781,18 @@ const AdminDashboard = () => {
                       pageSlug={selectedPage}
                       segmentKey={segment.id}
                       onSave={() => handleSaveSegments()}
+                    />
+                  )}
+
+                  {segment.type === 'industries' && (
+                    <IndustriesSegmentEditor
+                      data={segment.data || {}}
+                      onChange={(newData) => {
+                        const updatedSegments = pageSegments.map(s =>
+                          s.id === segment.id ? { ...s, data: newData } : s
+                        );
+                        setPageSegments(updatedSegments);
+                      }}
                     />
                   )}
 
