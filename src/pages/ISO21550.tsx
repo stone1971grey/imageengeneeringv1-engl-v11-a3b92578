@@ -216,16 +216,13 @@ const ISO21550 = () => {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'full-hero') {
-        // Determine if this full-hero should use h1 (if no intro segment exists before it)
-        const hasIntroBeforeThis = sortedSegments.slice(0, idx).some(s => s.type === 'intro');
-        return <FullHero key={segmentId} {...dynamicSegment.data} useH1={!hasIntroBeforeThis} />;
+        // Determine if this full-hero should use h1 or h2 based on whether an intro segment exists
+        const hasIntroSegment = sortedSegments.some(s => s.type === 'intro');
+        return <FullHero key={segmentId} {...dynamicSegment.data} useH1={!hasIntroSegment} />;
       }
       if (dynamicSegment.type === 'intro') {
-        // Intro should use h1 if it's the first content segment (after heroes)
-        const isFirstContentSegment = sortedSegments.slice(0, idx).every(s => 
-          s.type === 'hero' || s.type === 'full-hero' || s.type === 'meta-navigation'
-        );
-        return <Intro key={segmentId} {...dynamicSegment.data} headingLevel={isFirstContentSegment ? 'h1' : 'h2'} />;
+        // Intro always uses h1 (no need for headingLevel prop)
+        return <Intro key={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'banner') {
         return (
