@@ -20,6 +20,7 @@ import WebCamera from "./pages/WebCamera";
 import MobilePhone from "./pages/MobilePhone";
 import ISO21550 from "./pages/ISO21550";
 import PageIdRouter from "@/components/PageIdRouter";
+import CMSPage from "@/pages/CMSPage";
 import Downloads from "./pages/Downloads";
 import ProductLE7 from "./pages/ProductLE7";
 import ProductIQLED from "./pages/ProductIQLED";

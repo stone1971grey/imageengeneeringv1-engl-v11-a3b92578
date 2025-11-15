@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import CMSPage from "@/pages/CMSPage";
 
-// Import all CMS-enabled pages
+// Import legacy CMS-enabled pages (for backwards compatibility)
 import Photography from "@/pages/Photography";
 import ScannersArchiving from "@/pages/ScannersArchiving";
 import MedicalEndoscopy from "@/pages/MedicalEndoscopy";
 import MachineVision from "@/pages/MachineVision";
 import WebCamera from "@/pages/WebCamera";
 
-// Page ID to Component mapping
-const pageComponentMap: Record<number, React.ComponentType> = {
+// Legacy page ID to Component mapping (for backwards compatibility)
+const legacyPageComponentMap: Record<number, React.ComponentType> = {
   1: Photography,
   2: ScannersArchiving,
   3: MedicalEndoscopy,
@@ -20,11 +21,11 @@ const pageComponentMap: Record<number, React.ComponentType> = {
 
 const PageIdRouter = () => {
   const { pageId } = useParams<{ pageId: string }>();
-  const [pageSlug, setPageSlug] = useState<string | null>(null);
+  const [pageData, setPageData] = useState<{ slug: string; parentSlug: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPageSlug = async () => {
+    const fetchPageData = async () => {
       if (!pageId) {
         setLoading(false);
         return;
@@ -37,42 +38,49 @@ const PageIdRouter = () => {
         return;
       }
 
-      // Fetch page_slug from page_registry based on page_id
+      // Fetch page data from page_registry based on page_id
       const { data, error } = await supabase
         .from("page_registry")
-        .select("page_slug")
+        .select("page_slug, parent_slug")
         .eq("page_id", numericPageId)
         .maybeSingle();
 
       if (error || !data) {
         console.error("Error fetching page:", error);
-        setPageSlug(null);
+        setPageData(null);
       } else {
-        setPageSlug(data.page_slug);
+        setPageData({
+          slug: data.page_slug,
+          parentSlug: data.parent_slug
+        });
       }
 
       setLoading(false);
     };
 
-    fetchPageSlug();
+    fetchPageData();
   }, [pageId]);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  if (!pageId || !pageSlug) {
+  if (!pageId || !pageData) {
     return <Navigate to="/not-found" replace />;
   }
 
   const numericPageId = parseInt(pageId, 10);
-  const PageComponent = pageComponentMap[numericPageId];
-
-  if (!PageComponent) {
-    return <Navigate to="/not-found" replace />;
+  
+  // Check if this is a legacy page with a specific component
+  const LegacyPageComponent = legacyPageComponentMap[numericPageId];
+  
+  if (LegacyPageComponent) {
+    // Use legacy component for backwards compatibility
+    return <LegacyPageComponent />;
   }
 
-  return <PageComponent />;
+  // Use universal CMSPage component for all new CMS pages
+  return <CMSPage />;
 };
 
 export default PageIdRouter;
