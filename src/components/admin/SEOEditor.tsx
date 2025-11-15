@@ -53,11 +53,15 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
   // Load page content and segment registry
   useEffect(() => {
     const loadPageData = async () => {
+      console.log('[SEO Editor] Loading page data for:', pageSlug);
+      
       // Load page content
       const { data: contentData, error: contentError } = await supabase
         .from('page_content')
         .select('*')
         .eq('page_slug', pageSlug);
+      
+      console.log('[SEO Editor] Loaded content data:', contentData?.length, 'items');
       
       if (!contentError && contentData) {
         setPageContent(contentData);
@@ -67,10 +71,14 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         
         // Look for full_hero image
         const fullHeroEntry = contentData.find(item => item.section_key.startsWith('full_hero_'));
+        console.log('[SEO Editor] Full hero entry found:', fullHeroEntry);
+        
         if (fullHeroEntry) {
           try {
             const fullHeroData = JSON.parse(fullHeroEntry.content_value);
+            console.log('[SEO Editor] Parsed full hero data:', fullHeroData);
             foundHeroImage = fullHeroData.imageUrl || '';
+            console.log('[SEO Editor] Extracted image URL:', foundHeroImage);
           } catch (e) {
             console.error('[SEO Editor] Failed to parse full hero data:', e);
           }
@@ -84,15 +92,16 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           );
           if (heroImageEntry) {
             foundHeroImage = heroImageEntry.content_value;
+            console.log('[SEO Editor] Found fallback hero image:', foundHeroImage);
           }
         }
         
-        console.log('[SEO Editor] Found hero image:', foundHeroImage);
+        console.log('[SEO Editor] Final hero image URL:', foundHeroImage);
         setHeroImageUrl(foundHeroImage);
         
         // Auto-set OG image if empty and hero image exists
         if (foundHeroImage && !data.ogImage) {
-          console.log('[SEO Editor] Auto-setting OG image from hero');
+          console.log('[SEO Editor] Auto-setting OG image from hero to:', foundHeroImage);
           onChange({ ...data, ogImage: foundHeroImage });
         }
       }
