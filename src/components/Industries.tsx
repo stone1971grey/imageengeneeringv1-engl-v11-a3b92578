@@ -101,7 +101,7 @@ const Industries = () => {
                   <h3 className="font-medium text-light-foreground text-lg md:text-xl tracking-wide">
                     {industry.name}
                   </h3>
-                  <p className="text-sm text-light-muted font-light max-w-[160px] leading-relaxed">
+                  <p className="text-lg text-light-muted font-light max-w-[160px] leading-relaxed">
                     {industry.description}
                   </p>
                 </div>
