@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Save } from "lucide-react";
+import { Save, Heading1 } from "lucide-react";
 
 interface IntroEditorProps {
   pageSlug: string;
@@ -21,10 +22,27 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
   const [headingLevel, setHeadingLevel] = useState<'h1' | 'h2'>('h2');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isH1Segment, setIsH1Segment] = useState(false);
 
   useEffect(() => {
     loadContent();
+    checkIfH1Segment();
   }, [pageSlug, segmentKey]);
+
+  const checkIfH1Segment = async () => {
+    const { data: segments } = await supabase
+      .from("segment_registry")
+      .select("*")
+      .eq("page_slug", pageSlug)
+      .eq("deleted", false)
+      .order("position", { ascending: true });
+
+    if (!segments) return;
+
+    const firstContentSegment = segments[0];
+    const isThisSegmentH1 = firstContentSegment?.segment_key === segmentKey && firstContentSegment?.segment_type === "Intro";
+    setIsH1Segment(isThisSegmentH1);
+  };
 
   const loadContent = async () => {
     try {
@@ -116,6 +134,15 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
   return (
     <div className="space-y-4 p-4 bg-background border rounded-lg">
       <h3 className="text-lg font-semibold">Intro Segment bearbeiten</h3>
+      
+      {isH1Segment && (
+        <Alert className="border-primary/50 bg-primary/5">
+          <Heading1 className="h-4 w-4" />
+          <AlertDescription>
+            Dieses Intro trägt die H1-Überschrift für SEO-Optimierung
+          </AlertDescription>
+        </Alert>
+      )}
       
       <div className="space-y-2">
         <Label htmlFor="heading-level">Überschrift-Level</Label>
