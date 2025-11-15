@@ -325,6 +325,46 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     );
   };
 
+  // Highlight FKW in text
+  const highlightKeyword = (text: string, keyword: string) => {
+    if (!keyword || !text) return text;
+    
+    const keywordLower = keyword.toLowerCase();
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let searchText = text;
+    let currentIndex = 0;
+    
+    // Find all occurrences (case insensitive)
+    while (currentIndex < searchText.length) {
+      const index = searchText.toLowerCase().indexOf(keywordLower, currentIndex);
+      if (index === -1) break;
+      
+      // Add text before keyword
+      if (index > lastIndex) {
+        parts.push(searchText.substring(lastIndex, index));
+      }
+      
+      // Add highlighted keyword
+      const actualKeyword = searchText.substring(index, index + keyword.length);
+      parts.push(
+        <span key={`kw-${index}`} className="bg-yellow-300 font-bold px-1 rounded">
+          {actualKeyword}
+        </span>
+      );
+      
+      lastIndex = index + keyword.length;
+      currentIndex = index + keyword.length;
+    }
+    
+    // Add remaining text
+    if (lastIndex < searchText.length) {
+      parts.push(searchText.substring(lastIndex));
+    }
+    
+    return parts.length > 0 ? parts : text;
+  };
+
   return (
     <div className="space-y-6">
       {/* SEO Score Overview */}
@@ -507,24 +547,27 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </Badge>
             )}
           </Label>
-          <Input
-            value={data.h1 || ''}
-            disabled
-            placeholder="Automatisch: Intro Titel oder Hero Titelzeilen"
-            className={`mt-3 h-12 text-xl text-black placeholder:text-gray-500 border-2 cursor-not-allowed opacity-75 ${
+          <div
+            className={`mt-3 min-h-12 p-3 text-xl text-black rounded-md border-2 flex items-center ${
               checks.keywordInH1 
                 ? 'border-green-500 bg-green-50' 
                 : data.focusKeyword && data.h1
                 ? 'border-yellow-500 bg-yellow-50'
                 : 'border-gray-300 bg-gray-50'
             }`}
-          />
+          >
+            {data.h1 ? (
+              highlightKeyword(data.h1, data.focusKeyword || '')
+            ) : (
+              <span className="text-gray-500">Automatisch: Intro Titel oder Hero Titelzeilen</span>
+            )}
+          </div>
           <p className="text-base text-white mt-2 leading-relaxed">
             <strong>Automatisch synchronisiert:</strong><br/>
             <span className="ml-4 block mt-1">• <strong>Intro vorhanden</strong>: H1 = Intro Titel</span>
             <span className="ml-4 block">• <strong>Kein Intro</strong>: H1 = Hero Titelzeile 1 + 2</span>
             {data.focusKeyword && (
-              <span className="ml-4 block mt-2">• <strong>SEO Check</strong>: Das Fokus-Keyword sollte in der H1 enthalten sein</span>
+              <span className="ml-4 block mt-2">• <strong>SEO Check</strong>: Das Fokus-Keyword wird <span className="bg-yellow-300 font-bold px-1 rounded">gelb markiert</span></span>
             )}
           </p>
         </div>
@@ -541,22 +584,26 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </Badge>
             )}
           </Label>
-          <Textarea
-            value={[introductionText.title, introductionText.description].filter(Boolean).join('\n\n')}
-            disabled
-            placeholder="Automatisch aus Intro, Tiles oder Image & Text Segment (nur Description bei Intro)"
-            className={`mt-3 h-32 text-xl text-black placeholder:text-gray-500 border-2 cursor-not-allowed opacity-75 ${
+          <div
+            className={`mt-3 min-h-32 p-4 text-xl text-black rounded-md border-2 whitespace-pre-wrap ${
               checks.keywordInIntroduction 
                 ? 'border-green-500 bg-green-50' 
                 : 'border-gray-300 bg-gray-50'
             }`}
-          />
+          >
+            {highlightKeyword(
+              [introductionText.title, introductionText.description].filter(Boolean).join('\n\n'),
+              data.focusKeyword || ''
+            ) || (
+              <span className="text-gray-500">Automatisch aus Intro, Tiles oder Image & Text Segment (nur Description bei Intro)</span>
+            )}
+          </div>
           <p className="text-base text-white mt-3 leading-relaxed">
             <strong>Automatisch synchronisiert:</strong> Der Introduction-Text wird automatisch aus den Segmenten geladen:<br/>
             <span className="ml-4 block mt-1">• <strong>Intro Segment</strong> (höchste Priorität): Nur die Beschreibung wird verwendet</span>
             <span className="ml-4 block">• <strong>Tiles Segment</strong>: Titel + Beschreibung werden verwendet</span>
             <span className="ml-4 block">• <strong>Image & Text Segment</strong>: Titel + Beschreibung werden verwendet</span>
-            <span className="block mt-2">Gelöschte Segmente werden automatisch ignoriert. Die Introduction sollte das Fokus-Keyword enthalten.</span>
+            <span className="block mt-2">Gelöschte Segmente werden automatisch ignoriert. Das Fokus-Keyword wird <span className="bg-yellow-300 font-bold px-1 rounded">gelb markiert</span>.</span>
           </p>
         </div>
 
