@@ -16,6 +16,36 @@
 
 ---
 
+## 🐛 Häufige Probleme und Lösungen
+
+### Problem: Segmente wechseln Position nach Speichern
+**Symptom:** Nach dem Speichern ändern Segmente ihre Reihenfolge (z.B. Full Hero und Intro tauschen Plätze)
+
+**Ursache:** Die Position wird beim Laden nicht konsequent auf den sortierten Array-Index gesetzt
+
+**Lösung (bereits implementiert in AdminDashboard.tsx):**
+```javascript
+// RICHTIG: Beim Laden IMMER position = sortedIndex verwenden
+const sortedSegments = [...segments].sort((a, b) => (a.position || 0) - (b.position || 0));
+segmentsWithIds = sortedSegments.map((seg: any, idx: number) => ({
+  ...seg,
+  position: idx  // IMMER den sortierten Index verwenden
+}));
+
+// Beim Speichern ebenfalls position = currentIndex
+const segmentsWithPositions = pageSegments.map((seg, idx) => ({
+  ...seg,
+  position: idx
+}));
+```
+
+**Wichtig:** 
+- Position MUSS beim Laden auf den Index im sortierten Array gesetzt werden
+- Position MUSS beim Speichern auf den aktuellen Array-Index gesetzt werden
+- NIE `seg.position !== undefined ? seg.position : idx` verwenden - das führt zu instabilen Positionen!
+
+---
+
 ## Übersicht
 Dieses Dokument beschreibt Schritt für Schritt, wie eine neue CMS-fähige Produktseite erstellt wird, die über das Admin-Dashboard bearbeitbar ist.
 

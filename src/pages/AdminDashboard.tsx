@@ -796,12 +796,12 @@ const AdminDashboard = () => {
                 return {
                   ...seg,
                   id: registryId || String(nextSegmentId + idx),
-                  position: seg.position !== undefined ? seg.position : idx // Keep original position
+                  position: idx // ALWAYS use sorted array index for stable positions
                 };
               }
               return {
                 ...seg,
-                position: seg.position !== undefined ? seg.position : idx // Keep original position
+                position: idx // ALWAYS use sorted array index for stable positions
               };
             });
             
