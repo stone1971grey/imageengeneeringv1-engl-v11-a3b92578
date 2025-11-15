@@ -326,7 +326,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     );
   };
 
-  // Highlight FKW in text
+  // Highlight FKW in text with green background
   const highlightKeyword = (text: string, keyword: string) => {
     if (!keyword || !text) return text;
     
@@ -346,10 +346,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         parts.push(searchText.substring(lastIndex, index));
       }
       
-      // Add highlighted keyword
+      // Add highlighted keyword with green background
       const actualKeyword = searchText.substring(index, index + keyword.length);
       parts.push(
-        <span key={`kw-${index}`} className="bg-yellow-300 font-bold px-1 rounded">
+        <span key={`kw-${index}`} className="bg-green-200 dark:bg-green-800 font-semibold px-1 rounded">
           {actualKeyword}
         </span>
       );
@@ -795,13 +795,13 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 {introductionText.title && (
                   <div className="mb-3">
                     <p className="text-sm font-medium text-muted-foreground mb-1">Title:</p>
-                    <p className="text-sm">{introductionText.title}</p>
+                    <p className="text-sm">{highlightKeyword(introductionText.title, data.focusKeyword || '')}</p>
                   </div>
                 )}
                 {introductionText.description && (
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Description:</p>
-                    <p className="text-sm whitespace-pre-wrap">{introductionText.description}</p>
+                    <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
                   </div>
                 )}
                 {!introductionText.title && !introductionText.description && (
@@ -833,52 +833,6 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               <p className="text-sm text-muted-foreground mt-2">
                 Wenn diese Seite eine Kopie einer anderen ist, gib hier die Original-URL an. Leer lassen für normale Seiten.
               </p>
-            </div>
-          </div>
-
-          {/* Robots Settings */}
-          <div className="p-6 bg-background border rounded-lg space-y-6">
-            <div>
-              <h4 className="font-medium mb-4">Robots Meta Tags</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="robots-index" className="font-medium">Index</Label>
-                  <Select
-                    value={data.robotsIndex || 'index'}
-                    onValueChange={(value: 'index' | 'noindex') => handleChange('robotsIndex', value)}
-                  >
-                    <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="index">index</SelectItem>
-                      <SelectItem value="noindex">noindex</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    "noindex" verhindert Indexierung in Suchmaschinen
-                  </p>
-                </div>
-                
-                <div>
-                  <Label htmlFor="robots-follow" className="font-medium">Follow</Label>
-                  <Select
-                    value={data.robotsFollow || 'follow'}
-                    onValueChange={(value: 'follow' | 'nofollow') => handleChange('robotsFollow', value)}
-                  >
-                    <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="follow">follow</SelectItem>
-                      <SelectItem value="nofollow">nofollow</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    "nofollow" verhindert das Folgen von Links auf dieser Seite
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </TabsContent>
