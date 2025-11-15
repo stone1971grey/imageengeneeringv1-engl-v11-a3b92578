@@ -210,6 +210,13 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
     
     // Check if keyword is in H1
     const keywordInH1 = keyword && autoH1 ? autoH1.toLowerCase().includes(keyword) : false;
+    console.log('[SEO Editor] H1 Keyword Check:', {
+      keyword,
+      autoH1,
+      keywordInH1,
+      hasH1: !!data.h1,
+      hasFocusKeyword: !!data.focusKeyword
+    });
     
     // If we found an active segment, get its content for Introduction
     if (activeSegmentType && activeSegmentKey) {
@@ -292,6 +299,14 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
       keywordInSlug,
       keywordInIntroduction,
       keywordInH1,
+    });
+    
+    console.log('[SEO Editor] Final checks state:', {
+      keywordInH1,
+      keywordInTitle,
+      keywordInDescription,
+      keywordInSlug,
+      keywordInIntroduction
     });
   }, [data, pageSegments, pageContent, segmentRegistry]);
 
