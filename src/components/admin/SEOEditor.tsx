@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Save, AlertCircle, CheckCircle2, AlertTriangle, X } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -368,38 +368,41 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
   return (
     <div className="space-y-6">
       {/* SEO Score Overview */}
-      <Card className="p-8 bg-white border-2 border-indigo-200 shadow-lg animate-fade-in">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-2xl font-bold flex items-center gap-3 text-gray-900">
-            <div className="p-2 bg-white rounded-lg shadow-sm">
-              <AlertTriangle className="h-7 w-7 text-indigo-600" />
+      <Card className="bg-background border rounded-lg animate-fade-in">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 bg-accent rounded-lg">
+                <AlertTriangle className="h-6 w-6 text-accent-foreground" />
+              </div>
+              SEO Health Check
+            </CardTitle>
+            <div className="flex items-center gap-2 px-4 py-2 bg-muted rounded-full">
+              <div className={`h-3 w-3 rounded-full ${
+                Object.values(checks).filter(Boolean).length >= 5 ? 'bg-green-500 animate-pulse' : 
+                Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
+              }`} />
+              <span className="text-sm font-semibold">
+                {Object.values(checks).filter(Boolean).length}/7 Checks
+              </span>
             </div>
-            SEO Health Check
-          </h3>
-          <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
-            <div className={`h-3 w-3 rounded-full ${
-              Object.values(checks).filter(Boolean).length >= 5 ? 'bg-green-500 animate-pulse' : 
-              Object.values(checks).filter(Boolean).length >= 3 ? 'bg-yellow-500' : 'bg-red-500'
-            }`} />
-            <span className="text-sm font-semibold text-gray-700">
-              {Object.values(checks).filter(Boolean).length}/7 Checks
-            </span>
           </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
-            checks.titleLength ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
-          }`}>
-            {getStatusIcon(checks.titleLength)}
-            <span className="text-base font-medium text-gray-900">Title Length</span>
-          </div>
-          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
-            checks.descriptionLength ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
-          }`}>
-            {getStatusIcon(checks.descriptionLength)}
-            <span className="text-base font-medium text-gray-900">Description Length</span>
-          </div>
-          <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 ${
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 border ${
+              checks.titleLength ? 'bg-green-50 border-green-300' : 'bg-destructive/10 border-destructive/30'
+            }`}>
+              {getStatusIcon(checks.titleLength)}
+              <span className="text-sm font-medium">Title Length</span>
+            </div>
+            <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 border ${
+              checks.descriptionLength ? 'bg-green-50 border-green-300' : 'bg-destructive/10 border-destructive/30'
+            }`}>
+              {getStatusIcon(checks.descriptionLength)}
+              <span className="text-sm font-medium">Description Length</span>
+            </div>
+            <div className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 hover:scale-105 border ${
             checks.keywordInTitle ? 'bg-green-100 border-2 border-green-300' : 'bg-red-50 border-2 border-red-200'
           }`}>
             {getStatusIcon(checks.keywordInTitle)}
@@ -607,69 +610,69 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </p>
         </div>
 
-        <div>
-          <Label htmlFor="meta-description" className="flex items-center gap-2 text-base font-semibold">
-            Meta Description
-            <Badge variant="outline" className="text-sm">Pflicht</Badge>
-          </Label>
-          <Textarea
-            id="meta-description"
-            value={data.metaDescription || ''}
-            onChange={(e) => handleChange('metaDescription', e.target.value)}
-            placeholder="z.B. Discover professional camera testing solutions with Image Engineering. Industry-leading test charts, analysis software, and illumination devices for precise image quality measurement."
-            className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black placeholder:text-black"
-            rows={4}
-            maxLength={170}
-          />
-          <div className="mt-3 space-y-2">
-            {/* Progress Bar */}
-            <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className={`h-full transition-all duration-300 ${
+          <div>
+            <Label htmlFor="meta-description" className="flex items-center gap-2 text-sm font-semibold">
+              Meta Description
+              <Badge variant="outline" className="text-xs">Pflicht</Badge>
+            </Label>
+            <Textarea
+              id="meta-description"
+              value={data.metaDescription || ''}
+              onChange={(e) => handleChange('metaDescription', e.target.value)}
+              placeholder="z.B. Discover professional camera testing solutions with Image Engineering. Industry-leading test charts, analysis software, and illumination devices for precise image quality measurement."
+              className="mt-2 rounded-md border border-input bg-background px-3 py-2"
+              rows={4}
+              maxLength={170}
+            />
+            <div className="mt-2 space-y-2">
+              {/* Progress Bar */}
+              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-300 ${
+                    (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                      ? 'bg-green-500'
+                      : (data.metaDescription?.length || 0) > 160
+                      ? 'bg-destructive'
+                      : (data.metaDescription?.length || 0) >= 100
+                      ? 'bg-yellow-500'
+                      : 'bg-destructive/70'
+                  }`}
+                  style={{ width: `${Math.min(((data.metaDescription?.length || 0) / 170) * 100, 100)}%` }}
+                />
+              </div>
+              {/* Character Count */}
+              <div className="flex justify-between items-center">
+                <p className={`text-xs font-medium ${
                   (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                    ? 'bg-green-500'
+                    ? 'text-green-600'
                     : (data.metaDescription?.length || 0) > 160
-                    ? 'bg-red-500'
+                    ? 'text-destructive'
                     : (data.metaDescription?.length || 0) >= 100
-                    ? 'bg-yellow-500'
-                    : 'bg-red-400'
-                }`}
-                style={{ width: `${Math.min(((data.metaDescription?.length || 0) / 170) * 100, 100)}%` }}
-              />
-            </div>
-            {/* Character Count */}
-            <div className="flex justify-between items-center">
-              <p className={`text-base font-medium ${
-                (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                  ? 'text-green-600'
-                  : (data.metaDescription?.length || 0) > 160
-                  ? 'text-red-600'
-                  : (data.metaDescription?.length || 0) >= 100
-                  ? 'text-yellow-600'
-                  : 'text-red-500'
-              }`}>
-                {data.metaDescription?.length || 0} / 160 Zeichen
-              </p>
-              <span className={`text-sm font-medium ${
-                (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                  ? 'text-green-600'
-                  : (data.metaDescription?.length || 0) > 160
-                  ? 'text-red-600'
-                  : (data.metaDescription?.length || 0) >= 100
-                  ? 'text-yellow-600'
-                  : 'text-red-500'
-              }`}>
-                {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
-                  ? '✓ Optimal'
-                  : (data.metaDescription?.length || 0) > 160
-                  ? '⚠ Zu lang'
-                  : (data.metaDescription?.length || 0) >= 100
-                  ? '→ Fast optimal'
-                  : '⚠ Zu kurz'}
-              </span>
+                    ? 'text-yellow-600'
+                    : 'text-destructive'
+                }`}>
+                  {data.metaDescription?.length || 0} / 160 Zeichen
+                </p>
+                <span className={`text-xs font-medium ${
+                  (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                    ? 'text-green-600'
+                    : (data.metaDescription?.length || 0) > 160
+                    ? 'text-destructive'
+                    : (data.metaDescription?.length || 0) >= 100
+                    ? 'text-yellow-600'
+                    : 'text-destructive'
+                }`}>
+                  {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
+                    ? '✓ Optimal'
+                    : (data.metaDescription?.length || 0) > 160
+                    ? '⚠ Zu lang'
+                    : (data.metaDescription?.length || 0) >= 100
+                    ? '→ Fast optimal'
+                    : '⚠ Zu kurz'}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
         <div>
           <Label htmlFor="slug" className="flex items-center gap-2 text-base font-semibold">
@@ -693,102 +696,112 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </p>
         </div>
 
-        <div>
-          <Label htmlFor="canonical" className="flex items-center gap-2 text-base font-semibold">
-            Canonical URL
-            <Badge variant="outline" className="text-sm">Empfohlen</Badge>
-          </Label>
-          <Input
-            id="canonical"
-            value={data.canonical || ''}
-            onChange={(e) => handleChange('canonical', e.target.value)}
-            placeholder=""
-            className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
-          />
-          <p className="text-base text-white mt-3 leading-relaxed">
-            Verhindert Duplicate Content. Leer lassen = aktuelle URL verwenden.
-          </p>
-        </div>
-      </div>
+          <div>
+            <Label htmlFor="canonical" className="flex items-center gap-2 text-sm font-semibold">
+              Canonical URL
+              <Badge variant="outline" className="text-xs">Empfohlen</Badge>
+            </Label>
+            <Input
+              id="canonical"
+              value={data.canonical || ''}
+              onChange={(e) => handleChange('canonical', e.target.value)}
+              placeholder=""
+              className="mt-2 h-10 rounded-md border border-input bg-background px-3"
+            />
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+              Verhindert Duplicate Content. Leer lassen = aktuelle URL verwenden.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Robots Settings */}
-      <div className="grid grid-cols-2 gap-6">
-        <div>
-          <Label htmlFor="robots-index" className="text-base font-semibold">Robots Index</Label>
-          <Select
-            value={data.robotsIndex || 'index'}
-            onValueChange={(value: 'index' | 'noindex') => handleChange('robotsIndex', value)}
-          >
-            <SelectTrigger className="mt-3 h-12 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-black">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="index" className="text-xl">index (empfohlen)</SelectItem>
-              <SelectItem value="noindex" className="text-xl">noindex</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <Card className="bg-background border rounded-lg">
+        <CardHeader>
+          <CardTitle>Robots Settings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="robots-index" className="text-sm font-semibold">Robots Index</Label>
+              <Select
+                value={data.robotsIndex || 'index'}
+                onValueChange={(value: 'index' | 'noindex') => handleChange('robotsIndex', value)}
+              >
+                <SelectTrigger className="mt-2 h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="index">index (empfohlen)</SelectItem>
+                  <SelectItem value="noindex">noindex</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        <div>
-          <Label htmlFor="robots-follow" className="text-base font-semibold">Robots Follow</Label>
-          <Select
-            value={data.robotsFollow || 'follow'}
-            onValueChange={(value: 'follow' | 'nofollow') => handleChange('robotsFollow', value)}
-          >
-            <SelectTrigger className="mt-3 h-12 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-black">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="follow" className="text-xl">follow (empfohlen)</SelectItem>
-              <SelectItem value="nofollow" className="text-xl">nofollow</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+            <div>
+              <Label htmlFor="robots-follow" className="text-sm font-semibold">Robots Follow</Label>
+              <Select
+                value={data.robotsFollow || 'follow'}
+                onValueChange={(value: 'follow' | 'nofollow') => handleChange('robotsFollow', value)}
+              >
+                <SelectTrigger className="mt-2 h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="follow">follow (empfohlen)</SelectItem>
+                  <SelectItem value="nofollow">nofollow</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Open Graph / Social Media */}
-      <div className="border-t pt-8">
-        <h3 className="text-2xl font-semibold mb-6 text-gray-900">Open Graph / Social Media</h3>
-        <div className="space-y-6">
+      <Card className="bg-background border rounded-lg">
+        <CardHeader>
+          <CardTitle>Open Graph / Social Media</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <div>
-            <Label htmlFor="og-title" className="text-base font-semibold">OG Title</Label>
+            <Label htmlFor="og-title" className="text-sm font-semibold">OG Title</Label>
             <Input
               id="og-title"
               value={data.ogTitle || ''}
               onChange={(e) => handleChange('ogTitle', e.target.value)}
               placeholder="Leer lassen = SEO Title verwenden"
-              className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
+              className="mt-2 h-10 rounded-md border border-input bg-background px-3"
             />
           </div>
 
           <div>
-            <Label htmlFor="og-description" className="text-base font-semibold">OG Description</Label>
+            <Label htmlFor="og-description" className="text-sm font-semibold">OG Description</Label>
             <Textarea
               id="og-description"
               value={data.ogDescription || ''}
               onChange={(e) => handleChange('ogDescription', e.target.value)}
               placeholder="Leer lassen = Meta Description verwenden"
-              className="mt-3 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 py-3 text-black placeholder:text-black"
+              className="mt-2 rounded-md border border-input bg-background px-3 py-2"
               rows={3}
             />
           </div>
 
           <div>
-            <Label htmlFor="og-image" className="flex items-center gap-2 text-base font-semibold">
+            <Label htmlFor="og-image" className="flex items-center gap-2 text-sm font-semibold">
               OG Image URL
-              <Badge variant="secondary" className="text-sm">Auto</Badge>
+              <Badge variant="secondary" className="text-xs">Auto</Badge>
               {heroImageUrl && !data.ogImage && (
-                <Badge className="bg-green-500 text-white">Aus Hero übernommen</Badge>
+                <Badge className="bg-green-500 text-white text-xs">Aus Hero übernommen</Badge>
               )}
             </Label>
             
-            <div className="flex gap-3 mt-3">
+            <div className="flex gap-2 mt-2">
               <Input
                 id="og-image"
                 value={data.ogImage || heroImageUrl || ''}
                 onChange={(e) => handleChange('ogImage', e.target.value)}
                 placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
-                className="flex-1 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-gray-500"
+                className="flex-1 h-10 rounded-md border border-input bg-background px-3"
               />
               <label className="cursor-pointer">
                 <input
@@ -818,7 +831,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                     }
                   }}
                 />
-                <Button type="button" variant="outline" className="h-12 px-4">
+                <Button type="button" variant="outline" size="sm" className="h-10">
                   Upload
                 </Button>
               </label>
@@ -826,7 +839,8 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-12 px-4"
+                  size="sm"
+                  className="h-10"
                   onClick={() => handleChange('ogImage', '')}
                 >
                   <X className="h-4 w-4" />
@@ -836,11 +850,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             
             {/* Image Preview */}
             {(data.ogImage || heroImageUrl) && (
-              <div className="mt-4 border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50 w-[400px]">
-                <div className="p-2 bg-gray-100 border-b border-gray-200">
-                  <p className="text-xs font-medium text-gray-700">OG Image Preview</p>
+              <div className="mt-3 border rounded-lg overflow-hidden bg-muted w-[400px]">
+                <div className="p-2 bg-background border-b border-border">
+                  <p className="text-xs font-medium">OG Image Preview</p>
                 </div>
-                <div className="relative aspect-[1200/630] bg-gray-200">
+                <div className="relative aspect-[1200/630] bg-muted">
                   <img 
                     src={data.ogImage || heroImageUrl || ''}
                     alt="OG Image Preview"
@@ -856,7 +870,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               </div>
             )}
             
-            <p className="text-base text-white mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               {heroImageUrl && !data.ogImage ? (
                 <>✓ Hero-Bild wird automatisch verwendet. Überschreibe es mit Upload oder URL.</>
               ) : (
@@ -866,30 +880,31 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </div>
 
           <div>
-            <Label htmlFor="twitter-card" className="text-base font-semibold">Twitter Card Type</Label>
+            <Label htmlFor="twitter-card" className="text-sm font-semibold">Twitter Card Type</Label>
             <Select
               value={data.twitterCard || 'summary_large_image'}
               onValueChange={(value: 'summary' | 'summary_large_image') => handleChange('twitterCard', value)}
             >
-              <SelectTrigger className="mt-3 h-12 text-xl border-2 border-gray-300 focus:border-[#f9dc24] bg-white text-black">
+              <SelectTrigger className="mt-2 h-10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="summary_large_image" className="text-xl">Summary Large Image (empfohlen)</SelectItem>
-                <SelectItem value="summary" className="text-xl">Summary</SelectItem>
+                <SelectItem value="summary_large_image">Summary Large Image (empfohlen)</SelectItem>
+                <SelectItem value="summary">Summary</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-8 border-t">
+      <div className="flex justify-end pt-4">
         <Button
           onClick={onSave}
-          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-3 text-base h-12 px-6"
+          className="flex items-center gap-2"
+          size="lg"
         >
-          <Save className="h-5 w-5" />
+          <Save className="h-4 w-4" />
           SEO Settings speichern
         </Button>
       </div>
