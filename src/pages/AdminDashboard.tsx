@@ -2589,16 +2589,27 @@ const AdminDashboard = () => {
                   
                   if (pageData) {
                     if (pageData.parent_slug) {
-                      const { data: parentData } = await supabase
-                        .from('page_registry')
-                        .select('parent_slug')
-                        .eq('page_slug', pageData.parent_slug)
-                        .maybeSingle();
+                      // Check if parent is a product category (illumination, standards, test-charts, software)
+                      const productCategories = ['illumination', 'standards', 'test-charts', 'software', 'illumination-devices'];
                       
-                      if (parentData?.parent_slug) {
-                        previewUrl = `/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                      if (productCategories.includes(pageData.parent_slug)) {
+                        // Product pages: /products/{category}/{slug}
+                        previewUrl = `/products/${pageData.parent_slug}/${pageData.page_slug}`;
                       } else {
-                        previewUrl = `/${pageData.parent_slug}/${pageData.page_slug}`;
+                        // Check if parent has its own parent (3-level hierarchy)
+                        const { data: parentData } = await supabase
+                          .from('page_registry')
+                          .select('parent_slug')
+                          .eq('page_slug', pageData.parent_slug)
+                          .maybeSingle();
+                        
+                        if (parentData?.parent_slug) {
+                          // 3-level: /your-solution/{parent}/{page}
+                          previewUrl = `/your-solution/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                        } else {
+                          // 2-level: /your-solution/{parent}/{page}
+                          previewUrl = `/your-solution/${pageData.parent_slug}/${pageData.page_slug}`;
+                        }
                       }
                     } else {
                       previewUrl = `/${pageData.page_slug}`;
