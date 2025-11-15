@@ -28,11 +28,11 @@ const pageComponentMap: Record<number, React.ComponentType> = {
 
 const PageIdRouter = () => {
   const { pageId } = useParams<{ pageId: string }>();
-  const [pageSlug, setPageSlug] = useState<string | null>(null);
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPageSlug = async () => {
+    const fetchPageData = async () => {
       if (!pageId) {
         setLoading(false);
         return;
@@ -45,42 +45,41 @@ const PageIdRouter = () => {
         return;
       }
 
-      // Fetch page_slug from page_registry based on page_id
+      // Fetch page_slug and parent_slug from page_registry based on page_id
       const { data, error } = await supabase
         .from("page_registry")
-        .select("page_slug")
+        .select("page_slug, parent_slug")
         .eq("page_id", numericPageId)
         .maybeSingle();
 
       if (error || !data) {
         console.error("Error fetching page:", error);
-        setPageSlug(null);
+        setRedirectUrl(null);
       } else {
-        setPageSlug(data.page_slug);
+        // Build hierarchical URL
+        if (data.parent_slug) {
+          setRedirectUrl(`/products/${data.parent_slug}/${data.page_slug}`);
+        } else {
+          // If no parent_slug, try to use your-solution prefix for industry pages
+          setRedirectUrl(`/your-solution/${data.page_slug}`);
+        }
       }
 
       setLoading(false);
     };
 
-    fetchPageSlug();
+    fetchPageData();
   }, [pageId]);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  if (!pageId || !pageSlug) {
+  if (!redirectUrl) {
     return <Navigate to="/not-found" replace />;
   }
 
-  const numericPageId = parseInt(pageId, 10);
-  const PageComponent = pageComponentMap[numericPageId];
-
-  if (!PageComponent) {
-    return <Navigate to="/not-found" replace />;
-  }
-
-  return <PageComponent />;
+  return <Navigate to={redirectUrl} replace />;
 };
 
 export default PageIdRouter;
