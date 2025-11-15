@@ -474,19 +474,25 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </p>
         </div>
 
-        <div>
-          <Label htmlFor="seo-title" className="flex items-center gap-2 font-medium">
-            SEO Title (Meta Title)
-            <Badge variant="outline" className="text-xs">Pflicht</Badge>
-          </Label>
-          <Input
-            id="seo-title"
-            value={data.title || ''}
-            onChange={(e) => handleChange('title', e.target.value)}
-            placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
-            className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-          />
-          <div className="flex items-center justify-between mt-2">
+            <div>
+              <Label htmlFor="seo-title" className="flex items-center gap-2 font-medium">
+                SEO Title (Meta Title)
+                <Badge variant="outline" className="text-xs">Pflicht</Badge>
+                {data.title && (
+                  <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+                )}
+                {data.title && data.focusKeyword && data.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+                )}
+              </Label>
+              <Input
+                id="seo-title"
+                value={data.title || ''}
+                onChange={(e) => handleChange('title', e.target.value)}
+                placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
+                className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
+              />
+              <div className="flex items-center justify-between mt-2">
             <p className={`text-sm font-medium ${
               (data.title?.length || 0) >= 50 && (data.title?.length || 0) <= 60
                 ? 'text-green-600'
@@ -521,11 +527,17 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           </p>
         </div>
 
-        <div>
-          <Label htmlFor="meta-description" className="flex items-center gap-2 font-medium">
-            Meta Description
-            <Badge variant="outline" className="text-xs">Pflicht</Badge>
-          </Label>
+            <div>
+              <Label htmlFor="meta-description" className="flex items-center gap-2 font-medium">
+                Meta Description
+                <Badge variant="outline" className="text-xs">Pflicht</Badge>
+                {data.metaDescription && (
+                  <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+                )}
+                {data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+                  <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+                )}
+              </Label>
           <Textarea
             id="meta-description"
             value={data.metaDescription || ''}
@@ -573,6 +585,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           <Label htmlFor="slug" className="flex items-center gap-2 font-medium">
             URL Slug
             <Badge variant="outline" className="text-xs">Pflicht</Badge>
+            {data.slug && (
+              <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+            )}
+            {data.slug && data.focusKeyword && data.slug.toLowerCase().includes(data.focusKeyword.toLowerCase().replace(/\s+/g, '-')) && (
+              <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+            )}
           </Label>
           <div className="flex items-center mt-2">
             <span className="px-3 py-2 bg-muted rounded-l-md border-2 border-r-0 border-border font-medium h-10 flex items-center text-sm">
@@ -592,57 +610,25 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
         </div>
 
         <div>
-          <Label htmlFor="canonical" className="flex items-center gap-2 font-medium">
-            Canonical URL
-            <Badge variant="outline" className="text-xs">Empfohlen</Badge>
+          <Label htmlFor="h1" className="flex items-center gap-2 font-medium">
+            H1 Heading
+            <Badge variant="secondary" className="text-xs">Auto-detect</Badge>
+            {data.h1 && (
+              <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+            )}
+            {data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
+              <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+            )}
           </Label>
           <Input
-            id="canonical"
-            value={data.canonical || ''}
-            onChange={(e) => handleChange('canonical', e.target.value)}
-            placeholder=""
-            className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
+            id="h1"
+            value={data.h1 || ''}
+            disabled
+            className="mt-2 h-10 bg-muted/50 border-2 border-border cursor-not-allowed"
           />
           <p className="text-sm text-muted-foreground mt-2">
-            Verhindert Duplicate Content. Leer lassen = aktuelle URL verwenden.
+            Wird automatisch vom Intro-Titel oder Hero-Titel erkannt. Nur ein H1 pro Seite erlaubt.
           </p>
-        </div>
-      </div>
-
-      {/* Robots Settings */}
-      <div className="p-6 bg-background border rounded-lg">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="robots-index" className="font-medium">Robots Index</Label>
-            <Select
-              value={data.robotsIndex || 'index'}
-              onValueChange={(value: 'index' | 'noindex') => handleChange('robotsIndex', value)}
-            >
-              <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="index">index (empfohlen)</SelectItem>
-                <SelectItem value="noindex">noindex</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="robots-follow" className="font-medium">Robots Follow</Label>
-            <Select
-              value={data.robotsFollow || 'follow'}
-              onValueChange={(value: 'follow' | 'nofollow') => handleChange('robotsFollow', value)}
-            >
-              <SelectTrigger className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="follow">follow (empfohlen)</SelectItem>
-                <SelectItem value="nofollow">nofollow</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </div>
         </TabsContent>
@@ -795,18 +781,27 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               <Label className="flex items-center gap-2 font-medium">
                 Introduction Text
                 <Badge variant="secondary" className="text-xs">Auto-detected (Read-only)</Badge>
+                {(introductionText.title || introductionText.description) && (
+                  <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+                )}
+                {(introductionText.title || introductionText.description) && data.focusKeyword && (
+                  (introductionText.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) || 
+                   introductionText.description.toLowerCase().includes(data.focusKeyword.toLowerCase())) && (
+                    <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+                  )
+                )}
               </Label>
               <div className="mt-2 p-4 bg-muted/50 border-2 border-border rounded-lg">
                 {introductionText.title && (
                   <div className="mb-3">
                     <p className="text-sm font-medium text-muted-foreground mb-1">Title:</p>
-                    <p className="text-sm">{highlightKeyword(introductionText.title, data.focusKeyword || '')}</p>
+                    <p className="text-sm">{introductionText.title}</p>
                   </div>
                 )}
                 {introductionText.description && (
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Description:</p>
-                    <p className="text-sm whitespace-pre-wrap">{highlightKeyword(introductionText.description, data.focusKeyword || '')}</p>
+                    <p className="text-sm whitespace-pre-wrap">{introductionText.description}</p>
                   </div>
                 )}
                 {!introductionText.title && !introductionText.description && (
