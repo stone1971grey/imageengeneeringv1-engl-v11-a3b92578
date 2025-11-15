@@ -492,10 +492,16 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 placeholder="z.B. Professional Camera Testing Solutions | Image Engineering"
                 className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
               />
-              {data.title && data.focusKeyword && (
-                <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm">
-                  <span className="font-medium text-muted-foreground mr-2">Preview:</span>
-                  {highlightKeyword(data.title, data.focusKeyword)}
+              {data.focusKeyword && (
+                <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm min-h-[32px]">
+                  {data.title ? (
+                    <>
+                      <span className="font-medium text-muted-foreground mr-2">Preview:</span>
+                      {highlightKeyword(data.title, data.focusKeyword)}
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground italic">Gib einen Title ein um die FKW-Hervorhebung zu sehen</span>
+                  )}
                 </div>
               )}
               <div className="flex items-center justify-between mt-2">
@@ -552,10 +558,16 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             className="mt-2 min-h-[100px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
             rows={4}
           />
-          {data.metaDescription && data.focusKeyword && (
-            <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm">
-              <span className="font-medium text-muted-foreground mr-2">Preview:</span>
-              {highlightKeyword(data.metaDescription, data.focusKeyword)}
+          {data.focusKeyword && (
+            <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm min-h-[32px]">
+              {data.metaDescription ? (
+                <>
+                  <span className="font-medium text-muted-foreground mr-2">Preview:</span>
+                  {highlightKeyword(data.metaDescription, data.focusKeyword)}
+                </>
+              ) : (
+                <span className="text-muted-foreground italic">Gib eine Meta Description ein um die FKW-Hervorhebung zu sehen</span>
+              )}
             </div>
           )}
           <div className="flex items-center justify-between mt-2">
@@ -632,18 +644,13 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
             )}
           </Label>
-          <Input
-            id="h1"
-            value={data.h1 || ''}
-            disabled
-            className="mt-2 h-10 bg-muted/50 border-2 border-border cursor-not-allowed"
-          />
-          {data.h1 && data.focusKeyword && (
-            <div className="mt-2 p-2 bg-muted/30 border border-border rounded text-sm">
-              <span className="font-medium text-muted-foreground mr-2">Preview:</span>
-              {highlightKeyword(data.h1, data.focusKeyword)}
-            </div>
-          )}
+          <div className="mt-2 px-3 py-2 h-10 bg-muted/50 border-2 border-border rounded-md cursor-not-allowed flex items-center text-sm">
+            {data.h1 && data.focusKeyword ? (
+              highlightKeyword(data.h1, data.focusKeyword)
+            ) : (
+              <span className="text-muted-foreground">{data.h1 || ''}</span>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground mt-2">
             Wird automatisch vom Intro-Titel oder Hero-Titel erkannt. Nur ein H1 pro Seite erlaubt.
           </p>
