@@ -702,7 +702,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             id="canonical"
             value={data.canonical || ''}
             onChange={(e) => handleChange('canonical', e.target.value)}
-            placeholder="https://www.image-engineering.de/your-solution/machine-vision"
+            placeholder=""
             className="mt-3 text-xl h-12 border-2 border-gray-300 focus:border-[#f9dc24] bg-white px-4 text-black placeholder:text-black"
           />
           <p className="text-base text-white mt-3 leading-relaxed">
