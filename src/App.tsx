@@ -96,7 +96,6 @@ const App = () => (
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
         <Route path="/products/illumination/iq-led" element={<ProductIQLED />} />
-        <Route path="/products/illumination-devices/iq-led" element={<Navigate to="/products/illumination/iq-led" replace />} />
         <Route path="/products/standards/ieee-p2020" element={<ProductIEEEP2020 />} />
         
         <Route path="/downloads" element={<Downloads />} />
