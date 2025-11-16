@@ -7,7 +7,7 @@ interface ActionHeroProps {
 
 const ActionHero = ({ title, subtitle, backgroundImage, flipImage = true }: ActionHeroProps) => {
   return (
-    <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20 min-h-[500px] lg:min-h-[550px]">
+    <section className="relative h-[450px] lg:h-[500px]">
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10"></div>
       <div 
         className="absolute inset-0 bg-cover bg-center"
@@ -16,12 +16,12 @@ const ActionHero = ({ title, subtitle, backgroundImage, flipImage = true }: Acti
           transform: flipImage ? 'scaleX(-1)' : 'none'
         }}
       />
-      <div className="relative container mx-auto px-6 z-20">
+      <div className="relative container mx-auto px-6 z-20 h-full flex items-center">
         <div className="max-w-4xl">
           <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
             {title}
           </h1>
-          <p className="text-xl lg:text-2xl text-white mb-8 max-w-2xl">
+          <p className="text-xl lg:text-2xl text-white max-w-2xl line-clamp-3">
             {subtitle}
           </p>
         </div>
