@@ -17,6 +17,7 @@ import eventImage1 from "@/assets/event-automotive-conference-new.jpg";
 import eventImage2 from "@/assets/event-automotive-standards-new.jpg";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { storeMauticEmail } from "@/lib/mauticTracking";
 
 // Form validation schema
 const registrationFormSchema = z.object({
@@ -100,6 +101,9 @@ const WhitePaperDetail = () => {
 
       const result = await response.json();
       console.log("Registration successful:", result);
+
+      // Store email for Mautic tracking
+      storeMauticEmail(email);
 
       setRegistrationSuccess(true);
       toast.success("Anmeldung erfolgreich! Sie werden weitergeleitet...");

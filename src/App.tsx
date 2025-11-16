@@ -71,7 +71,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <StickyLogo />
-          <MauticTracker email="test2@sptools.de" />
+          <MauticTracker />
           <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/inside-lab" element={<InsideLab />} />

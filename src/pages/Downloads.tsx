@@ -15,6 +15,7 @@ import { FileText, Video, FileDown, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import downloadsHero from "@/assets/downloads-hero.jpg";
 import { supabase } from "@/integrations/supabase/client";
+import { storeMauticEmail } from "@/lib/mauticTracking";
 
 // Form validation schema
 const downloadFormSchema = z.object({
@@ -313,6 +314,9 @@ export default function Downloads() {
       const targetPage = isExistingContact 
         ? "/download-confirmation" 
         : "/download-registration-success";
+
+      // Store email for Mautic tracking
+      storeMauticEmail(data.email);
 
       // Navigate to the appropriate confirmation page
       navigate(targetPage, {
