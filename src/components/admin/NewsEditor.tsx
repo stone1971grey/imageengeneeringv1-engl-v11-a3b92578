@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Eye } from "lucide-react";
 import {
@@ -321,12 +322,13 @@ const NewsEditor = () => {
             <CardHeader>
               <CardTitle className="flex justify-between items-start">
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="text-lg">{article.title}</h3>
                     {!article.published && (
-                      <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">
-                        Draft
-                      </span>
+                      <Badge variant="secondary">Draft</Badge>
+                    )}
+                    {article.category && (
+                      <Badge variant="outline">{article.category}</Badge>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
