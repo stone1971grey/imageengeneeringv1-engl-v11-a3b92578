@@ -33,6 +33,16 @@ interface NewsArticle {
   updated_at: string;
 }
 
+const NEWS_CATEGORIES = [
+  { value: "Product Launch", label: "Product Launch" },
+  { value: "Technology", label: "Technology" },
+  { value: "Standards", label: "Standards" },
+  { value: "Innovation", label: "Innovation" },
+  { value: "Partnership", label: "Partnership" },
+  { value: "Event", label: "Event" },
+  { value: "Research", label: "Research" },
+] as const;
+
 const NewsEditor = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(null);
@@ -263,17 +273,15 @@ const NewsEditor = () => {
                     setFormData({ ...formData, category: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-background">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Product Launch">Product Launch</SelectItem>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Standards">Standards</SelectItem>
-                    <SelectItem value="Innovation">Innovation</SelectItem>
-                    <SelectItem value="Partnership">Partnership</SelectItem>
-                    <SelectItem value="Event">Event</SelectItem>
-                    <SelectItem value="Research">Research</SelectItem>
+                  <SelectContent className="bg-background z-50">
+                    {NEWS_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
