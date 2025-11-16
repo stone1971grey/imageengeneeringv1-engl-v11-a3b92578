@@ -58,6 +58,7 @@ import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNews from "./pages/AdminNews";
 import NotFound from "./pages/NotFound";
+import { MauticTracker } from "./components/MauticTracker";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <StickyLogo />
+          <MauticTracker email="test2@sptools.de" />
           <Routes>
         <Route path="/" element={<Index />} />
         <Route path="/inside-lab" element={<InsideLab />} />
