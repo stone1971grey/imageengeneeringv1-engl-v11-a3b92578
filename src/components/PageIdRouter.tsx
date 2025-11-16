@@ -58,9 +58,15 @@ const PageIdRouter = () => {
       } else {
         // Build hierarchical URL
         if (data.parent_slug) {
-          setRedirectUrl(`/products/${data.parent_slug}/${data.page_slug}`);
+          // If parent is "your-solution", build industry URL
+          if (data.parent_slug === "your-solution") {
+            setRedirectUrl(`/your-solution/${data.page_slug}`);
+          } else {
+            // Otherwise build product URL (e.g., /products/test-charts/le7)
+            setRedirectUrl(`/products/${data.parent_slug}/${data.page_slug}`);
+          }
         } else {
-          // If no parent_slug, try to use your-solution prefix for industry pages
+          // If no parent_slug, use your-solution prefix as fallback
           setRedirectUrl(`/your-solution/${data.page_slug}`);
         }
       }
