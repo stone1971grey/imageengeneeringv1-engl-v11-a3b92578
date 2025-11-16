@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { Badge } from "@/components/ui/badge";
 
 const NewsDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -44,10 +45,10 @@ const NewsDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
         <Navigation />
         <div className="container mx-auto px-6 py-32">
-          <p className="text-center">Loading article...</p>
+          <p className="text-center text-white">Loading article...</p>
         </div>
         <Footer />
       </div>
@@ -56,13 +57,13 @@ const NewsDetail = () => {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
         <Navigation />
         <div className="container mx-auto px-6 py-32">
-          <p className="text-center">Article not found</p>
+          <p className="text-center text-white mb-4">Article not found</p>
           <div className="text-center mt-4">
             <Link to="/news">
-              <Button variant="outline">
+              <Button variant="outline" className="bg-white/5 text-white border-white/10 hover:bg-white/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to News
               </Button>
@@ -75,89 +76,134 @@ const NewsDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       <Navigation />
 
-      {/* Hero Section */}
-      <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url(${article.image_url})`,
-          }}
-        />
-        <div className="relative container mx-auto px-6">
-          <div className="max-w-4xl">
-            <Link to="/news" className="inline-block mb-6">
-              <Button variant="outline" className="bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to News
-              </Button>
-            </Link>
-            <div className="text-sm text-white/80 mb-4">
-              {article.date}
-              {article.category && <> • {article.category}</>}
-              {article.author && <> • By {article.author}</>}
-            </div>
-            <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6">
-              {article.title}
-            </h1>
-            <p className="text-xl lg:text-2xl text-white/90 mb-8 max-w-3xl">
-              {article.teaser}
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Back Button */}
+      <div className="container mx-auto px-6 pt-32 pb-8">
+        <Link to="/news" className="inline-block group">
+          <Button variant="outline" className="bg-white/5 backdrop-blur-sm text-white border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
+            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
+            Back to News
+          </Button>
+        </Link>
+      </div>
 
-      {/* Article Content */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-6">
-          <article className="max-w-4xl mx-auto prose prose-lg prose-headings:font-bold prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-p:text-gray-700 prose-p:leading-relaxed prose-img:rounded-lg prose-img:shadow-lg prose-a:text-[#0f407b] prose-a:no-underline hover:prose-a:underline">
-            <ReactMarkdown>
-              {article.content}
-            </ReactMarkdown>
-          </article>
-        </div>
+      {/* Article Header Card */}
+      <section className="container mx-auto px-6 pb-12">
+        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-white/10 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 overflow-hidden group">
+          <CardContent className="p-0">
+            {/* Featured Image */}
+            <div className="aspect-[21/9] overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
+              <img
+                src={article.image_url}
+                alt={article.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+            
+            {/* Content */}
+            <div className="p-8 lg:p-12">
+              {/* Meta Info */}
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                {article.category && (
+                  <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/20 backdrop-blur-sm animate-fade-in">
+                    {article.category}
+                  </span>
+                )}
+                <span className="text-sm text-gray-400">{article.date}</span>
+                {article.author && (
+                  <>
+                    <span className="text-gray-600">•</span>
+                    <span className="text-sm text-gray-400">By {article.author}</span>
+                  </>
+                )}
+              </div>
+
+              {/* Title */}
+              <h1 className="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight animate-fade-in">
+                {article.title}
+              </h1>
+
+              {/* Teaser */}
+              <p className="text-lg lg:text-xl text-gray-300 mb-8 leading-relaxed animate-fade-in">
+                {article.teaser}
+              </p>
+
+              {/* Divider */}
+              <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8"></div>
+
+              {/* Article Content */}
+              <article className="prose prose-lg prose-invert max-w-none 
+                prose-headings:font-bold prose-headings:text-white
+                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-4
+                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
+                prose-img:rounded-lg prose-img:shadow-2xl prose-img:border prose-img:border-white/10 prose-img:my-8
+                prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-a:transition-all
+                prose-strong:text-white prose-strong:font-semibold
+                prose-ul:text-gray-300 prose-ol:text-gray-300
+                prose-li:mb-2
+                prose-code:text-primary prose-code:bg-white/5 prose-code:px-2 prose-code:py-1 prose-code:rounded
+                animate-fade-in">
+                <ReactMarkdown>
+                  {article.content}
+                </ReactMarkdown>
+              </article>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Related News */}
       {relatedNews && relatedNews.length > 0 && (
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-6">
-            <div className="max-w-7xl mx-auto">
-              <h2 className="text-3xl font-bold mb-8">Related News</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedNews.map((item) => (
-                  <Card key={item.id} className="hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group">
-                    <CardContent className="p-0">
-                      <div className="aspect-video overflow-hidden rounded-t-lg">
-                        <img
-                          src={item.image_url}
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+        <section className="py-16 container mx-auto px-6">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-8 animate-fade-in">Related News</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedNews.map((item, index) => (
+                <Card 
+                  key={item.id} 
+                  className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 border-white/10 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:scale-[1.03] hover:border-primary/30 group overflow-hidden animate-fade-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <CardContent className="p-0">
+                    <div className="aspect-video overflow-hidden relative">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-sm text-gray-400">{item.date}</span>
+                        {item.category && (
+                          <>
+                            <span className="text-gray-600">•</span>
+                            <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                              {item.category}
+                            </span>
+                          </>
+                        )}
                       </div>
-                      <div className="p-6">
-                        <div className="text-sm text-gray-500 mb-2">
-                          {item.date}
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
-                          {item.teaser}
-                        </p>
-                        <Link to={`/news/${item.slug}`}>
-                          <Button variant="outline" className="w-full">
-                            Read more
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                      <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-400 mb-4 line-clamp-2 text-sm">
+                        {item.teaser}
+                      </p>
+                      <Link to={`/news/${item.slug}`}>
+                        <Button variant="outline" className="w-full bg-white/5 text-white border-white/10 hover:bg-primary/20 hover:border-primary/40 hover:text-primary transition-all duration-300">
+                          Read more
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
