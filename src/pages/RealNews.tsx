@@ -90,7 +90,7 @@ const RealNews = () => {
 
                   <CardContent className="space-y-4 flex-1 flex flex-col">
                     <CardDescription className="text-base leading-relaxed text-white flex-1">
-                      {item.teaser}
+                      {item.teaser.length > 140 ? `${item.teaser.substring(0, 140)}...` : item.teaser}
                     </CardDescription>
 
                     {item.author && (
