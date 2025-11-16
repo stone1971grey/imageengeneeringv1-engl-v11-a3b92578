@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import whitepaperHero from "@/assets/whitepaper-hero.jpg";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/integrations/supabase/client";
+import { storeMauticEmail } from "@/lib/mauticTracking";
 
 // Form validation schema
 const downloadFormSchema = z.object({
@@ -225,6 +226,9 @@ const WhitePaper = () => {
       const targetPage = isExistingContact 
         ? "/download-confirmation" 
         : "/download-registration-success";
+
+      // Store email for Mautic tracking
+      storeMauticEmail(data.email);
 
       // Navigate to the appropriate confirmation page
       navigate(targetPage, {

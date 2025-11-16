@@ -14,6 +14,7 @@ import ActionHero from "@/components/ActionHero";
 import { Calendar, MapPin, Clock, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { storeMauticEmail } from "@/lib/mauticTracking";
 
 // Import event images
 import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
@@ -344,6 +345,9 @@ const Events = () => {
       const targetPage = isExistingContact 
         ? "/event-detail-registration-confirmation" 
         : "/event-registration-success";
+      
+      // Store email for Mautic tracking
+      storeMauticEmail(data.email);
       
       // Navigate to the appropriate confirmation page
       navigate(targetPage, {

@@ -1,18 +1,23 @@
 import { useMauticTracking } from '@/hooks/useMauticTracking';
 
 interface MauticTrackerProps {
-  email: string;
+  email?: string;
   enabled?: boolean;
 }
 
 /**
- * Component that tracks page views in Mautic for a given email address.
- * Add this component anywhere in your app where you want to track user activity.
+ * Component that tracks page views in Mautic.
+ * If no email is provided, it will automatically use the stored email from localStorage.
+ * Email is stored automatically after event registration or download form submission.
  * 
  * @example
- * <MauticTracker email="test2@sptools.de" />
+ * // Auto-tracking from localStorage
+ * <MauticTracker />
+ * 
+ * // Manual tracking with specific email
+ * <MauticTracker email="user@example.com" />
  */
-export const MauticTracker = ({ email, enabled = true }: MauticTrackerProps) => {
+export const MauticTracker = ({ email, enabled = true }: MauticTrackerProps = {}) => {
   useMauticTracking({ email, enabled });
   return null;
 };

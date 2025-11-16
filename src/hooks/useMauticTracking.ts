@@ -1,17 +1,21 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { getMauticEmail } from '@/lib/mauticTracking';
 
 interface MauticTrackingConfig {
-  email: string;
+  email?: string;
   enabled?: boolean;
 }
 
-export const useMauticTracking = ({ email, enabled = true }: MauticTrackingConfig) => {
+export const useMauticTracking = ({ email, enabled = true }: MauticTrackingConfig = {}) => {
   const location = useLocation();
+  
+  // Use provided email or get from localStorage
+  const trackingEmail = email || getMauticEmail();
 
   useEffect(() => {
-    if (!enabled || !email) {
+    if (!enabled || !trackingEmail) {
       return;
     }
 
@@ -20,11 +24,11 @@ export const useMauticTracking = ({ email, enabled = true }: MauticTrackingConfi
         const pageUrl = window.location.href;
         const pageTitle = document.title;
 
-        console.log('Tracking pageview:', { email, pageUrl, pageTitle });
+        console.log('Tracking pageview:', { email: trackingEmail, pageUrl, pageTitle });
 
         const { data, error } = await supabase.functions.invoke('track-mautic-pageview', {
           body: {
-            email,
+            email: trackingEmail,
             pageUrl,
             pageTitle,
           },
@@ -45,5 +49,5 @@ export const useMauticTracking = ({ email, enabled = true }: MauticTrackingConfi
     const timeoutId = setTimeout(trackPageview, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [location, email, enabled]);
+  }, [location, trackingEmail, enabled]);
 };
