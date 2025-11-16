@@ -247,7 +247,7 @@ export type Database = {
           category?: string | null
           content: string
           created_at?: string | null
-          date: string
+          date?: string
           id?: string
           image_url: string
           published?: boolean | null
