@@ -2609,8 +2609,14 @@ const AdminDashboard = () => {
                             .maybeSingle();
                           
                           if (parentData?.parent_slug) {
-                            // 3-level: /your-solution/{parent}/{page}
-                            previewUrl = `/your-solution/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                            // Check if grandparent is "your-solution"
+                            if (parentData.parent_slug === 'your-solution') {
+                              // 3-level Industry: /your-solution/{parent}/{page}
+                              previewUrl = `/your-solution/${pageData.parent_slug}/${pageData.page_slug}`;
+                            } else {
+                              // 3-level other: /{grandparent}/{parent}/{page}
+                              previewUrl = `/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                            }
                           } else {
                             // 2-level: /your-solution/{parent}/{page}
                             previewUrl = `/your-solution/${pageData.parent_slug}/${pageData.page_slug}`;
