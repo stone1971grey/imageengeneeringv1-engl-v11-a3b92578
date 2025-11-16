@@ -7,7 +7,7 @@ interface ActionHeroProps {
 
 const ActionHero = ({ title, subtitle, backgroundImage, flipImage = true }: ActionHeroProps) => {
   return (
-    <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20">
+    <section className="relative pt-56 pb-16 lg:pt-64 lg:pb-20 min-h-[500px] lg:min-h-[550px]">
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10"></div>
       <div 
         className="absolute inset-0 bg-cover bg-center"
