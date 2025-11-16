@@ -49,6 +49,7 @@ import InCabinTesting from "./pages/InCabinTesting";
 import Contact from "./pages/Contact";
 import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
+import RealNews from "./pages/RealNews";
 import Styleguide from "./pages/Styleguide";
 import IconsStyleguide from "./pages/IconsStyleguide";
 import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
@@ -123,6 +124,7 @@ const App = () => (
          <Route path="/contact" element={<Contact />} />
          <Route path="/news" element={<News />} />
          <Route path="/news/:slug" element={<NewsDetail />} />
+         <Route path="/real-news" element={<RealNews />} />
          <Route path="/styleguide" element={<Styleguide />} />
         <Route path="/icons-styleguide" element={<IconsStyleguide />} />
         <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
