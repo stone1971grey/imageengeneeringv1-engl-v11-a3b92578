@@ -354,12 +354,17 @@ const UniversalTestTarget = () => {
       {/* Scroll anchor for CTA links */}
       <div id="applications-start" className="scroll-mt-32"></div>
 
-      {/* Render all segments in tabOrder (excluding meta-navigation already rendered above) */}
+      {/* MANDATORY: Render full-hero segment (if exists) - Always after old hero, before other segments */}
+      {pageSegments
+        .filter(seg => seg.type === 'full-hero')
+        .map(seg => renderSegment(seg.id))}
+
+      {/* Render all segments in tabOrder (excluding meta-navigation and full-hero) */}
       {tabOrder
         .filter(segmentId => {
           // Only render segments that actually exist in pageSegments
           const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
-          return dynamicSegment && dynamicSegment.type !== 'meta-navigation';
+          return dynamicSegment && dynamicSegment.type !== 'meta-navigation' && dynamicSegment.type !== 'full-hero';
         })
         .map((segmentId) => renderSegment(segmentId))}
 
