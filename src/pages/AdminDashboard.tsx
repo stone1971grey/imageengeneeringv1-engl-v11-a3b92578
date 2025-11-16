@@ -2596,19 +2596,25 @@ const AdminDashboard = () => {
                         // Product pages: /products/{category}/{slug}
                         previewUrl = `/products/${pageData.parent_slug}/${pageData.page_slug}`;
                       } else {
-                        // Check if parent has its own parent (3-level hierarchy)
-                        const { data: parentData } = await supabase
-                          .from('page_registry')
-                          .select('parent_slug')
-                          .eq('page_slug', pageData.parent_slug)
-                          .maybeSingle();
-                        
-                        if (parentData?.parent_slug) {
-                          // 3-level: /your-solution/{parent}/{page}
-                          previewUrl = `/your-solution/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                        // Check if parent_slug is already "your-solution" (Industry pages)
+                        if (pageData.parent_slug === 'your-solution') {
+                          // Industry pages: /your-solution/{page}
+                          previewUrl = `/your-solution/${pageData.page_slug}`;
                         } else {
-                          // 2-level: /your-solution/{parent}/{page}
-                          previewUrl = `/your-solution/${pageData.parent_slug}/${pageData.page_slug}`;
+                          // Check if parent has its own parent (3-level hierarchy)
+                          const { data: parentData } = await supabase
+                            .from('page_registry')
+                            .select('parent_slug')
+                            .eq('page_slug', pageData.parent_slug)
+                            .maybeSingle();
+                          
+                          if (parentData?.parent_slug) {
+                            // 3-level: /your-solution/{parent}/{page}
+                            previewUrl = `/your-solution/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
+                          } else {
+                            // 2-level: /your-solution/{parent}/{page}
+                            previewUrl = `/your-solution/${pageData.parent_slug}/${pageData.page_slug}`;
+                          }
                         }
                       }
                     } else {
