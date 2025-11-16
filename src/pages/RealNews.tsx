@@ -8,7 +8,7 @@ import { Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-import eventsHero from "@/assets/events-hero.jpg";
+import newsHero from "@/assets/news-hero.jpg";
 
 const RealNews = () => {
   const { data: newsItems, isLoading } = useQuery({
@@ -42,7 +42,7 @@ const RealNews = () => {
       <ActionHero
         title="News & Updates"
         subtitle="Our latest innovations, partnerships, and developments in image quality testing technology."
-        backgroundImage={eventsHero}
+        backgroundImage={newsHero}
       />
 
       {/* News Content Section */}
