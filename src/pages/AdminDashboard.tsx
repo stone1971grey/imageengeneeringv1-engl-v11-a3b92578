@@ -930,6 +930,39 @@ const AdminDashboard = () => {
     setContent(contentMap);
     setApplications(apps);
     
+    // SAFETY CHECK: If tab_order is empty but page_segments exist, rebuild tab_order
+    // This prevents the "empty page" bug when segments are accidentally removed from tab_order
+    if (tabOrder.length === 0 && pageSegments.length > 0) {
+      console.log("🚨 SAFETY CHECK: tab_order is empty but segments exist. Rebuilding tab_order...");
+      
+      // Build tab_order from existing segments (exclude meta-navigation and full-hero)
+      const rebuiltTabOrder = pageSegments
+        .filter(seg => seg.type !== 'meta-navigation' && seg.type !== 'full-hero')
+        .map(seg => seg.id);
+      
+      if (rebuiltTabOrder.length > 0 && user) {
+        // Save the rebuilt tab_order to database
+        supabase
+          .from("page_content")
+          .upsert({
+            page_slug: selectedPage,
+            section_key: "tab_order",
+            content_type: "json",
+            content_value: JSON.stringify(rebuiltTabOrder),
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key'
+          })
+          .then(({ error }) => {
+            if (!error) {
+              console.log("✅ tab_order successfully rebuilt:", rebuiltTabOrder);
+              setTabOrder(rebuiltTabOrder);
+            }
+          });
+      }
+    }
+    
     // Check for autosaved data and restore if available
     setTimeout(() => {
       restoreAutosavedDataIfAvailable();
