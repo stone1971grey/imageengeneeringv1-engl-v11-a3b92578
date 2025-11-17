@@ -126,27 +126,32 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
 
     if (editor) {
       const { from, to } = editor.state.selection;
-      
-      if (from === to) {
-        // No text selected - insert link with URL as text
-        editor
-          .chain()
-          .focus()
-          .insertContent(`<a href="${linkUrl}">${linkUrl}</a>`)
-          .run();
-      } else {
-        // Text selected - apply link to selection
-        editor
-          .chain()
-          .focus()
-          .extendMarkRange('link')
-          .setLink({ href: linkUrl })
-          .run();
+      const hasSelection = from !== to;
+
+      if (!hasSelection) {
+        // No text selected - show warning
+        toast.error('Please select text first before adding a link');
+        return;
       }
+
+      // Text selected - apply link to selection
+      editor
+        .chain()
+        .focus()
+        .setLink({ href: linkUrl })
+        .run();
+      
+      toast.success('Link added successfully');
     }
 
     setShowLinkDialog(false);
     setLinkUrl('');
+  };
+
+  const openLinkDialog = () => {
+    const previousUrl = editor?.getAttributes('link').href || '';
+    setLinkUrl(previousUrl);
+    setShowLinkDialog(true);
   };
 
   if (!editor) {
@@ -198,7 +203,8 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => setShowLinkDialog(true)}
+          onClick={openLinkDialog}
+          className={editor.isActive('link') ? 'bg-gray-200' : ''}
         >
           <LinkIcon className="w-4 h-4" />
         </Button>
@@ -230,6 +236,9 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Insert Link</DialogTitle>
+            <p className="text-sm text-gray-600 mt-2">
+              Select text first, then enter URL to create a link. Or enter URL to insert as clickable link.
+            </p>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
