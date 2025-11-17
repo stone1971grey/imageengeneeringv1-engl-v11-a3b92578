@@ -4839,6 +4839,7 @@ const AdminDashboard = () => {
                         {segment.type === 'full-hero' && `Full Hero ${segment.position + 1}`}
                         {segment.type === 'intro' && `Intro ${segment.position + 1}`}
                         {segment.type === 'industries' && `Industries ${segment.position + 1}`}
+                        {segment.type === 'news' && `Latest News ${segment.position + 1}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
