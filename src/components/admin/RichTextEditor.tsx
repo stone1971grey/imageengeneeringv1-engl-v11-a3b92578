@@ -177,7 +177,8 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           variant="outline"
           size="sm"
           onClick={() => {
-            const { from, to } = editor.state.selection;
+            const { state } = editor;
+            const { from, to } = state.selection;
             const hasSelection = from !== to;
             
             if (!hasSelection) {
@@ -185,11 +186,20 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
               return;
             }
             
-            if (editor.isActive('heading', { level: 2 })) {
-              editor.chain().focus().setParagraph().run();
-            } else {
-              editor.chain().focus().setHeading({ level: 2 }).run();
-            }
+            // Get selected text
+            const selectedText = state.doc.textBetween(from, to);
+            
+            // Split the current paragraph and insert heading
+            editor
+              .chain()
+              .focus()
+              .deleteSelection()
+              .insertContent([
+                { type: 'hardBreak' },
+                { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: selectedText }] },
+                { type: 'hardBreak' },
+              ])
+              .run();
           }}
           className={editor.isActive('heading', { level: 2 }) ? 'bg-[#f9dc24] text-black font-bold' : ''}
         >
@@ -201,7 +211,8 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           variant="outline"
           size="sm"
           onClick={() => {
-            const { from, to } = editor.state.selection;
+            const { state } = editor;
+            const { from, to } = state.selection;
             const hasSelection = from !== to;
             
             if (!hasSelection) {
@@ -209,11 +220,20 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
               return;
             }
             
-            if (editor.isActive('heading', { level: 3 })) {
-              editor.chain().focus().setParagraph().run();
-            } else {
-              editor.chain().focus().setHeading({ level: 3 }).run();
-            }
+            // Get selected text
+            const selectedText = state.doc.textBetween(from, to);
+            
+            // Split the current paragraph and insert heading
+            editor
+              .chain()
+              .focus()
+              .deleteSelection()
+              .insertContent([
+                { type: 'hardBreak' },
+                { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: selectedText }] },
+                { type: 'hardBreak' },
+              ])
+              .run();
           }}
           className={editor.isActive('heading', { level: 3 }) ? 'bg-[#f9dc24] text-black font-bold' : ''}
         >
