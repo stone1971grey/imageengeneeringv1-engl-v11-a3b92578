@@ -136,8 +136,8 @@ const NewsDetail = () => {
               {/* Article Content */}
               <article className="prose prose-lg prose-invert max-w-none 
                 prose-headings:font-bold prose-headings:text-white
-                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-4
-                prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
+                prose-h2:text-4xl prose-h2:mt-16 prose-h2:mb-8 prose-h2:border-b-2 prose-h2:border-[#f9dc24] prose-h2:pb-6 prose-h2:font-extrabold
+                prose-h3:text-3xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:font-bold prose-h3:text-white
                 prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
                 prose-img:rounded-lg prose-img:shadow-2xl prose-img:border prose-img:border-white/10 prose-img:my-8
                 prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-a:transition-all
