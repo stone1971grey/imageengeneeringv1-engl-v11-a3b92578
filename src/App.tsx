@@ -20,6 +20,7 @@ import WebCamera from "./pages/WebCamera";
 import MobilePhone from "./pages/MobilePhone";
 import ISO21550 from "./pages/ISO21550";
 import UniversalTestTarget from "@/pages/UniversalTestTarget";
+import MultispectralIllumination from "./pages/MultispectralIllumination";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import ProductLE7 from "./pages/ProductLE7";
@@ -95,6 +96,7 @@ const App = () => (
         <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
         <Route path="/your-solution/scanners-archiving/iso-21550" element={<ISO21550 />} />
         <Route path="/your-solution/scanners-archiving/universal-test-target" element={<UniversalTestTarget />} />
+        <Route path="/your-solution/scanners-archiving/multispectral-illumination" element={<MultispectralIllumination />} />
         
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
