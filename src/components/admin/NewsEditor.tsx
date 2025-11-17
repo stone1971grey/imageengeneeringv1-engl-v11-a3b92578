@@ -18,6 +18,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RichTextEditor from "./RichTextEditor";
 
 interface NewsArticle {
   id: string;
@@ -178,70 +180,65 @@ const NewsEditor = () => {
               Add Article
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingArticle ? "Edit Article" : "Create New Article"}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="slug">Slug (URL)</Label>
-                <Input
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) =>
-                    setFormData({ ...formData, slug: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="teaser">Teaser</Label>
-                <Textarea
-                  id="teaser"
-                  value={formData.teaser}
-                  onChange={(e) =>
-                    setFormData({ ...formData, teaser: e.target.value })
-                  }
-                  required
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="content">Content (Markdown)</Label>
-                <Textarea
-                  id="content"
-                  value={formData.content}
-                  onChange={(e) =>
-                    setFormData({ ...formData, content: e.target.value })
-                  }
-                  required
-                  rows={15}
-                />
-              </div>
-              <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  value={formData.image_url}
-                  onChange={(e) =>
-                    setFormData({ ...formData, image_url: e.target.value })
-                  }
-                  required
-                />
-              </div>
+              <Tabs defaultValue="basic" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="basic">Basic Info</TabsTrigger>
+                  <TabsTrigger value="content">Content Editor</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="basic" className="space-y-4 mt-4">
+                  <div>
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      id="title"
+                      value={formData.title}
+                      onChange={(e) =>
+                        setFormData({ ...formData, title: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="slug">Slug (URL)</Label>
+                    <Input
+                      id="slug"
+                      value={formData.slug}
+                      onChange={(e) =>
+                        setFormData({ ...formData, slug: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="teaser">Teaser</Label>
+                    <Textarea
+                      id="teaser"
+                      value={formData.teaser}
+                      onChange={(e) =>
+                        setFormData({ ...formData, teaser: e.target.value })
+                      }
+                      required
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="image_url">Featured Image URL</Label>
+                    <Input
+                      id="image_url"
+                      value={formData.image_url}
+                      onChange={(e) =>
+                        setFormData({ ...formData, image_url: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="date">Date</Label>
@@ -296,7 +293,22 @@ const NewsEditor = () => {
                 />
                 <Label htmlFor="published">Published</Label>
               </div>
-              <div className="flex justify-end space-x-2">
+                </TabsContent>
+                
+                <TabsContent value="content" className="space-y-4 mt-4">
+                  <div>
+                    <Label>Article Content (Rich Text)</Label>
+                    <RichTextEditor
+                      content={formData.content}
+                      onChange={(content) =>
+                        setFormData({ ...formData, content })
+                      }
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
+              
+              <div className="flex justify-end space-x-2 pt-4 border-t">
                 <Button
                   type="button"
                   variant="outline"
