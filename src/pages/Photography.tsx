@@ -16,6 +16,7 @@ import Specification from "@/components/segments/Specification";
 import FullHero from "@/components/segments/FullHero";
 import Intro from "@/components/segments/Intro";
 import IndustriesSegment from "@/components/segments/IndustriesSegment";
+import NewsSegment from "@/components/segments/NewsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
@@ -431,6 +432,18 @@ const Photography = () => {
       }
       if (dynamicSegment.type === 'video') {
         return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'news') {
+        return (
+          <NewsSegment
+            key={segmentId}
+            id={segmentId}
+            sectionTitle={dynamicSegment.data.sectionTitle}
+            sectionDescription={dynamicSegment.data.sectionDescription}
+            articleLimit={parseInt(dynamicSegment.data.articleLimit || "6")}
+            categories={dynamicSegment.data.categories || []}
+          />
+        );
       }
       if (dynamicSegment.type === 'tiles') {
         const tilesData = dynamicSegment.data;
