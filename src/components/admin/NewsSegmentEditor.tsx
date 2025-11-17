@@ -60,6 +60,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
 
   const loadContent = async () => {
     try {
+      console.log(`Loading news content for pageSlug: ${pageSlug}, segmentId: ${segmentId}`);
       const { data, error } = await supabase
         .from("page_content")
         .select("*")
@@ -67,6 +68,8 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
         .eq("section_key", segmentId);
 
       if (error) throw error;
+
+      console.log(`Loaded ${data?.length || 0} news content items:`, data);
 
       if (data && data.length > 0) {
         data.forEach((item) => {
@@ -77,9 +80,18 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
           } else if (item.content_type === "news_article_limit") {
             setArticleLimit(item.content_value);
           } else if (item.content_type === "news_categories") {
-            setSelectedCategories(JSON.parse(item.content_value));
+            try {
+              const categories = JSON.parse(item.content_value);
+              console.log(`Loaded categories:`, categories);
+              setSelectedCategories(categories);
+            } catch (e) {
+              console.error("Error parsing categories:", e);
+              setSelectedCategories([]);
+            }
           }
         });
+      } else {
+        console.log("No existing news content found, using defaults");
       }
     } catch (error: any) {
       console.error("Error loading content:", error);
@@ -90,12 +102,20 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      console.log(`Saving news segment - pageSlug: ${pageSlug}, segmentId: ${segmentId}`);
+      console.log(`Categories to save:`, selectedCategories);
+      
       // Delete existing content for this segment
-      await supabase
+      const { error: deleteError } = await supabase
         .from("page_content")
         .delete()
         .eq("page_slug", pageSlug)
         .eq("section_key", segmentId);
+
+      if (deleteError) {
+        console.error("Delete error:", deleteError);
+        throw deleteError;
+      }
 
       // Insert new content
       const contentItems = [
@@ -125,17 +145,23 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
         },
       ];
 
+      console.log("Content items to insert:", contentItems);
+
       const { error: insertError } = await supabase
         .from("page_content")
         .insert(contentItems);
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error("Insert error:", insertError);
+        throw insertError;
+      }
 
+      console.log("News segment saved successfully");
       toast.success("News segment saved successfully. Please reload the frontend page to see changes.");
       onUpdate?.();
     } catch (error: any) {
       console.error("Error saving content:", error);
-      toast.error("Failed to save content");
+      toast.error("Failed to save content: " + error.message);
     } finally {
       setIsSaving(false);
     }
