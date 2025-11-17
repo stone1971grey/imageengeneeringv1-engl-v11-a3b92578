@@ -6,6 +6,29 @@
 All colors MUST be HSL.
 */
 
+/* Hide all video controls globally */
+video::-webkit-media-controls {
+  display: none !important;
+}
+video::-webkit-media-controls-enclosure {
+  display: none !important;
+}
+video::-webkit-media-controls-panel {
+  display: none !important;
+}
+video::-webkit-media-controls-play-button {
+  display: none !important;
+}
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+}
+video::-moz-media-controls {
+  display: none !important;
+}
+video::-ms-media-controls {
+  display: none !important;
+}
+
 @layer base {
   :root {
     --background: 220 20% 6%;
