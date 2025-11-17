@@ -2,6 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
+import { HardBreak } from '@tiptap/extension-hard-break';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -44,6 +45,16 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
         heading: {
           levels: [2, 3],
         },
+        hardBreak: false, // Disable default hardBreak from StarterKit
+      }),
+      HardBreak.extend({
+        addKeyboardShortcuts() {
+          return {
+            'Enter': () => this.editor.commands.setHardBreak(),
+            'Shift-Enter': () => this.editor.commands.splitListItem('listItem') || 
+                                 this.editor.commands.createParagraphNear(),
+          }
+        },
       }),
       Link.configure({
         openOnClick: false,
@@ -63,7 +74,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-base max-w-none focus:outline-none min-h-[400px] p-4 border border-gray-300 rounded-md prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-6 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-5 prose-h3:mb-3',
+        class: 'prose prose-base max-w-none focus:outline-none min-h-[400px] p-4 border border-gray-300 rounded-md prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-6 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-5 prose-h3:mb-3 prose-p:my-0',
       },
     },
   });
@@ -165,7 +176,13 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() => {
+            if (editor.isActive('heading', { level: 2 })) {
+              editor.chain().focus().setParagraph().run();
+            } else {
+              editor.chain().focus().setHeading({ level: 2 }).run();
+            }
+          }}
           className={editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}
         >
           <Heading2 className="w-4 h-4" />
@@ -174,7 +191,13 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() => {
+            if (editor.isActive('heading', { level: 3 })) {
+              editor.chain().focus().setParagraph().run();
+            } else {
+              editor.chain().focus().setHeading({ level: 3 }).run();
+            }
+          }}
           className={editor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}
         >
           <Heading3 className="w-4 h-4" />
