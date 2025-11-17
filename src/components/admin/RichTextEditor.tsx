@@ -177,30 +177,48 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           variant="outline"
           size="sm"
           onClick={() => {
+            const { from, to } = editor.state.selection;
+            const hasSelection = from !== to;
+            
+            if (!hasSelection) {
+              toast.error('Bitte markieren Sie zuerst den Text, der zur Überschrift werden soll');
+              return;
+            }
+            
             if (editor.isActive('heading', { level: 2 })) {
               editor.chain().focus().setParagraph().run();
             } else {
               editor.chain().focus().setHeading({ level: 2 }).run();
             }
           }}
-          className={editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}
+          className={editor.isActive('heading', { level: 2 }) ? 'bg-[#f9dc24] text-black font-bold' : ''}
         >
           <Heading2 className="w-4 h-4" />
+          {editor.isActive('heading', { level: 2 }) && <span className="ml-1 text-xs">H2</span>}
         </Button>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => {
+            const { from, to } = editor.state.selection;
+            const hasSelection = from !== to;
+            
+            if (!hasSelection) {
+              toast.error('Bitte markieren Sie zuerst den Text, der zur Überschrift werden soll');
+              return;
+            }
+            
             if (editor.isActive('heading', { level: 3 })) {
               editor.chain().focus().setParagraph().run();
             } else {
               editor.chain().focus().setHeading({ level: 3 }).run();
             }
           }}
-          className={editor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}
+          className={editor.isActive('heading', { level: 3 }) ? 'bg-[#f9dc24] text-black font-bold' : ''}
         >
           <Heading3 className="w-4 h-4" />
+          {editor.isActive('heading', { level: 3 }) && <span className="ml-1 text-xs">H3</span>}
         </Button>
         <div className="w-px h-8 bg-gray-300" />
         <Button
