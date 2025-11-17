@@ -100,8 +100,9 @@ const FullHero = ({
             loop
             muted
             playsInline
-            className="w-full h-full object-cover"
-            style={{ objectPosition: 'center center' }}
+            disablePictureInPicture
+            className="w-full h-full object-cover [&::-webkit-media-controls]:hidden [&::-webkit-media-controls-enclosure]:hidden"
+            style={{ objectPosition: 'center center', pointerEvents: 'none' }}
           >
             <source src={videoUrl} type="video/mp4" />
           </video>
