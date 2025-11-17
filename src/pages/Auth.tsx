@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
 import logoIE from "@/assets/logo-ie-white.png";
+import lovableLogo from "@/assets/lovable-cms-logo.png";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -114,11 +115,23 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
+          <div className="flex justify-center gap-4 items-center">
+            <img 
+              src={lovableLogo} 
+              alt="Lovable CMS" 
+              className="h-16 w-auto"
+            />
+            <div className="flex flex-col">
+              <span className="text-3xl font-bold text-foreground">Lovable</span>
+              <span className="text-xl font-medium text-muted-foreground">CMS</span>
+            </div>
+          </div>
+          <div className="border-t border-border my-4" />
           <div className="flex justify-center">
             <img 
               src={logoIE} 
               alt="Image Engineering" 
-              className="h-20 w-auto"
+              className="h-16 w-auto"
             />
           </div>
           <CardTitle className="text-2xl text-center">
