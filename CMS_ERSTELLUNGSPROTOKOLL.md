@@ -16,6 +16,83 @@
 
 ---
 
+## ⚙️ KRITISCH: tab_order Management
+
+### Was ist tab_order?
+`tab_order` ist ein Array von Segment-IDs, das die Reihenfolge der DYNAMISCHEN Segmente im Frontend bestimmt.
+
+### Grundregeln für tab_order:
+
+1. **NUR Dynamic Segments gehören in tab_order:**
+   - ✅ `intro`, `tiles`, `banner`, `image-text`, `feature-overview`, `table`, `faq`, `video`, `specification`, `product-hero-gallery`
+   - ❌ NIEMALS: `meta-navigation`, `full-hero`, `footer`, `hero`
+
+2. **tab_order darf NIE leer sein (wenn Dynamic Segments existieren):**
+   - Wenn Dynamic Segments in `segment_registry` existieren, MÜSSEN diese in `tab_order` sein
+   - Leere `tab_order` bei vorhandenen Dynamic Segments = FEHLER = Schwarzer Bildschirm
+
+3. **tab_order wird in page_content gespeichert:**
+   - `section_key = 'tab_order'`
+   - `content_value = JSON.stringify(['tiles', 'banner', 'solutions', ...])`
+
+### Safety Checks (MANDATORY):
+
+#### Beim Laden (loadContent):
+```javascript
+// 1. tab_order aus DB laden
+let tabOrder = JSON.parse(tabOrderData?.content_value || '[]');
+
+// 2. Filter gelöschte Segmente aus tab_order
+const validSegmentIds = new Set(
+  segments
+    .filter(s => !s.deleted && s.segment_type !== 'meta-navigation' && s.segment_type !== 'full-hero' && s.segment_type !== 'footer')
+    .map(s => s.segment_key)
+);
+
+tabOrder = tabOrder.filter(id => validSegmentIds.has(id));
+
+// 3. Ergänze fehlende Dynamic Segments
+const missingSegments = Array.from(validSegmentIds).filter(id => !tabOrder.includes(id));
+tabOrder.push(...missingSegments);
+
+// 4. Speichere bereinigte tab_order zurück (falls geändert)
+if (missingSegments.length > 0 || tabOrder.length !== originalLength) {
+  await supabase.from('page_content')
+    .upsert({
+      page_slug: pageSlug,
+      section_key: 'tab_order',
+      content_value: JSON.stringify(tabOrder)
+    });
+}
+```
+
+#### Beim Segment Hinzufügen:
+```javascript
+// IMMER neue Dynamic Segments in tab_order eintragen
+if (segmentType !== 'meta-navigation' && segmentType !== 'full-hero' && segmentType !== 'footer') {
+  const newTabOrder = [...currentTabOrder, newSegmentId];
+  await saveTabOrder(newTabOrder);
+}
+```
+
+#### Beim Segment Löschen:
+```javascript
+// IMMER aus tab_order entfernen
+const newTabOrder = currentTabOrder.filter(id => id !== deletedSegmentId);
+await saveTabOrder(newTabOrder);
+```
+
+### Häufige Fehler:
+
+| Fehler | Symptom | Lösung |
+|--------|---------|---------|
+| Static Segments in tab_order | Doppelte Darstellung | Filter in loadContent hinzufügen |
+| Gelöschte Segmente in tab_order | "Segment nicht gefunden" Fehler | Auto-Cleanup beim Laden |
+| Leere tab_order trotz Segmenten | Schwarzer Bildschirm | Auto-Rebuild beim Laden |
+| tab_order nicht aktualisiert nach Add/Delete | Segmente fehlen/verdoppelt | Sync-Logik in Add/Delete-Funktionen |
+
+---
+
 ## 🐛 Häufige Probleme und Lösungen
 
 ### Problem: Segmente wechseln Position nach Speichern
@@ -65,38 +142,203 @@ const segmentsWithPositions = pageSegments.map((seg, idx) => ({
 
 ---
 
+### Problem: Seite zeigt schwarzen Bildschirm / Infinite Loading nach Segment hinzufügen
+**Symptom:** Nach dem Hinzufügen eines Dynamic Segments (z.B. Intro) zeigt die Seite einen schwarzen Bildschirm mit Spinner, die Seite lädt nie fertig
+
+**Ursache:**
+1. Das neue Segment wurde NICHT in `tab_order` eingetragen
+2. Static Segments (`full-hero`, `meta-navigation`) wurden fälschlicherweise in `tab_order` aufgenommen
+3. `tab_order` enthält gelöschte Segment-IDs
+4. Frontend versucht ein Segment zu rendern, das nicht in `pageSegments` existiert
+
+**Lösung:**
+```javascript
+// Im Frontend (UniversalTestTarget.tsx / MachineVision.tsx):
+// 1. MANDATORY: Static Segments explizit vor tab_order rendern
+{pageSegments
+  .filter(seg => seg.type === 'meta-navigation')
+  .map(seg => renderSegment(seg.id))}
+
+{pageSegments
+  .filter(seg => seg.type === 'full-hero')
+  .map(seg => renderSegment(seg.id))}
+
+// 2. NUR Dynamic Segments aus tab_order rendern
+{tabOrder
+  .filter(segmentId => {
+    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+    return dynamicSegment && 
+           dynamicSegment.type !== 'meta-navigation' && 
+           dynamicSegment.type !== 'full-hero' && 
+           dynamicSegment.type !== 'footer';
+  })
+  .map(segmentId => renderSegment(segmentId))}
+
+// 3. Footer ganz am Ende
+{pageSegments
+  .filter(seg => seg.type === 'footer')
+  .map(seg => renderSegment(seg.id))}
+```
+
+**Debugging Checklist:**
+- [ ] Console Logs prüfen: Gibt es "Segment not found" Fehler?
+- [ ] Supabase DB prüfen: Ist das neue Segment in `segment_registry`?
+- [ ] `tab_order` prüfen: Enthält sie das neue Dynamic Segment?
+- [ ] `tab_order` prüfen: Enthält sie KEINE Static Segments (meta-navigation, full-hero, footer)?
+- [ ] `renderSegment` Funktion prüfen: Hat sie einen Handler für den neuen Segment-Typ?
+- [ ] Browser Cache leeren: Hard Refresh (Ctrl+Shift+R) oder Incognito-Fenster
+
+---
+
 ## Übersicht
 Dieses Dokument beschreibt Schritt für Schritt, wie eine neue CMS-fähige Produktseite erstellt wird, die über das Admin-Dashboard bearbeitbar ist.
 
 ## Referenz-Seite
 **Machine Vision** (`src/pages/MachineVision.tsx`) ist die Referenzimplementierung. Alle neuen CMS-Seiten sollten dieser Struktur folgen.
 
-## Verfügbare Segment-Typen & Editoren
+## 🎯 KRITISCH: Segment-Typ-Klassifizierung
 
-### Im AdminDashboard verfügbare Editoren
-Diese Segment-Typen können vollständig über das Admin-Dashboard bearbeitet werden:
+### Static Segments (NICHT in tab_order)
+Diese Segmente haben FESTE Positionen im Rendering und dürfen NIEMALS in `tab_order` erscheinen:
+
+| Segment-Typ | Position im Frontend | Editor | Rendering-Regel |
+|------------|---------------------|--------|-----------------|
+| `meta-navigation` | **IMMER** oben direkt unter Nav Bar | ✅ MetaNavigationEditor | Wird VOR allen anderen Segmenten gerendert |
+| `full-hero` | **IMMER** nach altem Hero, vor tab_order | ✅ FullHeroEditor | Wird explizit vor tab_order gerendert |
+| `footer` | **IMMER** ganz unten | ✅ FooterEditor | Wird NACH allen tab_order Segmenten gerendert |
+
+**WICHTIG:** Diese Segmente haben im Frontend eine FESTE Rendering-Reihenfolge:
+```
+1. Navigation
+2. Meta-Navigation (falls vorhanden)
+3. Old Hero (falls vorhanden)
+4. Full-Hero (falls vorhanden)
+5. Alle Segmente aus tab_order
+6. Footer
+```
+
+### Dynamic Segments (IN tab_order)
+Diese Segmente können über Drag & Drop neu angeordnet werden und MÜSSEN in `tab_order` erscheinen:
 
 | Segment-Typ | Editor | Komponente | Verwendung |
 |------------|--------|------------|------------|
-| `meta-navigation` | ✅ Aktiv | MetaNavigationEditor | Inhaltsverzeichnis mit Sprungmarken |
-| `product-hero-gallery` | ✅ Aktiv | ProductHeroGalleryEditor | Hero mit Produktgalerie |
-| `tiles` | ✅ Aktiv | Inline Editor | Kachel-Grid für Applications |
-| `banner` | ✅ Aktiv | BannerEditor | Logo-Banner mit optionalem CTA |
-| `image-text` | ✅ Aktiv | Inline Editor | Bild-Text-Kombinationen (Solutions) |
-| `feature-overview` | ✅ Aktiv | FeatureOverviewEditor | Feature-Listen ohne Bilder |
-| `table` | ✅ Aktiv | TableEditor | Tabellen mit Daten |
-| `faq` | ✅ Aktiv | FAQEditor | FAQ-Accordion |
-| `video` | ✅ Aktiv | VideoSegmentEditor | Video-Einbettung |
-| `specification` | ✅ Aktiv | SpecificationEditor | Technische Spezifikationen |
+| `intro` | ✅ IntroEditor | Intro | Einleitungstext mit Titel & Beschreibung |
+| `product-hero-gallery` | ✅ ProductHeroGalleryEditor | ProductHeroGallery | Hero mit Produktgalerie |
+| `tiles` | ✅ Inline Editor | IndustriesSegment | Kachel-Grid für Applications |
+| `banner` | ✅ BannerEditor | Banner | Logo-Banner mit optionalem CTA |
+| `image-text` | ✅ Inline Editor | ImageText | Bild-Text-Kombinationen (Solutions) |
+| `feature-overview` | ✅ FeatureOverviewEditor | FeatureOverview | Feature-Listen ohne Bilder |
+| `table` | ✅ TableEditor | Table | Tabellen mit Daten |
+| `faq` | ✅ FAQEditor | FAQ | FAQ-Accordion |
+| `video` | ✅ VideoSegmentEditor | Video | Video-Einbettung |
+| `specification` | ✅ SpecificationEditor | Specification | Technische Spezifikationen |
 
-### Statische Segmente (im Code definiert)
-Diese Segmente werden NICHT über das Admin-Dashboard bearbeitet:
+### Legacy Static Segments (im Code definiert, NICHT editierbar)
+Diese Segmente existieren nur auf älteren Seiten und werden NICHT über das Admin-Dashboard bearbeitet:
 
 | Segment-Typ | Status | Bearbeitung |
 |------------|--------|-------------|
 | `hero` | ❌ Kein Editor | Direkt in page_content (hero_title, hero_subtitle, etc.) |
 
-### Segment-Typ Mapping (wichtig für Verständnis!)
+---
+
+## 🎨 Frontend-Rendering-Regeln
+
+### MANDATORY: Segment-Rendering-Reihenfolge
+Jede CMS-Seite MUSS diese exakte Rendering-Reihenfolge einhalten:
+
+```tsx
+return (
+  <>
+    <SEOHead {...seoData} />
+    <Navigation />
+    
+    {/* 1. META-NAVIGATION (falls vorhanden) - IMMER ganz oben */}
+    {pageSegments
+      .filter(seg => seg.type === 'meta-navigation')
+      .map(seg => renderSegment(seg.id))}
+    
+    {/* 2. OLD HERO (Legacy, falls vorhanden) */}
+    {hasHeroContent && <HeroSection />}
+    
+    {/* 3. FULL-HERO (falls vorhanden) - IMMER vor tab_order */}
+    {pageSegments
+      .filter(seg => seg.type === 'full-hero')
+      .map(seg => renderSegment(seg.id))}
+    
+    {/* 4. DYNAMIC SEGMENTS aus tab_order */}
+    {tabOrder
+      .filter(segmentId => {
+        const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
+        // NUR rendern wenn:
+        // - Segment existiert in pageSegments
+        // - NICHT meta-navigation, full-hero oder footer
+        return dynamicSegment && 
+               dynamicSegment.type !== 'meta-navigation' && 
+               dynamicSegment.type !== 'full-hero' && 
+               dynamicSegment.type !== 'footer';
+      })
+      .map(segmentId => renderSegment(segmentId))}
+    
+    {/* 5. FOOTER - IMMER ganz unten */}
+    <Footer />
+  </>
+);
+```
+
+### renderSegment() Funktion
+**CRITICAL:** Jede CMS-Seite MUSS Handler für ALLE Dynamic Segment-Typen haben:
+
+```tsx
+const renderSegment = (segmentId: string) => {
+  const segment = pageSegments.find(s => s.id === segmentId);
+  if (!segment) {
+    console.warn(`Segment ${segmentId} not found in pageSegments`);
+    return null;
+  }
+
+  switch (segment.type) {
+    // Static Segments (werden oben explizit gerendert, kommen hier nicht vor)
+    case 'meta-navigation':
+      return <MetaNavigation key={segment.id} {...segment.data} />;
+    case 'full-hero':
+      return <FullHero key={segment.id} {...segment.data} />;
+    
+    // Dynamic Segments (aus tab_order)
+    case 'intro':
+      return <Intro key={segment.id} {...segment.data} />;
+    case 'product-hero-gallery':
+      return <ProductHeroGallery key={segment.id} {...segment.data} />;
+    case 'tiles':
+      return <IndustriesSegment key={segment.id} {...segment.data} />;
+    case 'banner':
+      return <Banner key={segment.id} {...segment.data} />;
+    case 'image-text':
+      return <ImageTextSegment key={segment.id} {...segment.data} />;
+    case 'feature-overview':
+      return <FeatureOverview key={segment.id} {...segment.data} />;
+    case 'table':
+      return <Table key={segment.id} {...segment.data} />;
+    case 'faq':
+      return <FAQ key={segment.id} {...segment.data} />;
+    case 'video':
+      return <Video key={segment.id} {...segment.data} />;
+    case 'specification':
+      return <Specification key={segment.id} {...segment.data} />;
+    
+    default:
+      console.warn(`Unknown segment type: ${segment.type}`);
+      return null;
+  }
+};
+```
+
+**WICHTIG:** 
+- Fehlende Handler führen zu unsichtbaren Segmenten im Frontend
+- Bei neuen Segment-Typen MÜSSEN alle CMS-Seiten aktualisiert werden
+- `console.warn` hilft beim Debugging fehlender Handler
+
+---
 - **`applications`** = wird als **`tiles`** Segment gerendert
 - **`solutions`** = wird als **`image-text`** Segment gerendert
 
