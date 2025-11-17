@@ -14,6 +14,7 @@ import Specification from "@/components/segments/Specification";
 import { Video } from "@/components/segments/Video";
 import Intro from "@/components/segments/Intro";
 import IndustriesSegment from "@/components/segments/IndustriesSegment";
+import NewsSegment from "@/components/segments/NewsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -118,6 +119,24 @@ const MachineVision = () => {
                 segment.data = JSON.parse(introData.content_value);
               }
             }
+            if (segment.type === 'news') {
+              const newsData = data.filter((d: any) => d.section_key === segment.id);
+              if (newsData.length > 0) {
+                const newsConfig: any = {};
+                newsData.forEach((item: any) => {
+                  if (item.content_type === 'news_section_title') {
+                    newsConfig.sectionTitle = item.content_value;
+                  } else if (item.content_type === 'news_section_description') {
+                    newsConfig.sectionDescription = item.content_value;
+                  } else if (item.content_type === 'news_article_limit') {
+                    newsConfig.articleLimit = item.content_value;
+                  } else if (item.content_type === 'news_categories') {
+                    newsConfig.categories = JSON.parse(item.content_value);
+                  }
+                });
+                segment.data = newsConfig;
+              }
+            }
           });
           
           console.log("Loading page_segments:", segments);
@@ -216,6 +235,18 @@ const MachineVision = () => {
       }
       if (dynamicSegment.type === 'industries') {
         return <IndustriesSegment key={segmentId} {...dynamicSegment.data} />;
+      }
+      if (dynamicSegment.type === 'news') {
+        return (
+          <NewsSegment
+            key={segmentId}
+            id={segmentId}
+            sectionTitle={dynamicSegment.data?.sectionTitle}
+            sectionDescription={dynamicSegment.data?.sectionDescription}
+            articleLimit={parseInt(dynamicSegment.data?.articleLimit || "6")}
+            categories={dynamicSegment.data?.categories || []}
+          />
+        );
       }
       if (dynamicSegment.type === 'banner') {
         return (
