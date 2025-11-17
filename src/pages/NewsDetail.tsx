@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import ReactMarkdown from "react-markdown";
 import { Badge } from "@/components/ui/badge";
 
 const NewsDetail = () => {
@@ -141,25 +140,15 @@ const NewsDetail = () => {
                 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4
                 prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
                 prose-img:rounded-lg prose-img:shadow-2xl prose-img:border prose-img:border-white/10 prose-img:my-8
-                prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-a:transition-all
+                prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-a:transition-all
                 prose-strong:text-white prose-strong:font-semibold
                 prose-ul:text-gray-300 prose-ol:text-gray-300
                 prose-li:mb-2
                 prose-hr:border-white/10 prose-hr:my-8
                 prose-code:text-primary prose-code:bg-white/5 prose-code:px-2 prose-code:py-1 prose-code:rounded
-                animate-fade-in">
-                <ReactMarkdown
-                  components={{
-                    h2: ({node, ...props}) => <h2 className="text-3xl font-bold text-white mt-12 mb-6 border-b border-white/10 pb-4" {...props} />,
-                    h3: ({node, ...props}) => <h3 className="text-2xl font-bold text-white mt-8 mb-4" {...props} />,
-                    p: ({node, ...props}) => <p className="text-gray-300 leading-relaxed mb-6" {...props} />,
-                    strong: ({node, ...props}) => <strong className="text-white font-semibold" {...props} />,
-                    img: ({node, ...props}) => <img className="rounded-lg shadow-2xl border border-white/10 my-8 w-full" {...props} />,
-                  }}
-                >
-                  {article.content}
-                </ReactMarkdown>
-              </article>
+                animate-fade-in"
+                dangerouslySetInnerHTML={{ __html: article.content }}
+              />
             </div>
           </CardContent>
         </Card>
