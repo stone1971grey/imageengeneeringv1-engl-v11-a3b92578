@@ -186,19 +186,57 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
               return;
             }
             
-            // Get selected text
-            const selectedText = state.doc.textBetween(from, to);
+            // Get the selection positions
+            const $from = state.selection.$from;
+            const $to = state.selection.$to;
             
-            // Split the current paragraph and insert heading
+            // Check if selection is within a single node
+            if ($from.parent !== $to.parent) {
+              toast.error('Bitte markieren Sie Text innerhalb eines Absatzes');
+              return;
+            }
+            
+            // Get positions relative to the parent node
+            const parentStart = $from.start($from.depth);
+            const parentEnd = $to.end($to.depth);
+            
+            // Get text content
+            const textBefore = state.doc.textBetween(parentStart, from, '\n');
+            const selectedText = state.doc.textBetween(from, to, '\n');
+            const textAfter = state.doc.textBetween(to, parentEnd, '\n');
+            
+            // Build new content
+            const newContent: any[] = [];
+            
+            if (textBefore.trim()) {
+              newContent.push({ 
+                type: 'paragraph', 
+                content: [{ type: 'text', text: textBefore }] 
+              });
+            }
+            
+            newContent.push({ 
+              type: 'heading', 
+              attrs: { level: 2 }, 
+              content: [{ type: 'text', text: selectedText }] 
+            });
+            
+            if (textAfter.trim()) {
+              newContent.push({ 
+                type: 'paragraph', 
+                content: [{ type: 'text', text: textAfter }] 
+              });
+            }
+            
+            // Replace the entire parent node
+            const nodeStart = $from.before($from.depth);
+            const nodeEnd = $to.after($to.depth);
+            
             editor
               .chain()
               .focus()
-              .deleteSelection()
-              .insertContent([
-                { type: 'hardBreak' },
-                { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: selectedText }] },
-                { type: 'hardBreak' },
-              ])
+              .deleteRange({ from: nodeStart, to: nodeEnd })
+              .insertContentAt(nodeStart, newContent)
               .run();
           }}
           className={editor.isActive('heading', { level: 2 }) ? 'bg-[#f9dc24] text-black font-bold' : ''}
@@ -220,19 +258,57 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
               return;
             }
             
-            // Get selected text
-            const selectedText = state.doc.textBetween(from, to);
+            // Get the selection positions
+            const $from = state.selection.$from;
+            const $to = state.selection.$to;
             
-            // Split the current paragraph and insert heading
+            // Check if selection is within a single node
+            if ($from.parent !== $to.parent) {
+              toast.error('Bitte markieren Sie Text innerhalb eines Absatzes');
+              return;
+            }
+            
+            // Get positions relative to the parent node
+            const parentStart = $from.start($from.depth);
+            const parentEnd = $to.end($to.depth);
+            
+            // Get text content
+            const textBefore = state.doc.textBetween(parentStart, from, '\n');
+            const selectedText = state.doc.textBetween(from, to, '\n');
+            const textAfter = state.doc.textBetween(to, parentEnd, '\n');
+            
+            // Build new content
+            const newContent: any[] = [];
+            
+            if (textBefore.trim()) {
+              newContent.push({ 
+                type: 'paragraph', 
+                content: [{ type: 'text', text: textBefore }] 
+              });
+            }
+            
+            newContent.push({ 
+              type: 'heading', 
+              attrs: { level: 3 }, 
+              content: [{ type: 'text', text: selectedText }] 
+            });
+            
+            if (textAfter.trim()) {
+              newContent.push({ 
+                type: 'paragraph', 
+                content: [{ type: 'text', text: textAfter }] 
+              });
+            }
+            
+            // Replace the entire parent node
+            const nodeStart = $from.before($from.depth);
+            const nodeEnd = $to.after($to.depth);
+            
             editor
               .chain()
               .focus()
-              .deleteSelection()
-              .insertContent([
-                { type: 'hardBreak' },
-                { type: 'heading', attrs: { level: 3 }, content: [{ type: 'text', text: selectedText }] },
-                { type: 'hardBreak' },
-              ])
+              .deleteRange({ from: nodeStart, to: nodeEnd })
+              .insertContentAt(nodeStart, newContent)
               .run();
           }}
           className={editor.isActive('heading', { level: 3 }) ? 'bg-[#f9dc24] text-black font-bold' : ''}
