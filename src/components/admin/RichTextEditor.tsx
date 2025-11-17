@@ -59,7 +59,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline hover:text-blue-800',
+          class: 'text-[#f9dc24] underline hover:text-[#f9dc24]/80',
         },
       }),
       Image.configure({
