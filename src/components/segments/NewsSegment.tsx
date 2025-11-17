@@ -74,7 +74,7 @@ const NewsSegment = ({
   }
 
   return (
-    <section id={id} className="py-24 bg-[#373737]">
+    <section id={id} className="pt-32 pb-24 bg-[#373737]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-foreground mb-4">{sectionTitle}</h2>
