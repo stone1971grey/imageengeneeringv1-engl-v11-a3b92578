@@ -66,7 +66,7 @@ export const navigationDataEn = {
         { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "Universal Test Target", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
         { name: "Multispectral Illumination", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
-        { name: "Scanner Dynamic Range", link: "#" },
+        { name: "Scanner Dynamic Range", link: "/your-solution/scanners-archiving/scanner-dynamic-range", active: true },
         { name: "Spectral Sensitivities", link: "#" }
       ]
     },

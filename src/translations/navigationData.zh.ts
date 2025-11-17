@@ -66,7 +66,7 @@ export const navigationDataZh = {
         { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "通用测试目标", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
         { name: "多光谱照明", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
-        { name: "扫描仪动态范围", link: "#" },
+        { name: "扫描仪动态范围", link: "/your-solution/scanners-archiving/scanner-dynamic-range", active: true },
         { name: "光谱灵敏度", link: "#" }
       ]
     },
