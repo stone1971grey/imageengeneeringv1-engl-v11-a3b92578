@@ -13,6 +13,7 @@ import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
 import { Video } from "@/components/segments/Video";
 import Specification from "@/components/segments/Specification";
+import NewsSegment from "@/components/segments/NewsSegment";
 import FullHero from "@/components/segments/FullHero";
 import Intro from "@/components/segments/Intro";
 import IndustriesSegment from "@/components/segments/IndustriesSegment";
