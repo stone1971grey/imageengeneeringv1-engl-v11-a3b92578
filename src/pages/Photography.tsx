@@ -144,6 +144,25 @@ const Photography = () => {
                 segment.data = JSON.parse(introData.content_value);
               }
             }
+            if (segment.type === 'news') {
+              // Load news segment data
+              const newsData = data.filter((d: any) => d.section_key === segment.id);
+              if (newsData.length > 0) {
+                const newsConfig: any = {};
+                newsData.forEach((item: any) => {
+                  if (item.content_type === 'news_section_title') {
+                    newsConfig.sectionTitle = item.content_value;
+                  } else if (item.content_type === 'news_section_description') {
+                    newsConfig.sectionDescription = item.content_value;
+                  } else if (item.content_type === 'news_article_limit') {
+                    newsConfig.articleLimit = item.content_value;
+                  } else if (item.content_type === 'news_categories') {
+                    newsConfig.categories = JSON.parse(item.content_value);
+                  }
+                });
+                segment.data = newsConfig;
+              }
+            }
           });
           
           console.log("Loading page_segments:", segments);

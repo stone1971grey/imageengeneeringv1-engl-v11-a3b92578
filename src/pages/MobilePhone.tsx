@@ -357,6 +357,18 @@ const MobilePhone = () => {
       if (dynamicSegment.type === 'video') {
         return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
       }
+      if (dynamicSegment.type === 'news') {
+        return (
+          <NewsSegment
+            key={segmentId}
+            id={segmentId}
+            sectionTitle={dynamicSegment.data?.sectionTitle}
+            sectionDescription={dynamicSegment.data?.sectionDescription}
+            articleLimit={parseInt(dynamicSegment.data?.articleLimit || "6")}
+            categories={dynamicSegment.data?.categories || []}
+          />
+        );
+      }
       if (dynamicSegment.type === 'tiles') {
         const tilesData = dynamicSegment.data;
         return (
