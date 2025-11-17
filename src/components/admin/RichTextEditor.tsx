@@ -48,7 +48,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-[#f9dc24] underline hover:text-[#f9dc24]/80',
+          class: 'text-blue-600 underline hover:text-blue-800',
         },
       }),
       Image.configure({
@@ -63,7 +63,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[400px] p-4 border border-gray-300 rounded-md',
+        class: 'prose prose-base max-w-none focus:outline-none min-h-[400px] p-4 border border-gray-300 rounded-md prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-6 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-5 prose-h3:mb-3',
       },
     },
   });
