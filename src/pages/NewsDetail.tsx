@@ -146,6 +146,7 @@ const NewsDetail = () => {
                 prose-li:mb-2
                 prose-hr:border-white/10 prose-hr:my-8
                 prose-code:text-primary prose-code:bg-white/5 prose-code:px-2 prose-code:py-1 prose-code:rounded
+                whitespace-pre-wrap
                 animate-fade-in"
                 dangerouslySetInnerHTML={{ __html: article.content }}
               />
