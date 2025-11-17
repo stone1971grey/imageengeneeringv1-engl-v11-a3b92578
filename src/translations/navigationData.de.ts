@@ -65,7 +65,7 @@ export const navigationDataDe = {
       subgroups: [
         { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "Universelles Testziel", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
-        { name: "Multispektrale Beleuchtung", link: "#" },
+        { name: "Multispektrale Beleuchtung", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
         { name: "Scanner-Dynamikbereich", link: "#" },
         { name: "Spektrale Empfindlichkeiten", link: "#" }
       ]

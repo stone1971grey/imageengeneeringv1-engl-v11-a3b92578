@@ -113,6 +113,7 @@ const Navigation = () => {
     '/products/test-charts/le7': 'le7',
     '/your-solution/photography': 'photography',
     '/your-solution/scanners-archiving': 'scanners-archiving',
+    '/your-solution/scanners-archiving/multispectral-illumination': 'multispectral-illumination',
     '/your-solution/medical-endoscopy': 'medical-endoscopy',
     '/your-solution/web-camera': 'web-camera',
     '/your-solution/machine-vision': 'machine-vision',
