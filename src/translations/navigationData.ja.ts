@@ -65,7 +65,7 @@ export const navigationDataJa = {
       subgroups: [
         { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "ユニバーサルテストターゲット", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
-        { name: "マルチスペクトル照明", link: "#" },
+        { name: "マルチスペクトル照明", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
         { name: "スキャナーダイナミックレンジ", link: "#" },
         { name: "分光感度", link: "#" }
       ]
