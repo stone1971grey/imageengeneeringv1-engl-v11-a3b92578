@@ -102,52 +102,10 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Check authentication first
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error("You must be logged in to save changes");
-        return;
-      }
-
       console.log(`Saving news segment - pageSlug: ${pageSlug}, segmentId: ${segmentId}`);
       console.log(`Categories to save:`, selectedCategories);
-      console.log(`Article limit:`, articleLimit);
       
-      // Insert new content using upsert to handle existing entries
-      const contentItems = [
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_section_title",
-          content_value: sectionTitle,
-          updated_by: user.id,
-        },
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_section_description",
-          content_value: sectionDescription,
-          updated_by: user.id,
-        },
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_article_limit",
-          content_value: articleLimit,
-          updated_by: user.id,
-        },
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_categories",
-          content_value: JSON.stringify(selectedCategories),
-          updated_by: user.id,
-        },
-      ];
-
-      console.log("Content items to upsert:", contentItems);
-
-      // First delete existing entries to avoid conflicts
+      // Delete existing content for this segment
       const { error: deleteError } = await supabase
         .from("page_content")
         .delete()
@@ -156,28 +114,54 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
 
       if (deleteError) {
         console.error("Delete error:", deleteError);
-        toast.error(`Delete failed: ${deleteError.message}`);
-        return;
+        throw deleteError;
       }
 
-      // Then insert new content
-      const { data, error: insertError } = await supabase
+      // Insert new content
+      const contentItems = [
+        {
+          page_slug: pageSlug,
+          section_key: segmentId,
+          content_type: "news_section_title",
+          content_value: sectionTitle,
+        },
+        {
+          page_slug: pageSlug,
+          section_key: segmentId,
+          content_type: "news_section_description",
+          content_value: sectionDescription,
+        },
+        {
+          page_slug: pageSlug,
+          section_key: segmentId,
+          content_type: "news_article_limit",
+          content_value: articleLimit,
+        },
+        {
+          page_slug: pageSlug,
+          section_key: segmentId,
+          content_type: "news_categories",
+          content_value: JSON.stringify(selectedCategories),
+        },
+      ];
+
+      console.log("Content items to insert:", contentItems);
+
+      const { error: insertError } = await supabase
         .from("page_content")
-        .insert(contentItems)
-        .select();
+        .insert(contentItems);
 
       if (insertError) {
-        console.error("Insert error details:", insertError);
-        toast.error(`Save failed: ${insertError.message}. Check console for details.`);
-        return;
+        console.error("Insert error:", insertError);
+        throw insertError;
       }
 
-      console.log("News segment saved successfully. Inserted data:", data);
-      toast.success("News segment saved successfully!");
+      console.log("News segment saved successfully");
+      toast.success("News segment saved successfully. Please reload the frontend page to see changes.");
       onUpdate?.();
     } catch (error: any) {
       console.error("Error saving content:", error);
-      toast.error(`Failed to save: ${error.message}`);
+      toast.error("Failed to save content: " + error.message);
     } finally {
       setIsSaving(false);
     }

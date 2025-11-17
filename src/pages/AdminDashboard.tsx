@@ -787,30 +787,17 @@ const AdminDashboard = () => {
           
           // Only process non-empty segments array
           if (segments && segments.length > 0) {
-            // CRITICAL: Filter out deleted segments using segmentRegistry
-            const activeSegments = segments.filter((seg: any) => {
-              const segmentId = String(seg.id);
-              const isInRegistry = Object.values(segmentRegistry).includes(Number(segmentId)) || 
-                                   Object.keys(segmentRegistry).includes(segmentId);
-              if (!isInRegistry) {
-                console.log(`Filtering out deleted segment ID ${segmentId} of type ${seg.type}`);
-              }
-              return isInRegistry;
-            });
-            
-            console.log(`Filtered ${segments.length - activeSegments.length} deleted segments`);
-            
             // CRITICAL: Log raw segments before sorting
-            console.log('[POSITION DEBUG] Raw active segments before sorting:', JSON.stringify(activeSegments.map(s => ({ id: s.id, type: s.type, position: s.position }))));
+            console.log('[POSITION DEBUG] Raw segments before sorting:', JSON.stringify(segments.map(s => ({ id: s.id, type: s.type, position: s.position }))));
             
             // CRITICAL: Robust sort by position with fallback to original array order
-            const sortedSegments = [...activeSegments].sort((a, b) => {
+            const sortedSegments = [...segments].sort((a, b) => {
               const posA = typeof a.position === 'number' ? a.position : 999;
               const posB = typeof b.position === 'number' ? b.position : 999;
               
               // If positions are equal or both undefined, maintain original order by using array index
               if (posA === posB) {
-                return activeSegments.indexOf(a) - activeSegments.indexOf(b);
+                return segments.indexOf(a) - segments.indexOf(b);
               }
               return posA - posB;
             });
@@ -847,10 +834,9 @@ const AdminDashboard = () => {
             setPageSegments([]);
           }
           
-          // If we filtered out deleted segments or added IDs, save back to database immediately
-          const segmentsWereFiltered = segments.length !== segmentsWithIds.length;
-          if ((needsUpdate || segmentsWereFiltered) && user) {
-            console.log("Updating segments (IDs or filtered deleted segments):", segmentsWithIds);
+          // If we added IDs, save back to database immediately
+          if (needsUpdate && user) {
+            console.log("Updating segments with numeric IDs:", segmentsWithIds);
             supabase
               .from("page_content")
               .upsert({
@@ -865,9 +851,9 @@ const AdminDashboard = () => {
               })
               .then(({ error }) => {
                 if (error) {
-                  console.error("Error updating segments:", error);
+                  console.error("Error updating segment IDs:", error);
                 } else {
-                  console.log("Segments updated successfully - removed deleted segments from page_segments");
+                  console.log("Segment IDs updated successfully");
                 }
               });
           }
