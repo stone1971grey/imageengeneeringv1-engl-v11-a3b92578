@@ -119,15 +119,30 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
   };
 
   const setLink = () => {
-    if (!linkUrl) return;
+    if (!linkUrl) {
+      toast.error('Please enter a URL');
+      return;
+    }
 
     if (editor) {
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange('link')
-        .setLink({ href: linkUrl })
-        .run();
+      const { from, to } = editor.state.selection;
+      
+      if (from === to) {
+        // No text selected - insert link with URL as text
+        editor
+          .chain()
+          .focus()
+          .insertContent(`<a href="${linkUrl}">${linkUrl}</a>`)
+          .run();
+      } else {
+        // Text selected - apply link to selection
+        editor
+          .chain()
+          .focus()
+          .extendMarkRange('link')
+          .setLink({ href: linkUrl })
+          .run();
+      }
     }
 
     setShowLinkDialog(false);
@@ -145,16 +160,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => {
-            const { from, to } = editor.state.selection;
-            if (from === to) {
-              // No selection, toggle current block
-              editor.chain().focus().toggleHeading({ level: 2 }).run();
-            } else {
-              // Has selection, set heading for selected blocks
-              editor.chain().focus().setHeading({ level: 2 }).run();
-            }
-          }}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           className={editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}
         >
           <Heading2 className="w-4 h-4" />
@@ -163,16 +169,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => {
-            const { from, to } = editor.state.selection;
-            if (from === to) {
-              // No selection, toggle current block
-              editor.chain().focus().toggleHeading({ level: 3 }).run();
-            } else {
-              // Has selection, set heading for selected blocks
-              editor.chain().focus().setHeading({ level: 3 }).run();
-            }
-          }}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
           className={editor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}
         >
           <Heading3 className="w-4 h-4" />
