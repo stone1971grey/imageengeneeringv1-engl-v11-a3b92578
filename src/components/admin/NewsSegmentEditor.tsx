@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -13,15 +14,17 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy } from "lucide-react";
+import { CopySegmentDialog } from "./CopySegmentDialog";
 
 interface NewsSegmentEditorProps {
   pageSlug: string;
   segmentId: string;
   onUpdate?: () => void;
+  currentPageSlug: string;
 }
 
-const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorProps) => {
+const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: NewsSegmentEditorProps) => {
   const [sectionTitle, setSectionTitle] = useState("Latest News");
   const [sectionDescription, setSectionDescription] = useState(
     "Stay updated with the latest developments in image quality testing and measurement technology"
@@ -30,6 +33,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -147,93 +151,123 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
   return (
     <div className="space-y-6">
-      <div>
-        <Label htmlFor="section-title" className="text-xl text-black">
-          Section Title
-        </Label>
-        <Input
-          id="section-title"
-          value={sectionTitle}
-          onChange={(e) => setSectionTitle(e.target.value)}
-          className="mt-2 text-xl text-black placeholder:text-black border-2 border-gray-300 focus:border-[#f9dc24] h-12"
-          placeholder="Latest News"
-        />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Section Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="section-title">Section Title (H2)</Label>
+            <Input
+              id="section-title"
+              value={sectionTitle}
+              onChange={(e) => setSectionTitle(e.target.value)}
+              placeholder="Latest News"
+            />
+          </div>
 
-      <div>
-        <Label htmlFor="section-description" className="text-xl text-black">
-          Section Description
-        </Label>
-        <Textarea
-          id="section-description"
-          value={sectionDescription}
-          onChange={(e) => setSectionDescription(e.target.value)}
-          className="mt-2 text-xl text-black placeholder:text-black border-2 border-gray-300 focus:border-[#f9dc24] min-h-[100px]"
-          placeholder="Stay updated with the latest developments..."
-        />
-      </div>
+          <div>
+            <Label htmlFor="section-description">Section Description</Label>
+            <Textarea
+              id="section-description"
+              value={sectionDescription}
+              onChange={(e) => setSectionDescription(e.target.value)}
+              placeholder="Stay updated with the latest developments..."
+              rows={3}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      <div>
-        <Label htmlFor="article-limit" className="text-xl text-black">
-          Number of Articles to Display
-        </Label>
-        <Select value={articleLimit} onValueChange={setArticleLimit}>
-          <SelectTrigger className="mt-2 text-xl text-black border-2 border-gray-300 focus:border-[#f9dc24] h-12">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="3">3 Articles</SelectItem>
-            <SelectItem value="6">6 Articles</SelectItem>
-            <SelectItem value="9">9 Articles</SelectItem>
-            <SelectItem value="12">12 Articles</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Display Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="article-limit">Number of Articles to Display</Label>
+            <Select value={articleLimit} onValueChange={setArticleLimit}>
+              <SelectTrigger id="article-limit">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3">3 Articles</SelectItem>
+                <SelectItem value="6">6 Articles</SelectItem>
+                <SelectItem value="9">9 Articles</SelectItem>
+                <SelectItem value="12">12 Articles</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-      <div>
-        <Label className="text-xl text-black mb-3 block">
-          Category Filter
-        </Label>
-        <p className="text-sm text-white mb-3">
-          Select specific categories or leave all unchecked to show articles from all categories
-        </p>
-        <div className="space-y-3 bg-white p-4 rounded-lg border-2 border-gray-300">
-          {availableCategories.length === 0 ? (
-            <p className="text-gray-500">No categories available</p>
+          <div>
+            <Label className="mb-3 block">Category Filter</Label>
+            <p className="text-sm text-gray-600 mb-3">
+              Select specific categories or leave all unchecked to show articles from all categories
+            </p>
+            <div className="space-y-3 bg-gray-50 p-4 rounded-lg border">
+              {availableCategories.length === 0 ? (
+                <p className="text-gray-500">No categories available</p>
+              ) : (
+                availableCategories.map((category) => (
+                  <div key={category} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`category-${category}`}
+                      checked={selectedCategories.includes(category)}
+                      onCheckedChange={() => handleCategoryToggle(category)}
+                    />
+                    <label
+                      htmlFor={`category-${category}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {category}
+                    </label>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex gap-2">
+        <Button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex-1"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
           ) : (
-            availableCategories.map((category) => (
-              <div key={category} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`category-${category}`}
-                  checked={selectedCategories.includes(category)}
-                  onCheckedChange={() => handleCategoryToggle(category)}
-                />
-                <label
-                  htmlFor={`category-${category}`}
-                  className="text-base text-black cursor-pointer"
-                >
-                  {category}
-                </label>
-              </div>
-            ))
+            "Save Changes"
           )}
-        </div>
+        </Button>
+        
+        <Button
+          variant="outline"
+          onClick={() => setCopyDialogOpen(true)}
+          className="flex items-center gap-2"
+        >
+          <Copy className="h-4 w-4" />
+          Copy to Page...
+        </Button>
       </div>
 
-      <Button
-        onClick={handleSave}
-        disabled={isSaving}
-        className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 h-12 text-lg font-medium"
-      >
-        {isSaving ? (
-          <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            Saving...
-          </>
-        ) : (
-          "Save Changes"
-        )}
-      </Button>
+      <CopySegmentDialog
+        open={copyDialogOpen}
+        onOpenChange={setCopyDialogOpen}
+        currentPageSlug={currentPageSlug}
+        segmentId={segmentId}
+        segmentType="news"
+        segmentData={{
+          sectionTitle,
+          sectionDescription,
+          articleLimit,
+          categories: selectedCategories,
+        }}
+      />
     </div>
   );
 };
