@@ -140,8 +140,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send to Mautic
     const mauticBaseUrl = Deno.env.get("MAUTIC_BASE_URL");
-    const mauticUser = Deno.env.get("MAUTIC_USER");
-    const mauticPass = Deno.env.get("MAUTIC_PASS");
+    const mauticUser = Deno.env.get("MAUTIC_USER") || Deno.env.get("MAUTIC_USERNAME");
+    const mauticPass = Deno.env.get("MAUTIC_PASS") || Deno.env.get("MAUTIC_PASSWORD");
 
     if (mauticBaseUrl && mauticUser && mauticPass) {
       console.log("Sending to Mautic for:", data.email);
