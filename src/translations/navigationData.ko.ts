@@ -66,7 +66,7 @@ export const navigationDataKo = {
         { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
         { name: "범용 테스트 타겟", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
         { name: "다중 스펙트럼 조명", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
-        { name: "스캐너 다이내믹 레인지", link: "#" },
+        { name: "스캐너 다이내믹 레인지", link: "/your-solution/scanners-archiving/scanner-dynamic-range", active: true },
         { name: "분광 감도", link: "#" }
       ]
     },
