@@ -131,7 +131,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
 
       if (insertError) throw insertError;
 
-      toast.success("News segment saved successfully");
+      toast.success("News segment saved successfully. Please reload the frontend page to see changes.");
       onUpdate?.();
     } catch (error: any) {
       console.error("Error saving content:", error);
