@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Loader2, Copy } from "lucide-react";
+import { Loader2, Copy, Save } from "lucide-react";
 import { CopySegmentDialog } from "./CopySegmentDialog";
 
 interface NewsSegmentEditorProps {
@@ -150,90 +150,82 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Section Settings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="section-title">Section Title (H2)</Label>
-            <Input
-              id="section-title"
-              value={sectionTitle}
-              onChange={(e) => setSectionTitle(e.target.value)}
-              placeholder="Latest News"
-            />
-          </div>
+    <CardContent className="space-y-6">
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="section-title" className="text-white">Section Title (H2)</Label>
+          <Input
+            id="section-title"
+            value={sectionTitle}
+            onChange={(e) => setSectionTitle(e.target.value)}
+            placeholder="Latest News"
+            className="border-2 border-gray-600"
+          />
+        </div>
 
-          <div>
-            <Label htmlFor="section-description">Section Description</Label>
-            <Textarea
-              id="section-description"
-              value={sectionDescription}
-              onChange={(e) => setSectionDescription(e.target.value)}
-              placeholder="Stay updated with the latest developments..."
-              rows={3}
-            />
-          </div>
-        </CardContent>
-      </Card>
+        <div>
+          <Label htmlFor="section-description" className="text-white">Section Description</Label>
+          <Textarea
+            id="section-description"
+            value={sectionDescription}
+            onChange={(e) => setSectionDescription(e.target.value)}
+            placeholder="Stay updated with the latest developments..."
+            rows={3}
+            className="border-2 border-gray-600"
+          />
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Display Settings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="article-limit">Number of Articles to Display</Label>
-            <Select value={articleLimit} onValueChange={setArticleLimit}>
-              <SelectTrigger id="article-limit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="3">3 Articles</SelectItem>
-                <SelectItem value="6">6 Articles</SelectItem>
-                <SelectItem value="9">9 Articles</SelectItem>
-                <SelectItem value="12">12 Articles</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <div className="space-y-4 border-t border-gray-600 pt-6">
+        <div>
+          <Label htmlFor="article-limit" className="text-white">Number of Articles to Display</Label>
+          <Select value={articleLimit} onValueChange={setArticleLimit}>
+            <SelectTrigger id="article-limit" className="border-2 border-gray-600">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="3">3 Articles</SelectItem>
+              <SelectItem value="6">6 Articles</SelectItem>
+              <SelectItem value="9">9 Articles</SelectItem>
+              <SelectItem value="12">12 Articles</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <div>
-            <Label className="mb-3 block">Category Filter</Label>
-            <p className="text-sm text-gray-600 mb-3">
-              Select specific categories or leave all unchecked to show articles from all categories
-            </p>
-            <div className="space-y-3 bg-gray-50 p-4 rounded-lg border">
-              {availableCategories.length === 0 ? (
-                <p className="text-gray-500">No categories available</p>
-              ) : (
-                availableCategories.map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`category-${category}`}
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={() => handleCategoryToggle(category)}
-                    />
-                    <label
-                      htmlFor={`category-${category}`}
-                      className="text-sm cursor-pointer"
-                    >
-                      {category}
-                    </label>
-                  </div>
-                ))
-              )}
-            </div>
+        <div>
+          <Label className="text-white mb-3 block">Category Filter</Label>
+          <p className="text-sm text-gray-400 mb-3">
+            Select specific categories or leave all unchecked to show articles from all categories
+          </p>
+          <div className="space-y-3 bg-gray-700 p-4 rounded-lg border border-gray-600">
+            {availableCategories.length === 0 ? (
+              <p className="text-gray-400">No categories available</p>
+            ) : (
+              availableCategories.map((category) => (
+                <div key={category} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`category-${category}`}
+                    checked={selectedCategories.includes(category)}
+                    onCheckedChange={() => handleCategoryToggle(category)}
+                  />
+                  <label
+                    htmlFor={`category-${category}`}
+                    className="text-sm text-white cursor-pointer"
+                  >
+                    {category}
+                  </label>
+                </div>
+              ))
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 pt-4 border-t border-gray-600">
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex-1"
+          className="flex-1 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
         >
           {isSaving ? (
             <>
@@ -241,7 +233,10 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
               Saving...
             </>
           ) : (
-            "Save Changes"
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              Save Changes
+            </>
           )}
         </Button>
         
@@ -268,7 +263,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
           categories: selectedCategories,
         }}
       />
-    </div>
+    </CardContent>
   );
 };
 
