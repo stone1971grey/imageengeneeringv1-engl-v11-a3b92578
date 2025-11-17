@@ -109,7 +109,7 @@ const NewsSegment = ({
                       <div className="p-6 flex flex-col flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           {item.category && (
-                            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1">
                               {item.category}
                             </Badge>
                           )}
