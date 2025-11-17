@@ -3237,6 +3237,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
                       if (segment.type === 'video') label = `Video ${displayNumber}`;
                       if (segment.type === 'specification') label = `Specification ${displayNumber}`;
+                      if (segment.type === 'news') label = `Latest News ${displayNumber}`;
                       if (segment.type === 'full-hero') label = `Full Hero ${displayNumber}`;
                       if (segment.type === 'intro') label = `Intro ${displayNumber}`;
                       if (segment.type === 'industries') label = `Industries ${displayNumber}`;
@@ -5928,6 +5929,7 @@ const AdminDashboard = () => {
                       pageSlug={selectedPage}
                       segmentId={segment.id}
                       onUpdate={() => handleSaveSegments()}
+                      currentPageSlug={selectedPage}
                     />
                   )}
 
