@@ -43,12 +43,12 @@ const ScannerDynamicRange = () => {
     const { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", "scanners-archiving-scanner-dynamic-range");
+      .eq("page_slug", "scanner-dynamic-range");
 
     const { data: segmentData } = await supabase
       .from("segment_registry")
       .select("*")
-      .eq("page_slug", "scanners-archiving-scanner-dynamic-range")
+      .eq("page_slug", "scanner-dynamic-range")
       .eq("deleted", false);
 
     if (segmentData) {
