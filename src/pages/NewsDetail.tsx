@@ -145,9 +145,18 @@ const NewsDetail = () => {
                 prose-strong:text-white prose-strong:font-semibold
                 prose-ul:text-gray-300 prose-ol:text-gray-300
                 prose-li:mb-2
+                prose-hr:border-white/10 prose-hr:my-8
                 prose-code:text-primary prose-code:bg-white/5 prose-code:px-2 prose-code:py-1 prose-code:rounded
                 animate-fade-in">
-                <ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    h2: ({node, ...props}) => <h2 className="text-3xl font-bold text-white mt-12 mb-6 border-b border-white/10 pb-4" {...props} />,
+                    h3: ({node, ...props}) => <h3 className="text-2xl font-bold text-white mt-8 mb-4" {...props} />,
+                    p: ({node, ...props}) => <p className="text-gray-300 leading-relaxed mb-6" {...props} />,
+                    strong: ({node, ...props}) => <strong className="text-white font-semibold" {...props} />,
+                    img: ({node, ...props}) => <img className="rounded-lg shadow-2xl border border-white/10 my-8 w-full" {...props} />,
+                  }}
+                >
                   {article.content}
                 </ReactMarkdown>
               </article>
