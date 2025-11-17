@@ -135,7 +135,7 @@ const Auth = () => {
             />
           </div>
           <CardTitle className="text-2xl text-center">
-            {isLogin ? "Admin Login" : "Create Account"}
+            {isLogin ? "Login" : "Create Account"}
           </CardTitle>
           <CardDescription className="text-center">
             {isLogin 
