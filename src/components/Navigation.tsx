@@ -115,6 +115,8 @@ const Navigation = () => {
     '/your-solution/scanners-archiving': 'scanners-archiving',
     '/your-solution/scanners-archiving/multispectral-illumination': 'multispectral-illumination',
     '/your-solution/scanners-archiving/scanner-dynamic-range': 'scanner-dynamic-range',
+    '/your-solution/scanners-archiving/universal-test-target': 'universal-test-target',
+    '/your-solution/scanners-archiving/iso-21550': 'iso-21550',
     '/your-solution/medical-endoscopy': 'medical-endoscopy',
     '/your-solution/web-camera': 'web-camera',
     '/your-solution/machine-vision': 'machine-vision',
