@@ -122,6 +122,7 @@ const UniversalTestTarget = () => {
             }
             if (segment.type === 'news') {
               const newsData = data.filter((d: any) => d.section_key === segment.id);
+              console.log(`Loading news data for segment ${segment.id}:`, newsData);
               if (newsData.length > 0) {
                 const newsConfig: any = {};
                 newsData.forEach((item: any) => {
@@ -135,7 +136,10 @@ const UniversalTestTarget = () => {
                     newsConfig.categories = JSON.parse(item.content_value);
                   }
                 });
+                console.log(`News config for segment ${segment.id}:`, newsConfig);
                 segment.data = newsConfig;
+              } else {
+                console.log(`No news data found for segment ${segment.id}`);
               }
             }
           });
