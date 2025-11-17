@@ -44,6 +44,9 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
         heading: {
           levels: [2, 3],
         },
+        hardBreak: {
+          keepMarks: true,
+        },
       }),
       Link.configure({
         openOnClick: false,
@@ -63,7 +66,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-base max-w-none focus:outline-none min-h-[400px] p-4 border border-gray-300 rounded-md bg-white prose-headings:font-bold prose-headings:text-gray-900 prose-h2:text-2xl prose-h2:mt-6 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-5 prose-h3:mb-3 prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-p:text-gray-700 prose-strong:text-gray-900',
+        class: 'prose prose-base max-w-none focus:outline-none min-h-[400px] p-4 border border-gray-300 rounded-md bg-white prose-headings:font-bold prose-headings:text-gray-900 prose-h2:text-2xl prose-h2:mt-6 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-5 prose-h3:mb-3 prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-p:text-gray-700 prose-p:my-3 prose-strong:text-gray-900 whitespace-pre-wrap',
       },
     },
   });
