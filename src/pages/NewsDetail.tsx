@@ -107,9 +107,9 @@ const NewsDetail = () => {
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 {article.category && (
-                  <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/20 backdrop-blur-sm animate-fade-in">
+                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal w-fit">
                     {article.category}
-                  </span>
+                  </Badge>
                 )}
                 <span className="text-sm text-gray-400">{article.date}</span>
                 {article.author && (
@@ -140,7 +140,7 @@ const NewsDetail = () => {
                 prose-h3:text-3xl prose-h3:mt-12 prose-h3:mb-6 prose-h3:font-bold prose-h3:text-white
                 prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-6
                 prose-img:rounded-lg prose-img:shadow-2xl prose-img:border prose-img:border-white/10 prose-img:my-8
-                prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-a:transition-all
+                prose-a:text-[#f9dc24] prose-a:underline hover:prose-a:text-[#f9dc24]/80 prose-a:transition-all
                 prose-strong:text-white prose-strong:font-semibold
                 prose-ul:text-gray-300 prose-ol:text-gray-300
                 prose-li:mb-2
