@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Carousel,
   CarouselContent,
@@ -106,8 +107,15 @@ const NewsSegment = ({
                         />
                       </div>
                       <div className="p-6 flex flex-col flex-1">
-                        <div className="text-sm text-muted-foreground mb-2 font-medium">
-                          {formatDate(item.date)}
+                        <div className="flex items-center gap-2 mb-2">
+                          {item.category && (
+                            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
+                              {item.category}
+                            </Badge>
+                          )}
+                          <span className="text-sm text-muted-foreground font-medium">
+                            {formatDate(item.date)}
+                          </span>
                         </div>
                         <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 leading-tight">
                           {item.title}
