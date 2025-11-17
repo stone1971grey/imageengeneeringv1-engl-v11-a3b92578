@@ -172,7 +172,7 @@ const NewsEditor = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">News Articles</h2>
+        <h2 className="text-2xl font-bold text-white">News Articles</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={resetForm}>
@@ -330,20 +330,20 @@ const NewsEditor = () => {
 
       <div className="grid gap-4">
         {articles?.map((article) => (
-          <Card key={article.id}>
+          <Card key={article.id} className="bg-gradient-to-br from-gray-900/90 to-black/90 border-white/10">
             <CardHeader>
               <CardTitle className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-lg">{article.title}</h3>
+                    <h3 className="text-lg text-white">{article.title}</h3>
                     {!article.published && (
                       <Badge variant="secondary">Draft</Badge>
                     )}
                     {article.category && (
-                      <Badge variant="outline">{article.category}</Badge>
+                      <Badge variant="outline" className="text-white border-white/20">{article.category}</Badge>
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-gray-400 mt-1">
                     {article.date} • {article.slug}
                   </p>
                 </div>
@@ -352,6 +352,7 @@ const NewsEditor = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => window.open(`/news/${article.slug}`, '_blank')}
+                    className="bg-white/5 text-white border-white/10 hover:bg-white/10"
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
@@ -359,6 +360,7 @@ const NewsEditor = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleEdit(article)}
+                    className="bg-white/5 text-white border-white/10 hover:bg-white/10"
                   >
                     <Pencil className="w-4 h-4" />
                   </Button>
@@ -370,6 +372,7 @@ const NewsEditor = () => {
                         deleteMutation.mutate(article.id);
                       }
                     }}
+                    className="bg-white/5 text-white border-white/10 hover:bg-white/10"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -377,7 +380,7 @@ const NewsEditor = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">{article.teaser}</p>
+              <p className="text-sm text-gray-400">{article.teaser}</p>
             </CardContent>
           </Card>
         ))}
