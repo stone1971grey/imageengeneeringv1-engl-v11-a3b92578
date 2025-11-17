@@ -175,10 +175,14 @@ const handler = async (req: Request): Promise<Response> => {
         let mauticResponse;
 
         if (isExistingMauticContact && mauticContactId) {
-          // Update existing contact - only send new event data and tags
-          console.log("Updating existing Mautic contact - preserving all existing data");
+          // Update existing contact - update all fields including name changes
+          console.log("Updating existing Mautic contact - updating all fields");
           
           const updateData: any = {
+            firstname: data.firstName,
+            lastname: data.lastName,
+            company: data.company,
+            position: data.position,
             event_title: data.eventName,
             event_date: data.eventDate,
             event_location: data.eventLocation,
