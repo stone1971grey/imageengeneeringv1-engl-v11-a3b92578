@@ -48,8 +48,8 @@ const AdminNews = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <p className="text-xl text-white">Loading...</p>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl">Loading...</p>
       </div>
     );
   }
@@ -59,19 +59,19 @@ const AdminNews = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+    <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-white">News Management</h1>
-            <p className="text-gray-400 mt-2">Create and manage news articles</p>
+            <h1 className="text-4xl font-bold text-gray-900">News Management</h1>
+            <p className="text-gray-600 mt-2">Create and manage news articles</p>
           </div>
           <Button
             onClick={() => navigate("/admin-dashboard")}
             variant="outline"
-            className="flex items-center gap-2 bg-white/5 text-white border-white/10 hover:bg-white/10"
+            className="flex items-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard

@@ -90,7 +90,7 @@ const NewsDetail = () => {
 
       {/* Article Header Card */}
       <section className="container mx-auto px-6 pb-12">
-        <Card className="bg-gradient-to-br from-gray-900/90 to-black/90 border-white/10 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 overflow-hidden group">
+        <Card className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-white/10 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/20 transition-all duration-500 overflow-hidden group">
           <CardContent className="p-0">
             {/* Featured Image */}
             <div className="aspect-[21/9] overflow-hidden relative">
@@ -164,7 +164,7 @@ const NewsDetail = () => {
               {relatedNews.map((item, index) => (
                 <Card 
                   key={item.id} 
-                  className="bg-gradient-to-br from-gray-900/70 to-black/70 border-white/10 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:scale-[1.03] hover:border-primary/30 group overflow-hidden animate-fade-in"
+                  className="bg-gradient-to-br from-gray-800/40 to-gray-900/40 border-white/10 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 hover:scale-[1.03] hover:border-primary/30 group overflow-hidden animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <CardContent className="p-0">
