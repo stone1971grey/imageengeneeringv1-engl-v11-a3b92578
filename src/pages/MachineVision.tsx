@@ -448,7 +448,7 @@ const MachineVision = () => {
     // Static segments
     if (segmentId === 'tiles') {
       return (
-        <section key="tiles" id={segmentIdMap['tiles']?.toString() || 'tiles'} className="py-8 bg-gray-50">
+        <section key="tiles" id={segmentIdMap['tiles']?.toString() || 'tiles'} className="pt-0 pb-8 bg-gray-50">
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
               {content.applications_title && (
@@ -644,7 +644,7 @@ const MachineVision = () => {
 
     if (segmentId === 'solutions') {
       return (
-        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="py-20 bg-gray-50">
+        <section key="solutions" id={segmentIdMap['solutions']?.toString() || 'solutions'} className="pt-2 pb-20 bg-gray-50">
           <div className="w-full px-6">
             <div className="text-center mb-16">
               {solutionsTitle && (
