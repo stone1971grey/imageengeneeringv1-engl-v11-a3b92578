@@ -145,7 +145,16 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() => {
+            const { from, to } = editor.state.selection;
+            if (from === to) {
+              // No selection, toggle current block
+              editor.chain().focus().toggleHeading({ level: 2 }).run();
+            } else {
+              // Has selection, set heading for selected blocks
+              editor.chain().focus().setHeading({ level: 2 }).run();
+            }
+          }}
           className={editor.isActive('heading', { level: 2 }) ? 'bg-gray-200' : ''}
         >
           <Heading2 className="w-4 h-4" />
@@ -154,7 +163,16 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          onClick={() => {
+            const { from, to } = editor.state.selection;
+            if (from === to) {
+              // No selection, toggle current block
+              editor.chain().focus().toggleHeading({ level: 3 }).run();
+            } else {
+              // Has selection, set heading for selected blocks
+              editor.chain().focus().setHeading({ level: 3 }).run();
+            }
+          }}
           className={editor.isActive('heading', { level: 3 }) ? 'bg-gray-200' : ''}
         >
           <Heading3 className="w-4 h-4" />
