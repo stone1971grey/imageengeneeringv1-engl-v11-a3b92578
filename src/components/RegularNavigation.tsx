@@ -4,11 +4,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-new-v7.png";
 
-const logoStyles = {
-  filter: 'grayscale(100%) brightness(0)',
-  WebkitFilter: 'grayscale(100%) brightness(0)'
-};
-
 const RegularNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDarkBackground, setIsDarkBackground] = useState(false);
@@ -51,7 +46,6 @@ const RegularNavigation = () => {
               src={logoIE} 
               alt="Image Engineering" 
               className={getLogoClasses()}
-              style={logoStyles}
             />
           </Link>
           
