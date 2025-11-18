@@ -102,11 +102,14 @@ const FullHero = ({
             playsInline
             disablePictureInPicture
             controls={false}
-            className="w-full h-full object-cover"
+            controlsList="nodownload nofullscreen noremoteplayback"
+            disableRemotePlayback
+            className="w-full h-full object-cover [&::-webkit-media-controls]:!hidden"
             style={{ 
               objectPosition: 'center center', 
               pointerEvents: 'none',
             }}
+            onContextMenu={(e) => e.preventDefault()}
           >
             <source src={videoUrl} type="video/mp4" />
           </video>
