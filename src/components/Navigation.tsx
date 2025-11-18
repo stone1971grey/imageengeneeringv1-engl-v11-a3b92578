@@ -4,7 +4,7 @@ import { BadgeCheck, Sprout } from "lucide-react";
 import { CustomTargetIcon } from "./CustomTargetIcon";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import logoIE from "@/assets/logo-ie-black.png";
+import logoIE from "@/assets/logo-ie-new-v7.png";
 import UtilityNavigation from "@/components/UtilityNavigation";
 import { SimpleDropdown } from "./SimpleNavigation";
 import { Separator } from "@/components/ui/separator";

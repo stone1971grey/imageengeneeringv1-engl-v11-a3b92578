@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
-import logoIE from "@/assets/logo-ie-black.png";
+import logoIE from "@/assets/logo-ie-new-v7.png";
 
 const Optin = () => {
   const location = useLocation();

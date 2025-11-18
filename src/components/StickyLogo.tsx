@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import logoIEWhite from "@/assets/logo-ie-white.png";
-import logoIEBlack from "@/assets/logo-ie-black.png";
+import logoIE from "@/assets/logo-ie-new-v7.png";
 
 const StickyLogo = () => {
   const [isDarkLogo, setIsDarkLogo] = useState(false);
