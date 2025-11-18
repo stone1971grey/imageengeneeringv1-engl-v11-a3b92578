@@ -82,7 +82,7 @@ const FullHero = ({
   };
 
   return (
-    <section className="relative overflow-hidden -mt-4" style={{ minHeight: 'calc(100vh - 220px)' }}>
+    <section className="relative overflow-hidden" style={{ minHeight: 'calc(100vh - 220px)' }}>
       {/* Background (Image or Video) */}
       <div className="absolute inset-0 animate-fade-in">
         {backgroundType === 'image' && imageUrl ? (
