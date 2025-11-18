@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import logoIE from "@/assets/logo-ie-white.png";
+import logoIE from "@/assets/logo-ie-new-v7.png";
 
 const RegularNavigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,8 +33,8 @@ const RegularNavigation = () => {
 
   const getLogoClasses = () => {
     const baseClasses = "h-12 md:h-16 w-auto max-w-[200px] object-contain";
-    // Always use dark logo for RegularNavigation (typically on light backgrounds)
-    return `${baseClasses} brightness-0 invert`;
+    // Use the new color logo without filters
+    return baseClasses;
   };
 
   return (

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLocation } from "react-router-dom";
-import logoIE from "@/assets/logo-ie-black.png";
+import logoIE from "@/assets/logo-ie-new-v7.png";
 import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
 import { Calendar, MapPin, Clock } from "lucide-react";
 

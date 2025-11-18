@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import logoIE from "@/assets/logo-ie-white.png";
+import logoIE from "@/assets/logo-ie-new-v7.png";
 import lovableLogo from "@/assets/lovable-cms-logo.png";
 
 const Auth = () => {
