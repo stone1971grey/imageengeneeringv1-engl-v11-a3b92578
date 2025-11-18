@@ -5,6 +5,11 @@ import { CustomTargetIcon } from "./CustomTargetIcon";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-new-v7.png";
+
+const logoStyles = {
+  filter: 'grayscale(100%) brightness(0)',
+  WebkitFilter: 'grayscale(100%) brightness(0)'
+};
 import UtilityNavigation from "@/components/UtilityNavigation";
 import { SimpleDropdown } from "./SimpleNavigation";
 import { Separator } from "@/components/ui/separator";
@@ -243,7 +248,7 @@ const Navigation = () => {
               src={logoIE} 
               alt="Image Engineering" 
               className="h-[54px] w-auto max-w-[270px] object-contain"
-              style={{ width: '270px' }}
+              style={{ width: '270px', ...logoStyles }}
             />
           </Link>
           

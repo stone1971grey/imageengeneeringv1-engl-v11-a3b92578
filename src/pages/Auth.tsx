@@ -10,6 +10,11 @@ import { User, Session } from "@supabase/supabase-js";
 import logoIE from "@/assets/logo-ie-new-v7.png";
 import lovableLogo from "@/assets/lovable-cms-logo.png";
 
+const logoStyles = {
+  filter: 'grayscale(100%) brightness(0)',
+  WebkitFilter: 'grayscale(100%) brightness(0)'
+};
+
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
@@ -132,6 +137,7 @@ const Auth = () => {
               src={logoIE} 
               alt="Image Engineering" 
               className="h-16 w-auto"
+              style={logoStyles}
             />
           </div>
           <CardTitle className="text-2xl text-center">
