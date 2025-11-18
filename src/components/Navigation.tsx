@@ -232,7 +232,7 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-[#f3f3f5]/95 backdrop-blur-sm shadow-lg border-b border-white/10">
+    <nav className="fixed top-[10px] left-[10px] right-[10px] z-40 bg-[#f3f3f5]/95 backdrop-blur-sm shadow-lg border-b border-white/10 rounded-lg">
       {/* Main Navigation with integrated Utility Navigation */}
       <div className="w-full px-6 py-6">
         {/* Single row - logo left, main nav center, utility right */}
