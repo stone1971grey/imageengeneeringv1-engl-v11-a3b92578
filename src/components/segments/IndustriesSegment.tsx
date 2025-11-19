@@ -75,6 +75,11 @@ const IndustriesSegment = ({
     4: 'grid-cols-2 md:grid-cols-4'
   }[columns] || 'grid-cols-2 md:grid-cols-4';
 
+  // Don't render if no items are configured
+  if (!items || items.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-20 bg-slate-50">
       <div className="container mx-auto px-6">
