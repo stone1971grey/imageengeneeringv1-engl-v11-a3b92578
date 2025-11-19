@@ -917,6 +917,33 @@ const ISO21550 = () => {
     );
   }
 
+  // Compute effective tab order to ensure all dynamic segments (especially full-hero) are rendered
+  const effectiveTabOrder = (() => {
+    // Start with current tabOrder from CMS
+    const orderedIds = [...tabOrder];
+
+    // Ensure full-hero segments are always present and appear first if missing
+    const sortedSegments = [...pageSegments].sort((a, b) => (a.position || 0) - (b.position || 0));
+    const fullHeroIds = sortedSegments
+      .filter((seg) => seg.type === "full-hero")
+      .map((seg) => seg.id);
+
+    fullHeroIds.forEach((id) => {
+      if (!orderedIds.includes(id)) {
+        orderedIds.unshift(id);
+      }
+    });
+
+    // Append any other dynamic segments that are missing from tabOrder
+    sortedSegments.forEach((seg) => {
+      if (!orderedIds.includes(seg.id)) {
+        orderedIds.push(seg.id);
+      }
+    });
+
+    return orderedIds;
+  })();
+
   return (
     <div className="min-h-screen bg-white">
       {/* SEO Meta Tags */}
@@ -936,7 +963,7 @@ const ISO21550 = () => {
       <Navigation />
 
       {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
-      {tabOrder
+      {effectiveTabOrder
         .filter(segmentId => {
           const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
           return dynamicSegment && dynamicSegment.type === 'meta-navigation';
@@ -947,7 +974,7 @@ const ISO21550 = () => {
       <div id="applications-start" className="scroll-mt-32"></div>
 
       {/* Render all segments in tabOrder (excluding meta-navigation already rendered above) */}
-      {tabOrder
+      {effectiveTabOrder
         .filter(segmentId => {
           // Only render segments that actually exist in pageSegments
           const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
