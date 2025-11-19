@@ -13,7 +13,7 @@ const Hero = () => {
           src={precisionTestingHero}
           alt="Precision Engineering Process"
           className="w-full h-full object-cover animate-ken-burns"
-          style={{ objectPosition: 'center center', transform: 'scale(1.3)' }}
+          style={{ objectPosition: 'center calc(50% - 65px)', transform: 'scale(1.3)' }}
         />
         <div className="absolute inset-0 bg-black/15"></div>
         {/* Left fade overlay */}
