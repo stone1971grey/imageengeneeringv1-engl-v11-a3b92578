@@ -135,6 +135,52 @@ const DynamicCMSPage = () => {
     const segmentDbId = segmentIdMap[segment.segment_key || segment.id];
 
     switch (segment.type) {
+      case "hero":
+        return (
+          <section key={segmentId} id={segmentDbId?.toString()} className={`py-${segment.data?.hero_top_spacing === 'small' ? '16' : segment.data?.hero_top_spacing === 'large' ? '32' : segment.data?.hero_top_spacing === 'xlarge' ? '40' : '24'}`}>
+            <div className="container mx-auto px-6">
+              <div className={`grid gap-12 items-center ${
+                segment.data?.hero_layout_ratio === '1-1' ? 'grid-cols-1 lg:grid-cols-2' :
+                segment.data?.hero_layout_ratio === '2-3' ? 'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3' :
+                'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3'
+              } ${segment.data?.hero_image_position === 'left' ? '[&>*:first-child]:order-2 lg:[&>*:first-child]:order-1' : ''}`}>
+                <div className={segment.data?.hero_image_position === 'left' ? 'order-1' : ''}>
+                  <h1 className="text-5xl font-bold text-gray-900 mb-6">
+                    {segment.data?.hero_title || ''}
+                  </h1>
+                  {segment.data?.hero_subtitle && (
+                    <p className="text-2xl text-gray-700 mb-6">{segment.data.hero_subtitle}</p>
+                  )}
+                  <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                    {segment.data?.hero_description || ''}
+                  </p>
+                  {segment.data?.hero_cta_text && (
+                    <Link
+                      to={segment.data.hero_cta_link || '#'}
+                      className={`inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
+                        segment.data.hero_cta_style === 'technical'
+                          ? 'bg-gray-800 text-white hover:bg-gray-900'
+                          : 'bg-[#f9dc24] text-gray-900 hover:bg-yellow-400'
+                      }`}
+                    >
+                      {segment.data.hero_cta_text}
+                    </Link>
+                  )}
+                </div>
+                {segment.data?.hero_image_url && (
+                  <div className={`${segment.data?.hero_image_position === 'left' ? 'order-2' : ''}`}>
+                    <img
+                      src={segment.data.hero_image_url}
+                      alt={segment.data.hero_image_metadata?.altText || segment.data.hero_title || 'Hero image'}
+                      className="w-full h-[500px] object-cover rounded-xl shadow-2xl"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+
       case "meta-navigation":
         return (
           <MetaNavigation
