@@ -2714,7 +2714,8 @@ const AdminDashboard = () => {
                       'inside-lab': '/inside-lab',
                       'contact': '/contact'
                     };
-                    previewUrl = urlMap[selectedPage] || '/';
+                    // Fallback: assume new CMS page under /your-solution/{slug} instead of sending user to homepage
+                    previewUrl = urlMap[selectedPage] || `/your-solution/${selectedPage}`;
                   }
 
                   window.open(previewUrl, '_blank');
