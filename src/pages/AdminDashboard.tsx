@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useNavigationData } from "@/hooks/useNavigationData";
 import {
   DndContext,
   closestCenter,
@@ -144,6 +145,7 @@ const AdminDashboard = () => {
   const [content, setContent] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const location = useLocation();
+  const navigationData = useNavigationData();
   
   // Static segment IDs - these are fixed and never change
   const STATIC_SEGMENT_IDS = {
@@ -629,20 +631,70 @@ const AdminDashboard = () => {
 
         const nextPageId = (maxPage?.page_id || 0) + 1;
 
-        // Infer parent info based on common patterns
+        // Infer parent info based on navigation structure first
         let parent_id: number | null = null;
         let parent_slug: string | null = null;
 
-        // Try to attach all new CMS pages under "your-solution" by default
-        const { data: yourSolutionParent } = await supabase
-          .from("page_registry")
-          .select("page_id, page_slug")
-          .eq("page_slug", "your-solution")
-          .maybeSingle();
+        const inferParentFromNavigation = async (slug: string) => {
+          if (!navigationData) return { parent_id: null, parent_slug: null };
 
-        if (yourSolutionParent) {
-          parent_id = yourSolutionParent.page_id;
-          parent_slug = yourSolutionParent.page_slug;
+          // Handle Your Solution hierarchy (including multi-level like /your-solution/mobile-phone/isp-tuning)
+          const industries = navigationData.industries || {};
+          for (const [, category] of Object.entries(industries)) {
+            const subgroups = (category as any).subgroups || [];
+            for (const subgroup of subgroups) {
+              const link: string = subgroup.link;
+              if (!link || link === '#') continue;
+
+              const parts = link.split('/').filter(Boolean);
+              if (parts.length < 2) continue;
+              const last = parts[parts.length - 1];
+              if (last !== slug) continue;
+
+              // /your-solution/{slug}
+              if (parts[0] === 'your-solution') {
+                if (parts.length === 2) {
+                  const { data: parent } = await supabase
+                    .from('page_registry')
+                    .select('page_id')
+                    .eq('page_slug', 'your-solution')
+                    .maybeSingle();
+                  return { parent_id: parent?.page_id ?? null, parent_slug: 'your-solution' };
+                }
+
+                // /your-solution/{parent}/{slug}
+                if (parts.length >= 3) {
+                  const parentSlug = parts[1];
+                  const { data: parent } = await supabase
+                    .from('page_registry')
+                    .select('page_id')
+                    .eq('page_slug', parentSlug)
+                    .maybeSingle();
+                  return { parent_id: parent?.page_id ?? null, parent_slug: parentSlug };
+                }
+              }
+            }
+          }
+
+          return { parent_id: null, parent_slug: null };
+        };
+
+        const inferred = await inferParentFromNavigation(selectedPageForCMS);
+        parent_id = inferred.parent_id;
+        parent_slug = inferred.parent_slug;
+
+        // Fallback: attach under "your-solution" if nothing inferred
+        if (!parent_id) {
+          const { data: yourSolutionParent } = await supabase
+            .from("page_registry")
+            .select("page_id, page_slug")
+            .eq("page_slug", "your-solution")
+            .maybeSingle();
+
+          if (yourSolutionParent) {
+            parent_id = yourSolutionParent.page_id;
+            parent_slug = yourSolutionParent.page_slug;
+          }
         }
 
         const inferredTitle = selectedPageForCMS
