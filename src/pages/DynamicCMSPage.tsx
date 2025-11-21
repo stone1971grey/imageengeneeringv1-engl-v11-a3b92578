@@ -148,8 +148,8 @@ const DynamicCMSPage = () => {
                 segment.data?.hero_layout_ratio === '1-1' ? 'grid-cols-1 lg:grid-cols-2' :
                 segment.data?.hero_layout_ratio === '2-3' ? 'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3' :
                 'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3'
-              } ${segment.data?.hero_image_position === 'left' ? '[&>*:first-child]:order-2 lg:[&>*:first-child]:order-1' : ''}`}>
-                <div className={segment.data?.hero_image_position === 'left' ? 'order-1' : ''}>
+              }`}>
+                <div className={segment.data?.hero_image_position === 'left' ? 'order-2 lg:order-2' : 'order-1 lg:order-1'}>
                   <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light text-white leading-tight tracking-tight mb-6">
                     {segment.data?.hero_title || ''}
                     {segment.data?.hero_subtitle && (
@@ -173,7 +173,7 @@ const DynamicCMSPage = () => {
                   )}
                 </div>
                 {segment.data?.hero_image_url && (
-                  <div className={`${segment.data?.hero_image_position === 'left' ? 'order-2' : ''}`}>
+                  <div className={segment.data?.hero_image_position === 'left' ? 'order-1 lg:order-1' : 'order-2 lg:order-2'}>
                     <img
                       src={segment.data.hero_image_url}
                       alt={segment.data.hero_image_metadata?.altText || segment.data.hero_title || 'Hero image'}
