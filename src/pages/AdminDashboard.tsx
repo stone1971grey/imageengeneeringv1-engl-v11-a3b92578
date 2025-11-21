@@ -5203,79 +5203,224 @@ const AdminDashboard = () => {
                           </div>
 
                           <div className="pt-4 border-t border-gray-600">
-                            <h4 className="text-white font-semibold mb-3">Layout Settings</h4>
+                            <h4 className="text-white font-semibold mb-4">Layout Settings</h4>
                             
-                            <div className="space-y-4">
+                            <div className="space-y-6">
+                              {/* Image Position - Visual Selector */}
                               <div>
-                                <Label className="text-white">Image Position</Label>
-                                <Select 
-                                  value={heroData.hero_image_position || 'right'}
-                                  onValueChange={(value) => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_image_position: value
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                >
-                                  <SelectTrigger className="border-2 border-gray-600 text-black">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="left">Left</SelectItem>
-                                    <SelectItem value="right">Right</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <Label className="text-white mb-3 block">Image Position</Label>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_image_position: 'left'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-4 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_image_position || 'right') === 'left'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <div className="w-12 h-8 bg-gray-700 rounded"></div>
+                                      <div className="w-20 h-8 bg-gray-600 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white">Image Left</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_image_position: 'right'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-4 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_image_position || 'right') === 'right'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <div className="w-20 h-8 bg-gray-600 rounded"></div>
+                                      <div className="w-12 h-8 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white">Image Right</span>
+                                  </button>
+                                </div>
                               </div>
 
+                              {/* Layout Ratio - Visual Selector */}
                               <div>
-                                <Label className="text-white">Layout Ratio (Text : Image)</Label>
-                                <Select 
-                                  value={heroData.hero_layout_ratio || '2-5'}
-                                  onValueChange={(value) => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_layout_ratio: value
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                >
-                                  <SelectTrigger className="border-2 border-gray-600 text-black">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="1-1">1:1 (50% : 50%)</SelectItem>
-                                    <SelectItem value="2-3">2:3 (40% : 60%)</SelectItem>
-                                    <SelectItem value="2-5">2:5 (30% : 70%)</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <Label className="text-white mb-3 block">Layout Ratio (Text : Image)</Label>
+                                <div className="grid grid-cols-3 gap-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_layout_ratio: '1-1'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_layout_ratio || '2-5') === '1-1'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex gap-1 mb-2">
+                                      <div className="flex-1 h-6 bg-gray-600 rounded"></div>
+                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white block">50 : 50</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_layout_ratio: '2-3'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_layout_ratio || '2-5') === '2-3'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex gap-1 mb-2">
+                                      <div className="w-8 h-6 bg-gray-600 rounded"></div>
+                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white block">40 : 60</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_layout_ratio: '2-5'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_layout_ratio || '2-5') === '2-5'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex gap-1 mb-2">
+                                      <div className="w-6 h-6 bg-gray-600 rounded"></div>
+                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white block">30 : 70</span>
+                                  </button>
+                                </div>
                               </div>
 
+                              {/* Top Spacing - Visual Selector */}
                               <div>
-                                <Label className="text-white">Top Spacing</Label>
-                                <Select 
-                                  value={heroData.hero_top_spacing || 'medium'}
-                                  onValueChange={(value) => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_top_spacing: value
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                >
-                                  <SelectTrigger className="border-2 border-gray-600 text-black">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="small">Small (PT-16)</SelectItem>
-                                    <SelectItem value="medium">Medium (PT-24)</SelectItem>
-                                    <SelectItem value="large">Large (PT-32)</SelectItem>
-                                    <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <Label className="text-white mb-3 block">Top Spacing</Label>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'small'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'small'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-2 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">Small (64px)</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'medium'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'medium'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">Medium (96px)</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'large'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'large'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-6 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">Large (128px)</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'extra-large'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'extra-large'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-8 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">XL (160px)</span>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
