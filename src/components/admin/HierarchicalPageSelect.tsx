@@ -418,6 +418,11 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
                 placeholder="Search: Page ID, Name, Category, or Slug..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  // Prevent Select from capturing keyboard events
+                  e.stopPropagation();
+                }}
+                autoFocus
                 className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus:border-[#f9dc24] transition-colors"
               />
               {searchQuery && (
