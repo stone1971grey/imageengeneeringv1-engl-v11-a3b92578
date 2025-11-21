@@ -136,13 +136,14 @@ const DynamicCMSPage = () => {
 
     switch (segment.type) {
       case "hero":
+        const topSpacingClass = 
+          segment.data?.hero_top_spacing === 'small' ? 'pt-[30px]' : 
+          segment.data?.hero_top_spacing === 'large' ? 'pt-[70px]' : 
+          segment.data?.hero_top_spacing === 'xlarge' ? 'pt-[90px]' : 
+          'pt-[50px]';
+        
         return (
-          <section key={segmentId} id={segmentDbId?.toString()} className={`${
-            segment.data?.hero_top_spacing === 'small' ? 'mt-[30px]' : 
-            segment.data?.hero_top_spacing === 'large' ? 'mt-[70px]' : 
-            segment.data?.hero_top_spacing === 'xlarge' ? 'mt-[90px]' : 
-            'mt-[50px]'
-          } pb-16`}>
+          <section key={segmentId} id={segmentDbId?.toString()} className={`${topSpacingClass} pb-16`}>
             <div className="container mx-auto px-6">
               <div className={`grid gap-12 items-center ${
                 segment.data?.hero_layout_ratio === '1-1' ? 'grid-cols-1 lg:grid-cols-2' :
