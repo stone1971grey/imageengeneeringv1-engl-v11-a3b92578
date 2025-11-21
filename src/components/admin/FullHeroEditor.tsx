@@ -164,9 +164,12 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Full Hero Editor</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          Produkt Hero
+          <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
+        </CardTitle>
         <CardDescription>
-          Configure the full-screen hero with two-line title, subtitle, buttons, and background
+          Fullscreen Hero mit zweizeiligem Titel, Untertitel, Buttons und Hintergrundbild/-video
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
