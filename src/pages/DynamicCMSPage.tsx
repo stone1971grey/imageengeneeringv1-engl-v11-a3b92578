@@ -150,13 +150,13 @@ const DynamicCMSPage = () => {
                 'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3'
               }`}>
                 <div className={segment.data?.hero_image_position === 'left' ? 'order-2 lg:order-2' : 'order-1 lg:order-1'}>
-                  <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light text-white leading-tight tracking-tight mb-6">
+                  <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light text-gray-900 leading-tight tracking-tight mb-6">
                     {segment.data?.hero_title || ''}
                     {segment.data?.hero_subtitle && (
                       <span className="font-medium block">{segment.data.hero_subtitle}</span>
                     )}
                   </h1>
-                  <p className="text-lg lg:text-xl text-white leading-relaxed mb-8">
+                  <p className="text-lg lg:text-xl text-gray-600 leading-relaxed mb-8">
                     {segment.data?.hero_description || ''}
                   </p>
                   {segment.data?.hero_cta_text && (
