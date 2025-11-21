@@ -26,7 +26,7 @@ export const navigationDataEn = {
       description: "Image quality testing according to VCX standards",
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
-        { name: "Color Calibration", link: "#" },
+        { name: "Color Calibration", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "Camera Stabilization", link: "#" },
         { name: "ISP Tuning", link: "#" },
         { name: "Timing Measurements", link: "#" }

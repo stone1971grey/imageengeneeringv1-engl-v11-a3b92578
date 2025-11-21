@@ -26,7 +26,7 @@ export const navigationDataZh = {
       description: "根据VCX标准进行图像质量测试",
       subgroups: [
         { name: "VCX手机摄像头", link: "#" },
-        { name: "色彩校准", link: "#" },
+        { name: "色彩校准", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "相机防抖", link: "#" },
         { name: "ISP调优", link: "#" },
         { name: "时序测量", link: "#" }
