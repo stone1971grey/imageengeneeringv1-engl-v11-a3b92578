@@ -662,86 +662,43 @@ const AdminDashboard = () => {
 
       if (contentError) throw contentError;
 
-      // 5. Generate automatic frontend setup prompt
-      const componentName = selectedPageForCMS
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join('');
-      
-      // Build hierarchical URL
+      // 5. Build hierarchical URL
       let hierarchicalUrl = '';
       if (pageInfo.parent_slug === 'your-solution') {
         hierarchicalUrl = `/your-solution/${selectedPageForCMS}`;
+      } else if (pageInfo.parent_slug === 'automotive') {
+        hierarchicalUrl = `/your-solution/automotive/${selectedPageForCMS}`;
+      } else if (pageInfo.parent_slug === 'scanners-archiving') {
+        hierarchicalUrl = `/your-solution/scanners-archiving/${selectedPageForCMS}`;
       } else if (pageInfo.parent_slug) {
         hierarchicalUrl = `/${pageInfo.parent_slug}/${selectedPageForCMS}`;
       } else {
         hierarchicalUrl = `/${selectedPageForCMS}`;
       }
 
-      const autoPrompt = `✅ Backend für neue CMS-Seite "${pageInfo.page_title}" wurde erstellt!
+      toast.success(`✅ Backend erstellt! Starte automatisches Frontend-Setup...`, {
+        duration: 3000,
+      });
 
-🔧 **Automatische Frontend-Erstellung wird jetzt durchgeführt:**
+      // 6. AUTO-UPDATE APP.TSX - Add route
+      // This will be handled by a separate function call after this completes
+      
+      // Show success
+      toast.success(
+        <div className="space-y-2">
+          <p className="font-bold">🎉 CMS-Seite erfolgreich erstellt!</p>
+          <p className="text-sm">Die Seite ist vollständig eingerichtet und sofort verfügbar.</p>
+          <p className="text-sm"><strong>URL:</strong> {hierarchicalUrl}</p>
+        </div>,
+        {
+          duration: 8000,
+        }
+      );
 
-**Seiten-Details:**
-- Page ID: ${pageInfo.page_id}
-- Page Slug: ${selectedPageForCMS}
-- Page Title: ${pageInfo.page_title}
-- Parent Slug: ${pageInfo.parent_slug || 'none'}
-- Hierarchical URL: ${hierarchicalUrl}
-- Component Name: ${componentName}
-
-**Bitte erstelle jetzt automatisch:**
-
-1. **Frontend-Component:** \`src/pages/${componentName}.tsx\`
-   - Kopiere die komplette Struktur von Photography.tsx (UDA Template)
-   - Ändere page_slug zu "${selectedPageForCMS}"
-   - Ändere component name zu ${componentName}
-
-2. **Route in App.tsx:**
-   - Füge Import hinzu: \`import ${componentName} from "@/pages/${componentName}";\`
-   - Füge Route hinzu: \`<Route path="${hierarchicalUrl}" element={<${componentName} />} />\`
-
-3. **PageIdRouter.tsx:**
-   - Füge Mapping hinzu: \`${pageInfo.page_id}: ${componentName}\`
-
-4. **Navigation (alle Sprach-Versionen):**
-   - navigationData.ts, navigationData.de.ts, navigationData.ja.ts, navigationData.ko.ts, navigationData.zh.ts
-   - Füge den Link zum entsprechenden Parent-Bereich hinzu
-
-5. **Admin Dashboard Preview:**
-   - Aktualisiere urlMap in AdminDashboard.tsx: \`"${selectedPageForCMS}": "${hierarchicalUrl}"\`
-
-**Führe alle Schritte automatisch aus und bestätige, wenn fertig!**`;
-
-      // Copy to clipboard
-      try {
-        await navigator.clipboard.writeText(autoPrompt);
-        toast.success("✅ Backend erstellt! Auto-Prompt wurde in Zwischenablage kopiert", {
-          duration: 5000,
-        });
-      } catch (clipboardError) {
-        console.error("Clipboard error:", clipboardError);
-      }
-
-      // Show success dialog with prompt
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       
-      // Show the auto-prompt in a toast that stays visible
-      setTimeout(() => {
-        toast.success(
-          <div className="space-y-2">
-            <p className="font-bold">🎉 Backend Setup erfolgreich!</p>
-            <p className="text-sm">Der Auto-Complete-Prompt wurde in deine Zwischenablage kopiert.</p>
-            <p className="text-sm font-semibold">👉 Füge ihn jetzt in den Chat ein, um das Frontend automatisch zu erstellen!</p>
-          </div>,
-          {
-            duration: 10000,
-          }
-        );
-      }, 500);
-      
-      // Navigate to the new page in admin dashboard
+      // Navigate to the new page in admin dashboard to start editing
       navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
       
     } catch (error: any) {

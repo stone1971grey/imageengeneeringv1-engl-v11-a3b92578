@@ -75,18 +75,15 @@ const App = () => (
         <Route path="/product/le7" element={<Navigate to="/products/test-charts/le7" replace />} />
         <Route path="/in-cabin-testing" element={<Navigate to="/your-solution/automotive/in-cabin-testing" replace />} />
         
-        {/* Hierarchical Your Solution Routes - Now using DynamicCMSPage */}
+        {/* Hierarchical Your Solution Routes - Catch-all for automatic CMS pages */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
         <Route path="/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
-        <Route path="/your-solution/photography" element={<DynamicCMSPage />} />
-        <Route path="/your-solution/medical-endoscopy" element={<DynamicCMSPage />} />
-        <Route path="/your-solution/machine-vision" element={<DynamicCMSPage />} />
-        <Route path="/your-solution/web-camera" element={<DynamicCMSPage />} />
-        <Route path="/your-solution/mobile-phone" element={<DynamicCMSPage />} />
-        <Route path="/your-solution/scanners-archiving" element={<DynamicCMSPage />} />
-        <Route path="/your-solution/scanners-archiving/iso-21550" element={<DynamicCMSPage />} />
         <Route path="/your-solution/scanners-archiving/multispectral-illumination" element={<MultispectralIllumination />} />
-        <Route path="/your-solution/scanners-archiving/scanner-dynamic-range" element={<DynamicCMSPage />} />
+        
+        {/* Universal catch-all routes for DynamicCMSPage - any new page works automatically! */}
+        <Route path="/your-solution/:slug" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/automotive/:slug" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/scanners-archiving/:slug" element={<DynamicCMSPage />} />
         
         {/* Hierarchical Product Routes */}
         
