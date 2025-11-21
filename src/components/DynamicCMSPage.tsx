@@ -16,7 +16,11 @@ import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
-const NIRAutomotive = () => {
+interface DynamicCMSPageProps {
+  pageSlug: string;
+}
+
+const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
   const [content, setContent] = useState<Record<string, string>>({});
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
@@ -24,60 +28,64 @@ const NIRAutomotive = () => {
   const [seoData, setSeoData] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
-  const pageSlug = "nir-automotive";
-
   useEffect(() => {
     loadContent();
-  }, []);
+  }, [pageSlug]);
 
   const loadContent = async () => {
-    const { data, error } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", pageSlug);
+    try {
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug);
 
-    const { data: segmentData } = await supabase
-      .from("segment_registry")
-      .select("*")
-      .eq("page_slug", pageSlug)
-      .eq("deleted", false);
+      const { data: segmentData } = await supabase
+        .from("segment_registry")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("deleted", false);
 
-    if (segmentData) {
-      const idMap: Record<string, number> = {};
-      segmentData.forEach((seg: any) => {
-        idMap[seg.segment_key] = seg.segment_id;
-      });
-      setSegmentIdMap(idMap);
+      if (segmentData) {
+        const idMap: Record<string, number> = {};
+        segmentData.forEach((seg: any) => {
+          idMap[seg.segment_key] = seg.segment_id;
+        });
+        setSegmentIdMap(idMap);
+      }
+
+      if (!error && data) {
+        const contentMap: Record<string, string> = {};
+
+        data.forEach((item: any) => {
+          if (item.section_key === "page_segments") {
+            const segments = JSON.parse(item.content_value);
+            segments.forEach((segment: any) => {
+              const segmentDataItem = data.find((d: any) => d.section_key === segment.id);
+              if (segmentDataItem) {
+                segment.data = JSON.parse(segmentDataItem.content_value);
+              }
+            });
+            setPageSegments(segments);
+          } else if (item.section_key === "tab_order") {
+            const parsedTabOrder = JSON.parse(item.content_value);
+            // Filter tab_order to only include valid segments
+            const validTabOrder = parsedTabOrder.filter((id: any) => 
+              segmentData?.some(seg => seg.segment_id.toString() === id.toString() || seg.segment_key === id)
+            );
+            setTabOrder(validTabOrder);
+          } else if (item.section_key === "seo_data") {
+            setSeoData(JSON.parse(item.content_value));
+          } else {
+            contentMap[item.section_key] = item.content_value;
+          }
+        });
+        setContent(contentMap);
+      }
+    } catch (error) {
+      console.error("Error loading content:", error);
+    } finally {
+      setLoading(false);
     }
-
-    if (!error && data) {
-      const contentMap: Record<string, string> = {};
-
-      data.forEach((item: any) => {
-        if (item.section_key === "page_segments") {
-          const segments = JSON.parse(item.content_value);
-          segments.forEach((segment: any) => {
-            const segmentDataItem = data.find((d: any) => d.section_key === segment.id);
-            if (segmentDataItem) {
-              segment.data = JSON.parse(segmentDataItem.content_value);
-            }
-          });
-          setPageSegments(segments);
-        } else if (item.section_key === "tab_order") {
-          const parsedTabOrder = JSON.parse(item.content_value);
-          const validTabOrder = parsedTabOrder.filter((id: any) => 
-            segmentData?.some(seg => seg.segment_id.toString() === id.toString() || seg.segment_key === id)
-          );
-          setTabOrder(validTabOrder);
-        } else if (item.section_key === "seo_data") {
-          setSeoData(JSON.parse(item.content_value));
-        } else {
-          contentMap[item.section_key] = item.content_value;
-        }
-      });
-      setContent(contentMap);
-    }
-    setLoading(false);
   };
 
   const renderSegment = (segmentId: string) => {
@@ -144,8 +152,8 @@ const NIRAutomotive = () => {
   return (
     <div className="min-h-screen bg-white">
       <SEOHead
-        title={seoData?.title || "Near-Infrared (NIR) Automotive Testing"}
-        description={seoData?.description || "Near-infrared automotive camera testing solutions"}
+        title={seoData?.title || ""}
+        description={seoData?.description || ""}
       />
       <Navigation />
       {tabOrder.map((segmentId) => renderSegment(segmentId))}
@@ -154,4 +162,4 @@ const NIRAutomotive = () => {
   );
 };
 
-export default NIRAutomotive;
+export default DynamicCMSPage;
