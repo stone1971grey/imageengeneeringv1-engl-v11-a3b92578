@@ -28,7 +28,7 @@ export const navigationDataZh = {
         { name: "VCX手机摄像头", link: "#" },
         { name: "色彩校准", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "相机防抖", link: "#" },
-        { name: "ISP调优", link: "#" },
+        { name: "ISP调优", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "时序测量", link: "#" }
       ]
     },
