@@ -1,0 +1,484 @@
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
+import { Link } from "react-router-dom";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import MetaNavigation from "@/components/segments/MetaNavigation";
+import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
+import FeatureOverview from "@/components/segments/FeatureOverview";
+import Table from "@/components/segments/Table";
+import FAQ from "@/components/segments/FAQ";
+import { Video } from "@/components/segments/Video";
+import Specification from "@/components/segments/Specification";
+import FullHero from "@/components/segments/FullHero";
+import Intro from "@/components/segments/Intro";
+import IndustriesSegment from "@/components/segments/IndustriesSegment";
+import NewsSegment from "@/components/segments/NewsSegment";
+import { SEOHead } from "@/components/SEOHead";
+import { supabase } from "@/integrations/supabase/client";
+
+const iconMap: Record<string, any> = {
+  FileText,
+  Download,
+  BarChart3,
+  Zap,
+  Shield,
+  Eye,
+  Car,
+  Smartphone,
+  Heart,
+  CheckCircle,
+  Lightbulb,
+  Monitor,
+};
+
+const DynamicCMSPage = () => {
+  const { slug, '*': wildcardSlug } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [pageSegments, setPageSegments] = useState<any[]>([]);
+  const [tabOrder, setTabOrder] = useState<string[]>([]);
+  const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
+  const [seoData, setSeoData] = useState<any>({});
+  const [pageNotFound, setPageNotFound] = useState(false);
+
+  // Extract actual page slug from URL
+  const pageSlug = wildcardSlug || slug;
+
+  useEffect(() => {
+    if (pageSlug) {
+      loadContent();
+    }
+  }, [pageSlug]);
+
+  const loadContent = async () => {
+    if (!pageSlug) {
+      setPageNotFound(true);
+      setLoading(false);
+      return;
+    }
+
+    // Check if page exists in page_registry
+    const { data: pageExists } = await supabase
+      .from("page_registry")
+      .select("page_slug")
+      .eq("page_slug", pageSlug)
+      .maybeSingle();
+
+    if (!pageExists) {
+      setPageNotFound(true);
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("page_content")
+      .select("*")
+      .eq("page_slug", pageSlug);
+
+    const { data: segmentData } = await supabase
+      .from("segment_registry")
+      .select("*")
+      .eq("page_slug", pageSlug)
+      .eq("deleted", false);
+
+    if (segmentData) {
+      const idMap: Record<string, number> = {};
+      segmentData.forEach((seg: any) => {
+        idMap[seg.segment_key] = seg.segment_id;
+      });
+      setSegmentIdMap(idMap);
+    }
+
+    if (!error && data) {
+      data.forEach((item: any) => {
+        if (item.section_key === "page_segments") {
+          const segments = JSON.parse(item.content_value);
+          setPageSegments(segments);
+        } else if (item.section_key === "tab_order") {
+          try {
+            const order = JSON.parse(item.content_value);
+            setTabOrder(order || []);
+          } catch {
+            setTabOrder([]);
+          }
+        } else if (item.section_key === "seo_settings") {
+          try {
+            const seo = JSON.parse(item.content_value);
+            setSeoData(seo);
+          } catch {
+            setSeoData({});
+          }
+        }
+      });
+    }
+
+    setLoading(false);
+  };
+
+  const renderSegment = (segmentId: string) => {
+    const segment = pageSegments.find((s) => s.id === segmentId || s.segment_key === segmentId);
+    
+    if (!segment) {
+      return null;
+    }
+
+    const segmentDbId = segmentIdMap[segment.segment_key || segment.id];
+
+    switch (segment.type) {
+      case "meta-navigation":
+        return (
+          <MetaNavigation
+            key={segmentId}
+            data={{
+              links: segment.data?.navigationItems || []
+            }}
+            segmentIdMap={segmentIdMap}
+          />
+        );
+
+      case "product-hero-gallery":
+        return (
+          <ProductHeroGallery
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            data={{
+              title: segment.data?.title || "",
+              subtitle: segment.data?.subtitle || "",
+              description: segment.data?.description || "",
+              images: segment.data?.images || [],
+              cta1Text: segment.data?.cta1Text || "",
+              cta1Link: segment.data?.cta1Link || "",
+              cta1Style: segment.data?.cta1Style || "standard",
+              cta2Text: segment.data?.cta2Text || "",
+              cta2Link: segment.data?.cta2Link || "",
+              cta2Style: segment.data?.cta2Style || "standard",
+              imagePosition: segment.data?.imagePosition || "right",
+              layoutRatio: segment.data?.layoutRatio || "2-5",
+              topSpacing: segment.data?.topSpacing || "medium",
+            }}
+          />
+        );
+
+      case "feature-overview":
+        return (
+          <FeatureOverview
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            title={segment.data?.title || ""}
+            subtext={segment.data?.subtext}
+            layout={segment.data?.layout}
+            rows={segment.data?.rows}
+            items={segment.data?.features || []}
+          />
+        );
+
+      case "table":
+        return (
+          <Table
+            key={segmentId}
+            id={segmentDbId?.toString() || ""}
+            title={segment.data?.title || ""}
+            subtext={segment.data?.description}
+            headers={segment.data?.headers || []}
+            rows={segment.data?.rows || []}
+          />
+        );
+
+      case "faq":
+        return (
+          <FAQ
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            title={segment.data?.title || ""}
+            subtext={segment.data?.subtext}
+            items={segment.data?.items || []}
+          />
+        );
+
+      case "specification":
+        return (
+          <Specification
+            key={segmentId}
+            id={segmentDbId?.toString() || ""}
+            title={segment.data?.title || ""}
+            rows={segment.data?.specifications || []}
+          />
+        );
+
+      case "video":
+        return (
+          <Video
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            data={{
+              title: segment.data?.title || "",
+              videoUrl: segment.data?.videoUrl || "",
+              caption: segment.data?.caption
+            }}
+          />
+        );
+
+      case "full-hero":
+        return (
+          <FullHero
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            titleLine1={segment.data?.title || ""}
+            titleLine2={segment.data?.titleLine2 || ""}
+            subtitle={segment.data?.subtitle || ""}
+            button1Text={segment.data?.ctaText}
+            button1Link={segment.data?.ctaLink}
+            button1Color={segment.data?.ctaStyle === "technical" ? "black" : "yellow"}
+            button2Text={segment.data?.cta2Text}
+            button2Link={segment.data?.cta2Link}
+            button2Color={segment.data?.cta2Style === "technical" ? "black" : "yellow"}
+            backgroundType={segment.data?.backgroundType || "image"}
+            imageUrl={segment.data?.backgroundImage}
+            videoUrl={segment.data?.videoUrl}
+            kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
+            overlayOpacity={segment.data?.overlayOpacity || 15}
+            useH1={segment.data?.useH1 || false}
+          />
+        );
+
+      case "intro":
+        return (
+          <Intro
+            key={segmentId}
+            title={segment.data?.title || ""}
+            description={segment.data?.description || ""}
+          />
+        );
+
+      case "industries":
+        return (
+          <IndustriesSegment
+            key={segmentId}
+            title={segment.data?.title || ""}
+            subtitle={segment.data?.description || ""}
+            columns={segment.data?.columns}
+            items={segment.data?.industries || []}
+          />
+        );
+
+      case "news":
+        return (
+          <NewsSegment
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            sectionTitle={segment.data?.title || "Latest News"}
+            sectionDescription={segment.data?.description}
+            articleLimit={segment.data?.articleLimit}
+            categories={segment.data?.categories}
+          />
+        );
+
+      case "tiles":
+        return (
+          <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-gray-50">
+            <div className="container mx-auto px-6">
+              {segment.data?.sectionTitle && (
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.sectionTitle}
+                  </h2>
+                  {segment.data?.sectionDescription && (
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                      {segment.data.sectionDescription}
+                    </p>
+                  )}
+                </div>
+              )}
+              <div className={`grid gap-8 ${
+                segment.data?.tilesColumns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
+                segment.data?.tilesColumns === '3' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+                'grid-cols-1 md:grid-cols-2'
+              }`}>
+                {(segment.data?.tiles || []).map((tile: any, idx: number) => {
+                  const Icon = iconMap[tile.icon] || FileText;
+                  return (
+                    <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white">
+                      <CardContent className="p-8">
+                        <div className="flex flex-col items-start space-y-4">
+                          <div className="p-3 bg-[#f9dc24] rounded-lg">
+                            <Icon className="h-8 w-8 text-gray-900" />
+                          </div>
+                          <div className="space-y-3 flex-1">
+                            <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
+                            <p className="text-gray-600 leading-relaxed">{tile.description}</p>
+                          </div>
+                          {tile.ctaText && tile.ctaLink && (
+                            <Link
+                              to={tile.ctaLink}
+                              className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                                tile.ctaStyle === "technical"
+                                  ? "bg-gray-800 text-white hover:bg-gray-900"
+                                  : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
+                              }`}
+                            >
+                              {tile.ctaText}
+                            </Link>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+
+      case "banner":
+        return (
+          <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-white">
+            <div className="container mx-auto px-6">
+              {segment.data?.bannerTitle && (
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.bannerTitle}
+                  </h2>
+                  {segment.data?.bannerSubtext && (
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                      {segment.data.bannerSubtext}
+                    </p>
+                  )}
+                </div>
+              )}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+                {(segment.data?.bannerImages || []).map((banner: any, idx: number) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                  >
+                    <img
+                      src={banner.imageUrl}
+                      alt={banner.altText}
+                      className="max-h-16 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+              {segment.data?.bannerButtonText && segment.data?.bannerButtonLink && (
+                <div className="text-center">
+                  <Link
+                    to={segment.data.bannerButtonLink}
+                    className={`inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
+                      segment.data.bannerButtonStyle === "technical"
+                        ? "bg-gray-800 text-white hover:bg-gray-900"
+                        : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
+                    }`}
+                  >
+                    {segment.data.bannerButtonText}
+                  </Link>
+                </div>
+              )}
+            </div>
+          </section>
+        );
+
+      case "image-text":
+      case "solutions":
+        const layoutClass =
+          segment.data?.solutionsLayout === "1-col"
+            ? "grid-cols-1"
+            : segment.data?.solutionsLayout === "3-col"
+            ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            : "grid-cols-1 md:grid-cols-2";
+
+        return (
+          <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-gray-50">
+            <div className="container mx-auto px-6">
+              {segment.data?.solutionsTitle && (
+                <div className="text-center mb-16">
+                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.solutionsTitle}
+                  </h2>
+                  {segment.data?.solutionsSubtext && (
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                      {segment.data.solutionsSubtext}
+                    </p>
+                  )}
+                </div>
+              )}
+              <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
+                {(segment.data?.solutionsItems || []).map((solution: any, idx: number) => (
+                  <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                    {solution.imageUrl && (
+                      <div className="w-full h-64 overflow-hidden">
+                        <img
+                          src={solution.imageUrl}
+                          alt={solution.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{solution.title}</h3>
+                      <p className="text-gray-600 leading-relaxed">{solution.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading page...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (pageNotFound) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Navigation />
+        <div className="text-center">
+          <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
+          <p className="text-xl text-gray-600 mb-8">Page not found</p>
+          <Link
+            to="/"
+            className="inline-flex items-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+          >
+            Back to Home
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <SEOHead
+        title={seoData?.title || "Image Engineering"}
+        description={seoData?.description || ""}
+        canonical={seoData?.canonical}
+        ogTitle={seoData?.ogTitle}
+        ogDescription={seoData?.ogDescription}
+        ogImage={seoData?.ogImage}
+        robotsIndex={seoData?.robotsIndex ? 'index' : 'noindex'}
+        robotsFollow={seoData?.robotsFollow ? 'follow' : 'nofollow'}
+      />
+      <Navigation />
+      {tabOrder.map((segmentId) => renderSegment(segmentId))}
+      <Footer />
+    </div>
+  );
+};
+
+export default DynamicCMSPage;
