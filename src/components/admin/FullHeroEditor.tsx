@@ -31,6 +31,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [backgroundType, setBackgroundType] = useState<'image' | 'video'>('image');
   const [imageUrl, setImageUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [imagePosition, setImagePosition] = useState<'left' | 'right'>('right');
+  const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('1-1');
+  const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'extra-large'>('medium');
   const [kenBurnsEffect, setKenBurnsEffect] = useState<string>('standard');
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [isUploading, setIsUploading] = useState(false);
@@ -87,6 +90,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       setBackgroundType(content.backgroundType || 'image');
       setImageUrl(content.imageUrl || "");
       setVideoUrl(content.videoUrl || "");
+      setImagePosition(content.imagePosition || 'right');
+      setLayoutRatio(content.layoutRatio || '1-1');
+      setTopSpacing(content.topSpacing || 'medium');
       setKenBurnsEffect(content.kenBurnsEffect || 'standard');
       setOverlayOpacity(content.overlayOpacity || 15);
     }
@@ -136,6 +142,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       backgroundType,
       imageUrl,
       videoUrl,
+      imagePosition,
+      layoutRatio,
+      topSpacing,
       kenBurnsEffect,
       overlayOpacity,
     };
@@ -192,8 +201,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         )}
         
         <Tabs defaultValue="content">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="layout">Layout</TabsTrigger>
             <TabsTrigger value="buttons">Buttons</TabsTrigger>
             <TabsTrigger value="background">Background</TabsTrigger>
           </TabsList>
@@ -232,6 +242,50 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                 placeholder="Professional solutions for testing and calibrating camera systems..."
                 rows={3}
               />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="layout" className="space-y-4">
+            <div className="space-y-2">
+              <Label>Image Position</Label>
+              <Select value={imagePosition} onValueChange={(val: any) => setImagePosition(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="left">Left</SelectItem>
+                  <SelectItem value="right">Right</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Layout Ratio (Text : Image)</Label>
+              <Select value={layoutRatio} onValueChange={(val: any) => setLayoutRatio(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1-1">1:1 (50% : 50%)</SelectItem>
+                  <SelectItem value="2-3">2:3 (40% : 60%)</SelectItem>
+                  <SelectItem value="2-5">2:5 (30% : 70%)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Top Spacing</Label>
+              <Select value={topSpacing} onValueChange={(val: any) => setTopSpacing(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="small">Small (PT-16)</SelectItem>
+                  <SelectItem value="medium">Medium (PT-24)</SelectItem>
+                  <SelectItem value="large">Large (PT-32)</SelectItem>
+                  <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </TabsContent>
 
