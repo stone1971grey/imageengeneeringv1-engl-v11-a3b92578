@@ -303,9 +303,8 @@ const ScannersArchiving = () => {
       <SEOHead 
         title={seoData?.title || "Scanners & Archiving"}
         description={seoData?.description || ""}
-        keywords={seoData?.keywords || ""}
         ogImage={seoData?.ogImage || ""}
-        canonicalUrl={seoData?.canonicalUrl || ""}
+        canonical={seoData?.canonicalUrl || ""}
       />
       <Navigation />
       <main>

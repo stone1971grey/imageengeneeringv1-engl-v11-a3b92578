@@ -303,9 +303,8 @@ const WebCamera = () => {
       <SEOHead 
         title={seoData?.title || "Web Camera Testing"}
         description={seoData?.description || ""}
-        keywords={seoData?.keywords || ""}
         ogImage={seoData?.ogImage || ""}
-        canonicalUrl={seoData?.canonicalUrl || ""}
+        canonical={seoData?.canonicalUrl || ""}
       />
       <Navigation />
       <main>
