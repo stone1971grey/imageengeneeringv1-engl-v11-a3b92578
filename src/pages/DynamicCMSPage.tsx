@@ -361,11 +361,11 @@ const DynamicCMSPage = () => {
                   return (
                     <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white">
                       <CardContent className="p-8">
-                        <div className="flex flex-col items-start space-y-4">
-                          <div className="p-3 bg-[#f9dc24] rounded-lg">
+                        <div className="flex flex-col items-center space-y-4">
+                          <div className="p-4 bg-[#f9dc24]/10 rounded-lg border-2 border-[#f9dc24]/20 hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
                             <Icon className="h-8 w-8 text-gray-900" />
                           </div>
-                          <div className="space-y-3 flex-1">
+                          <div className="space-y-3 flex-1 text-center">
                             <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
                             <p className="text-gray-600 leading-relaxed">{tile.description}</p>
                           </div>
