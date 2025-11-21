@@ -68,7 +68,6 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
             setPageSegments(segments);
           } else if (item.section_key === "tab_order") {
             const parsedTabOrder = JSON.parse(item.content_value);
-            // Filter tab_order to only include valid segments
             const validTabOrder = parsedTabOrder.filter((id: any) => 
               segmentData?.some(seg => seg.segment_id.toString() === id.toString() || seg.segment_key === id)
             );
@@ -80,6 +79,75 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
           }
         });
         setContent(contentMap);
+
+        // Handle legacy static segments (hero, tiles, banner, solutions)
+        // These have their data in separate page_content fields, not in page_segments
+        const legacySegments: any[] = [];
+        
+        segmentData?.forEach((seg: any) => {
+          if (seg.is_static && seg.segment_type !== 'footer') {
+            const legacyData: any = {};
+            
+            if (seg.segment_type === 'hero') {
+              legacyData.title = contentMap.hero_title;
+              legacyData.subtitle = contentMap.hero_subtitle;
+              legacyData.description = contentMap.hero_description;
+              legacyData.imageUrl = contentMap.hero_image_url;
+              legacyData.imagePosition = contentMap.hero_image_position;
+              legacyData.layoutRatio = contentMap.hero_layout;
+              legacyData.topSpacing = contentMap.hero_top_padding;
+              legacyData.ctaText = contentMap.hero_cta_text;
+              legacyData.ctaLink = contentMap.hero_cta_link;
+              legacyData.ctaStyle = contentMap.hero_cta_style;
+            }
+            
+            if (seg.segment_type === 'tiles') {
+              legacyData.title = contentMap.applications_title;
+              legacyData.subtitle = contentMap.applications_description;
+              try {
+                legacyData.items = JSON.parse(contentMap.applications_items || '[]');
+              } catch (e) {
+                legacyData.items = [];
+              }
+              legacyData.columns = contentMap.tiles_columns || 3;
+            }
+            
+            if (seg.segment_type === 'banner') {
+              legacyData.sectionTitle = contentMap.banner_title;
+              legacyData.sectionDescription = contentMap.banner_subtext;
+              try {
+                legacyData.bannerImages = JSON.parse(contentMap.banner_images || '[]');
+              } catch (e) {
+                legacyData.bannerImages = [];
+              }
+              legacyData.bannerButtonText = contentMap.banner_button_text;
+              legacyData.bannerButtonLink = contentMap.banner_button_link;
+              legacyData.bannerButtonStyle = contentMap.banner_button_style;
+            }
+            
+            if (seg.segment_type === 'solutions') {
+              legacyData.title = contentMap.solutions_title;
+              legacyData.description = contentMap.solutions_subtext;
+              legacyData.solutionsLayout = contentMap.solutions_layout;
+              try {
+                legacyData.solutionsItems = JSON.parse(contentMap.solutions_items || '[]');
+              } catch (e) {
+                legacyData.solutionsItems = [];
+              }
+            }
+            
+            legacySegments.push({
+              id: seg.segment_key,
+              type: seg.segment_type,
+              data: legacyData
+            });
+          }
+        });
+        
+        // Merge legacy segments with dynamic segments
+        if (legacySegments.length > 0) {
+          setPageSegments(prev => [...legacySegments, ...prev]);
+        }
       }
     } catch (error) {
       console.error("Error loading content:", error);
@@ -99,6 +167,80 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
     const stringSegmentId = numericSegmentId.toString();
 
     switch (segment.type) {
+      case "hero":
+        // Legacy hero with old structure
+        if (segment.data?.title || segment.data?.subtitle) {
+          const topPaddingClass = {
+            'small': 'pt-16',
+            'medium': 'pt-24',
+            'large': 'pt-32',
+            'extra-large': 'pt-40'
+          }[segment.data?.topSpacing || 'medium'] || 'pt-24';
+          
+          const layoutRatioClass = {
+            '1-1': 'lg:grid-cols-2',
+            '2-3': 'lg:grid-cols-5',
+            '2-5': 'lg:grid-cols-7'
+          }[segment.data?.layoutRatio || '2-5'] || 'lg:grid-cols-7';
+          
+          const textColClass = {
+            '1-1': 'lg:col-span-1',
+            '2-3': 'lg:col-span-2',
+            '2-5': 'lg:col-span-3'
+          }[segment.data?.layoutRatio || '2-5'] || 'lg:col-span-3';
+          
+          const imageColClass = {
+            '1-1': 'lg:col-span-1',
+            '2-3': 'lg:col-span-3',
+            '2-5': 'lg:col-span-4'
+          }[segment.data?.layoutRatio || '2-5'] || 'lg:col-span-4';
+          
+          return (
+            <section key={segmentId} id={stringSegmentId} className={`min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8 ${topPaddingClass}`}>
+              <div className="container mx-auto px-6 py-16 lg:py-24 pb-8 lg:pb-12 relative z-10">
+                <div className={`grid ${layoutRatioClass} gap-16 items-center ${segment.data?.imagePosition === 'left' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`${textColClass} space-y-8 ${segment.data?.imagePosition === 'left' ? 'order-2' : 'order-1'}`}>
+                    <div>
+                      <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black">
+                        {segment.data.title}
+                      </h1>
+                      {segment.data.subtitle && (
+                        <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
+                          {segment.data.subtitle}
+                        </p>
+                      )}
+                    </div>
+                    {segment.data.ctaText && segment.data.ctaLink && (
+                      <div className="pt-4">
+                        <a href={segment.data.ctaLink}>
+                          <button 
+                            className={
+                              segment.data.ctaStyle === "technical"
+                                ? "bg-[#1f2937] text-white hover:bg-[#1f2937]/90 px-8 py-4 text-lg font-medium rounded-md"
+                                : "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 px-8 py-4 text-lg font-medium rounded-md"
+                            }
+                          >
+                            {segment.data.ctaText}
+                          </button>
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                  {segment.data.imageUrl && (
+                    <div className={`${imageColClass} relative ${segment.data?.imagePosition === 'left' ? 'order-1' : 'order-2'}`}>
+                      <img 
+                        src={segment.data.imageUrl} 
+                        alt={segment.data.title || "Hero image"} 
+                        className="w-full h-auto rounded-lg shadow-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          );
+        }
+        return null;
       case "meta-navigation":
         return <MetaNavigation key={segmentId} data={segment.data || { links: [] }} segmentIdMap={segmentIdMap} />;
       case "product-hero-gallery":
@@ -130,12 +272,105 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
           />
         );
       case "tiles":
-        return <IndustriesSegment key={segmentId} title={segment.data?.title} subtitle={segment.data?.subtitle} columns={segment.data?.columns} items={segment.data?.items || []} />;
+        return <IndustriesSegment key={segmentId} title={segment.data?.title} subtitle={segment.data?.subtitle} columns={parseInt(segment.data?.columns || "3")} items={segment.data?.items || []} />;
       case "banner":
-        return <NewsSegment key={segmentId} id={stringSegmentId} sectionTitle={segment.data?.sectionTitle} sectionDescription={segment.data?.sectionDescription} articleLimit={segment.data?.articleLimit} categories={segment.data?.categories} />;
+        // Check if it's legacy banner with images or new NewsSegment
+        if (segment.data?.bannerImages || segment.data?.bannerButtonText) {
+          // Legacy banner structure
+          return (
+            <section key={segmentId} id={stringSegmentId} className="py-20 bg-gray-50">
+              <div className="container mx-auto px-4">
+                {segment.data?.sectionTitle && (
+                  <h2 className="text-4xl font-bold text-center mb-4">{segment.data.sectionTitle}</h2>
+                )}
+                {segment.data?.sectionDescription && (
+                  <p className="text-center text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
+                    {segment.data.sectionDescription}
+                  </p>
+                )}
+                {segment.data?.bannerImages && segment.data.bannerImages.length > 0 && (
+                  <div className="flex flex-wrap justify-center items-center gap-12 mb-12">
+                    {segment.data.bannerImages.map((img: any, index: number) => (
+                      <div key={index} className="grayscale hover:grayscale-0 transition-all duration-500">
+                        <img
+                          src={img.url || img.imageUrl}
+                          alt={img.alt || img.altText || "Partner logo"}
+                          className="h-20 object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {segment.data?.bannerButtonText && segment.data?.bannerButtonLink && (
+                  <div className="text-center">
+                    <a href={segment.data.bannerButtonLink}>
+                      <button 
+                        className={
+                          segment.data.bannerButtonStyle === "technical"
+                            ? "bg-[#1f2937] text-white hover:bg-[#1f2937]/90 px-8 py-3 rounded-md"
+                            : "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 px-8 py-3 rounded-md"
+                        }
+                      >
+                        {segment.data.bannerButtonText}
+                      </button>
+                    </a>
+                  </div>
+                )}
+              </div>
+            </section>
+          );
+        } else {
+          // New NewsSegment structure
+          return <NewsSegment key={segmentId} id={stringSegmentId} sectionTitle={segment.data?.sectionTitle} sectionDescription={segment.data?.sectionDescription} articleLimit={segment.data?.articleLimit} categories={segment.data?.categories} />;
+        }
       case "image-text":
       case "solutions":
-        return <Intro key={segmentId} title={segment.data?.title} description={segment.data?.description} />;
+        // Check if it's legacy solutions structure or new Intro
+        if (segment.data?.solutionsItems || segment.data?.solutionsLayout) {
+          // Legacy solutions structure
+          const layout = segment.data?.solutionsLayout || "2-col";
+          const items = segment.data?.solutionsItems || [];
+          
+          const getGridClass = () => {
+            switch(layout) {
+              case "1-col": return "grid-cols-1";
+              case "2-col": return "grid-cols-1 md:grid-cols-2";
+              case "3-col": return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+              default: return "grid-cols-1 md:grid-cols-2";
+            }
+          };
+          
+          return (
+            <section key={segmentId} id={stringSegmentId} className="py-20 bg-white">
+              <div className="grid gap-8 max-w-7xl mx-auto grid-cols-1 px-4">
+                {segment.data?.title && (
+                  <h2 className="text-4xl font-bold mb-4">{segment.data.title}</h2>
+                )}
+                {segment.data?.description && (
+                  <p className="text-lg text-gray-600 mb-8">{segment.data.description}</p>
+                )}
+                <div className={`grid ${getGridClass()} gap-8`}>
+                  {items.map((item: any, index: number) => (
+                    <div key={index} className="space-y-4">
+                      {item.imageUrl && (
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title || "Content image"} 
+                          className="w-full h-auto rounded-lg shadow-md"
+                        />
+                      )}
+                      {item.title && <h3 className="text-2xl font-bold">{item.title}</h3>}
+                      {item.description && <p className="text-gray-600 leading-relaxed">{item.description}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          );
+        } else {
+          // New Intro structure
+          return <Intro key={segmentId} title={segment.data?.title} description={segment.data?.description} />;
+        }
       default:
         return null;
     }
