@@ -15,9 +15,12 @@ interface FullHeroProps {
   backgroundType: 'image' | 'video';
   imageUrl?: string;
   videoUrl?: string;
+  imagePosition?: 'left' | 'right';
+  layoutRatio?: '1-1' | '2-3' | '2-5';
+  topSpacing?: 'small' | 'medium' | 'large' | 'extra-large';
   kenBurnsEffect?: 'none' | 'standard' | 'slow' | 'fast' | 'zoom-out' | 'pan-left' | 'pan-right';
   overlayOpacity?: number;
-  useH1?: boolean; // NEW: determines if title should be h1 or div
+  useH1?: boolean;
 }
 
 const FullHero = ({
@@ -34,10 +37,59 @@ const FullHero = ({
   backgroundType,
   imageUrl,
   videoUrl,
+  imagePosition = 'right',
+  layoutRatio = '1-1',
+  topSpacing = 'medium',
   kenBurnsEffect = 'standard',
   overlayOpacity = 15,
-  useH1 = false, // Default to false for backwards compatibility
+  useH1 = false,
 }: FullHeroProps) => {
+  
+  const getTopPaddingClass = () => {
+    switch (topSpacing) {
+      case 'small': return 'pt-16';
+      case 'medium': return 'pt-24';
+      case 'large': return 'pt-32';
+      case 'extra-large': return 'pt-40';
+      default: return 'pt-24';
+    }
+  };
+
+  const getLayoutClasses = () => {
+    const isImageLeft = imagePosition === 'left';
+    switch (layoutRatio) {
+      case '1-1':
+        return {
+          container: 'grid grid-cols-1 lg:grid-cols-2 gap-12 items-center',
+          text: 'lg:col-span-1',
+          image: 'lg:col-span-1',
+          order: isImageLeft ? 'lg:order-2' : 'lg:order-1'
+        };
+      case '2-3':
+        return {
+          container: 'grid grid-cols-1 lg:grid-cols-5 gap-12 items-center',
+          text: 'lg:col-span-2',
+          image: 'lg:col-span-3',
+          order: isImageLeft ? 'lg:order-2' : 'lg:order-1'
+        };
+      case '2-5':
+        return {
+          container: 'grid grid-cols-1 lg:grid-cols-7 gap-12 items-center',
+          text: 'lg:col-span-2',
+          image: 'lg:col-span-5',
+          order: isImageLeft ? 'lg:order-2' : 'lg:order-1'
+        };
+      default:
+        return {
+          container: 'grid grid-cols-1 lg:grid-cols-2 gap-12 items-center',
+          text: 'lg:col-span-1',
+          image: 'lg:col-span-1',
+          order: isImageLeft ? 'lg:order-2' : 'lg:order-1'
+        };
+    }
+  };
+
+  const layoutClasses = getLayoutClasses();
   
   const getButtonStyle = (color: 'yellow' | 'black' | 'white') => {
     switch (color) {
@@ -84,88 +136,38 @@ const FullHero = ({
   };
 
   return (
-    <section id={id?.toString()} className="relative overflow-hidden" style={{ minHeight: 'calc(100vh - 220px)' }}>
-      {/* Background (Image or Video) */}
-      <div className="absolute inset-0 animate-fade-in">
-        {backgroundType === 'image' && imageUrl ? (
-          <>
-            <img 
-              src={imageUrl}
-              alt="Hero Background"
-              className={`w-full h-full object-cover ${getKenBurnsClass()}`}
-              style={{ objectPosition: 'center center', transform: kenBurnsEffect !== 'none' ? 'scale(1.3)' : 'scale(1)' }}
-            />
-          </>
-        ) : backgroundType === 'video' && videoUrl ? (
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            disablePictureInPicture
-            controls={false}
-            controlsList="nodownload nofullscreen noremoteplayback"
-            disableRemotePlayback
-            className="w-full h-full object-cover [&::-webkit-media-controls]:!hidden"
-            style={{ 
-              objectPosition: 'center center', 
-              pointerEvents: 'none',
-            }}
-            onContextMenu={(e) => e.preventDefault()}
-          >
-            <source src={videoUrl} type="video/mp4" />
-          </video>
-        ) : null}
-        
-        {/* Overlay */}
-        <div 
-          className="absolute inset-0 bg-black"
-          style={{ opacity: overlayOpacity / 100 }}
-        ></div>
-        
-        {/* Left fade gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
-      </div>
-      
-      {/* Navigation Spacer */}
-      <div className="h-16"></div>
-      
-      {/* Hero Content */}
-      <div className="container mx-auto px-6 pt-28 pb-16 lg:pt-36 lg:pb-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
-        <div className="flex items-center justify-start min-h-full">
+    <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()}`}>
+      <div className="container mx-auto px-6 pb-16 lg:pb-24 relative z-10">
+        <div className={layoutClasses.container}>
           
-          {/* Left-aligned Content */}
-          <div className="text-left space-y-8 max-w-4xl w-full pr-4 md:pr-0">
+          {/* Text Content */}
+          <div className={`text-left space-y-8 ${layoutClasses.text} ${layoutClasses.order}`}>
             <div>
-      {/* Two-line title - dynamic h1 or h2 based on useH1 prop */}
-      {useH1 ? (
-        <h1 className="text-5xl lg:text-6xl xl:text-7xl leading-[0.9] tracking-tight mb-6">
-          <span className="font-light text-white block">{titleLine1}</span>
-          <span className="font-medium text-white block">{titleLine2}</span>
-        </h1>
-      ) : (
-        <h2 className="text-5xl lg:text-6xl xl:text-7xl leading-[0.9] tracking-tight mb-6">
-          <span className="font-light text-white block">{titleLine1}</span>
-          <span className="font-medium text-white block">{titleLine2}</span>
-        </h2>
-      )}
+              {useH1 ? (
+                <h1 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-foreground">
+                  <span className="font-light block">{titleLine1}</span>
+                  <span className="font-medium block">{titleLine2}</span>
+                </h1>
+              ) : (
+                <h2 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-foreground">
+                  <span className="font-light block">{titleLine1}</span>
+                  <span className="font-medium block">{titleLine2}</span>
+                </h2>
+              )}
               
-              {/* Subtitle */}
               {subtitle && (
-                <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
+                <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
                   {subtitle}
                 </p>
               )}
             </div>
             
-            {/* Buttons */}
             {(button1Text || button2Text) && (
-              <div className="pt-4 flex flex-col md:flex-row gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 {button1Text && (
                   <Button 
                     size="lg"
-                    variant="decision"
-                    className="border-0 px-12 py-4 w-full md:w-auto"
+                    className="px-8 py-6 text-base"
                     style={getButtonStyle(button1Color)}
                     onClick={() => handleButtonClick(button1Link)}
                   >
@@ -177,7 +179,7 @@ const FullHero = ({
                   <Button 
                     size="lg"
                     variant="outline"
-                    className="px-12 py-4 w-full md:w-auto border-2"
+                    className="px-8 py-6 text-base"
                     style={getButtonStyle(button2Color)}
                     onClick={() => handleButtonClick(button2Link)}
                   >
@@ -186,6 +188,41 @@ const FullHero = ({
                 )}
               </div>
             )}
+          </div>
+
+          {/* Image Section */}
+          <div className={`relative ${layoutClasses.image} ${imagePosition === 'left' ? 'lg:order-1' : 'lg:order-2'}`}>
+            {backgroundType === 'image' && imageUrl ? (
+              <div className="relative rounded-xl overflow-hidden shadow-2xl">
+                <img 
+                  src={imageUrl}
+                  alt="Product Hero"
+                  className={`w-full h-auto object-cover ${getKenBurnsClass()}`}
+                  style={{ transform: kenBurnsEffect !== 'none' ? 'scale(1.1)' : 'scale(1)' }}
+                />
+                <div 
+                  className="absolute inset-0 bg-black"
+                  style={{ opacity: overlayOpacity / 100 }}
+                />
+              </div>
+            ) : backgroundType === 'video' && videoUrl ? (
+              <div className="relative rounded-xl overflow-hidden shadow-2xl">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-auto object-cover"
+                  onContextMenu={(e) => e.preventDefault()}
+                >
+                  <source src={videoUrl} type="video/mp4" />
+                </video>
+                <div 
+                  className="absolute inset-0 bg-black"
+                  style={{ opacity: overlayOpacity / 100 }}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
