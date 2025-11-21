@@ -1,8 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Camera, TestTube, Monitor, Play, Car, Lightbulb, Code, Shield, Zap, Eye, Brain, FileText, Download, BarChart3, Smartphone, Heart, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MetaNavigation from "@/components/segments/MetaNavigation";
@@ -12,63 +8,19 @@ import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
 import Specification from "@/components/segments/Specification";
 import { Video } from "@/components/segments/Video";
+import FullHero from "@/components/segments/FullHero";
 import Intro from "@/components/segments/Intro";
 import IndustriesSegment from "@/components/segments/IndustriesSegment";
-import FullHero from "@/components/segments/FullHero";
 import NewsSegment from "@/components/segments/NewsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
-const iconMap: Record<string, any> = {
-  FileText,
-  Download,
-  BarChart3,
-  Zap,
-  Shield,
-  Eye,
-  Car,
-  Smartphone,
-  Heart,
-  CheckCircle,
-  Lightbulb,
-  Monitor,
-};
-
-interface Application {
-  title: string;
-  description: string;
-  ctaLink: string;
-  ctaStyle: string;
-  ctaText: string;
-  imageUrl: string;
-  icon: string;
-}
-
-// Universal Test Target page component
 const UniversalTestTarget = () => {
-  const [content, setContent] = useState<Record<string, string>>({});
-  const [applications, setApplications] = useState<any[]>([]);
-  const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [loading, setLoading] = useState(true);
-  const [heroImageUrl, setHeroImageUrl] = useState<string>("");
-  const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
-  const [heroLayout, setHeroLayout] = useState<string>("2-5");
-  const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
-  const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
-  const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
-  const [bannerTitle, setBannerTitle] = useState<string>("");
-  const [bannerSubtext, setBannerSubtext] = useState<string>("");
-  const [bannerImages, setBannerImages] = useState<any[]>([]);
-  const [bannerButtonText, setBannerButtonText] = useState<string>("");
-  const [bannerButtonLink, setBannerButtonLink] = useState<string>("");
-  const [bannerButtonStyle, setBannerButtonStyle] = useState<string>("standard");
-  const [solutionsTitle, setSolutionsTitle] = useState<string>("");
-  const [solutionsSubtext, setSolutionsSubtext] = useState<string>("");
-  const [solutionsLayout, setSolutionsLayout] = useState<string>("2-col");
-  const [solutionsItems, setSolutionsItems] = useState<any[]>([]);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
-  const [hasHeroContent, setHasHeroContent] = useState(false);
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
   const [seoData, setSeoData] = useState<any>({});
 
@@ -82,11 +34,11 @@ const UniversalTestTarget = () => {
       .select("*")
       .eq("page_slug", "universal-test-target");
 
-    // Load segment registry for ID mapping
     const { data: segmentData } = await supabase
       .from("segment_registry")
       .select("*")
-      .eq("page_slug", "universal-test-target");
+      .eq("page_slug", "universal-test-target")
+      .eq("deleted", false);
 
     if (segmentData) {
       const idMap: Record<string, number> = {};
@@ -97,54 +49,9 @@ const UniversalTestTarget = () => {
     }
 
     if (!error && data) {
-      const contentMap: Record<string, string> = {};
-      let apps: any[] = [];
-      let heroExists = false;
-
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
           const segments = JSON.parse(item.content_value);
-          
-          // Merge full-hero and intro data from separate entries
-          segments.forEach((segment: any) => {
-            if (segment.type === 'full-hero') {
-              const fullHeroKey = `full_hero_${segment.id}`;
-              const fullHeroData = data.find((d: any) => d.section_key === fullHeroKey);
-              if (fullHeroData) {
-                segment.data = JSON.parse(fullHeroData.content_value);
-              }
-            }
-            if (segment.type === 'intro') {
-              const introData = data.find((d: any) => d.section_key === segment.id);
-              if (introData) {
-                segment.data = JSON.parse(introData.content_value);
-              }
-            }
-            if (segment.type === 'news') {
-              const newsData = data.filter((d: any) => d.section_key === segment.id);
-              console.log(`Loading news data for segment ${segment.id}:`, newsData);
-              if (newsData.length > 0) {
-                const newsConfig: any = {};
-                newsData.forEach((item: any) => {
-                  if (item.content_type === 'news_section_title') {
-                    newsConfig.sectionTitle = item.content_value;
-                  } else if (item.content_type === 'news_section_description') {
-                    newsConfig.sectionDescription = item.content_value;
-                  } else if (item.content_type === 'news_article_limit') {
-                    newsConfig.articleLimit = item.content_value;
-                  } else if (item.content_type === 'news_categories') {
-                    newsConfig.categories = JSON.parse(item.content_value);
-                  }
-                });
-                console.log(`News config for segment ${segment.id}:`, newsConfig);
-                segment.data = newsConfig;
-              } else {
-                console.log(`No news data found for segment ${segment.id}`);
-              }
-            }
-          });
-          
-          console.log("Loading page_segments:", segments);
           setPageSegments(segments);
         } else if (item.section_key === "tab_order") {
           try {
@@ -153,315 +60,242 @@ const UniversalTestTarget = () => {
           } catch {
             setTabOrder([]);
           }
-        } else if (item.section_key === "applications_items") {
-          apps = JSON.parse(item.content_value);
-        } else if (item.section_key === "tiles_columns") {
-          setTilesColumns(item.content_value || "3");
-        } else if (item.section_key === "solutions_title") {
-          setSolutionsTitle(item.content_value);
-        } else if (item.section_key === "solutions_subtext") {
-          setSolutionsSubtext(item.content_value);
-        } else if (item.section_key === "solutions_layout") {
-          setSolutionsLayout(item.content_value || "2-col");
-        } else if (item.section_key === "solutions_items") {
-          setSolutionsItems(JSON.parse(item.content_value));
-        } else if (item.section_key === "banner_images") {
-          setBannerImages(JSON.parse(item.content_value));
-        } else if (item.section_key === "banner_title") {
-          setBannerTitle(item.content_value);
-        } else if (item.section_key === "banner_subtext") {
-          setBannerSubtext(item.content_value);
-        } else if (item.section_key === "banner_button_text") {
-          setBannerButtonText(item.content_value);
-        } else if (item.section_key === "banner_button_link") {
-          setBannerButtonLink(item.content_value);
-        } else if (item.section_key === "banner_button_style") {
-          setBannerButtonStyle(item.content_value || "standard");
-        } else if (item.section_key === "hero_image_url") {
-          setHeroImageUrl(item.content_value);
-          heroExists = true;
-        } else if (item.section_key === "hero_image_position") {
-          setHeroImagePosition(item.content_value || "right");
-        } else if (item.section_key === "hero_layout") {
-          setHeroLayout(item.content_value || "2-5");
-        } else if (item.section_key === "hero_top_padding") {
-          setHeroTopPadding(item.content_value || "medium");
-        } else if (item.section_key === "hero_cta_link") {
-          setHeroCtaLink(item.content_value || "#applications-start");
-        } else if (item.section_key === "hero_cta_style") {
-          setHeroCtaStyle(item.content_value || "standard");
-        } else if (item.section_key === "hero_title") {
-          contentMap[item.section_key] = item.content_value;
-          heroExists = true;
         } else if (item.section_key === "seo_settings") {
           try {
             const seoSettings = JSON.parse(item.content_value);
             setSeoData(seoSettings);
           } catch {
-            // Keep empty seo data
+            // Keep empty
           }
-        } else {
-          contentMap[item.section_key] = item.content_value;
         }
       });
-
-      setContent(contentMap);
-      setApplications(apps);
-      setHasHeroContent(heroExists);
     }
+
     setLoading(false);
   };
 
-  // Helper function to render segment by ID
   const renderSegment = (segmentId: string) => {
-    // Check if it's a dynamic segment
-    const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
-    if (dynamicSegment) {
-      if (dynamicSegment.type === 'meta-navigation') {
-        return <MetaNavigation key={segmentId} data={dynamicSegment.data} segmentIdMap={segmentIdMap} />;
-      }
-      if (dynamicSegment.type === 'product-hero-gallery') {
-        return <ProductHeroGallery key={segmentId} id={segmentId} data={dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'feature-overview') {
-        return <FeatureOverview key={segmentId} id={segmentId} {...dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'table') {
-        return <Table key={segmentId} id={segmentId} {...dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'faq') {
-        return <FAQ key={segmentId} id={segmentId} {...dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'video') {
-        return <Video key={segmentId} id={segmentId} data={dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'specification') {
-        return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'intro') {
-        return <Intro key={segmentId} id={segmentId} {...dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'industries') {
-        return <IndustriesSegment key={segmentId} id={segmentId} {...dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'full-hero') {
-        return <FullHero key={segmentId} {...dynamicSegment.data} />;
-      }
-      if (dynamicSegment.type === 'news') {
+    const segment = pageSegments.find(seg => seg.id === segmentId);
+    if (!segment) return null;
+
+    const numericId = segmentIdMap[segmentId] || segmentId;
+
+    switch (segment.type) {
+      case 'meta-navigation':
+        return <MetaNavigation key={segmentId} data={segment.data} segmentIdMap={segmentIdMap} />;
+      case 'product-hero-gallery':
+        return <ProductHeroGallery key={segmentId} id={String(numericId)} data={segment.data} />;
+      case 'feature-overview':
+        return <FeatureOverview key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'table':
+        return <Table key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'faq':
+        return <FAQ key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'specification':
+        return <Specification key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'video':
+        return <Video key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'full-hero':
+        return <FullHero key={segmentId} {...segment.data} />;
+      case 'hero':
         return (
-          <NewsSegment
-            key={segmentId}
-            id={segmentId}
-            sectionTitle={dynamicSegment.data?.sectionTitle}
-            sectionDescription={dynamicSegment.data?.sectionDescription}
-            articleLimit={parseInt(dynamicSegment.data?.articleLimit || "6")}
-            categories={dynamicSegment.data?.categories || []}
-          />
-        );
-      }
-      if (dynamicSegment.type === 'tiles') {
-        const tilesData = dynamicSegment.data;
-        return (
-          <section key={segmentId} id={segmentId} className="py-8 bg-gray-50">
+          <section key={segmentId} id={String(numericId)} className={`relative py-16 ${segment.data?.topPadding === 'small' ? 'pt-16' : segment.data?.topPadding === 'medium' ? 'pt-24' : segment.data?.topPadding === 'large' ? 'pt-32' : 'pt-40'}`}>
             <div className="container mx-auto px-6">
-              <div className="text-center mb-16">
-                {tilesData.title && (
-                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                    {tilesData.title}
-                  </h2>
+              <div className={`grid gap-12 items-center ${segment.data?.imagePosition === 'left' ? 'md:grid-cols-2' : segment.data?.imagePosition === 'right' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+                {segment.data?.imagePosition === 'left' && segment.data?.imageUrl && (
+                  <div className="order-1">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
                 )}
-                {tilesData.description && (
-                  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                    {tilesData.description}
-                  </p>
+                <div className={segment.data?.imagePosition === 'left' ? 'order-2' : segment.data?.imagePosition === 'right' ? 'order-1' : 'text-center max-w-4xl mx-auto'}>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">{segment.data?.title}</h1>
+                  <p className="text-xl text-gray-600 mb-8">{segment.data?.subtitle}</p>
+                  {segment.data?.ctaText && (
+                    <a href={segment.data.ctaLink} className="inline-block px-8 py-4 rounded-md text-lg font-medium transition-all duration-300" style={{
+                      backgroundColor: segment.data.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                      color: segment.data.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                    }}>
+                      {segment.data.ctaText}
+                    </a>
+                  )}
+                </div>
+                {segment.data?.imagePosition === 'right' && segment.data?.imageUrl && (
+                  <div className="order-2">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
                 )}
-              </div>
-            </div>
-            <div className="container mx-auto px-6">
-              <div className={`grid gap-8 max-w-7xl mx-auto ${
-                tilesData.columns === "2" ? "md:grid-cols-2" :
-                tilesData.columns === "4" ? "md:grid-cols-2 lg:grid-cols-4" :
-                "md:grid-cols-2 lg:grid-cols-3"
-              }`}>
-                {tilesData.items?.map((app: any, index: number) => {
-                  const IconComponent = app.icon ? iconMap[app.icon] : null;
-                  return (
-                    <div 
-                      key={index}
-                      className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col overflow-hidden group"
-                    >
-                      {IconComponent && (
-                        <div className="w-full flex justify-center pt-8">
-                          <div className="relative">
-                            <div className="w-20 h-20 bg-[#f9dc24]/10 rounded-full flex items-center justify-center border-2 border-[#f9dc24]/20 shadow-lg group-hover:shadow-xl group-hover:bg-[#f9dc24]/20 group-hover:border-[#f9dc24]/40 transition-all duration-500 ease-out group-hover:-translate-y-1 group-hover:scale-105">
-                              <IconComponent 
-                                size={36} 
-                                className="text-black group-hover:text-gray-900 group-hover:scale-125 transition-all duration-300" 
-                                strokeWidth={1.8}
-                              />
-                            </div>
-                            <div className="absolute inset-0 w-20 h-20 bg-[#f9dc24] rounded-full opacity-0 group-hover:opacity-15 transition-opacity duration-500 blur-xl" />
-                          </div>
-                        </div>
-                      )}
-                      {app.imageUrl && (
-                        <div className={`w-full h-[200px] overflow-hidden ${IconComponent ? 'mt-4' : ''}`}>
-                          <img 
-                            src={app.imageUrl} 
-                            alt={app.title} 
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div className={`p-8 flex flex-col items-center text-center flex-1 ${!IconComponent && !app.imageUrl ? 'pt-8' : ''}`}>
-                        <h3 className="text-xl font-bold text-gray-900 mb-4 leading-tight">
-                          {app.title}
-                        </h3>
-                        <p className="text-base text-gray-600 leading-relaxed mb-6 flex-1">
-                          {app.description}
-                        </p>
-                        {app.ctaLink && app.ctaLink.trim() ? (
-                          app.ctaLink.startsWith('http://') || app.ctaLink.startsWith('https://') ? (
-                            <a 
-                              href={app.ctaLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-full"
-                            >
-                              <button
-                                className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                                style={{
-                                  backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : app.ctaStyle === "outline-white" ? "#ffffff" : "#f9dc24",
-                                  color: app.ctaStyle === "technical" ? "#ffffff" : app.ctaStyle === "outline-white" ? "#000000" : "#000000",
-                                  border: app.ctaStyle === "outline-white" ? "1px solid #e5e5e5" : "none"
-                                }}
-                              >
-                                {app.ctaText || "Learn more"}
-                              </button>
-                            </a>
-                          ) : (
-                            <Link to={app.ctaLink} className="w-full">
-                              <button
-                                className="w-full px-4 py-2 rounded-md border-0 font-medium text-lg transition-opacity hover:opacity-90"
-                                style={{
-                                  backgroundColor: app.ctaStyle === "technical" ? "#1f2937" : app.ctaStyle === "outline-white" ? "#ffffff" : "#f9dc24",
-                                  color: app.ctaStyle === "technical" ? "#ffffff" : app.ctaStyle === "outline-white" ? "#000000" : "#000000",
-                                  border: app.ctaStyle === "outline-white" ? "1px solid #e5e5e5" : "none"
-                                }}
-                              >
-                                {app.ctaText || "Learn more"}
-                              </button>
-                            </Link>
-                          )
-                        ) : null}
-                      </div>
-                    </div>
-                  );
-                })}
+                {segment.data?.imagePosition === 'center' && segment.data?.imageUrl && (
+                  <div className="w-full max-w-4xl mx-auto mt-12">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
+                )}
               </div>
             </div>
           </section>
         );
-      }
-      if (dynamicSegment.type === 'banner') {
+      case 'intro':
+        return <Intro key={segmentId} {...segment.data} />;
+      case 'industries':
+        return <IndustriesSegment key={segmentId} {...segment.data} />;
+      case 'news':
         return (
-          <section key={segmentId} id={segmentId} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+          <NewsSegment
+            key={segmentId}
+            id={String(numericId)}
+            sectionTitle={segment.data?.sectionTitle}
+            sectionDescription={segment.data?.sectionDescription}
+            articleLimit={parseInt(segment.data?.articleLimit || "6")}
+            categories={segment.data?.categories || []}
+          />
+        );
+      case 'tiles':
+        return (
+          <section key={segmentId} id={String(numericId)} className="py-8 bg-gray-50">
+            <div className="container mx-auto px-6">
+              <div className="text-center mb-16">
+                {segment.data?.title && (
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.title}
+                  </h2>
+                )}
+                {segment.data?.description && (
+                  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    {segment.data.description}
+                  </p>
+                )}
+              </div>
+              <div className={`grid gap-8 max-w-7xl mx-auto ${
+                segment.data?.columns === "2" ? "md:grid-cols-2" :
+                segment.data?.columns === "4" ? "md:grid-cols-2 lg:grid-cols-4" :
+                "md:grid-cols-2 lg:grid-cols-3"
+              }`}>
+                {segment.data?.items?.map((item: any, index: number) => (
+                  <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-shadow duration-300">
+                    <CardContent className="p-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                      <p className="text-gray-600 leading-relaxed mb-6">{item.description}</p>
+                      {item.ctaText && item.ctaLink && (
+                        item.ctaLink.startsWith('http') ? (
+                          <a
+                            href={item.ctaLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block px-6 py-3 rounded-md text-base font-medium transition-all duration-300"
+                            style={{
+                              backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                              color: item.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                            }}
+                          >
+                            {item.ctaText}
+                          </a>
+                        ) : (
+                          <Link to={item.ctaLink}>
+                            <button
+                              className="px-6 py-3 rounded-md text-base font-medium transition-all duration-300"
+                              style={{
+                                backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                color: item.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                              }}
+                            >
+                              {item.ctaText}
+                            </button>
+                          </Link>
+                        )
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      case 'banner':
+        return (
+          <section key={segmentId} id={String(numericId)} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
             <div className="container mx-auto px-4 text-center">
-              {dynamicSegment.data.title && (
+              {segment.data?.title && (
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                  {dynamicSegment.data.title}
+                  {segment.data.title}
                 </h2>
               )}
-              {dynamicSegment.data.subtext && (
+              {segment.data?.subtext && (
                 <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-                  {dynamicSegment.data.subtext}
+                  {segment.data.subtext}
                 </p>
               )}
-              {dynamicSegment.data.images && dynamicSegment.data.images.length > 0 && (
+              {segment.data?.images?.length > 0 && (
                 <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
-                  {dynamicSegment.data.images.map((image: any, index: number) => (
-                    <div key={index} className="h-16 flex items-center">
+                  {segment.data.images.map((image: any, idx: number) => (
+                    <div key={idx} className="h-16 flex items-center">
                       <img 
                         src={image.url}
-                        alt={image.alt || `Banner image ${index + 1}`}
+                        alt={image.alt || `Banner image ${idx + 1}`}
                         className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
                       />
                     </div>
                   ))}
                 </div>
               )}
-              {dynamicSegment.data.buttonText && (
+              {segment.data?.buttonText && (
                 <div className="flex justify-center">
-                  {dynamicSegment.data.buttonLink ? (
-                    dynamicSegment.data.buttonLink.startsWith('http://') || dynamicSegment.data.buttonLink.startsWith('https://') ? (
-                      <a
-                        href={dynamicSegment.data.buttonLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block px-8 py-4 rounded-md text-lg font-medium transition-all duration-300 hover:scale-105"
-                        style={{
-                          backgroundColor: dynamicSegment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
-                          color: dynamicSegment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
-                        }}
-                      >
-                        {dynamicSegment.data.buttonText}
-                      </a>
-                    ) : (
-                      <Link to={dynamicSegment.data.buttonLink}>
-                        <button 
-                          className="px-8 py-4 rounded-md text-lg font-medium transition-all duration-300 hover:scale-105"
-                          style={{
-                            backgroundColor: dynamicSegment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
-                            color: dynamicSegment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
-                          }}
-                        >
-                          {dynamicSegment.data.buttonText}
-                        </button>
-                      </Link>
-                    )
-                  ) : (
-                    <button 
-                      className="px-8 py-4 rounded-md text-lg font-medium transition-all duration-300 hover:scale-105"
+                  {segment.data.buttonLink?.startsWith('http') ? (
+                    <a
+                      href={segment.data.buttonLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block px-8 py-4 rounded-md text-lg font-medium transition-all duration-300"
                       style={{
-                        backgroundColor: dynamicSegment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
-                        color: dynamicSegment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                        backgroundColor: segment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                        color: segment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
                       }}
                     >
-                      {dynamicSegment.data.buttonText}
-                    </button>
+                      {segment.data.buttonText}
+                    </a>
+                  ) : (
+                    <Link to={segment.data.buttonLink || "#"}>
+                      <button
+                        className="px-8 py-4 rounded-md text-lg font-medium transition-all duration-300"
+                        style={{
+                          backgroundColor: segment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                          color: segment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                        }}
+                      >
+                        {segment.data.buttonText}
+                      </button>
+                    </Link>
                   )}
                 </div>
               )}
             </div>
           </section>
         );
-      }
-      if (dynamicSegment.type === 'image-text') {
+      case 'image-text':
+      case 'solutions':
         return (
-          <section key={segmentId} id={segmentId} className="bg-gray-50 py-20">
+          <section key={segmentId} id={String(numericId)} className="bg-gray-50 py-20">
             <div className="w-full px-6">
-              {(dynamicSegment.data.title || dynamicSegment.data.subtext) && (
+              {(segment.data?.title || segment.data?.subtext) && (
                 <div className="text-center mb-16">
-                  {dynamicSegment.data.title && (
+                  {segment.data?.title && (
                     <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                      {dynamicSegment.data.title}
+                      {segment.data.title}
                     </h2>
                   )}
-                  {dynamicSegment.data.subtext && (
+                  {segment.data?.subtext && (
                     <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                      {dynamicSegment.data.subtext}
+                      {segment.data.subtext}
                     </p>
                   )}
                 </div>
               )}
-              {dynamicSegment.data.items && dynamicSegment.data.items.length > 0 && (
+              {segment.data?.items?.length > 0 && (
                 <div className={`grid gap-8 max-w-7xl mx-auto ${
-                  dynamicSegment.data.layout === "1-col" ? "grid-cols-1" :
-                  dynamicSegment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+                  segment.data.layout === "1-col" ? "grid-cols-1" :
+                  segment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
                   "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
                 }`}>
-                  {dynamicSegment.data.items.map((item: any, index: number) => (
-                    <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                  {segment.data.items.map((item: any, idx: number) => (
+                    <Card key={idx} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
                       <CardContent className="p-0">
                         {item.imageUrl && (
                           <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
@@ -486,152 +320,33 @@ const UniversalTestTarget = () => {
             </div>
           </section>
         );
-      }
+      case 'footer':
+        return <Footer key={segmentId} />;
+      default:
+        return null;
     }
-    return null;
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white font-roboto">
-      <SEOHead
-        title={seoData.title || content.hero_title || "Universal Test Target"}
-        description={seoData.description || content.hero_subtitle || ""}
-        canonical={seoData.canonical || ""}
-        ogImage={seoData.ogImage || heroImageUrl || ""}
-        robotsIndex={seoData.robotsIndex}
-        robotsFollow={seoData.robotsFollow}
+    <div className="min-h-screen bg-gray-50">
+      <SEOHead 
+        title={seoData?.title || "Universal Test Target"}
+        description={seoData?.description || ""}
+        ogImage={seoData?.ogImage || ""}
+        canonical={seoData?.canonicalUrl || ""}
       />
-      
-      {/* Navigation */}
       <Navigation />
-
-      {/* MANDATORY: Meta Navigation - Always First (Below Nav Bar) */}
-      {tabOrder
-        .filter(segmentId => {
-          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
-          return dynamicSegment && dynamicSegment.type === 'meta-navigation';
-        })
-        .map(segmentId => renderSegment(segmentId))}
-
-      {/* Hero Section - Only render if hero content exists */}
-      {hasHeroContent && (
-        <section id="hero" className="min-h-[60vh] bg-white font-roboto relative overflow-hidden py-8">
-        <div className={`container mx-auto px-6 pb-8 lg:pb-12 relative z-10 ${
-          heroTopPadding === "small" ? "pt-16 lg:pt-16" :
-          heroTopPadding === "medium" ? "pt-24 lg:pt-24" :
-          heroTopPadding === "large" ? "pt-32 lg:pt-32" :
-          heroTopPadding === "xlarge" ? "pt-40 lg:pt-40" :
-          "pt-32 lg:pt-32"
-        }`}>
-          <div className={`grid gap-16 items-center ${
-            heroLayout === "50-50" ? "lg:grid-cols-2" : 
-            heroLayout === "2-3" ? "lg:grid-cols-5" :
-            heroLayout === "1-2" ? "lg:grid-cols-3" :
-            "lg:grid-cols-5"
-          }`}>
-            
-            {/* Text Content */}
-            <div className={`space-y-8 ${
-              heroLayout === "50-50" ? "" :
-              heroLayout === "2-3" ? "lg:col-span-2" :
-              heroLayout === "1-2" ? "" :
-              "lg:col-span-2"
-            } ${heroImagePosition === "left" ? "order-2" : "order-1"}`}>
-              <div>
-                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-black mt-8 md:mt-0">
-                  {content.hero_title || "Universal Test Target"}
-                  <br />
-                  <span className="font-medium text-black">{content.hero_subtitle || ""}</span>
-                </h1>
-                
-                <p className="text-xl lg:text-2xl text-black font-light leading-relaxed max-w-lg">
-                  {content.hero_description || "Professional test target for image quality testing."}
-                </p>
-              </div>
-              
-              <div className="pt-4">
-                {heroCtaLink.startsWith('http://') || heroCtaLink.startsWith('https://') ? (
-                  <a 
-                    href={heroCtaLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button 
-                      size="lg"
-                      className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
-                        heroCtaStyle === "yellow"
-                          ? "bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
-                          : "bg-white hover:bg-gray-50 text-black"
-                      }`}
-                    >
-                      {content.hero_cta || "Learn More"}
-                    </Button>
-                  </a>
-                ) : (
-                  <Link to={heroCtaLink}>
-                    <Button 
-                      size="lg"
-                      className={`border-0 px-8 py-4 text-lg font-medium shadow-soft hover:shadow-lg transition-all duration-300 group ${
-                        heroCtaStyle === "yellow"
-                          ? "bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
-                          : "bg-white hover:bg-gray-50 text-black"
-                      }`}
-                    >
-                      {content.hero_cta || "Learn More"}
-                    </Button>
-                  </Link>
-                )}
-              </div>
-            </div>
-
-            {/* Image */}
-            {heroImageUrl && (
-              <div className={`${
-                heroLayout === "50-50" ? "" :
-                heroLayout === "2-3" ? "lg:col-span-3" :
-                heroLayout === "1-2" ? "lg:col-span-2" :
-                "lg:col-span-3"
-              } ${heroImagePosition === "left" ? "order-1" : "order-2"}`}>
-                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl">
-                  <img 
-                    src={heroImageUrl} 
-                    alt={content.hero_title || "Hero image"}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-      )}
-
-      {/* Scroll anchor for CTA links */}
-      <div id="applications-start" className="scroll-mt-32"></div>
-
-      {/* MANDATORY: Render full-hero segment (if exists) - Always after old hero, before other segments */}
-      {pageSegments
-        .filter(seg => seg.type === 'full-hero')
-        .map(seg => renderSegment(seg.id))}
-
-      {/* Render all segments in tabOrder (excluding meta-navigation and full-hero) */}
-      {tabOrder
-        .filter(segmentId => {
-          // Only render segments that actually exist in pageSegments
-          const dynamicSegment = pageSegments.find(seg => seg.id === segmentId);
-          return dynamicSegment && dynamicSegment.type !== 'meta-navigation' && dynamicSegment.type !== 'full-hero';
-        })
-        .map((segmentId) => renderSegment(segmentId))}
-
-      <Footer />
+      <main>
+        {tabOrder.map(segmentId => renderSegment(segmentId))}
+      </main>
     </div>
   );
 };

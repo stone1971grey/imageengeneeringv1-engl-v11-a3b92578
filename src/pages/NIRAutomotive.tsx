@@ -6,25 +6,23 @@ import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
 import Table from "@/components/segments/Table";
 import FAQ from "@/components/segments/FAQ";
-import { Video } from "@/components/segments/Video";
 import Specification from "@/components/segments/Specification";
+import { Video } from "@/components/segments/Video";
 import FullHero from "@/components/segments/FullHero";
 import Intro from "@/components/segments/Intro";
 import IndustriesSegment from "@/components/segments/IndustriesSegment";
 import NewsSegment from "@/components/segments/NewsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 
 const NIRAutomotive = () => {
-  const [content, setContent] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
   const [seoData, setSeoData] = useState<any>({});
-  const [loading, setLoading] = useState(true);
-
-  const pageSlug = "nir-automotive";
 
   useEffect(() => {
     loadContent();
@@ -34,12 +32,12 @@ const NIRAutomotive = () => {
     const { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", pageSlug);
+      .eq("page_slug", "nir-automotive");
 
     const { data: segmentData } = await supabase
       .from("segment_registry")
       .select("*")
-      .eq("page_slug", pageSlug)
+      .eq("page_slug", "nir-automotive")
       .eq("deleted", false);
 
     if (segmentData) {
@@ -51,83 +49,279 @@ const NIRAutomotive = () => {
     }
 
     if (!error && data) {
-      const contentMap: Record<string, string> = {};
-
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
           const segments = JSON.parse(item.content_value);
-          segments.forEach((segment: any) => {
-            const segmentDataItem = data.find((d: any) => d.section_key === segment.id);
-            if (segmentDataItem) {
-              segment.data = JSON.parse(segmentDataItem.content_value);
-            }
-          });
           setPageSegments(segments);
         } else if (item.section_key === "tab_order") {
-          const parsedTabOrder = JSON.parse(item.content_value);
-          const validTabOrder = parsedTabOrder.filter((id: any) => 
-            segmentData?.some(seg => seg.segment_id.toString() === id.toString() || seg.segment_key === id)
-          );
-          setTabOrder(validTabOrder);
-        } else if (item.section_key === "seo_data") {
-          setSeoData(JSON.parse(item.content_value));
-        } else {
-          contentMap[item.section_key] = item.content_value;
+          try {
+            const order = JSON.parse(item.content_value);
+            setTabOrder(order || []);
+          } catch {
+            setTabOrder([]);
+          }
+        } else if (item.section_key === "seo_settings") {
+          try {
+            const seoSettings = JSON.parse(item.content_value);
+            setSeoData(seoSettings);
+          } catch {
+            // Keep empty
+          }
         }
       });
-      setContent(contentMap);
     }
+
     setLoading(false);
   };
 
   const renderSegment = (segmentId: string) => {
-    const segment = pageSegments.find(
-      (seg) => seg.id === segmentId || seg.id === segmentId.toString()
-    );
-
+    const segment = pageSegments.find(seg => seg.id === segmentId);
     if (!segment) return null;
 
-    const numericSegmentId = segmentIdMap[segmentId] || parseInt(segmentId);
-    const stringSegmentId = numericSegmentId.toString();
+    const numericId = segmentIdMap[segmentId] || segmentId;
 
     switch (segment.type) {
-      case "meta-navigation":
-        return <MetaNavigation key={segmentId} data={segment.data || { links: [] }} segmentIdMap={segmentIdMap} />;
-      case "product-hero-gallery":
-        return <ProductHeroGallery key={segmentId} data={segment.data || {}} />;
-      case "feature-overview":
-        return <FeatureOverview key={segmentId} id={stringSegmentId} title={segment.data?.title} subtext={segment.data?.subtext} layout={segment.data?.layout} rows={segment.data?.rows} items={segment.data?.items || []} />;
-      case "table":
-        return <Table key={segmentId} id={stringSegmentId} title={segment.data?.title} subtext={segment.data?.subtext} headers={segment.data?.headers || []} rows={segment.data?.rows || []} />;
-      case "faq":
-        return <FAQ key={segmentId} id={stringSegmentId} title={segment.data?.title} subtext={segment.data?.subtext} items={segment.data?.items || []} />;
-      case "specification":
-        return <Specification key={segmentId} id={stringSegmentId} title={segment.data?.title} rows={segment.data?.rows || []} />;
-      case "video":
-        return <Video key={segmentId} id={stringSegmentId} data={segment.data || {}} />;
-      case "full-hero":
+      case 'meta-navigation':
+        return <MetaNavigation key={segmentId} data={segment.data} segmentIdMap={segmentIdMap} />;
+      case 'product-hero-gallery':
+        return <ProductHeroGallery key={segmentId} id={String(numericId)} data={segment.data} />;
+      case 'feature-overview':
+        return <FeatureOverview key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'table':
+        return <Table key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'faq':
+        return <FAQ key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'specification':
+        return <Specification key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'video':
+        return <Video key={segmentId} id={String(numericId)} {...segment.data} />;
+      case 'full-hero':
+        return <FullHero key={segmentId} {...segment.data} />;
+      case 'hero':
         return (
-          <FullHero
+          <section key={segmentId} id={String(numericId)} className={`relative py-16 ${segment.data?.topPadding === 'small' ? 'pt-16' : segment.data?.topPadding === 'medium' ? 'pt-24' : segment.data?.topPadding === 'large' ? 'pt-32' : 'pt-40'}`}>
+            <div className="container mx-auto px-6">
+              <div className={`grid gap-12 items-center ${segment.data?.imagePosition === 'left' ? 'md:grid-cols-2' : segment.data?.imagePosition === 'right' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+                {segment.data?.imagePosition === 'left' && segment.data?.imageUrl && (
+                  <div className="order-1">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
+                )}
+                <div className={segment.data?.imagePosition === 'left' ? 'order-2' : segment.data?.imagePosition === 'right' ? 'order-1' : 'text-center max-w-4xl mx-auto'}>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">{segment.data?.title}</h1>
+                  <p className="text-xl text-gray-600 mb-8">{segment.data?.subtitle}</p>
+                  {segment.data?.ctaText && (
+                    <a href={segment.data.ctaLink} className="inline-block px-8 py-4 rounded-md text-lg font-medium transition-all duration-300" style={{
+                      backgroundColor: segment.data.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                      color: segment.data.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                    }}>
+                      {segment.data.ctaText}
+                    </a>
+                  )}
+                </div>
+                {segment.data?.imagePosition === 'right' && segment.data?.imageUrl && (
+                  <div className="order-2">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
+                )}
+                {segment.data?.imagePosition === 'center' && segment.data?.imageUrl && (
+                  <div className="w-full max-w-4xl mx-auto mt-12">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      case 'intro':
+        return <Intro key={segmentId} {...segment.data} />;
+      case 'industries':
+        return <IndustriesSegment key={segmentId} {...segment.data} />;
+      case 'news':
+        return (
+          <NewsSegment
             key={segmentId}
-            titleLine1={segment.data?.titleLine1 || ""}
-            titleLine2={segment.data?.titleLine2 || ""}
-            subtitle={segment.data?.subtitle || ""}
-            backgroundType={segment.data?.backgroundType || "image"}
-            button1Text={segment.data?.button1Text}
-            button1Link={segment.data?.button1Link}
-            button1Color={segment.data?.button1Color}
-            button2Text={segment.data?.button2Text}
-            button2Link={segment.data?.button2Link}
-            button2Color={segment.data?.button2Color}
+            id={String(numericId)}
+            sectionTitle={segment.data?.sectionTitle}
+            sectionDescription={segment.data?.sectionDescription}
+            articleLimit={parseInt(segment.data?.articleLimit || "6")}
+            categories={segment.data?.categories || []}
           />
         );
-      case "tiles":
-        return <IndustriesSegment key={segmentId} title={segment.data?.title} subtitle={segment.data?.subtitle} columns={segment.data?.columns} items={segment.data?.items || []} />;
-      case "banner":
-        return <NewsSegment key={segmentId} id={stringSegmentId} sectionTitle={segment.data?.sectionTitle} sectionDescription={segment.data?.sectionDescription} articleLimit={segment.data?.articleLimit} categories={segment.data?.categories} />;
-      case "image-text":
-      case "solutions":
-        return <Intro key={segmentId} title={segment.data?.title} description={segment.data?.description} />;
+      case 'tiles':
+        return (
+          <section key={segmentId} id={String(numericId)} className="py-8 bg-gray-50">
+            <div className="container mx-auto px-6">
+              <div className="text-center mb-16">
+                {segment.data?.title && (
+                  <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.title}
+                  </h2>
+                )}
+                {segment.data?.description && (
+                  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                    {segment.data.description}
+                  </p>
+                )}
+              </div>
+              <div className={`grid gap-8 max-w-7xl mx-auto ${
+                segment.data?.columns === "2" ? "md:grid-cols-2" :
+                segment.data?.columns === "4" ? "md:grid-cols-2 lg:grid-cols-4" :
+                "md:grid-cols-2 lg:grid-cols-3"
+              }`}>
+                {segment.data?.items?.map((item: any, index: number) => (
+                  <Card key={index} className="bg-white border-gray-200 hover:shadow-lg transition-shadow duration-300">
+                    <CardContent className="p-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                      <p className="text-gray-600 leading-relaxed mb-6">{item.description}</p>
+                      {item.ctaText && item.ctaLink && (
+                        item.ctaLink.startsWith('http') ? (
+                          <a
+                            href={item.ctaLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block px-6 py-3 rounded-md text-base font-medium transition-all duration-300"
+                            style={{
+                              backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                              color: item.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                            }}
+                          >
+                            {item.ctaText}
+                          </a>
+                        ) : (
+                          <Link to={item.ctaLink}>
+                            <button
+                              className="px-6 py-3 rounded-md text-base font-medium transition-all duration-300"
+                              style={{
+                                backgroundColor: item.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                                color: item.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                              }}
+                            >
+                              {item.ctaText}
+                            </button>
+                          </Link>
+                        )
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      case 'banner':
+        return (
+          <section key={segmentId} id={String(numericId)} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
+            <div className="container mx-auto px-4 text-center">
+              {segment.data?.title && (
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                  {segment.data.title}
+                </h2>
+              )}
+              {segment.data?.subtext && (
+                <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
+                  {segment.data.subtext}
+                </p>
+              )}
+              {segment.data?.images?.length > 0 && (
+                <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
+                  {segment.data.images.map((image: any, idx: number) => (
+                    <div key={idx} className="h-16 flex items-center">
+                      <img 
+                        src={image.url}
+                        alt={image.alt || `Banner image ${idx + 1}`}
+                        className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              {segment.data?.buttonText && (
+                <div className="flex justify-center">
+                  {segment.data.buttonLink?.startsWith('http') ? (
+                    <a
+                      href={segment.data.buttonLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block px-8 py-4 rounded-md text-lg font-medium transition-all duration-300"
+                      style={{
+                        backgroundColor: segment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                        color: segment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                      }}
+                    >
+                      {segment.data.buttonText}
+                    </a>
+                  ) : (
+                    <Link to={segment.data.buttonLink || "#"}>
+                      <button
+                        className="px-8 py-4 rounded-md text-lg font-medium transition-all duration-300"
+                        style={{
+                          backgroundColor: segment.data.buttonStyle === "technical" ? "#1f2937" : "#f9dc24",
+                          color: segment.data.buttonStyle === "technical" ? "#ffffff" : "#000000"
+                        }}
+                      >
+                        {segment.data.buttonText}
+                      </button>
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      case 'image-text':
+      case 'solutions':
+        return (
+          <section key={segmentId} id={String(numericId)} className="bg-gray-50 py-20">
+            <div className="w-full px-6">
+              {(segment.data?.title || segment.data?.subtext) && (
+                <div className="text-center mb-16">
+                  {segment.data?.title && (
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                      {segment.data.title}
+                    </h2>
+                  )}
+                  {segment.data?.subtext && (
+                    <p className="text-xl text-gray-600 max-w-4xl mx-auto">
+                      {segment.data.subtext}
+                    </p>
+                  )}
+                </div>
+              )}
+              {segment.data?.items?.length > 0 && (
+                <div className={`grid gap-8 max-w-7xl mx-auto ${
+                  segment.data.layout === "1-col" ? "grid-cols-1" :
+                  segment.data.layout === "2-col" ? "grid-cols-1 md:grid-cols-2" :
+                  "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                }`}>
+                  {segment.data.items.map((item: any, idx: number) => (
+                    <Card key={idx} className="bg-white border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+                      <CardContent className="p-0">
+                        {item.imageUrl && (
+                          <div className="aspect-[4/3] bg-gray-900 overflow-hidden relative">
+                            <img 
+                              src={item.imageUrl}
+                              alt={item.title}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="p-8">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h3>
+                          <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+                            {item.description}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      case 'footer':
+        return <Footer key={segmentId} />;
       default:
         return null;
     }
@@ -136,20 +330,23 @@ const NIRAutomotive = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="text-xl">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <SEOHead
-        title={seoData?.title || "Near-Infrared (NIR) Automotive Testing"}
-        description={seoData?.description || "Near-infrared automotive camera testing solutions"}
+    <div className="min-h-screen bg-gray-50">
+      <SEOHead 
+        title={seoData?.title || "Near-Infrared (NIR)"}
+        description={seoData?.description || ""}
+        ogImage={seoData?.ogImage || ""}
+        canonical={seoData?.canonicalUrl || ""}
       />
       <Navigation />
-      {tabOrder.map((segmentId) => renderSegment(segmentId))}
-      <Footer />
+      <main>
+        {tabOrder.map(segmentId => renderSegment(segmentId))}
+      </main>
     </div>
   );
 };
