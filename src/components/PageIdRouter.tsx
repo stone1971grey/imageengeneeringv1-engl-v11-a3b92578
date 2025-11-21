@@ -2,26 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
-// Import all CMS-enabled pages
-import Photography from "@/pages/Photography";
-import ScannersArchiving from "@/pages/ScannersArchiving";
-import MedicalEndoscopy from "@/pages/MedicalEndoscopy";
-import MachineVision from "@/pages/MachineVision";
-import WebCamera from "@/pages/WebCamera";
-import UniversalTestTarget from "@/pages/UniversalTestTarget";
-import ISO21550 from "@/pages/ISO21550";
-
-// Page ID to Component mapping (must match page_registry table)
-const pageComponentMap: Record<number, React.ComponentType> = {
-  9: Photography,           // photography
-  10: ScannersArchiving,    // scanners-archiving
-  11: MedicalEndoscopy,     // medical-endoscopy
-  12: WebCamera,            // web-camera
-  13: MachineVision,        // machine-vision
-  260: ISO21550,            // iso-21550
-  261: UniversalTestTarget, // universal-test-target
-};
-
+/**
+ * PageIdRouter - Routes numeric page IDs to their hierarchical URLs
+ * Example: /3 -> /your-solution/photography
+ * 
+ * Now simplified for Universal Dynamic Page System - no component mapping needed
+ */
 const PageIdRouter = () => {
   const { pageId } = useParams<{ pageId: string }>();
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
@@ -52,21 +38,21 @@ const PageIdRouter = () => {
         console.error("Error fetching page:", error);
         setRedirectUrl(null);
       } else {
-        // Build hierarchical URL
+        // Build hierarchical URL based on parent structure
         if (data.parent_slug) {
-          // If parent is "your-solution", build industry URL
           if (data.parent_slug === "your-solution") {
             setRedirectUrl(`/your-solution/${data.page_slug}`);
           } else if (data.parent_slug === "automotive") {
-            // If parent is automotive, build automotive sub-page URL
             setRedirectUrl(`/your-solution/automotive/${data.page_slug}`);
+          } else if (data.parent_slug === "scanners-archiving") {
+            setRedirectUrl(`/your-solution/scanners-archiving/${data.page_slug}`);
           } else {
-            // Otherwise build product URL (e.g., /products/test-charts/le7)
-            setRedirectUrl(`/products/${data.parent_slug}/${data.page_slug}`);
+            // For products or other hierarchies
+            setRedirectUrl(`/${data.parent_slug}/${data.page_slug}`);
           }
         } else {
-          // If no parent_slug, use your-solution prefix as fallback
-          setRedirectUrl(`/your-solution/${data.page_slug}`);
+          // No parent - top-level page
+          setRedirectUrl(`/${data.page_slug}`);
         }
       }
 
@@ -77,7 +63,14 @@ const PageIdRouter = () => {
   }, [pageId]);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading page...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!redirectUrl) {

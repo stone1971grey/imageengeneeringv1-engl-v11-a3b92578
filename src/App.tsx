@@ -12,15 +12,8 @@ import InsideLab from "./pages/InsideLab";
 import YourSolution from "./pages/YourSolution";
 import Products from "./pages/Products";
 import Automotive from "./pages/Automotive";
-import Photography from "./pages/Photography";
-import ScannersArchiving from "./pages/ScannersArchiving";
-import MedicalEndoscopy from "./pages/MedicalEndoscopy";
-import MachineVision from "./pages/MachineVision";
-import WebCamera from "./pages/WebCamera";
-import MobilePhone from "./pages/MobilePhone";
-import ISO21550 from "./pages/ISO21550";
+import DynamicCMSPage from "./pages/DynamicCMSPage";
 import MultispectralIllumination from "./pages/MultispectralIllumination";
-import ScannerDynamicRange from "./pages/ScannerDynamicRange";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import HiddenSegments from "./pages/HiddenSegments";
@@ -82,18 +75,18 @@ const App = () => (
         <Route path="/product/le7" element={<Navigate to="/products/test-charts/le7" replace />} />
         <Route path="/in-cabin-testing" element={<Navigate to="/your-solution/automotive/in-cabin-testing" replace />} />
         
-        {/* Hierarchical Your Solution Routes */}
+        {/* Hierarchical Your Solution Routes - Now using DynamicCMSPage */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
         <Route path="/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
-        <Route path="/your-solution/photography" element={<Photography />} />
-        <Route path="/your-solution/medical-endoscopy" element={<MedicalEndoscopy />} />
-        <Route path="/your-solution/machine-vision" element={<MachineVision />} />
-        <Route path="/your-solution/web-camera" element={<WebCamera />} />
-        <Route path="/your-solution/mobile-phone" element={<MobilePhone />} />
-        <Route path="/your-solution/scanners-archiving" element={<ScannersArchiving />} />
-        <Route path="/your-solution/scanners-archiving/iso-21550" element={<ISO21550 />} />
+        <Route path="/your-solution/photography" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/medical-endoscopy" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/machine-vision" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/web-camera" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/mobile-phone" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/scanners-archiving" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/scanners-archiving/iso-21550" element={<DynamicCMSPage />} />
         <Route path="/your-solution/scanners-archiving/multispectral-illumination" element={<MultispectralIllumination />} />
-        <Route path="/your-solution/scanners-archiving/scanner-dynamic-range" element={<ScannerDynamicRange />} />
+        <Route path="/your-solution/scanners-archiving/scanner-dynamic-range" element={<DynamicCMSPage />} />
         
         {/* Hierarchical Product Routes */}
         
