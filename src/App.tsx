@@ -45,7 +45,6 @@ import EventDetailRegistrationConfirmation from "./pages/EventDetailRegistration
 import EventAlreadyRegistered from "./pages/EventAlreadyRegistered";
 import EventRegistrationSuccess from "./pages/EventRegistrationSuccess";
 import InCabinTesting from "./pages/InCabinTesting";
-import NIRAutomotive from "./pages/NIRAutomotive";
 import Contact from "./pages/Contact";
 import News from "./pages/News";
 import NewsDetail from "./pages/NewsDetail";
@@ -87,7 +86,6 @@ const App = () => (
         {/* Hierarchical Your Solution Routes */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
         <Route path="/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
-        <Route path="/your-solution/automotive/nir-automotive" element={<NIRAutomotive />} />
         <Route path="/your-solution/photography" element={<Photography />} />
         <Route path="/your-solution/medical-endoscopy" element={<MedicalEndoscopy />} />
         <Route path="/your-solution/machine-vision" element={<MachineVision />} />
