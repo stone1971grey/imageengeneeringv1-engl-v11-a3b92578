@@ -185,7 +185,7 @@ const AdminDashboard = () => {
   const [copySolutionsDialogOpen, setCopySolutionsDialogOpen] = useState(false);
   const [copyFooterDialogOpen, setCopyFooterDialogOpen] = useState(false);
   const [availablePages, setAvailablePages] = useState<Array<{ page_slug: string; page_title: string }>>([]);
-  const [activeTab, setActiveTab] = useState<string>("hero");
+  const [activeTab, setActiveTab] = useState<string>("");
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
@@ -866,14 +866,22 @@ const AdminDashboard = () => {
         try {
           const order = JSON.parse(item.content_value);
           
-          // Filter out deleted segments using segmentRegistry
+          // Get valid segment IDs from segment_registry (excluding deleted)
+          const reverseRegistry = (window as any).__segmentKeyRegistry || {};
+          const validSegmentIds = Object.keys(reverseRegistry);
+          
+          // Filter out deleted segments - tabId is a segment_id string like "197"
           const validOrder = (order || []).filter((tabId: string) => {
-            return segmentRegistry[tabId] !== undefined;
+            return validSegmentIds.includes(tabId);
           });
           
           // If we filtered anything out, save the cleaned tab_order back to database
           if (validOrder.length !== order.length && user) {
-            console.log("🧹 Cleaning tab_order: Removed deleted segments");
+            console.log("🧹 Cleaning tab_order: Removed deleted segments", {
+              original: order,
+              cleaned: validOrder,
+              validSegmentIds
+            });
             supabase
               .from("page_content")
               .upsert({
@@ -889,6 +897,11 @@ const AdminDashboard = () => {
           }
           
           setTabOrder(validOrder.length > 0 ? validOrder : []);
+          
+          // Set activeTab to first available tab if not already set or if current tab is invalid
+          if (validOrder.length > 0 && (!activeTab || !validOrder.includes(activeTab))) {
+            setActiveTab(validOrder[0]);
+          }
         } catch {
           setTabOrder([]);
         }
