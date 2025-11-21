@@ -716,8 +716,9 @@ const AdminDashboard = () => {
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       
-      // Navigate to the new page in admin dashboard to start editing
-      navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
+      // Force full page reload to refresh dropdown with new CMS page
+      window.location.href = `/admin-dashboard?page=${selectedPageForCMS}`;
+      
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
