@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 
 interface FullHeroProps {
+  id?: string | number;
   titleLine1: string;
   titleLine2: string;
   subtitle: string;
@@ -20,6 +21,7 @@ interface FullHeroProps {
 }
 
 const FullHero = ({
+  id,
   titleLine1,
   titleLine2,
   subtitle,
@@ -82,7 +84,7 @@ const FullHero = ({
   };
 
   return (
-    <section className="relative overflow-hidden" style={{ minHeight: 'calc(100vh - 220px)' }}>
+    <section id={id?.toString()} className="relative overflow-hidden" style={{ minHeight: 'calc(100vh - 220px)' }}>
       {/* Background (Image or Video) */}
       <div className="absolute inset-0 animate-fade-in">
         {backgroundType === 'image' && imageUrl ? (
