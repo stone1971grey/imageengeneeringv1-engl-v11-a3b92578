@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -3274,7 +3274,7 @@ const AdminDashboard = () => {
                     if (customKey && customKey !== String(segmentId)) {
                       label = customKey;
                     } else {
-                      if (segment.type === 'hero') label = `Hero ${displayNumber}`;
+                      if (segment.type === 'hero') label = `Produkt Hero ${displayNumber}`;
                       if (segment.type === 'product-hero-gallery') label = `Product Gallery ${displayNumber}`;
                       if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
                       if (segment.type === 'banner') label = `Banner ${displayNumber}`;
@@ -4877,7 +4877,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-white">
-                        {segment.type === 'hero' && `Hero Section ${segment.position + 1}`}
+                        {segment.type === 'hero' && `Produkt Hero ${segment.position + 1}`}
                         {segment.type === 'meta-navigation' && `Meta Navigation ${segment.position + 1}`}
                         {segment.type === 'product-hero-gallery' && `Product Hero Gallery ${segment.position + 1}`}
                         {segment.type === 'tiles' && `Tiles Section ${segment.position + 1}`}
@@ -4963,12 +4963,78 @@ const AdminDashboard = () => {
                       hero_top_spacing: 'medium'
                     };
                     
+                    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      try {
+                        // Upload to Supabase Storage first
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${Date.now()}.${fileExt}`;
+                        const filePath = `${selectedPage}/${fileName}`;
+
+                        const { error: uploadError } = await supabase.storage
+                          .from('page-images')
+                          .upload(filePath, file);
+
+                        if (uploadError) throw uploadError;
+
+                        // Get public URL
+                        const { data: urlData } = supabase.storage
+                          .from('page-images')
+                          .getPublicUrl(filePath);
+
+                        // Extract metadata with URL
+                        const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
+                        const metadata: ImageMetadata = {
+                          ...metadataWithoutAlt,
+                          altText: ''
+                        };
+
+                        // Update segment with image URL and metadata
+                        const newSegments = [...pageSegments];
+                        newSegments[index].data = {
+                          ...heroData,
+                          hero_image_url: urlData.publicUrl,
+                          hero_image_metadata: metadata
+                        };
+                        setPageSegments(newSegments);
+                        
+                        toast.success("Bild erfolgreich hochgeladen");
+                      } catch (error) {
+                        console.error('Image upload error:', error);
+                        toast.error("Upload fehlgeschlagen");
+                      }
+                    };
+
+                    const handleImageDelete = async () => {
+                      if (!heroData.hero_image_url) return;
+
+                      try {
+                        const filePath = heroData.hero_image_url.split('/page-images/')[1];
+                        if (filePath) {
+                          await supabase.storage
+                            .from('page-images')
+                            .remove([filePath]);
+                        }
+
+                        const newSegments = [...pageSegments];
+                        newSegments[index].data = {
+                          ...heroData,
+                          hero_image_url: '',
+                          hero_image_metadata: null
+                        };
+                        setPageSegments(newSegments);
+                        
+                        toast.success("Bild erfolgreich gelöscht");
+                      } catch (error) {
+                        console.error('Image delete error:', error);
+                        toast.error("Löschen fehlgeschlagen");
+                      }
+                    };
+                    
                     return (
                       <div className="space-y-6">
-                        <p className="text-sm text-white mb-4">
-                          This is a dynamically copied Hero segment. Edit the content below:
-                        </p>
-                        
                         <div className="space-y-4">
                           <div>
                             <Label className="text-white">Title</Label>
@@ -5016,6 +5082,76 @@ const AdminDashboard = () => {
                               }}
                               className="border-2 border-gray-600 text-black min-h-[100px]"
                             />
+                          </div>
+
+                          <div>
+                            <Label className="text-white mb-2 block">Hero Bild</Label>
+                            {heroData.hero_image_url ? (
+                              <div className="space-y-3">
+                                <div className="relative group">
+                                  <img
+                                    src={heroData.hero_image_url}
+                                    alt="Hero Preview"
+                                    className="w-full h-48 object-cover rounded-lg"
+                                  />
+                                  <Button
+                                    onClick={handleImageDelete}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                                {heroData.hero_image_metadata && (
+                                  <div className="text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
+                                    <p><strong>Dateiname:</strong> {heroData.hero_image_metadata.originalFileName}</p>
+                                    <p><strong>Größe:</strong> {heroData.hero_image_metadata.width} × {heroData.hero_image_metadata.height} px</p>
+                                    <p><strong>Dateigröße:</strong> {formatFileSize(heroData.hero_image_metadata.fileSizeKB)}</p>
+                                    <p><strong>Format:</strong> {heroData.hero_image_metadata.format}</p>
+                                    <p><strong>Hochgeladen:</strong> {formatUploadDate(heroData.hero_image_metadata.uploadDate)}</p>
+                                  </div>
+                                )}
+                                <div>
+                                  <Label className="text-white">Alt Text (SEO)</Label>
+                                  <Input
+                                    value={heroData.hero_image_metadata?.altText || ''}
+                                    onChange={(e) => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_image_metadata: {
+                                          ...heroData.hero_image_metadata,
+                                          altText: e.target.value
+                                        }
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    placeholder="Beschreiben Sie das Bild für SEO..."
+                                    className="border-2 border-gray-600 text-black"
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors">
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageUpload}
+                                  className="hidden"
+                                  id={`hero-image-upload-${segment.id}`}
+                                />
+                                <label
+                                  htmlFor={`hero-image-upload-${segment.id}`}
+                                  className="cursor-pointer flex flex-col items-center gap-2"
+                                >
+                                  <Upload className="h-8 w-8 text-gray-400" />
+                                  <span className="text-sm text-gray-400">
+                                    Klicken zum Hochladen oder Datei hierher ziehen
+                                  </span>
+                                </label>
+                              </div>
+                            )}
                           </div>
                           
                           <div className="flex justify-end pt-4 border-t border-gray-600">
