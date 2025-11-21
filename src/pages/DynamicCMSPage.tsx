@@ -230,7 +230,7 @@ const DynamicCMSPage = () => {
             subtext={segment.data?.subtext}
             layout={segment.data?.layout}
             rows={segment.data?.rows}
-            items={segment.data?.features || []}
+            items={segment.data?.items || []}
           />
         );
 
@@ -317,9 +317,9 @@ const DynamicCMSPage = () => {
           <IndustriesSegment
             key={segmentId}
             title={segment.data?.title || ""}
-            subtitle={segment.data?.description || ""}
+            subtitle={segment.data?.subtitle || ""}
             columns={segment.data?.columns}
-            items={segment.data?.industries || []}
+            items={segment.data?.items || []}
           />
         );
 
@@ -395,43 +395,43 @@ const DynamicCMSPage = () => {
         return (
           <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-white">
             <div className="container mx-auto px-6">
-              {segment.data?.bannerTitle && (
+              {segment.data?.title && (
                 <div className="text-center mb-16">
                   <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.bannerTitle}
+                    {segment.data.title}
                   </h2>
-                  {segment.data?.bannerSubtext && (
+                  {segment.data?.subtext && (
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                      {segment.data.bannerSubtext}
+                      {segment.data.subtext}
                     </p>
                   )}
                 </div>
               )}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-                {(segment.data?.bannerImages || []).map((banner: any, idx: number) => (
+                {(segment.data?.images || []).map((banner: any, idx: number) => (
                   <div
                     key={idx}
                     className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
                   >
                     <img
-                      src={banner.imageUrl}
-                      alt={banner.altText}
+                      src={banner.url}
+                      alt={banner.alt}
                       className="max-h-16 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
                 ))}
               </div>
-              {segment.data?.bannerButtonText && segment.data?.bannerButtonLink && (
+              {segment.data?.buttonText && segment.data?.buttonLink && (
                 <div className="text-center">
                   <Link
-                    to={segment.data.bannerButtonLink}
+                    to={segment.data.buttonLink}
                     className={`inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
-                      segment.data.bannerButtonStyle === "technical"
+                      segment.data.buttonStyle === "technical"
                         ? "bg-gray-800 text-white hover:bg-gray-900"
                         : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
                     }`}
                   >
-                    {segment.data.bannerButtonText}
+                    {segment.data.buttonText}
                   </Link>
                 </div>
               )}
@@ -442,29 +442,29 @@ const DynamicCMSPage = () => {
       case "image-text":
       case "solutions":
         const layoutClass =
-          segment.data?.solutionsLayout === "1-col"
+          segment.data?.layout === "1-col"
             ? "grid-cols-1"
-            : segment.data?.solutionsLayout === "3-col"
+            : segment.data?.layout === "3-col"
             ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             : "grid-cols-1 md:grid-cols-2";
 
         return (
           <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-gray-50">
             <div className="container mx-auto px-6">
-              {segment.data?.solutionsTitle && (
+              {segment.data?.title && (
                 <div className="text-center mb-16">
                   <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.solutionsTitle}
+                    {segment.data.title}
                   </h2>
-                  {segment.data?.solutionsSubtext && (
+                  {segment.data?.subtext && (
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                      {segment.data.solutionsSubtext}
+                      {segment.data.subtext}
                     </p>
                   )}
                 </div>
               )}
               <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
-                {(segment.data?.solutionsItems || []).map((solution: any, idx: number) => (
+                {(segment.data?.items || []).map((solution: any, idx: number) => (
                   <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
                     {solution.imageUrl && (
                       <div className="w-full h-64 overflow-hidden">
