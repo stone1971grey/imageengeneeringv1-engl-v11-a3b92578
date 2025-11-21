@@ -98,7 +98,41 @@ const ScannersArchiving = () => {
       case 'full-hero':
         return <FullHero key={segmentId} {...segment.data} />;
       case 'hero':
-        return <FullHero key={segmentId} {...segment.data} />;
+        return (
+          <section key={segmentId} id={String(numericId)} className={`relative py-16 ${segment.data?.topPadding === 'small' ? 'pt-16' : segment.data?.topPadding === 'medium' ? 'pt-24' : segment.data?.topPadding === 'large' ? 'pt-32' : 'pt-40'}`}>
+            <div className="container mx-auto px-6">
+              <div className={`grid gap-12 items-center ${segment.data?.imagePosition === 'left' ? 'md:grid-cols-2' : segment.data?.imagePosition === 'right' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+                {segment.data?.imagePosition === 'left' && segment.data?.imageUrl && (
+                  <div className="order-1">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
+                )}
+                <div className={segment.data?.imagePosition === 'left' ? 'order-2' : segment.data?.imagePosition === 'right' ? 'order-1' : 'text-center max-w-4xl mx-auto'}>
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">{segment.data?.title}</h1>
+                  <p className="text-xl text-gray-600 mb-8">{segment.data?.subtitle}</p>
+                  {segment.data?.ctaText && (
+                    <a href={segment.data.ctaLink} className="inline-block px-8 py-4 rounded-md text-lg font-medium transition-all duration-300" style={{
+                      backgroundColor: segment.data.ctaStyle === "technical" ? "#1f2937" : "#f9dc24",
+                      color: segment.data.ctaStyle === "technical" ? "#ffffff" : "#000000"
+                    }}>
+                      {segment.data.ctaText}
+                    </a>
+                  )}
+                </div>
+                {segment.data?.imagePosition === 'right' && segment.data?.imageUrl && (
+                  <div className="order-2">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
+                )}
+                {segment.data?.imagePosition === 'center' && segment.data?.imageUrl && (
+                  <div className="w-full max-w-4xl mx-auto mt-12">
+                    <img src={segment.data.imageUrl} alt={segment.data.title} className="w-full h-auto rounded-lg shadow-lg" />
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        );
       case 'intro':
         return <Intro key={segmentId} {...segment.data} />;
       case 'industries':
