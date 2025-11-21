@@ -5355,7 +5355,7 @@ const AdminDashboard = () => {
                                   >
                                     <div className="h-2 bg-gray-700 rounded mb-2"></div>
                                     <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">Small (64px)</span>
+                                    <span className="text-xs text-white block mt-2">Small (30px)</span>
                                   </button>
                                   
                                   <button
@@ -5376,7 +5376,7 @@ const AdminDashboard = () => {
                                   >
                                     <div className="h-4 bg-gray-700 rounded mb-2"></div>
                                     <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">Medium (96px)</span>
+                                    <span className="text-xs text-white block mt-2">Medium (50px)</span>
                                   </button>
                                   
                                   <button
@@ -5397,7 +5397,7 @@ const AdminDashboard = () => {
                                   >
                                     <div className="h-6 bg-gray-700 rounded mb-2"></div>
                                     <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">Large (128px)</span>
+                                    <span className="text-xs text-white block mt-2">Large (70px)</span>
                                   </button>
                                   
                                   <button
@@ -5406,19 +5406,19 @@ const AdminDashboard = () => {
                                       const newSegments = [...pageSegments];
                                       newSegments[index].data = {
                                         ...heroData,
-                                        hero_top_spacing: 'extra-large'
+                                        hero_top_spacing: 'xlarge'
                                       };
                                       setPageSegments(newSegments);
                                     }}
                                     className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_top_spacing || 'medium') === 'extra-large'
+                                      (heroData.hero_top_spacing || 'medium') === 'xlarge'
                                         ? 'border-[#f9dc24] bg-[#f9dc24]/10'
                                         : 'border-gray-600 hover:border-gray-500'
                                     }`}
                                   >
                                     <div className="h-8 bg-gray-700 rounded mb-2"></div>
                                     <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">XL (160px)</span>
+                                    <span className="text-xs text-white block mt-2">XL (90px)</span>
                                   </button>
                                 </div>
                               </div>
