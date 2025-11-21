@@ -62,13 +62,26 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       .select('page_slug, page_id, page_title');
 
     if (data) {
-      // Map both by slug AND by normalized title for fallback
+      // Map by slug, normalized title, AND partial slug matches
       const mapping = new Map<string, number>();
       data.forEach(item => {
+        // Direct slug mapping
         mapping.set(item.page_slug, item.page_id);
-        // Also map by normalized title as fallback
+        
+        // Normalized title mapping (fallback)
         const normalizedTitle = item.page_title.toLowerCase().replace(/[^a-z0-9]/g, '');
         mapping.set(`title:${normalizedTitle}`, item.page_id);
+        
+        // Partial slug mapping (for pages with displaySlug mismatch)
+        // e.g. "vcx-phonecam" should match "mobile-phone-vcx-phonecam"
+        const slugParts = item.page_slug.split('-');
+        if (slugParts.length > 1) {
+          // Store by last 2-3 parts of slug
+          const lastTwoParts = slugParts.slice(-2).join('-');
+          const lastThreeParts = slugParts.slice(-3).join('-');
+          mapping.set(`partial:${lastTwoParts}`, item.page_id);
+          mapping.set(`partial:${lastThreeParts}`, item.page_id);
+        }
       });
       setPageIdMap(mapping);
     }
@@ -254,16 +267,31 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   };
 
   const getPageIdForStatus = (status: { slug: string; title: string }) => {
-    // First try direct slug lookup
-    let pageId = pageIdMap.get(status.slug);
+    // Try multiple matching strategies
     
-    // If not found, try normalized title lookup
-    if (pageId === undefined) {
-      const normalizedTitle = status.title.toLowerCase().replace(/[^a-z0-9]/g, '');
-      pageId = pageIdMap.get(`title:${normalizedTitle}`);
+    // 1. Direct slug lookup
+    let pageId = pageIdMap.get(status.slug);
+    if (pageId !== undefined) return pageId;
+    
+    // 2. Normalized title lookup
+    const normalizedTitle = status.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+    pageId = pageIdMap.get(`title:${normalizedTitle}`);
+    if (pageId !== undefined) return pageId;
+    
+    // 3. Partial slug matching (for displaySlug mismatches)
+    // Extract last 2-3 parts of slug and try partial match
+    const slugParts = status.slug.split('-');
+    if (slugParts.length > 1) {
+      const lastTwoParts = slugParts.slice(-2).join('-');
+      pageId = pageIdMap.get(`partial:${lastTwoParts}`);
+      if (pageId !== undefined) return pageId;
+      
+      const lastThreeParts = slugParts.slice(-3).join('-');
+      pageId = pageIdMap.get(`partial:${lastThreeParts}`);
+      if (pageId !== undefined) return pageId;
     }
     
-    return pageId;
+    return undefined;
   };
 
   const getItemLabel = (status: PageStatus) => {
