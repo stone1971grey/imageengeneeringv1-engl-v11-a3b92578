@@ -151,16 +151,31 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
             // Nur hinzufügen wenn Daten vorhanden
             if (Object.keys(legacyData).length > 0 && Object.values(legacyData).some(v => v !== undefined && v !== '' && v !== null)) {
               legacySegments.push({
-                id: seg.segment_key,
+                id: seg.segment_id.toString(),  // Use segment_id instead of segment_key
                 type: seg.segment_type,
                 data: legacyData
               });
+              console.log(`[DynamicCMSPage] Loaded legacy data for segment ${seg.segment_id} (${seg.segment_type})`);
             }
           }
         });
         
         // Merge: loadedSegments + legacySegments
-        setPageSegments([...loadedSegments, ...legacySegments]);
+        const allSegments = [...loadedSegments, ...legacySegments];
+        setPageSegments(allSegments);
+        
+        // Update tabOrder to include ALL segment IDs (including legacy)
+        if (allSegments.length > 0) {
+          const allSegmentIds = allSegments.map(s => s.id.toString());
+          const currentTabOrder = tabOrder.filter(id => allSegmentIds.includes(id.toString()));
+          const missingSegmentIds = allSegmentIds.filter(id => !currentTabOrder.includes(id));
+          
+          if (missingSegmentIds.length > 0) {
+            const updatedTabOrder = [...currentTabOrder, ...missingSegmentIds];
+            setTabOrder(updatedTabOrder);
+            console.log('[DynamicCMSPage] Updated tabOrder with legacy segments:', updatedTabOrder);
+          }
+        }
       }
     } catch (error) {
       console.error("Error loading content:", error);
