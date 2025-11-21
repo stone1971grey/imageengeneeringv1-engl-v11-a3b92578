@@ -440,9 +440,10 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!user || !selectedPage || pageSegments.length === 0) return;
     
-    // Get all current segment IDs from pageSegments (excluding fixed-position segments)
+    // Get all current segment IDs from pageSegments (excluding ONLY meta-navigation which is fixed-position)
+    // IMPORTANT: full-hero MUST be included in tab_order to be rendered!
     const segmentIds = pageSegments
-      .filter(seg => seg.type !== 'meta-navigation' && seg.type !== 'full-hero')
+      .filter(seg => seg.type !== 'meta-navigation')
       .map(seg => seg.id);
     
     // Remove deleted/non-existent segments from tabOrder
@@ -702,11 +703,16 @@ const AdminDashboard = () => {
           .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
           .join(' ');
 
+        // Generate hierarchical page_slug based on parent relationship
+        const hierarchicalSlug = parent_slug 
+          ? `${parent_slug}/${selectedPageForCMS}`
+          : selectedPageForCMS;
+
         const { data: newPageData, error: insertError } = await supabase
           .from("page_registry")
           .insert({
             page_id: nextPageId,
-            page_slug: selectedPageForCMS,
+            page_slug: hierarchicalSlug,
             page_title: inferredTitle,
             parent_id,
             parent_slug,
@@ -736,8 +742,11 @@ const AdminDashboard = () => {
       const baseId = (maxSegment?.segment_id || 0) + 1;
 
       // 3. Create segment_registry entry for footer only (UDA approach)
+      // Use hierarchical slug from pageInfo
+      const finalSlug = pageInfo.page_slug;
+      
       const segmentEntries = [
-        { page_slug: selectedPageForCMS, segment_key: 'footer', segment_id: baseId, segment_type: 'footer', is_static: true, deleted: false, position: 999 },
+        { page_slug: finalSlug, segment_key: 'footer', segment_id: baseId, segment_type: 'footer', is_static: true, deleted: false, position: 999 },
       ];
 
       const { error: segmentError } = await supabase
@@ -748,12 +757,12 @@ const AdminDashboard = () => {
 
       // 4. Create page_content entries (UDA structure: only tab_order, page_segments, seo_settings)
       const contentEntries = [
-        { page_slug: selectedPageForCMS, section_key: 'tab_order', content_type: 'json', content_value: '["footer"]' },
-        { page_slug: selectedPageForCMS, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
-        { page_slug: selectedPageForCMS, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
+        { page_slug: finalSlug, section_key: 'tab_order', content_type: 'json', content_value: '["footer"]' },
+        { page_slug: finalSlug, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
+        { page_slug: finalSlug, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
           title: `${pageInfo.page_title} | Image Engineering`,
           description: '',
-          canonical: `https://www.image-engineering.de/${selectedPageForCMS}`,
+          canonical: `https://www.image-engineering.de/${finalSlug}`,
           robotsIndex: true,
           robotsFollow: true
         }) },
@@ -765,19 +774,8 @@ const AdminDashboard = () => {
 
       if (contentError) throw contentError;
 
-      // 5. Build hierarchical URL
-      let hierarchicalUrl = '';
-      if (pageInfo.parent_slug === 'your-solution') {
-        hierarchicalUrl = `/your-solution/${selectedPageForCMS}`;
-      } else if (pageInfo.parent_slug === 'automotive') {
-        hierarchicalUrl = `/your-solution/automotive/${selectedPageForCMS}`;
-      } else if (pageInfo.parent_slug === 'scanners-archiving') {
-        hierarchicalUrl = `/your-solution/scanners-archiving/${selectedPageForCMS}`;
-      } else if (pageInfo.parent_slug) {
-        hierarchicalUrl = `/${pageInfo.parent_slug}/${selectedPageForCMS}`;
-      } else {
-        hierarchicalUrl = `/${selectedPageForCMS}`;
-      }
+      // 5. Build hierarchical URL from page_slug (which is now already hierarchical)
+      const hierarchicalUrl = `/${pageInfo.page_slug}`;
 
       toast.success(`✅ Backend erstellt! Starte automatisches Frontend-Setup...`, {
         duration: 3000,
@@ -801,8 +799,8 @@ const AdminDashboard = () => {
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       
-      // Force full page reload to refresh dropdown with new CMS page
-      window.location.href = `/admin-dashboard?page=${selectedPageForCMS}`;
+      // Force full page reload to refresh dropdown with new CMS page (use hierarchical slug)
+      window.location.href = `/admin-dashboard?page=${pageInfo.page_slug}`;
       
       
     } catch (error: any) {
