@@ -29,7 +29,7 @@ export const navigationDataKo = {
         { name: "색상 보정", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "카메라 안정화", link: "#" },
         { name: "ISP 튜닝", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "타이밍 측정", link: "#" }
+        { name: "타이밍 측정", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {

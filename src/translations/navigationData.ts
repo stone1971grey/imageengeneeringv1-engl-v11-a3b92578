@@ -29,7 +29,7 @@ export const navigationDataEn = {
         { name: "Color Calibration", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "Camera Stabilization", link: "#" },
         { name: "ISP Tuning", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "Timing Measurements", link: "#" }
+        { name: "Timing Measurements", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {
