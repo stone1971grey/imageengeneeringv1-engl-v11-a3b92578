@@ -314,7 +314,7 @@ const Photography = () => {
         return <Specification key={segmentId} id={segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'full-hero') {
-        return <FullHero key={segmentId} {...dynamicSegment.data} />;
+        return <FullHero key={segmentId} id={segmentIdMap[segmentId] || segmentId} {...dynamicSegment.data} />;
       }
       if (dynamicSegment.type === 'intro') {
         return <Intro key={segmentId} {...dynamicSegment.data} />;
