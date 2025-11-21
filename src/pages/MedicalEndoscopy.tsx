@@ -303,9 +303,8 @@ const MedicalEndoscopy = () => {
       <SEOHead 
         title={seoData?.title || "Medical & Endoscopy"}
         description={seoData?.description || ""}
-        keywords={seoData?.keywords || ""}
         ogImage={seoData?.ogImage || ""}
-        canonicalUrl={seoData?.canonicalUrl || ""}
+        canonical={seoData?.canonicalUrl || ""}
       />
       <Navigation />
       <main>
