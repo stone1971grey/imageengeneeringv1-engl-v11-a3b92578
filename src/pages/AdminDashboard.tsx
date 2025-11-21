@@ -5110,7 +5110,7 @@ const AdminDashboard = () => {
                                 };
                                 setPageSegments(newSegments);
                               }}
-                              className="border-2 border-gray-600 text-black"
+                              className="border-2 border-gray-600 text-white bg-gray-800"
                             />
                           </div>
                           
@@ -5126,7 +5126,7 @@ const AdminDashboard = () => {
                                 };
                                 setPageSegments(newSegments);
                               }}
-                              className="border-2 border-gray-600 text-black"
+                              className="border-2 border-gray-600 text-white bg-gray-800"
                             />
                           </div>
                           
@@ -5142,7 +5142,7 @@ const AdminDashboard = () => {
                                 };
                                 setPageSegments(newSegments);
                               }}
-                              className="border-2 border-gray-600 text-black min-h-[100px]"
+                              className="border-2 border-gray-600 text-white bg-gray-800 min-h-[100px]"
                             />
                           </div>
 
@@ -5158,7 +5158,7 @@ const AdminDashboard = () => {
                                 };
                                 setPageSegments(newSegments);
                               }}
-                              className="border-2 border-gray-600 text-black"
+                              className="border-2 border-gray-600 text-white bg-gray-800"
                             />
                           </div>
 
@@ -5174,7 +5174,7 @@ const AdminDashboard = () => {
                                 };
                                 setPageSegments(newSegments);
                               }}
-                              className="border-2 border-gray-600 text-black"
+                              className="border-2 border-gray-600 text-white bg-gray-800"
                               placeholder="#section-id or /path"
                             />
                           </div>
@@ -5192,7 +5192,7 @@ const AdminDashboard = () => {
                                 setPageSegments(newSegments);
                               }}
                             >
-                              <SelectTrigger className="border-2 border-gray-600 text-black">
+                              <SelectTrigger className="border-2 border-gray-600 text-white bg-gray-800">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
