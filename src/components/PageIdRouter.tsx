@@ -10,7 +10,6 @@ import MachineVision from "@/pages/MachineVision";
 import WebCamera from "@/pages/WebCamera";
 import UniversalTestTarget from "@/pages/UniversalTestTarget";
 import ISO21550 from "@/pages/ISO21550";
-import NIRAutomotive from "@/pages/NIRAutomotive";
 
 // Page ID to Component mapping (must match page_registry table)
 const pageComponentMap: Record<number, React.ComponentType> = {
@@ -19,7 +18,6 @@ const pageComponentMap: Record<number, React.ComponentType> = {
   11: MedicalEndoscopy,     // medical-endoscopy
   12: WebCamera,            // web-camera
   13: MachineVision,        // machine-vision
-  239: NIRAutomotive,       // nir-automotive
   260: ISO21550,            // iso-21550
   261: UniversalTestTarget, // universal-test-target
 };
