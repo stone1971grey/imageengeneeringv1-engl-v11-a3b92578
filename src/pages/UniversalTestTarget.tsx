@@ -75,7 +75,9 @@ const UniversalTestTarget = () => {
   };
 
   const renderSegment = (segmentId: string) => {
-    const segment = pageSegments.find(seg => seg.id === segmentId);
+    const segment = pageSegments.find(
+      (seg) => seg.id === segmentId || seg.id === Number(segmentId) || seg.id?.toString() === segmentId
+    );
     if (!segment) return null;
 
     const numericId = segmentIdMap[segmentId] || segmentId;
