@@ -83,7 +83,6 @@ const App = () => (
         {/* Universal catch-all routes for DynamicCMSPage - any new page works automatically! */}
         <Route path="/your-solution/:slug" element={<DynamicCMSPage />} />
         <Route path="/your-solution/automotive/:slug" element={<DynamicCMSPage />} />
-        <Route path="/your-solution/mobile-phone/:slug" element={<DynamicCMSPage />} />
         <Route path="/your-solution/scanners-archiving/:slug" element={<DynamicCMSPage />} />
         
         {/* Hierarchical Product Routes */}
