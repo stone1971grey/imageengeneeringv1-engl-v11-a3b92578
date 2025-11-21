@@ -2013,6 +2013,20 @@ const AdminDashboard = () => {
   const handleAddSegment = async (templateType: string) => {
     if (!user) return;
 
+    // Check for mutual exclusivity between Full Hero and Meta Navigation
+    const hasFullHero = pageSegments.some(seg => seg.type === 'full-hero');
+    const hasMetaNav = pageSegments.some(seg => seg.type === 'meta-navigation');
+
+    if (templateType === 'full-hero' && hasMetaNav) {
+      toast.error("Full Hero cannot be added when Meta Navigation is present. Please remove Meta Navigation first.");
+      return;
+    }
+
+    if (templateType === 'meta-navigation' && hasFullHero) {
+      toast.error("Meta Navigation cannot be added when Full Hero is present. Please remove Full Hero first.");
+      return;
+    }
+
     // Generate a unique numeric ID for this segment (globally unique across all pages)
     const segmentId = nextSegmentId;
     console.log("Creating new segment with global ID:", segmentId);
@@ -2413,9 +2427,18 @@ const AdminDashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
                       {/* Full Hero */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 bg-white hover:shadow-xl ${
+                          pageSegments.some(seg => seg.type === 'meta-navigation')
+                            ? 'border-red-300 opacity-60 cursor-not-allowed'
+                            : 'border-gray-200 hover:border-[#f9dc24] cursor-pointer'
+                        }`}
                         onClick={() => handleAddSegment('full-hero')}
                       >
+                        {pageSegments.some(seg => seg.type === 'meta-navigation') && (
+                          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+                            Blocked by Meta Nav
+                          </div>
+                        )}
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2427,6 +2450,11 @@ const AdminDashboard = () => {
                             <p className="text-sm text-gray-600 mt-1">
                               Full-width hero with background image, title, subtitle and description
                             </p>
+                            {pageSegments.some(seg => seg.type === 'meta-navigation') && (
+                              <p className="text-xs text-red-600 mt-2 font-semibold">
+                                ⚠️ Cannot be used with Meta Navigation
+                              </p>
+                            )}
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
@@ -2501,9 +2529,18 @@ const AdminDashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
                       {/* Meta Navigation */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 bg-white hover:shadow-xl ${
+                          pageSegments.some(seg => seg.type === 'full-hero')
+                            ? 'border-red-300 opacity-60 cursor-not-allowed'
+                            : 'border-gray-200 hover:border-[#f9dc24] cursor-pointer'
+                        }`}
                         onClick={() => handleAddSegment('meta-navigation')}
                       >
+                        {pageSegments.some(seg => seg.type === 'full-hero') && (
+                          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+                            Blocked by Full Hero
+                          </div>
+                        )}
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -2515,6 +2552,11 @@ const AdminDashboard = () => {
                             <p className="text-sm text-gray-600 mt-1">
                               Navigation links to related pages or sections
                             </p>
+                            {pageSegments.some(seg => seg.type === 'full-hero') && (
+                              <p className="text-xs text-red-600 mt-2 font-semibold">
+                                ⚠️ Cannot be used with Full Hero
+                              </p>
+                            )}
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
