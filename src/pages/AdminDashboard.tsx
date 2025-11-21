@@ -2471,7 +2471,7 @@ const AdminDashboard = () => {
                             <Eye className="h-7 w-7 text-gray-900" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Hero Section</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Produkt Hero</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Main page hero with image, title, description and CTA button
                             </p>
@@ -2885,7 +2885,7 @@ const AdminDashboard = () => {
                         <Eye className="h-7 w-7 text-gray-900" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">Hero Section</h3>
+                        <h3 className="text-lg font-bold text-gray-900">Produkt Hero</h3>
                         <p className="text-sm text-gray-600 mt-1">
                           Main page hero with image, title, description and CTA button
                         </p>
@@ -3318,7 +3318,7 @@ const AdminDashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-white">Hero Section</CardTitle>
+                  <CardTitle className="text-white">Produkt Hero</CardTitle>
                   <CardDescription className="text-gray-300">Edit the main hero section content</CardDescription>
                   <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                     ID: {segmentRegistry['hero'] || 1}
@@ -5177,7 +5177,7 @@ const AdminDashboard = () => {
                     if (segmentRegistry['hero']) {
                       availableSegments.push({
                         id: segmentRegistry['hero'].toString(),
-                        title: content.hero_title || 'Hero Section'
+                        title: content.hero_title || 'Produkt Hero'
                       });
                     }
                     
