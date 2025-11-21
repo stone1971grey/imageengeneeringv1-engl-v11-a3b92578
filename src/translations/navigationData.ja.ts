@@ -29,7 +29,7 @@ export const navigationDataJa = {
         { name: "色較正", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "カメラ手ブレ補正", link: "#" },
         { name: "ISPチューニング", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "タイミング測定", link: "#" }
+        { name: "タイミング測定", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {

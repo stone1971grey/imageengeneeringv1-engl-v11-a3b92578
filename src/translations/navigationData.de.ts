@@ -29,7 +29,7 @@ export const navigationDataDe = {
         { name: "Farbkalibrierung", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "Kamerastabilisierung", link: "#" },
         { name: "ISP-Tuning", link: "/your-solution/mobile-phone/isp-tuning" },
-        { name: "Timing-Messungen", link: "#" }
+        { name: "Timing-Messungen", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
     },
     "Web Camera": {
