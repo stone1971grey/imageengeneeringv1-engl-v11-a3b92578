@@ -23,7 +23,6 @@ import MultispectralIllumination from "./pages/MultispectralIllumination";
 import ScannerDynamicRange from "./pages/ScannerDynamicRange";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
-import ProductLE7 from "./pages/ProductLE7";
 import HiddenSegments from "./pages/HiddenSegments";
 import Backlog from "./pages/Backlog";
 import Charts from "./pages/Charts";
@@ -97,7 +96,6 @@ const App = () => (
         <Route path="/your-solution/scanners-archiving/scanner-dynamic-range" element={<ScannerDynamicRange />} />
         
         {/* Hierarchical Product Routes */}
-        <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
         
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
