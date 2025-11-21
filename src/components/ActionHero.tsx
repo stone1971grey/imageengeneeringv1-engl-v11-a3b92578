@@ -18,7 +18,7 @@ const ActionHero = ({ title, subtitle, backgroundImage, flipImage = true }: Acti
       />
       <div className="relative container mx-auto px-6 z-20 h-full flex items-center">
         <div className="max-w-4xl">
-          <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
+          <h1 className="text-4xl lg:text-6xl font-bold text-white mb-6">
             {title}
           </h1>
           <p className="text-xl lg:text-2xl text-white max-w-2xl line-clamp-3">

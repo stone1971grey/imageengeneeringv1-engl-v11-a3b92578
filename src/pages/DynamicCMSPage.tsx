@@ -137,7 +137,12 @@ const DynamicCMSPage = () => {
     switch (segment.type) {
       case "hero":
         return (
-          <section key={segmentId} id={segmentDbId?.toString()} className={`py-${segment.data?.hero_top_spacing === 'small' ? '16' : segment.data?.hero_top_spacing === 'large' ? '32' : segment.data?.hero_top_spacing === 'xlarge' ? '40' : '24'}`}>
+          <section key={segmentId} id={segmentDbId?.toString()} className={`${
+            segment.data?.hero_top_spacing === 'small' ? 'pt-[30px]' : 
+            segment.data?.hero_top_spacing === 'large' ? 'pt-[70px]' : 
+            segment.data?.hero_top_spacing === 'xlarge' ? 'pt-[90px]' : 
+            'pt-[50px]'
+          } pb-16`}>
             <div className="container mx-auto px-6">
               <div className={`grid gap-12 items-center ${
                 segment.data?.hero_layout_ratio === '1-1' ? 'grid-cols-1 lg:grid-cols-2' :
@@ -145,13 +150,13 @@ const DynamicCMSPage = () => {
                 'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3'
               } ${segment.data?.hero_image_position === 'left' ? '[&>*:first-child]:order-2 lg:[&>*:first-child]:order-1' : ''}`}>
                 <div className={segment.data?.hero_image_position === 'left' ? 'order-1' : ''}>
-                  <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light text-foreground leading-tight tracking-tight mb-6">
+                  <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light text-white leading-tight tracking-tight mb-6">
                     {segment.data?.hero_title || ''}
                     {segment.data?.hero_subtitle && (
                       <span className="font-medium block">{segment.data.hero_subtitle}</span>
                     )}
                   </h1>
-                  <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed mb-8">
+                  <p className="text-lg lg:text-xl text-white leading-relaxed mb-8">
                     {segment.data?.hero_description || ''}
                   </p>
                   {segment.data?.hero_cta_text && (
@@ -172,7 +177,7 @@ const DynamicCMSPage = () => {
                     <img
                       src={segment.data.hero_image_url}
                       alt={segment.data.hero_image_metadata?.altText || segment.data.hero_title || 'Hero image'}
-                      className="w-full h-auto object-cover rounded-xl shadow-2xl"
+                      className="w-full h-auto object-cover shadow-2xl"
                     />
                   </div>
                 )}
