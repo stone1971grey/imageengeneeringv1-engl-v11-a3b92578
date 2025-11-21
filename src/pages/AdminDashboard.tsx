@@ -6185,44 +6185,54 @@ const AdminDashboard = () => {
 
       {/* Create New CMS Page Dialog */}
       <Dialog open={isCreateCMSDialogOpen} onOpenChange={setIsCreateCMSDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-gray-900 border-2 border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">Create New CMS Page</DialogTitle>
-            <DialogDescription className="text-base">
-              This will automatically set up a new CMS-enabled page with all required database entries.
-              Select a page below to convert it to a CMS page.
+            <DialogTitle className="text-2xl font-bold text-white">Create New CMS Page</DialogTitle>
+            <DialogDescription className="text-base text-gray-300">
+              Fully automated CMS page creation with one click. The system will handle all backend setup, routing, and frontend rendering automatically.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-6 py-4">
             <div className="space-y-2">
-              <Label htmlFor="page-select" className="text-base font-semibold">
+              <Label htmlFor="page-select" className="text-base font-semibold text-white">
                 Select Page
               </Label>
               <HierarchicalPageSelect
                 value={selectedPageForCMS}
                 onValueChange={setSelectedPageForCMS}
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-gray-400">
                 Choose a page that is not yet CMS-enabled (pages without ✓ checkmark)
               </p>
             </div>
 
               {selectedPageForCMS && (
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-                <h4 className="font-semibold text-blue-900 mb-2">What will be created automatically:</h4>
-                <ul className="space-y-1 text-sm text-blue-800 mb-4">
-                  <li>✓ 5 entries in segment_registry (hero, tiles, banner, solutions, footer)</li>
-                  <li>✓ 27 entries in page_content (all required fields)</li>
-                  <li>✓ SEO settings initialized</li>
+              <div className="rounded-lg border-2 border-[#f9dc24] bg-gray-800 p-5">
+                <h4 className="font-semibold text-[#f9dc24] mb-3 text-lg">🚀 Fully Automated Setup</h4>
+                <ul className="space-y-2 text-sm text-gray-200">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f9dc24] mt-0.5">✓</span>
+                    <span><strong>Backend Infrastructure:</strong> Automatic creation in segment_registry, page_content, and page_registry</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f9dc24] mt-0.5">✓</span>
+                    <span><strong>Frontend Rendering:</strong> Catch-all routes handle any new page automatically via DynamicCMSPage</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f9dc24] mt-0.5">✓</span>
+                    <span><strong>SEO Configuration:</strong> Default meta tags, Open Graph, and schema markup initialized</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f9dc24] mt-0.5">✓</span>
+                    <span><strong>Admin Dashboard:</strong> Instant access to edit all page segments</span>
+                  </li>
                 </ul>
-                <h4 className="font-semibold text-blue-900 mb-2">Manual steps after creation:</h4>
-                <ul className="space-y-1 text-sm text-blue-800">
-                  <li>1️⃣ Copy src/pages/MachineVision.tsx to src/pages/{selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('')}.tsx</li>
-                  <li>2️⃣ Update page_slug in the new file (2 places)</li>
-                  <li>3️⃣ Add import and route in App.tsx</li>
-                  <li>4️⃣ Add to PageIdRouter.tsx mapping</li>
-                </ul>
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <p className="text-sm text-gray-300">
+                    <strong className="text-white">Note:</strong> After creation, you can immediately start editing content. To add the page to the main navigation, manually update navigationData.ts files.
+                  </p>
+                </div>
               </div>
             )}
           </div>
@@ -6235,17 +6245,18 @@ const AdminDashboard = () => {
                 setSelectedPageForCMS("");
               }}
               disabled={isCreatingCMS}
+              className="border-2 border-gray-600 text-white hover:bg-gray-800"
             >
               Cancel
             </Button>
             <Button
               onClick={createNewCMSPage}
               disabled={!selectedPageForCMS || isCreatingCMS}
-              className="bg-[#f9dc24] hover:bg-yellow-400 text-gray-900 font-bold"
+              className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-bold border-2 border-black"
             >
               {isCreatingCMS ? (
                 <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-900 border-t-transparent" />
+                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
                   Creating...
                 </>
               ) : (
