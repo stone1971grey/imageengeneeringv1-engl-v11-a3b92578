@@ -84,14 +84,20 @@
 
 ## ⏰ WANN ANGEHEN?
 
-**Frage an Dich:**
-- Soll ich die Breaking Changes JETZT durchführen?
-- Oder erst vor dem Launch (2-3 Monate)?
-- Oder schrittweise über mehrere Sessions?
+**ENTSCHEIDUNG:** In 1 Woche (ca. 28.11.2025)
 
 **Zeitaufwand geschätzt:** 2-4 Stunden für vollständige Korrektur
+
+**Plan:**
+1. Backup aller betroffenen Tabellen erstellen
+2. SQL-Skript für alle ~50 Seiten vorbereiten
+3. Routes, Navigation (5 Sprachen) und Admin-Dashboard parallel aktualisieren
+4. Gründliches Testing aller Seiten
+
+**Empfohlener Ansatz:** Option A (alles auf einmal) - da wir noch nicht live sind
 
 ---
 
 **Erstellt:** 2025-11-21  
-**Status:** Ausstehend
+**Geplant für:** ~28.11.2025 (in 1 Woche)
+**Status:** ⏰ Geplant - Wartet auf Ausführung
