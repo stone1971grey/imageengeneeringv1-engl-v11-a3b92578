@@ -6203,7 +6203,7 @@ const AdminDashboard = () => {
 
       {/* Create New CMS Page Dialog */}
       <Dialog open={isCreateCMSDialogOpen} onOpenChange={setIsCreateCMSDialogOpen}>
-        <DialogContent className="max-w-2xl bg-gray-900 border-2 border-gray-700">
+        <DialogContent className="max-w-4xl bg-gray-900 border-2 border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-white">Create New CMS Page</DialogTitle>
             <DialogDescription className="text-base text-gray-300">
