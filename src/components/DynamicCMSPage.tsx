@@ -78,14 +78,16 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
             contentMap[item.section_key] = item.content_value;
           }
         });
-        setContent(contentMap);
-
-        // Handle legacy static segments (hero, tiles, banner, solutions)
-        // These have their data in separate page_content fields, not in page_segments
-        const legacySegments: any[] = [];
         
+        // Check for legacy static segments that are NOT in page_segments
+        const existingSegmentIds = new Set(
+          (pageSegments.length > 0 ? pageSegments : []).map((s: any) => s.id)
+        );
+        
+        const legacySegments: any[] = [];
         segmentData?.forEach((seg: any) => {
-          if (seg.is_static && seg.segment_type !== 'footer') {
+          // Only load legacy data if segment is not already in page_segments
+          if (!existingSegmentIds.has(seg.segment_key) && seg.segment_type !== 'footer') {
             const legacyData: any = {};
             
             if (seg.segment_type === 'hero') {
@@ -136,17 +138,20 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
               }
             }
             
-            legacySegments.push({
-              id: seg.segment_key,
-              type: seg.segment_type,
-              data: legacyData
-            });
+            // Only add if there's actual data
+            if (Object.keys(legacyData).length > 0) {
+              legacySegments.push({
+                id: seg.segment_key,
+                type: seg.segment_type,
+                data: legacyData
+              });
+            }
           }
         });
         
         // Merge legacy segments with dynamic segments
         if (legacySegments.length > 0) {
-          setPageSegments(prev => [...legacySegments, ...prev]);
+          setPageSegments(prev => [...prev, ...legacySegments]);
         }
       }
     } catch (error) {
@@ -168,7 +173,7 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
 
     switch (segment.type) {
       case "hero":
-        // Legacy hero with old structure
+        // Hero rendering with legacy data support
         if (segment.data?.title || segment.data?.subtitle) {
           const topPaddingClass = {
             'small': 'pt-16',
