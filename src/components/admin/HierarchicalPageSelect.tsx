@@ -105,19 +105,6 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       });
     });
 
-    // Your Solution main page
-    statuses.push({
-      slug: 'your-solution',
-      title: 'Your Solution',
-      url: '/your-solution',
-      isCMS: cmsPages.has('your-solution'),
-      isStatic: false,
-      category: 'Your Solution',
-      subcategory: 'Main',
-      isMainCategory: true,
-      pageId: pageIdMap.get('your-solution'),
-    });
-
     // Your Solution (industries in data structure)
     Object.entries(navigationData.industries).forEach(([categoryName, category]: [string, any]) => {
       // Special mapping for categories that have different slugs in the database
