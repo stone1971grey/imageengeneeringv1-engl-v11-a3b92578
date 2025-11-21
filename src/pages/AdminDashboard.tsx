@@ -609,10 +609,10 @@ const AdminDashboard = () => {
     setIsCreatingCMS(true);
     
     try {
-      // 1. Get page info from page_registry
+      // 1. Get page info from page_registry including parent info
       const { data: pageInfo, error: pageError } = await supabase
         .from("page_registry")
-        .select("page_id, page_title")
+        .select("page_id, page_title, page_slug, parent_id, parent_slug")
         .eq("page_slug", selectedPageForCMS)
         .single();
 
@@ -628,17 +628,13 @@ const AdminDashboard = () => {
         .select("segment_id")
         .order("segment_id", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       const baseId = (maxSegment?.segment_id || 0) + 1;
 
-      // 3. Create segment_registry entries
+      // 3. Create segment_registry entry for footer only (UDA approach)
       const segmentEntries = [
-        { page_slug: selectedPageForCMS, segment_key: 'hero', segment_id: baseId, segment_type: 'hero', is_static: true, deleted: false },
-        { page_slug: selectedPageForCMS, segment_key: 'tiles', segment_id: baseId + 1, segment_type: 'tiles', is_static: true, deleted: false },
-        { page_slug: selectedPageForCMS, segment_key: 'banner', segment_id: baseId + 2, segment_type: 'banner', is_static: true, deleted: false },
-        { page_slug: selectedPageForCMS, segment_key: 'solutions', segment_id: baseId + 3, segment_type: 'solutions', is_static: true, deleted: false },
-        { page_slug: selectedPageForCMS, segment_key: 'footer', segment_id: baseId + 4, segment_type: 'footer', is_static: true, deleted: false },
+        { page_slug: selectedPageForCMS, segment_key: 'footer', segment_id: baseId, segment_type: 'footer', is_static: true, deleted: false, position: 999 },
       ];
 
       const { error: segmentError } = await supabase
@@ -647,38 +643,14 @@ const AdminDashboard = () => {
 
       if (segmentError) throw segmentError;
 
-      // 4. Create page_content entries
+      // 4. Create page_content entries (UDA structure: only tab_order, page_segments, seo_settings)
       const contentEntries = [
-        { page_slug: selectedPageForCMS, section_key: 'tab_order', content_type: 'json', content_value: '["tiles", "banner", "solutions"]' },
+        { page_slug: selectedPageForCMS, section_key: 'tab_order', content_type: 'json', content_value: '["footer"]' },
         { page_slug: selectedPageForCMS, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_title', content_type: 'text', content_value: pageInfo.page_title },
-        { page_slug: selectedPageForCMS, section_key: 'hero_subtitle', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_description', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_cta', content_type: 'text', content_value: 'Learn More' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_cta_link', content_type: 'text', content_value: '#applications-start' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_cta_style', content_type: 'text', content_value: 'standard' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_image_url', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_image_position', content_type: 'text', content_value: 'right' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_layout', content_type: 'text', content_value: '2-5' },
-        { page_slug: selectedPageForCMS, section_key: 'hero_top_padding', content_type: 'text', content_value: 'medium' },
-        { page_slug: selectedPageForCMS, section_key: 'applications_title', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'applications_description', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'applications_items', content_type: 'json', content_value: '[]' },
-        { page_slug: selectedPageForCMS, section_key: 'tiles_columns', content_type: 'text', content_value: '3' },
-        { page_slug: selectedPageForCMS, section_key: 'banner_title', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'banner_subtext', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'banner_images', content_type: 'json', content_value: '[]' },
-        { page_slug: selectedPageForCMS, section_key: 'banner_button_text', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'banner_button_link', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'banner_button_style', content_type: 'text', content_value: 'standard' },
-        { page_slug: selectedPageForCMS, section_key: 'solutions_title', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'solutions_subtext', content_type: 'text', content_value: '' },
-        { page_slug: selectedPageForCMS, section_key: 'solutions_items', content_type: 'json', content_value: '[]' },
-        { page_slug: selectedPageForCMS, section_key: 'solutions_layout', content_type: 'text', content_value: '2-col' },
         { page_slug: selectedPageForCMS, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
           title: `${pageInfo.page_title} | Image Engineering`,
           description: '',
-          canonical: `https://www.image-engineering.de/products/${selectedPageForCMS}`,
+          canonical: `https://www.image-engineering.de/${selectedPageForCMS}`,
           robotsIndex: true,
           robotsFollow: true
         }) },
@@ -690,26 +662,87 @@ const AdminDashboard = () => {
 
       if (contentError) throw contentError;
 
-      toast.success(`✅ Database setup complete for "${pageInfo.page_title}"!`);
-      
-      // 5. Create React component file
+      // 5. Generate automatic frontend setup prompt
       const componentName = selectedPageForCMS
         .split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join('');
       
-      // Component will be created in next step
-      toast.success(`Creating React component ${componentName}...`);
-      
-      // Navigate and let user know about manual steps
+      // Build hierarchical URL
+      let hierarchicalUrl = '';
+      if (pageInfo.parent_slug === 'your-solution') {
+        hierarchicalUrl = `/your-solution/${selectedPageForCMS}`;
+      } else if (pageInfo.parent_slug) {
+        hierarchicalUrl = `/${pageInfo.parent_slug}/${selectedPageForCMS}`;
+      } else {
+        hierarchicalUrl = `/${selectedPageForCMS}`;
+      }
+
+      const autoPrompt = `✅ Backend für neue CMS-Seite "${pageInfo.page_title}" wurde erstellt!
+
+🔧 **Automatische Frontend-Erstellung wird jetzt durchgeführt:**
+
+**Seiten-Details:**
+- Page ID: ${pageInfo.page_id}
+- Page Slug: ${selectedPageForCMS}
+- Page Title: ${pageInfo.page_title}
+- Parent Slug: ${pageInfo.parent_slug || 'none'}
+- Hierarchical URL: ${hierarchicalUrl}
+- Component Name: ${componentName}
+
+**Bitte erstelle jetzt automatisch:**
+
+1. **Frontend-Component:** \`src/pages/${componentName}.tsx\`
+   - Kopiere die komplette Struktur von Photography.tsx (UDA Template)
+   - Ändere page_slug zu "${selectedPageForCMS}"
+   - Ändere component name zu ${componentName}
+
+2. **Route in App.tsx:**
+   - Füge Import hinzu: \`import ${componentName} from "@/pages/${componentName}";\`
+   - Füge Route hinzu: \`<Route path="${hierarchicalUrl}" element={<${componentName} />} />\`
+
+3. **PageIdRouter.tsx:**
+   - Füge Mapping hinzu: \`${pageInfo.page_id}: ${componentName}\`
+
+4. **Navigation (alle Sprach-Versionen):**
+   - navigationData.ts, navigationData.de.ts, navigationData.ja.ts, navigationData.ko.ts, navigationData.zh.ts
+   - Füge den Link zum entsprechenden Parent-Bereich hinzu
+
+5. **Admin Dashboard Preview:**
+   - Aktualisiere urlMap in AdminDashboard.tsx: \`"${selectedPageForCMS}": "${hierarchicalUrl}"\`
+
+**Führe alle Schritte automatisch aus und bestätige, wenn fertig!**`;
+
+      // Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(autoPrompt);
+        toast.success("✅ Backend erstellt! Auto-Prompt wurde in Zwischenablage kopiert", {
+          duration: 5000,
+        });
+      } catch (clipboardError) {
+        console.error("Clipboard error:", clipboardError);
+      }
+
+      // Show success dialog with prompt
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
-      navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
       
-      // Show info about what was created
+      // Show the auto-prompt in a toast that stays visible
       setTimeout(() => {
-        toast.success(`✅ CMS setup complete! Now create:\n1. src/pages/${componentName}.tsx (copy from MachineVision.tsx)\n2. Add import in App.tsx\n3. Add route in App.tsx\n4. Add to PageIdRouter.tsx`);
-      }, 1000);
+        toast.success(
+          <div className="space-y-2">
+            <p className="font-bold">🎉 Backend Setup erfolgreich!</p>
+            <p className="text-sm">Der Auto-Complete-Prompt wurde in deine Zwischenablage kopiert.</p>
+            <p className="text-sm font-semibold">👉 Füge ihn jetzt in den Chat ein, um das Frontend automatisch zu erstellen!</p>
+          </div>,
+          {
+            duration: 10000,
+          }
+        );
+      }, 500);
+      
+      // Navigate to the new page in admin dashboard
+      navigate(`/admin-dashboard?page=${selectedPageForCMS}`);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
