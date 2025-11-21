@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
-import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import MetaNavigation from "@/components/segments/MetaNavigation";
@@ -35,8 +34,7 @@ const iconMap: Record<string, any> = {
 };
 
 const DynamicCMSPage = () => {
-  const { slug, '*': wildcardSlug } = useParams();
-  const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
@@ -44,8 +42,17 @@ const DynamicCMSPage = () => {
   const [seoData, setSeoData] = useState<any>({});
   const [pageNotFound, setPageNotFound] = useState(false);
 
-  // Extract actual page slug from URL
-  const pageSlug = wildcardSlug || slug;
+  // Extract page_slug from URL pathname
+  // Examples:
+  // /your-solution/photography -> photography
+  // /your-solution/scanners-archiving/iso-21550 -> iso-21550
+  const extractPageSlug = (pathname: string): string => {
+    const parts = pathname.split('/').filter(Boolean);
+    // Return the last segment of the URL
+    return parts[parts.length - 1];
+  };
+
+  const pageSlug = extractPageSlug(location.pathname);
 
   useEffect(() => {
     if (pageSlug) {
