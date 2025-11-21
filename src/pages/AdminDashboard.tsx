@@ -609,68 +609,35 @@ const AdminDashboard = () => {
     setIsCreatingCMS(true);
     
     try {
-      // 1. Check if page exists in page_registry, create if not
-      let { data: pageInfo, error: pageError } = await supabase
+      // 1. Try to get page info from page_registry; if missing, fall back to local defaults
+      let { data: pageInfo } = await supabase
         .from("page_registry")
         .select("page_id, page_title, page_slug, parent_id, parent_slug")
         .eq("page_slug", selectedPageForCMS)
         .maybeSingle();
 
-      // If page doesn't exist in registry, create it
       if (!pageInfo) {
-        console.log("Page not in registry, creating entry...");
-        
-        // Get highest page_id to generate next ID
-        const { data: maxPage } = await supabase
-          .from("page_registry")
-          .select("page_id")
-          .order("page_id", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+        // Fallback: build a local pageInfo object without touching the database
+        const inferredTitle = selectedPageForCMS
+          .split('-')
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
 
-        const nextPageId = (maxPage?.page_id || 0) + 1;
-        
-        // Infer parent info from slug structure
-        let parent_id = null;
-        let parent_slug = null;
-        
-        // Determine parent based on common patterns
-        if (selectedPageForCMS.includes('-')) {
-          // Could be a subcategory - try to find parent
-          const { data: parentData } = await supabase
-            .from("page_registry")
-            .select("page_id, page_slug")
-            .eq("page_slug", "your-solution")
-            .maybeSingle();
-          
-          if (parentData) {
-            parent_id = parentData.page_id;
-            parent_slug = "your-solution";
-          }
-        }
-        
-        // Create page_registry entry
-        const { data: newPageData, error: insertError } = await supabase
-          .from("page_registry")
-          .insert({
-            page_id: nextPageId,
-            page_slug: selectedPageForCMS,
-            page_title: selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-            parent_id,
-            parent_slug
-          })
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error("Error creating page_registry entry:", insertError);
-          toast.error("Failed to create page registry entry");
-          setIsCreatingCMS(false);
-          return;
+        // Basic parent inference purely for URL building
+        let parent_slug: string | null = null;
+        if (selectedPageForCMS === 'broadcast-video' || selectedPageForCMS === 'security-surveillance') {
+          parent_slug = 'your-solution';
+        } else if (selectedPageForCMS.includes('-')) {
+          parent_slug = 'your-solution';
         }
 
-        pageInfo = newPageData;
-        toast.success("✅ Page registry entry created!");
+        pageInfo = {
+          page_id: 0,
+          page_slug: selectedPageForCMS,
+          page_title: inferredTitle,
+          parent_id: null,
+          parent_slug,
+        } as any;
       }
 
       // 2. Find highest segment_id
