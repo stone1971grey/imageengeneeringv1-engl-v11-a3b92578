@@ -60,16 +60,6 @@ export const navigationDataZh = {
         { name: "内窥镜照明", link: "#" }
       ]
     },
-    "Scanners & Archiving": {
-      description: "文档、书籍、照片数字化的质量保证",
-      subgroups: [
-        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
-        { name: "通用测试目标", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
-        { name: "多光谱照明", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
-        { name: "扫描仪动态范围", link: "/your-solution/scanners-archiving/scanner-dynamic-range", active: true },
-        { name: "光谱灵敏度", link: "#" }
-      ]
-    },
     "Photo & Video": {
       description: "专业和业余应用的数码相机",
       subgroups: [

@@ -60,16 +60,6 @@ export const navigationDataJa = {
         { name: "内視鏡照明", link: "#" }
       ]
     },
-    "Scanners & Archiving": {
-      description: "文書、書籍、写真のデジタル化における品質保証",
-      subgroups: [
-        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
-        { name: "ユニバーサルテストターゲット", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
-        { name: "マルチスペクトル照明", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
-        { name: "スキャナーダイナミックレンジ", link: "/your-solution/scanners-archiving/scanner-dynamic-range", active: true },
-        { name: "分光感度", link: "#" }
-      ]
-    },
     "Photo & Video": {
       description: "プロおよびアマチュア向けデジタルカメラ",
       subgroups: [
