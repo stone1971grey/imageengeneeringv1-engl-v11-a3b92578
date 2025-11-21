@@ -12,6 +12,7 @@ import UniversalTestTarget from "@/pages/UniversalTestTarget";
 import ProductIQLED from "@/pages/ProductIQLED";
 import ProductIEEEP2020 from "@/pages/ProductIEEEP2020";
 import ISO21550 from "@/pages/ISO21550";
+import NIRAutomotive from "@/pages/NIRAutomotive";
 
 // Page ID to Component mapping (must match page_registry table)
 const pageComponentMap: Record<number, React.ComponentType> = {
@@ -22,6 +23,7 @@ const pageComponentMap: Record<number, React.ComponentType> = {
   13: MachineVision,        // machine-vision
   21: ProductIQLED,         // iq-led
   220: ProductIEEEP2020,    // ieee-p2020
+  239: NIRAutomotive,       // nir-automotive
   260: ISO21550,            // iso-21550
   261: UniversalTestTarget, // universal-test-target
 };
@@ -61,6 +63,9 @@ const PageIdRouter = () => {
           // If parent is "your-solution", build industry URL
           if (data.parent_slug === "your-solution") {
             setRedirectUrl(`/your-solution/${data.page_slug}`);
+          } else if (data.parent_slug === "automotive") {
+            // If parent is automotive, build automotive sub-page URL
+            setRedirectUrl(`/your-solution/automotive/${data.page_slug}`);
           } else {
             // Otherwise build product URL (e.g., /products/test-charts/le7)
             setRedirectUrl(`/products/${data.parent_slug}/${data.page_slug}`);
