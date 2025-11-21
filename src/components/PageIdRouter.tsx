@@ -9,8 +9,6 @@ import MedicalEndoscopy from "@/pages/MedicalEndoscopy";
 import MachineVision from "@/pages/MachineVision";
 import WebCamera from "@/pages/WebCamera";
 import UniversalTestTarget from "@/pages/UniversalTestTarget";
-import ProductIQLED from "@/pages/ProductIQLED";
-import ProductIEEEP2020 from "@/pages/ProductIEEEP2020";
 import ISO21550 from "@/pages/ISO21550";
 import NIRAutomotive from "@/pages/NIRAutomotive";
 
@@ -21,8 +19,6 @@ const pageComponentMap: Record<number, React.ComponentType> = {
   11: MedicalEndoscopy,     // medical-endoscopy
   12: WebCamera,            // web-camera
   13: MachineVision,        // machine-vision
-  21: ProductIQLED,         // iq-led
-  220: ProductIEEEP2020,    // ieee-p2020
   239: NIRAutomotive,       // nir-automotive
   260: ISO21550,            // iso-21550
   261: UniversalTestTarget, // universal-test-target

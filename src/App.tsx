@@ -24,8 +24,6 @@ import ScannerDynamicRange from "./pages/ScannerDynamicRange";
 import PageIdRouter from "@/components/PageIdRouter";
 import Downloads from "./pages/Downloads";
 import ProductLE7 from "./pages/ProductLE7";
-import ProductIQLED from "./pages/ProductIQLED";
-import ProductIEEEP2020 from "./pages/ProductIEEEP2020";
 import HiddenSegments from "./pages/HiddenSegments";
 import Backlog from "./pages/Backlog";
 import Charts from "./pages/Charts";
@@ -102,8 +100,6 @@ const App = () => (
         
         {/* Hierarchical Product Routes */}
         <Route path="/products/test-charts/le7" element={<ProductLE7 />} />
-        <Route path="/products/illumination/iq-led" element={<ProductIQLED />} />
-        <Route path="/products/standards/ieee-p2020" element={<ProductIEEEP2020 />} />
         
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
