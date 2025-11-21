@@ -28,7 +28,7 @@ export const navigationDataJa = {
         { name: "VCX PhoneCam", link: "#" },
         { name: "色較正", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "カメラ手ブレ補正", link: "#" },
-        { name: "ISPチューニング", link: "#" },
+        { name: "ISPチューニング", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "タイミング測定", link: "#" }
       ]
     },

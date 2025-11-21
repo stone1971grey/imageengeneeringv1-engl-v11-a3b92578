@@ -28,7 +28,7 @@ export const navigationDataDe = {
         { name: "VCX PhoneCam", link: "#" },
         { name: "Farbkalibrierung", link: "/your-solution/mobile-phone/color-calibration" },
         { name: "Kamerastabilisierung", link: "#" },
-        { name: "ISP-Tuning", link: "#" },
+        { name: "ISP-Tuning", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "Timing-Messungen", link: "#" }
       ]
     },
