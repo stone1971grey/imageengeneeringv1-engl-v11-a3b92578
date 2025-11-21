@@ -285,17 +285,17 @@ const DynamicCMSPage = () => {
           <FullHero
             key={segmentId}
             id={segmentDbId?.toString()}
-            titleLine1={segment.data?.title || ""}
+            titleLine1={segment.data?.titleLine1 || ""}
             titleLine2={segment.data?.titleLine2 || ""}
             subtitle={segment.data?.subtitle || ""}
-            button1Text={segment.data?.ctaText}
-            button1Link={segment.data?.ctaLink}
-            button1Color={segment.data?.ctaStyle === "technical" ? "black" : "yellow"}
-            button2Text={segment.data?.cta2Text}
-            button2Link={segment.data?.cta2Link}
-            button2Color={segment.data?.cta2Style === "technical" ? "black" : "yellow"}
+            button1Text={segment.data?.button1Text}
+            button1Link={segment.data?.button1Link}
+            button1Color={segment.data?.button1Color || "yellow"}
+            button2Text={segment.data?.button2Text}
+            button2Link={segment.data?.button2Link}
+            button2Color={segment.data?.button2Color || "black"}
             backgroundType={segment.data?.backgroundType || "image"}
-            imageUrl={segment.data?.backgroundImage}
+            imageUrl={segment.data?.imageUrl}
             videoUrl={segment.data?.videoUrl}
             kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
             overlayOpacity={segment.data?.overlayOpacity || 15}
@@ -339,24 +339,24 @@ const DynamicCMSPage = () => {
         return (
           <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-gray-50">
             <div className="container mx-auto px-6">
-              {segment.data?.sectionTitle && (
+              {segment.data?.title && (
                 <div className="text-center mb-16">
                   <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                    {segment.data.sectionTitle}
+                    {segment.data.title}
                   </h2>
-                  {segment.data?.sectionDescription && (
+                  {segment.data?.description && (
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                      {segment.data.sectionDescription}
+                      {segment.data.description}
                     </p>
                   )}
                 </div>
               )}
               <div className={`grid gap-8 ${
-                segment.data?.tilesColumns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
-                segment.data?.tilesColumns === '3' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+                segment.data?.columns === '4' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' :
+                segment.data?.columns === '3' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
                 'grid-cols-1 md:grid-cols-2'
               }`}>
-                {(segment.data?.tiles || []).map((tile: any, idx: number) => {
+                {(segment.data?.items || []).map((tile: any, idx: number) => {
                   const Icon = iconMap[tile.icon] || FileText;
                   return (
                     <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white">
