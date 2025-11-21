@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigationData } from "@/hooks/useNavigationData";
+import { Input } from "@/components/ui/input";
+import { X, Search, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -33,6 +36,8 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const [cmsPages, setCmsPages] = useState<Set<string>>(new Set());
   const [pageStatuses, setPageStatuses] = useState<PageStatus[]>([]);
   const [pageIdMap, setPageIdMap] = useState<Map<string, number>>(new Map());
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredStatuses, setFilteredStatuses] = useState<PageStatus[]>([]);
 
   useEffect(() => {
     loadCMSPages();
@@ -43,6 +48,38 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     // Always build page statuses when data changes, even if no CMS pages exist yet
     buildPageStatuses();
   }, [cmsPages, navigationData, pageIdMap]);
+
+  useEffect(() => {
+    // Filter statuses based on search query
+    if (!searchQuery.trim()) {
+      setFilteredStatuses(pageStatuses);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const filtered = pageStatuses.filter(status => {
+      const pageId = status.pageId ?? getPageIdForStatus(status);
+      
+      // Match by Page ID (exact or starts with)
+      if (pageId !== undefined && pageId.toString().includes(query)) {
+        return true;
+      }
+      
+      // Match by page title
+      if (status.title.toLowerCase().includes(query)) {
+        return true;
+      }
+      
+      // Match by slug
+      if (status.slug.toLowerCase().includes(query)) {
+        return true;
+      }
+      
+      return false;
+    });
+    
+    setFilteredStatuses(filtered);
+  }, [searchQuery, pageStatuses]);
 
   const loadCMSPages = async () => {
     const { data } = await supabase
@@ -307,10 +344,10 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   };
 
   // Group by main category and subcategory
-  const static_pages = pageStatuses.filter(p => p.isStatic);
+  const static_pages = filteredStatuses.filter(p => p.isStatic);
   
   // Group Your Solution by subcategory
-  const yourSolutionPages = pageStatuses.filter(p => p.category === 'Your Solution');
+  const yourSolutionPages = filteredStatuses.filter(p => p.category === 'Your Solution');
   const yourSolutionBySubcat = yourSolutionPages.reduce((acc, page) => {
     const subcat = page.subcategory || 'Other';
     if (!acc[subcat]) acc[subcat] = [];
@@ -319,7 +356,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   }, {} as Record<string, PageStatus[]>);
 
   // Group Products by subcategory
-  const productsPages = pageStatuses.filter(p => p.category === 'Products');
+  const productsPages = filteredStatuses.filter(p => p.category === 'Products');
   const productsBySubcat = productsPages.reduce((acc, page) => {
     const subcat = page.subcategory || 'Other';
     if (!acc[subcat]) acc[subcat] = [];
@@ -328,7 +365,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   }, {} as Record<string, PageStatus[]>);
 
   // Group Solutions by subcategory
-  const solutionsPages = pageStatuses.filter(p => p.category === 'Solutions');
+  const solutionsPages = filteredStatuses.filter(p => p.category === 'Solutions');
   const solutionsBySubcat = solutionsPages.reduce((acc, page) => {
     const subcat = page.subcategory || 'Other';
     if (!acc[subcat]) acc[subcat] = [];
@@ -336,29 +373,62 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     return acc;
   }, {} as Record<string, PageStatus[]>);
 
+  const handleClearSelection = () => {
+    onValueChange("");
+    window.location.href = "/admin-dashboard";
+  };
+
   return (
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[700px] bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
-        <SelectValue placeholder="Select a page to edit..." />
-      </SelectTrigger>
-      <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] w-[700px] z-50 shadow-2xl">
-        {/* Static Pages */}
-        {static_pages.length > 0 && (
-          <SelectGroup>
-            <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 bg-gray-800/50">
-              Static Pages
-            </SelectLabel>
-            {static_pages.map((status) => (
-              <SelectItem 
-                key={status.slug} 
-                value={status.slug}
-                className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
-              >
-                {getItemLabel(status)}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        )}
+    <div className="flex items-center gap-2 w-full">
+      <Select value={value} onValueChange={onValueChange}>
+        <SelectTrigger className="flex-1 bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
+          <SelectValue placeholder="Select a page to edit..." />
+        </SelectTrigger>
+        <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] w-[700px] z-50 shadow-2xl">
+          {/* Search Bar */}
+          <div className="sticky top-0 z-10 bg-gray-900 border-b border-gray-700 p-3 space-y-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search by Page ID or Name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus:border-[#f9dc24]"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <div className="text-xs text-gray-400">
+                Found {filteredStatuses.length} page{filteredStatuses.length !== 1 ? 's' : ''}
+              </div>
+            )}
+          </div>
+
+          {/* Static Pages */}
+          {static_pages.length > 0 && (
+            <SelectGroup>
+              <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 bg-gray-800/50">
+                Static Pages
+              </SelectLabel>
+              {static_pages.map((status) => (
+                <SelectItem 
+                  key={status.slug} 
+                  value={status.slug}
+                  className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
+                >
+                  {getItemLabel(status)}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          )}
 
         {/* Your Solution */}
         {Object.keys(yourSolutionBySubcat).length > 0 && (
@@ -486,6 +556,18 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           </div>
         </div>
       </SelectContent>
-    </Select>
+      </Select>
+      
+      {/* Clear Selection / Back to Dashboard Button */}
+      <Button
+        onClick={handleClearSelection}
+        variant="outline"
+        size="icon"
+        className="bg-gray-900 border-gray-700 hover:bg-gray-800 hover:border-[#f9dc24] text-white"
+        title="Back to Dashboard Overview"
+      >
+        <Home className="h-4 w-4" />
+      </Button>
+    </div>
   );
 };
