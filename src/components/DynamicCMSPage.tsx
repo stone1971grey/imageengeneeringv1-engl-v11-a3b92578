@@ -60,7 +60,16 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
           if (item.section_key === "page_segments") {
             const segments = JSON.parse(item.content_value);
             segments.forEach((segment: any) => {
-              const segmentDataItem = data.find((d: any) => d.section_key === segment.id);
+              // Primär nach numerischer ID suchen
+              let segmentDataItem = data.find((d: any) => d.section_key === segment.id);
+
+              // Sonderfall: FullHero speichert Daten unter full_hero_<id>
+              if (!segmentDataItem && segment.type === "full-hero") {
+                segmentDataItem = data.find(
+                  (d: any) => d.section_key === `full_hero_${segment.id}`
+                );
+              }
+
               if (segmentDataItem) {
                 segment.data = JSON.parse(segmentDataItem.content_value);
               }
@@ -396,7 +405,9 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
         description={seoData?.description || ""}
       />
       <Navigation />
-      {tabOrder.map((segmentId) => renderSegment(segmentId))}
+      {(tabOrder.length > 0 ? tabOrder : pageSegments.map((seg) => seg.id?.toString())).map((segmentId) =>
+        renderSegment(segmentId)
+      )}
       <Footer />
     </div>
   );
