@@ -55,6 +55,7 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
 
       if (!error && data) {
         const contentMap: Record<string, string> = {};
+        let loadedSegments: any[] = [];
 
         data.forEach((item: any) => {
           if (item.section_key === "page_segments") {
@@ -74,7 +75,7 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
                 segment.data = JSON.parse(segmentDataItem.content_value);
               }
             });
-            setPageSegments(segments);
+            loadedSegments = segments;
           } else if (item.section_key === "tab_order") {
             const parsedTabOrder = JSON.parse(item.content_value);
             const validTabOrder = parsedTabOrder.filter((id: any) => 
@@ -88,14 +89,14 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
           }
         });
         
-        // Check for legacy static segments that are NOT in page_segments
+        // NACH dem Laden: Prüfe welche Segmente bereits vorhanden sind
         const existingSegmentIds = new Set(
-          (pageSegments.length > 0 ? pageSegments : []).map((s: any) => s.id)
+          loadedSegments.map((s: any) => s.id)
         );
         
         const legacySegments: any[] = [];
         segmentData?.forEach((seg: any) => {
-          // Only load legacy data if segment is not already in page_segments
+          // Nur Legacy-Daten laden wenn Segment NICHT bereits in page_segments ist
           if (!existingSegmentIds.has(seg.segment_key) && seg.segment_type !== 'footer') {
             const legacyData: any = {};
             
@@ -107,7 +108,7 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
               legacyData.imagePosition = contentMap.hero_image_position;
               legacyData.layoutRatio = contentMap.hero_layout;
               legacyData.topSpacing = contentMap.hero_top_padding;
-              legacyData.ctaText = contentMap.hero_cta_text;
+              legacyData.ctaText = contentMap.hero_cta_text || contentMap.hero_cta;
               legacyData.ctaLink = contentMap.hero_cta_link;
               legacyData.ctaStyle = contentMap.hero_cta_style;
             }
@@ -147,8 +148,8 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
               }
             }
             
-            // Only add if there's actual data
-            if (Object.keys(legacyData).length > 0) {
+            // Nur hinzufügen wenn Daten vorhanden
+            if (Object.keys(legacyData).length > 0 && Object.values(legacyData).some(v => v !== undefined && v !== '' && v !== null)) {
               legacySegments.push({
                 id: seg.segment_key,
                 type: seg.segment_type,
@@ -158,10 +159,8 @@ const DynamicCMSPage = ({ pageSlug }: DynamicCMSPageProps) => {
           }
         });
         
-        // Merge legacy segments with dynamic segments
-        if (legacySegments.length > 0) {
-          setPageSegments(prev => [...prev, ...legacySegments]);
-        }
+        // Merge: loadedSegments + legacySegments
+        setPageSegments([...loadedSegments, ...legacySegments]);
       }
     } catch (error) {
       console.error("Error loading content:", error);
