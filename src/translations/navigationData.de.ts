@@ -60,16 +60,6 @@ export const navigationDataDe = {
         { name: "Endoskopische Beleuchtung", link: "#" }
       ]
     },
-    "Scanners & Archiving": {
-      description: "Qualitätssicherung bei der Digitalisierung von Dokumenten, Büchern, Fotos",
-      subgroups: [
-        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
-        { name: "Universelles Testziel", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
-        { name: "Multispektrale Beleuchtung", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
-        { name: "Scanner-Dynamikbereich", link: "/your-solution/scanners-archiving/scanner-dynamic-range", active: true },
-        { name: "Spektrale Empfindlichkeiten", link: "#" }
-      ]
-    },
     "Photo & Video": {
       description: "Digitalkameras für professionelle und Amateur-Anwendungen",
       subgroups: [

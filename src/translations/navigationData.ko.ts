@@ -60,16 +60,6 @@ export const navigationDataKo = {
         { name: "내시경 조명", link: "#" }
       ]
     },
-    "Scanners & Archiving": {
-      description: "문서, 책, 사진 디지털화의 품질 보증",
-      subgroups: [
-        { name: "ISO 21550", link: "/your-solution/scanners-archiving/iso-21550" },
-        { name: "범용 테스트 타겟", link: "/your-solution/scanners-archiving/universal-test-target", active: true },
-        { name: "다중 스펙트럼 조명", link: "/your-solution/scanners-archiving/multispectral-illumination", active: true },
-        { name: "스캐너 다이내믹 레인지", link: "/your-solution/scanners-archiving/scanner-dynamic-range", active: true },
-        { name: "분광 감도", link: "#" }
-      ]
-    },
     "Photo & Video": {
       description: "전문가 및 아마추어용 디지털 카메라",
       subgroups: [
