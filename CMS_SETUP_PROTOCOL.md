@@ -2,6 +2,91 @@
 
 Dieses Protokoll beschreibt den vollautomatischen, fehlerfreien Workflow zur Einrichtung einer neuen CMS-Seite im **Universal Dynamic Page System (UDPS)** mit **Universal Dynamic Architecture (UDA)**.
 
+---
+
+## 📊 System-Hierarchie & URL-Struktur
+
+### Wichtige Prinzipien:
+- **Eindeutige Page IDs:** Jede Seite hat eine unique ID (niemals wiederverwendet)
+- **Lücken erlaubt:** IDs müssen nicht lückenlos sein (z.B. 1, 2, 9, 10, 20, 307)
+- **No-Reuse-Policy:** Gelöschte IDs werden NIE neu vergeben
+- **Hierarchische URLs:** URLs folgen der Navigationsstruktur (Parent-Slugs als Präfix)
+
+### Komplette Seitenhierarchie:
+
+```
+📁 Homepage (ID: 1) → /
+│
+├── 📁 Your Solution (ID: 2) → /your-solution
+│   ├── 📄 Photography (ID: 9) → /your-solution/photography [CMS]
+│   ├── 📁 Scanners & Archiving (ID: 10) → /your-solution/scanners-archiving [CMS]
+│   │   ├── 📄 Universal Test Target (ID: 239) → /your-solution/scanners-archiving/universal-test-target [CMS]
+│   │   ├── 📄 ISO 21550 (ID: 260) → /your-solution/scanners-archiving/iso-21550 [CMS]
+│   │   └── 📄 Multispectral Illumination (ID: 261) → /your-solution/scanners-archiving/multispectral-illumination [CMS]
+│   ├── 📄 Medical & Endoscopy (ID: 11) → /your-solution/medical-endoscopy [CMS]
+│   ├── 📄 Web Camera (ID: 12) → /your-solution/web-camera [CMS]
+│   ├── 📁 Machine Vision (ID: 13) → /your-solution/machine-vision [CMS]
+│   │   └── 📄 Lens Distortion (ID: 241) → /your-solution/machine-vision/lens-distortion [CMS]
+│   ├── 📁 Automotive (ID: 14) → /your-solution/automotive [CMS]
+│   │   └── 📄 In-Cabin Testing (ID: 19) → /your-solution/automotive/in-cabin-testing [CMS]
+│   ├── 📁 Mobile Phone (ID: 20) → /your-solution/mobile-phone [CMS]
+│   │   ├── 📄 Color Calibration (ID: 286) → /your-solution/mobile-phone/color-calibration [CMS]
+│   │   └── 📄 ISP Tuning (ID: 307) → /your-solution/mobile-phone/isp-tuning [CMS]
+│   ├── 📄 Broadcast & Video (ID: 221) → /your-solution/broadcast-video [CMS]
+│   └── 📄 Security & Surveillance (ID: 222) → /your-solution/security-surveillance [CMS]
+│
+├── 📁 Products (ID: 3) → /products
+│   ├── 📁 Test Charts (ID: 15) → /products/test-charts
+│   │   ├── 📄 LE7 (ID: 17) → /products/test-charts/le7 [CMS]
+│   │   ├── 📄 TE42-LL (ID: 225) → /products/test-charts/te42-ll [CMS]
+│   │   ├── 📄 TE292 (ID: 226) → /products/test-charts/te292 [CMS]
+│   │   ├── 📄 TE294 (ID: 227) → /products/test-charts/te294 [CMS]
+│   │   └── 📄 TE42 (ID: 228) → /products/test-charts/te42 [CMS]
+│   ├── 📁 Illumination Devices (ID: 16) → /products/illumination-devices
+│   │   ├── 📄 Arcturus (ID: 18) → /products/illumination-devices/arcturus [CMS]
+│   │   └── 📄 iQ-LED (ID: 21) → /products/illumination/iq-led [CMS]
+│   ├── 📁 Software (ID: 223) → /products/software
+│   │   ├── 📄 iQ-Analyzer (ID: 229) → /products/software/iq-analyzer [Static]
+│   │   ├── 📄 Camspecs (ID: 230) → /products/software/camspecs [Static]
+│   │   └── 📄 VEGA (ID: 231) → /products/software/vega [Static]
+│   └── 📁 Bundles & Services (ID: 224) → /products/bundles-services
+│       └── 📄 IEEE P2020 Bundle (ID: 232) → /products/bundles-services/product-bundle-ieee [Static]
+│
+├── 📄 Downloads (ID: 4) → /downloads [Static]
+├── 📄 Events (ID: 5) → /events [Static]
+├── 📄 News (ID: 6) → /news [Static]
+├── 📄 Inside Lab (ID: 7) → /inside-lab [Static]
+├── 📄 Contact (ID: 8) → /contact [Static]
+└── 📄 ADAS Testing (ID: 233) → /adas-testing [Static]
+```
+
+### Legende:
+- **[CMS]** = Seite wird über CMS verwaltet (Universal Dynamic Page System)
+- **[Static]** = Statische React-Komponente (nicht im CMS)
+- **📁** = Parent-Kategorie (hat Unterseiten)
+- **📄** = Einzelseite
+
+### ID-Vergabe-Regeln:
+1. **Fortlaufend:** Neue Seiten erhalten die nächsthöhere ID (aktuell: 308+)
+2. **Global eindeutig:** IDs über alle Seitentypen hinweg (CMS + Static)
+3. **Chronologisch:** Reihenfolge entspricht Erstellungszeitpunkt
+4. **Permanent:** Gelöschte IDs werden niemals wiederverwendet
+5. **Lücken normal:** Durch Löschungen entstehen Lücken (z.B. 20 → 221 → 222)
+
+### URL-Konstruktion:
+```
+Hierarchische URL = /{parent_slug}/{page_slug}
+
+Beispiele:
+- Seite unter "Your Solution": /your-solution/photography
+- Unterseite 2. Ebene: /your-solution/mobile-phone/isp-tuning
+- Unterseite 3. Ebene: /products/test-charts/le7
+
+Direkter ID-Zugriff:
+- Jede Seite auch über /{page_id} erreichbar
+- Beispiel: /307 → redirect zu /your-solution/mobile-phone/isp-tuning
+```
+
 ## 🚀 VOLLAUTOMATIK - Ein Klick genügt!
 
 ### ✨ So funktioniert es:
