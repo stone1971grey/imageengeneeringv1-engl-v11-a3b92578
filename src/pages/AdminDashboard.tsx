@@ -609,17 +609,68 @@ const AdminDashboard = () => {
     setIsCreatingCMS(true);
     
     try {
-      // 1. Get page info from page_registry including parent info
-      const { data: pageInfo, error: pageError } = await supabase
+      // 1. Check if page exists in page_registry, create if not
+      let { data: pageInfo, error: pageError } = await supabase
         .from("page_registry")
         .select("page_id, page_title, page_slug, parent_id, parent_slug")
         .eq("page_slug", selectedPageForCMS)
-        .single();
+        .maybeSingle();
 
-      if (pageError || !pageInfo) {
-        toast.error("Page not found in registry");
-        setIsCreatingCMS(false);
-        return;
+      // If page doesn't exist in registry, create it
+      if (!pageInfo) {
+        console.log("Page not in registry, creating entry...");
+        
+        // Get highest page_id to generate next ID
+        const { data: maxPage } = await supabase
+          .from("page_registry")
+          .select("page_id")
+          .order("page_id", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const nextPageId = (maxPage?.page_id || 0) + 1;
+        
+        // Infer parent info from slug structure
+        let parent_id = null;
+        let parent_slug = null;
+        
+        // Determine parent based on common patterns
+        if (selectedPageForCMS.includes('-')) {
+          // Could be a subcategory - try to find parent
+          const { data: parentData } = await supabase
+            .from("page_registry")
+            .select("page_id, page_slug")
+            .eq("page_slug", "your-solution")
+            .maybeSingle();
+          
+          if (parentData) {
+            parent_id = parentData.page_id;
+            parent_slug = "your-solution";
+          }
+        }
+        
+        // Create page_registry entry
+        const { data: newPageData, error: insertError } = await supabase
+          .from("page_registry")
+          .insert({
+            page_id: nextPageId,
+            page_slug: selectedPageForCMS,
+            page_title: selectedPageForCMS.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+            parent_id,
+            parent_slug
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error("Error creating page_registry entry:", insertError);
+          toast.error("Failed to create page registry entry");
+          setIsCreatingCMS(false);
+          return;
+        }
+
+        pageInfo = newPageData;
+        toast.success("✅ Page registry entry created!");
       }
 
       // 2. Find highest segment_id
