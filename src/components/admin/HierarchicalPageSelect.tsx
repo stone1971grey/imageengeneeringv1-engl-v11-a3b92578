@@ -50,35 +50,59 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   }, [cmsPages, navigationData, pageIdMap]);
 
   useEffect(() => {
-    // Filter statuses based on search query
+    // Filter statuses based on search query with smart ranking
     if (!searchQuery.trim()) {
       setFilteredStatuses(pageStatuses);
       return;
     }
 
     const query = searchQuery.toLowerCase().trim();
-    const filtered = pageStatuses.filter(status => {
-      const pageId = status.pageId ?? getPageIdForStatus(status);
-      
-      // Match by Page ID (exact or starts with)
-      if (pageId !== undefined && pageId.toString().includes(query)) {
-        return true;
-      }
-      
-      // Match by page title
-      if (status.title.toLowerCase().includes(query)) {
-        return true;
-      }
-      
-      // Match by slug
-      if (status.slug.toLowerCase().includes(query)) {
-        return true;
-      }
-      
-      return false;
-    });
     
-    setFilteredStatuses(filtered);
+    // Score-based filtering for better relevance
+    const scoredResults = pageStatuses.map(status => {
+      let score = 0;
+      const pageId = status.pageId ?? getPageIdForStatus(status);
+      const pageIdStr = pageId?.toString() || '';
+      const title = status.title.toLowerCase();
+      const slug = status.slug.toLowerCase();
+      const category = status.category?.toLowerCase() || '';
+      const subcategory = status.subcategory?.toLowerCase() || '';
+      
+      // Exact matches (highest priority)
+      if (pageIdStr === query) score += 100;
+      if (title === query) score += 90;
+      if (slug === query) score += 85;
+      
+      // Starts with (high priority)
+      if (pageIdStr.startsWith(query)) score += 70;
+      if (title.startsWith(query)) score += 60;
+      if (slug.startsWith(query)) score += 55;
+      
+      // Contains (medium priority)
+      if (pageIdStr.includes(query)) score += 40;
+      if (title.includes(query)) score += 30;
+      if (slug.includes(query)) score += 25;
+      if (category.includes(query)) score += 20;
+      if (subcategory.includes(query)) score += 15;
+      
+      // Word boundary matches (better than simple contains)
+      const words = query.split(/\s+/);
+      words.forEach(word => {
+        if (word.length > 2) {
+          const wordRegex = new RegExp(`\\b${word}`, 'i');
+          if (wordRegex.test(title)) score += 10;
+          if (wordRegex.test(slug)) score += 8;
+          if (wordRegex.test(category)) score += 5;
+        }
+      });
+      
+      return { status, score };
+    })
+    .filter(result => result.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(result => result.status);
+    
+    setFilteredStatuses(scoredResults);
   }, [searchQuery, pageStatuses]);
 
   const loadCMSPages = async () => {
@@ -391,10 +415,10 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search by Page ID or Name..."
+                placeholder="Search: Page ID, Name, Category, or Slug..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus:border-[#f9dc24]"
+                className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus:border-[#f9dc24] transition-colors"
               />
               {searchQuery && (
                 <button
@@ -406,29 +430,57 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
               )}
             </div>
             {searchQuery && (
-              <div className="text-xs text-gray-400">
-                Found {filteredStatuses.length} page{filteredStatuses.length !== 1 ? 's' : ''}
+              <div className="flex items-center justify-between">
+                <div className="text-xs text-gray-400">
+                  Found {filteredStatuses.length} page{filteredStatuses.length !== 1 ? 's' : ''}
+                </div>
+                {filteredStatuses.length > 0 && (
+                  <div className="text-xs text-gray-500">
+                    Sorted by relevance
+                  </div>
+                )}
               </div>
             )}
           </div>
 
-          {/* Static Pages */}
-          {static_pages.length > 0 && (
-            <SelectGroup>
-              <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 bg-gray-800/50">
-                Static Pages
-              </SelectLabel>
-              {static_pages.map((status) => (
-                <SelectItem 
-                  key={status.slug} 
-                  value={status.slug}
-                  className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
-                >
-                  {getItemLabel(status)}
-                </SelectItem>
-              ))}
-            </SelectGroup>
+          {/* No Results Message */}
+          {searchQuery && filteredStatuses.length === 0 && (
+            <div className="px-6 py-12 text-center">
+              <div className="text-gray-400 space-y-3">
+                <div className="text-lg font-medium">No pages found</div>
+                <div className="text-sm text-gray-500 space-y-1">
+                  <p>Try searching for:</p>
+                  <ul className="list-none space-y-1">
+                    <li>• Page ID (e.g., "207", "9")</li>
+                    <li>• Page name (e.g., "Photography", "Automotive")</li>
+                    <li>• Partial name (e.g., "photo", "auto")</li>
+                    <li>• Category (e.g., "products", "solution")</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           )}
+
+          {/* Results List */}
+          {filteredStatuses.length > 0 && (
+            <>
+              {/* Static Pages */}
+              {static_pages.length > 0 && (
+                <SelectGroup>
+                  <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 bg-gray-800/50">
+                    Static Pages
+                  </SelectLabel>
+                  {static_pages.map((status) => (
+                    <SelectItem 
+                      key={status.slug} 
+                      value={status.slug}
+                      className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
+                    >
+                      {getItemLabel(status)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              )}
 
         {/* Your Solution */}
         {Object.keys(yourSolutionBySubcat).length > 0 && (
@@ -533,7 +585,10 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           </SelectGroup>
         )}
 
-        {/* Legend */}
+            </>
+          )}
+
+          {/* Legend */}
         <div className="px-4 py-4 border-t border-gray-700 bg-gray-950 text-xs space-y-2 mt-2">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
