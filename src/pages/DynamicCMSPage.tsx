@@ -145,19 +145,19 @@ const DynamicCMSPage = () => {
                 'grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3'
               } ${segment.data?.hero_image_position === 'left' ? '[&>*:first-child]:order-2 lg:[&>*:first-child]:order-1' : ''}`}>
                 <div className={segment.data?.hero_image_position === 'left' ? 'order-1' : ''}>
-                  <h1 className="text-5xl font-bold text-gray-900 mb-6">
+                  <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light text-foreground leading-tight tracking-tight mb-6">
                     {segment.data?.hero_title || ''}
+                    {segment.data?.hero_subtitle && (
+                      <span className="font-medium block">{segment.data.hero_subtitle}</span>
+                    )}
                   </h1>
-                  {segment.data?.hero_subtitle && (
-                    <p className="text-2xl text-gray-700 mb-6">{segment.data.hero_subtitle}</p>
-                  )}
-                  <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed mb-8">
                     {segment.data?.hero_description || ''}
                   </p>
                   {segment.data?.hero_cta_text && (
                     <Link
                       to={segment.data.hero_cta_link || '#'}
-                      className={`inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
+                      className={`inline-flex items-center px-8 py-4 rounded-lg font-bold text-base transition-all duration-200 ${
                         segment.data.hero_cta_style === 'technical'
                           ? 'bg-gray-800 text-white hover:bg-gray-900'
                           : 'bg-[#f9dc24] text-gray-900 hover:bg-yellow-400'
@@ -172,7 +172,7 @@ const DynamicCMSPage = () => {
                     <img
                       src={segment.data.hero_image_url}
                       alt={segment.data.hero_image_metadata?.altText || segment.data.hero_title || 'Hero image'}
-                      className="w-full h-[500px] object-cover rounded-xl shadow-2xl"
+                      className="w-full h-auto object-cover rounded-xl shadow-2xl"
                     />
                   </div>
                 )}

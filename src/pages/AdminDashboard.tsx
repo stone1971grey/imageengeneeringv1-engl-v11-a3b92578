@@ -5147,6 +5147,140 @@ const AdminDashboard = () => {
                           </div>
 
                           <div>
+                            <Label className="text-white">CTA Button Text</Label>
+                            <Input
+                              value={heroData.hero_cta_text || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_cta_text: e.target.value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-black"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-white">CTA Button Link</Label>
+                            <Input
+                              value={heroData.hero_cta_link || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_cta_link: e.target.value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-black"
+                              placeholder="#section-id or /path"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-white">CTA Button Style</Label>
+                            <Select 
+                              value={heroData.hero_cta_style || 'standard'}
+                              onValueChange={(value) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_cta_style: value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                            >
+                              <SelectTrigger className="border-2 border-gray-600 text-black">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="standard">Standard (Yellow)</SelectItem>
+                                <SelectItem value="technical">Technical (Dark)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="pt-4 border-t border-gray-600">
+                            <h4 className="text-white font-semibold mb-3">Layout Settings</h4>
+                            
+                            <div className="space-y-4">
+                              <div>
+                                <Label className="text-white">Image Position</Label>
+                                <Select 
+                                  value={heroData.hero_image_position || 'right'}
+                                  onValueChange={(value) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_image_position: value
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                >
+                                  <SelectTrigger className="border-2 border-gray-600 text-black">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="left">Left</SelectItem>
+                                    <SelectItem value="right">Right</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div>
+                                <Label className="text-white">Layout Ratio (Text : Image)</Label>
+                                <Select 
+                                  value={heroData.hero_layout_ratio || '2-5'}
+                                  onValueChange={(value) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_layout_ratio: value
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                >
+                                  <SelectTrigger className="border-2 border-gray-600 text-black">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="1-1">1:1 (50% : 50%)</SelectItem>
+                                    <SelectItem value="2-3">2:3 (40% : 60%)</SelectItem>
+                                    <SelectItem value="2-5">2:5 (30% : 70%)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div>
+                                <Label className="text-white">Top Spacing</Label>
+                                <Select 
+                                  value={heroData.hero_top_spacing || 'medium'}
+                                  onValueChange={(value) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_top_spacing: value
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                >
+                                  <SelectTrigger className="border-2 border-gray-600 text-black">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="small">Small (PT-16)</SelectItem>
+                                    <SelectItem value="medium">Medium (PT-24)</SelectItem>
+                                    <SelectItem value="large">Large (PT-32)</SelectItem>
+                                    <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
                             <Label className="text-white mb-2 block">Hero Bild</Label>
                             {heroData.hero_image_url ? (
                               <div className="space-y-3">
