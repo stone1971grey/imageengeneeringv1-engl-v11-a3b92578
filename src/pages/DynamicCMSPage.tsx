@@ -361,37 +361,41 @@ const DynamicCMSPage = () => {
                   const hasImage = tile.imageUrl;
                   
                   return (
-                    <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white">
-                      <CardContent className="p-8">
-                        <div className="flex flex-col items-center space-y-4">
-                          {hasImage ? (
-                            <div className="w-32 h-32 rounded-lg overflow-hidden border-2 border-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
-                              <img 
-                                src={tile.imageUrl} 
-                                alt={tile.metadata?.altText || tile.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ) : (
+                    <Card key={idx} className="hover:shadow-xl transition-all duration-300 border-none bg-white overflow-hidden">
+                      <CardContent className="p-0">
+                        {hasImage ? (
+                          <div className="w-full aspect-square overflow-hidden">
+                            <img 
+                              src={tile.imageUrl} 
+                              alt={tile.metadata?.altText || tile.title}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex justify-center pt-8">
                             <div className="p-4 bg-[#f9dc24]/10 rounded-full border-2 border-[#f9dc24]/20 hover:bg-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
                               <Icon className="h-8 w-8 text-gray-900" />
                             </div>
-                          )}
+                          </div>
+                        )}
+                        <div className="p-8">
                           <div className="space-y-3 flex-1 text-center">
                             <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
                             <p className="text-gray-600 leading-relaxed">{tile.description}</p>
                           </div>
                           {tile.ctaText && tile.ctaLink && (
-                            <Link
-                              to={tile.ctaLink}
-                              className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                                tile.ctaStyle === "technical"
-                                  ? "bg-gray-800 text-white hover:bg-gray-900"
-                                  : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
-                              }`}
-                            >
-                              {tile.ctaText}
-                            </Link>
+                            <div className="mt-6 flex justify-center">
+                              <Link
+                                to={tile.ctaLink}
+                                className={`inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
+                                  tile.ctaStyle === "technical"
+                                    ? "bg-gray-800 text-white hover:bg-gray-900"
+                                    : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
+                                }`}
+                              >
+                                {tile.ctaText}
+                              </Link>
+                            </div>
                           )}
                         </div>
                       </CardContent>
