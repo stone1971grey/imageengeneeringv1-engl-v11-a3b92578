@@ -41,6 +41,20 @@ const MetaNavigation = ({ data, segmentIdMap = {} }: MetaNavigationProps) => {
       console.log(`MetaNav: Element #${anchor} not found, trying data-segment-key="${anchor}"`);
       element = document.querySelector(`[data-segment-key="${anchor}"]`);
     }
+
+    // As last resort, try to find a section by heading text matching the label
+    if (!element) {
+      console.log(`MetaNav: Trying to find section by heading text for label "${label}"`);
+      const sections = Array.from(document.querySelectorAll('section')) as HTMLElement[];
+      for (const section of sections) {
+        const heading = section.querySelector('h1, h2, h3, h4');
+        if (heading && heading.textContent && heading.textContent.includes(label)) {
+          element = section;
+          console.log('MetaNav: Matched section by heading text:', heading.textContent);
+          break;
+        }
+      }
+    }
     
     if (element) {
       console.log(`MetaNav: Found element, scrolling...`, element);
