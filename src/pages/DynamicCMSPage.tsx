@@ -383,7 +383,7 @@ const DynamicCMSPage = () => {
                             <h3 className="text-2xl font-bold text-gray-900">{tile.title}</h3>
                             <p className="text-gray-600 leading-relaxed">{tile.description}</p>
                           </div>
-                          {tile.ctaText && tile.ctaLink && (
+                          {tile.showButton !== false && tile.ctaText && tile.ctaLink && (
                             <div className="mt-6 flex justify-center">
                               <Link
                                 to={tile.ctaLink}
