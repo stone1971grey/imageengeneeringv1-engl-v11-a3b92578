@@ -38,13 +38,15 @@ const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
   const layoutRatio = data.layoutRatio || '1-1';
   const topSpacing = data.topSpacing || 'medium';
 
+  // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
+  // Dazu kommt der gewünschte Abstand: small(30px), medium(50px), large(70px), extra-large(90px)
   const getTopPaddingClass = () => {
     switch (topSpacing) {
-      case 'small': return 'pt-[30px]';
-      case 'medium': return 'pt-[50px]';
-      case 'large': return 'pt-[70px]';
-      case 'extra-large': return 'pt-[90px]';
-      default: return 'pt-[50px]';
+      case 'small': return 'pt-[120px]';        // 90px Nav + 30px = 120px
+      case 'medium': return 'pt-[140px]';       // 90px Nav + 50px = 140px
+      case 'large': return 'pt-[160px]';        // 90px Nav + 70px = 160px
+      case 'extra-large': return 'pt-[180px]';  // 90px Nav + 90px = 180px
+      default: return 'pt-[140px]';             // medium als default
     }
   };
 
