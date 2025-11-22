@@ -365,7 +365,7 @@ const DynamicCMSPage = () => {
                       <CardContent className="p-8">
                         <div className="flex flex-col items-center space-y-4">
                           {hasImage ? (
-                            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
+                            <div className="w-32 h-32 rounded-lg overflow-hidden border-2 border-[#f9dc24]/20 hover:border-[#f9dc24]/40 transition-all duration-300">
                               <img 
                                 src={tile.imageUrl} 
                                 alt={tile.metadata?.altText || tile.title}
