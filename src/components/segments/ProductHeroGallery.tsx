@@ -12,6 +12,7 @@ interface ProductImage {
 
 interface ProductHeroGalleryProps {
   id?: string;
+  hasMetaNavigation?: boolean;
   data: {
     title: string;
     subtitle: string;
@@ -29,7 +30,7 @@ interface ProductHeroGalleryProps {
   };
 }
 
-const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
+const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHeroGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hoveredButton, setHoveredButton] = useState<string | null>(null);
@@ -39,14 +40,16 @@ const ProductHeroGallery = ({ id, data }: ProductHeroGalleryProps) => {
   const topSpacing = data.topSpacing || 'medium';
 
   // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
+  // Meta Navigation (wenn vorhanden) ist ~60px hoch
   // Dazu kommt der gewünschte Abstand: small(30px), medium(50px), large(70px), extra-large(90px)
   const getTopPaddingClass = () => {
+    const metaNavOffset = hasMetaNavigation ? 60 : 0;
     switch (topSpacing) {
-      case 'small': return 'pt-[120px]';        // 90px Nav + 30px = 120px
-      case 'medium': return 'pt-[140px]';       // 90px Nav + 50px = 140px
-      case 'large': return 'pt-[160px]';        // 90px Nav + 70px = 160px
-      case 'extra-large': return 'pt-[180px]';  // 90px Nav + 90px = 180px
-      default: return 'pt-[140px]';             // medium als default
+      case 'small': return hasMetaNavigation ? 'pt-[180px]' : 'pt-[120px]';        // +60px wenn Meta Nav
+      case 'medium': return hasMetaNavigation ? 'pt-[200px]' : 'pt-[140px]';       // +60px wenn Meta Nav
+      case 'large': return hasMetaNavigation ? 'pt-[220px]' : 'pt-[160px]';        // +60px wenn Meta Nav
+      case 'extra-large': return hasMetaNavigation ? 'pt-[240px]' : 'pt-[180px]';  // +60px wenn Meta Nav
+      default: return hasMetaNavigation ? 'pt-[200px]' : 'pt-[140px]';             // medium als default
     }
   };
 
