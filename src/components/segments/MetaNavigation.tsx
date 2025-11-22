@@ -21,7 +21,7 @@ const MetaNavigation = ({ data, segmentIdMap = {} }: MetaNavigationProps) => {
   };
 
   return (
-    <nav className="sticky top-[235px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
+    <nav className="sticky top-[85px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
           <div className="flex flex-wrap gap-6 justify-center text-lg">
