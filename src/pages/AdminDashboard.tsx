@@ -760,9 +760,29 @@ const AdminDashboard = () => {
           .join(' ');
 
         // Generate hierarchical page_slug based on parent relationship
-        const hierarchicalSlug = parent_slug 
-          ? `${parent_slug}/${selectedPageForCMS}`
-          : selectedPageForCMS;
+        let hierarchicalSlug = selectedPageForCMS;
+        
+        if (parent_slug) {
+          // If parent_slug is already hierarchical (contains '/'), just append
+          if (parent_slug.includes('/')) {
+            hierarchicalSlug = `${parent_slug}/${selectedPageForCMS}`;
+          } else {
+            // Look up parent page to see if it has its own parent_slug (e.g. your-solution → automotive)
+            const { data: parentPage } = await supabase
+              .from('page_registry')
+              .select('page_slug, parent_slug')
+              .eq('page_slug', parent_slug)
+              .maybeSingle();
+
+            if (parentPage?.parent_slug) {
+              // Build full hierarchy, e.g. your-solution/automotive/geometric-calibration-automotive
+              hierarchicalSlug = `${parentPage.parent_slug}/${parent_slug}/${selectedPageForCMS}`;
+            } else {
+              // Simple parent/child, e.g. products/test-charts
+              hierarchicalSlug = `${parent_slug}/${selectedPageForCMS}`;
+            }
+          }
+        }
 
         const { data: newPageData, error: insertError } = await supabase
           .from("page_registry")
