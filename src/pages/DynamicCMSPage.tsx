@@ -194,7 +194,8 @@ const DynamicCMSPage = () => {
           <MetaNavigation
             key={segmentId}
             data={{
-              links: segment.data?.navigationItems || []
+              // Support both legacy "navigationItems" and new "links" structure
+              links: segment.data?.navigationItems || segment.data?.links || []
             }}
             segmentIdMap={segmentIdMap}
           />
@@ -561,7 +562,8 @@ const DynamicCMSPage = () => {
         <MetaNavigation
           key={`meta-nav-${metaNavSegment.segment_id}`}
           data={{
-            links: metaNavSegment.data?.navigationItems || []
+            // Support both legacy "navigationItems" and new "links" structure
+            links: metaNavSegment.data?.navigationItems || metaNavSegment.data?.links || []
           }}
           segmentIdMap={segmentIdMap}
         />
