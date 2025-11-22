@@ -43,6 +43,12 @@ const MetaNavigation = ({ data, segmentIdMap = {} }: MetaNavigationProps) => {
       element = document.querySelector(`[data-segment-key="${anchor}"]`);
     }
 
+    // If still not found, try to find by data-segment-id (numeric ID from registry)
+    if (!element) {
+      console.log(`MetaNav: Element not found by key, trying data-segment-id="${resolvedAnchor}"`);
+      element = document.querySelector(`[data-segment-id="${resolvedAnchor}"]`);
+    }
+
     // As last resort, try to find a section by heading text matching the label
     if (!element) {
       console.log(`MetaNav: Trying to find section by heading text for label "${label}"`);
