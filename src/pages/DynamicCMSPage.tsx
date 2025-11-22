@@ -133,16 +133,23 @@ const DynamicCMSPage = () => {
     }
 
     const segmentDbId = segmentIdMap[segment.segment_key || segment.id];
+    
+    // Check if Meta Navigation exists on this page
+    const hasMetaNav = pageSegments.some(s => s.type === 'meta-navigation');
 
     switch (segment.type) {
       case "hero":
-        // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
-        // Dazu kommt der gewünschte Abstand: small(30px), medium(50px), large(70px), xlarge(90px)
-        const topSpacingClass = 
-          segment.data?.hero_top_spacing === 'small' ? 'pt-[120px]' :      // 90px Nav + 30px = 120px
-          segment.data?.hero_top_spacing === 'large' ? 'pt-[160px]' :      // 90px Nav + 70px = 160px
-          segment.data?.hero_top_spacing === 'xlarge' ? 'pt-[180px]' :     // 90px Nav + 90px = 180px
-          'pt-[140px]';                                                     // 90px Nav + 50px = 140px (medium default)
+        // Base heights: NavBar (85px) + Meta Nav if present (~85px)
+        // Plus desired spacing: small(30px), medium(50px), large(70px), xlarge(90px)
+        const baseOffset = hasMetaNav ? 170 : 85; // NavBar + MetaNav or just NavBar
+        const spacingValue = 
+          segment.data?.hero_top_spacing === 'small' ? 30 :
+          segment.data?.hero_top_spacing === 'large' ? 70 :
+          segment.data?.hero_top_spacing === 'xlarge' ? 90 :
+          50; // medium default
+        
+        const totalSpacing = baseOffset + spacingValue;
+        const topSpacingClass = `pt-[${totalSpacing}px]`;
         
         return (
           <section key={segmentId} id={segmentDbId?.toString()} className={`${topSpacingClass} pb-16`}>
