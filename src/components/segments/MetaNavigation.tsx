@@ -11,6 +11,7 @@ interface MetaNavigationProps {
 }
 
 const MetaNavigation = ({ data, segmentIdMap = {} }: MetaNavigationProps) => {
+  console.log('MetaNav: Render', { links: data.links, segmentIdMap });
   // Convert segment_key to segment_id if available
   const resolveAnchor = (anchor: string): string => {
     // If anchor is already numeric, use it as-is
