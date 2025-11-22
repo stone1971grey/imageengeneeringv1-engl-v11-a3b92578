@@ -7,6 +7,8 @@ Dieses Dokument definiert alle Segment-Typen im CMS-System, deren Erscheinungsbi
 
 ## Status: Definierte und validierte Segmente
 
+**Aktueller Stand:** 5 von 18 Segmenten vollständig definiert und validiert
+
 ### ✅ 1. INTRO-SEGMENT
 **Status:** Vollständig definiert und validiert
 
@@ -326,6 +328,246 @@ type IconName =
 
 ---
 
+### ✅ 4. PRODUCT HERO SEGMENT
+**Status:** Vollständig definiert und validiert
+
+#### Beschreibung
+Das Product Hero Segment ist ein zweispaltiger Hero-Bereich für Produktseiten mit großem Text (Titel und Subtitle), Beschreibung, zwei CTA-Buttons und einem Produktbild. Die Anordnung und Proportionen sind flexibel konfigurierbar.
+
+#### Visuelle Eigenschaften
+- **Hintergrund:** Weiß (`bg-white`)
+- **Abstände:** 
+  - **Top Spacing:** Konfigurierbar (siehe Top Spacing System)
+  - **Bottom:** `pb-16`
+- **Container:** Standard Container mit `px-6`
+
+#### Top Spacing System
+Das Top Spacing wird vom **Boden der Navigation** gemessen (nicht vom Viewport-Top).
+- **Berechnung:** Navigation (~80px) + Top-Offset (10px) = 90px Basis
+- **Optionen:**
+  - **Small:** `pt-[120px]` = 90px Nav + 30px Abstand
+  - **Medium:** `pt-[140px]` = 90px Nav + 50px Abstand (Default)
+  - **Large:** `pt-[160px]` = 90px Nav + 70px Abstand
+  - **Extra Large:** `pt-[180px]` = 90px Nav + 90px Abstand
+
+#### Inhaltsstruktur
+
+**1. Grid-Layout**
+- **Basis:** `grid items-center gap-12`
+- **Layout Ratio Optionen:**
+  - **1:1 (50:50):** `grid-cols-1 lg:grid-cols-2`
+  - **2:3 (2/3:1/3):** `grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3`
+  - **2:5 (2/5:3/5):** `grid-cols-1 lg:grid-cols-5 [&>*:first-child]:lg:col-span-2 [&>*:last-child]:lg:col-span-3` (Default)
+- **Image Position:** Links oder Rechts (über `order-` Classes gesteuert)
+
+**2. Text-Content-Bereich**
+
+**Überschrift (H2):**
+- **Schriftgröße:** `text-5xl lg:text-6xl xl:text-7xl`
+- **Schriftgewicht:** `font-light` (Titel) + `font-medium` (Subtitle im gleichen H2)
+- **Line Height:** `leading-[0.9]`
+- **Tracking:** `tracking-tight`
+- **Farbe:** `text-gray-900`
+- **Abstand:** `mb-6`
+- **Struktur:** Titel und Subtitle beide innerhalb eines H2-Tags, Subtitle als `<span className="font-medium block">`
+
+**Beschreibung (Paragraph):**
+- **Schriftgröße:** `text-2xl lg:text-3xl`
+- **Farbe:** `text-gray-700`
+- **Schriftgewicht:** `font-light`
+- **Line Height:** `leading-relaxed`
+- **Abstand:** `mb-8`
+
+**CTA-Buttons (2 Stück):**
+- **Container:** `pt-4 flex gap-4`
+- **Button-Größen:** `px-8 py-4 text-lg font-medium`
+- **Border Radius:** `rounded-lg`
+- **Shadow:** `shadow-soft`
+- **Transition:** `transition-all duration-300`
+- **Drei Stil-Optionen:**
+  - **Standard (Yellow):** `bg-[#f9dc24] text-black`
+  - **Technical (Dark Gray):** `bg-[#1f2937] text-white`
+  - **Outline White:** `bg-white text-black border border-[#e5e5e5]` → Hover: `bg-black text-white border-black`
+
+**3. Bild-Bereich**
+- **Bild:**
+  - Klasse: `w-full h-auto object-cover shadow-2xl`
+  - Alt-Text: Verwendet `metadata.altText` oder Fallback auf Titel
+- **Positionierung:** Order-Klassen für responsive Links/Rechts-Wechsel
+
+#### Backend-Konfiguration
+```typescript
+interface ProductHeroData {
+  hero_title: string;                          // Titel (erforderlich)
+  hero_subtitle?: string;                      // Subtitle (optional)
+  hero_description: string;                    // Beschreibung (erforderlich)
+  hero_image_url?: string;                     // Bild-URL (optional)
+  hero_image_metadata?: ImageMetadata;         // Bild-Metadaten (optional)
+  hero_image_position?: 'left' | 'right';      // Bildposition (default: 'right')
+  hero_layout_ratio?: '1-1' | '2-3' | '2-5';  // Layout-Verhältnis (default: '2-5')
+  hero_top_spacing?: 'small' | 'medium' | 'large' | 'xlarge'; // Top Spacing (default: 'medium')
+  hero_cta_text?: string;                      // CTA 1 Text (optional)
+  hero_cta_link?: string;                      // CTA 1 Link (optional)
+  hero_cta_style?: 'standard' | 'technical' | 'outline-white'; // CTA 1 Stil (default: 'standard')
+  hero_cta2_text?: string;                     // CTA 2 Text (optional)
+  hero_cta2_link?: string;                     // CTA 2 Link (optional)
+  hero_cta2_style?: 'standard' | 'technical' | 'outline-white'; // CTA 2 Stil (default: 'standard')
+}
+```
+
+#### Design-Regeln
+1. **H2 statt H1:**
+   - Titel und Subtitle werden beide als H2 gerendert
+   - Subtitle hat `font-medium` zur Unterscheidung vom `font-light` Titel
+
+2. **Top Spacing:**
+   - MUSS vom Boden der Navigation gemessen werden
+   - Bild darf niemals an Navigation "kleben"
+   
+3. **Layout Flexibilität:**
+   - Drei Ratio-Optionen für unterschiedliche Text-zu-Bild-Verhältnisse
+   - Bild kann links oder rechts positioniert werden
+   
+4. **Button-Hierarchie:**
+   - Zwei CTA-Buttons für primäre und sekundäre Aktionen
+   - Buttons werden nur gerendert wenn Text UND Link vorhanden
+
+5. **Responsive:**
+   - Mobile: Einspaltig, Bild immer oberhalb (order-1)
+   - Desktop: Zweispaltig nach gewählter Ratio und Position
+
+#### Verwendung
+- Positionierung: Direkt unter Navigation (erster Content-Bereich)
+- Zweck: Produkt-Vorstellung mit starker visueller Präsenz
+- Einsatzgebiet: Produktseiten, Lösungsseiten mit Produktfokus
+
+---
+
+### ✅ 5. PRODUCT HERO GALLERY SEGMENT
+**Status:** Vollständig definiert und validiert
+
+#### Beschreibung
+Erweiterte Version des Product Hero mit Galerie-Funktionalität. Unterstützt mehrere Produktbilder mit Thumbnail-Navigation, Modal-Ansicht und vollständiger Layout-Kontrolle wie Product Hero.
+
+#### Visuelle Eigenschaften
+Identisch zu Product Hero Segment, mit folgenden Erweiterungen:
+
+#### Galerie-Funktionalität
+
+**1. Hauptbild-Bereich**
+- **Container:** `relative rounded-lg shadow-soft group cursor-pointer`
+- **Bild:** 
+  - Größe: `w-full h-[500px] lg:h-[600px]`
+  - Object-Fit: `object-contain`
+  - Hintergrund: `bg-white`
+  - Transition: `transition-all duration-300`
+
+**Hintergrund-Effekte:**
+- **Animated Glow:** `absolute inset-0 bg-gradient-to-br from-soft-blue/20 via-transparent to-accent-soft-blue/20 animate-pulse`
+- **Subtle Overlay:** `absolute inset-0 bg-gradient-to-t from-black/5 to-transparent`
+- **Light Beam Animation:** Beweglicher Lichtstrahl-Effekt mit `animate-[slide-in-right_3s_ease-in-out_infinite]`
+
+**Expand-Icon Overlay:**
+- **Anzeige:** Bei Hover sichtbar
+- **Container:** `absolute inset-0 bg-black/0 group-hover:bg-black/10`
+- **Icon:** `Expand` (lucide-react) in weißem Kreis mit `bg-white/90 rounded-full p-3 shadow-lg`
+- **Transition:** Opacity fade-in bei Hover
+
+**2. Thumbnail-Navigation**
+- **Container:** `flex justify-center gap-3 mt-4`
+- **Thumbnail:**
+  - Größe: `w-16 lg:w-20 aspect-[4/3]`
+  - Border: `border-2`
+    - Aktiv: `border-accent-soft-blue shadow-md`
+    - Inaktiv: `border-gray-200 hover:border-gray-300`
+  - Border Radius: `rounded-lg`
+  - Bild: `w-full h-full object-contain bg-white`
+  - Transition: `transition-all duration-300`
+
+**3. Bild-Beschreibung**
+- **Container:** `text-center mt-4`
+- **Titel:** `font-medium text-light-foreground text-sm lg:text-base mb-1`
+- **Beschreibung:** `text-xs lg:text-sm text-scandi-grey`
+- **Anzeige:** Nur wenn Titel oder Beschreibung für aktuelles Bild vorhanden
+
+**4. Modal-Ansicht (Lightbox)**
+- **Dialog:** Verwendet `Dialog` und `DialogContent` von shadcn/ui
+- **Content:** `max-w-5xl max-h-[80vh] p-4 bg-white`
+- **Bild:** `w-full h-full max-h-[75vh] object-contain`
+- **Navigation Arrows:**
+  - Position: `left-4` / `right-4`, `top-1/2 -translate-y-1/2`
+  - Style: `bg-white/90 hover:bg-white p-3 rounded-full shadow-lg`
+  - Icons: `ChevronLeft` / `ChevronRight` (w-6 h-6)
+  - Nur sichtbar wenn mehrere Bilder vorhanden
+
+**Hintergrund-Animationen (Page-Level):**
+- **Gradient Orbs:** Zwei animierte Blur-Gradienten im Hintergrund
+  - Orb 1: `top-1/4 left-1/4 w-96 h-96 blur-3xl animate-pulse`
+  - Orb 2: `top-1/3 right-1/4 w-64 h-64 blur-2xl animate-pulse` mit 1s Delay
+
+#### Backend-Konfiguration
+```typescript
+interface ProductImage {
+  imageUrl: string;             // Bild-URL (erforderlich)
+  title: string;                // Bild-Titel (erforderlich)
+  description: string;          // Bild-Beschreibung (erforderlich)
+  metadata?: ImageMetadata;     // Bild-Metadaten (optional)
+}
+
+interface ProductHeroGalleryData {
+  title: string;                           // Haupttitel (erforderlich)
+  subtitle: string;                        // Subtitle (erforderlich)
+  description: string;                     // Beschreibung (erforderlich)
+  imagePosition: 'left' | 'right';         // Bildposition (default: 'right')
+  layoutRatio: '1-1' | '2-3' | '2-5';     // Layout-Verhältnis (default: '2-5')
+  topSpacing: 'small' | 'medium' | 'large' | 'extra-large'; // Top Spacing (default: 'medium')
+  cta1Text: string;                        // CTA 1 Text (optional)
+  cta1Link: string;                        // CTA 1 Link (optional)
+  cta1Style: 'standard' | 'technical' | 'outline-white'; // CTA 1 Stil (default: 'standard')
+  cta2Text: string;                        // CTA 2 Text (optional)
+  cta2Link: string;                        // CTA 2 Link (optional)
+  cta2Style: 'standard' | 'technical' | 'outline-white'; // CTA 2 Stil (default: 'standard')
+  images: ProductImage[];                  // Array von Produktbildern (erforderlich)
+}
+```
+
+#### Design-Regeln
+1. **Galerie-Mindestanzahl:**
+   - Thumbnail-Navigation wird nur bei `images.length > 1` angezeigt
+   - Modal-Arrows nur bei mehreren Bildern
+   
+2. **Bild-Wechsel:**
+   - Click auf Thumbnail wechselt Hauptbild
+   - Click auf Hauptbild öffnet Modal
+   - Arrows im Modal navigieren zwischen Bildern
+   
+3. **Animation-Details:**
+   - Hintergrund-Orbs: Pulse-Animation gestaffelt
+   - Light Beam: Kontinuierliche Slide-Animation (3s Loop)
+   - Thumbnails: Smooth Transition bei Border-Änderung
+   
+4. **Alle Product Hero Regeln gelten:**
+   - Top Spacing vom Navigation-Boden
+   - H2-Tags für Überschriften (Subtitle mit font-medium)
+   - Gleiche Layout-Ratio-Optionen
+   - Gleiche Button-Stile und -Logik
+
+#### Technische Besonderheiten
+- **State Management:** `currentImageIndex` für aktuelle Bildauswahl, `isModalOpen` für Lightbox
+- **Keyboard Navigation:** Modal unterstützt Pfeiltasten (über Button-Handlers)
+- **Accessibility:** 
+  - Alt-Texte für alle Bilder erforderlich
+  - ARIA-Labels für Navigation-Buttons
+  - Expand-Icon mit visueller Hover-Indikation
+
+#### Verwendung
+- Positionierung: Direkt unter Navigation (erster Content-Bereich)
+- Zweck: Produkt-Vorstellung mit mehreren Ansichten/Varianten
+- Einsatzgebiet: Produktseiten mit mehreren Produktbildern, Varianten oder Perspektiven
+- Referenzseite: `/products/test-charts/le7`
+
+---
+
 ## Gemeinsame Design-Prinzipien
 
 ### Farbschema
@@ -447,14 +689,13 @@ Bei der Erstellung neuer Segmente müssen folgende Punkte sichergestellt werden:
 | Datum | Version | Änderung |
 |-------|---------|----------|
 | 2025-11-22 | 1.0 | Initial: Intro, Tiles, Industries definiert und validiert |
+| 2025-11-22 | 1.1 | Product Hero und Product Hero Gallery definiert und validiert |
 
 ---
 
 ## Nächste Schritte
 
 Folgende Segmente müssen noch dokumentiert und validiert werden:
-- Hero-Segment (Product Hero)
-- Product Hero Gallery
 - Meta Navigation
 - Banner-Segment
 - Image & Text / Solutions
