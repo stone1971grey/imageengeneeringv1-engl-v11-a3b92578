@@ -3988,65 +3988,85 @@ const AdminDashboard = () => {
                       
                       {/* Button Settings */}
                       <div className="pt-3 border-t border-gray-600">
-                        <h4 className="text-sm font-semibold text-white mb-3">Button Settings</h4>
-                        
-                        <div className="space-y-3">
-                          <div>
-                            <Label htmlFor={`app_cta_link_${index}`} className="text-white">Button Link</Label>
-                            <Input
-                              id={`app_cta_link_${index}`}
-                              value={app.ctaLink || ""}
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="text-sm font-semibold text-white">Button Settings</h4>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id={`app_show_button_${index}`}
+                              checked={app.showButton !== false}
                               onChange={(e) => {
                                 const newApps = [...applications];
-                                newApps[index].ctaLink = e.target.value;
+                                newApps[index].showButton = e.target.checked;
                                 setApplications(newApps);
                               }}
-                              placeholder="/page-url or https://example.com"
-                              className="border-2 border-gray-600"
+                              className="h-5 w-5 rounded border-gray-600"
                             />
-                            <p className="text-sm text-white mt-1">
-                              Use '/path' for internal pages or 'https://...' for external URLs
-                            </p>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor={`app_cta_text_${index}`} className="text-white">Button Text</Label>
-                            <Input
-                              id={`app_cta_text_${index}`}
-                              value={app.ctaText || ""}
-                              onChange={(e) => {
-                                const newApps = [...applications];
-                                newApps[index].ctaText = e.target.value;
-                                setApplications(newApps);
-                              }}
-                              placeholder="Learn More"
-                              className="border-2 border-gray-600"
-                            />
-                            <p className="text-sm text-white mt-1">
-                              Text displayed on the button (default: "Learn More")
-                            </p>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
-                            <Select
-                              value={app.ctaStyle || "standard"}
-                              onValueChange={(value) => {
-                                const newApps = [...applications];
-                                newApps[index].ctaStyle = value;
-                                setApplications(newApps);
-                              }}
-                            >
-                              <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                                <SelectValue placeholder="Select button style" className="text-black" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-white">
-                                <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
-                                <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <Label htmlFor={`app_show_button_${index}`} className="text-white cursor-pointer">
+                              Show Button
+                            </Label>
                           </div>
                         </div>
+                        
+                        {app.showButton !== false && (
+                          <div className="space-y-3">
+                            <div>
+                              <Label htmlFor={`app_cta_link_${index}`} className="text-white">Button Link</Label>
+                              <Input
+                                id={`app_cta_link_${index}`}
+                                value={app.ctaLink || ""}
+                                onChange={(e) => {
+                                  const newApps = [...applications];
+                                  newApps[index].ctaLink = e.target.value;
+                                  setApplications(newApps);
+                                }}
+                                placeholder="/page-url or https://example.com"
+                                className="border-2 border-gray-600"
+                              />
+                              <p className="text-sm text-white mt-1">
+                                Use '/path' for internal pages or 'https://...' for external URLs
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <Label htmlFor={`app_cta_text_${index}`} className="text-white">Button Text</Label>
+                              <Input
+                                id={`app_cta_text_${index}`}
+                                value={app.ctaText || ""}
+                                onChange={(e) => {
+                                  const newApps = [...applications];
+                                  newApps[index].ctaText = e.target.value;
+                                  setApplications(newApps);
+                                }}
+                                placeholder="Learn More"
+                                className="border-2 border-gray-600"
+                              />
+                              <p className="text-sm text-white mt-1">
+                                Text displayed on the button (default: "Learn More")
+                              </p>
+                            </div>
+                            
+                            <div>
+                              <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
+                              <Select
+                                value={app.ctaStyle || "standard"}
+                                onValueChange={(value) => {
+                                  const newApps = [...applications];
+                                  newApps[index].ctaStyle = value;
+                                  setApplications(newApps);
+                                }}
+                              >
+                                <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                                  <SelectValue placeholder="Select button style" className="text-black" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white">
+                                  <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
+                                  <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
