@@ -176,6 +176,25 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const buildPageStatuses = () => {
     const statuses: PageStatus[] = [];
 
+    // Helper function to check if a page is a CMS page
+    // Checks both non-hierarchical and hierarchical slug formats
+    const isPageInCMS = (slug: string, url: string): boolean => {
+      // Direct slug match
+      if (cmsPages.has(slug)) return true;
+      
+      // Check for hierarchical slug match by extracting from URL
+      if (url && url !== '#') {
+        const urlParts = url.split('/').filter(Boolean);
+        // Try various hierarchical combinations
+        for (let i = 0; i < urlParts.length; i++) {
+          const hierarchicalSlug = urlParts.slice(i).join('/');
+          if (cmsPages.has(hierarchicalSlug)) return true;
+        }
+      }
+      
+      return false;
+    };
+
     // Static pages (hardcoded, not in navigation structure)
     const staticPages = [
       { slug: 'index', title: 'Homepage', url: '/', isStatic: true },
@@ -188,7 +207,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     staticPages.forEach(page => {
       statuses.push({
         ...page,
-        isCMS: cmsPages.has(page.slug),
+        isCMS: isPageInCMS(page.slug, page.url),
         pageId: pageIdMap.get(page.slug),
       });
     });
@@ -216,7 +235,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         slug: categorySlug,
         title: categoryName,
         url: categoryUrl,
-        isCMS: cmsPages.has(categorySlug),
+        isCMS: isPageInCMS(categorySlug, categoryUrl),
         isStatic: false,
         category: 'Your Solution',
         subcategory: categoryName,
@@ -235,7 +254,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           slug: displaySlug,
           title: subgroup.name,
           url: subgroup.link,
-          isCMS: slug ? cmsPages.has(slug) : false,
+          isCMS: slug ? isPageInCMS(slug, subgroup.link) : false,
           isStatic: false,
           category: 'Your Solution',
           subcategory: categoryName,
@@ -259,7 +278,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         slug: categorySlug,
         title: categoryName,
         url: categoryUrl,
-        isCMS: cmsPages.has(categorySlug),
+        isCMS: isPageInCMS(categorySlug, categoryUrl),
         isStatic: false,
         category: 'Products',
         subcategory: categoryName,
@@ -278,7 +297,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           slug: displaySlug,
           title: subgroup.name,
           url: subgroup.link,
-          isCMS: slug ? cmsPages.has(slug) : false,
+          isCMS: slug ? isPageInCMS(slug, subgroup.link) : false,
           isStatic: false,
           category: 'Products',
           subcategory: categoryName,
@@ -300,7 +319,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             slug: displaySlug,
             title: solution.name,
             url: solution.link,
-            isCMS: slug ? cmsPages.has(slug) : false,
+            isCMS: slug ? isPageInCMS(slug, solution.link) : false,
             isStatic: false,
             category: 'Solutions',
             subcategory: categoryName,
@@ -318,7 +337,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             slug: displaySlug,
             title: service.name,
             url: service.link,
-            isCMS: slug ? cmsPages.has(slug) : false,
+            isCMS: slug ? isPageInCMS(slug, service.link) : false,
             isStatic: false,
             category: 'Solutions',
             subcategory: categoryName,
