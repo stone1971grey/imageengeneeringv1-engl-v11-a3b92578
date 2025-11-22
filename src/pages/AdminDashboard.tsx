@@ -5637,19 +5637,6 @@ const AdminDashboard = () => {
                       />
                     );
                   })()}
-                  {segment.type === 'product-hero-gallery' && (
-                    <ProductHeroGalleryEditor
-                      data={segment.data}
-                      onChange={(newData) => {
-                        const newSegments = [...pageSegments];
-                        newSegments[index].data = newData;
-                        setPageSegments(newSegments);
-                      }}
-                      onSave={() => handleSaveSegments()}
-                      pageSlug={selectedPage}
-                      segmentId={parseInt(segment.id)}
-                    />
-                  )}
                   {segment.type === 'tiles' && (() => {
                     // Initialize data if missing
                     if (!segment.data) {
