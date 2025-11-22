@@ -125,6 +125,9 @@ const DynamicCMSPage = () => {
     setLoading(false);
   };
 
+  // Check if page has Meta Navigation segment
+  const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
+
   const renderSegment = (segmentId: string) => {
     const segment = pageSegments.find((s) => s.id === segmentId || s.segment_key === segmentId);
     
@@ -206,6 +209,7 @@ const DynamicCMSPage = () => {
           <ProductHeroGallery
             key={segmentId}
             id={segmentDbId?.toString()}
+            hasMetaNavigation={hasMetaNavigation}
             data={{
               title: segment.data?.title || "",
               subtitle: segment.data?.subtitle || "",
@@ -288,6 +292,7 @@ const DynamicCMSPage = () => {
           <FullHero
             key={segmentId}
             id={segmentDbId?.toString()}
+            hasMetaNavigation={hasMetaNavigation}
             titleLine1={segment.data?.titleLine1 || ""}
             titleLine2={segment.data?.titleLine2 || ""}
             subtitle={segment.data?.subtitle || ""}

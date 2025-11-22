@@ -3,6 +3,7 @@ import { Play } from "lucide-react";
 
 interface FullHeroProps {
   id?: string | number;
+  hasMetaNavigation?: boolean;
   titleLine1: string;
   titleLine2: string;
   subtitle: string;
@@ -25,6 +26,7 @@ interface FullHeroProps {
 
 const FullHero = ({
   id,
+  hasMetaNavigation = false,
   titleLine1,
   titleLine2,
   subtitle,
@@ -46,12 +48,13 @@ const FullHero = ({
 }: FullHeroProps) => {
   
   const getTopPaddingClass = () => {
+    // Meta Navigation (wenn vorhanden) ist ~60px hoch, zusätzlicher Space erforderlich
     switch (topSpacing) {
-      case 'small': return 'pt-16';
-      case 'medium': return 'pt-24';
-      case 'large': return 'pt-32';
-      case 'extra-large': return 'pt-40';
-      default: return 'pt-24';
+      case 'small': return hasMetaNavigation ? 'pt-32' : 'pt-16';
+      case 'medium': return hasMetaNavigation ? 'pt-40' : 'pt-24';
+      case 'large': return hasMetaNavigation ? 'pt-48' : 'pt-32';
+      case 'extra-large': return hasMetaNavigation ? 'pt-56' : 'pt-40';
+      default: return hasMetaNavigation ? 'pt-40' : 'pt-24';
     }
   };
 
