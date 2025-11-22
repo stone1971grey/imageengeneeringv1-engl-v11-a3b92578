@@ -233,70 +233,70 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
           {/* Buttons Tab */}
           <TabsContent value="buttons" className="space-y-6">
             <div className="space-y-4">
-              <h3 className="font-semibold">Primary Button (CTA 1)</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Button Text</Label>
-                  <Input
-                    value={data.cta1Text}
-                    onChange={(e) => onChange({ ...data, cta1Text: e.target.value })}
-                    placeholder="Contact Sales"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Button Link</Label>
-                  <Input
-                    value={data.cta1Link}
-                    onChange={(e) => onChange({ ...data, cta1Link: e.target.value })}
-                    placeholder="#contact or /path"
-                  />
-                </div>
+              <h3 className="font-semibold">Button 1</h3>
+              <div className="space-y-2">
+                <Label htmlFor="cta1Text">Text</Label>
+                <Input
+                  id="cta1Text"
+                  value={data.cta1Text}
+                  onChange={(e) => onChange({ ...data, cta1Text: e.target.value })}
+                  placeholder="Contact Sales"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Button Style</Label>
+                <Label htmlFor="cta1Link">Link (use # for anchor)</Label>
+                <Input
+                  id="cta1Link"
+                  value={data.cta1Link}
+                  onChange={(e) => onChange({ ...data, cta1Link: e.target.value })}
+                  placeholder="#contact or /path"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cta1Style">Color</Label>
                 <Select value={data.cta1Style} onValueChange={(value: any) => onChange({ ...data, cta1Style: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="standard">Standard (Yellow)</SelectItem>
-                    <SelectItem value="technical">Technical (Dark Gray)</SelectItem>
-                    <SelectItem value="outline-white">Outline White</SelectItem>
+                    <SelectItem value="standard">Yellow</SelectItem>
+                    <SelectItem value="technical">Black</SelectItem>
+                    <SelectItem value="outline-white">White</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div className="space-y-4 border-t pt-4">
-              <h3 className="font-semibold">Secondary Button (CTA 2)</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Button Text</Label>
-                  <Input
-                    value={data.cta2Text}
-                    onChange={(e) => onChange({ ...data, cta2Text: e.target.value })}
-                    placeholder="Learn More"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Button Link</Label>
-                  <Input
-                    value={data.cta2Link}
-                    onChange={(e) => onChange({ ...data, cta2Link: e.target.value })}
-                    placeholder="#overview or /path"
-                  />
-                </div>
+            <div className="space-y-4">
+              <h3 className="font-semibold">Button 2 (Optional)</h3>
+              <div className="space-y-2">
+                <Label htmlFor="cta2Text">Text</Label>
+                <Input
+                  id="cta2Text"
+                  value={data.cta2Text}
+                  onChange={(e) => onChange({ ...data, cta2Text: e.target.value })}
+                  placeholder="Learn More"
+                />
               </div>
               <div className="space-y-2">
-                <Label>Button Style</Label>
+                <Label htmlFor="cta2Link">Link (use # for anchor)</Label>
+                <Input
+                  id="cta2Link"
+                  value={data.cta2Link}
+                  onChange={(e) => onChange({ ...data, cta2Link: e.target.value })}
+                  placeholder="#overview or /path"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cta2Style">Color</Label>
                 <Select value={data.cta2Style} onValueChange={(value: any) => onChange({ ...data, cta2Style: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="standard">Standard (Yellow)</SelectItem>
-                    <SelectItem value="technical">Technical (Dark Gray)</SelectItem>
-                    <SelectItem value="outline-white">Outline White</SelectItem>
+                    <SelectItem value="standard">Yellow</SelectItem>
+                    <SelectItem value="technical">Black</SelectItem>
+                    <SelectItem value="outline-white">White</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -430,6 +430,10 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
             ))}
           </TabsContent>
         </Tabs>
+
+        <Button onClick={onSave} className="w-full mt-6">
+          Save Product Hero Gallery
+        </Button>
       </CardContent>
 
       <AlertDialog open={deleteIndex !== null} onOpenChange={() => setDeleteIndex(null)}>
