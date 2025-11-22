@@ -539,6 +539,9 @@ const DynamicCMSPage = () => {
     );
   }
 
+  // Extract Meta Navigation segment (must render before all other segments)
+  const metaNavSegment = pageSegments.find(seg => seg.type === 'meta-navigation');
+
   return (
     <div className="min-h-screen bg-gray-50">
       <SEOHead
@@ -552,7 +555,26 @@ const DynamicCMSPage = () => {
         robotsFollow={seoData?.robotsFollow ? 'follow' : 'nofollow'}
       />
       <Navigation />
-      {tabOrder.map((segmentId) => renderSegment(segmentId))}
+      
+      {/* Meta Navigation - Always rendered directly under Navigation (mandatory position) */}
+      {metaNavSegment && (
+        <MetaNavigation
+          key={`meta-nav-${metaNavSegment.segment_id}`}
+          data={{
+            links: metaNavSegment.data?.navigationItems || []
+          }}
+          segmentIdMap={segmentIdMap}
+        />
+      )}
+      
+      {/* Render all other segments in tab order (excluding meta-navigation) */}
+      {tabOrder
+        .filter(segmentId => {
+          const segment = pageSegments.find(s => s.segment_id === segmentId);
+          return segment?.type !== 'meta-navigation';
+        })
+        .map((segmentId) => renderSegment(segmentId))
+      }
       <Footer />
     </div>
   );
