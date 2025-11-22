@@ -799,9 +799,13 @@ const AdminDashboard = () => {
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       
-      // Force full page reload to refresh dropdown with new CMS page (use hierarchical slug)
-      window.location.href = `/admin-dashboard?page=${pageInfo.page_slug}`;
+      // Trigger refresh of page selector dropdown
+      window.dispatchEvent(new Event('refreshPageSelector'));
       
+      // Navigate to the newly created page after a short delay to allow data to load
+      setTimeout(() => {
+        navigate(`/admin-dashboard?page=${encodeURIComponent(pageInfo.page_slug)}`);
+      }, 500);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
