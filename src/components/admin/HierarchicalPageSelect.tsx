@@ -38,11 +38,25 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const [pageIdMap, setPageIdMap] = useState<Map<string, number>>(new Map());
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredStatuses, setFilteredStatuses] = useState<PageStatus[]>([]);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
+
+  // Expose refresh function to parent via custom event
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log("🔄 HierarchicalPageSelect: Refreshing data...");
+      loadCMSPages();
+      loadPageIds();
+      setRefreshKey(prev => prev + 1);
+    };
+
+    window.addEventListener('refreshPageSelector', handleRefresh);
+    return () => window.removeEventListener('refreshPageSelector', handleRefresh);
+  }, []);
 
   useEffect(() => {
     loadCMSPages();
     loadPageIds();
-  }, []);
+  }, [refreshKey]);
 
   useEffect(() => {
     // Always build page statuses when data changes, even if no CMS pages exist yet
