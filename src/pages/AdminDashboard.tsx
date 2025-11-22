@@ -158,6 +158,7 @@ const AdminDashboard = () => {
   // Get selected page from URL parameter
   const searchParams = new URLSearchParams(location.search);
   const selectedPage = searchParams.get('page') || '';
+  const [resolvedPageSlug, setResolvedPageSlug] = useState<string>('');
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [saving, setSaving] = useState(false);
@@ -542,15 +543,39 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
+  
+  // Helper function to resolve non-hierarchical slug to full hierarchical slug
+  const resolvePageSlug = async (slug: string): Promise<string> => {
+    if (!slug) return slug;
+    
+    // Try to find full hierarchical slug in page_registry
+    const { data: pageData } = await supabase
+      .from('page_registry')
+      .select('page_slug')
+      .or(`page_slug.eq.${slug},page_slug.like.%/${slug}`)
+      .maybeSingle();
+    
+    if (pageData) {
+      console.log(`🔍 Resolved slug "${slug}" to "${pageData.page_slug}"`);
+      setResolvedPageSlug(pageData.page_slug); // Store resolved slug
+      return pageData.page_slug;
+    }
+    
+    setResolvedPageSlug(slug); // Use original if not found
+    return slug;
+  };
+
   // Load segment registry to get all segment IDs
   // IMPORTANT: Only load non-deleted segments (deleted=false or deleted IS NULL)
   // to prevent showing deleted segments, but keep their IDs in registry forever
   const loadSegmentRegistry = async () => {
     try {
+      const querySlug = await resolvePageSlug(selectedPage);
+      
       const { data, error } = await supabase
         .from("segment_registry")
         .select("*")
-        .eq("page_slug", selectedPage)
+        .eq("page_slug", querySlug)
         .or("deleted.is.null,deleted.eq.false"); // Only load active segments
 
       if (error) {
@@ -570,7 +595,7 @@ const AdminDashboard = () => {
       setSegmentRegistry(registry);
       // Store reverse registry in a separate state or use it directly below
       (window as any).__segmentKeyRegistry = reverseRegistry;
-      console.log("✅ Loaded segment registry for", selectedPage, ":", registry);
+      console.log("✅ Loaded segment registry for", querySlug, ":", registry);
     } catch (error) {
       console.error("Error loading segment registry:", error);
     }
@@ -802,10 +827,14 @@ const AdminDashboard = () => {
       // Trigger refresh of page selector dropdown
       window.dispatchEvent(new Event('refreshPageSelector'));
       
-      // Navigate to the newly created page after a short delay to allow data to load
+      // Extract last part of slug for navigation (HierarchicalPageSelect works with non-hierarchical slugs)
+      const slugParts = pageInfo.page_slug.split('/').filter(Boolean);
+      const lastSlugPart = slugParts[slugParts.length - 1];
+      
+      // Navigate to the newly created page
       setTimeout(() => {
-        navigate(`/admin-dashboard?page=${encodeURIComponent(pageInfo.page_slug)}`);
-      }, 500);
+        navigate(`/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
+      }, 300);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
@@ -816,10 +845,12 @@ const AdminDashboard = () => {
   };
 
   const loadContent = async () => {
+    const querySlug = await resolvePageSlug(selectedPage);
+    
     const { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", selectedPage);
+      .eq("page_slug", querySlug);
 
     if (error) {
       toast.error("Error loading content");
