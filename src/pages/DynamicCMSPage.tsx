@@ -148,7 +148,7 @@ const DynamicCMSPage = () => {
           'pt-[140px]';                                                     // 90px Nav + 50px = 140px (medium default)
         
         return (
-          <section key={segmentId} id={segmentDbId?.toString()} className={`${topSpacingClass} pb-16`}>
+          <section key={segmentId} id={segmentDbId?.toString()} data-segment-key={segment.segment_key || segment.id} className={`${topSpacingClass} pb-16`}>
             <div className="container mx-auto px-6">
               <div className={`grid gap-12 items-center ${
                 segment.data?.hero_layout_ratio === '1-1' ? 'grid-cols-1 lg:grid-cols-2' :
@@ -345,7 +345,7 @@ const DynamicCMSPage = () => {
 
       case "tiles":
         return (
-          <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-gray-50">
+          <section key={segmentId} id={segmentDbId?.toString()} data-segment-key={segment.segment_key || segment.id} className="py-20 bg-gray-50">
             <div className="container mx-auto px-6">
               {segment.data?.title && (
                 <div className="text-center mb-16">
@@ -417,7 +417,7 @@ const DynamicCMSPage = () => {
 
       case "banner":
         return (
-          <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-white">
+          <section key={segmentId} id={segmentDbId?.toString()} data-segment-key={segment.segment_key || segment.id} className="py-20 bg-white">
             <div className="container mx-auto px-6">
               {segment.data?.title && (
                 <div className="text-center mb-16">
@@ -473,7 +473,7 @@ const DynamicCMSPage = () => {
             : "grid-cols-1 md:grid-cols-2";
 
         return (
-          <section key={segmentId} id={segmentDbId?.toString()} className="py-20 bg-gray-50">
+          <section key={segmentId} id={segmentDbId?.toString()} data-segment-key={segment.segment_key || segment.id} className="py-20 bg-gray-50">
             <div className="container mx-auto px-6">
               {segment.data?.title && (
                 <div className="text-center mb-16">
