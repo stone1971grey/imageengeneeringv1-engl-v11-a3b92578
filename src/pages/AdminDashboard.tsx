@@ -664,41 +664,72 @@ const AdminDashboard = () => {
         const inferParentFromNavigation = async (slug: string) => {
           if (!navigationData) return { parent_id: null, parent_slug: null };
 
-          // Handle Your Solution hierarchy (including multi-level like /your-solution/mobile-phone/isp-tuning)
-          const industries = navigationData.industries || {};
-          for (const [, category] of Object.entries(industries)) {
-            const subgroups = (category as any).subgroups || [];
-            for (const subgroup of subgroups) {
-              const link: string = subgroup.link;
-              if (!link || link === '#') continue;
+          // Helper to find parent info from hierarchical URL
+          const findParentFromUrl = async (link: string) => {
+            if (!link || link === '#') return null;
+            
+            const parts = link.split('/').filter(Boolean);
+            if (parts.length < 2) return null;
+            const last = parts[parts.length - 1];
+            if (last !== slug) return null;
 
-              const parts = link.split('/').filter(Boolean);
-              if (parts.length < 2) continue;
-              const last = parts[parts.length - 1];
-              if (last !== slug) continue;
-
-              // /your-solution/{slug}
-              if (parts[0] === 'your-solution') {
-                if (parts.length === 2) {
-                  const { data: parent } = await supabase
-                    .from('page_registry')
-                    .select('page_id')
-                    .eq('page_slug', 'your-solution')
-                    .maybeSingle();
-                  return { parent_id: parent?.page_id ?? null, parent_slug: 'your-solution' };
-                }
-
-                // /your-solution/{parent}/{slug}
-                if (parts.length >= 3) {
-                  const parentSlug = parts[1];
-                  const { data: parent } = await supabase
-                    .from('page_registry')
-                    .select('page_id')
-                    .eq('page_slug', parentSlug)
-                    .maybeSingle();
-                  return { parent_id: parent?.page_id ?? null, parent_slug: parentSlug };
+            // Extract parent slug from URL path
+            // For /your-solution/automotive/adas → parent is 'automotive' 
+            // For /your-solution/automotive → parent is 'your-solution'
+            // For /products/test-charts/le7 → parent is 'test-charts'
+            if (parts.length === 2) {
+              // Direct child of top-level category (e.g., /your-solution/automotive)
+              const topLevel = parts[0];
+              const { data } = await supabase
+                .from('page_registry')
+                .select('page_id, page_slug')
+                .eq('page_slug', topLevel)
+                .maybeSingle();
+              return data ? { parent_id: data.page_id, parent_slug: data.page_slug } : null;
+            } else if (parts.length >= 3) {
+              // Multi-level hierarchy (e.g., /your-solution/automotive/adas)
+              // Parent could be hierarchical slug like 'your-solution/automotive' or just 'automotive'
+              const potentialParentSlugs = [
+                parts.slice(0, -1).join('/'),  // Full hierarchical: 'your-solution/automotive'
+                parts[parts.length - 2],        // Just immediate parent: 'automotive'
+              ];
+              
+              for (const potentialSlug of potentialParentSlugs) {
+                const { data } = await supabase
+                  .from('page_registry')
+                  .select('page_id, page_slug')
+                  .eq('page_slug', potentialSlug)
+                  .maybeSingle();
+                if (data) {
+                  return { parent_id: data.page_id, parent_slug: data.page_slug };
                 }
               }
+            }
+            
+            return null;
+          };
+
+          // Search in all navigation categories
+          const allCategories = [
+            ...(Object.values(navigationData.industries || {}) as any[]),
+            ...(Object.values(navigationData.products || {}) as any[]),
+            ...(Object.values(navigationData.solutions || {}) as any[]),
+            ...(Object.values(navigationData.targetGroups || {}) as any[]),
+            ...(Object.values(navigationData.testServices || {}) as any[]),
+          ];
+
+          for (const category of allCategories) {
+            // Check main category link
+            if (category.link) {
+              const result = await findParentFromUrl(category.link);
+              if (result) return result;
+            }
+
+            // Check subgroups
+            const subgroups = category.subgroups || category.services || [];
+            for (const subgroup of subgroups) {
+              const result = await findParentFromUrl(subgroup.link);
+              if (result) return result;
             }
           }
 
