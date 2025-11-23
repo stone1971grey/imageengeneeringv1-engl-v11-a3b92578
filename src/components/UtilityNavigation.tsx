@@ -1,14 +1,35 @@
 import { Button } from "@/components/ui/button";
-import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const UtilityNavigation = () => {
   const { language, setLanguage } = useLanguage();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus when search opens
+  useEffect(() => {
+    if (isSearchOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to search results or handle search
+      console.log("Search query:", searchQuery);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    inputRef.current?.focus();
+  };
 
   const languages = [
     { code: "en", label: "EN", flag: "🇺🇸" },
@@ -21,18 +42,38 @@ const UtilityNavigation = () => {
   return (
     <div className="flex items-center gap-4 relative">
       {/* Search - Modern Expandable - as single unit */}
-      <div className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden transition-all duration-300">
+      <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden transition-all duration-300">
         {/* Search Input - slides in smoothly */}
         <div 
           className={`transition-all duration-500 ease-in-out ${
             isSearchOpen ? 'w-[240px] opacity-100' : 'w-0 opacity-0'
           } overflow-hidden`}
         >
-          <IntelligentSearchBar variant="utility" />
+          <div className="relative h-10 flex items-center">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-full pl-10 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
+              >
+                <X className="h-3 w-3 text-gray-500" />
+              </button>
+            )}
+          </div>
         </div>
         
         {/* Search Icon Button - integrated seamlessly */}
         <button
+          type="button"
           onClick={() => setIsSearchOpen(!isSearchOpen)}
           className={`w-10 h-10 flex items-center justify-center transition-all duration-300 flex-shrink-0 hover:bg-gray-100 ${
             isSearchOpen ? 'rotate-90' : 'rotate-0'
@@ -45,7 +86,7 @@ const UtilityNavigation = () => {
             <Search className="h-5 w-5 text-gray-700 transition-transform duration-300" />
           )}
         </button>
-      </div>
+      </form>
       
       {/* Language Selector */}
       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
