@@ -43,6 +43,9 @@ const DynamicCMSPage = () => {
   const [seoData, setSeoData] = useState<any>({});
   const [pageNotFound, setPageNotFound] = useState(false);
   const [fullHeroOverrides, setFullHeroOverrides] = useState<Record<string, any>>({});
+  
+  // Debug mode aktivieren mit ?debug=true in der URL
+  const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
 
   // Extract page_slug from URL pathname
   // Examples:
@@ -580,6 +583,26 @@ const DynamicCMSPage = () => {
             ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             : "grid-cols-1 md:grid-cols-2";
 
+        // DEBUG: Log full segment data to console
+        console.log(`[DynamicCMSPage] 🔍 Image-Text Segment Debug:`, {
+          segmentId,
+          segmentDbId,
+          segmentType: segment.type,
+          segmentDataKeys: Object.keys(segment.data || {}),
+          fullSegmentData: segment.data,
+          itemsCount: segment.data?.items?.length || 0,
+          items: segment.data?.items,
+        });
+
+        // DEBUG: Log each item's image URL
+        (segment.data?.items || []).forEach((item: any, idx: number) => {
+          console.log(`[DynamicCMSPage] 📸 Item ${idx + 1} Image:`, {
+            hasImageUrl: !!item.imageUrl,
+            imageUrl: item.imageUrl,
+            title: item.title,
+          });
+        });
+
         return (
           <section
             key={segmentId}
@@ -602,7 +625,14 @@ const DynamicCMSPage = () => {
                 </div>
               )}
               <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
-                {(segment.data?.items || []).map((solution: any, idx: number) => (
+                {(segment.data?.items || []).map((solution: any, idx: number) => {
+                  console.log(`[DynamicCMSPage] 🖼️ Rendering Item ${idx + 1}:`, {
+                    hasImageUrl: !!solution.imageUrl,
+                    imageUrl: solution.imageUrl,
+                    willRenderImage: !!solution.imageUrl
+                  });
+                  
+                  return (
                   <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
                     {solution.imageUrl && (
                       <div className="w-full h-64 overflow-hidden">
@@ -610,6 +640,8 @@ const DynamicCMSPage = () => {
                           src={solution.imageUrl}
                           alt={solution.title}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          onLoad={() => console.log(`[DynamicCMSPage] ✅ Image loaded successfully: Item ${idx + 1}`)}
+                          onError={(e) => console.error(`[DynamicCMSPage] ❌ Image failed to load: Item ${idx + 1}`, solution.imageUrl, e)}
                         />
                       </div>
                     )}
@@ -618,7 +650,7 @@ const DynamicCMSPage = () => {
                       <p className="text-gray-600 leading-relaxed">{solution.description}</p>
                     </div>
                   </div>
-                ))}
+                )})}
               </div>
             </div>
           </section>
@@ -675,6 +707,67 @@ const DynamicCMSPage = () => {
         robotsFollow={seoData?.robotsFollow ? 'follow' : 'nofollow'}
       />
       <Navigation />
+      
+      {/* DEBUG PANEL - Nur sichtbar mit ?debug=true */}
+      {isDebugMode && (
+        <div className="bg-yellow-100 border-4 border-yellow-500 p-6 mx-4 my-4 rounded-lg">
+          <h2 className="text-2xl font-bold text-black mb-4">🔍 DEBUG MODE - Image & Text Segments</h2>
+          <div className="space-y-4">
+            {pageSegments
+              .filter(seg => seg.type === 'image-text')
+              .map((seg, segIdx) => (
+                <div key={seg.id} className="bg-white p-4 rounded border-2 border-gray-300">
+                  <h3 className="font-bold text-lg mb-2">
+                    Segment ID: {segmentIdMap[seg.id] || seg.id} | Type: {seg.type}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                    <div><strong>Title:</strong> {seg.data?.title || '(keine)'}</div>
+                    <div><strong>Items Count:</strong> {seg.data?.items?.length || 0}</div>
+                    <div><strong>Layout:</strong> {seg.data?.layout || '2-col'}</div>
+                  </div>
+                  
+                  {seg.data?.items?.length > 0 ? (
+                    <div className="space-y-3">
+                      <h4 className="font-semibold">Items:</h4>
+                      {seg.data.items.map((item: any, itemIdx: number) => (
+                        <div key={itemIdx} className="bg-gray-50 p-3 rounded border border-gray-200">
+                          <div className="font-semibold mb-2">Item {itemIdx + 1}</div>
+                          <div className="grid gap-1 text-xs">
+                            <div><strong>Title:</strong> {item.title || '(leer)'}</div>
+                            <div><strong>Has imageUrl:</strong> {item.imageUrl ? '✅ JA' : '❌ NEIN'}</div>
+                            {item.imageUrl && (
+                              <>
+                                <div className="break-all"><strong>Image URL:</strong> {item.imageUrl}</div>
+                                <div className="mt-2">
+                                  <strong>Image Test:</strong>
+                                  <img 
+                                    src={item.imageUrl} 
+                                    alt={item.title}
+                                    className="w-32 h-32 object-cover border-2 border-green-500 mt-1"
+                                    onLoad={() => console.log(`✅ Debug Panel: Item ${itemIdx + 1} loaded`)}
+                                    onError={(e) => console.error(`❌ Debug Panel: Item ${itemIdx + 1} failed`, e)}
+                                  />
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-red-600 font-semibold">⚠️ Keine Items in diesem Segment!</div>
+                  )}
+                </div>
+              ))}
+            
+            {pageSegments.filter(seg => seg.type === 'image-text').length === 0 && (
+              <div className="bg-red-100 p-4 rounded border-2 border-red-500 text-red-800 font-semibold">
+                ⚠️ Keine Image & Text Segmente auf dieser Seite gefunden!
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       
       {/* Meta Navigation - Always rendered directly under Navigation (mandatory position) */}
       {metaNavSegment && (
