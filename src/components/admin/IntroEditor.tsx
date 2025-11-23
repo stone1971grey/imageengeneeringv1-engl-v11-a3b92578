@@ -45,7 +45,27 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
 
   const loadContent = async () => {
     try {
-      // First try to load from unified page_segments structure
+      // 1) Primär: Legacy-Row pro Intro-Segment (aktuell zuverlässigste Quelle)
+      const { data: legacyRow, error: legacyError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', segmentKey)
+        .maybeSingle();
+
+      if (!legacyError && legacyRow?.content_value) {
+        try {
+          const content = JSON.parse(legacyRow.content_value);
+          setTitle(content.title || "");
+          setDescription(content.description || "");
+          setIsLoading(false);
+          return;
+        } catch (parseError) {
+          console.error('Error parsing legacy Intro content:', parseError);
+        }
+      }
+
+      // 2) Fallback: unified page_segments Struktur
       const { data: segmentsRow, error: segmentsError } = await supabase
         .from('page_content')
         .select('content_value')
@@ -72,7 +92,6 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
             }
           }
 
-
           if (introSegment?.data) {
             setTitle(introSegment.data.title || "");
             setDescription(introSegment.data.description || "");
@@ -84,21 +103,9 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         }
       }
 
-      // Fallback: legacy storage per segment key
-      const { data, error } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', pageSlug)
-        .eq('section_key', segmentKey)
-        .maybeSingle();
-
-      if (error) throw error;
-
-      if (data) {
-        const content = JSON.parse(data.content_value);
-        setTitle(content.title || "");
-        setDescription(content.description || "");
-      }
+      // 3) Fallback: nichts gefunden -> leer lassen
+      setTitle("");
+      setDescription("");
     } catch (error) {
       console.error('Error loading content:', error);
       toast({
