@@ -74,32 +74,43 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       .from("page_content")
       .select("*")
       .eq("page_slug", pageSlug)
-      .eq("section_key", `full_hero_${segmentId}`);
+      .eq("section_key", "page_segments");
 
     if (error) {
-      console.error("Error loading full hero content:", error);
+      console.error("Error loading page_segments:", error);
       return;
     }
 
     if (data && data.length > 0) {
-      const content = JSON.parse(data[0].content_value);
-      setTitleLine1(content.titleLine1 || "");
-      setTitleLine2(content.titleLine2 || "");
-      setSubtitle(content.subtitle || "");
-      setButton1Text(content.button1Text || "");
-      setButton1Link(content.button1Link || "");
-      setButton1Color(content.button1Color || 'yellow');
-      setButton2Text(content.button2Text || "");
-      setButton2Link(content.button2Link || "");
-      setButton2Color(content.button2Color || 'black');
-      setBackgroundType(content.backgroundType || 'image');
-      setImageUrl(content.imageUrl || "");
-      setVideoUrl(content.videoUrl || "");
-      setImagePosition(content.imagePosition || 'right');
-      setLayoutRatio(content.layoutRatio || '1-1');
-      setTopSpacing(content.topSpacing || 'medium');
-      setKenBurnsEffect(content.kenBurnsEffect || 'standard');
-      setOverlayOpacity(content.overlayOpacity || 15);
+      try {
+        const segments = JSON.parse(data[0].content_value);
+        const fullHeroSegment = segments.find((seg: any) => 
+          seg.type === "full-hero" && String(seg.id) === String(segmentId)
+        );
+
+        if (fullHeroSegment?.data) {
+          const content = fullHeroSegment.data;
+          setTitleLine1(content.titleLine1 || "");
+          setTitleLine2(content.titleLine2 || "");
+          setSubtitle(content.subtitle || "");
+          setButton1Text(content.button1Text || "");
+          setButton1Link(content.button1Link || "");
+          setButton1Color(content.button1Color || 'yellow');
+          setButton2Text(content.button2Text || "");
+          setButton2Link(content.button2Link || "");
+          setButton2Color(content.button2Color || 'black');
+          setBackgroundType(content.backgroundType || 'image');
+          setImageUrl(content.imageUrl || "");
+          setVideoUrl(content.videoUrl || "");
+          setImagePosition(content.imagePosition || 'right');
+          setLayoutRatio(content.layoutRatio || '1-1');
+          setTopSpacing(content.topSpacing || 'medium');
+          setKenBurnsEffect(content.kenBurnsEffect || 'standard');
+          setOverlayOpacity(content.overlayOpacity || 15);
+        }
+      } catch (e) {
+        console.error("Error parsing page_segments:", e);
+      }
     }
   };
 
@@ -203,67 +214,53 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       topSpacing,
       kenBurnsEffect,
       overlayOpacity,
+      useH1: isH1Segment,
     };
 
-    const { error } = await supabase
+    // Lade page_segments
+    const { data: pageContentData, error: fetchError } = await supabase
       .from("page_content")
-      .upsert({
-        page_slug: pageSlug,
-        section_key: `full_hero_${segmentId}`,
-        content_type: 'json',
-        content_value: JSON.stringify(content),
-      }, {
-        onConflict: 'page_slug,section_key'
-      });
+      .select("*")
+      .eq("page_slug", pageSlug)
+      .eq("section_key", "page_segments")
+      .single();
 
-    if (error) {
-      console.error("Error saving full hero:", error);
-      toast.error("Failed to save full hero");
+    if (fetchError || !pageContentData) {
+      console.error("Error loading page_segments:", fetchError);
+      toast.error("Failed to load page segments");
       return;
     }
 
-    // Zusätzlich: page_segments-Eintrag für dieses Segment synchron halten,
-    // damit das Frontend die gleichen Daten wie der Editor sieht
     try {
-      const { data: pageSegmentsRow, error: loadError } = await supabase
-        .from("page_content")
-        .select("id, content_value")
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .maybeSingle();
-
-      if (!loadError && pageSegmentsRow) {
-        let segments: any[] = [];
-        try {
-          segments = JSON.parse(pageSegmentsRow.content_value || "[]");
-        } catch {
-          segments = [];
+      const segments = JSON.parse(pageContentData.content_value);
+      const updatedSegments = segments.map((seg: any) => {
+        if (seg.type === "full-hero" && String(seg.id) === String(segmentId)) {
+          return { ...seg, data: content };
         }
+        return seg;
+      });
 
-        const updatedSegments = segments.map((seg: any) => {
-          if (seg.type === "full-hero") {
-            return {
-              ...seg,
-              data: content,
-            };
-          }
-          return seg;
-        });
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(updatedSegments),
+          updated_by: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments");
 
-        await supabase
-          .from("page_content")
-          .update({
-            content_value: JSON.stringify(updatedSegments),
-          })
-          .eq("id", pageSegmentsRow.id);
+      if (updateError) {
+        console.error("Error updating page_segments:", updateError);
+        toast.error("Failed to save Full Hero");
+        return;
       }
-    } catch (syncError) {
-      console.error("Error syncing full hero to page_segments:", syncError);
-      // Kein hartes Abbrechen – der Editor hat gespeichert, nur das Frontend-Fallback evtl. nicht
-    }
 
-    toast.success("Full hero saved successfully");
-    onSave();
+      toast.success("Full Hero saved successfully");
+      onSave?.();
+    } catch (e) {
+      console.error("Error parsing/updating page_segments:", e);
+      toast.error("Failed to save Full Hero");
+    }
   };
 
   return (
