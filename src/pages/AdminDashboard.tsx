@@ -5610,7 +5610,7 @@ const AdminDashboard = () => {
                                 </div>
                               ) : (
                                 <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors space-y-3">
-                                  <Input
+                                  <input
                                     type="file"
                                     accept="image/*"
                                     onChange={handleImageUpload}
