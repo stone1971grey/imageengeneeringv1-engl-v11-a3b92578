@@ -198,7 +198,7 @@ const AdminDashboard = () => {
   const [footerContactDescription, setFooterContactDescription] = useState<string>("");
   const [footerTeamImageUrl, setFooterTeamImageUrl] = useState<string>("");
   const [footerTeamImageMetadata, setFooterTeamImageMetadata] = useState<ImageMetadata | null>(null);
-  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const [debugLogs, setDebugLogs] = useState<string[]>(["Debug Monitor gestartet – bereit zum Testen"]);
   const [showDebugWindow, setShowDebugWindow] = useState(true);
 
   const addDebugLog = (message: string) => {
@@ -208,10 +208,6 @@ const AdminDashboard = () => {
     setDebugLogs(prev => [...prev.slice(-20), logMessage]); // Keep last 20 logs
   };
 
-  // Add test log on mount
-  useEffect(() => {
-    addDebugLog('🟢 Debug Monitor gestartet - bereit zum Testen');
-  }, []);
   const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
   const [footerTeamName, setFooterTeamName] = useState<string>("");
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
