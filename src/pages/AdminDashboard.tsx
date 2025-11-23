@@ -2715,7 +2715,7 @@ const AdminDashboard = () => {
                             <Eye className="h-7 w-7 text-gray-900" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Produkt Hero</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Produkt Hero - F</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Main page hero with image, title, description and CTA button
                             </p>
@@ -2797,7 +2797,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Image & Text</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Image & Text - I</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Side-by-side image and text content with flexible layout
                             </p>
@@ -3130,7 +3130,7 @@ const AdminDashboard = () => {
                         <Eye className="h-7 w-7 text-gray-900" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">Produkt Hero</h3>
+                        <h3 className="text-lg font-bold text-gray-900">Produkt Hero - F</h3>
                         <p className="text-sm text-gray-600 mt-1">
                           Main page hero with image, title, description and CTA button
                         </p>
@@ -3526,7 +3526,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'image-text') label = `Image & Text ${displayNumber} - I`;
                       if (segment.type === 'feature-overview') label = `Features ${displayNumber} - K`;
                       if (segment.type === 'table') label = `Table ${displayNumber} - L`;
-                      if (segment.type === 'faq') label = `FAQ ${displayNumber} - H`;
+                      if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
                       if (segment.type === 'video') label = `Video ${displayNumber} - M`;
                       if (segment.type === 'specification') label = `Specification ${displayNumber} - N`;
                       if (segment.type === 'news') label = `Latest News ${displayNumber} - D`;
@@ -5187,7 +5187,7 @@ const AdminDashboard = () => {
                         {segment.type === 'news' && `Latest News ${segment.position + 1} - D`}
                         {segment.type === 'feature-overview' && `Feature Overview ${segment.position + 1} - K`}
                         {segment.type === 'table' && `Table ${segment.position + 1} - L`}
-                        {segment.type === 'faq' && `FAQ ${segment.position + 1} - H`}
+                        {segment.type === 'faq' && `FAQ ${segment.position + 1}`}
                         {segment.type === 'video' && `Video ${segment.position + 1} - M`}
                         {segment.type === 'specification' && `Specification ${segment.position + 1} - N`}
                       </CardTitle>
@@ -5208,7 +5208,7 @@ const AdminDashboard = () => {
                         {segment.type === 'image-text' && 'Image & Text Template - I'}
                         {segment.type === 'feature-overview' && 'Feature Overview Template - K'}
                         {segment.type === 'table' && 'Table Template - L'}
-                        {segment.type === 'faq' && 'FAQ Template - H'}
+                        {segment.type === 'faq' && 'FAQ Template'}
                         {segment.type === 'video' && 'Video Template - M'}
                         {segment.type === 'full-hero' && 'Full Hero Template - A'}
                         {segment.type === 'specification' && 'Specification Template - N'}
