@@ -8,6 +8,7 @@ import { useState, useRef } from "react";
 const UtilityNavigation = () => {
   const { language, setLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -23,6 +24,16 @@ const UtilityNavigation = () => {
     inputRef.current?.focus();
   };
 
+  const handleSearchToggle = () => {
+    if (!isSearchOpen) {
+      setIsSearchOpen(true);
+      // Focus input after animation
+      setTimeout(() => inputRef.current?.focus(), 150);
+    } else if (!searchQuery) {
+      setIsSearchOpen(false);
+    }
+  };
+
   const languages = [
     { code: "en", label: "EN", flag: "🇺🇸" },
     { code: "de", label: "DE", flag: "🇩🇪" },
@@ -33,18 +44,45 @@ const UtilityNavigation = () => {
 
   return (
     <div className="flex items-center gap-4 relative">
-      {/* Search - Simple persistent field */}
-      <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden h-10">
-        <div className="flex items-center w-[240px]">
-          <div className="relative flex-1 h-full flex items-center">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+      {/* Expandable Search */}
+      <form 
+        onSubmit={handleSearchSubmit} 
+        className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden h-10 transition-all duration-500 ease-in-out"
+        style={{
+          width: isSearchOpen ? '240px' : '40px',
+        }}
+      >
+        <div className="flex items-center w-full h-full">
+          {/* Search Icon Button */}
+          <button
+            type="button"
+            onClick={handleSearchToggle}
+            className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors z-10"
+            aria-label="Search"
+          >
+            <Search className="h-5 w-5 text-gray-700" />
+          </button>
+          
+          {/* Expandable Input Field */}
+          <div 
+            className="relative flex-1 h-full flex items-center overflow-hidden transition-all duration-500 ease-in-out"
+            style={{
+              width: isSearchOpen ? '100%' : '0px',
+              opacity: isSearchOpen ? 1 : 0,
+            }}
+          >
             <input
               ref={inputRef}
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-full pl-10 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
+              className="w-full h-full pl-3 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
+              onBlur={() => {
+                if (!searchQuery) {
+                  setTimeout(() => setIsSearchOpen(false), 150);
+                }
+              }}
             />
             {searchQuery && (
               <button
@@ -56,15 +94,6 @@ const UtilityNavigation = () => {
               </button>
             )}
           </div>
-          {/* Icon acts as submit trigger but no toggle */}
-          <button
-            type="submit"
-            className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors"
-            aria-label="Search"
-            onClick={() => inputRef.current?.focus()}
-          >
-            <Search className="h-5 w-5 text-gray-700" />
-          </button>
         </div>
       </form>
       
