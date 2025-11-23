@@ -5350,64 +5350,8 @@ const AdminDashboard = () => {
                     };
                     
                     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-
-                      console.log('🖼️ Starting Product Hero image upload for segment:', segment.id, 'File:', file.name);
-
-                      setUploading(true);
-                      try {
-                        const fileExt = file.name.split('.').pop() || 'jpg';
-                        const fileName = `product-hero-${segment.id}-${Date.now()}.${fileExt}`;
-                        const filePath = `${fileName}`;
-
-                        console.log('☁️ Uploading to Storage at path:', filePath);
-
-                        const { error: uploadError } = await supabase.storage
-                          .from('page-images')
-                          .upload(filePath, file, {
-                            cacheControl: '3600',
-                            upsert: false,
-                          });
-
-                        if (uploadError) {
-                          console.error('❌ Upload error:', uploadError);
-                          throw uploadError;
-                        }
-
-                        const { data: { publicUrl } } = supabase.storage
-                          .from('page-images')
-                          .getPublicUrl(filePath);
-
-                        console.log('🔗 Public URL for Product Hero image:', publicUrl);
-
-                        // Extract image metadata
-                        const metadataWithoutAlt = await extractImageMetadata(file, publicUrl);
-                        const metadata: ImageMetadata = {
-                          ...metadataWithoutAlt,
-                          altText: '',
-                        };
-
-                        const newSegments = [...pageSegments];
-                        newSegments[index].data = {
-                          ...heroData,
-                          hero_image_url: publicUrl,
-                          hero_image_metadata: metadata,
-                        };
-                        setPageSegments(newSegments);
-
-                        console.log('💾 Product Hero segment updated with image:', newSegments[index].data);
-
-                        toast.success('Bild erfolgreich hochgeladen – bitte Änderungen speichern.');
-
-                        // Reset input so the same file can be selected again if needed
-                        e.target.value = '';
-                      } catch (error: any) {
-                        console.error('❌ Image upload error (Product Hero):', error);
-                        toast.error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}`);
-                      } finally {
-                        setUploading(false);
-                      }
+                      // Reuse the proven Image Text Hero upload handler for Product Hero segments
+                      return handleImageTextHeroImageUpload(index, e);
                     };
 
                     const handleImageDelete = async () => {
