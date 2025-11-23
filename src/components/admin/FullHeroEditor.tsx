@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -35,6 +36,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('1-1');
   const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'extra-large'>('medium');
   const [kenBurnsEffect, setKenBurnsEffect] = useState<string>('standard');
+  const [kenBurnsLoop, setKenBurnsLoop] = useState(true);
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [gradientDirection, setGradientDirection] = useState<'none' | 'left-to-right' | 'right-to-left'>('none');
   const [isUploading, setIsUploading] = useState(false);
@@ -95,6 +97,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       setLayoutRatio(content.layoutRatio || '1-1');
       setTopSpacing(content.topSpacing || 'medium');
       setKenBurnsEffect(content.kenBurnsEffect || 'standard');
+      setKenBurnsLoop(content.kenBurnsLoop !== undefined ? content.kenBurnsLoop : true);
       setOverlayOpacity(content.overlayOpacity || 15);
       setGradientDirection(content.gradientDirection || 'none');
     }
@@ -148,6 +151,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       layoutRatio,
       topSpacing,
       kenBurnsEffect,
+      kenBurnsLoop,
       overlayOpacity,
       gradientDirection,
     };
@@ -376,6 +380,22 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                       <SelectItem value="pan-right">Pan Right</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="kenBurnsLoop"
+                      checked={kenBurnsLoop}
+                      onCheckedChange={(checked) => setKenBurnsLoop(checked === true)}
+                    />
+                    <Label htmlFor="kenBurnsLoop" className="cursor-pointer font-normal">
+                      Loop Animation (Continuous)
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground ml-6">
+                    When unchecked, animation plays once and pauses. When checked, animation loops continuously.
+                  </p>
                 </div>
               </>
             ) : (
