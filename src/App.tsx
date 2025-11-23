@@ -87,6 +87,9 @@ const App = () => (
         <Route path="/your-solution/automotive/:slug" element={<DynamicCMSPage />} />
         <Route path="/your-solution/scanners-archiving/:slug" element={<DynamicCMSPage />} />
         <Route path="/your-solution/mobile-phone/:slug" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/web-camera/:slug" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/machine-vision/:slug" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/medical-endoscopy/:slug" element={<DynamicCMSPage />} />
         
         {/* Hierarchical Product Routes */}
         
