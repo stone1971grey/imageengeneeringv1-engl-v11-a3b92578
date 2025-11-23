@@ -750,12 +750,12 @@ const Navigation = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation - positioned below navbar, right-aligned, 760px width */}
+        {/* Mobile Navigation - positioned below navbar, right-aligned */}
         <div className="2xl:hidden relative">
           {isOpen && (
             <>
               {/* Mobile Menu */}
-              <div className="absolute top-full right-0 w-full max-w-[800px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-[18px] max-h-[60vh] overflow-y-auto">
+              <div className="absolute top-full right-0 w-[calc(100vw-32px)] max-w-[500px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 mt-[18px] max-h-[60vh] overflow-y-auto">
                 {/* Mobile Utility Navigation - Only for screens < 576px */}
                 <div className="px-6 pt-4 pb-2 block sm:hidden">
                   {/* Search Bar - Full Width */}
