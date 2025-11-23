@@ -193,7 +193,6 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<string>("");
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
-  const [segmentTabStates, setSegmentTabStates] = useState<Record<string, string>>({});
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
   const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
   const [footerContactHeadline, setFooterContactHeadline] = useState<string>("");
@@ -1752,12 +1751,8 @@ const AdminDashboard = () => {
   };
 
   const handleImageTextHeroImageUpload = async (segmentIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('🧪 handleImageTextHeroImageUpload called for segmentIndex:', segmentIndex);
     const file = event.target.files?.[0];
-    if (!file) {
-      console.log('🧪 No file selected in handleImageTextHeroImageUpload');
-      return;
-    }
+    if (!file) return;
 
     if (!file.type.startsWith('image/')) {
       toast.error("Please upload an image file");
@@ -3610,257 +3605,237 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6">
-              <Tabs defaultValue="content" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="content">Content</TabsTrigger>
-                  <TabsTrigger value="layout">Layout & Image</TabsTrigger>
-                </TabsList>
-
-                {/* Content Tab */}
-                <TabsContent value="content" className="space-y-4 mt-0">
-                  <div>
-                    <Label htmlFor="hero_title" className="text-white">Title</Label>
-                    <Input
-                      id="hero_title"
-                      value={content.hero_title || ""}
-                      onChange={(e) => setContent({ ...content, hero_title: e.target.value })}
-                      className="border-2 border-gray-600"
+            <CardContent className="space-y-4">
+              {/* Hero Image Upload */}
+              <div>
+                <Label htmlFor="hero_image" className="text-white">Hero Image</Label>
+                <p className="text-sm text-white mb-2">
+                  {heroImageUrl ? "Current hero image - click 'Replace Image' to upload a new one" : "Upload a custom hero image (replaces the interactive hotspot image)"}
+                </p>
+                {heroImageUrl && (
+                  <div className="mb-4">
+                    <img 
+                      src={heroImageUrl} 
+                      alt="Current hero" 
+                      className="max-w-xs h-auto object-contain rounded-lg border-2 border-gray-600"
                     />
                   </div>
-                  
-                  <div>
-                    <Label htmlFor="hero_subtitle" className="text-white">Subtitle</Label>
-                    <Input
-                      id="hero_subtitle"
-                      value={content.hero_subtitle || ""}
-                      onChange={(e) => setContent({ ...content, hero_subtitle: e.target.value })}
-                      className="border-2 border-gray-600"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="hero_description" className="text-white">Description</Label>
-                    <Textarea
-                      id="hero_description"
-                      value={content.hero_description || ""}
-                      onChange={(e) => setContent({ ...content, hero_description: e.target.value })}
-                      rows={3}
-                      className="border-2 border-gray-600"
-                    />
-                  </div>
-
-                  <div className="pt-4 border-t border-gray-700">
-                    <h4 className="text-white font-semibold mb-3">Call-to-Action Button</h4>
-                    
-                    <div className="space-y-3">
+                )}
+                
+                {heroImageUrl ? (
+                  <Button
+                    type="button"
+                    onClick={() => document.getElementById('hero_image')?.click()}
+                    disabled={uploading}
+                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                  >
+                    {uploading ? "Uploading..." : "Replace Image"}
+                  </Button>
+                ) : null}
+                
+                <Input
+                  id="hero_image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
+                />
+                {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
+                
+                {/* Image Metadata Display */}
+                {heroImageMetadata && (
+                  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
+                    <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <Label htmlFor="hero_cta" className="text-white">Button Text</Label>
-                        <Input
-                          id="hero_cta"
-                          value={content.hero_cta || ""}
-                          onChange={(e) => setContent({ ...content, hero_cta: e.target.value })}
-                          className="border-2 border-gray-600"
-                        />
+                        <span className="text-gray-600">Original Name:</span>
+                        <p className="text-black font-medium">{heroImageMetadata.originalFileName}</p>
                       </div>
-
                       <div>
-                        <Label htmlFor="hero_cta_link" className="text-white">Button Link</Label>
-                        <Input
-                          id="hero_cta_link"
-                          value={heroCtaLink}
-                          onChange={(e) => setHeroCtaLink(e.target.value)}
-                          placeholder="#applications-start, /page-url, or https://example.com"
-                          className="border-2 border-gray-600"
-                        />
-                        <p className="text-sm text-white mt-1">
-                          Use '#section-id' for same page links, '/path' for internal pages, or 'https://...' for external URLs (opens in new tab)
-                        </p>
+                        <span className="text-gray-600">Dimensions:</span>
+                        <p className="text-black font-medium">{heroImageMetadata.width} × {heroImageMetadata.height} px</p>
                       </div>
-
                       <div>
-                        <Label htmlFor="hero_cta_style" className="text-white">Button Style</Label>
-                        <select
-                          id="hero_cta_style"
-                          value={heroCtaStyle}
-                          onChange={(e) => setHeroCtaStyle(e.target.value)}
-                          className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                        >
-                          <option value="standard">Standard (Yellow with Black Text)</option>
-                          <option value="technical">Technical (Dark Gray with White Text)</option>
-                        </select>
+                        <span className="text-gray-600">File Size:</span>
+                        <p className="text-black font-medium">{formatFileSize(heroImageMetadata.fileSizeKB)}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">Format:</span>
+                        <p className="text-black font-medium uppercase">{heroImageMetadata.format}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-gray-600">Upload Date:</span>
+                        <p className="text-black font-medium">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
                       </div>
                     </div>
-                  </div>
-                </TabsContent>
-
-                {/* Layout & Image Tab */}
-                <TabsContent value="layout" className="space-y-4 mt-0">
-                  {/* Hero Image Upload */}
-                  <div>
-                    <Label htmlFor="hero_image" className="text-white">Hero Image</Label>
-                    <p className="text-sm text-white mb-2">
-                      {heroImageUrl ? "Current hero image - click 'Replace Image' to upload a new one" : "Upload a custom hero image (replaces the interactive hotspot image)"}
-                    </p>
-                    {heroImageUrl && (
-                      <div className="mb-4">
-                        <img 
-                          src={heroImageUrl} 
-                          alt="Current hero" 
-                          className="max-w-xs h-auto object-contain rounded-lg border-2 border-gray-600"
-                        />
-                      </div>
-                    )}
                     
-                    {heroImageUrl ? (
-                      <Button
-                        type="button"
-                        onClick={() => document.getElementById('hero_image')?.click()}
-                        className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                      >
-                        {uploading ? "Uploading..." : "Replace Image"}
-                      </Button>
-                    ) : null}
-                    
-                    <Input
-                      id="hero_image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
-                    />
-                    {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
-                    
-                    {/* Image Metadata Display */}
-                    {heroImageMetadata && (
-                      <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
-                        <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div>
-                            <span className="text-gray-600">Original Name:</span>
-                            <p className="text-black font-medium">{heroImageMetadata.originalFileName}</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Dimensions:</span>
-                            <p className="text-black font-medium">{heroImageMetadata.width} × {heroImageMetadata.height} px</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">File Size:</span>
-                            <p className="text-black font-medium">{formatFileSize(heroImageMetadata.fileSizeKB)}</p>
-                          </div>
-                          <div>
-                            <span className="text-gray-600">Format:</span>
-                            <p className="text-black font-medium uppercase">{heroImageMetadata.format}</p>
-                          </div>
-                          <div className="col-span-2">
-                            <span className="text-gray-600">Upload Date:</span>
-                            <p className="text-black font-medium">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4">
-                          <Label htmlFor="hero_image_alt" className="text-black text-base">Alt Text (SEO)</Label>
-                          <Input
-                            id="hero_image_alt"
-                            type="text"
-                            value={heroImageMetadata.altText || ''}
-                            onChange={(e) => {
-                              if (heroImageMetadata) {
-                                const updatedMetadata = { ...heroImageMetadata, altText: e.target.value };
-                                setHeroImageMetadata(updatedMetadata);
-                              }
-                            }}
-                            placeholder="Describe this image for accessibility and SEO"
-                            className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
-                          />
-                          <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="hero_image_dimensions" className="text-white">Image Dimensions</Label>
-                      <select
-                        id="hero_image_dimensions"
-                        value={heroImageDimensions}
-                        onChange={(e) => setHeroImageDimensions(e.target.value as any)}
-                        className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                      >
-                        <option value="600x600">600 × 600px (Square)</option>
-                        <option value="800x600">800 × 600px (4:3)</option>
-                        <option value="1200x800">1200 × 800px (3:2)</option>
-                        <option value="1920x1080">1920 × 1080px (16:9)</option>
-                      </select>
-                      <p className="text-sm text-gray-400 mt-1">Images will be cropped to this size</p>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="hero_crop_position" className="text-white">Crop Position</Label>
-                      <select
-                        id="hero_crop_position"
-                        value={heroCropPosition}
-                        onChange={(e) => setHeroCropPosition(e.target.value as any)}
-                        className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                      >
-                        <option value="top">Top (Keep top, crop bottom)</option>
-                        <option value="center">Center (Crop equally)</option>
-                        <option value="bottom">Bottom (Keep bottom, crop top)</option>
-                      </select>
-                      <p className="text-sm text-gray-400 mt-1">Which part to keep when cropping</p>
+                    <div className="mt-4">
+                      <Label htmlFor="hero_image_alt" className="text-black text-base">Alt Text (SEO)</Label>
+                      <Input
+                        id="hero_image_alt"
+                        type="text"
+                        value={heroImageMetadata.altText || ''}
+                        onChange={(e) => {
+                          if (heroImageMetadata) {
+                            const updatedMetadata = { ...heroImageMetadata, altText: e.target.value };
+                            setHeroImageMetadata(updatedMetadata);
+                          }
+                        }}
+                        placeholder="Describe this image for accessibility and SEO"
+                        className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                      />
+                      <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
                     </div>
                   </div>
+                )}
+              </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="hero_image_position" className="text-white">Image Position</Label>
-                      <select
-                        id="hero_image_position"
-                        value={heroImagePosition}
-                        onChange={(e) => setHeroImagePosition(e.target.value)}
-                        className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                      >
-                        <option value="left">Left</option>
-                        <option value="right">Right</option>
-                      </select>
-                    </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="hero_image_dimensions" className="text-white">Image Dimensions</Label>
+                  <select
+                    id="hero_image_dimensions"
+                    value={heroImageDimensions}
+                    onChange={(e) => setHeroImageDimensions(e.target.value as any)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="600x600">600 × 600px (Square)</option>
+                    <option value="800x600">800 × 600px (4:3)</option>
+                    <option value="1200x800">1200 × 800px (3:2)</option>
+                    <option value="1920x1080">1920 × 1080px (16:9)</option>
+                  </select>
+                  <p className="text-sm text-gray-400 mt-1">Images will be cropped to this size</p>
+                </div>
 
-                    <div>
-                      <Label htmlFor="hero_layout" className="text-white">Layout Ratio</Label>
-                      <select
-                        id="hero_layout"
-                        value={heroLayout}
-                        onChange={(e) => setHeroLayout(e.target.value)}
-                        className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                      >
-                        <option value="50-50">50:50 (Equal)</option>
-                        <option value="2-3">2:3 (Text:Image)</option>
-                        <option value="1-2">1:2 (Text:Image)</option>
-                        <option value="2-5">2:5 (Text:Image)</option>
-                      </select>
-                    </div>
-                  </div>
+                <div>
+                  <Label htmlFor="hero_crop_position" className="text-white">Crop Position</Label>
+                  <select
+                    id="hero_crop_position"
+                    value={heroCropPosition}
+                    onChange={(e) => setHeroCropPosition(e.target.value as any)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="top">Top (Keep top, crop bottom)</option>
+                    <option value="center">Center (Crop equally)</option>
+                    <option value="bottom">Bottom (Keep bottom, crop top)</option>
+                  </select>
+                  <p className="text-sm text-gray-400 mt-1">Which part to keep when cropping</p>
+                </div>
+              </div>
 
-                  <div>
-                    <Label htmlFor="hero_top_padding" className="text-white">Top Spacing</Label>
-                    <select
-                      id="hero_top_padding"
-                      value={heroTopPadding}
-                      onChange={(e) => setHeroTopPadding(e.target.value)}
-                      className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                    >
-                      <option value="small">Small (PT-16)</option>
-                      <option value="medium">Medium (PT-24)</option>
-                      <option value="large">Large (PT-32)</option>
-                      <option value="xlarge">Extra Large (PT-40)</option>
-                    </select>
-                    <p className="text-sm text-white mt-1">Controls the spacing from the top of the hero section</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="hero_image_position" className="text-white">Image Position</Label>
+                  <select
+                    id="hero_image_position"
+                    value={heroImagePosition}
+                    onChange={(e) => setHeroImagePosition(e.target.value)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                  </select>
+                </div>
 
-              <div className="flex justify-between items-center pt-4 border-t border-gray-700 mt-6">
+                <div>
+                  <Label htmlFor="hero_layout" className="text-white">Layout Ratio</Label>
+                  <select
+                    id="hero_layout"
+                    value={heroLayout}
+                    onChange={(e) => setHeroLayout(e.target.value)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="50-50">50:50 (Equal)</option>
+                    <option value="2-3">2:3 (Text:Image)</option>
+                    <option value="1-2">1:2 (Text:Image)</option>
+                    <option value="2-5">2:5 (Text:Image)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_top_padding" className="text-white">Top Spacing</Label>
+                <select
+                  id="hero_top_padding"
+                  value={heroTopPadding}
+                  onChange={(e) => setHeroTopPadding(e.target.value)}
+                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                >
+                  <option value="small">Small (PT-16)</option>
+                  <option value="medium">Medium (PT-24)</option>
+                  <option value="large">Large (PT-32)</option>
+                  <option value="xlarge">Extra Large (PT-40)</option>
+                </select>
+                <p className="text-sm text-white mt-1">Controls the spacing from the top of the hero section</p>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_title" className="text-white">Title</Label>
+                <Input
+                  id="hero_title"
+                  value={content.hero_title || ""}
+                  onChange={(e) => setContent({ ...content, hero_title: e.target.value })}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_subtitle" className="text-white">Subtitle</Label>
+                <Input
+                  id="hero_subtitle"
+                  value={content.hero_subtitle || ""}
+                  onChange={(e) => setContent({ ...content, hero_subtitle: e.target.value })}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_description" className="text-white">Description</Label>
+                <Textarea
+                  id="hero_description"
+                  value={content.hero_description || ""}
+                  onChange={(e) => setContent({ ...content, hero_description: e.target.value })}
+                  rows={3}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label htmlFor="hero_cta" className="text-white">CTA Button Text</Label>
+                <Input
+                  id="hero_cta"
+                  value={content.hero_cta || ""}
+                  onChange={(e) => setContent({ ...content, hero_cta: e.target.value })}
+                  className="border-2 border-gray-600"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="hero_cta_link" className="text-white">CTA Button Link</Label>
+                <Input
+                  id="hero_cta_link"
+                  value={heroCtaLink}
+                  onChange={(e) => setHeroCtaLink(e.target.value)}
+                  placeholder="#applications-start, /page-url, or https://example.com"
+                  className="border-2 border-gray-600"
+                />
+                <p className="text-sm text-white mt-1">
+                  Use '#section-id' for same page links, '/path' for internal pages, or 'https://...' for external URLs (opens in new tab)
+                </p>
+              </div>
+
+              <div>
+                <Label htmlFor="hero_cta_style" className="text-white">CTA Button Style</Label>
+                <select
+                  id="hero_cta_style"
+                  value={heroCtaStyle}
+                  onChange={(e) => setHeroCtaStyle(e.target.value)}
+                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                >
+                  <option value="standard">Standard (Yellow with Black Text)</option>
+                  <option value="technical">Technical (Dark Gray with White Text)</option>
+                </select>
+              </div>
+
+              <div className="flex justify-between items-center pt-4 border-t">
                 <Button
                   onClick={() => setCopyHeroDialogOpen(true)}
                   variant="outline"
@@ -4059,6 +4034,7 @@ const AdminDashboard = () => {
                           <Button
                             type="button"
                             onClick={() => document.getElementById(`app_image_${index}`)?.click()}
+                            disabled={uploading}
                             className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                           >
                             {uploading ? "Uploading..." : "Replace Image"}
@@ -4070,6 +4046,7 @@ const AdminDashboard = () => {
                           type="file"
                           accept="image/*"
                           onChange={(e) => handleTileImageUpload(e, index)}
+                          disabled={uploading}
                           className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
                         />
                         
@@ -4455,6 +4432,7 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleBannerImageUpload(e, index)}
+                            disabled={uploading}
                             className="border-2 border-gray-600"
                           />
                         </div>
@@ -4803,6 +4781,7 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleSolutionImageUpload(e, index)}
+                            disabled={uploading}
                             className="border-2 border-gray-600"
                           />
                           
@@ -5070,6 +5049,7 @@ const AdminDashboard = () => {
                           type="file"
                           accept="image/*"
                           onChange={handleFooterTeamImageUpload}
+                          disabled={uploading}
                           className="border-2 border-gray-600"
                         />
                       </div>
@@ -5271,14 +5251,6 @@ const AdminDashboard = () => {
                 <CardContent>
                   {segment.type === 'hero' && (() => {
                     console.log('Rendering hero segment:', segment.id, 'with data:', segment.data);
-                    
-                    // Get or initialize tab state for this segment
-                    const segmentKey = `hero-${segment.id}`;
-                    const currentTab = segmentTabStates[segmentKey] || 'content';
-                    const setCurrentTab = (tab: string) => {
-                      setSegmentTabStates(prev => ({ ...prev, [segmentKey]: tab }));
-                    };
-                    
                     // Get data or use defaults WITHOUT mutating the original
                     const heroData = segment.data || {
                       hero_title: '',
@@ -5291,64 +5263,51 @@ const AdminDashboard = () => {
                       hero_cta_style: 'standard',
                       hero_image_position: 'right',
                       hero_layout_ratio: '2-5',
-                      hero_top_spacing: 'medium',
-                      hero_image_dimensions: '600x600',
-                      hero_crop_position: 'center'
-                    };
-                    
-                    const cropImage = async (file: File, dimensions: string, cropPosition: string): Promise<Blob> => {
-                      return new Promise((resolve, reject) => {
-                        const [targetWidth, targetHeight] = dimensions.split('x').map(Number);
-                        const img = new Image();
-                        const canvas = document.createElement('canvas');
-                        const ctx = canvas.getContext('2d');
-
-                        if (!ctx) {
-                          reject(new Error('Could not get canvas context'));
-                          return;
-                        }
-
-                        img.onload = () => {
-                          canvas.width = targetWidth;
-                          canvas.height = targetHeight;
-
-                          const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
-                          const scaledWidth = img.width * scale;
-                          const scaledHeight = img.height * scale;
-
-                          let sx = 0;
-                          let sy = 0;
-
-                          if (cropPosition === 'top') {
-                            sx = (scaledWidth - targetWidth) / 2;
-                            sy = 0;
-                          } else if (cropPosition === 'bottom') {
-                            sx = (scaledWidth - targetWidth) / 2;
-                            sy = scaledHeight - targetHeight;
-                          } else {
-                            sx = (scaledWidth - targetWidth) / 2;
-                            sy = (scaledHeight - targetHeight) / 2;
-                          }
-
-                          ctx.drawImage(img, -sx, -sy, scaledWidth, scaledHeight);
-
-                          canvas.toBlob((blob) => {
-                            if (blob) {
-                              resolve(blob);
-                            } else {
-                              reject(new Error('Could not create blob'));
-                            }
-                          }, 'image/jpeg', 0.95);
-                        };
-
-                        img.onerror = () => reject(new Error('Failed to load image'));
-                        img.src = URL.createObjectURL(file);
-                      });
+                      hero_top_spacing: 'medium'
                     };
                     
                     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-                      console.log('🧪 Product Hero handleImageUpload called for segment index', index, 'segment id', segment.id);
-                      return handleImageTextHeroImageUpload(index, e);
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      try {
+                        // Upload to Supabase Storage first
+                        const fileExt = file.name.split('.').pop();
+                        const fileName = `${Date.now()}.${fileExt}`;
+                        const filePath = `${selectedPage}/${fileName}`;
+
+                        const { error: uploadError } = await supabase.storage
+                          .from('page-images')
+                          .upload(filePath, file);
+
+                        if (uploadError) throw uploadError;
+
+                        // Get public URL
+                        const { data: urlData } = supabase.storage
+                          .from('page-images')
+                          .getPublicUrl(filePath);
+
+                        // Extract metadata with URL
+                        const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
+                        const metadata: ImageMetadata = {
+                          ...metadataWithoutAlt,
+                          altText: ''
+                        };
+
+                        // Update segment with image URL and metadata
+                        const newSegments = [...pageSegments];
+                        newSegments[index].data = {
+                          ...heroData,
+                          hero_image_url: urlData.publicUrl,
+                          hero_image_metadata: metadata
+                        };
+                        setPageSegments(newSegments);
+                        
+                        toast.success("Bild erfolgreich hochgeladen");
+                      } catch (error) {
+                        console.error('Image upload error:', error);
+                        toast.error("Upload fehlgeschlagen");
+                      }
                     };
 
                     const handleImageDelete = async () => {
@@ -5366,483 +5325,426 @@ const AdminDashboard = () => {
                         newSegments[index].data = {
                           ...heroData,
                           hero_image_url: '',
-                          hero_image_metadata: null,
+                          hero_image_metadata: null
                         };
                         setPageSegments(newSegments);
-
-                        toast.success('Bild erfolgreich gelöscht');
+                        
+                        toast.success("Bild erfolgreich gelöscht");
                       } catch (error) {
                         console.error('Image delete error:', error);
-                        toast.error('Löschen fehlgeschlagen');
+                        toast.error("Löschen fehlgeschlagen");
                       }
                     };
                     
                     return (
                       <div className="space-y-6">
-                        <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
-                          <TabsList className="grid w-full grid-cols-2 mb-6">
-                            <TabsTrigger value="content">Content</TabsTrigger>
-                            <TabsTrigger value="layout">Layout & Image</TabsTrigger>
-                          </TabsList>
+                        <div className="space-y-4">
+                          <div>
+                            <Label className="text-white">Title</Label>
+                            <Input
+                              value={heroData.hero_title || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_title: e.target.value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-white bg-gray-800"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label className="text-white">Subtitle (Optional)</Label>
+                            <Input
+                              value={heroData.hero_subtitle || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_subtitle: e.target.value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-white bg-gray-800"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label className="text-white">Description</Label>
+                            <Textarea
+                              value={heroData.hero_description || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_description: e.target.value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-white bg-gray-800 min-h-[100px]"
+                            />
+                          </div>
 
-                          {/* Content Tab */}
-                          <TabsContent value="content" className="space-y-4 mt-0">
-                            <div>
-                              <Label className="text-white">Title</Label>
-                              <Input
-                                value={heroData.hero_title || ''}
-                                onChange={(e) => {
-                                  const newSegments = [...pageSegments];
-                                  newSegments[index].data = {
-                                    ...heroData,
-                                    hero_title: e.target.value
-                                  };
-                                  setPageSegments(newSegments);
-                                }}
-                                className="border-2 border-gray-600 text-white bg-gray-800"
-                              />
-                            </div>
+                          <div>
+                            <Label className="text-white">CTA Button Text</Label>
+                            <Input
+                              value={heroData.hero_cta_text || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_cta_text: e.target.value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-white bg-gray-800"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-white">CTA Button Link</Label>
+                            <Input
+                              value={heroData.hero_cta_link || ''}
+                              onChange={(e) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_cta_link: e.target.value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                              className="border-2 border-gray-600 text-white bg-gray-800"
+                              placeholder="#section-id or /path"
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-white">CTA Button Style</Label>
+                            <Select 
+                              value={heroData.hero_cta_style || 'standard'}
+                              onValueChange={(value) => {
+                                const newSegments = [...pageSegments];
+                                newSegments[index].data = {
+                                  ...heroData,
+                                  hero_cta_style: value
+                                };
+                                setPageSegments(newSegments);
+                              }}
+                            >
+                              <SelectTrigger className="border-2 border-gray-600 text-white bg-gray-800">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="standard">Standard (Yellow)</SelectItem>
+                                <SelectItem value="technical">Technical (Dark)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="pt-4 border-t border-gray-600">
+                            <h4 className="text-white font-semibold mb-4">Layout Settings</h4>
                             
-                            <div>
-                              <Label className="text-white">Subtitle (Optional)</Label>
-                              <Input
-                                value={heroData.hero_subtitle || ''}
-                                onChange={(e) => {
-                                  const newSegments = [...pageSegments];
-                                  newSegments[index].data = {
-                                    ...heroData,
-                                    hero_subtitle: e.target.value
-                                  };
-                                  setPageSegments(newSegments);
-                                }}
-                                className="border-2 border-gray-600 text-white bg-gray-800"
-                              />
-                            </div>
-                            
-                            <div>
-                              <Label className="text-white">Description</Label>
-                              <Textarea
-                                value={heroData.hero_description || ''}
-                                onChange={(e) => {
-                                  const newSegments = [...pageSegments];
-                                  newSegments[index].data = {
-                                    ...heroData,
-                                    hero_description: e.target.value
-                                  };
-                                  setPageSegments(newSegments);
-                                }}
-                                className="border-2 border-gray-600 text-white bg-gray-800 min-h-[100px]"
-                              />
-                            </div>
-
-                            <div className="pt-4 border-t border-gray-700">
-                              <h4 className="text-white font-semibold mb-3">CTA Button</h4>
-                              
-                              <div className="space-y-3">
-                                <div>
-                                  <Label className="text-white">Button Text</Label>
-                                  <Input
-                                    value={heroData.hero_cta_text || ''}
-                                    onChange={(e) => {
+                            <div className="space-y-6">
+                              {/* Image Position - Visual Selector */}
+                              <div>
+                                <Label className="text-white mb-3 block">Image Position</Label>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
                                       const newSegments = [...pageSegments];
                                       newSegments[index].data = {
                                         ...heroData,
-                                        hero_cta_text: e.target.value
+                                        hero_image_position: 'left'
                                       };
                                       setPageSegments(newSegments);
                                     }}
-                                    className="border-2 border-gray-600 text-white bg-gray-800"
-                                  />
-                                </div>
-
-                                <div>
-                                  <Label className="text-white">Button Link</Label>
-                                  <Input
-                                    value={heroData.hero_cta_link || ''}
-                                    onChange={(e) => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_cta_link: e.target.value
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className="border-2 border-gray-600 text-white bg-gray-800"
-                                    placeholder="#section-id or /path"
-                                  />
-                                </div>
-
-                                <div>
-                                  <Label className="text-white">Button Style</Label>
-                                  <Select 
-                                    value={heroData.hero_cta_style || 'standard'}
-                                    onValueChange={(value) => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_cta_style: value
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
+                                    className={`p-4 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_image_position || 'right') === 'left'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
                                   >
-                                    <SelectTrigger className="border-2 border-gray-600 text-white bg-gray-800">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="standard">Standard (Yellow)</SelectItem>
-                                      <SelectItem value="technical">Technical (Dark)</SelectItem>
-                                      <SelectItem value="outline-white">Outline White</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <div className="w-12 h-8 bg-gray-700 rounded"></div>
+                                      <div className="w-20 h-8 bg-gray-600 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white">Image Left</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_image_position: 'right'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-4 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_image_position || 'right') === 'right'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <div className="w-20 h-8 bg-gray-600 rounded"></div>
+                                      <div className="w-12 h-8 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white">Image Right</span>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Layout Ratio - Visual Selector */}
+                              <div>
+                                <Label className="text-white mb-3 block">Layout Ratio (Text : Image)</Label>
+                                <div className="grid grid-cols-3 gap-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_layout_ratio: '1-1'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_layout_ratio || '2-5') === '1-1'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex gap-1 mb-2">
+                                      <div className="flex-1 h-6 bg-gray-600 rounded"></div>
+                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white block">50 : 50</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_layout_ratio: '2-3'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_layout_ratio || '2-5') === '2-3'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex gap-1 mb-2">
+                                      <div className="w-8 h-6 bg-gray-600 rounded"></div>
+                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white block">40 : 60</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_layout_ratio: '2-5'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_layout_ratio || '2-5') === '2-5'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="flex gap-1 mb-2">
+                                      <div className="w-6 h-6 bg-gray-600 rounded"></div>
+                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                    </div>
+                                    <span className="text-xs text-white block">30 : 70</span>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Top Spacing - Visual Selector */}
+                              <div>
+                                <Label className="text-white mb-3 block">Top Spacing</Label>
+                                <div className="grid grid-cols-2 gap-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'small'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'small'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-2 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">Small (30px)</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'medium'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'medium'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">Medium (50px)</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'large'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'large'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-6 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">Large (70px)</span>
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_top_spacing: 'xlarge'
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className={`p-3 rounded-lg border-2 transition-all ${
+                                      (heroData.hero_top_spacing || 'medium') === 'xlarge'
+                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                        : 'border-gray-600 hover:border-gray-500'
+                                    }`}
+                                  >
+                                    <div className="h-8 bg-gray-700 rounded mb-2"></div>
+                                    <div className="h-6 bg-gray-600 rounded"></div>
+                                    <span className="text-xs text-white block mt-2">XL (90px)</span>
+                                  </button>
                                 </div>
                               </div>
                             </div>
-                          </TabsContent>
+                          </div>
 
-                          {/* Layout & Image Tab */}
-                          <TabsContent value="layout" className="space-y-4 mt-0">
-                            <div>
-                              <Label className="text-white mb-2 block">Hero Image</Label>
-                              {heroData.hero_image_url ? (
-                                <div className="space-y-3">
-                                  <div className="relative group">
-                                    <img
-                                      src={heroData.hero_image_url}
-                                      alt="Hero Preview"
-                                      className="w-full h-48 object-cover rounded-lg"
-                                    />
-                                    <Button
-                                      onClick={handleImageDelete}
-                                      variant="destructive"
-                                      size="sm"
-                                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                  {heroData.hero_image_metadata && (
-                                    <div className="text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
-                                      <p><strong>Dateiname:</strong> {heroData.hero_image_metadata.originalFileName}</p>
-                                      <p><strong>Größe:</strong> {heroData.hero_image_metadata.width} × {heroData.hero_image_metadata.height} px</p>
-                                      <p><strong>Dateigröße:</strong> {formatFileSize(heroData.hero_image_metadata.fileSizeKB)}</p>
-                                      <p><strong>Format:</strong> {heroData.hero_image_metadata.format}</p>
-                                      <p><strong>Hochgeladen:</strong> {formatUploadDate(heroData.hero_image_metadata.uploadDate)}</p>
-                                    </div>
-                                  )}
-                                  <div>
-                                    <Label className="text-white">Alt Text (SEO)</Label>
-                                    <Input
-                                      value={heroData.hero_image_metadata?.altText || ''}
-                                      onChange={(e) => {
-                                        const newSegments = [...pageSegments];
-                                        newSegments[index].data = {
-                                          ...heroData,
-                                          hero_image_metadata: {
-                                            ...heroData.hero_image_metadata,
-                                            altText: e.target.value
-                                          }
-                                        };
-                                        setPageSegments(newSegments);
-                                      }}
-                                      placeholder="Beschreiben Sie das Bild für SEO..."
-                                      className="border-2 border-gray-600 text-white bg-gray-800"
-                                    />
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors space-y-3">
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageUpload}
-                                    className="block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#f9dc24] file:text-black hover:file:bg-[#f9dc24]/90"
+                          <div>
+                            <Label className="text-white mb-2 block">Hero Bild</Label>
+                            {heroData.hero_image_url ? (
+                              <div className="space-y-3">
+                                <div className="relative group">
+                                  <img
+                                    src={heroData.hero_image_url}
+                                    alt="Hero Preview"
+                                    className="w-full h-48 object-cover rounded-lg"
                                   />
-                                  {uploading ? (
-                                    <div className="flex flex-col items-center gap-2">
-                                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f9dc24]"></div>
-                                      <span className="text-sm text-gray-400">Bild wird verarbeitet und hochgeladen...</span>
-                                    </div>
-                                  ) : (
-                                    <span className="text-sm text-gray-400">
-                                      Wählen Sie eine Datei aus, um ein neues Hero-Bild für dieses Segment (ID {segment.id}) hochzuladen.
-                                    </span>
-                                  )}
+                                  <Button
+                                    onClick={handleImageDelete}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
                                 </div>
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <Label className="text-white">Image Dimensions</Label>
-                                <select
-                                  value={heroData.hero_image_dimensions || '600x600'}
-                                  onChange={(e) => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_image_dimensions: e.target.value
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                                >
-                                  <option value="600x600">600 × 600px (Square)</option>
-                                  <option value="800x600">800 × 600px (4:3)</option>
-                                  <option value="1200x800">1200 × 800px (3:2)</option>
-                                  <option value="1920x1080">1920 × 1080px (16:9)</option>
-                                </select>
-                                <p className="text-sm text-gray-400 mt-1">Images will be cropped to this size</p>
-                              </div>
-
-                              <div>
-                                <Label className="text-white">Crop Position</Label>
-                                <select
-                                  value={heroData.hero_crop_position || 'center'}
-                                  onChange={(e) => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_crop_position: e.target.value
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
-                                >
-                                  <option value="top">Top (Keep top, crop bottom)</option>
-                                  <option value="center">Center (Crop equally)</option>
-                                  <option value="bottom">Bottom (Keep bottom, crop top)</option>
-                                </select>
-                                <p className="text-sm text-gray-400 mt-1">Which part to keep when cropping</p>
-                              </div>
-                            </div>
-
-                            {/* Image Position - Visual Selector */}
-                            <div>
-                              <Label className="text-white mb-3 block">Image Position</Label>
-                              <div className="grid grid-cols-2 gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_image_position: 'left'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-4 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_image_position || 'right') === 'left'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-12 h-8 bg-gray-700 rounded"></div>
-                                    <div className="w-20 h-8 bg-gray-600 rounded"></div>
+                                {heroData.hero_image_metadata && (
+                                  <div className="text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
+                                    <p><strong>Dateiname:</strong> {heroData.hero_image_metadata.originalFileName}</p>
+                                    <p><strong>Größe:</strong> {heroData.hero_image_metadata.width} × {heroData.hero_image_metadata.height} px</p>
+                                    <p><strong>Dateigröße:</strong> {formatFileSize(heroData.hero_image_metadata.fileSizeKB)}</p>
+                                    <p><strong>Format:</strong> {heroData.hero_image_metadata.format}</p>
+                                    <p><strong>Hochgeladen:</strong> {formatUploadDate(heroData.hero_image_metadata.uploadDate)}</p>
                                   </div>
-                                  <span className="text-xs text-white">Image Left</span>
-                                </button>
-                                
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_image_position: 'right'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-4 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_image_position || 'right') === 'right'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-20 h-8 bg-gray-600 rounded"></div>
-                                    <div className="w-12 h-8 bg-gray-700 rounded"></div>
-                                  </div>
-                                  <span className="text-xs text-white">Image Right</span>
-                                </button>
+                                )}
+                                <div>
+                                  <Label className="text-white">Alt Text (SEO)</Label>
+                                  <Input
+                                    value={heroData.hero_image_metadata?.altText || ''}
+                                    onChange={(e) => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_image_metadata: {
+                                          ...heroData.hero_image_metadata,
+                                          altText: e.target.value
+                                        }
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    placeholder="Beschreiben Sie das Bild für SEO..."
+                                    className="border-2 border-gray-600 text-black"
+                                  />
+                                </div>
                               </div>
-                            </div>
-
-                            {/* Layout Ratio - Visual Selector */}
-                            <div>
-                              <Label className="text-white mb-3 block">Layout Ratio (Text : Image)</Label>
-                              <div className="grid grid-cols-3 gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_layout_ratio: '1-1'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_layout_ratio || '2-5') === '1-1'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
+                            ) : (
+                              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors">
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageUpload}
+                                  className="hidden"
+                                  id={`hero-image-upload-${segment.id}`}
+                                />
+                                <label
+                                  htmlFor={`hero-image-upload-${segment.id}`}
+                                  className="cursor-pointer flex flex-col items-center gap-2"
                                 >
-                                  <div className="flex gap-1 mb-2">
-                                    <div className="flex-1 h-6 bg-gray-600 rounded"></div>
-                                    <div className="flex-1 h-6 bg-gray-700 rounded"></div>
-                                  </div>
-                                  <span className="text-xs text-white block">50 : 50</span>
-                                </button>
-                                
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_layout_ratio: '2-3'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_layout_ratio || '2-5') === '2-3'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="flex gap-1 mb-2">
-                                    <div className="w-8 h-6 bg-gray-600 rounded"></div>
-                                    <div className="flex-1 h-6 bg-gray-700 rounded"></div>
-                                  </div>
-                                  <span className="text-xs text-white block">40 : 60</span>
-                                </button>
-                                
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_layout_ratio: '2-5'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_layout_ratio || '2-5') === '2-5'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="flex gap-1 mb-2">
-                                    <div className="w-6 h-6 bg-gray-600 rounded"></div>
-                                    <div className="flex-1 h-6 bg-gray-700 rounded"></div>
-                                  </div>
-                                  <span className="text-xs text-white block">30 : 70</span>
-                                </button>
+                                  <Upload className="h-8 w-8 text-gray-400" />
+                                  <span className="text-sm text-gray-400">
+                                    Klicken zum Hochladen oder Datei hierher ziehen
+                                  </span>
+                                </label>
                               </div>
-                            </div>
-
-                            {/* Top Spacing - Visual Selector */}
-                            <div>
-                              <Label className="text-white mb-3 block">Top Spacing</Label>
-                              <div className="grid grid-cols-2 gap-3">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_top_spacing: 'small'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_top_spacing || 'medium') === 'small'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="h-2 bg-gray-700 rounded mb-2"></div>
-                                  <div className="h-6 bg-gray-600 rounded"></div>
-                                  <span className="text-xs text-white block mt-2">Small (30px)</span>
-                                </button>
-                                
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_top_spacing: 'medium'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_top_spacing || 'medium') === 'medium'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                                  <div className="h-6 bg-gray-600 rounded"></div>
-                                  <span className="text-xs text-white block mt-2">Medium (50px)</span>
-                                </button>
-                                
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_top_spacing: 'large'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_top_spacing || 'medium') === 'large'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="h-6 bg-gray-700 rounded mb-2"></div>
-                                  <div className="h-6 bg-gray-600 rounded"></div>
-                                  <span className="text-xs text-white block mt-2">Large (70px)</span>
-                                </button>
-                                
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const newSegments = [...pageSegments];
-                                    newSegments[index].data = {
-                                      ...heroData,
-                                      hero_top_spacing: 'xlarge'
-                                    };
-                                    setPageSegments(newSegments);
-                                  }}
-                                  className={`p-3 rounded-lg border-2 transition-all ${
-                                    (heroData.hero_top_spacing || 'medium') === 'xlarge'
-                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                      : 'border-gray-600 hover:border-gray-500'
-                                  }`}
-                                >
-                                  <div className="h-8 bg-gray-700 rounded mb-2"></div>
-                                  <div className="h-6 bg-gray-600 rounded"></div>
-                                  <span className="text-xs text-white block mt-2">XL (90px)</span>
-                                </button>
-                              </div>
-                            </div>
-                          </TabsContent>
-                        </Tabs>
-                        
-                        <div className="flex justify-end pt-4 border-t border-gray-600">
-                          <Button
-                            onClick={() => handleSaveSegments()}
-                            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                          >
-                            <Save className="h-4 w-4" />
-                            Save Changes
-                          </Button>
+                            )}
+                          </div>
+                          
+                          <div className="flex justify-end pt-4 border-t border-gray-600">
+                            <Button
+                              onClick={() => handleSaveSegments()}
+                              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                            >
+                              <Save className="h-4 w-4" />
+                              Save Changes
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -6065,6 +5967,7 @@ const AdminDashboard = () => {
                                   <Button
                                     type="button"
                                     onClick={() => document.getElementById(`dynamic_tile_image_${index}_${tileIndex}`)?.click()}
+                                    disabled={uploading}
                                     className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                                   >
                                     {uploading ? "Uploading..." : "Replace Image"}
@@ -6125,6 +6028,7 @@ const AdminDashboard = () => {
                                       setUploading(false);
                                     }
                                   }}
+                                  disabled={uploading}
                                   className={`border-2 border-gray-600 ${tile.imageUrl ? "hidden" : ""}`}
                                 />
                                 
@@ -6368,6 +6272,7 @@ const AdminDashboard = () => {
                             <Button
                               type="button"
                               onClick={() => document.getElementById(`image_text_hero_${index}`)?.click()}
+                              disabled={uploading}
                               className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                             >
                               {uploading ? "Uploading..." : "Replace Image"}
@@ -6379,6 +6284,7 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleImageTextHeroImageUpload(index, e)}
+                            disabled={uploading}
                             className={`border-2 border-gray-600 ${segment.data.heroImageUrl ? "hidden" : ""}`}
                           />
                           
@@ -6570,6 +6476,7 @@ const AdminDashboard = () => {
                                     <Button
                                       type="button"
                                       onClick={() => document.getElementById(`image_text_item_${index}_${itemIndex}`)?.click()}
+                                      disabled={uploading}
                                       className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                                     >
                                       {uploading ? "Uploading..." : "Replace Image"}
@@ -6581,6 +6488,7 @@ const AdminDashboard = () => {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => handleImageTextItemImageUpload(index, itemIndex, e)}
+                                    disabled={uploading}
                                     className={`border-2 border-gray-600 ${item.imageUrl ? "hidden" : ""}`}
                                   />
                                   
