@@ -222,6 +222,47 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       return;
     }
 
+    // Zusätzlich: page_segments-Eintrag für dieses Segment synchron halten,
+    // damit das Frontend die gleichen Daten wie der Editor sieht
+    try {
+      const { data: pageSegmentsRow, error: loadError } = await supabase
+        .from("page_content")
+        .select("id, content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .maybeSingle();
+
+      if (!loadError && pageSegmentsRow) {
+        let segments: any[] = [];
+        try {
+          segments = JSON.parse(pageSegmentsRow.content_value || "[]");
+        } catch {
+          segments = [];
+        }
+
+        const updatedSegments = segments.map((seg: any) => {
+          const segId = String(seg.id || seg.segment_key || "");
+          if (seg.type === "full-hero" && segId === String(segmentId)) {
+            return {
+              ...seg,
+              data: content,
+            };
+          }
+          return seg;
+        });
+
+        await supabase
+          .from("page_content")
+          .update({
+            content_value: JSON.stringify(updatedSegments),
+          })
+          .eq("id", pageSegmentsRow.id);
+      }
+    } catch (syncError) {
+      console.error("Error syncing full hero to page_segments:", syncError);
+      // Kein hartes Abbrechen – der Editor hat gespeichert, nur das Frontend-Fallback evtl. nicht
+    }
+
     toast.success("Full hero saved successfully");
     onSave();
   };
