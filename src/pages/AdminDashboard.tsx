@@ -1752,8 +1752,12 @@ const AdminDashboard = () => {
   };
 
   const handleImageTextHeroImageUpload = async (segmentIndex: number, event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('🧪 handleImageTextHeroImageUpload called for segmentIndex:', segmentIndex);
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('🧪 No file selected in handleImageTextHeroImageUpload');
+      return;
+    }
 
     if (!file.type.startsWith('image/')) {
       toast.error("Please upload an image file");
@@ -5350,7 +5354,7 @@ const AdminDashboard = () => {
                     };
                     
                     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-                      // Reuse the proven Image Text Hero upload handler for Product Hero segments
+                      console.log('🧪 Product Hero handleImageUpload called for segment index', index, 'segment id', segment.id);
                       return handleImageTextHeroImageUpload(index, e);
                     };
 
