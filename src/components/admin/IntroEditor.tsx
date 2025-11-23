@@ -56,13 +56,22 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
       if (!segmentsError && segmentsRow?.content_value) {
         try {
           const segments = JSON.parse(segmentsRow.content_value);
-          const introSegment = Array.isArray(segments)
-            ? segments.find((seg: any) => {
-                const key = seg.segment_key ?? seg.id;
-                if (!key) return false;
-                return String(key) === String(segmentKey) && String(seg.type || '').toLowerCase() === 'intro';
-              })
-            : null;
+          let introSegment: any = null;
+
+          if (Array.isArray(segments)) {
+            // 1. Versuche Match über segmentKey/id
+            introSegment = segments.find((seg: any) => {
+              const key = seg.segment_key ?? seg.id;
+              if (!key) return false;
+              return String(key) === String(segmentKey) && String(seg.type || '').toLowerCase() === 'intro';
+            });
+
+            // 2. Fallback: erstes Intro-Segment auf der Seite
+            if (!introSegment) {
+              introSegment = segments.find((seg: any) => String(seg.type || '').toLowerCase() === 'intro');
+            }
+          }
+
 
           if (introSegment?.data) {
             setTitle(introSegment.data.title || "");
@@ -140,11 +149,10 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
           const segments = JSON.parse(segmentsRow.content_value);
           const updatedSegments = Array.isArray(segments)
             ? segments.map((seg: any) => {
-                const key = seg.segment_key ?? seg.id;
                 const isIntroType = String(seg.type || '').toLowerCase() === 'intro';
-                const isSameSegment = key && String(key) === String(segmentKey);
 
-                if (isIntroType && isSameSegment) {
+                // Für maximale Robustheit: immer das erste Intro-Segment updaten
+                if (isIntroType) {
                   return {
                     ...seg,
                     data: {
