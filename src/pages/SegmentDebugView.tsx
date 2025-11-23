@@ -121,20 +121,20 @@ const SegmentDebugView = () => {
                         </CardHeader>
                         <CardContent>
                           {seg.type === "full-hero" && (
-                            <div className="space-y-2 bg-yellow-50 p-3 rounded">
-                              <div className="font-medium text-sm text-yellow-900">Full Hero Data:</div>
-                              <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="space-y-2 bg-white p-3 rounded border border-yellow-300">
+                              <div className="font-medium text-sm text-black">Full Hero Data:</div>
+                              <div className="grid grid-cols-2 gap-2 text-sm text-black">
                                 <div>
                                   <span className="font-medium">titleLine1:</span>{" "}
-                                  {seg.data?.titleLine1 || <span className="text-red-500">(empty)</span>}
+                                  {seg.data?.titleLine1 || <span className="text-red-600">(empty)</span>}
                                 </div>
                                 <div>
                                   <span className="font-medium">titleLine2:</span>{" "}
-                                  {seg.data?.titleLine2 || <span className="text-red-500">(empty)</span>}
+                                  {seg.data?.titleLine2 || <span className="text-red-600">(empty)</span>}
                                 </div>
                                 <div className="col-span-2">
                                   <span className="font-medium">subtitle:</span>{" "}
-                                  {seg.data?.subtitle || <span className="text-red-500">(empty)</span>}
+                                  {seg.data?.subtitle || <span className="text-red-600">(empty)</span>}
                                 </div>
                                 <div className="col-span-2">
                                   <span className="font-medium">imageUrl:</span>{" "}
@@ -148,7 +148,7 @@ const SegmentDebugView = () => {
                                       {seg.data.imageUrl}
                                     </a>
                                   ) : (
-                                    <span className="text-red-500 font-bold">(EMPTY - NO IMAGE!)</span>
+                                    <span className="text-red-600 font-bold">(EMPTY - NO IMAGE!)</span>
                                   )}
                                 </div>
                                 <div>
@@ -157,14 +157,14 @@ const SegmentDebugView = () => {
                                 </div>
                                 <div>
                                   <span className="font-medium">button1Text:</span>{" "}
-                                  {seg.data?.button1Text || <span className="text-red-500">(empty)</span>}
+                                  {seg.data?.button1Text || <span className="text-red-600">(empty)</span>}
                                 </div>
                               </div>
                             </div>
                           )}
                           
                           {seg.type !== "full-hero" && (
-                            <pre className="text-xs bg-gray-50 p-2 rounded overflow-auto max-h-40">
+                            <pre className="text-xs bg-white p-2 rounded border overflow-auto max-h-40 text-black">
                               {JSON.stringify(seg.data, null, 2)}
                             </pre>
                           )}
@@ -189,7 +189,7 @@ const SegmentDebugView = () => {
                             </CardTitle>
                           </CardHeader>
                           <CardContent>
-                            <div className="space-y-2 bg-orange-50 p-3 rounded text-sm">
+                            <div className="space-y-2 bg-white p-3 rounded border border-orange-300 text-sm text-black">
                               <div className="grid grid-cols-2 gap-2">
                                 <div>
                                   <span className="font-medium">titleLine1:</span> {data.titleLine1}
@@ -209,7 +209,7 @@ const SegmentDebugView = () => {
                                       {data.imageUrl}
                                     </a>
                                   ) : (
-                                    <span className="text-red-500">(empty)</span>
+                                    <span className="text-red-600">(empty)</span>
                                   )}
                                 </div>
                               </div>
