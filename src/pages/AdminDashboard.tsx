@@ -1347,7 +1347,22 @@ const AdminDashboard = () => {
         .getPublicUrl(filePath);
 
       // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
+      let metadata: Omit<ImageMetadata, 'altText'>;
+      try {
+        metadata = await extractImageMetadata(file, publicUrl);
+      } catch (error) {
+        console.warn('[TILE UPLOAD] Metadata extraction failed, using minimal metadata:', error);
+        // Fallback metadata if extraction fails
+        metadata = {
+          url: publicUrl,
+          originalFileName: file.name,
+          width: 0,
+          height: 0,
+          fileSizeKB: Math.round(file.size / 1024),
+          format: file.type.replace('image/', '').toUpperCase(),
+          uploadDate: new Date().toISOString()
+        };
+      }
 
       // Update applications array with URL and metadata
       const newApps = [...applications];
@@ -1678,7 +1693,22 @@ const AdminDashboard = () => {
         .getPublicUrl(filePath);
 
       // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
+      let metadata: Omit<ImageMetadata, 'altText'>;
+      try {
+        metadata = await extractImageMetadata(file, publicUrl);
+      } catch (error) {
+        console.warn('[SOLUTION UPLOAD] Metadata extraction failed, using minimal metadata:', error);
+        // Fallback metadata if extraction fails
+        metadata = {
+          url: publicUrl,
+          originalFileName: file.name,
+          width: 0,
+          height: 0,
+          fileSizeKB: Math.round(file.size / 1024),
+          format: file.type.replace('image/', '').toUpperCase(),
+          uploadDate: new Date().toISOString()
+        };
+      }
 
       const newItems = [...solutionsItems];
       newItems[index].imageUrl = publicUrl;

@@ -84,11 +84,27 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
         .getPublicUrl(fileName);
 
       // Extract image metadata
-      const baseMetadata = await extractImageMetadata(file, publicUrl);
-      const fullMetadata: ImageMetadata = {
-        ...baseMetadata,
-        altText: data.images[index]?.metadata?.altText || ''
-      };
+      let fullMetadata: ImageMetadata;
+      try {
+        const baseMetadata = await extractImageMetadata(file, publicUrl);
+        fullMetadata = {
+          ...baseMetadata,
+          altText: data.images[index]?.metadata?.altText || ''
+        };
+      } catch (error) {
+        console.warn('[PRODUCT HERO GALLERY] Metadata extraction failed, using minimal metadata:', error);
+        // Fallback metadata if extraction fails
+        fullMetadata = {
+          url: publicUrl,
+          originalFileName: file.name,
+          width: 0,
+          height: 0,
+          fileSizeKB: Math.round(file.size / 1024),
+          format: file.type.replace('image/', '').toUpperCase(),
+          uploadDate: new Date().toISOString(),
+          altText: data.images[index]?.metadata?.altText || ''
+        };
+      }
 
       const updatedImages = [...data.images];
       updatedImages[index] = { 
