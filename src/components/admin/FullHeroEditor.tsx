@@ -103,25 +103,31 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
     if (!file) return;
 
     setIsUploading(true);
+    console.log('[FullHeroEditor] Starting image upload for pageSlug:', pageSlug, 'file:', file.name);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${pageSlug}/${fileName}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `${pageSlug}/full-hero-${segmentId}-${uniqueId}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('page-images')
-        .upload(filePath, file);
+        .upload(filePath, file, { upsert: false });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('[FullHeroEditor] Upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
 
+      console.log('[FullHeroEditor] Upload successful, URL:', publicUrl);
       setImageUrl(publicUrl);
       toast.success("Image uploaded successfully");
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error("[FullHeroEditor] Error uploading image:", error);
       toast.error("Failed to upload image");
     } finally {
       setIsUploading(false);
