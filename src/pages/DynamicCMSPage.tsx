@@ -392,7 +392,6 @@ const DynamicCMSPage = () => {
             videoUrl={segment.data?.videoUrl}
             kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
             overlayOpacity={segment.data?.overlayOpacity || 15}
-            gradientDirection={segment.data?.gradientDirection || "none"}
             useH1={segment.data?.useH1 || false}
           />
         );
@@ -508,13 +507,6 @@ const DynamicCMSPage = () => {
         );
 
       case "banner":
-        const bannerColumns = segment.data?.columns || '4';
-        const bannerGridClass = bannerColumns === '2' 
-          ? 'grid-cols-1 md:grid-cols-2' 
-          : bannerColumns === '3'
-          ? 'grid-cols-2 md:grid-cols-3'
-          : 'grid-cols-2 md:grid-cols-4';
-        
         return (
           <section
             key={segmentId}
@@ -536,7 +528,7 @@ const DynamicCMSPage = () => {
                   )}
                 </div>
               )}
-              <div className={`grid ${bannerGridClass} gap-8 mb-12`}>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
                 {(segment.data?.images || []).map((banner: any, idx: number) => (
                   <div
                     key={idx}

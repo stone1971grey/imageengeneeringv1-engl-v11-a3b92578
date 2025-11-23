@@ -21,7 +21,6 @@ interface FullHeroProps {
   topSpacing?: 'small' | 'medium' | 'large' | 'extra-large';
   kenBurnsEffect?: 'none' | 'standard' | 'slow' | 'fast' | 'zoom-out' | 'pan-left' | 'pan-right';
   overlayOpacity?: number;
-  gradientDirection?: 'none' | 'left-to-right' | 'right-to-left';
   useH1?: boolean;
 }
 
@@ -45,7 +44,6 @@ const FullHero = ({
   topSpacing = 'medium',
   kenBurnsEffect = 'standard',
   overlayOpacity = 15,
-  gradientDirection = 'none',
   useH1 = false,
 }: FullHeroProps) => {
   
@@ -127,38 +125,6 @@ const FullHero = ({
     }
   };
 
-  const getOverlayStyle = () => {
-    const baseOpacity = overlayOpacity / 100;
-    
-    if (gradientDirection === 'none') {
-      return {
-        background: 'black',
-        opacity: baseOpacity
-      };
-    }
-    
-    if (gradientDirection === 'left-to-right') {
-      // Darker on left, lighter on right
-      return {
-        background: `linear-gradient(to right, rgba(0,0,0,${baseOpacity * 1.5}), rgba(0,0,0,${baseOpacity * 0.3}))`,
-        opacity: 1
-      };
-    }
-    
-    if (gradientDirection === 'right-to-left') {
-      // Lighter on left, darker on right
-      return {
-        background: `linear-gradient(to left, rgba(0,0,0,${baseOpacity * 1.5}), rgba(0,0,0,${baseOpacity * 0.3}))`,
-        opacity: 1
-      };
-    }
-    
-    return {
-      background: 'black',
-      opacity: baseOpacity
-    };
-  };
-
   const handleButtonClick = (link?: string) => {
     if (!link) return;
     
@@ -185,8 +151,8 @@ const FullHero = ({
             }}
           />
           <div 
-            className="absolute inset-0"
-            style={getOverlayStyle()}
+            className="absolute inset-0 bg-black"
+            style={{ opacity: overlayOpacity / 100 }}
           />
         </>
       ) : backgroundType === 'video' && videoUrl ? (
@@ -202,8 +168,8 @@ const FullHero = ({
             <source src={videoUrl} type="video/mp4" />
           </video>
           <div 
-            className="absolute inset-0"
-            style={getOverlayStyle()}
+            className="absolute inset-0 bg-black"
+            style={{ opacity: overlayOpacity / 100 }}
           />
         </>
       ) : null}
@@ -226,7 +192,7 @@ const FullHero = ({
               )}
               
               {subtitle && (
-                <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-lg drop-shadow-lg">
+                <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl drop-shadow-lg">
                   {subtitle}
                 </p>
               )}

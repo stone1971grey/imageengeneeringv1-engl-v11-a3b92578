@@ -36,7 +36,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'extra-large'>('medium');
   const [kenBurnsEffect, setKenBurnsEffect] = useState<string>('standard');
   const [overlayOpacity, setOverlayOpacity] = useState(15);
-  const [gradientDirection, setGradientDirection] = useState<'none' | 'left-to-right' | 'right-to-left'>('none');
   const [isUploading, setIsUploading] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
 
@@ -96,7 +95,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       setTopSpacing(content.topSpacing || 'medium');
       setKenBurnsEffect(content.kenBurnsEffect || 'standard');
       setOverlayOpacity(content.overlayOpacity || 15);
-      setGradientDirection(content.gradientDirection || 'none');
     }
   };
 
@@ -149,7 +147,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       topSpacing,
       kenBurnsEffect,
       overlayOpacity,
-      gradientDirection,
     };
 
     const { error } = await supabase
@@ -399,23 +396,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                 max={80}
                 step={5}
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Gradient Direction</Label>
-              <Select value={gradientDirection} onValueChange={(val: any) => setGradientDirection(val)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No Gradient (Uniform)</SelectItem>
-                  <SelectItem value="left-to-right">Left to Right (Darker → Lighter)</SelectItem>
-                  <SelectItem value="right-to-left">Right to Left (Lighter → Darker)</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Gradient creates a smooth transition from darker to lighter overlay
-              </p>
             </div>
           </TabsContent>
         </Tabs>

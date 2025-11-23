@@ -32,7 +32,6 @@ interface BannerData {
   buttonText: string;
   buttonLink: string;
   buttonStyle: string;
-  columns?: string;
 }
 
 interface BannerEditorProps {
@@ -126,24 +125,6 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
           placeholder="Enter optional subtext"
           className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black placeholder:text-gray-400 min-h-[80px]"
         />
-      </div>
-
-      {/* Columns Configuration */}
-      <div>
-        <Label className="text-white text-lg font-semibold mb-2 block">Column Layout</Label>
-        <Select
-          value={data.columns || '4'}
-          onValueChange={(value) => onChange({ ...data, columns: value })}
-        >
-          <SelectTrigger className="bg-white border-2 border-gray-300 text-black">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="2">2 Spalten</SelectItem>
-            <SelectItem value="3">3 Spalten</SelectItem>
-            <SelectItem value="4">4 Spalten</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {/* Images */}

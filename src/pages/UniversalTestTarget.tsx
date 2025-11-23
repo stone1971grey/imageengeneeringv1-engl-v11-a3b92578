@@ -98,7 +98,7 @@ const UniversalTestTarget = () => {
       case 'video':
         return <Video key={segmentId} id={String(numericId)} {...segment.data} />;
       case 'full-hero':
-        return <FullHero key={segmentId} id={String(numericId)} {...segment.data} />;
+        return <FullHero key={segmentId} {...segment.data} />;
       case 'hero':
         return (
           <section key={segmentId} id={String(numericId)} className={`relative py-16 ${segment.data?.topPadding === 'small' ? 'pt-16' : segment.data?.topPadding === 'medium' ? 'pt-24' : segment.data?.topPadding === 'large' ? 'pt-32' : 'pt-40'}`}>
@@ -212,13 +212,6 @@ const UniversalTestTarget = () => {
           </section>
         );
       case 'banner':
-        const bannerColumns = segment.data?.columns || '4';
-        const bannerGridClass = bannerColumns === '2' 
-          ? 'grid-cols-1 md:grid-cols-2' 
-          : bannerColumns === '3'
-          ? 'grid-cols-2 md:grid-cols-3'
-          : 'grid-cols-2 md:grid-cols-4';
-        
         return (
           <section key={segmentId} id={String(numericId)} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
             <div className="container mx-auto px-4 text-center">
@@ -233,7 +226,7 @@ const UniversalTestTarget = () => {
                 </p>
               )}
               {segment.data?.images?.length > 0 && (
-                <div className={`grid ${bannerGridClass} gap-8 mb-12 items-center justify-items-center`}>
+                <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
                   {segment.data.images.map((image: any, idx: number) => (
                     <div key={idx} className="h-16 flex items-center">
                       <img 
