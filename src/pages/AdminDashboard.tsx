@@ -5353,83 +5353,61 @@ const AdminDashboard = () => {
                       const file = e.target.files?.[0];
                       if (!file) return;
 
-                      console.log('🖼️ Starting image upload for segment:', segment.id, 'File:', file.name);
+                      console.log('🖼️ Starting Product Hero image upload for segment:', segment.id, 'File:', file.name);
 
+                      setUploading(true);
                       try {
-                        setUploading(true);
-                        console.log('📸 Cropping image with dimensions:', heroData.hero_image_dimensions || '600x600', 'position:', heroData.hero_crop_position || 'center');
-                        
-                        // Crop the image
-                        const croppedBlob = await cropImage(
-                          file, 
-                          heroData.hero_image_dimensions || '600x600',
-                          heroData.hero_crop_position || 'center'
-                        );
-                        
-                        console.log('✂️ Image cropped successfully, size:', croppedBlob.size);
-                        
-                        // Convert blob to file
-                        const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
+                        const fileExt = file.name.split('.').pop() || 'jpg';
+                        const fileName = `product-hero-${segment.id}-${Date.now()}.${fileExt}`;
+                        const filePath = `${fileName}`;
 
-                        // Upload to Supabase Storage
-                        const fileExt = 'jpg';
-                        const fileName = `${Date.now()}.${fileExt}`;
-                        const basePath = resolvedPageSlug || selectedPage || 'page-images';
-                        const filePath = `${basePath}/${fileName}`;
-                        
-                        console.log('☁️ Uploading to Supabase:', filePath);
+                        console.log('☁️ Uploading to Storage at path:', filePath);
 
                         const { error: uploadError } = await supabase.storage
                           .from('page-images')
-                          .upload(filePath, croppedFile);
+                          .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: false,
+                          });
 
                         if (uploadError) {
                           console.error('❌ Upload error:', uploadError);
                           throw uploadError;
                         }
-                        
-                        console.log('✅ Upload successful');
 
-                        // Get public URL
-                        const { data: urlData } = supabase.storage
+                        const { data: { publicUrl } } = supabase.storage
                           .from('page-images')
                           .getPublicUrl(filePath);
-                        
-                        console.log('🔗 Public URL:', urlData.publicUrl);
 
-                        // Extract metadata with URL
-                        const metadataWithoutAlt = await extractImageMetadata(croppedFile, urlData.publicUrl);
+                        console.log('🔗 Public URL for Product Hero image:', publicUrl);
+
+                        // Extract image metadata
+                        const metadataWithoutAlt = await extractImageMetadata(file, publicUrl);
                         const metadata: ImageMetadata = {
                           ...metadataWithoutAlt,
-                          altText: ''
+                          altText: '',
                         };
-                        
-                        console.log('📊 Metadata extracted:', metadata);
 
-                        // Update segment with image URL and metadata
                         const newSegments = [...pageSegments];
                         newSegments[index].data = {
                           ...heroData,
-                          hero_image_url: urlData.publicUrl,
-                          hero_image_metadata: metadata
+                          hero_image_url: publicUrl,
+                          hero_image_metadata: metadata,
                         };
                         setPageSegments(newSegments);
-                        
-                        console.log('💾 Segment updated in state, new data:', newSegments[index].data);
-                        
-                        toast.success("Bild erfolgreich hochgeladen - Bitte speichern Sie die Änderungen!");
-                        
-                        // Reset input
+
+                        console.log('💾 Product Hero segment updated with image:', newSegments[index].data);
+
+                        toast.success('Bild erfolgreich hochgeladen – bitte Änderungen speichern.');
+
+                        // Reset input so the same file can be selected again if needed
                         e.target.value = '';
                       } catch (error: any) {
-                        console.error('❌ Image upload error:', error);
+                        console.error('❌ Image upload error (Product Hero):', error);
                         toast.error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}`);
                       } finally {
                         setUploading(false);
-                        console.log('🏁 Upload process finished');
                       }
-                    };
-
                     const handleImageDelete = async () => {
                       if (!heroData.hero_image_url) return;
 
@@ -5445,14 +5423,14 @@ const AdminDashboard = () => {
                         newSegments[index].data = {
                           ...heroData,
                           hero_image_url: '',
-                          hero_image_metadata: null
+                          hero_image_metadata: null,
                         };
                         setPageSegments(newSegments);
-                        
-                        toast.success("Bild erfolgreich gelöscht");
+
+                        toast.success('Bild erfolgreich gelöscht');
                       } catch (error) {
                         console.error('Image delete error:', error);
-                        toast.error("Löschen fehlgeschlagen");
+                        toast.error('Löschen fehlgeschlagen');
                       }
                     };
                     
