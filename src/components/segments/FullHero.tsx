@@ -48,13 +48,13 @@ const FullHero = ({
 }: FullHeroProps) => {
   
   const getTopPaddingClass = () => {
-    // Meta Navigation (wenn vorhanden) ist ~60px hoch, zusätzlicher Space erforderlich
+    // Navigation ist ~100-120px hoch, Meta Navigation (wenn vorhanden) ist ~60px hoch zusätzlich
     switch (topSpacing) {
-      case 'small': return hasMetaNavigation ? 'pt-32' : 'pt-16';
-      case 'medium': return hasMetaNavigation ? 'pt-40' : 'pt-24';
-      case 'large': return hasMetaNavigation ? 'pt-48' : 'pt-32';
-      case 'extra-large': return hasMetaNavigation ? 'pt-56' : 'pt-40';
-      default: return hasMetaNavigation ? 'pt-40' : 'pt-24';
+      case 'small': return hasMetaNavigation ? 'pt-[210px]' : 'pt-[150px]';
+      case 'medium': return hasMetaNavigation ? 'pt-[230px]' : 'pt-[170px]';
+      case 'large': return hasMetaNavigation ? 'pt-[250px]' : 'pt-[190px]';
+      case 'extra-large': return hasMetaNavigation ? 'pt-[270px]' : 'pt-[210px]';
+      default: return hasMetaNavigation ? 'pt-[230px]' : 'pt-[170px]';
     }
   };
 
