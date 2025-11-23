@@ -130,7 +130,7 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
           <span className="font-medium text-gray-900">{data.subtitle}</span>
         </h1>
         
-        <p className="text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-lg">
+        <p className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed max-w-2xl">
           {data.description}
         </p>
       </div>

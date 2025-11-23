@@ -234,7 +234,7 @@ const DynamicCMSPage = () => {
                       <span className="font-medium block">{segment.data.hero_subtitle}</span>
                     )}
                   </h2>
-                  <p className="text-2xl lg:text-3xl text-gray-700 font-light leading-relaxed mb-8">
+                  <p className="text-lg md:text-xl lg:text-2xl text-gray-700 font-light leading-relaxed mb-8">
                     {segment.data?.hero_description || ''}
                   </p>
                   {segment.data?.hero_cta_text && (
