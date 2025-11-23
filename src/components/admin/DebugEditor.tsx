@@ -96,20 +96,9 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
 
       console.log('[Upload] Success! URL:', result.url);
       
-      // Update with permanent URL and persist immediately
+      // Update with permanent URL in local + parent state
       handleImageUrlChange(result.url);
-      toast.success('✅ Upload successful!', { duration: 3000 });
-
-      // Auto-save so the new image persists in backend and frontend.
-      // Use a small timeout so React can flush the state update from onChange first.
-      setTimeout(() => {
-        try {
-          onSave();
-        } catch (saveError) {
-          console.error('[Upload] Auto-save error:', saveError);
-          toast.error('Image uploaded, but saving failed. Please click "Save Changes".');
-        }
-      }, 0);
+      toast.success('✅ Upload successful! Please click "Save Changes" to store it permanently.', { duration: 4000 });
 
       // Reset input
       e.target.value = '';
