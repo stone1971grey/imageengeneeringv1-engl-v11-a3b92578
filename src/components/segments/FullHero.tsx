@@ -139,20 +139,24 @@ const FullHero = ({
   };
 
   return (
-    <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()}`}>
+    <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()}`} style={{ minHeight: 'calc(100vh - 220px)' }}>
       {/* Background layer: image or video full-width */}
       {backgroundType === 'image' && imageUrl && (
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 animate-fade-in">
           <img
             src={imageUrl}
             alt="Full hero background"
             className={`w-full h-full object-cover ${getKenBurnsClass()}`}
-            style={{ transform: kenBurnsEffect !== 'none' ? 'scale(1.05)' : 'scale(1)' }}
+            style={{ 
+              objectPosition: 'center center',
+              transform: kenBurnsEffect !== 'none' ? 'scale(1.3)' : 'scale(1)' 
+            }}
           />
           <div
             className="absolute inset-0 bg-black"
             style={{ opacity: overlayOpacity / 100 }}
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
         </div>
       )}
 
@@ -176,32 +180,34 @@ const FullHero = ({
       )}
 
       {/* Content layer */}
-      <div className="container mx-auto px-6 pb-16 lg:pb-24 relative z-10">
-        <div className="max-w-3xl">
+      <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
+        <div className="max-w-4xl w-full">
           {useH1 ? (
-            <h1 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white">
-              <span className="font-light block">{titleLine1}</span>
-              <span className="font-medium block">{titleLine2}</span>
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6">
+              {titleLine1}
+              <br />
+              <span className="font-medium">{titleLine2}</span>
             </h1>
           ) : (
-            <h2 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white">
-              <span className="font-light block">{titleLine1}</span>
-              <span className="font-medium block">{titleLine2}</span>
+            <h2 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6">
+              {titleLine1}
+              <br />
+              <span className="font-medium">{titleLine2}</span>
             </h2>
           )}
 
           {subtitle && (
-            <p className="text-lg lg:text-xl text-white/80 leading-relaxed max-w-2xl">
+            <p className="text-lg md:text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl">
               {subtitle}
             </p>
           )}
 
           {(button1Text || button2Text) && (
-            <div className="pt-6 flex flex-col sm:flex-row gap-4">
+            <div className="pt-4 flex flex-col md:flex-row gap-4">
               {button1Text && (
                 <Button
                   size="lg"
-                  className="px-8 py-6 text-base font-semibold shadow-lg"
+                  className="border-0 px-12 py-4 w-full md:w-auto"
                   style={getButtonStyle(button1Color)}
                   onClick={() => handleButtonClick(button1Link)}
                 >
@@ -213,7 +219,7 @@ const FullHero = ({
                 <Button
                   size="lg"
                   variant="outline"
-                  className="px-8 py-6 text-base font-semibold bg-transparent border-white/40 text-white hover:bg-white/10"
+                  className="px-12 py-4 w-full md:w-auto bg-transparent border-white/40 text-white hover:bg-white/10"
                   style={button2Color === 'white' ? getButtonStyle(button2Color) : undefined}
                   onClick={() => handleButtonClick(button2Link)}
                 >
