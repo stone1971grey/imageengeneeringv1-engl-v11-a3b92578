@@ -6678,21 +6678,6 @@ const AdminDashboard = () => {
                     />
                   )}
 
-                  {segment.type === 'debug' && (
-                    <DebugEditor
-                      data={segment.data || {}}
-                      onChange={(newData) => {
-                        const updatedSegments = pageSegments.map(s =>
-                          s.id === segment.id ? { ...s, data: newData } : s
-                        );
-                        setPageSegments(updatedSegments);
-                      }}
-                      onSave={() => handleSaveSegments()}
-                      pageSlug={selectedPage}
-                      segmentId={segment.id}
-                    />
-                  )}
-
                   {segment.type === 'specification' && (() => {
                     // Initialize data if missing
                     if (!segment.data) {
