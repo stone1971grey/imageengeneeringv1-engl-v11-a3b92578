@@ -1308,58 +1308,85 @@ const AdminDashboard = () => {
   };
 
   const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
-    if (!e.target.files || !e.target.files[0]) return;
+    console.log('[AdminDashboard] handleTileImageUpload called for index:', tileIndex);
+    
+    if (!e.target.files || !e.target.files[0]) {
+      console.log('[AdminDashboard] No file selected');
+      return;
+    }
     
     const file = e.target.files[0];
+    console.log('[AdminDashboard] File selected:', file.name, 'size:', file.size, 'type:', file.type);
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
+      console.log('[AdminDashboard] Invalid file type:', file.type);
       toast.error("Please upload an image file");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
+      console.log('[AdminDashboard] File too large:', file.size);
       toast.error("Image size must be less than 5MB");
       return;
     }
 
     setUploading(true);
+    console.log('[AdminDashboard] Starting upload...');
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `tile-${tileIndex}-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `tile-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
+      
+      console.log('[AdminDashboard] Uploading to path:', filePath);
 
       // Upload to storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from('page-images')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('[AdminDashboard] Upload error:', uploadError);
+        throw uploadError;
+      }
+      
+      console.log('[AdminDashboard] Upload successful:', uploadData);
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
+      
+      console.log('[AdminDashboard] Public URL:', publicUrl);
 
       // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
+      console.log('[AdminDashboard] Metadata extracted:', metadata);
 
       // Update applications array with URL and metadata
       const newApps = [...applications];
       newApps[tileIndex].imageUrl = publicUrl;
       newApps[tileIndex].metadata = { ...metadata, altText: '' };
       setApplications(newApps);
+      
+      console.log('[AdminDashboard] Applications updated');
 
       toast.success("Image uploaded successfully!");
+      
+      // Reset input to allow re-uploading same file
+      e.target.value = '';
     } catch (error: any) {
+      console.error('[AdminDashboard] Upload failed:', error);
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploading(false);
+      console.log('[AdminDashboard] Upload finished');
     }
   };
 

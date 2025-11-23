@@ -184,13 +184,19 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) handleImageUpload(index, file);
+                        console.log('[BannerEditor] File input onChange, file:', file?.name);
+                        if (file) {
+                          console.log('[BannerEditor] Calling handleImageUpload for index:', index);
+                          handleImageUpload(index, file);
+                        }
+                        // Reset input value to allow re-uploading same file
+                        e.target.value = '';
                       }}
-                      className="bg-white border-2 border-gray-300 text-black"
+                      className="bg-white border-2 border-gray-300 text-black cursor-pointer"
                       disabled={uploadingIndex === index}
                     />
                     {uploadingIndex === index && (
-                      <span className="text-[#f9dc24]">Uploading...</span>
+                      <span className="text-[#f9dc24] font-semibold">Uploading...</span>
                     )}
                   </div>
                   {image.url && (
