@@ -5408,6 +5408,8 @@ const AdminDashboard = () => {
                       } finally {
                         setUploading(false);
                       }
+                    };
+
                     const handleImageDelete = async () => {
                       if (!heroData.hero_image_url) return;
 
