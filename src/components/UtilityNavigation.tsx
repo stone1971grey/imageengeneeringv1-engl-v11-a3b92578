@@ -3,20 +3,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 const UtilityNavigation = () => {
   const { language, setLanguage } = useLanguage();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Auto-focus when search opens
-  useEffect(() => {
-    if (isSearchOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isSearchOpen]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,15 +33,10 @@ const UtilityNavigation = () => {
 
   return (
     <div className="flex items-center gap-4 relative">
-      {/* Search - Modern Expandable - as single unit */}
-      <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden transition-all duration-300">
-        {/* Search Input - slides in smoothly */}
-        <div 
-          className={`transition-all duration-500 ease-in-out ${
-            isSearchOpen ? 'w-[240px] opacity-100' : 'w-0 opacity-0'
-          } overflow-hidden`}
-        >
-          <div className="relative h-10 flex items-center">
+      {/* Search - Simple persistent field */}
+      <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden h-10">
+        <div className="flex items-center w-[240px]">
+          <div className="relative flex-1 h-full flex items-center">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
             <input
               ref={inputRef}
@@ -69,23 +56,16 @@ const UtilityNavigation = () => {
               </button>
             )}
           </div>
+          {/* Icon acts as submit trigger but no toggle */}
+          <button
+            type="submit"
+            className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors"
+            aria-label="Search"
+            onClick={() => inputRef.current?.focus()}
+          >
+            <Search className="h-5 w-5 text-gray-700" />
+          </button>
         </div>
-        
-        {/* Search Icon Button - integrated seamlessly */}
-        <button
-          type="button"
-          onClick={() => setIsSearchOpen(!isSearchOpen)}
-          className={`w-10 h-10 flex items-center justify-center transition-all duration-300 flex-shrink-0 hover:bg-gray-100 ${
-            isSearchOpen ? 'rotate-90' : 'rotate-0'
-          }`}
-          aria-label={isSearchOpen ? "Close search" : "Open search"}
-        >
-          {isSearchOpen ? (
-            <X className="h-5 w-5 text-gray-700 transition-transform duration-300" />
-          ) : (
-            <Search className="h-5 w-5 text-gray-700 transition-transform duration-300" />
-          )}
-        </button>
       </form>
       
       {/* Language Selector */}
