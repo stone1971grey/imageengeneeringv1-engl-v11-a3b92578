@@ -2776,7 +2776,7 @@ const AdminDashboard = () => {
                             <GripVertical className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Tiles - B</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Tiles - H</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Feature cards with icons, titles, descriptions and CTA links
                             </p>
@@ -3146,7 +3146,7 @@ const AdminDashboard = () => {
                         <GripVertical className="h-7 w-7 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">Tiles - B</h3>
+                        <h3 className="text-lg font-bold text-gray-900">Tiles - H</h3>
                         <p className="text-sm text-gray-600 mt-1">
                           Feature cards with icons, titles, descriptions and CTA links
                         </p>
@@ -3484,7 +3484,7 @@ const AdminDashboard = () => {
                   if (tabId === 'tiles' && segmentRegistry['tiles']) {
                     return (
                       <SortableTab key="tiles" id="tiles" value="tiles">
-                        ID {segmentRegistry['tiles']}: Tiles - B
+                        ID {segmentRegistry['tiles']}: Tiles - H
                       </SortableTab>
                     );
                   }
@@ -3521,7 +3521,7 @@ const AdminDashboard = () => {
                     } else {
                       if (segment.type === 'hero') label = `Produkt Hero ${displayNumber} - F`;
                       if (segment.type === 'product-hero-gallery') label = `Product Gallery ${displayNumber} - G`;
-                      if (segment.type === 'tiles') label = `Tiles ${displayNumber} - B`;
+                      if (segment.type === 'tiles') label = `Tiles ${displayNumber} - H`;
                       if (segment.type === 'banner') label = `Banner ${displayNumber} - J`;
                       if (segment.type === 'image-text') label = `Image & Text ${displayNumber} - I`;
                       if (segment.type === 'feature-overview') label = `Features ${displayNumber} - K`;
@@ -3889,7 +3889,7 @@ const AdminDashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-white">Tiles Template - B</CardTitle>
+                  <CardTitle className="text-white">Tiles Template - H</CardTitle>
                   <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
                   <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                     ID: {segmentRegistry['tiles'] || 2}
@@ -3897,7 +3897,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
-                    Tiles Template - B
+                    Tiles Template - H
                   </div>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
@@ -5178,7 +5178,7 @@ const AdminDashboard = () => {
                         {segment.type === 'hero' && `Produkt Hero ${segment.position + 1} - F`}
                         {segment.type === 'meta-navigation' && `Meta Navigation ${segment.position + 1} - E`}
                         {segment.type === 'product-hero-gallery' && `Product Hero Gallery ${segment.position + 1} - G`}
-                        {segment.type === 'tiles' && `Tiles Section ${segment.position + 1} - B`}
+                        {segment.type === 'tiles' && `Tiles Section ${segment.position + 1} - H`}
                         {segment.type === 'banner' && `Banner Section ${segment.position + 1} - J`}
                         {segment.type === 'image-text' && `Image & Text Section ${segment.position + 1} - I`}
                         {segment.type === 'full-hero' && `Full Hero ${segment.position + 1} - A`}
@@ -5203,7 +5203,7 @@ const AdminDashboard = () => {
                         {segment.type === 'hero' && 'Produkt-Hero Template - F'}
                         {segment.type === 'meta-navigation' && 'Meta Navigation - E'}
                         {segment.type === 'product-hero-gallery' && 'Product Hero Gallery - G'}
-                        {segment.type === 'tiles' && 'Tiles Template - B'}
+                        {segment.type === 'tiles' && 'Tiles Template - H'}
                         {segment.type === 'banner' && 'Banner Template - J'}
                         {segment.type === 'image-text' && 'Image & Text Template - I'}
                         {segment.type === 'feature-overview' && 'Feature Overview Template - K'}
