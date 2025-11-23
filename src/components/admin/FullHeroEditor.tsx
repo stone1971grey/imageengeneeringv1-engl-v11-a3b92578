@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, X, Heading1 } from "lucide-react";
+import { extractImageMetadata, ImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -31,6 +32,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [button2Color, setButton2Color] = useState<'yellow' | 'black' | 'white'>('black');
   const [backgroundType, setBackgroundType] = useState<'image' | 'video'>('image');
   const [imageUrl, setImageUrl] = useState("");
+  const [imageMetadata, setImageMetadata] = useState<ImageMetadata | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [imagePosition, setImagePosition] = useState<'left' | 'right'>('right');
   const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('1-1');
@@ -92,6 +94,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       setButton2Color(content.button2Color || 'black');
       setBackgroundType(content.backgroundType || 'image');
       setImageUrl(content.imageUrl || "");
+      setImageMetadata(content.imageMetadata || null);
       setVideoUrl(content.videoUrl || "");
       setImagePosition(content.imagePosition || 'right');
       setLayoutRatio(content.layoutRatio || '1-1');
@@ -123,13 +126,27 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract metadata
+      const metadataWithoutAlt = await extractImageMetadata(file, publicUrl);
+      const metadata: ImageMetadata = {
+        ...metadataWithoutAlt,
+        altText: imageMetadata?.altText || ''
+      };
+
       setImageUrl(publicUrl);
+      setImageMetadata(metadata);
       toast.success("Image uploaded successfully");
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Failed to upload image");
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleAltTextChange = (newAltText: string) => {
+    if (imageMetadata) {
+      setImageMetadata({ ...imageMetadata, altText: newAltText });
     }
   };
 
@@ -146,6 +163,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       button2Color,
       backgroundType,
       imageUrl,
+      imageMetadata,
       videoUrl,
       imagePosition,
       layoutRatio,
@@ -360,7 +378,52 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                     )}
                   </div>
                   {imageUrl && (
-                    <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded" />
+                    <div className="mt-4 space-y-4">
+                      <img src={imageUrl} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
+                      
+                      {/* Image Metadata Display */}
+                      {imageMetadata && (
+                        <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                          <h4 className="text-sm font-semibold text-white mb-2">Image Information</h4>
+                          <div className="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                              <span className="text-gray-400">Filename:</span>
+                              <p className="text-white truncate">{imageMetadata.originalFileName}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Format:</span>
+                              <p className="text-white">{imageMetadata.format}</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Dimensions:</span>
+                              <p className="text-white">{imageMetadata.width} × {imageMetadata.height}px</p>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">File Size:</span>
+                              <p className="text-white">{formatFileSize(imageMetadata.fileSizeKB)}</p>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-gray-400">Upload Date:</span>
+                              <p className="text-white">{formatUploadDate(imageMetadata.uploadDate)}</p>
+                            </div>
+                          </div>
+                          
+                          {/* Alt Text Field */}
+                          <div className="pt-3 border-t border-gray-700">
+                            <Label htmlFor="imageAltText" className="text-white text-sm mb-2 block">
+                              Alt Text (SEO & Accessibility)
+                            </Label>
+                            <Textarea
+                              id="imageAltText"
+                              value={imageMetadata.altText || ''}
+                              onChange={(e) => handleAltTextChange(e.target.value)}
+                              placeholder="Describe this image for SEO and accessibility..."
+                              className="bg-white border-2 border-gray-600 text-black placeholder:text-gray-400 min-h-[60px]"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 

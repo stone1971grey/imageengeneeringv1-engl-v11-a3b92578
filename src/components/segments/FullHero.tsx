@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { ImageMetadata } from '@/types/imageMetadata';
 
 interface FullHeroProps {
   id?: string | number;
@@ -15,6 +16,7 @@ interface FullHeroProps {
   button2Color?: 'yellow' | 'black' | 'white';
   backgroundType: 'image' | 'video';
   imageUrl?: string;
+  imageMetadata?: ImageMetadata;
   videoUrl?: string;
   imagePosition?: 'left' | 'right';
   layoutRatio?: '1-1' | '2-3' | '2-5';
@@ -40,6 +42,7 @@ const FullHero = ({
   button2Color = 'black',
   backgroundType,
   imageUrl,
+  imageMetadata,
   videoUrl,
   imagePosition = 'right',
   layoutRatio = '1-1',
@@ -183,6 +186,8 @@ const FullHero = ({
               backgroundImage: `url(${imageUrl})`,
               transform: kenBurnsEffect !== 'none' ? 'scale(1.1)' : 'scale(1)'
             }}
+            role="img"
+            aria-label={imageMetadata?.altText || 'Hero background image'}
           />
           <div 
             className="absolute inset-0"

@@ -389,6 +389,7 @@ const DynamicCMSPage = () => {
             button2Color={segment.data?.button2Color || "black"}
             backgroundType={segment.data?.backgroundType || "image"}
             imageUrl={segment.data?.imageUrl}
+            imageMetadata={segment.data?.imageMetadata}
             videoUrl={segment.data?.videoUrl}
             kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
             kenBurnsLoop={segment.data?.kenBurnsLoop !== undefined ? segment.data.kenBurnsLoop : true}
