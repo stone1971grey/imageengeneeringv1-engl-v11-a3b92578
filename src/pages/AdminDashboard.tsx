@@ -5374,7 +5374,8 @@ const AdminDashboard = () => {
                         // Upload to Supabase Storage
                         const fileExt = 'jpg';
                         const fileName = `${Date.now()}.${fileExt}`;
-                        const filePath = `${resolvedPageSlug}/${fileName}`;
+                        const basePath = resolvedPageSlug || selectedPage || 'page-images';
+                        const filePath = `${basePath}/${fileName}`;
                         
                         console.log('☁️ Uploading to Supabase:', filePath);
 
