@@ -212,6 +212,13 @@ const UniversalTestTarget = () => {
           </section>
         );
       case 'banner':
+        const bannerColumns = segment.data?.columns || '4';
+        const bannerGridClass = bannerColumns === '2' 
+          ? 'grid-cols-1 md:grid-cols-2' 
+          : bannerColumns === '3'
+          ? 'grid-cols-2 md:grid-cols-3'
+          : 'grid-cols-2 md:grid-cols-4';
+        
         return (
           <section key={segmentId} id={String(numericId)} className="py-16" style={{ backgroundColor: '#f3f3f5' }}>
             <div className="container mx-auto px-4 text-center">
@@ -226,7 +233,7 @@ const UniversalTestTarget = () => {
                 </p>
               )}
               {segment.data?.images?.length > 0 && (
-                <div className="flex flex-wrap justify-center items-center gap-8 mb-12">
+                <div className={`grid ${bannerGridClass} gap-8 mb-12 items-center justify-items-center`}>
                   {segment.data.images.map((image: any, idx: number) => (
                     <div key={idx} className="h-16 flex items-center">
                       <img 
