@@ -17,7 +17,7 @@ interface SearchResult {
 }
 
 interface SearchBarProps {
-  variant?: 'desktop' | 'mobile';
+  variant?: 'desktop' | 'mobile' | 'utility';
 }
 
 const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
@@ -225,7 +225,7 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
   };
 
   return (
-    <div ref={searchRef} className={`relative ${variant === 'mobile' ? 'w-full' : ''}`}>
+    <div ref={searchRef} className={`relative ${variant === 'mobile' ? 'w-full' : variant === 'utility' ? 'w-full' : ''}`}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black" />
         <Input
@@ -235,9 +235,12 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          className={variant === 'mobile' 
-            ? "pl-10 pr-10 w-full bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
-            : "pl-10 pr-10 w-36 bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
+          className={
+            variant === 'utility'
+              ? "pl-10 pr-10 w-full h-10 bg-transparent border-none text-black placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              : variant === 'mobile' 
+                ? "pl-10 pr-10 w-full bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
+                : "pl-10 pr-10 w-36 bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
           }
         />
         {query && (

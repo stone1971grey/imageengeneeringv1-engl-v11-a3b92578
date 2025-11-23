@@ -20,35 +20,31 @@ const UtilityNavigation = () => {
 
   return (
     <div className="flex items-center gap-4 relative">
-      {/* Search - Modern Expandable */}
-      <div className="relative overflow-hidden">
-        <div className="flex items-center">
-          {/* Search Input - slides in smoothly */}
-          <div 
-            className={`transition-all duration-500 ease-in-out ${
-              isSearchOpen ? 'w-[220px] opacity-100' : 'w-0 opacity-0'
-            } overflow-hidden`}
-          >
-            <IntelligentSearchBar />
-          </div>
-          
-          {/* Search Icon Button - morphs smoothly */}
-          <button
-            onClick={() => setIsSearchOpen(!isSearchOpen)}
-            className={`w-10 h-10 rounded-md flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
-              isSearchOpen 
-                ? 'bg-gray-100 hover:bg-gray-200 rotate-90' 
-                : 'bg-white hover:bg-gray-100 rotate-0'
-            }`}
-            aria-label={isSearchOpen ? "Close search" : "Open search"}
-          >
-            {isSearchOpen ? (
-              <X className="h-5 w-5 text-gray-700 transition-transform duration-300" />
-            ) : (
-              <Search className="h-5 w-5 text-gray-700 transition-transform duration-300" />
-            )}
-          </button>
+      {/* Search - Modern Expandable - as single unit */}
+      <div className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden transition-all duration-300">
+        {/* Search Input - slides in smoothly */}
+        <div 
+          className={`transition-all duration-500 ease-in-out ${
+            isSearchOpen ? 'w-[240px] opacity-100' : 'w-0 opacity-0'
+          } overflow-hidden`}
+        >
+          <IntelligentSearchBar variant="utility" />
         </div>
+        
+        {/* Search Icon Button - integrated seamlessly */}
+        <button
+          onClick={() => setIsSearchOpen(!isSearchOpen)}
+          className={`w-10 h-10 flex items-center justify-center transition-all duration-300 flex-shrink-0 hover:bg-gray-100 ${
+            isSearchOpen ? 'rotate-90' : 'rotate-0'
+          }`}
+          aria-label={isSearchOpen ? "Close search" : "Open search"}
+        >
+          {isSearchOpen ? (
+            <X className="h-5 w-5 text-gray-700 transition-transform duration-300" />
+          ) : (
+            <Search className="h-5 w-5 text-gray-700 transition-transform duration-300" />
+          )}
+        </button>
       </div>
       
       {/* Language Selector */}
