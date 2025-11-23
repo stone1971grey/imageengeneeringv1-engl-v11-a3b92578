@@ -84,6 +84,48 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
           )}
         </div>
 
+        <div className="border-t pt-4 space-y-2">
+          <Label htmlFor="debug-upload">Alternative: Direct File Upload Test</Label>
+          <p className="text-xs text-muted-foreground mb-2">
+            Test file upload with visible input (no hidden elements)
+          </p>
+          
+          <Input
+            id="debug-upload"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              console.log('=== VISIBLE FILE INPUT ONCHANGE FIRED ===');
+              toast.success('✅ onChange event detected!', { duration: 3000 });
+              
+              const file = e.target.files?.[0];
+              if (!file) {
+                console.log('No file selected');
+                toast.error('No file selected');
+                return;
+              }
+              
+              console.log('File details:', { 
+                name: file.name, 
+                size: file.size, 
+                type: file.type 
+              });
+              toast.info(`File: ${file.name} (${Math.round(file.size/1024)}KB)`);
+              
+              // Create object URL for immediate preview
+              const objectUrl = URL.createObjectURL(file);
+              handleImageUrlChange(objectUrl);
+              toast.success('Preview loaded! (Object URL)', { duration: 3000 });
+            }}
+            className="cursor-pointer"
+          />
+          
+          <p className="text-xs text-yellow-600 bg-yellow-50 p-2 rounded">
+            ⚠️ This is a diagnostic test - if onChange fires here but not with hidden inputs, 
+            we've isolated the problem to hidden input handling in React.
+          </p>
+        </div>
+
         <div className="flex justify-end pt-4 border-t">
           <Button
             onClick={handleSave}
