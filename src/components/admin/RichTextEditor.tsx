@@ -80,26 +80,41 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
   });
 
   const handleImageUpload = async () => {
+    console.log('[RTE] handleImageUpload called, imageFile:', imageFile?.name);
+    
     if (!imageFile) {
+      console.log('[RTE] No image file selected');
       toast.error('Please select an image file');
       return;
     }
 
     setUploadingImage(true);
+    console.log('[RTE] Starting upload...');
+    
     try {
       const fileExt = imageFile.name.split('.').pop();
-      const fileName = `news-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `news-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `news-images/${fileName}`;
+      
+      console.log('[RTE] Uploading to:', filePath);
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data: uploadData } = await supabase.storage
         .from('page-images')
-        .upload(filePath, imageFile);
+        .upload(filePath, imageFile, { upsert: false });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('[RTE] Upload error:', uploadError);
+        throw uploadError;
+      }
+      
+      console.log('[RTE] Upload successful:', uploadData);
 
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
+      
+      console.log('[RTE] Public URL:', publicUrl);
 
       if (editor) {
         editor.chain().focus().setImage({ src: publicUrl }).run();
@@ -109,9 +124,11 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       setShowImageDialog(false);
       setImageFile(null);
     } catch (error: any) {
+      console.error('[RTE] Upload failed:', error);
       toast.error('Failed to upload image: ' + error.message);
     } finally {
       setUploadingImage(false);
+      console.log('[RTE] Upload finished');
     }
   };
 
@@ -406,23 +423,36 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
             <DialogTitle>Insert Image</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="image-file">Upload Image</Label>
-              <Input
-                id="image-file"
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-              />
-              <Button
-                type="button"
-                onClick={handleImageUpload}
-                disabled={!imageFile || uploadingImage}
-                className="mt-2 w-full"
-              >
-                {uploadingImage ? 'Uploading...' : 'Upload & Insert'}
-              </Button>
-            </div>
+          <div>
+            <Label htmlFor="image-file">Upload Image</Label>
+            <Input
+              id="image-file"
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                console.log('[RTE] File selected:', file?.name, file?.size);
+                setImageFile(file || null);
+              }}
+              className="cursor-pointer"
+            />
+            {imageFile && (
+              <p className="text-sm text-gray-600 mt-1">
+                Selected: {imageFile.name} ({(imageFile.size / 1024).toFixed(1)} KB)
+              </p>
+            )}
+            <Button
+              type="button"
+              onClick={() => {
+                console.log('[RTE] Upload button clicked, imageFile:', imageFile?.name);
+                handleImageUpload();
+              }}
+              disabled={!imageFile || uploadingImage}
+              className="mt-2 w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black disabled:opacity-50"
+            >
+              {uploadingImage ? 'Uploading...' : 'Upload & Insert'}
+            </Button>
+          </div>
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
