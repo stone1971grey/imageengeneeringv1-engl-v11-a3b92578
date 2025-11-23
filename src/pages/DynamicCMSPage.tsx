@@ -108,6 +108,7 @@ const DynamicCMSPage = () => {
       let loadedSegments: any[] = [];
       let loadedTabOrder: string[] = [];
       const fullHeroOverridesLocal: Record<string, any> = {};
+      const introLegacyMap: Record<string, { title?: string; description?: string }> = {};
       
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
@@ -138,18 +139,54 @@ const DynamicCMSPage = () => {
           } catch (e) {
             console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
           }
+        } else {
+          // Legacy Intro: numerischer section_key + headingLevel-Feld
+          const isNumericKey = /^\d+$/.test(item.section_key);
+          if (isNumericKey) {
+            try {
+              const legacy = JSON.parse(item.content_value || '{}');
+              if (legacy && typeof legacy === 'object' && 'headingLevel' in legacy) {
+                introLegacyMap[item.section_key] = {
+                  title: legacy.title,
+                  description: legacy.description,
+                };
+              }
+            } catch (e) {
+              console.error('[DynamicCMSPage] Error parsing legacy intro content:', e);
+            }
+          }
         }
       });
 
       setFullHeroOverrides(fullHeroOverridesLocal);
 
-      setPageSegments(loadedSegments);
+      // Intro-Segmente mit ggf. vorhandenen Legacy-Texten anreichern
+      const enhancedSegments = Array.isArray(loadedSegments)
+        ? loadedSegments.map((seg: any) => {
+            if (String(seg.type || '').toLowerCase() === 'intro') {
+              const key = seg.id ?? seg.segment_key;
+              const legacy = key ? introLegacyMap[String(key)] : undefined;
+              if (legacy) {
+                return {
+                  ...seg,
+                  data: {
+                    ...(seg.data || {}),
+                    ...legacy,
+                  },
+                };
+              }
+            }
+            return seg;
+          })
+        : loadedSegments;
+
+      setPageSegments(enhancedSegments);
       setTabOrder(loadedTabOrder);
 
       // CRITICAL: Auto-sync tab_order with page_segments
       // Ensure all segments in page_segments are also in tab_order
-      if (loadedSegments.length > 0) {
-        const allSegmentIds = loadedSegments.map((s) => s.id || s.segment_key);
+      if (Array.isArray(enhancedSegments) && enhancedSegments.length > 0) {
+        const allSegmentIds = enhancedSegments.map((s) => s.id || s.segment_key);
         const missingInTabOrder = allSegmentIds.filter((id) => !loadedTabOrder.includes(id));
         
         if (missingInTabOrder.length > 0) {
