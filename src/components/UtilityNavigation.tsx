@@ -53,57 +53,52 @@ const UtilityNavigation = () => {
   ];
 
   return (
-    <div className="flex items-center gap-4 relative">
-      {/* Search with toggle animation */}
-      <div ref={searchContainerRef} className="relative">
-        {/* Search Button (Magnifying Glass) */}
+    <div className="flex items-center gap-4">
+      {/* Search with smooth slide-in animation that pushes navigation */}
+      <div ref={searchContainerRef} className="flex items-center overflow-hidden">
+        <form 
+          onSubmit={handleSearchSubmit} 
+          className={`flex items-center bg-white rounded-md shadow-sm overflow-hidden h-10 transition-all duration-300 ease-in-out ${
+            isSearchOpen ? 'w-[240px] opacity-100' : 'w-0 opacity-0'
+          }`}
+        >
+          <div className="flex items-center min-w-[240px]">
+            <div className="relative flex-1 h-full flex items-center">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+              <input
+                ref={inputRef}
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-full pl-10 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
+                >
+                  <X className="h-3 w-3 text-gray-500" />
+                </button>
+              )}
+            </div>
+          </div>
+        </form>
+        
+        {/* Search Toggle Button */}
         <button
           type="button"
           onClick={toggleSearch}
-          className="w-10 h-10 flex items-center justify-center bg-white rounded-md hover:bg-gray-100 transition-colors shadow-sm"
-          aria-label="Toggle Search"
+          className="w-10 h-10 flex items-center justify-center bg-white rounded-md hover:bg-gray-100 transition-colors shadow-sm flex-shrink-0"
+          aria-label={isSearchOpen ? "Close Search" : "Open Search"}
         >
-          <Search className="h-5 w-5 text-gray-700" />
+          {isSearchOpen ? (
+            <X className="h-5 w-5 text-gray-700" />
+          ) : (
+            <Search className="h-5 w-5 text-gray-700" />
+          )}
         </button>
-
-        {/* Expandable Search Input */}
-        {isSearchOpen && (
-          <form 
-            onSubmit={handleSearchSubmit} 
-            className="absolute right-0 top-0 flex items-center bg-white rounded-md shadow-lg overflow-hidden h-10 animate-scale-in"
-          >
-            <div className="flex items-center w-[240px]">
-              <div className="relative flex-1 h-full flex items-center">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-                <input
-                  ref={inputRef}
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-full pl-10 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={handleClearSearch}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
-                  >
-                    <X className="h-3 w-3 text-gray-500" />
-                  </button>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={toggleSearch}
-                className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors"
-                aria-label="Close Search"
-              >
-                <X className="h-5 w-5 text-gray-700" />
-              </button>
-            </div>
-          </form>
-        )}
       </div>
       
       {/* Language Selector */}
