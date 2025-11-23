@@ -6846,7 +6846,7 @@ const AdminDashboard = () => {
 
       {/* Visual Debug Window */}
       {showDebugWindow && (
-        <div className="fixed bottom-4 right-4 w-96 bg-gray-900 border-2 border-[#f9dc24] rounded-lg shadow-2xl z-[9999]">
+        <div className="fixed bottom-4 left-4 w-96 bg-gray-900 border-2 border-[#f9dc24] rounded-lg shadow-2xl z-[9999]">
           <div className="flex items-center justify-between bg-[#f9dc24] px-4 py-2 rounded-t-lg">
             <h3 className="font-bold text-black">🔍 Upload Debug Monitor</h3>
             <Button
@@ -6884,7 +6884,7 @@ const AdminDashboard = () => {
       {!showDebugWindow && (
         <Button
           onClick={() => setShowDebugWindow(true)}
-          className="fixed bottom-4 right-4 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 shadow-lg z-[9999]"
+          className="fixed bottom-4 left-4 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 shadow-lg z-[9999]"
         >
           🔍 Debug Monitor öffnen
         </Button>
