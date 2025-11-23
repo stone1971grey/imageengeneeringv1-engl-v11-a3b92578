@@ -5353,8 +5353,11 @@ const AdminDashboard = () => {
                       const file = e.target.files?.[0];
                       if (!file) return;
 
+                      console.log('🖼️ Starting image upload for segment:', segment.id, 'File:', file.name);
+
                       try {
                         setUploading(true);
+                        console.log('📸 Cropping image with dimensions:', heroData.hero_image_dimensions || '600x600', 'position:', heroData.hero_crop_position || 'center');
                         
                         // Crop the image
                         const croppedBlob = await cropImage(
@@ -5363,24 +5366,35 @@ const AdminDashboard = () => {
                           heroData.hero_crop_position || 'center'
                         );
                         
+                        console.log('✂️ Image cropped successfully, size:', croppedBlob.size);
+                        
                         // Convert blob to file
                         const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
 
                         // Upload to Supabase Storage
                         const fileExt = 'jpg';
                         const fileName = `${Date.now()}.${fileExt}`;
-                        const filePath = `${selectedPage}/${fileName}`;
+                        const filePath = `${resolvedPageSlug}/${fileName}`;
+                        
+                        console.log('☁️ Uploading to Supabase:', filePath);
 
                         const { error: uploadError } = await supabase.storage
                           .from('page-images')
                           .upload(filePath, croppedFile);
 
-                        if (uploadError) throw uploadError;
+                        if (uploadError) {
+                          console.error('❌ Upload error:', uploadError);
+                          throw uploadError;
+                        }
+                        
+                        console.log('✅ Upload successful');
 
                         // Get public URL
                         const { data: urlData } = supabase.storage
                           .from('page-images')
                           .getPublicUrl(filePath);
+                        
+                        console.log('🔗 Public URL:', urlData.publicUrl);
 
                         // Extract metadata with URL
                         const metadataWithoutAlt = await extractImageMetadata(croppedFile, urlData.publicUrl);
@@ -5388,6 +5402,8 @@ const AdminDashboard = () => {
                           ...metadataWithoutAlt,
                           altText: ''
                         };
+                        
+                        console.log('📊 Metadata extracted:', metadata);
 
                         // Update segment with image URL and metadata
                         const newSegments = [...pageSegments];
@@ -5398,12 +5414,18 @@ const AdminDashboard = () => {
                         };
                         setPageSegments(newSegments);
                         
-                        toast.success("Bild erfolgreich hochgeladen und zugeschnitten");
-                      } catch (error) {
-                        console.error('Image upload error:', error);
-                        toast.error("Upload fehlgeschlagen");
+                        console.log('💾 Segment updated in state, new data:', newSegments[index].data);
+                        
+                        toast.success("Bild erfolgreich hochgeladen - Bitte speichern Sie die Änderungen!");
+                        
+                        // Reset input
+                        e.target.value = '';
+                      } catch (error: any) {
+                        console.error('❌ Image upload error:', error);
+                        toast.error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}`);
                       } finally {
                         setUploading(false);
+                        console.log('🏁 Upload process finished');
                       }
                     };
 
@@ -5619,10 +5641,19 @@ const AdminDashboard = () => {
                                     htmlFor={`hero-image-upload-${segment.id}`}
                                     className="cursor-pointer flex flex-col items-center gap-2"
                                   >
-                                    <Upload className="h-8 w-8 text-gray-400" />
-                                    <span className="text-sm text-gray-400">
-                                      {uploading ? 'Uploading...' : 'Klicken zum Hochladen oder Datei hierher ziehen'}
-                                    </span>
+                                    {uploading ? (
+                                      <>
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f9dc24]"></div>
+                                        <span className="text-sm text-gray-400">Bild wird verarbeitet und hochgeladen...</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Upload className="h-8 w-8 text-gray-400" />
+                                        <span className="text-sm text-gray-400">
+                                          Klicken zum Hochladen oder Datei hierher ziehen
+                                        </span>
+                                      </>
+                                    )}
                                   </label>
                                 </div>
                               )}
