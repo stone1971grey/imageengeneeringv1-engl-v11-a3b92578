@@ -5609,33 +5609,24 @@ const AdminDashboard = () => {
                                   </div>
                                 </div>
                               ) : (
-                                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors">
+                                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors space-y-3">
                                   <Input
                                     type="file"
                                     accept="image/*"
                                     onChange={handleImageUpload}
                                     disabled={uploading}
-                                    className="hidden"
-                                    id={`hero-image-upload-${segment.id}`}
+                                    className="block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#f9dc24] file:text-black hover:file:bg-[#f9dc24]/90"
                                   />
-                                  <label
-                                    htmlFor={`hero-image-upload-${segment.id}`}
-                                    className="cursor-pointer flex flex-col items-center gap-2"
-                                  >
-                                    {uploading ? (
-                                      <>
-                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f9dc24]"></div>
-                                        <span className="text-sm text-gray-400">Bild wird verarbeitet und hochgeladen...</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Upload className="h-8 w-8 text-gray-400" />
-                                        <span className="text-sm text-gray-400">
-                                          Klicken zum Hochladen oder Datei hierher ziehen
-                                        </span>
-                                      </>
-                                    )}
-                                  </label>
+                                  {uploading ? (
+                                    <div className="flex flex-col items-center gap-2">
+                                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f9dc24]"></div>
+                                      <span className="text-sm text-gray-400">Bild wird verarbeitet und hochgeladen...</span>
+                                    </div>
+                                  ) : (
+                                    <span className="text-sm text-gray-400">
+                                      Wählen Sie eine Datei aus, um ein neues Hero-Bild für dieses Segment (ID {segment.id}) hochzuladen.
+                                    </span>
+                                  )}
                                 </div>
                               )}
                             </div>
