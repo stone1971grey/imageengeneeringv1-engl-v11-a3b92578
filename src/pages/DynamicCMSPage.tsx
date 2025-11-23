@@ -102,19 +102,18 @@ const DynamicCMSPage = () => {
     if (!error && data) {
       let loadedSegments: any[] = [];
       let loadedTabOrder: string[] = [];
+      const fullHeroOverrides: Record<string, any> = {};
       
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
           const segments = JSON.parse(item.content_value);
           loadedSegments = segments;
-          setPageSegments(segments);
         } else if (item.section_key === "tab_order") {
           try {
             const order = JSON.parse(item.content_value);
             loadedTabOrder = order || [];
-            setTabOrder(loadedTabOrder);
           } catch {
-            setTabOrder([]);
+            loadedTabOrder = [];
           }
         } else if (item.section_key === "seo_settings") {
           try {
@@ -123,14 +122,45 @@ const DynamicCMSPage = () => {
           } catch {
             setSeoData({});
           }
+        } else if (item.section_key.startsWith("full_hero_")) {
+          // Segment-spezifische Full-Hero Daten (z.B. full_hero_246)
+          try {
+            const data = JSON.parse(item.content_value);
+            const segmentIdFromKey = item.section_key.split("full_hero_")[1];
+            if (segmentIdFromKey) {
+              fullHeroOverrides[segmentIdFromKey] = data;
+            }
+          } catch {
+            // ignore parse errors here, fall back to page_segments data
+          }
         }
       });
+
+      // Wende Full-Hero Overrides aus spezifischen section_keys auf page_segments an
+      if (loadedSegments.length > 0 && Object.keys(fullHeroOverrides).length > 0) {
+        loadedSegments = loadedSegments.map((seg: any) => {
+          const key = seg.id || seg.segment_key;
+          if (key && fullHeroOverrides[key]) {
+            return {
+              ...seg,
+              data: {
+                ...(seg.data || {}),
+                ...fullHeroOverrides[key],
+              },
+            };
+          }
+          return seg;
+        });
+      }
+
+      setPageSegments(loadedSegments);
+      setTabOrder(loadedTabOrder);
 
       // CRITICAL: Auto-sync tab_order with page_segments
       // Ensure all segments in page_segments are also in tab_order
       if (loadedSegments.length > 0) {
-        const allSegmentIds = loadedSegments.map(s => s.id || s.segment_key);
-        const missingInTabOrder = allSegmentIds.filter(id => !loadedTabOrder.includes(id));
+        const allSegmentIds = loadedSegments.map((s) => s.id || s.segment_key);
+        const missingInTabOrder = allSegmentIds.filter((id) => !loadedTabOrder.includes(id));
         
         if (missingInTabOrder.length > 0) {
           console.log(`[DynamicCMSPage] Auto-syncing tab_order: adding missing segments ${missingInTabOrder.join(', ')}`);
@@ -151,7 +181,7 @@ const DynamicCMSPage = () => {
               .from("page_content")
               .update({
                 content_value: JSON.stringify(updatedTabOrder),
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
               })
               .eq("page_slug", pageSlug)
               .eq("section_key", "tab_order");
@@ -162,7 +192,7 @@ const DynamicCMSPage = () => {
                 page_slug: pageSlug,
                 section_key: "tab_order",
                 content_type: "json",
-                content_value: JSON.stringify(updatedTabOrder)
+                content_value: JSON.stringify(updatedTabOrder),
               });
           }
           
