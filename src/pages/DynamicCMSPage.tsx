@@ -713,6 +713,12 @@ const DynamicCMSPage = () => {
 
   // Extract Meta Navigation segment (must render before all other segments)
   const metaNavSegment = pageSegments.find(seg => seg.type === 'meta-navigation');
+  
+  // Check if page is essentially empty (only footer or no content segments)
+  const contentSegments = pageSegments.filter(seg => 
+    seg.type !== 'footer' && seg.type !== 'meta-navigation'
+  );
+  const isEmpty = contentSegments.length === 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -727,6 +733,34 @@ const DynamicCMSPage = () => {
         robotsFollow={seoData?.robotsFollow ? 'follow' : 'nofollow'}
       />
       <Navigation />
+      
+      {/* Empty Page Indicator */}
+      {isEmpty && (
+        <div className="flex items-center justify-center min-h-[60vh] px-4">
+          <div className="text-center max-w-2xl">
+            <div className="mb-6">
+              <div className="w-24 h-24 bg-[#f9dc24] rounded-full mx-auto flex items-center justify-center">
+                <span className="text-5xl">📄</span>
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Created Successfully</h1>
+            <p className="text-xl text-gray-600 mb-6">
+              This page has been created and is ready to be configured.
+            </p>
+            <p className="text-lg text-gray-500">
+              Visit the Admin Dashboard to add content segments and customize this page.
+            </p>
+            <div className="mt-8">
+              <Link
+                to="/admin-dashboard"
+                className="inline-flex items-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
+              >
+                Go to Admin Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* DEBUG PANEL - Nur sichtbar mit ?debug=true */}
       {isDebugMode && (
