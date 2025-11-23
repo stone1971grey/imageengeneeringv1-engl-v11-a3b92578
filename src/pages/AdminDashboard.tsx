@@ -5285,7 +5285,59 @@ const AdminDashboard = () => {
                       hero_cta_style: 'standard',
                       hero_image_position: 'right',
                       hero_layout_ratio: '2-5',
-                      hero_top_spacing: 'medium'
+                      hero_top_spacing: 'medium',
+                      hero_image_dimensions: '600x600',
+                      hero_crop_position: 'center'
+                    };
+                    
+                    const cropImage = async (file: File, dimensions: string, cropPosition: string): Promise<Blob> => {
+                      return new Promise((resolve, reject) => {
+                        const [targetWidth, targetHeight] = dimensions.split('x').map(Number);
+                        const img = new Image();
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        if (!ctx) {
+                          reject(new Error('Could not get canvas context'));
+                          return;
+                        }
+
+                        img.onload = () => {
+                          canvas.width = targetWidth;
+                          canvas.height = targetHeight;
+
+                          const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+                          const scaledWidth = img.width * scale;
+                          const scaledHeight = img.height * scale;
+
+                          let sx = 0;
+                          let sy = 0;
+
+                          if (cropPosition === 'top') {
+                            sx = (scaledWidth - targetWidth) / 2;
+                            sy = 0;
+                          } else if (cropPosition === 'bottom') {
+                            sx = (scaledWidth - targetWidth) / 2;
+                            sy = scaledHeight - targetHeight;
+                          } else {
+                            sx = (scaledWidth - targetWidth) / 2;
+                            sy = (scaledHeight - targetHeight) / 2;
+                          }
+
+                          ctx.drawImage(img, -sx, -sy, scaledWidth, scaledHeight);
+
+                          canvas.toBlob((blob) => {
+                            if (blob) {
+                              resolve(blob);
+                            } else {
+                              reject(new Error('Could not create blob'));
+                            }
+                          }, 'image/jpeg', 0.95);
+                        };
+
+                        img.onerror = () => reject(new Error('Failed to load image'));
+                        img.src = URL.createObjectURL(file);
+                      });
                     };
                     
                     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -5293,14 +5345,26 @@ const AdminDashboard = () => {
                       if (!file) return;
 
                       try {
-                        // Upload to Supabase Storage first
-                        const fileExt = file.name.split('.').pop();
+                        setUploading(true);
+                        
+                        // Crop the image
+                        const croppedBlob = await cropImage(
+                          file, 
+                          heroData.hero_image_dimensions || '600x600',
+                          heroData.hero_crop_position || 'center'
+                        );
+                        
+                        // Convert blob to file
+                        const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
+
+                        // Upload to Supabase Storage
+                        const fileExt = 'jpg';
                         const fileName = `${Date.now()}.${fileExt}`;
                         const filePath = `${selectedPage}/${fileName}`;
 
                         const { error: uploadError } = await supabase.storage
                           .from('page-images')
-                          .upload(filePath, file);
+                          .upload(filePath, croppedFile);
 
                         if (uploadError) throw uploadError;
 
@@ -5310,7 +5374,7 @@ const AdminDashboard = () => {
                           .getPublicUrl(filePath);
 
                         // Extract metadata with URL
-                        const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
+                        const metadataWithoutAlt = await extractImageMetadata(croppedFile, urlData.publicUrl);
                         const metadata: ImageMetadata = {
                           ...metadataWithoutAlt,
                           altText: ''
@@ -5325,10 +5389,12 @@ const AdminDashboard = () => {
                         };
                         setPageSegments(newSegments);
                         
-                        toast.success("Bild erfolgreich hochgeladen");
+                        toast.success("Bild erfolgreich hochgeladen und zugeschnitten");
                       } catch (error) {
                         console.error('Image upload error:', error);
                         toast.error("Upload fehlgeschlagen");
+                      } finally {
+                        setUploading(false);
                       }
                     };
 
@@ -5360,413 +5426,471 @@ const AdminDashboard = () => {
                     
                     return (
                       <div className="space-y-6">
-                        <div className="space-y-4">
-                          <div>
-                            <Label className="text-white">Title</Label>
-                            <Input
-                              value={heroData.hero_title || ''}
-                              onChange={(e) => {
-                                const newSegments = [...pageSegments];
-                                newSegments[index].data = {
-                                  ...heroData,
-                                  hero_title: e.target.value
-                                };
-                                setPageSegments(newSegments);
-                              }}
-                              className="border-2 border-gray-600 text-white bg-gray-800"
-                            />
-                          </div>
-                          
-                          <div>
-                            <Label className="text-white">Subtitle (Optional)</Label>
-                            <Input
-                              value={heroData.hero_subtitle || ''}
-                              onChange={(e) => {
-                                const newSegments = [...pageSegments];
-                                newSegments[index].data = {
-                                  ...heroData,
-                                  hero_subtitle: e.target.value
-                                };
-                                setPageSegments(newSegments);
-                              }}
-                              className="border-2 border-gray-600 text-white bg-gray-800"
-                            />
-                          </div>
-                          
-                          <div>
-                            <Label className="text-white">Description</Label>
-                            <Textarea
-                              value={heroData.hero_description || ''}
-                              onChange={(e) => {
-                                const newSegments = [...pageSegments];
-                                newSegments[index].data = {
-                                  ...heroData,
-                                  hero_description: e.target.value
-                                };
-                                setPageSegments(newSegments);
-                              }}
-                              className="border-2 border-gray-600 text-white bg-gray-800 min-h-[100px]"
-                            />
-                          </div>
+                        <Tabs defaultValue="content" className="w-full">
+                          <TabsList className="grid w-full grid-cols-2 mb-6">
+                            <TabsTrigger value="content">Content</TabsTrigger>
+                            <TabsTrigger value="layout">Layout & Image</TabsTrigger>
+                          </TabsList>
 
-                          <div>
-                            <Label className="text-white">CTA Button Text</Label>
-                            <Input
-                              value={heroData.hero_cta_text || ''}
-                              onChange={(e) => {
-                                const newSegments = [...pageSegments];
-                                newSegments[index].data = {
-                                  ...heroData,
-                                  hero_cta_text: e.target.value
-                                };
-                                setPageSegments(newSegments);
-                              }}
-                              className="border-2 border-gray-600 text-white bg-gray-800"
-                            />
-                          </div>
-
-                          <div>
-                            <Label className="text-white">CTA Button Link</Label>
-                            <Input
-                              value={heroData.hero_cta_link || ''}
-                              onChange={(e) => {
-                                const newSegments = [...pageSegments];
-                                newSegments[index].data = {
-                                  ...heroData,
-                                  hero_cta_link: e.target.value
-                                };
-                                setPageSegments(newSegments);
-                              }}
-                              className="border-2 border-gray-600 text-white bg-gray-800"
-                              placeholder="#section-id or /path"
-                            />
-                          </div>
-
-                          <div>
-                            <Label className="text-white">CTA Button Style</Label>
-                            <Select 
-                              value={heroData.hero_cta_style || 'standard'}
-                              onValueChange={(value) => {
-                                const newSegments = [...pageSegments];
-                                newSegments[index].data = {
-                                  ...heroData,
-                                  hero_cta_style: value
-                                };
-                                setPageSegments(newSegments);
-                              }}
-                            >
-                              <SelectTrigger className="border-2 border-gray-600 text-white bg-gray-800">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="standard">Standard (Yellow)</SelectItem>
-                                <SelectItem value="technical">Technical (Dark)</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div className="pt-4 border-t border-gray-600">
-                            <h4 className="text-white font-semibold mb-4">Layout Settings</h4>
-                            
-                            <div className="space-y-6">
-                              {/* Image Position - Visual Selector */}
-                              <div>
-                                <Label className="text-white mb-3 block">Image Position</Label>
-                                <div className="grid grid-cols-2 gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_image_position: 'left'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-4 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_image_position || 'right') === 'left'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <div className="w-12 h-8 bg-gray-700 rounded"></div>
-                                      <div className="w-20 h-8 bg-gray-600 rounded"></div>
-                                    </div>
-                                    <span className="text-xs text-white">Image Left</span>
-                                  </button>
-                                  
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_image_position: 'right'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-4 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_image_position || 'right') === 'right'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="flex items-center gap-2 mb-2">
-                                      <div className="w-20 h-8 bg-gray-600 rounded"></div>
-                                      <div className="w-12 h-8 bg-gray-700 rounded"></div>
-                                    </div>
-                                    <span className="text-xs text-white">Image Right</span>
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* Layout Ratio - Visual Selector */}
-                              <div>
-                                <Label className="text-white mb-3 block">Layout Ratio (Text : Image)</Label>
-                                <div className="grid grid-cols-3 gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_layout_ratio: '1-1'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_layout_ratio || '2-5') === '1-1'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="flex gap-1 mb-2">
-                                      <div className="flex-1 h-6 bg-gray-600 rounded"></div>
-                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
-                                    </div>
-                                    <span className="text-xs text-white block">50 : 50</span>
-                                  </button>
-                                  
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_layout_ratio: '2-3'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_layout_ratio || '2-5') === '2-3'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="flex gap-1 mb-2">
-                                      <div className="w-8 h-6 bg-gray-600 rounded"></div>
-                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
-                                    </div>
-                                    <span className="text-xs text-white block">40 : 60</span>
-                                  </button>
-                                  
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_layout_ratio: '2-5'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_layout_ratio || '2-5') === '2-5'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="flex gap-1 mb-2">
-                                      <div className="w-6 h-6 bg-gray-600 rounded"></div>
-                                      <div className="flex-1 h-6 bg-gray-700 rounded"></div>
-                                    </div>
-                                    <span className="text-xs text-white block">30 : 70</span>
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* Top Spacing - Visual Selector */}
-                              <div>
-                                <Label className="text-white mb-3 block">Top Spacing</Label>
-                                <div className="grid grid-cols-2 gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_top_spacing: 'small'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_top_spacing || 'medium') === 'small'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="h-2 bg-gray-700 rounded mb-2"></div>
-                                    <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">Small (30px)</span>
-                                  </button>
-                                  
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_top_spacing: 'medium'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_top_spacing || 'medium') === 'medium'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="h-4 bg-gray-700 rounded mb-2"></div>
-                                    <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">Medium (50px)</span>
-                                  </button>
-                                  
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_top_spacing: 'large'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_top_spacing || 'medium') === 'large'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="h-6 bg-gray-700 rounded mb-2"></div>
-                                    <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">Large (70px)</span>
-                                  </button>
-                                  
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data = {
-                                        ...heroData,
-                                        hero_top_spacing: 'xlarge'
-                                      };
-                                      setPageSegments(newSegments);
-                                    }}
-                                    className={`p-3 rounded-lg border-2 transition-all ${
-                                      (heroData.hero_top_spacing || 'medium') === 'xlarge'
-                                        ? 'border-[#f9dc24] bg-[#f9dc24]/10'
-                                        : 'border-gray-600 hover:border-gray-500'
-                                    }`}
-                                  >
-                                    <div className="h-8 bg-gray-700 rounded mb-2"></div>
-                                    <div className="h-6 bg-gray-600 rounded"></div>
-                                    <span className="text-xs text-white block mt-2">XL (90px)</span>
-                                  </button>
-                                </div>
-                              </div>
+                          {/* Content Tab */}
+                          <TabsContent value="content" className="space-y-4 mt-0">
+                            <div>
+                              <Label className="text-white">Title</Label>
+                              <Input
+                                value={heroData.hero_title || ''}
+                                onChange={(e) => {
+                                  const newSegments = [...pageSegments];
+                                  newSegments[index].data = {
+                                    ...heroData,
+                                    hero_title: e.target.value
+                                  };
+                                  setPageSegments(newSegments);
+                                }}
+                                className="border-2 border-gray-600 text-white bg-gray-800"
+                              />
                             </div>
-                          </div>
+                            
+                            <div>
+                              <Label className="text-white">Subtitle (Optional)</Label>
+                              <Input
+                                value={heroData.hero_subtitle || ''}
+                                onChange={(e) => {
+                                  const newSegments = [...pageSegments];
+                                  newSegments[index].data = {
+                                    ...heroData,
+                                    hero_subtitle: e.target.value
+                                  };
+                                  setPageSegments(newSegments);
+                                }}
+                                className="border-2 border-gray-600 text-white bg-gray-800"
+                              />
+                            </div>
+                            
+                            <div>
+                              <Label className="text-white">Description</Label>
+                              <Textarea
+                                value={heroData.hero_description || ''}
+                                onChange={(e) => {
+                                  const newSegments = [...pageSegments];
+                                  newSegments[index].data = {
+                                    ...heroData,
+                                    hero_description: e.target.value
+                                  };
+                                  setPageSegments(newSegments);
+                                }}
+                                className="border-2 border-gray-600 text-white bg-gray-800 min-h-[100px]"
+                              />
+                            </div>
 
-                          <div>
-                            <Label className="text-white mb-2 block">Hero Bild</Label>
-                            {heroData.hero_image_url ? (
+                            <div className="pt-4 border-t border-gray-700">
+                              <h4 className="text-white font-semibold mb-3">CTA Button</h4>
+                              
                               <div className="space-y-3">
-                                <div className="relative group">
-                                  <img
-                                    src={heroData.hero_image_url}
-                                    alt="Hero Preview"
-                                    className="w-full h-48 object-cover rounded-lg"
-                                  />
-                                  <Button
-                                    onClick={handleImageDelete}
-                                    variant="destructive"
-                                    size="sm"
-                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                                {heroData.hero_image_metadata && (
-                                  <div className="text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
-                                    <p><strong>Dateiname:</strong> {heroData.hero_image_metadata.originalFileName}</p>
-                                    <p><strong>Größe:</strong> {heroData.hero_image_metadata.width} × {heroData.hero_image_metadata.height} px</p>
-                                    <p><strong>Dateigröße:</strong> {formatFileSize(heroData.hero_image_metadata.fileSizeKB)}</p>
-                                    <p><strong>Format:</strong> {heroData.hero_image_metadata.format}</p>
-                                    <p><strong>Hochgeladen:</strong> {formatUploadDate(heroData.hero_image_metadata.uploadDate)}</p>
-                                  </div>
-                                )}
                                 <div>
-                                  <Label className="text-white">Alt Text (SEO)</Label>
+                                  <Label className="text-white">Button Text</Label>
                                   <Input
-                                    value={heroData.hero_image_metadata?.altText || ''}
+                                    value={heroData.hero_cta_text || ''}
                                     onChange={(e) => {
                                       const newSegments = [...pageSegments];
                                       newSegments[index].data = {
                                         ...heroData,
-                                        hero_image_metadata: {
-                                          ...heroData.hero_image_metadata,
-                                          altText: e.target.value
-                                        }
+                                        hero_cta_text: e.target.value
                                       };
                                       setPageSegments(newSegments);
                                     }}
-                                    placeholder="Beschreiben Sie das Bild für SEO..."
-                                    className="border-2 border-gray-600 text-black"
+                                    className="border-2 border-gray-600 text-white bg-gray-800"
                                   />
                                 </div>
+
+                                <div>
+                                  <Label className="text-white">Button Link</Label>
+                                  <Input
+                                    value={heroData.hero_cta_link || ''}
+                                    onChange={(e) => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_cta_link: e.target.value
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                    className="border-2 border-gray-600 text-white bg-gray-800"
+                                    placeholder="#section-id or /path"
+                                  />
+                                </div>
+
+                                <div>
+                                  <Label className="text-white">Button Style</Label>
+                                  <Select 
+                                    value={heroData.hero_cta_style || 'standard'}
+                                    onValueChange={(value) => {
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data = {
+                                        ...heroData,
+                                        hero_cta_style: value
+                                      };
+                                      setPageSegments(newSegments);
+                                    }}
+                                  >
+                                    <SelectTrigger className="border-2 border-gray-600 text-white bg-gray-800">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="standard">Standard (Yellow)</SelectItem>
+                                      <SelectItem value="technical">Technical (Dark)</SelectItem>
+                                      <SelectItem value="outline-white">Outline White</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
                               </div>
-                            ) : (
-                              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors">
-                                <Input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleImageUpload}
-                                  className="hidden"
-                                  id={`hero-image-upload-${segment.id}`}
-                                />
-                                <label
-                                  htmlFor={`hero-image-upload-${segment.id}`}
-                                  className="cursor-pointer flex flex-col items-center gap-2"
+                            </div>
+                          </TabsContent>
+
+                          {/* Layout & Image Tab */}
+                          <TabsContent value="layout" className="space-y-4 mt-0">
+                            <div>
+                              <Label className="text-white mb-2 block">Hero Image</Label>
+                              {heroData.hero_image_url ? (
+                                <div className="space-y-3">
+                                  <div className="relative group">
+                                    <img
+                                      src={heroData.hero_image_url}
+                                      alt="Hero Preview"
+                                      className="w-full h-48 object-cover rounded-lg"
+                                    />
+                                    <Button
+                                      onClick={handleImageDelete}
+                                      variant="destructive"
+                                      size="sm"
+                                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  {heroData.hero_image_metadata && (
+                                    <div className="text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
+                                      <p><strong>Dateiname:</strong> {heroData.hero_image_metadata.originalFileName}</p>
+                                      <p><strong>Größe:</strong> {heroData.hero_image_metadata.width} × {heroData.hero_image_metadata.height} px</p>
+                                      <p><strong>Dateigröße:</strong> {formatFileSize(heroData.hero_image_metadata.fileSizeKB)}</p>
+                                      <p><strong>Format:</strong> {heroData.hero_image_metadata.format}</p>
+                                      <p><strong>Hochgeladen:</strong> {formatUploadDate(heroData.hero_image_metadata.uploadDate)}</p>
+                                    </div>
+                                  )}
+                                  <div>
+                                    <Label className="text-white">Alt Text (SEO)</Label>
+                                    <Input
+                                      value={heroData.hero_image_metadata?.altText || ''}
+                                      onChange={(e) => {
+                                        const newSegments = [...pageSegments];
+                                        newSegments[index].data = {
+                                          ...heroData,
+                                          hero_image_metadata: {
+                                            ...heroData.hero_image_metadata,
+                                            altText: e.target.value
+                                          }
+                                        };
+                                        setPageSegments(newSegments);
+                                      }}
+                                      placeholder="Beschreiben Sie das Bild für SEO..."
+                                      className="border-2 border-gray-600 text-white bg-gray-800"
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-gray-500 transition-colors">
+                                  <Input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    disabled={uploading}
+                                    className="hidden"
+                                    id={`hero-image-upload-${segment.id}`}
+                                  />
+                                  <label
+                                    htmlFor={`hero-image-upload-${segment.id}`}
+                                    className="cursor-pointer flex flex-col items-center gap-2"
+                                  >
+                                    <Upload className="h-8 w-8 text-gray-400" />
+                                    <span className="text-sm text-gray-400">
+                                      {uploading ? 'Uploading...' : 'Klicken zum Hochladen oder Datei hierher ziehen'}
+                                    </span>
+                                  </label>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <Label className="text-white">Image Dimensions</Label>
+                                <select
+                                  value={heroData.hero_image_dimensions || '600x600'}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_image_dimensions: e.target.value
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                                 >
-                                  <Upload className="h-8 w-8 text-gray-400" />
-                                  <span className="text-sm text-gray-400">
-                                    Klicken zum Hochladen oder Datei hierher ziehen
-                                  </span>
-                                </label>
+                                  <option value="600x600">600 × 600px (Square)</option>
+                                  <option value="800x600">800 × 600px (4:3)</option>
+                                  <option value="1200x800">1200 × 800px (3:2)</option>
+                                  <option value="1920x1080">1920 × 1080px (16:9)</option>
+                                </select>
+                                <p className="text-sm text-gray-400 mt-1">Images will be cropped to this size</p>
                               </div>
-                            )}
-                          </div>
-                          
-                          <div className="flex justify-end pt-4 border-t border-gray-600">
-                            <Button
-                              onClick={() => handleSaveSegments()}
-                              className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                            >
-                              <Save className="h-4 w-4" />
-                              Save Changes
-                            </Button>
-                          </div>
+
+                              <div>
+                                <Label className="text-white">Crop Position</Label>
+                                <select
+                                  value={heroData.hero_crop_position || 'center'}
+                                  onChange={(e) => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_crop_position: e.target.value
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                                >
+                                  <option value="top">Top (Keep top, crop bottom)</option>
+                                  <option value="center">Center (Crop equally)</option>
+                                  <option value="bottom">Bottom (Keep bottom, crop top)</option>
+                                </select>
+                                <p className="text-sm text-gray-400 mt-1">Which part to keep when cropping</p>
+                              </div>
+                            </div>
+
+                            {/* Image Position - Visual Selector */}
+                            <div>
+                              <Label className="text-white mb-3 block">Image Position</Label>
+                              <div className="grid grid-cols-2 gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_image_position: 'left'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-4 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_image_position || 'right') === 'left'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-12 h-8 bg-gray-700 rounded"></div>
+                                    <div className="w-20 h-8 bg-gray-600 rounded"></div>
+                                  </div>
+                                  <span className="text-xs text-white">Image Left</span>
+                                </button>
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_image_position: 'right'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-4 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_image_position || 'right') === 'right'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-20 h-8 bg-gray-600 rounded"></div>
+                                    <div className="w-12 h-8 bg-gray-700 rounded"></div>
+                                  </div>
+                                  <span className="text-xs text-white">Image Right</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Layout Ratio - Visual Selector */}
+                            <div>
+                              <Label className="text-white mb-3 block">Layout Ratio (Text : Image)</Label>
+                              <div className="grid grid-cols-3 gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_layout_ratio: '1-1'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_layout_ratio || '2-5') === '1-1'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="flex gap-1 mb-2">
+                                    <div className="flex-1 h-6 bg-gray-600 rounded"></div>
+                                    <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                  </div>
+                                  <span className="text-xs text-white block">50 : 50</span>
+                                </button>
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_layout_ratio: '2-3'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_layout_ratio || '2-5') === '2-3'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="flex gap-1 mb-2">
+                                    <div className="w-8 h-6 bg-gray-600 rounded"></div>
+                                    <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                  </div>
+                                  <span className="text-xs text-white block">40 : 60</span>
+                                </button>
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_layout_ratio: '2-5'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_layout_ratio || '2-5') === '2-5'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="flex gap-1 mb-2">
+                                    <div className="w-6 h-6 bg-gray-600 rounded"></div>
+                                    <div className="flex-1 h-6 bg-gray-700 rounded"></div>
+                                  </div>
+                                  <span className="text-xs text-white block">30 : 70</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Top Spacing - Visual Selector */}
+                            <div>
+                              <Label className="text-white mb-3 block">Top Spacing</Label>
+                              <div className="grid grid-cols-2 gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_top_spacing: 'small'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_top_spacing || 'medium') === 'small'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="h-2 bg-gray-700 rounded mb-2"></div>
+                                  <div className="h-6 bg-gray-600 rounded"></div>
+                                  <span className="text-xs text-white block mt-2">Small (30px)</span>
+                                </button>
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_top_spacing: 'medium'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_top_spacing || 'medium') === 'medium'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="h-4 bg-gray-700 rounded mb-2"></div>
+                                  <div className="h-6 bg-gray-600 rounded"></div>
+                                  <span className="text-xs text-white block mt-2">Medium (50px)</span>
+                                </button>
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_top_spacing: 'large'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_top_spacing || 'medium') === 'large'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="h-6 bg-gray-700 rounded mb-2"></div>
+                                  <div className="h-6 bg-gray-600 rounded"></div>
+                                  <span className="text-xs text-white block mt-2">Large (70px)</span>
+                                </button>
+                                
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newSegments = [...pageSegments];
+                                    newSegments[index].data = {
+                                      ...heroData,
+                                      hero_top_spacing: 'xlarge'
+                                    };
+                                    setPageSegments(newSegments);
+                                  }}
+                                  className={`p-3 rounded-lg border-2 transition-all ${
+                                    (heroData.hero_top_spacing || 'medium') === 'xlarge'
+                                      ? 'border-[#f9dc24] bg-[#f9dc24]/10'
+                                      : 'border-gray-600 hover:border-gray-500'
+                                  }`}
+                                >
+                                  <div className="h-8 bg-gray-700 rounded mb-2"></div>
+                                  <div className="h-6 bg-gray-600 rounded"></div>
+                                  <span className="text-xs text-white block mt-2">XL (90px)</span>
+                                </button>
+                              </div>
+                            </div>
+                          </TabsContent>
+                        </Tabs>
+                        
+                        <div className="flex justify-end pt-4 border-t border-gray-600">
+                          <Button
+                            onClick={() => handleSaveSegments()}
+                            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                          >
+                            <Save className="h-4 w-4" />
+                            Save Changes
+                          </Button>
                         </div>
                       </div>
                     );
