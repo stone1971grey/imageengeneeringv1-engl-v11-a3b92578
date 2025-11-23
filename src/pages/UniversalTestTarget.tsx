@@ -98,7 +98,7 @@ const UniversalTestTarget = () => {
       case 'video':
         return <Video key={segmentId} id={String(numericId)} {...segment.data} />;
       case 'full-hero':
-        return <FullHero key={segmentId} {...segment.data} />;
+        return <FullHero key={segmentId} id={String(numericId)} {...segment.data} />;
       case 'hero':
         return (
           <section key={segmentId} id={String(numericId)} className={`relative py-16 ${segment.data?.topPadding === 'small' ? 'pt-16' : segment.data?.topPadding === 'medium' ? 'pt-24' : segment.data?.topPadding === 'large' ? 'pt-32' : 'pt-40'}`}>

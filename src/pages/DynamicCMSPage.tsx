@@ -392,6 +392,7 @@ const DynamicCMSPage = () => {
             videoUrl={segment.data?.videoUrl}
             kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
             overlayOpacity={segment.data?.overlayOpacity || 15}
+            gradientDirection={segment.data?.gradientDirection || "none"}
             useH1={segment.data?.useH1 || false}
           />
         );
