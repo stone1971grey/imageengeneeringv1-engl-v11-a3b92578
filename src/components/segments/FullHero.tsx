@@ -115,19 +115,28 @@ const FullHero = ({
   const getKenBurnsClass = () => {
     if (kenBurnsEffect === 'none') return '';
     
-    const baseClass = (() => {
+    // Return complete class names instead of dynamic concatenation for Tailwind
+    if (kenBurnsLoop) {
       switch (kenBurnsEffect) {
-        case 'slow': return 'ken-burns-slow';
-        case 'fast': return 'ken-burns-fast';
-        case 'zoom-out': return 'ken-burns-zoom-out';
-        case 'pan-left': return 'ken-burns-pan-left';
-        case 'pan-right': return 'ken-burns-pan-right';
+        case 'slow': return 'animate-ken-burns-slow-loop';
+        case 'fast': return 'animate-ken-burns-fast-loop';
+        case 'zoom-out': return 'animate-ken-burns-zoom-out-loop';
+        case 'pan-left': return 'animate-ken-burns-pan-left-loop';
+        case 'pan-right': return 'animate-ken-burns-pan-right-loop';
         case 'standard':
-        default: return 'ken-burns';
+        default: return 'animate-ken-burns-loop';
       }
-    })();
-    
-    return kenBurnsLoop ? `animate-${baseClass}-loop` : `animate-${baseClass}`;
+    } else {
+      switch (kenBurnsEffect) {
+        case 'slow': return 'animate-ken-burns-slow';
+        case 'fast': return 'animate-ken-burns-fast';
+        case 'zoom-out': return 'animate-ken-burns-zoom-out';
+        case 'pan-left': return 'animate-ken-burns-pan-left';
+        case 'pan-right': return 'animate-ken-burns-pan-right';
+        case 'standard':
+        default: return 'animate-ken-burns';
+      }
+    }
   };
 
   const getOverlayStyle = () => {
