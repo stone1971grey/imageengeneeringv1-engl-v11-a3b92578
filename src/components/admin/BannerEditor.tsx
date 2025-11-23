@@ -48,20 +48,31 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
 
   const handleImageUpload = async (index: number, file: File) => {
     setUploadingIndex(index);
+    console.log('[BannerEditor] Starting upload for index:', index, 'file:', file.name);
+    
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${pageSlug}_banner_${segmentId}_${index}_${Date.now()}.${fileExt}`;
+      // Use crypto.randomUUID for truly unique filenames instead of index
+      const uniqueId = crypto.randomUUID().substring(0, 8);
+      const fileName = `${pageSlug}_banner_${segmentId}_${uniqueId}_${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
+      
+      console.log('[BannerEditor] Uploading to path:', filePath);
 
       const { error: uploadError } = await supabase.storage
         .from('page-images')
-        .upload(filePath, file, { upsert: true });
+        .upload(filePath, file, { upsert: false }); // Never overwrite, always create new
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('[BannerEditor] Upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: urlData } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
+      
+      console.log('[BannerEditor] Upload successful, new URL:', urlData.publicUrl);
 
       const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
       const metadata: ImageMetadata = {
@@ -69,15 +80,19 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
         altText: data.images[index]?.alt || ''
       };
 
+      // Create fresh image object without spreading old data to avoid keeping stale URLs
       const updatedImages = [...data.images];
       updatedImages[index] = {
-        ...updatedImages[index],
         url: urlData.publicUrl,
+        alt: data.images[index]?.alt || '',
         metadata
       };
+      
+      console.log('[BannerEditor] Updating state with new image at index:', index);
       onChange({ ...data, images: updatedImages });
       toast.success("Image uploaded successfully!");
     } catch (error: any) {
+      console.error('[BannerEditor] Upload failed:', error);
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploadingIndex(null);
@@ -92,9 +107,12 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
   };
 
   const handleDeleteImage = (index: number) => {
+    console.log('[BannerEditor] Deleting image at index:', index);
     const updatedImages = data.images.filter((_, i) => i !== index);
+    console.log('[BannerEditor] Images after deletion:', updatedImages.length);
     onChange({ ...data, images: updatedImages });
     setDeleteIndex(null);
+    toast.success("Image deleted successfully!");
   };
 
   const handleImageChange = (index: number, field: keyof BannerImage, value: string) => {
