@@ -193,6 +193,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<string>("");
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
+  const [segmentTabStates, setSegmentTabStates] = useState<Record<string, string>>({});
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
   const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
   const [footerContactHeadline, setFooterContactHeadline] = useState<string>("");
@@ -5273,6 +5274,14 @@ const AdminDashboard = () => {
                 <CardContent>
                   {segment.type === 'hero' && (() => {
                     console.log('Rendering hero segment:', segment.id, 'with data:', segment.data);
+                    
+                    // Get or initialize tab state for this segment
+                    const segmentKey = `hero-${segment.id}`;
+                    const currentTab = segmentTabStates[segmentKey] || 'content';
+                    const setCurrentTab = (tab: string) => {
+                      setSegmentTabStates(prev => ({ ...prev, [segmentKey]: tab }));
+                    };
+                    
                     // Get data or use defaults WITHOUT mutating the original
                     const heroData = segment.data || {
                       hero_title: '',
@@ -5426,7 +5435,7 @@ const AdminDashboard = () => {
                     
                     return (
                       <div className="space-y-6">
-                        <Tabs defaultValue="content" className="w-full">
+                        <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
                           <TabsList className="grid w-full grid-cols-2 mb-6">
                             <TabsTrigger value="content">Content</TabsTrigger>
                             <TabsTrigger value="layout">Layout & Image</TabsTrigger>
