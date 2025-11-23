@@ -2615,7 +2615,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Intro</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Intro - B</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Introduction section with optional image, title and text content
                             </p>
@@ -2757,7 +2757,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Intro</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Intro - B</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Introduction section with optional image, title and text content
                             </p>
@@ -2776,7 +2776,7 @@ const AdminDashboard = () => {
                             <GripVertical className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Tiles</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Tiles - B</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Feature cards with icons, titles, descriptions and CTA links
                             </p>
@@ -2839,7 +2839,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Feature</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Feature - K</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Feature list with checkmarks, descriptions and optional image
                             </p>
@@ -2860,7 +2860,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Table</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Table - L</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Data table with customizable columns and rows
                             </p>
@@ -2903,7 +2903,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Specification</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Specification - N</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Technical specifications with key-value pairs
                             </p>
@@ -3146,7 +3146,7 @@ const AdminDashboard = () => {
                         <GripVertical className="h-7 w-7 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-gray-900">Tiles</h3>
+                        <h3 className="text-lg font-bold text-gray-900">Tiles - B</h3>
                         <p className="text-sm text-gray-600 mt-1">
                           Feature cards with icons, titles, descriptions and CTA links
                         </p>
