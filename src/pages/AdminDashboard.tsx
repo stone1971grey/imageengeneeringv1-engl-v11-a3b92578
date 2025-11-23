@@ -5138,6 +5138,31 @@ const AdminDashboard = () => {
             // Calculate display number based on same type before this index (consistent with Tab Label logic)
             const sameTypeBefore = pageSegments.slice(0, index).filter(s => s.type === segment.type).length;
             const displayNumber = sameTypeBefore + 1;
+            const segmentId = segmentRegistry[segment.id] || segment.id;
+            const reverseRegistry = (window as any).__segmentKeyRegistry || {};
+            const customKey = reverseRegistry[String(segmentId)];
+
+            let label = '';
+            if (customKey && customKey !== String(segmentId)) {
+              label = customKey;
+            } else {
+              if (segment.type === 'hero') label = `Produkt Hero - F ${displayNumber}`;
+              if (segment.type === 'meta-navigation') label = `Meta Navigation - E ${displayNumber}`;
+              if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
+              if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
+              if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
+              if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
+              if (segment.type === 'full-hero') label = `Full Hero - A ${displayNumber}`;
+              if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
+              if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
+              if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
+              if (segment.type === 'debug') label = `Debug ${displayNumber}`;
+              if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
+              if (segment.type === 'table') label = `Table - L ${displayNumber}`;
+              if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
+              if (segment.type === 'video') label = `Video - M ${displayNumber}`;
+              if (segment.type === 'specification') label = `Specification - N ${displayNumber}`;
+            }
             
             return (
             <TabsContent key={`segment-content-${segment.id}`} value={segment.id}>
@@ -5146,22 +5171,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-white">
-                        {segment.type === 'hero' && `Produkt Hero - F ${displayNumber}`}
-                        {segment.type === 'meta-navigation' && `Meta Navigation - E ${displayNumber}`}
-                        {segment.type === 'product-hero-gallery' && `Product Hero Gallery - G ${displayNumber}`}
-                        {segment.type === 'tiles' && `Tiles Section - H ${displayNumber}`}
-                        {segment.type === 'banner' && `Banner Section - J ${displayNumber}`}
-                        {segment.type === 'image-text' && `Image & Text Section - I ${displayNumber}`}
-                        {segment.type === 'full-hero' && `Full Hero - A ${displayNumber}`}
-                        {segment.type === 'intro' && `Intro - B ${displayNumber}`}
-                        {segment.type === 'industries' && `Industries - C ${displayNumber}`}
-                        {segment.type === 'news' && `Latest News - D ${displayNumber}`}
-                        {segment.type === 'debug' && `Debug ${displayNumber}`}
-                        {segment.type === 'feature-overview' && `Features - K ${displayNumber}`}
-                        {segment.type === 'table' && `Table - L ${displayNumber}`}
-                        {segment.type === 'faq' && `FAQ - O ${displayNumber}`}
-                        {segment.type === 'video' && `Video - M ${displayNumber}`}
-                        {segment.type === 'specification' && `Specification - N ${displayNumber}`}
+                        {label}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
