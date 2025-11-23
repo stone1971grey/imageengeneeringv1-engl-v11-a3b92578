@@ -198,6 +198,15 @@ const AdminDashboard = () => {
   const [footerContactDescription, setFooterContactDescription] = useState<string>("");
   const [footerTeamImageUrl, setFooterTeamImageUrl] = useState<string>("");
   const [footerTeamImageMetadata, setFooterTeamImageMetadata] = useState<ImageMetadata | null>(null);
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const [showDebugWindow, setShowDebugWindow] = useState(true);
+
+  const addDebugLog = (message: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logMessage = `${timestamp}: ${message}`;
+    console.log('[AdminDashboard]', message);
+    setDebugLogs(prev => [...prev.slice(-20), logMessage]); // Keep last 20 logs
+  };
   const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
   const [footerTeamName, setFooterTeamName] = useState<string>("");
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
@@ -5905,26 +5914,27 @@ const AdminDashboard = () => {
                                     accept="image/*"
                                     onChange={async (e) => {
                                       if (!e.target.files || !e.target.files[0]) {
-                                        console.log('[AdminDashboard DynamicTiles] No file selected');
+                                        addDebugLog('Dynamic Tiles: Kein File ausgewählt');
                                         return;
                                       }
                                       
                                       const file = e.target.files[0];
-                                      console.log('[AdminDashboard DynamicTiles] Starting upload, file:', file.name, 'size:', file.size);
+                                      addDebugLog(`Dynamic Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB`);
                                       
                                       if (!file.type.startsWith('image/')) {
-                                        console.log('[AdminDashboard DynamicTiles] Invalid file type:', file.type);
-                                        toast.error("Please upload an image file");
+                                        addDebugLog(`Dynamic Tiles: FEHLER - Ungültiger Dateityp: ${file.type}`);
+                                        toast.error("Bitte ein Bild hochladen");
                                         return;
                                       }
 
                                       if (file.size > 5 * 1024 * 1024) {
-                                        console.log('[AdminDashboard DynamicTiles] File too large:', file.size);
-                                        toast.error("Image size must be less than 5MB");
+                                        addDebugLog(`Dynamic Tiles: FEHLER - Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
+                                        toast.error("Bildgröße muss unter 5MB sein");
                                         return;
                                       }
 
                                       setUploading(true);
+                                      addDebugLog('Dynamic Tiles: Upload gestartet...');
 
                                       try {
                                         const fileExt = file.name.split('.').pop();
@@ -5932,7 +5942,8 @@ const AdminDashboard = () => {
                                         const fileName = `dynamic-tile-${index}-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
                                         const filePath = `${fileName}`;
                                         
-                                        console.log('[AdminDashboard DynamicTiles] Uploading to path:', filePath);
+                                        addDebugLog(`Dynamic Tiles: Pfad generiert - ${filePath}`);
+                                        addDebugLog('Dynamic Tiles: Rufe supabase.storage.upload auf...');
 
                                         const { error: uploadError } = await supabase.storage
                                           .from('page-images')
@@ -5942,7 +5953,7 @@ const AdminDashboard = () => {
                                           });
 
                                         if (uploadError) {
-                                          console.error('[AdminDashboard DynamicTiles] Upload error:', uploadError);
+                                          addDebugLog(`Dynamic Tiles: Upload FEHLER - ${uploadError.message}`);
                                           throw uploadError;
                                         }
 
@@ -5950,7 +5961,7 @@ const AdminDashboard = () => {
                                           .from('page-images')
                                           .getPublicUrl(filePath);
 
-                                        console.log('[AdminDashboard DynamicTiles] Upload successful, URL:', publicUrl);
+                                        addDebugLog(`Dynamic Tiles: Upload erfolgreich! URL: ${publicUrl}`);
 
                                         // Extract image metadata
                                         const metadata = await extractImageMetadata(file, publicUrl);
@@ -5960,13 +5971,15 @@ const AdminDashboard = () => {
                                         newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
                                         setPageSegments(newSegments);
 
-                                        toast.success("Tile image uploaded successfully!");
+                                        addDebugLog('Dynamic Tiles: State aktualisiert');
+                                        toast.success("Tile-Bild erfolgreich hochgeladen!");
                                         e.target.value = '';
                                       } catch (error: any) {
-                                        console.error('[AdminDashboard DynamicTiles] Upload failed:', error);
-                                        toast.error("Error uploading image: " + error.message);
+                                        addDebugLog(`Dynamic Tiles: CATCH FEHLER - ${error.message}`);
+                                        toast.error("Fehler beim Upload: " + error.message);
                                       } finally {
                                         setUploading(false);
+                                        addDebugLog('Dynamic Tiles: Upload abgeschlossen');
                                       }
                                     }}
                                     className="bg-white border-2 border-gray-600 text-black cursor-pointer"
@@ -6825,6 +6838,52 @@ const AdminDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Visual Debug Window */}
+      {showDebugWindow && (
+        <div className="fixed bottom-4 right-4 w-96 bg-gray-900 border-2 border-[#f9dc24] rounded-lg shadow-2xl z-50">
+          <div className="flex items-center justify-between bg-[#f9dc24] px-4 py-2 rounded-t-lg">
+            <h3 className="font-bold text-black">Upload Debug Monitor</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowDebugWindow(false)}
+              className="h-6 w-6 p-0 hover:bg-black/10"
+            >
+              <X className="h-4 w-4 text-black" />
+            </Button>
+          </div>
+          <div className="p-4 max-h-64 overflow-y-auto bg-black font-mono text-xs">
+            {debugLogs.length === 0 ? (
+              <p className="text-gray-500">Keine Logs. Versuche ein Bild hochzuladen...</p>
+            ) : (
+              debugLogs.map((log, idx) => (
+                <div key={idx} className="mb-1 text-green-400">{log}</div>
+              ))
+            )}
+          </div>
+          <div className="px-4 py-2 bg-gray-800 rounded-b-lg">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDebugLogs([])}
+              className="w-full text-xs"
+            >
+              Logs löschen
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Toggle Debug Window Button */}
+      {!showDebugWindow && (
+        <Button
+          onClick={() => setShowDebugWindow(true)}
+          className="fixed bottom-4 right-4 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 shadow-lg z-50"
+        >
+          Debug Monitor öffnen
+        </Button>
+      )}
     </div>
   );
 };
