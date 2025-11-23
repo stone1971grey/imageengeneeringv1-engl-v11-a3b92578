@@ -613,6 +613,14 @@ const DynamicCMSPage = () => {
                   const imageSrc = solution.imageUrl || (idx === 0 ? segment.data?.heroImageUrl : undefined);
                   const imageAlt = solution.metadata?.altText || solution.title || segment.data?.heroImageMetadata?.altText || segment.data?.title;
 
+                  console.log('[DynamicCMSPage] Image-Text render', {
+                    segmentTitle: segment.data?.title,
+                    heroImageUrl: segment.data?.heroImageUrl,
+                    itemIndex: idx,
+                    itemHasImageUrl: !!solution.imageUrl,
+                    resolvedImageSrc: imageSrc,
+                  });
+
                   return (
                     <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
                       {imageSrc && (
