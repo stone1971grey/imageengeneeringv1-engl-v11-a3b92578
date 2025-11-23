@@ -24,7 +24,12 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('[DebugEditor] No file selected');
+      return;
+    }
+
+    console.log('[DebugEditor] File selected:', { name: file.name, size: file.size, type: file.type });
 
     if (!file.type.startsWith('image/')) {
       toast.error('Please upload an image file');
@@ -37,43 +42,60 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
     }
 
     setUploading(true);
-    console.log('[DebugEditor] Starting upload...', { file: file.name, size: file.size });
+    console.log('[DebugEditor] Starting upload via Edge Function...');
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `debug-${segmentId}-${Date.now()}.${fileExt}`;
-      const filePath = `${pageSlug}/${fileName}`;
+      // Convert file to base64
+      const reader = new FileReader();
+      const fileDataPromise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      console.log('[DebugEditor] Uploading to:', filePath);
+      const fileData = await fileDataPromise;
+      console.log('[DebugEditor] File converted to base64');
 
-      const { error: uploadError, data: uploadData } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      // Get auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      console.log('[DebugEditor] Calling upload-image Edge Function');
+
+      // Call Edge Function
+      const { data: uploadResult, error: uploadError } = await supabase.functions.invoke('upload-image', {
+        body: {
+          fileName: file.name,
+          fileData: fileData,
+          bucket: 'page-images',
+          folder: pageSlug,
+          segmentId: segmentId
+        }
+      });
+
+      console.log('[DebugEditor] Edge Function response:', { uploadResult, uploadError });
 
       if (uploadError) {
-        console.error('[DebugEditor] Upload error:', uploadError);
+        console.error('[DebugEditor] Edge Function error:', uploadError);
         throw uploadError;
       }
 
-      console.log('[DebugEditor] Upload successful:', uploadData);
+      if (!uploadResult?.success) {
+        throw new Error(uploadResult?.error || 'Upload failed');
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
+      console.log('[DebugEditor] Upload successful, URL:', uploadResult.url);
 
-      console.log('[DebugEditor] Public URL:', publicUrl);
-
-      onChange({ ...data, imageUrl: publicUrl });
+      onChange({ ...data, imageUrl: uploadResult.url });
       toast.success('Image uploaded successfully!');
 
       // Reset file input
       e.target.value = '';
     } catch (error: any) {
       console.error('[DebugEditor] Upload failed:', error);
-      toast.error('Failed to upload image: ' + error.message);
+      toast.error('Failed to upload image: ' + (error.message || 'Unknown error'));
     } finally {
       setUploading(false);
     }
