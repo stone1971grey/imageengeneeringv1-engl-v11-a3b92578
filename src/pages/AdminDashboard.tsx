@@ -5898,74 +5898,70 @@ const AdminDashboard = () => {
                                   </div>
                                 )}
                                 
-                                {tile.imageUrl ? (
-                                  <Button
-                                    type="button"
-                                    onClick={() => document.getElementById(`dynamic_tile_image_${index}_${tileIndex}`)?.click()}
+                                <div className="space-y-2">
+                                  <Input
+                                    id={`dynamic_tile_image_${index}_${tileIndex}`}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                      if (!e.target.files || !e.target.files[0]) return;
+                                      
+                                      const file = e.target.files[0];
+                                      
+                                      if (!file.type.startsWith('image/')) {
+                                        toast.error("Please upload an image file");
+                                        return;
+                                      }
+
+                                      if (file.size > 5 * 1024 * 1024) {
+                                        toast.error("Image size must be less than 5MB");
+                                        return;
+                                      }
+
+                                      setUploading(true);
+
+                                      try {
+                                        const fileExt = file.name.split('.').pop();
+                                        const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+                                        const fileName = `dynamic-tile-${index}-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
+                                        const filePath = `${fileName}`;
+
+                                        const { error: uploadError } = await supabase.storage
+                                          .from('page-images')
+                                          .upload(filePath, file, {
+                                            cacheControl: '3600',
+                                            upsert: false
+                                          });
+
+                                        if (uploadError) throw uploadError;
+
+                                        const { data: { publicUrl } } = supabase.storage
+                                          .from('page-images')
+                                          .getPublicUrl(filePath);
+
+                                        // Extract image metadata
+                                        const metadata = await extractImageMetadata(file, publicUrl);
+
+                                        const newSegments = [...pageSegments];
+                                        newSegments[index].data.items[tileIndex].imageUrl = publicUrl;
+                                        newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
+                                        setPageSegments(newSegments);
+
+                                        toast.success("Tile image uploaded successfully!");
+                                        e.target.value = '';
+                                      } catch (error: any) {
+                                        toast.error("Error uploading image: " + error.message);
+                                      } finally {
+                                        setUploading(false);
+                                      }
+                                    }}
                                     disabled={uploading}
-                                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                                  >
-                                    {uploading ? "Uploading..." : "Replace Image"}
-                                  </Button>
-                                ) : null}
-                                
-                                <Input
-                                  id={`dynamic_tile_image_${index}_${tileIndex}`}
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={async (e) => {
-                                    if (!e.target.files || !e.target.files[0]) return;
-                                    
-                                    const file = e.target.files[0];
-                                    
-                                    if (!file.type.startsWith('image/')) {
-                                      toast.error("Please upload an image file");
-                                      return;
-                                    }
-
-                                    if (file.size > 5 * 1024 * 1024) {
-                                      toast.error("Image size must be less than 5MB");
-                                      return;
-                                    }
-
-                                    setUploading(true);
-
-                                    try {
-                                      const fileExt = file.name.split('.').pop();
-                                      const fileName = `dynamic-tile-${index}-${tileIndex}-${Date.now()}.${fileExt}`;
-                                      const filePath = `${fileName}`;
-
-                                      const { error: uploadError } = await supabase.storage
-                                        .from('page-images')
-                                        .upload(filePath, file, {
-                                          cacheControl: '3600',
-                                          upsert: false
-                                        });
-
-                                      if (uploadError) throw uploadError;
-
-                                      const { data: { publicUrl } } = supabase.storage
-                                        .from('page-images')
-                                        .getPublicUrl(filePath);
-
-                                      // Extract image metadata
-                                      const metadata = await extractImageMetadata(file, publicUrl);
-
-                                      const newSegments = [...pageSegments];
-                                      newSegments[index].data.items[tileIndex].imageUrl = publicUrl;
-                                      newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
-                                      setPageSegments(newSegments);
-
-                                      toast.success("Tile image uploaded successfully!");
-                                    } catch (error: any) {
-                                      toast.error("Error uploading image: " + error.message);
-                                    } finally {
-                                      setUploading(false);
-                                    }
-                                  }}
-                                  disabled={uploading}
-                                  className={`border-2 border-gray-600 ${tile.imageUrl ? "hidden" : ""}`}
-                                />
+                                    className="bg-white border-2 border-gray-600 text-black cursor-pointer"
+                                  />
+                                  {uploading && (
+                                    <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
+                                  )}
+                                </div>
                                 
                                 {/* Image Metadata Display */}
                                 {tile.metadata && (
