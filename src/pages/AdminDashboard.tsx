@@ -1347,22 +1347,7 @@ const AdminDashboard = () => {
         .getPublicUrl(filePath);
 
       // Extract image metadata
-      let metadata: Omit<ImageMetadata, 'altText'>;
-      try {
-        metadata = await extractImageMetadata(file, publicUrl);
-      } catch (error) {
-        console.warn('[TILE UPLOAD] Metadata extraction failed, using minimal metadata:', error);
-        // Fallback metadata if extraction fails
-        metadata = {
-          url: publicUrl,
-          originalFileName: file.name,
-          width: 0,
-          height: 0,
-          fileSizeKB: Math.round(file.size / 1024),
-          format: file.type.replace('image/', '').toUpperCase(),
-          uploadDate: new Date().toISOString()
-        };
-      }
+      const metadata = await extractImageMetadata(file, publicUrl);
 
       // Update applications array with URL and metadata
       const newApps = [...applications];
@@ -1693,22 +1678,7 @@ const AdminDashboard = () => {
         .getPublicUrl(filePath);
 
       // Extract image metadata
-      let metadata: Omit<ImageMetadata, 'altText'>;
-      try {
-        metadata = await extractImageMetadata(file, publicUrl);
-      } catch (error) {
-        console.warn('[SOLUTION UPLOAD] Metadata extraction failed, using minimal metadata:', error);
-        // Fallback metadata if extraction fails
-        metadata = {
-          url: publicUrl,
-          originalFileName: file.name,
-          width: 0,
-          height: 0,
-          fileSizeKB: Math.round(file.size / 1024),
-          format: file.type.replace('image/', '').toUpperCase(),
-          uploadDate: new Date().toISOString()
-        };
-      }
+      const metadata = await extractImageMetadata(file, publicUrl);
 
       const newItems = [...solutionsItems];
       newItems[index].imageUrl = publicUrl;
@@ -3981,22 +3951,14 @@ const AdminDashboard = () => {
                           </Button>
                         ) : null}
                         
-                        <div className="flex gap-2 items-center">
-                          <Input
-                            id={`app_image_${index}`}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleTileImageUpload(e, index)}
-                            disabled={uploading}
-                            className={`border-2 border-gray-600 ${uploading ? 'opacity-50' : ''} ${app.imageUrl ? "hidden" : ""}`}
-                          />
-                          {uploading && (
-                            <div className="flex items-center gap-2 text-sm text-[#f9dc24]">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9dc24]"></div>
-                              <span>Uploading...</span>
-                            </div>
-                          )}
-                        </div>
+                        <Input
+                          id={`app_image_${index}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleTileImageUpload(e, index)}
+                          disabled={uploading}
+                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
+                        />
                         
                         {/* Image Metadata Display */}
                         {app.metadata && (
@@ -4724,22 +4686,14 @@ const AdminDashboard = () => {
                               />
                             </div>
                           )}
-                          <div className="flex gap-2 items-center">
-                            <Input
-                              id={`solution_image_${index}`}
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleSolutionImageUpload(e, index)}
-                              disabled={uploading}
-                              className={`border-2 border-gray-600 ${uploading ? 'opacity-50' : ''}`}
-                            />
-                            {uploading && (
-                              <div className="flex items-center gap-2 text-sm text-[#f9dc24]">
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9dc24]"></div>
-                                <span>Uploading...</span>
-                              </div>
-                            )}
-                          </div>
+                          <Input
+                            id={`solution_image_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleSolutionImageUpload(e, index)}
+                            disabled={uploading}
+                            className="border-2 border-gray-600"
+                          />
                           
                           {/* Image Metadata Display */}
                           {item.metadata && (

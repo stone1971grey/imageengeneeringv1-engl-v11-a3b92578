@@ -7,12 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, X, Heading1 } from "lucide-react";
-import { extractImageMetadata, ImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -32,16 +30,13 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [button2Color, setButton2Color] = useState<'yellow' | 'black' | 'white'>('black');
   const [backgroundType, setBackgroundType] = useState<'image' | 'video'>('image');
   const [imageUrl, setImageUrl] = useState("");
-  const [imageMetadata, setImageMetadata] = useState<ImageMetadata | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [imagePosition, setImagePosition] = useState<'left' | 'right'>('right');
   const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('1-1');
   const [topSpacing, setTopSpacing] = useState<'small' | 'medium' | 'large' | 'extra-large'>('medium');
   const [kenBurnsEffect, setKenBurnsEffect] = useState<string>('standard');
-  const [kenBurnsLoop, setKenBurnsLoop] = useState(true);
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [gradientDirection, setGradientDirection] = useState<'none' | 'left-to-right' | 'right-to-left'>('none');
-  const [imageDimensions, setImageDimensions] = useState<'600x600' | '800x600' | '1200x800' | '1920x1080'>('600x600');
   const [isUploading, setIsUploading] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
 
@@ -95,55 +90,14 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       setButton2Color(content.button2Color || 'black');
       setBackgroundType(content.backgroundType || 'image');
       setImageUrl(content.imageUrl || "");
-      setImageMetadata(content.imageMetadata || null);
       setVideoUrl(content.videoUrl || "");
       setImagePosition(content.imagePosition || 'right');
       setLayoutRatio(content.layoutRatio || '1-1');
       setTopSpacing(content.topSpacing || 'medium');
       setKenBurnsEffect(content.kenBurnsEffect || 'standard');
-      setKenBurnsLoop(content.kenBurnsLoop !== undefined ? content.kenBurnsLoop : true);
       setOverlayOpacity(content.overlayOpacity || 15);
       setGradientDirection(content.gradientDirection || 'none');
-      setImageDimensions(content.imageDimensions || '600x600');
     }
-  };
-
-  const cropImage = async (file: File, dimensions: string): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const [targetWidth, targetHeight] = dimensions.split('x').map(Number);
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      if (!ctx) {
-        reject(new Error('Could not get canvas context'));
-        return;
-      }
-
-      img.onload = () => {
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
-
-        const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
-        const scaledWidth = img.width * scale;
-        const scaledHeight = img.height * scale;
-        const x = (targetWidth - scaledWidth) / 2;
-        const y = (targetHeight - scaledHeight) / 2;
-
-        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-
-        canvas.toBlob((blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to create blob'));
-          }
-        }, 'image/jpeg', 0.92);
-      };
-
-      img.onerror = () => reject(new Error('Failed to load image'));
-      img.src = URL.createObjectURL(file);
-    });
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,17 +106,13 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
     setIsUploading(true);
     try {
-      // Crop the image first
-      const croppedBlob = await cropImage(file, imageDimensions);
-      const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
-
-      const fileExt = 'jpg';
+      const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${pageSlug}/${fileName}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('page-images')
-        .upload(filePath, croppedFile);
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
@@ -170,55 +120,13 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract metadata from cropped file
-      let metadata: ImageMetadata;
-      try {
-        const metadataWithoutAlt = await extractImageMetadata(croppedFile, publicUrl);
-        metadata = {
-          ...metadataWithoutAlt,
-          altText: imageMetadata?.altText || ''
-        };
-      } catch (error) {
-        console.warn('[FULL HERO] Metadata extraction failed, using minimal metadata:', error);
-        // Fallback metadata if extraction fails
-        metadata = {
-          url: publicUrl,
-          originalFileName: croppedFile.name,
-          width: 0,
-          height: 0,
-          fileSizeKB: Math.round(croppedFile.size / 1024),
-          format: 'JPEG',
-          uploadDate: new Date().toISOString(),
-          altText: imageMetadata?.altText || ''
-        };
-      }
-
       setImageUrl(publicUrl);
-      setImageMetadata(metadata);
-      toast.success("Image uploaded and cropped successfully");
+      toast.success("Image uploaded successfully");
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Failed to upload image");
     } finally {
       setIsUploading(false);
-    }
-  };
-
-  const handleAltTextChange = (newAltText: string) => {
-    if (imageMetadata) {
-      setImageMetadata({ ...imageMetadata, altText: newAltText });
-    } else if (imageUrl) {
-      // Create minimal metadata object if none exists
-      setImageMetadata({
-        url: imageUrl,
-        originalFileName: '',
-        width: 0,
-        height: 0,
-        fileSizeKB: 0,
-        format: '',
-        uploadDate: new Date().toISOString(),
-        altText: newAltText
-      });
     }
   };
 
@@ -235,16 +143,13 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       button2Color,
       backgroundType,
       imageUrl,
-      imageMetadata,
       videoUrl,
       imagePosition,
       layoutRatio,
       topSpacing,
       kenBurnsEffect,
-      kenBurnsLoop,
       overlayOpacity,
       gradientDirection,
-      imageDimensions,
     };
 
     const { error } = await supabase
@@ -431,108 +336,27 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
             {backgroundType === 'image' ? (
               <>
                 <div className="space-y-2">
-                  <Label>Image Dimensions</Label>
-                  <Select value={imageDimensions} onValueChange={(val: any) => setImageDimensions(val)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="600x600">600 × 600px (Square - Default)</SelectItem>
-                      <SelectItem value="800x600">800 × 600px (4:3)</SelectItem>
-                      <SelectItem value="1200x800">1200 × 800px (3:2)</SelectItem>
-                      <SelectItem value="1920x1080">1920 × 1080px (16:9)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Uploaded images will be automatically cropped to this size
-                  </p>
-                </div>
-
-                <div className="space-y-2">
                   <Label htmlFor="imageUpload">Upload Image</Label>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2">
                     <Input
                       id="imageUpload"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
                       disabled={isUploading}
-                      className={isUploading ? "opacity-50" : ""}
                     />
-                    {isUploading && (
-                      <div className="flex items-center gap-2 text-sm text-primary">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                        <span>Uploading...</span>
-                      </div>
-                    )}
-                    {imageUrl && !isUploading && (
+                    {imageUrl && (
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => {
-                          setImageUrl("");
-                          setImageMetadata(null);
-                        }}
+                        onClick={() => setImageUrl("")}
                       >
                         <X className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
                   {imageUrl && (
-                    <div className="mt-4 space-y-4">
-                      <img src={imageUrl} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
-                      
-                      {/* Image Metadata Display - Always show if image exists */}
-                      <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                        <h4 className="text-sm font-semibold text-white mb-2">Image Information</h4>
-                        
-                        {imageMetadata ? (
-                          <div className="grid grid-cols-2 gap-3 text-xs">
-                            <div>
-                              <span className="text-gray-400">Filename:</span>
-                              <p className="text-white truncate">{imageMetadata.originalFileName}</p>
-                            </div>
-                            <div>
-                              <span className="text-gray-400">Format:</span>
-                              <p className="text-white">{imageMetadata.format}</p>
-                            </div>
-                            <div>
-                              <span className="text-gray-400">Dimensions:</span>
-                              <p className="text-white">{imageMetadata.width} × {imageMetadata.height}px</p>
-                            </div>
-                            <div>
-                              <span className="text-gray-400">File Size:</span>
-                              <p className="text-white">{formatFileSize(imageMetadata.fileSizeKB)}</p>
-                            </div>
-                            <div className="col-span-2">
-                              <span className="text-gray-400">Upload Date:</span>
-                              <p className="text-white">{formatUploadDate(imageMetadata.uploadDate)}</p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-xs text-gray-400 pb-2">
-                            Upload a new image to see detailed metadata information
-                          </div>
-                        )}
-                        
-                        {/* Alt Text Field - Always visible */}
-                        <div className="pt-3 border-t border-gray-700">
-                          <Label htmlFor="imageAltText" className="text-white text-sm mb-2 block">
-                            Alt Text (SEO & Accessibility)
-                          </Label>
-                          <Textarea
-                            id="imageAltText"
-                            value={imageMetadata?.altText || ''}
-                            onChange={(e) => handleAltTextChange(e.target.value)}
-                            placeholder="Describe this image for SEO and accessibility..."
-                            className="bg-white border-2 border-gray-600 text-black placeholder:text-gray-400 min-h-[60px]"
-                          />
-                          <p className="text-xs text-gray-400 mt-2">
-                            Provide a descriptive alternative text for screen readers and SEO
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                    <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded" />
                   )}
                 </div>
 
@@ -552,22 +376,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                       <SelectItem value="pan-right">Pan Right</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="kenBurnsLoop"
-                      checked={kenBurnsLoop}
-                      onCheckedChange={(checked) => setKenBurnsLoop(checked === true)}
-                    />
-                    <Label htmlFor="kenBurnsLoop" className="cursor-pointer font-normal">
-                      Loop Animation (Continuous)
-                    </Label>
-                  </div>
-                  <p className="text-xs text-muted-foreground ml-6">
-                    When unchecked, animation plays once and pauses. When checked, animation loops continuously.
-                  </p>
                 </div>
               </>
             ) : (

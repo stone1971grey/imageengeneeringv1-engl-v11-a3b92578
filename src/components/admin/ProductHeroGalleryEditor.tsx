@@ -84,27 +84,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
         .getPublicUrl(fileName);
 
       // Extract image metadata
-      let fullMetadata: ImageMetadata;
-      try {
-        const baseMetadata = await extractImageMetadata(file, publicUrl);
-        fullMetadata = {
-          ...baseMetadata,
-          altText: data.images[index]?.metadata?.altText || ''
-        };
-      } catch (error) {
-        console.warn('[PRODUCT HERO GALLERY] Metadata extraction failed, using minimal metadata:', error);
-        // Fallback metadata if extraction fails
-        fullMetadata = {
-          url: publicUrl,
-          originalFileName: file.name,
-          width: 0,
-          height: 0,
-          fileSizeKB: Math.round(file.size / 1024),
-          format: file.type.replace('image/', '').toUpperCase(),
-          uploadDate: new Date().toISOString(),
-          altText: data.images[index]?.metadata?.altText || ''
-        };
-      }
+      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      const fullMetadata: ImageMetadata = {
+        ...baseMetadata,
+        altText: data.images[index]?.metadata?.altText || ''
+      };
 
       const updatedImages = [...data.images];
       updatedImages[index] = { 
@@ -344,7 +328,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
 
                 <div>
                   <Label>Upload Image</Label>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2">
                     <Input
                       type="file"
                       accept="image/*"
@@ -353,14 +337,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                         if (file) handleImageUpload(index, file);
                       }}
                       disabled={uploadingIndex === index}
-                      className={uploadingIndex === index ? "opacity-50" : ""}
                     />
-                    {uploadingIndex === index && (
-                      <div className="flex items-center gap-2 text-sm text-primary">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                        <span>Uploading...</span>
-                      </div>
-                    )}
+                    {uploadingIndex === index && <span className="text-sm text-gray-500">Uploading...</span>}
                   </div>
                   {image.imageUrl && (
                     <img src={image.imageUrl} alt={image.metadata?.altText || `Gallery ${index + 1}`} className="mt-2 h-20 object-contain" />

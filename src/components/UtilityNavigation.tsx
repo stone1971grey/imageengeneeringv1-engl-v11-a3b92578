@@ -3,14 +3,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Link } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 const UtilityNavigation = () => {
   const { language, setLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,25 +23,6 @@ const UtilityNavigation = () => {
     inputRef.current?.focus();
   };
 
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-    if (!isSearchOpen) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
-  };
-
-  // Close search when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-        setIsSearchOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   const languages = [
     { code: "en", label: "EN", flag: "🇺🇸" },
     { code: "de", label: "DE", flag: "🇩🇪" },
@@ -53,53 +32,41 @@ const UtilityNavigation = () => {
   ];
 
   return (
-    <div className="flex items-center gap-4">
-      {/* Search with smooth slide-in animation that pushes navigation */}
-      <div ref={searchContainerRef} className="flex items-center overflow-hidden">
-        <form 
-          onSubmit={handleSearchSubmit} 
-          className={`flex items-center bg-white rounded-md shadow-sm overflow-hidden h-10 transition-all duration-300 ease-in-out ${
-            isSearchOpen ? 'w-[240px] opacity-100' : 'w-0 opacity-0'
-          }`}
-        >
-          <div className="flex items-center min-w-[240px]">
-            <div className="relative flex-1 h-full flex items-center">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-full pl-10 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
-                >
-                  <X className="h-3 w-3 text-gray-500" />
-                </button>
-              )}
-            </div>
+    <div className="flex items-center gap-4 relative">
+      {/* Search - Simple persistent field */}
+      <form onSubmit={handleSearchSubmit} className="relative flex items-center bg-white rounded-md shadow-sm overflow-hidden h-10">
+        <div className="flex items-center w-[240px]">
+          <div className="relative flex-1 h-full flex items-center">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 pointer-events-none" />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-full pl-10 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
+              >
+                <X className="h-3 w-3 text-gray-500" />
+              </button>
+            )}
           </div>
-        </form>
-        
-        {/* Search Toggle Button */}
-        <button
-          type="button"
-          onClick={toggleSearch}
-          className="w-10 h-10 flex items-center justify-center bg-white rounded-md hover:bg-gray-100 transition-colors shadow-sm flex-shrink-0"
-          aria-label={isSearchOpen ? "Close Search" : "Open Search"}
-        >
-          {isSearchOpen ? (
-            <X className="h-5 w-5 text-gray-700" />
-          ) : (
+          {/* Icon acts as submit trigger but no toggle */}
+          <button
+            type="submit"
+            className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors"
+            aria-label="Search"
+            onClick={() => inputRef.current?.focus()}
+          >
             <Search className="h-5 w-5 text-gray-700" />
-          )}
-        </button>
-      </div>
+          </button>
+        </div>
+      </form>
       
       {/* Language Selector */}
       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>

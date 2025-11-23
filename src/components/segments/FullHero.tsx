@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
-import { ImageMetadata } from '@/types/imageMetadata';
 
 interface FullHeroProps {
   id?: string | number;
@@ -16,13 +15,11 @@ interface FullHeroProps {
   button2Color?: 'yellow' | 'black' | 'white';
   backgroundType: 'image' | 'video';
   imageUrl?: string;
-  imageMetadata?: ImageMetadata;
   videoUrl?: string;
   imagePosition?: 'left' | 'right';
   layoutRatio?: '1-1' | '2-3' | '2-5';
   topSpacing?: 'small' | 'medium' | 'large' | 'extra-large';
   kenBurnsEffect?: 'none' | 'standard' | 'slow' | 'fast' | 'zoom-out' | 'pan-left' | 'pan-right';
-  kenBurnsLoop?: boolean;
   overlayOpacity?: number;
   gradientDirection?: 'none' | 'left-to-right' | 'right-to-left';
   useH1?: boolean;
@@ -42,13 +39,11 @@ const FullHero = ({
   button2Color = 'black',
   backgroundType,
   imageUrl,
-  imageMetadata,
   videoUrl,
   imagePosition = 'right',
   layoutRatio = '1-1',
   topSpacing = 'medium',
   kenBurnsEffect = 'standard',
-  kenBurnsLoop = true,
   overlayOpacity = 15,
   gradientDirection = 'none',
   useH1 = false,
@@ -113,21 +108,23 @@ const FullHero = ({
   };
 
   const getKenBurnsClass = () => {
-    if (kenBurnsEffect === 'none') return '';
-    
-    const baseClass = (() => {
-      switch (kenBurnsEffect) {
-        case 'slow': return 'ken-burns-slow';
-        case 'fast': return 'ken-burns-fast';
-        case 'zoom-out': return 'ken-burns-zoom-out';
-        case 'pan-left': return 'ken-burns-pan-left';
-        case 'pan-right': return 'ken-burns-pan-right';
-        case 'standard':
-        default: return 'ken-burns';
-      }
-    })();
-    
-    return kenBurnsLoop ? `animate-${baseClass}-loop` : `animate-${baseClass}`;
+    switch (kenBurnsEffect) {
+      case 'none':
+        return '';
+      case 'slow':
+        return 'animate-ken-burns-slow';
+      case 'fast':
+        return 'animate-ken-burns-fast';
+      case 'zoom-out':
+        return 'animate-ken-burns-zoom-out';
+      case 'pan-left':
+        return 'animate-ken-burns-pan-left';
+      case 'pan-right':
+        return 'animate-ken-burns-pan-right';
+      case 'standard':
+      default:
+        return 'animate-ken-burns';
+    }
   };
 
   const getOverlayStyle = () => {
@@ -186,8 +183,6 @@ const FullHero = ({
               backgroundImage: `url(${imageUrl})`,
               transform: kenBurnsEffect !== 'none' ? 'scale(1.1)' : 'scale(1)'
             }}
-            role="img"
-            aria-label={imageMetadata?.altText || 'Hero background image'}
           />
           <div 
             className="absolute inset-0"

@@ -49,76 +49,36 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
 
   const handleImageUpload = async (index: number, file: File) => {
     setUploadingIndex(index);
-    
-    console.log('[BANNER UPLOAD] Starting upload for index:', index);
-    console.log('[BANNER UPLOAD] Current images array length:', data.images.length);
-    console.log('[BANNER UPLOAD] Current image at index:', data.images[index]);
-    
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${pageSlug}_banner_${segmentId}_${index}_${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      console.log('[BANNER UPLOAD] Uploading to path:', filePath);
-
       const { error: uploadError } = await supabase.storage
         .from('page-images')
         .upload(filePath, file, { upsert: true });
 
-      if (uploadError) {
-        console.error('[BANNER UPLOAD] Upload error:', uploadError);
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
 
-      console.log('[BANNER UPLOAD] Got public URL:', urlData.publicUrl);
-
-      let metadata: ImageMetadata;
-      try {
-        const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
-        metadata = {
-          ...metadataWithoutAlt,
-          altText: data.images[index]?.alt || ''
-        };
-        console.log('[BANNER UPLOAD] Extracted metadata:', metadata);
-      } catch (error) {
-        console.warn('[BANNER UPLOAD] Metadata extraction failed, using minimal metadata:', error);
-        // Fallback metadata if extraction fails
-        metadata = {
-          url: urlData.publicUrl,
-          originalFileName: file.name,
-          width: 0,
-          height: 0,
-          fileSizeKB: Math.round(file.size / 1024),
-          format: file.type.replace('image/', '').toUpperCase(),
-          uploadDate: new Date().toISOString(),
-          altText: data.images[index]?.alt || ''
-        };
-      }
+      const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
+      const metadata: ImageMetadata = {
+        ...metadataWithoutAlt,
+        altText: data.images[index]?.alt || ''
+      };
 
       const updatedImages = [...data.images];
-      
-      // Ensure the image object exists before updating
-      if (!updatedImages[index]) {
-        console.warn('[BANNER UPLOAD] Image at index does not exist, creating new entry');
-        updatedImages[index] = { url: '', alt: '' };
-      }
-      
       updatedImages[index] = {
         ...updatedImages[index],
         url: urlData.publicUrl,
         metadata
       };
-      
-      console.log('[BANNER UPLOAD] Updated images array:', updatedImages);
-      
       onChange({ ...data, images: updatedImages });
       toast.success("Image uploaded successfully!");
     } catch (error: any) {
-      console.error('[BANNER UPLOAD] Error:', error);
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploadingIndex(null);
@@ -126,18 +86,10 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
   };
 
   const handleAddImage = () => {
-    const newImage: BannerImage = {
-      url: '',
-      alt: '',
-      metadata: undefined
-    };
-    
     onChange({
       ...data,
-      images: [...data.images, newImage]
+      images: [...data.images, { url: '', alt: '' }]
     });
-    
-    toast.success("New image slot added. Upload an image to complete.");
   };
 
   const handleDeleteImage = (index: number) => {
@@ -235,14 +187,11 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                         const file = e.target.files?.[0];
                         if (file) handleImageUpload(index, file);
                       }}
-                      className={`bg-white border-2 border-gray-300 text-black ${uploadingIndex === index ? 'opacity-50' : ''}`}
+                      className="bg-white border-2 border-gray-300 text-black"
                       disabled={uploadingIndex === index}
                     />
                     {uploadingIndex === index && (
-                      <div className="flex items-center gap-2 text-sm text-[#f9dc24]">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9dc24]"></div>
-                        <span>Uploading...</span>
-                      </div>
+                      <span className="text-[#f9dc24]">Uploading...</span>
                     )}
                   </div>
                   {image.url && (
