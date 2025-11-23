@@ -3716,7 +3716,6 @@ const AdminDashboard = () => {
                       <Button
                         type="button"
                         onClick={() => document.getElementById('hero_image')?.click()}
-                        disabled={uploading}
                         className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                       >
                         {uploading ? "Uploading..." : "Replace Image"}
@@ -3728,7 +3727,6 @@ const AdminDashboard = () => {
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
-                      disabled={uploading}
                       className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
                     />
                     {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
@@ -4061,7 +4059,6 @@ const AdminDashboard = () => {
                           <Button
                             type="button"
                             onClick={() => document.getElementById(`app_image_${index}`)?.click()}
-                            disabled={uploading}
                             className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                           >
                             {uploading ? "Uploading..." : "Replace Image"}
@@ -4073,7 +4070,6 @@ const AdminDashboard = () => {
                           type="file"
                           accept="image/*"
                           onChange={(e) => handleTileImageUpload(e, index)}
-                          disabled={uploading}
                           className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
                         />
                         
@@ -4459,7 +4455,6 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleBannerImageUpload(e, index)}
-                            disabled={uploading}
                             className="border-2 border-gray-600"
                           />
                         </div>
@@ -4808,7 +4803,6 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleSolutionImageUpload(e, index)}
-                            disabled={uploading}
                             className="border-2 border-gray-600"
                           />
                           
@@ -5076,7 +5070,6 @@ const AdminDashboard = () => {
                           type="file"
                           accept="image/*"
                           onChange={handleFooterTeamImageUpload}
-                          disabled={uploading}
                           className="border-2 border-gray-600"
                         />
                       </div>
@@ -5562,7 +5555,6 @@ const AdminDashboard = () => {
                                     type="file"
                                     accept="image/*"
                                     onChange={handleImageUpload}
-                                    disabled={uploading}
                                     className="block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-[#f9dc24] file:text-black hover:file:bg-[#f9dc24]/90"
                                   />
                                   {uploading ? (
@@ -6073,7 +6065,6 @@ const AdminDashboard = () => {
                                   <Button
                                     type="button"
                                     onClick={() => document.getElementById(`dynamic_tile_image_${index}_${tileIndex}`)?.click()}
-                                    disabled={uploading}
                                     className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                                   >
                                     {uploading ? "Uploading..." : "Replace Image"}
@@ -6134,7 +6125,6 @@ const AdminDashboard = () => {
                                       setUploading(false);
                                     }
                                   }}
-                                  disabled={uploading}
                                   className={`border-2 border-gray-600 ${tile.imageUrl ? "hidden" : ""}`}
                                 />
                                 
@@ -6378,7 +6368,6 @@ const AdminDashboard = () => {
                             <Button
                               type="button"
                               onClick={() => document.getElementById(`image_text_hero_${index}`)?.click()}
-                              disabled={uploading}
                               className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                             >
                               {uploading ? "Uploading..." : "Replace Image"}
@@ -6390,7 +6379,6 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleImageTextHeroImageUpload(index, e)}
-                            disabled={uploading}
                             className={`border-2 border-gray-600 ${segment.data.heroImageUrl ? "hidden" : ""}`}
                           />
                           
@@ -6582,7 +6570,6 @@ const AdminDashboard = () => {
                                     <Button
                                       type="button"
                                       onClick={() => document.getElementById(`image_text_item_${index}_${itemIndex}`)?.click()}
-                                      disabled={uploading}
                                       className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                                     >
                                       {uploading ? "Uploading..." : "Replace Image"}
@@ -6594,7 +6581,6 @@ const AdminDashboard = () => {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => handleImageTextItemImageUpload(index, itemIndex, e)}
-                                    disabled={uploading}
                                     className={`border-2 border-gray-600 ${item.imageUrl ? "hidden" : ""}`}
                                   />
                                   
