@@ -46,6 +46,14 @@ const PageIdRouter = () => {
             setRedirectUrl(`/your-solution/automotive/${data.page_slug}`);
           } else if (data.parent_slug === "scanners-archiving") {
             setRedirectUrl(`/your-solution/scanners-archiving/${data.page_slug}`);
+          } else if (data.parent_slug === "web-camera") {
+            setRedirectUrl(`/your-solution/web-camera/${data.page_slug}`);
+          } else if (data.parent_slug === "machine-vision") {
+            setRedirectUrl(`/your-solution/machine-vision/${data.page_slug}`);
+          } else if (data.parent_slug === "mobile-phone") {
+            setRedirectUrl(`/your-solution/mobile-phone/${data.page_slug}`);
+          } else if (data.parent_slug === "medical-endoscopy") {
+            setRedirectUrl(`/your-solution/medical-endoscopy/${data.page_slug}`);
           } else {
             // For products or other hierarchies
             setRedirectUrl(`/${data.parent_slug}/${data.page_slug}`);
