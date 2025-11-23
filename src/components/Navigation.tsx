@@ -235,16 +235,16 @@ const Navigation = () => {
   return (
     <nav className="fixed top-[10px] left-[10px] right-[10px] z-40 bg-[#f3f3f5]/95 backdrop-blur-sm shadow-lg border-b border-white/10 rounded-lg">
       {/* Main Navigation with integrated Utility Navigation */}
-      <div className="w-full px-6 py-6">
+      <div className="w-full px-3 sm:px-6 py-4 sm:py-6">
         {/* Single row - logo left, main nav center, utility right */}
-        <div className="flex items-center w-full gap-8">
+        <div className="flex items-center w-full gap-2 sm:gap-8">
           {/* Logo on the left - integrated for proper vertical centering */}
           <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
             <img 
               src={logoIE} 
               alt="Image Engineering" 
-              className="h-[54px] w-auto max-w-[270px] object-contain"
-              style={{ width: '270px' }}
+              className="h-[36px] sm:h-[54px] w-auto max-w-[180px] sm:max-w-[270px] object-contain"
+              style={{ width: 'auto' }}
             />
           </Link>
           
@@ -736,15 +736,15 @@ const Navigation = () => {
           </div>
 
           {/* Mobile menu button - always on the right */}
-          <div className="2xl:hidden ml-auto relative z-50">
+          <div className="2xl:hidden ml-auto relative z-50 flex-shrink-0">
             <button 
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-center w-10 h-10 bg-[#f9dc24] text-black rounded-md hover:bg-[#f9dc24]/90 transition-colors shadow-lg"
+              className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#f9dc24] text-black rounded-md hover:bg-[#f9dc24]/90 transition-colors shadow-lg"
             >
               {isOpen ? (
-                <X size={22} className="stroke-[3]" />
+                <X size={20} className="stroke-[3]" />
               ) : (
-                <Menu size={22} className="stroke-[3]" />
+                <Menu size={20} className="stroke-[3]" />
               )}
             </button>
           </div>
