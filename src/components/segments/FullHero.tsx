@@ -139,27 +139,60 @@ const FullHero = ({
   };
 
   return (
-    <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()}`}>
-      <div className="container mx-auto px-6 pb-16 lg:pb-24 relative z-10">
-        <div className={layoutClasses.container}>
-          
-          {/* Text Content */}
-          <div className={`text-left space-y-8 ${layoutClasses.text} ${layoutClasses.order}`}>
+    <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()} min-h-[600px] flex items-center`}>
+      {/* Background Image/Video - Full Width */}
+      {backgroundType === 'image' && imageUrl ? (
+        <>
+          <div 
+            className={`absolute inset-0 bg-cover bg-center ${getKenBurnsClass()}`}
+            style={{ 
+              backgroundImage: `url(${imageUrl})`,
+              transform: kenBurnsEffect !== 'none' ? 'scale(1.1)' : 'scale(1)'
+            }}
+          />
+          <div 
+            className="absolute inset-0 bg-black"
+            style={{ opacity: overlayOpacity / 100 }}
+          />
+        </>
+      ) : backgroundType === 'video' && videoUrl ? (
+        <>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <source src={videoUrl} type="video/mp4" />
+          </video>
+          <div 
+            className="absolute inset-0 bg-black"
+            style={{ opacity: overlayOpacity / 100 }}
+          />
+        </>
+      ) : null}
+
+      {/* Content - Overlaying the background */}
+      <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10">
+        <div className="max-w-4xl">
+          <div className="text-left space-y-8">
             <div>
               {useH1 ? (
-                <h1 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-foreground">
+                <h1 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white drop-shadow-lg">
                   <span className="font-light block">{titleLine1}</span>
                   <span className="font-medium block">{titleLine2}</span>
                 </h1>
               ) : (
-                <h2 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-foreground">
+                <h2 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white drop-shadow-lg">
                   <span className="font-light block">{titleLine1}</span>
                   <span className="font-medium block">{titleLine2}</span>
                 </h2>
               )}
               
               {subtitle && (
-                <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
+                <p className="text-lg lg:text-xl text-white/90 leading-relaxed drop-shadow-md">
                   {subtitle}
                 </p>
               )}
@@ -170,7 +203,7 @@ const FullHero = ({
                 {button1Text && (
                   <Button 
                     size="lg"
-                    className="px-8 py-6 text-base"
+                    className="px-8 py-6 text-base shadow-xl"
                     style={getButtonStyle(button1Color)}
                     onClick={() => handleButtonClick(button1Link)}
                   >
@@ -182,7 +215,7 @@ const FullHero = ({
                   <Button 
                     size="lg"
                     variant="outline"
-                    className="px-8 py-6 text-base"
+                    className="px-8 py-6 text-base shadow-xl"
                     style={getButtonStyle(button2Color)}
                     onClick={() => handleButtonClick(button2Link)}
                   >
@@ -191,41 +224,6 @@ const FullHero = ({
                 )}
               </div>
             )}
-          </div>
-
-          {/* Image Section */}
-          <div className={`relative ${layoutClasses.image} ${imagePosition === 'left' ? 'lg:order-1' : 'lg:order-2'}`}>
-            {backgroundType === 'image' && imageUrl ? (
-              <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                <img 
-                  src={imageUrl}
-                  alt="Product Hero"
-                  className={`w-full h-auto object-cover ${getKenBurnsClass()}`}
-                  style={{ transform: kenBurnsEffect !== 'none' ? 'scale(1.1)' : 'scale(1)' }}
-                />
-                <div 
-                  className="absolute inset-0 bg-black"
-                  style={{ opacity: overlayOpacity / 100 }}
-                />
-              </div>
-            ) : backgroundType === 'video' && videoUrl ? (
-              <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-auto object-cover"
-                  onContextMenu={(e) => e.preventDefault()}
-                >
-                  <source src={videoUrl} type="video/mp4" />
-                </video>
-                <div 
-                  className="absolute inset-0 bg-black"
-                  style={{ opacity: overlayOpacity / 100 }}
-                />
-              </div>
-            ) : null}
           </div>
         </div>
       </div>
