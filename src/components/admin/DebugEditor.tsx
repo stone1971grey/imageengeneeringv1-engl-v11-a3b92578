@@ -24,47 +24,52 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addLog = (message: string) => {
+    const logEntry = `${new Date().toLocaleTimeString()}: ${message}`;
     console.log(`[DebugEditor] ${message}`);
-    setStatusLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
-    toast.info(message);
+    setStatusLog(prev => [...prev, logEntry]);
+    toast.info(message, { duration: 5000 });
   };
 
-  const handleButtonClick = () => {
-    addLog('Upload button clicked');
-    if (!fileInputRef.current) {
-      addLog('ERROR: File input ref is null!');
-      toast.error('File input not initialized');
-      return;
-    }
-    addLog('Triggering file picker...');
-    fileInputRef.current.click();
+  // Separate handler for button click
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addLog('🔵 Button clicked - Opening file dialog');
+    fileInputRef.current?.click();
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    addLog('File input onChange triggered');
+  // Separate handler for file selection
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    addLog('🟢 File input onChange fired!');
     
-    const file = e.target.files?.[0];
-    if (!file) {
-      addLog('No file selected by user');
+    const files = e.target.files;
+    addLog(`Files object: ${files ? `${files.length} file(s)` : 'null'}`);
+    
+    if (!files || files.length === 0) {
+      addLog('⚠️ No file selected');
       return;
     }
 
-    addLog(`File selected: ${file.name} (${Math.round(file.size / 1024)}KB)`);
+    const file = files[0];
+    addLog(`✅ File selected: ${file.name} (${Math.round(file.size / 1024)}KB, ${file.type})`);
 
+
+    // Validate file type
     if (!file.type.startsWith('image/')) {
+      addLog('❌ ERROR: Not an image file');
       toast.error('Please upload an image file');
-      addLog('ERROR: Not an image file');
       return;
     }
 
+    // Validate file size
     if (file.size > 5 * 1024 * 1024) {
+      addLog('❌ ERROR: File too large (max 5MB)');
       toast.error('Image size must be less than 5MB');
-      addLog('ERROR: File too large');
       return;
     }
 
     setUploading(true);
-    addLog('Starting upload process...');
+    addLog('🚀 Starting upload process...');
 
     try {
       // Convert file to base64
@@ -176,9 +181,10 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            onChange={handleImageUpload}
+            onChange={handleFileSelected}
             disabled={uploading}
-            className="hidden"
+            style={{ display: 'none' }}
+            key={Date.now()} // Force remount on each render to ensure fresh state
           />
           
           <Button
