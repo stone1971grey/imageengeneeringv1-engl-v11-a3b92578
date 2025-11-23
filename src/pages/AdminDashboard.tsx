@@ -3967,25 +3967,22 @@ const AdminDashboard = () => {
                           </div>
                         )}
                         
-                        {app.imageUrl ? (
-                          <Button
-                            type="button"
-                            onClick={() => document.getElementById(`app_image_${index}`)?.click()}
+                        <div className="space-y-2">
+                          <Input
+                            id={`app_image_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              console.log('[AdminDashboard Tiles] Input onChange triggered for index:', index);
+                              handleTileImageUpload(e, index);
+                            }}
                             disabled={uploading}
-                            className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                          >
-                            {uploading ? "Uploading..." : "Replace Image"}
-                          </Button>
-                        ) : null}
-                        
-                        <Input
-                          id={`app_image_${index}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleTileImageUpload(e, index)}
-                          disabled={uploading}
-                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
-                        />
+                            className="bg-white border-2 border-gray-600 text-black cursor-pointer"
+                          />
+                          {uploading && (
+                            <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
+                          )}
+                        </div>
                         
                         {/* Image Metadata Display */}
                         {app.metadata && (
