@@ -5910,42 +5910,44 @@ const AdminDashboard = () => {
                                 )}
                                 
                                 <div className="space-y-2">
-                                <Input
+                                  <input
                                     id={`dynamic_tile_image_${index}_${tileIndex}`}
                                     type="file"
                                     accept="image/*"
                                     onChange={async (e) => {
-                                      if (!e.target.files || !e.target.files[0]) {
-                                        addDebugLog('Dynamic Tiles: Kein File ausgewählt');
+                                      const input = e.target as HTMLInputElement;
+                                      const file = input.files?.[0];
+
+                                      if (!file) {
+                                        addDebugLog('🟡 Neue Tiles: Kein File ausgewählt');
                                         return;
                                       }
-                                      
-                                      const file = e.target.files[0];
-                                      addDebugLog(`Dynamic Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB`);
-                                      
+
+                                      addDebugLog(`🟢 Neue Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
+
                                       if (!file.type.startsWith('image/')) {
-                                        addDebugLog(`Dynamic Tiles: FEHLER - Ungültiger Dateityp: ${file.type}`);
+                                        addDebugLog(`❌ Neue Tiles: Ungültiger Dateityp: ${file.type}`);
                                         toast.error("Bitte ein Bild hochladen");
                                         return;
                                       }
 
                                       if (file.size > 5 * 1024 * 1024) {
-                                        addDebugLog(`Dynamic Tiles: FEHLER - Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
+                                        addDebugLog(`❌ Neue Tiles: Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
                                         toast.error("Bildgröße muss unter 5MB sein");
                                         return;
                                       }
 
                                       setUploading(true);
-                                      addDebugLog('Dynamic Tiles: Upload gestartet...');
+                                      addDebugLog('🚀 Neue Tiles: Upload gestartet...');
 
                                       try {
                                         const fileExt = file.name.split('.').pop();
                                         const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
                                         const fileName = `dynamic-tile-${index}-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
                                         const filePath = `${fileName}`;
-                                        
-                                        addDebugLog(`Dynamic Tiles: Pfad generiert - ${filePath}`);
-                                        addDebugLog('Dynamic Tiles: Rufe supabase.storage.upload auf...');
+
+                                        addDebugLog(`📂 Neue Tiles: Pfad generiert - ${filePath}`);
+                                        addDebugLog('📤 Neue Tiles: Rufe backend-Upload auf...');
 
                                         const { error: uploadError } = await supabase.storage
                                           .from('page-images')
@@ -5955,7 +5957,7 @@ const AdminDashboard = () => {
                                           });
 
                                         if (uploadError) {
-                                          addDebugLog(`Dynamic Tiles: Upload FEHLER - ${uploadError.message}`);
+                                          addDebugLog(`❌ Neue Tiles: Upload FEHLER - ${uploadError.message}`);
                                           throw uploadError;
                                         }
 
@@ -5963,9 +5965,8 @@ const AdminDashboard = () => {
                                           .from('page-images')
                                           .getPublicUrl(filePath);
 
-                                        addDebugLog(`Dynamic Tiles: Upload erfolgreich! URL: ${publicUrl}`);
+                                        addDebugLog(`✅ Neue Tiles: Upload erfolgreich! URL: ${publicUrl}`);
 
-                                        // Extract image metadata
                                         const metadata = await extractImageMetadata(file, publicUrl);
 
                                         const newSegments = [...pageSegments];
@@ -5973,18 +5974,20 @@ const AdminDashboard = () => {
                                         newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
                                         setPageSegments(newSegments);
 
-                                        addDebugLog('Dynamic Tiles: State aktualisiert');
+                                        addDebugLog('💾 Neue Tiles: State aktualisiert');
                                         toast.success("Tile-Bild erfolgreich hochgeladen!");
-                                        e.target.value = '';
+
+                                        input.value = '';
                                       } catch (error: any) {
-                                        addDebugLog(`Dynamic Tiles: CATCH FEHLER - ${error.message}`);
+                                        addDebugLog(`❌ Neue Tiles: CATCH FEHLER - ${error.message}`);
                                         toast.error("Fehler beim Upload: " + error.message);
                                       } finally {
                                         setUploading(false);
-                                        addDebugLog('Dynamic Tiles: Upload abgeschlossen');
+                                        addDebugLog('🏁 Neue Tiles: Upload abgeschlossen');
                                       }
                                     }}
-                                    className="bg-white border-2 border-gray-600 text-black cursor-pointer"
+                                    disabled={uploading}
+                                    className="block w-full text-sm text-black bg-white border-2 border-gray-600 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f9dc24] file:text-black hover:file:bg-[#f9dc24]/90"
                                   />
                                   {uploading && (
                                     <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
