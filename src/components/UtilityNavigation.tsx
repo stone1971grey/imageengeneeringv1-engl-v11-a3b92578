@@ -26,7 +26,7 @@ const UtilityNavigation = () => {
           {/* Search Input - slides in smoothly */}
           <div 
             className={`transition-all duration-500 ease-in-out ${
-              isSearchOpen ? 'w-[220px] opacity-100 mr-2' : 'w-0 opacity-0 mr-0'
+              isSearchOpen ? 'w-[220px] opacity-100' : 'w-0 opacity-0'
             } overflow-hidden`}
           >
             <IntelligentSearchBar />
