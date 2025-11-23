@@ -3951,14 +3951,22 @@ const AdminDashboard = () => {
                           </Button>
                         ) : null}
                         
-                        <Input
-                          id={`app_image_${index}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleTileImageUpload(e, index)}
-                          disabled={uploading}
-                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
-                        />
+                        <div className="flex gap-2 items-center">
+                          <Input
+                            id={`app_image_${index}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleTileImageUpload(e, index)}
+                            disabled={uploading}
+                            className={`border-2 border-gray-600 ${uploading ? 'opacity-50' : ''} ${app.imageUrl ? "hidden" : ""}`}
+                          />
+                          {uploading && (
+                            <div className="flex items-center gap-2 text-sm text-[#f9dc24]">
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9dc24]"></div>
+                              <span>Uploading...</span>
+                            </div>
+                          )}
+                        </div>
                         
                         {/* Image Metadata Display */}
                         {app.metadata && (
@@ -4686,14 +4694,22 @@ const AdminDashboard = () => {
                               />
                             </div>
                           )}
-                          <Input
-                            id={`solution_image_${index}`}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleSolutionImageUpload(e, index)}
-                            disabled={uploading}
-                            className="border-2 border-gray-600"
-                          />
+                          <div className="flex gap-2 items-center">
+                            <Input
+                              id={`solution_image_${index}`}
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleSolutionImageUpload(e, index)}
+                              disabled={uploading}
+                              className={`border-2 border-gray-600 ${uploading ? 'opacity-50' : ''}`}
+                            />
+                            {uploading && (
+                              <div className="flex items-center gap-2 text-sm text-[#f9dc24]">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9dc24]"></div>
+                                <span>Uploading...</span>
+                              </div>
+                            )}
+                          </div>
                           
                           {/* Image Metadata Display */}
                           {item.metadata && (
