@@ -608,23 +608,29 @@ const DynamicCMSPage = () => {
               
               {/* Grid with Items - Each item has integrated image */}
               <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
-                {(segment.data?.items || []).map((solution: any, idx: number) => (
-                  <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                    {solution.imageUrl && (
-                      <div className="w-full h-64 overflow-hidden">
-                        <img
-                          src={solution.imageUrl}
-                          alt={solution.metadata?.altText || solution.title}
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                        />
+                {(segment.data?.items || []).map((solution: any, idx: number) => {
+                  // Prefer item-level image, fallback to section hero image for first item
+                  const imageSrc = solution.imageUrl || (idx === 0 ? segment.data?.heroImageUrl : undefined);
+                  const imageAlt = solution.metadata?.altText || solution.title || segment.data?.heroImageMetadata?.altText || segment.data?.title;
+
+                  return (
+                    <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                      {imageSrc && (
+                        <div className="w-full h-64 overflow-hidden">
+                          <img
+                            src={imageSrc}
+                            alt={imageAlt || "Section image"}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      )}
+                      <div className="p-8">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-4">{solution.title}</h3>
+                        <p className="text-gray-600 leading-relaxed">{solution.description}</p>
                       </div>
-                    )}
-                    <div className="p-8">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">{solution.title}</h3>
-                      <p className="text-gray-600 leading-relaxed">{solution.description}</p>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </section>
