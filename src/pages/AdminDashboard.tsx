@@ -2101,6 +2101,11 @@ const AdminDashboard = () => {
             }
           ]
         };
+      case 'debug':
+        return {
+          title: 'Debug Segment',
+          imageUrl: ''
+        };
       default:
         return {};
     }
@@ -3505,6 +3510,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'full-hero') label = `Full Hero ${displayNumber}`;
                       if (segment.type === 'intro') label = `Intro ${displayNumber}`;
                       if (segment.type === 'industries') label = `Industries ${displayNumber}`;
+                      if (segment.type === 'debug') label = `Debug ${displayNumber}`;
                     }
                     
                     return (
@@ -5124,6 +5130,7 @@ const AdminDashboard = () => {
                         {segment.type === 'intro' && `Intro ${segment.position + 1}`}
                         {segment.type === 'industries' && `Industries ${segment.position + 1}`}
                         {segment.type === 'news' && `Latest News ${segment.position + 1}`}
+                        {segment.type === 'debug' && `Debug ${segment.position + 1}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
@@ -5149,6 +5156,7 @@ const AdminDashboard = () => {
                         {segment.type === 'news' && 'Latest News Template'}
                         {segment.type === 'intro' && 'Intro Template'}
                         {segment.type === 'industries' && 'Industries Template'}
+                        {segment.type === 'debug' && 'Debug Template'}
                       </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -6619,6 +6627,27 @@ const AdminDashboard = () => {
                       currentPageSlug={selectedPage}
                     />
                   )}
+
+                  {segment.type === 'debug' && (() => {
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('debug');
+                    }
+                    
+                    return (
+                      <DebugEditor
+                        data={segment.data}
+                        onChange={(newData) => {
+                          const updatedSegments = pageSegments.map(s =>
+                            s.id === segment.id ? { ...s, data: newData } : s
+                          );
+                          setPageSegments(updatedSegments);
+                        }}
+                        onSave={() => handleSaveSegments()}
+                        pageSlug={selectedPage}
+                        segmentId={parseInt(segment.id)}
+                      />
+                    );
+                  })()}
 
                   {segment.type === 'full-hero' && (
                     <FullHeroEditor
