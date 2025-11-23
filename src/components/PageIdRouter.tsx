@@ -40,7 +40,16 @@ const PageIdRouter = () => {
 
       if (error || !data) {
         console.error("[PageIdRouter] Error fetching page or page not found:", error);
-        setRedirectUrl(null);
+        
+        // Hard fallback for legacy VCX WebCam Service page (Page ID 287)
+        // This issue is very old – if lookup fails we still want the page to work.
+        if (numericPageId === 287) {
+          const legacyUrl = "/your-solution/web-camera/vcx-webcam-service";
+          console.warn("[PageIdRouter] Falling back to hardcoded URL for Page ID 287:", legacyUrl);
+          setRedirectUrl(legacyUrl);
+        } else {
+          setRedirectUrl(null);
+        }
       } else {
         // Build hierarchical URL based on parent structure
         let constructedUrl = '';
