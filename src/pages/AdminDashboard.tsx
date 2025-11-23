@@ -1322,32 +1322,32 @@ const AdminDashboard = () => {
   };
 
   const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
-    addDebugLog(`Tiles (statisch): handleTileImageUpload für Index ${tileIndex} aufgerufen`);
+    addDebugLog(`🟢 Bereits vorhandene Tiles: handleTileImageUpload für Index ${tileIndex} aufgerufen`);
     
     if (!e.target.files || !e.target.files[0]) {
-      addDebugLog('Tiles (statisch): Kein File ausgewählt');
+      addDebugLog('❌ Bereits vorhandene Tiles: Kein File ausgewählt');
       return;
     }
     
     const file = e.target.files[0];
-    addDebugLog(`Tiles (statisch): File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
+    addDebugLog(`✅ Bereits vorhandene Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      addDebugLog(`Tiles (statisch): FEHLER - Ungültiger Dateityp: ${file.type}`);
+      addDebugLog(`❌ Bereits vorhandene Tiles: FEHLER - Ungültiger Dateityp: ${file.type}`);
       toast.error("Bitte ein Bild hochladen");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      addDebugLog(`Tiles (statisch): FEHLER - Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
+      addDebugLog(`❌ Bereits vorhandene Tiles: FEHLER - Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
       toast.error("Bildgröße muss unter 5MB sein");
       return;
     }
 
     setUploading(true);
-    addDebugLog('Tiles (statisch): Upload gestartet...');
+    addDebugLog('🚀 Bereits vorhandene Tiles: Upload gestartet...');
 
     try {
       const fileExt = file.name.split('.').pop();
@@ -1355,8 +1355,8 @@ const AdminDashboard = () => {
       const fileName = `tile-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
       
-      addDebugLog(`Tiles (statisch): Pfad generiert - ${filePath}`);
-      addDebugLog('Tiles (statisch): Rufe supabase.storage.upload auf...');
+      addDebugLog(`📂 Bereits vorhandene Tiles: Pfad generiert - ${filePath}`);
+      addDebugLog('📤 Bereits vorhandene Tiles: Rufe supabase.storage.upload auf...');
 
       // Upload to storage
       const { error: uploadError, data: uploadData } = await supabase.storage
@@ -1367,22 +1367,22 @@ const AdminDashboard = () => {
         });
 
       if (uploadError) {
-        addDebugLog(`Tiles (statisch): Upload FEHLER - ${uploadError.message}`);
+        addDebugLog(`❌ Bereits vorhandene Tiles: Upload FEHLER - ${uploadError.message}`);
         throw uploadError;
       }
       
-      addDebugLog(`Tiles (statisch): Upload erfolgreich! Data: ${JSON.stringify(uploadData)}`);
+      addDebugLog(`✅ Bereits vorhandene Tiles: Upload erfolgreich! Data: ${JSON.stringify(uploadData)}`);
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
       
-      addDebugLog(`Tiles (statisch): Public URL: ${publicUrl}`);
+      addDebugLog(`🔗 Bereits vorhandene Tiles: Public URL: ${publicUrl}`);
 
       // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
-      addDebugLog('Tiles (statisch): Metadata extrahiert');
+      addDebugLog('📊 Bereits vorhandene Tiles: Metadata extrahiert');
 
       // Update applications array with URL and metadata
       const newApps = [...applications];
@@ -1390,18 +1390,18 @@ const AdminDashboard = () => {
       newApps[tileIndex].metadata = { ...metadata, altText: '' };
       setApplications(newApps);
       
-      addDebugLog('Tiles (statisch): Applications aktualisiert');
+      addDebugLog('💾 Bereits vorhandene Tiles: Applications aktualisiert');
 
       toast.success("Tile-Bild erfolgreich hochgeladen!");
       
       // Reset input to allow re-uploading same file
       e.target.value = '';
     } catch (error: any) {
-      addDebugLog(`Tiles (statisch): CATCH FEHLER - ${error.message}`);
+      addDebugLog(`❌ Bereits vorhandene Tiles: CATCH FEHLER - ${error.message}`);
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploading(false);
-      addDebugLog('Tiles (statisch): Upload abgeschlossen');
+      addDebugLog('🏁 Bereits vorhandene Tiles: Upload abgeschlossen');
     }
   };
   const handleLogout = async () => {
@@ -3987,7 +3987,8 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
-                              console.log('[AdminDashboard Tiles] Input onChange triggered for index:', index);
+                              addDebugLog(`🔵 Bereits vorhandene Tiles: Input onChange für Index ${index} getriggert`);
+                              addDebugLog(`🔵 Event target: ${e.target.tagName}, files: ${e.target.files?.length || 0}`);
                               handleTileImageUpload(e, index);
                             }}
                             disabled={uploading}
