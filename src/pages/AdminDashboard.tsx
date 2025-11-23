@@ -1322,32 +1322,32 @@ const AdminDashboard = () => {
   };
 
   const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
-    console.log('[AdminDashboard] handleTileImageUpload called for index:', tileIndex);
+    addDebugLog(`Tiles (statisch): handleTileImageUpload für Index ${tileIndex} aufgerufen`);
     
     if (!e.target.files || !e.target.files[0]) {
-      console.log('[AdminDashboard] No file selected');
+      addDebugLog('Tiles (statisch): Kein File ausgewählt');
       return;
     }
     
     const file = e.target.files[0];
-    console.log('[AdminDashboard] File selected:', file.name, 'size:', file.size, 'type:', file.type);
+    addDebugLog(`Tiles (statisch): File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      console.log('[AdminDashboard] Invalid file type:', file.type);
-      toast.error("Please upload an image file");
+      addDebugLog(`Tiles (statisch): FEHLER - Ungültiger Dateityp: ${file.type}`);
+      toast.error("Bitte ein Bild hochladen");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      console.log('[AdminDashboard] File too large:', file.size);
-      toast.error("Image size must be less than 5MB");
+      addDebugLog(`Tiles (statisch): FEHLER - Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
+      toast.error("Bildgröße muss unter 5MB sein");
       return;
     }
 
     setUploading(true);
-    console.log('[AdminDashboard] Starting upload...');
+    addDebugLog('Tiles (statisch): Upload gestartet...');
 
     try {
       const fileExt = file.name.split('.').pop();
@@ -1355,7 +1355,8 @@ const AdminDashboard = () => {
       const fileName = `tile-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
       
-      console.log('[AdminDashboard] Uploading to path:', filePath);
+      addDebugLog(`Tiles (statisch): Pfad generiert - ${filePath}`);
+      addDebugLog('Tiles (statisch): Rufe supabase.storage.upload auf...');
 
       // Upload to storage
       const { error: uploadError, data: uploadData } = await supabase.storage
@@ -1366,22 +1367,22 @@ const AdminDashboard = () => {
         });
 
       if (uploadError) {
-        console.error('[AdminDashboard] Upload error:', uploadError);
+        addDebugLog(`Tiles (statisch): Upload FEHLER - ${uploadError.message}`);
         throw uploadError;
       }
       
-      console.log('[AdminDashboard] Upload successful:', uploadData);
+      addDebugLog(`Tiles (statisch): Upload erfolgreich! Data: ${JSON.stringify(uploadData)}`);
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
       
-      console.log('[AdminDashboard] Public URL:', publicUrl);
+      addDebugLog(`Tiles (statisch): Public URL: ${publicUrl}`);
 
       // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
-      console.log('[AdminDashboard] Metadata extracted:', metadata);
+      addDebugLog('Tiles (statisch): Metadata extrahiert');
 
       // Update applications array with URL and metadata
       const newApps = [...applications];
@@ -1389,21 +1390,20 @@ const AdminDashboard = () => {
       newApps[tileIndex].metadata = { ...metadata, altText: '' };
       setApplications(newApps);
       
-      console.log('[AdminDashboard] Applications updated');
+      addDebugLog('Tiles (statisch): Applications aktualisiert');
 
-      toast.success("Image uploaded successfully!");
+      toast.success("Tile-Bild erfolgreich hochgeladen!");
       
       // Reset input to allow re-uploading same file
       e.target.value = '';
     } catch (error: any) {
-      console.error('[AdminDashboard] Upload failed:', error);
+      addDebugLog(`Tiles (statisch): CATCH FEHLER - ${error.message}`);
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploading(false);
-      console.log('[AdminDashboard] Upload finished');
+      addDebugLog('Tiles (statisch): Upload abgeschlossen');
     }
   };
-
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
