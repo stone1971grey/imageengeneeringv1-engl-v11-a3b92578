@@ -100,14 +100,19 @@ const DynamicCMSPage = () => {
     }
 
     if (!error && data) {
+      let loadedSegments: any[] = [];
+      let loadedTabOrder: string[] = [];
+      
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
           const segments = JSON.parse(item.content_value);
+          loadedSegments = segments;
           setPageSegments(segments);
         } else if (item.section_key === "tab_order") {
           try {
             const order = JSON.parse(item.content_value);
-            setTabOrder(order || []);
+            loadedTabOrder = order || [];
+            setTabOrder(loadedTabOrder);
           } catch {
             setTabOrder([]);
           }
@@ -120,6 +125,50 @@ const DynamicCMSPage = () => {
           }
         }
       });
+
+      // CRITICAL: Auto-sync tab_order with page_segments
+      // Ensure all segments in page_segments are also in tab_order
+      if (loadedSegments.length > 0) {
+        const allSegmentIds = loadedSegments.map(s => s.id || s.segment_key);
+        const missingInTabOrder = allSegmentIds.filter(id => !loadedTabOrder.includes(id));
+        
+        if (missingInTabOrder.length > 0) {
+          console.log(`[DynamicCMSPage] Auto-syncing tab_order: adding missing segments ${missingInTabOrder.join(', ')}`);
+          
+          // Add missing segments to tab_order
+          const updatedTabOrder = [...missingInTabOrder, ...loadedTabOrder];
+          
+          // Update tab_order in database
+          const { data: existingTabOrder } = await supabase
+            .from("page_content")
+            .select("id")
+            .eq("page_slug", pageSlug)
+            .eq("section_key", "tab_order")
+            .maybeSingle();
+
+          if (existingTabOrder) {
+            await supabase
+              .from("page_content")
+              .update({
+                content_value: JSON.stringify(updatedTabOrder),
+                updated_at: new Date().toISOString()
+              })
+              .eq("page_slug", pageSlug)
+              .eq("section_key", "tab_order");
+          } else {
+            await supabase
+              .from("page_content")
+              .insert({
+                page_slug: pageSlug,
+                section_key: "tab_order",
+                content_type: "json",
+                content_value: JSON.stringify(updatedTabOrder)
+              });
+          }
+          
+          setTabOrder(updatedTabOrder);
+        }
+      }
     }
 
     setLoading(false);
