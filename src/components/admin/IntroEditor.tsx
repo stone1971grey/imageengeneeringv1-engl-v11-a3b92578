@@ -45,6 +45,35 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
 
   const loadContent = async () => {
     try {
+      // First try to load from unified page_segments structure
+      const { data: segmentsRow, error: segmentsError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+
+      if (!segmentsError && segmentsRow?.content_value) {
+        try {
+          const segments = JSON.parse(segmentsRow.content_value);
+          const introSegment = Array.isArray(segments)
+            ? segments.find((seg: any) =>
+                (seg.segment_key === segmentKey || seg.id === segmentKey) && seg.type === 'intro'
+              )
+            : null;
+
+          if (introSegment?.data) {
+            setTitle(introSegment.data.title || "");
+            setDescription(introSegment.data.description || "");
+            setIsLoading(false);
+            return;
+          }
+        } catch (parseError) {
+          console.error('Error parsing page_segments for Intro:', parseError);
+        }
+      }
+
+      // Fallback: legacy storage per segment key
       const { data, error } = await supabase
         .from('page_content')
         .select('content_value')
@@ -81,6 +110,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         headingLevel: 'h1'
       };
 
+      // Legacy: keep per-segment content row in sync
       const { error } = await supabase
         .from('page_content')
         .upsert({
@@ -94,6 +124,45 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         });
 
       if (error) throw error;
+
+      // Primary: sync into unified page_segments structure
+      const { data: segmentsRow, error: segmentsError } = await supabase
+        .from('page_content')
+        .select('id, content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .maybeSingle();
+
+      if (!segmentsError && segmentsRow?.content_value) {
+        try {
+          const segments = JSON.parse(segmentsRow.content_value);
+          const updatedSegments = Array.isArray(segments)
+            ? segments.map((seg: any) => {
+                if (seg.type === 'intro' && (seg.segment_key === segmentKey || seg.id === segmentKey)) {
+                  return {
+                    ...seg,
+                    data: {
+                      ...(seg.data || {}),
+                      title,
+                      description,
+                    },
+                  };
+                }
+                return seg;
+              })
+            : segments;
+
+          await supabase
+            .from('page_content')
+            .update({
+              content_value: JSON.stringify(updatedSegments),
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', segmentsRow.id);
+        } catch (syncError) {
+          console.error('Error syncing Intro to page_segments:', syncError);
+        }
+      }
       
       toast({
         title: "Gespeichert",
