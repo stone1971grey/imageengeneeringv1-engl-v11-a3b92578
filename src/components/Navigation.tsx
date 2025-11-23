@@ -181,55 +181,55 @@ const Navigation = () => {
 
   // Industry data mapping with subgroups - now using translated data
   const industryData = {
-    "Automotive": { ...navData.industries["Automotive"], image: industryAutomotive },
-    "Security & Surveillance": { ...navData.industries["Security & Surveillance"], image: industrySecurity },
-    "Mobile Phone": { ...navData.industries["Mobile Phone"], image: industryMobile },
-    "Web Camera": { ...navData.industries["Web Camera"], image: industryBroadcast },
-    "Machine Vision": { ...navData.industries["Machine Vision"], image: industryMachineVision },
-    "Medical & Endoscopy": { ...navData.industries["Medical & Endoscopy"], image: industryMedical },
-    "Scanners & Archiving": { ...navData.industries["Scanners & Archiving"], image: industryScanning },
-    "Photo & Video": { ...navData.industries["Photo & Video"], image: industryPhotography }
+    "Automotive": { ...(navData.industries?.["Automotive"] || { description: "", subgroups: [] }), image: industryAutomotive },
+    "Security & Surveillance": { ...(navData.industries?.["Security & Surveillance"] || { description: "", subgroups: [] }), image: industrySecurity },
+    "Mobile Phone": { ...(navData.industries?.["Mobile Phone"] || { description: "", subgroups: [] }), image: industryMobile },
+    "Web Camera": { ...(navData.industries?.["Web Camera"] || { description: "", subgroups: [] }), image: industryBroadcast },
+    "Machine Vision": { ...(navData.industries?.["Machine Vision"] || { description: "", subgroups: [] }), image: industryMachineVision },
+    "Medical & Endoscopy": { ...(navData.industries?.["Medical & Endoscopy"] || { description: "", subgroups: [] }), image: industryMedical },
+    "Scanners & Archiving": { ...(navData.industries?.["Scanners & Archiving"] || { description: "", subgroups: [] }), image: industryScanning },
+    "Photo & Video": { ...(navData.industries?.["Photo & Video"] || { description: "", subgroups: [] }), image: industryPhotography }
   };
   
   // Product data mapping with subgroups - now using translated data
   const productData = {
-    "Test Charts": { ...navData.products["Test Charts"], image: "/images/custom-chart.png" },
-    "Illumination Devices": { ...navData.products["Illumination Devices"], image: iqLedIllumination },
-    "Measurement Devices": { ...navData.products["Measurement Devices"], image: iqAnalyzerIntro },
-    "Software & APIs": { ...navData.products["Software & APIs"], image: iqAnalyzerIntro },
-    "Product Accessories": { ...navData.products["Product Accessories"], image: "/images/chart-case.png" }
+    "Test Charts": { ...(navData.products?.["Test Charts"] || { description: "", subgroups: [] }), image: "/images/custom-chart.png" },
+    "Illumination Devices": { ...(navData.products?.["Illumination Devices"] || { description: "", subgroups: [] }), image: iqLedIllumination },
+    "Measurement Devices": { ...(navData.products?.["Measurement Devices"] || { description: "", subgroups: [] }), image: iqAnalyzerIntro },
+    "Software & APIs": { ...(navData.products?.["Software & APIs"] || { description: "", subgroups: [] }), image: iqAnalyzerIntro },
+    "Product Accessories": { ...(navData.products?.["Product Accessories"] || { description: "", subgroups: [] }), image: "/images/chart-case.png" }
   };
   
   // Solution data mapping - now using translated data
   const solutionData = {
-    "Camera Quality Validation": { ...navData.solutions["Camera Quality Validation"], image: industryPhotography },
-    "In-Cabin Performance Testing": { ...navData.solutions["In-Cabin Performance Testing"], image: industryAutomotive },
-    "Test Environments for Smartphones & Displays": { ...navData.solutions["Test Environments for Smartphones & Displays"], image: industryMobile },
-    "Microscopy & Medical Imaging": { ...navData.solutions["Microscopy & Medical Imaging"], image: industryMedical },
-    "ISO and IEEE Compliant Test Setups": { ...navData.solutions["ISO and IEEE Compliant Test Setups"], image: industryLabTesting }
+    "Camera Quality Validation": { ...(navData.solutions?.["Camera Quality Validation"] || { description: "", subgroups: [] }), image: industryPhotography },
+    "In-Cabin Performance Testing": { ...(navData.solutions?.["In-Cabin Performance Testing"] || { description: "", subgroups: [] }), image: industryAutomotive },
+    "Test Environments for Smartphones & Displays": { ...(navData.solutions?.["Test Environments for Smartphones & Displays"] || { description: "", subgroups: [] }), image: industryMobile },
+    "Microscopy & Medical Imaging": { ...(navData.solutions?.["Microscopy & Medical Imaging"] || { description: "", subgroups: [] }), image: industryMedical },
+    "ISO and IEEE Compliant Test Setups": { ...(navData.solutions?.["ISO and IEEE Compliant Test Setups"] || { description: "", subgroups: [] }), image: industryLabTesting }
   };
 
   const solutionPackages = {
-    "Camera Calibration Package": { ...navData.solutionPackages["Camera Calibration Package"], image: "/images/custom-chart.png" },
-    "Laboratory Complete Solution": { ...navData.solutionPackages["Laboratory Complete Solution"], image: industryLabTesting },
-    "Spectral Measurement & Analysis Set": { ...navData.solutionPackages["Spectral Measurement & Analysis Set"], image: iqAnalyzerIntro }
+    "Camera Calibration Package": { ...(navData.solutionPackages?.["Camera Calibration Package"] || { description: "", subgroups: [] }), image: "/images/custom-chart.png" },
+    "Laboratory Complete Solution": { ...(navData.solutionPackages?.["Laboratory Complete Solution"] || { description: "", subgroups: [] }), image: industryLabTesting },
+    "Spectral Measurement & Analysis Set": { ...(navData.solutionPackages?.["Spectral Measurement & Analysis Set"] || { description: "", subgroups: [] }), image: iqAnalyzerIntro }
   };
   
   // Target groups data mapping - now using translated data
   const targetGroupsData = {
-    "Manufacturers": { ...navData.targetGroups["Manufacturers"], image: industryAutomotive },
-    "Suppliers": { ...navData.targetGroups["Suppliers"], image: industryMachineVision },
-    "Research Institutions": { ...navData.targetGroups["Research Institutions"], image: industryLabTesting }
+    "Manufacturers": { ...(navData.targetGroups?.["Manufacturers"] || { description: "", subgroups: [] }), image: industryAutomotive },
+    "Suppliers": { ...(navData.targetGroups?.["Suppliers"] || { description: "", subgroups: [] }), image: industryMachineVision },
+    "Research Institutions": { ...(navData.targetGroups?.["Research Institutions"] || { description: "", subgroups: [] }), image: industryLabTesting }
   };
   
   // Test Services data mapping - now using translated data
   const testServicesData = {
-    "Overview": { ...navData.testServices["Overview"], image: industryLabTesting },
-    "Automotive": { ...navData.testServices["Automotive"], image: industryAutomotive },
-    "VCX": { ...navData.testServices["VCX"], image: industryMobile },
-    "Image Quality": { ...navData.testServices["Image Quality"], image: industryPhotography },
-    "Standardized": { ...navData.testServices["Standardized"], image: industryLabTesting },
-    "Specialized/Custom": { ...navData.testServices["Specialized/Custom"], image: industryMedical }
+    "Overview": { ...(navData.testServices?.["Overview"] || { description: "", services: [] }), image: industryLabTesting },
+    "Automotive": { ...(navData.testServices?.["Automotive"] || { description: "", services: [] }), image: industryAutomotive },
+    "VCX": { ...(navData.testServices?.["VCX"] || { description: "", services: [] }), image: industryMobile },
+    "Image Quality": { ...(navData.testServices?.["Image Quality"] || { description: "", services: [] }), image: industryPhotography },
+    "Standardized": { ...(navData.testServices?.["Standardized"] || { description: "", services: [] }), image: industryLabTesting },
+    "Specialized/Custom": { ...(navData.testServices?.["Specialized/Custom"] || { description: "", services: [] }), image: industryMedical }
   };
 
   return (
