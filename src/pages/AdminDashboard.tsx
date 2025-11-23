@@ -59,6 +59,7 @@ import { HierarchicalPageSelect } from '@/components/admin/HierarchicalPageSelec
 import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedData } from '@/hooks/useAdminAutosave';
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import NewsEditor from '@/components/admin/NewsEditor';
+import DebugEditor from '@/components/admin/DebugEditor';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -2616,6 +2617,25 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* Debug Upload */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('debug')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Upload className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Debug Upload</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Simple image upload test segment
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
                     </div>
                   </TabsContent>
@@ -6626,6 +6646,21 @@ const AdminDashboard = () => {
                         setPageSegments(updatedSegments);
                       }}
                       onSave={() => handleSaveSegments()}
+                    />
+                  )}
+
+                  {segment.type === 'debug' && (
+                    <DebugEditor
+                      data={segment.data || {}}
+                      onChange={(newData) => {
+                        const updatedSegments = pageSegments.map(s =>
+                          s.id === segment.id ? { ...s, data: newData } : s
+                        );
+                        setPageSegments(updatedSegments);
+                      }}
+                      onSave={() => handleSaveSegments()}
+                      pageSlug={selectedPage}
+                      segmentId={segment.id}
                     />
                   )}
 
