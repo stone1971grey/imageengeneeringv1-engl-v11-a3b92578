@@ -196,6 +196,18 @@ const FullHero = ({
             </p>
           )}
 
+          {/* TEMP: Inline debug image to verify imageUrl rendering */}
+          {imageUrl && (
+            <div className="mt-6 inline-block bg-black/40 p-2 rounded">
+              <p className="text-xs text-white/70 mb-1">Debug image preview (only for testing):</p>
+              <img
+                src={imageUrl}
+                alt="Full hero debug preview"
+                className="max-w-xs rounded border border-white/20"
+              />
+            </div>
+          )}
+
           {(button1Text || button2Text) && (
             <div className="pt-6 flex flex-col sm:flex-row gap-4">
               {button1Text && (
