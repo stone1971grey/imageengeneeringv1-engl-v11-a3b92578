@@ -2,11 +2,13 @@ import { Button } from "@/components/ui/button";
 import IntelligentSearchBar from "@/components/IntelligentSearchBar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
-import { MessageCircle } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useState } from "react";
 
 const UtilityNavigation = () => {
   const { language, setLanguage } = useLanguage();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const languages = [
     { code: "en", label: "EN", flag: "🇺🇸" },
@@ -17,8 +19,32 @@ const UtilityNavigation = () => {
   ];
 
   return (
-    <div className="flex items-center gap-4">
-      <IntelligentSearchBar />
+    <div className="flex items-center gap-4 relative">
+      {/* Search Icon Button or Expanded Search */}
+      <div className="relative flex items-center">
+        {!isSearchOpen ? (
+          <button
+            onClick={() => setIsSearchOpen(true)}
+            className="w-10 h-10 bg-white hover:bg-gray-100 rounded-md flex items-center justify-center transition-all duration-300"
+            aria-label="Open search"
+          >
+            <Search className="h-5 w-5 text-gray-700" />
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 animate-in slide-in-from-right-5 fade-in duration-300">
+            <div className="w-[300px]">
+              <IntelligentSearchBar />
+            </div>
+            <button
+              onClick={() => setIsSearchOpen(false)}
+              className="w-10 h-10 bg-white hover:bg-gray-100 rounded-md flex items-center justify-center transition-all duration-300 flex-shrink-0"
+              aria-label="Close search"
+            >
+              <X className="h-5 w-5 text-gray-700" />
+            </button>
+          </div>
+        )}
+      </div>
       
       {/* Language Selector */}
       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
