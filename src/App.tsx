@@ -48,6 +48,8 @@ import ImageDownload from "./pages/ImageDownload";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNews from "./pages/AdminNews";
+import FullHeroMigration from "./pages/FullHeroMigration";
+import SegmentDebugView from "./pages/SegmentDebugView";
 import NotFound from "./pages/NotFound";
 import { MauticTracker } from "./components/MauticTracker";
 
@@ -117,10 +119,12 @@ const App = () => (
          <Route path="/styleguide" element={<Styleguide />} />
         <Route path="/icons-styleguide" element={<IconsStyleguide />} />
         <Route path="/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
-        <Route path="/image-download" element={<ImageDownload />} />
+         <Route path="/image-download" element={<ImageDownload />} />
          <Route path="/auth" element={<Auth />} />
          <Route path="/admin-dashboard" element={<AdminDashboard />} />
          <Route path="/admin-dashboard/news" element={<AdminNews />} />
+         <Route path="/full-hero-migration" element={<FullHeroMigration />} />
+         <Route path="/segment-debug" element={<SegmentDebugView />} />
            {/* Page ID Route - MUST be after all specific routes */}
            <Route path="/:pageId" element={<PageIdRouter />} />
            
