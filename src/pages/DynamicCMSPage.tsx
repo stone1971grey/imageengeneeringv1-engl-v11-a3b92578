@@ -592,17 +592,7 @@ const DynamicCMSPage = () => {
             className="py-20 bg-gray-50"
           >
             <div className="container mx-auto px-6">
-              {/* Section Hero Image - Full Width (if present) */}
-              {segment.data?.heroImageUrl && (
-                <div className="mb-16 rounded-xl overflow-hidden shadow-xl">
-                  <img
-                    src={segment.data.heroImageUrl}
-                    alt={segment.data?.heroImageMetadata?.altText || segment.data?.title || "Section image"}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              )}
-              
+              {/* Section Title & Subtext FIRST */}
               {segment.data?.title && (
                 <div className="text-center mb-16">
                   <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -615,6 +605,8 @@ const DynamicCMSPage = () => {
                   )}
                 </div>
               )}
+              
+              {/* Grid with Items - Each item has integrated image */}
               <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
                 {(segment.data?.items || []).map((solution: any, idx: number) => (
                   <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
