@@ -5933,44 +5933,45 @@ const AdminDashboard = () => {
                                 )}
                                 
                                 <div className="space-y-2">
-                                  <input
+                                  <Input
                                     id={`dynamic_tile_image_${index}_${tileIndex}`}
                                     type="file"
                                     accept="image/*"
                                     onChange={async (e) => {
+                                      addDebugLog(`🔵 Tiles-Segment (ID ${segment.id || 'unknown'}): onChange gefeuert für Tile ${tileIndex}`);
+                                      
                                       const input = e.target as HTMLInputElement;
                                       const file = input.files?.[0];
 
                                       if (!file) {
-                                        addDebugLog('🟡 Neue Tiles: Kein File ausgewählt');
+                                        addDebugLog('🟡 Tiles: Kein File ausgewählt');
                                         return;
                                       }
 
-                                      addDebugLog(`🟢 Neue Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
+                                      addDebugLog(`🟢 Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
 
                                       if (!file.type.startsWith('image/')) {
-                                        addDebugLog(`❌ Neue Tiles: Ungültiger Dateityp: ${file.type}`);
+                                        addDebugLog(`❌ Tiles: Ungültiger Dateityp: ${file.type}`);
                                         toast.error("Bitte ein Bild hochladen");
                                         return;
                                       }
 
                                       if (file.size > 5 * 1024 * 1024) {
-                                        addDebugLog(`❌ Neue Tiles: Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
+                                        addDebugLog(`❌ Tiles: Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
                                         toast.error("Bildgröße muss unter 5MB sein");
                                         return;
                                       }
 
                                       setUploadingTileIndex(tileIndex);
-                                      addDebugLog('🚀 Neue Tiles: Upload gestartet...');
+                                      addDebugLog('🚀 Tiles: Upload gestartet...');
 
                                       try {
                                         const fileExt = file.name.split('.').pop();
                                         const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-                                        const fileName = `dynamic-tile-${index}-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
+                                        const fileName = `tile-${segment.id}-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
                                         const filePath = `${fileName}`;
 
-                                        addDebugLog(`📂 Neue Tiles: Pfad generiert - ${filePath}`);
-                                        addDebugLog('📤 Neue Tiles: Rufe backend-Upload auf...');
+                                        addDebugLog(`📂 Tiles: Pfad generiert - ${filePath}`);
 
                                         const { error: uploadError } = await supabase.storage
                                           .from('page-images')
@@ -5980,7 +5981,7 @@ const AdminDashboard = () => {
                                           });
 
                                         if (uploadError) {
-                                          addDebugLog(`❌ Neue Tiles: Upload FEHLER - ${uploadError.message}`);
+                                          addDebugLog(`❌ Tiles: Upload FEHLER - ${uploadError.message}`);
                                           throw uploadError;
                                         }
 
@@ -5988,7 +5989,7 @@ const AdminDashboard = () => {
                                           .from('page-images')
                                           .getPublicUrl(filePath);
 
-                                        addDebugLog(`✅ Neue Tiles: Upload erfolgreich! URL: ${publicUrl}`);
+                                        addDebugLog(`✅ Tiles: Upload erfolgreich! URL: ${publicUrl}`);
 
                                         const metadata = await extractImageMetadata(file, publicUrl);
 
@@ -5997,20 +5998,20 @@ const AdminDashboard = () => {
                                         newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
                                         setPageSegments(newSegments);
 
-                                        addDebugLog('💾 Neue Tiles: State aktualisiert');
+                                        addDebugLog('💾 Tiles: State aktualisiert');
                                         toast.success("Tile-Bild erfolgreich hochgeladen!");
 
-                                        input.value = '';
+                                        e.target.value = '';
                                       } catch (error: any) {
-                                        addDebugLog(`❌ Neue Tiles: CATCH FEHLER - ${error.message}`);
+                                        addDebugLog(`❌ Tiles: CATCH FEHLER - ${error.message}`);
                                         toast.error("Fehler beim Upload: " + error.message);
                                       } finally {
                                         setUploadingTileIndex(null);
-                                        addDebugLog('🏁 Neue Tiles: Upload abgeschlossen');
+                                        addDebugLog('🏁 Tiles: Upload abgeschlossen');
                                       }
                                     }}
                                     disabled={uploadingTileIndex === tileIndex}
-                                    className="block w-full text-sm text-black bg-white border-2 border-gray-600 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f9dc24] file:text-black hover:file:bg-[#f9dc24]/90"
+                                    className="bg-white border-2 border-gray-600 text-black cursor-pointer"
                                   />
                                   {uploadingTileIndex === tileIndex && (
                                     <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
