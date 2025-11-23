@@ -49,20 +49,32 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
 
   const handleImageUpload = async (index: number, file: File) => {
     setUploadingIndex(index);
+    
+    console.log('[BANNER UPLOAD] Starting upload for index:', index);
+    console.log('[BANNER UPLOAD] Current images array length:', data.images.length);
+    console.log('[BANNER UPLOAD] Current image at index:', data.images[index]);
+    
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${pageSlug}_banner_${segmentId}_${index}_${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
+      console.log('[BANNER UPLOAD] Uploading to path:', filePath);
+
       const { error: uploadError } = await supabase.storage
         .from('page-images')
         .upload(filePath, file, { upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('[BANNER UPLOAD] Upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: urlData } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
+
+      console.log('[BANNER UPLOAD] Got public URL:', urlData.publicUrl);
 
       const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
       const metadata: ImageMetadata = {
@@ -70,15 +82,28 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
         altText: data.images[index]?.alt || ''
       };
 
+      console.log('[BANNER UPLOAD] Extracted metadata:', metadata);
+
       const updatedImages = [...data.images];
+      
+      // Ensure the image object exists before updating
+      if (!updatedImages[index]) {
+        console.warn('[BANNER UPLOAD] Image at index does not exist, creating new entry');
+        updatedImages[index] = { url: '', alt: '' };
+      }
+      
       updatedImages[index] = {
         ...updatedImages[index],
         url: urlData.publicUrl,
         metadata
       };
+      
+      console.log('[BANNER UPLOAD] Updated images array:', updatedImages);
+      
       onChange({ ...data, images: updatedImages });
       toast.success("Image uploaded successfully!");
     } catch (error: any) {
+      console.error('[BANNER UPLOAD] Error:', error);
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploadingIndex(null);
@@ -86,10 +111,18 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
   };
 
   const handleAddImage = () => {
+    const newImage: BannerImage = {
+      url: '',
+      alt: '',
+      metadata: undefined
+    };
+    
     onChange({
       ...data,
-      images: [...data.images, { url: '', alt: '' }]
+      images: [...data.images, newImage]
     });
+    
+    toast.success("New image slot added. Upload an image to complete.");
   };
 
   const handleDeleteImage = (index: number) => {
