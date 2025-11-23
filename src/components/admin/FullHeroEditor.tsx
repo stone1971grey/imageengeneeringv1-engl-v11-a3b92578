@@ -147,6 +147,18 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const handleAltTextChange = (newAltText: string) => {
     if (imageMetadata) {
       setImageMetadata({ ...imageMetadata, altText: newAltText });
+    } else if (imageUrl) {
+      // Create minimal metadata object if none exists
+      setImageMetadata({
+        url: imageUrl,
+        originalFileName: '',
+        width: 0,
+        height: 0,
+        fileSizeKB: 0,
+        format: '',
+        uploadDate: new Date().toISOString(),
+        altText: newAltText
+      });
     }
   };
 
@@ -371,7 +383,10 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setImageUrl("")}
+                        onClick={() => {
+                          setImageUrl("");
+                          setImageMetadata(null);
+                        }}
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -381,10 +396,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                     <div className="mt-4 space-y-4">
                       <img src={imageUrl} alt="Preview" className="w-full h-48 object-cover rounded-lg" />
                       
-                      {/* Image Metadata Display */}
-                      {imageMetadata && (
-                        <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-                          <h4 className="text-sm font-semibold text-white mb-2">Image Information</h4>
+                      {/* Image Metadata Display - Always show if image exists */}
+                      <div className="bg-gray-800 rounded-lg p-4 space-y-3">
+                        <h4 className="text-sm font-semibold text-white mb-2">Image Information</h4>
+                        
+                        {imageMetadata ? (
                           <div className="grid grid-cols-2 gap-3 text-xs">
                             <div>
                               <span className="text-gray-400">Filename:</span>
@@ -407,22 +423,29 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                               <p className="text-white">{formatUploadDate(imageMetadata.uploadDate)}</p>
                             </div>
                           </div>
-                          
-                          {/* Alt Text Field */}
-                          <div className="pt-3 border-t border-gray-700">
-                            <Label htmlFor="imageAltText" className="text-white text-sm mb-2 block">
-                              Alt Text (SEO & Accessibility)
-                            </Label>
-                            <Textarea
-                              id="imageAltText"
-                              value={imageMetadata.altText || ''}
-                              onChange={(e) => handleAltTextChange(e.target.value)}
-                              placeholder="Describe this image for SEO and accessibility..."
-                              className="bg-white border-2 border-gray-600 text-black placeholder:text-gray-400 min-h-[60px]"
-                            />
+                        ) : (
+                          <div className="text-xs text-gray-400 pb-2">
+                            Upload a new image to see detailed metadata information
                           </div>
+                        )}
+                        
+                        {/* Alt Text Field - Always visible */}
+                        <div className="pt-3 border-t border-gray-700">
+                          <Label htmlFor="imageAltText" className="text-white text-sm mb-2 block">
+                            Alt Text (SEO & Accessibility)
+                          </Label>
+                          <Textarea
+                            id="imageAltText"
+                            value={imageMetadata?.altText || ''}
+                            onChange={(e) => handleAltTextChange(e.target.value)}
+                            placeholder="Describe this image for SEO and accessibility..."
+                            className="bg-white border-2 border-gray-600 text-black placeholder:text-gray-400 min-h-[60px]"
+                          />
+                          <p className="text-xs text-gray-400 mt-2">
+                            Provide a descriptive alternative text for screen readers and SEO
+                          </p>
                         </div>
-                      )}
+                      </div>
                     </div>
                   )}
                 </div>
