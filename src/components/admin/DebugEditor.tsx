@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,6 +20,7 @@ interface DebugEditorProps {
 
 const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEditorProps) => {
   const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -98,7 +99,7 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="debug-image">Upload Image</Label>
+          <Label>Upload Image</Label>
           <p className="text-sm text-muted-foreground mb-2">
             Test the image upload pipeline
           </p>
@@ -114,21 +115,37 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
             </div>
           )}
 
-          <Input
-            id="debug-image"
+          <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
             onChange={handleImageUpload}
             disabled={uploading}
-            className="border-2"
+            className="hidden"
           />
           
-          {uploading && (
-            <div className="flex items-center gap-2 text-sm text-blue-600">
-              <Upload className="h-4 w-4 animate-pulse" />
-              <span>Uploading...</span>
-            </div>
-          )}
+          <Button
+            type="button"
+            onClick={() => {
+              console.log('[DebugEditor] Button clicked, triggering file input');
+              fileInputRef.current?.click();
+            }}
+            disabled={uploading}
+            variant="outline"
+            className="w-full"
+          >
+            {uploading ? (
+              <>
+                <Upload className="h-4 w-4 mr-2 animate-pulse" />
+                Uploading...
+              </>
+            ) : (
+              <>
+                <Upload className="h-4 w-4 mr-2" />
+                Choose Image
+              </>
+            )}
+          </Button>
         </div>
 
         <div className="flex justify-end pt-4 border-t">
