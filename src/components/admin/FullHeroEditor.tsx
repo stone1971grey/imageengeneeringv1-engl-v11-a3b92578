@@ -100,50 +100,29 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) {
-      console.log('[FullHeroEditor] No file selected');
-      return;
-    }
-
-    if (!file.type.startsWith('image/')) {
-      console.log('[FullHeroEditor] Invalid file type:', file.type);
-      toast.error('Please upload an image file');
-      return;
-    }
+    if (!file) return;
 
     setIsUploading(true);
-    console.log('[FullHeroEditor] Starting image upload for pageSlug:', pageSlug, 'file:', file.name, 'size:', file.size);
-    
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `${pageSlug}/full-hero-${segmentId}-${uniqueId}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-      
-      console.log('[FullHeroEditor] Uploading to path:', filePath);
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${pageSlug}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from('page-images')
-        .upload(filePath, file, { upsert: false });
+        .upload(filePath, file);
 
-      if (uploadError) {
-        console.error('[FullHeroEditor] Upload error:', uploadError);
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
 
-      console.log('[FullHeroEditor] Upload successful, URL:', publicUrl);
       setImageUrl(publicUrl);
       toast.success("Image uploaded successfully");
-      
-      // Reset input to allow re-uploading same file
-      e.target.value = '';
-    } catch (error: any) {
-      console.error("[FullHeroEditor] Error uploading image:", error);
-      toast.error("Failed to upload image: " + error.message);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image");
     } finally {
       setIsUploading(false);
     }
@@ -222,8 +201,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         )}
         
         <Tabs defaultValue="content">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="layout">Layout</TabsTrigger>
             <TabsTrigger value="buttons">Buttons</TabsTrigger>
             <TabsTrigger value="background">Background</TabsTrigger>
           </TabsList>
@@ -262,6 +242,50 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                 placeholder="Professional solutions for testing and calibrating camera systems..."
                 rows={3}
               />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="layout" className="space-y-4">
+            <div className="space-y-2">
+              <Label>Image Position</Label>
+              <Select value={imagePosition} onValueChange={(val: any) => setImagePosition(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="left">Left</SelectItem>
+                  <SelectItem value="right">Right</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Layout Ratio (Text : Image)</Label>
+              <Select value={layoutRatio} onValueChange={(val: any) => setLayoutRatio(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1-1">1:1 (50% : 50%)</SelectItem>
+                  <SelectItem value="2-3">2:3 (40% : 60%)</SelectItem>
+                  <SelectItem value="2-5">2:5 (30% : 70%)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Top Spacing</Label>
+              <Select value={topSpacing} onValueChange={(val: any) => setTopSpacing(val)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="small">Small (PT-16)</SelectItem>
+                  <SelectItem value="medium">Medium (PT-24)</SelectItem>
+                  <SelectItem value="large">Large (PT-32)</SelectItem>
+                  <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </TabsContent>
 
@@ -355,17 +379,14 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
               <>
                 <div className="space-y-2">
                   <Label htmlFor="imageUpload">Upload Image</Label>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex gap-2">
                     <Input
                       id="imageUpload"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
-                      className="bg-white border-2 cursor-pointer"
+                      disabled={isUploading}
                     />
-                    {isUploading && (
-                      <span className="text-sm text-primary font-medium">Uploading...</span>
-                    )}
                     {imageUrl && (
                       <Button
                         variant="ghost"

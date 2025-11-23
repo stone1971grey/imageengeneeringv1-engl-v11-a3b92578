@@ -162,13 +162,7 @@ const AdminDashboard = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [saving, setSaving] = useState(false);
-  const [uploadingTileIndex, setUploadingTileIndex] = useState<number | null>(null);
-  const [uploadingSolutionIndex, setUploadingSolutionIndex] = useState<number | null>(null);
-  const [uploadingBannerIndex, setUploadingBannerIndex] = useState<number | null>(null);
-  const [uploadingHero, setUploadingHero] = useState(false);
-  const [uploadingFooter, setUploadingFooter] = useState(false);
-  const [uploadingImageTextHero, setUploadingImageTextHero] = useState<number | null>(null);
-  const [uploadingImageTextItem, setUploadingImageTextItem] = useState<{segmentIndex: number, itemIndex: number} | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImageMetadata, setHeroImageMetadata] = useState<ImageMetadata | null>(null);
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
@@ -204,16 +198,6 @@ const AdminDashboard = () => {
   const [footerContactDescription, setFooterContactDescription] = useState<string>("");
   const [footerTeamImageUrl, setFooterTeamImageUrl] = useState<string>("");
   const [footerTeamImageMetadata, setFooterTeamImageMetadata] = useState<ImageMetadata | null>(null);
-  const [debugLogs, setDebugLogs] = useState<string[]>(["Debug Monitor gestartet – bereit zum Testen"]);
-  const [showDebugWindow, setShowDebugWindow] = useState(true);
-
-  const addDebugLog = (message: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    const logMessage = `${timestamp}: ${message}`;
-    console.log('[AdminDashboard]', message);
-    setDebugLogs(prev => [...prev.slice(-20), logMessage]); // Keep last 20 logs
-  };
-
   const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
   const [footerTeamName, setFooterTeamName] = useState<string>("");
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
@@ -1238,39 +1222,30 @@ const AdminDashboard = () => {
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      console.log('[AdminDashboard] Hero: No file selected');
-      return;
-    }
+    if (!e.target.files || !e.target.files[0]) return;
     
-    console.log('[AdminDashboard] Hero: File selected -', file.name);
+    const file = e.target.files[0];
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      console.log('[AdminDashboard] Hero: Invalid file type');
       toast.error("Please upload an image file");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      console.log('[AdminDashboard] Hero: File too large');
       toast.error("Image size must be less than 5MB");
       return;
     }
 
-    setUploadingHero(true);
-    console.log('[AdminDashboard] Hero: Starting upload...');
+    setUploading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `${selectedPage}-hero-${uniqueId}-${Date.now()}.${fileExt}`;
+      const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      console.log('[AdminDashboard] Hero: Uploading to', filePath);
-
+      // Upload to storage
       const { error: uploadError } = await supabase.storage
         .from('page-images')
         .upload(filePath, file, {
@@ -1278,17 +1253,14 @@ const AdminDashboard = () => {
           upsert: false
         });
 
-      if (uploadError) {
-        console.error('[AdminDashboard] Hero: Upload error', uploadError);
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
 
-      console.log('[AdminDashboard] Hero: Upload successful', publicUrl);
-
+      // Extract image metadata
       const baseMetadata = await extractImageMetadata(file, publicUrl);
       const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
       
@@ -1296,7 +1268,7 @@ const AdminDashboard = () => {
       setHeroImageMetadata(metadata);
       
       // Save URL to database
-      await supabase
+      const { error: dbError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
@@ -1309,8 +1281,10 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
+      if (dbError) throw dbError;
+
       // Save metadata to database
-      await supabase
+      const { error: metadataError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
@@ -1323,45 +1297,41 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
+      if (metadataError) throw metadataError;
+
       toast.success("Image uploaded successfully!");
-      e.target.value = ''; // Reset input
     } catch (error: any) {
-      console.error('[AdminDashboard] Hero: Upload failed', error);
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingHero(false);
-      console.log('[AdminDashboard] Hero: Upload complete');
+      setUploading(false);
     }
   };
 
-  const handleTileImageUpload = async (tileIndex: number, file: File) => {
-    addDebugLog(`🟢 Tiles: Starting upload for index ${tileIndex}, file: ${file.name}`);
+  const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    
+    const file = e.target.files[0];
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      addDebugLog(`❌ Tiles: Invalid file type: ${file.type}`);
-      toast.error("Bitte ein Bild hochladen");
+      toast.error("Please upload an image file");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      addDebugLog(`❌ Tiles: File too large: ${(file.size/1024/1024).toFixed(2)} MB`);
-      toast.error("Bildgröße muss unter 5MB sein");
+      toast.error("Image size must be less than 5MB");
       return;
     }
 
-    setUploadingTileIndex(tileIndex);
-    addDebugLog('🚀 Tiles: Upload started...');
+    setUploading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `tile-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
+      const fileName = `tile-${tileIndex}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
-      
-      addDebugLog(`📂 Tiles: Generated path - ${filePath}`);
 
+      // Upload to storage
       const { error: uploadError } = await supabase.storage
         .from('page-images')
         .upload(filePath, file, {
@@ -1369,38 +1339,30 @@ const AdminDashboard = () => {
           upsert: false
         });
 
-      if (uploadError) {
-        addDebugLog(`❌ Tiles: Upload error - ${uploadError.message}`);
-        throw uploadError;
-      }
-      
-      addDebugLog(`✅ Tiles: Upload successful!`);
+      if (uploadError) throw uploadError;
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
-      
-      addDebugLog(`🔗 Tiles: Public URL: ${publicUrl}`);
 
+      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
-      addDebugLog('📊 Tiles: Metadata extracted');
 
+      // Update applications array with URL and metadata
       const newApps = [...applications];
       newApps[tileIndex].imageUrl = publicUrl;
       newApps[tileIndex].metadata = { ...metadata, altText: '' };
       setApplications(newApps);
-      
-      addDebugLog('💾 Tiles: Applications updated');
 
-      toast.success("Tile-Bild erfolgreich hochgeladen!");
+      toast.success("Image uploaded successfully!");
     } catch (error: any) {
-      addDebugLog(`❌ Tiles: Upload failed - ${error.message}`);
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingTileIndex(null);
-      addDebugLog('🏁 Tiles: Upload complete');
+      setUploading(false);
     }
   };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
@@ -1695,12 +1657,11 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploadingSolutionIndex(index);
+    setUploading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `solution-${index}-${uniqueId}-${Date.now()}.${fileExt}`;
+      const fileName = `solution-${index}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1716,6 +1677,7 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newItems = [...solutionsItems];
@@ -1724,11 +1686,10 @@ const AdminDashboard = () => {
       setSolutionsItems(newItems);
 
       toast.success("Solution image uploaded successfully!");
-      e.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingSolutionIndex(null);
+      setUploading(false);
     }
   };
 
@@ -1746,11 +1707,10 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploadingSolutionIndex(segmentIndex);
+    setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `image-text-hero-${segmentIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
+      const fileName = `image-text-hero-${segmentIndex}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1766,6 +1726,7 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newSegments = [...pageSegments];
@@ -1774,11 +1735,10 @@ const AdminDashboard = () => {
       setPageSegments(newSegments);
 
       toast.success("Hero image uploaded successfully!");
-      event.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingSolutionIndex(null);
+      setUploading(false);
     }
   };
 
@@ -1796,11 +1756,10 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploadingSolutionIndex(itemIndex);
+    setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `image-text-item-${segmentIndex}-${itemIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
+      const fileName = `image-text-item-${segmentIndex}-${itemIndex}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1816,6 +1775,7 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newSegments = [...pageSegments];
@@ -1824,11 +1784,10 @@ const AdminDashboard = () => {
       setPageSegments(newSegments);
 
       toast.success("Item image uploaded successfully!");
-      event.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingSolutionIndex(null);
+      setUploading(false);
     }
   };
 
@@ -1847,12 +1806,11 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploadingFooter(true);
+    setUploading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `footer-team-${uniqueId}-${Date.now()}.${fileExt}`;
+      const fileName = `footer-team-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1868,17 +1826,18 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      const baseMetadata = await extractImageMetadata(file, publicUrl);
-      const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
-      
-      setFooterTeamImageUrl(publicUrl);
-      setFooterTeamImageMetadata(metadata);
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, publicUrl);
 
-      await supabase
+      setFooterTeamImageUrl(publicUrl);
+      setFooterTeamImageMetadata({ ...metadata, altText: '' });
+      
+      // Save to database
+      const { error: dbError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
-          section_key: "footer_team_image",
+          section_key: "footer_team_image_url",
           content_type: "image_url",
           content_value: publicUrl,
           updated_at: new Date().toISOString(),
@@ -1887,25 +1846,13 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: selectedPage,
-          section_key: "footer_team_image_metadata",
-          content_type: "json",
-          content_value: JSON.stringify(metadata),
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
+      if (dbError) throw dbError;
 
       toast.success("Team image uploaded successfully!");
-      e.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingFooter(false);
+      setUploading(false);
     }
   };
 
@@ -1939,12 +1886,11 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploadingBannerIndex(index);
+    setUploading(true);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-      const fileName = `banner-image-${index}-${uniqueId}-${Date.now()}.${fileExt}`;
+      const fileName = `banner-image-${index}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1960,19 +1906,19 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
+      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newImages = [...bannerImages];
-      newImages[index].imageUrl = publicUrl;
-      newImages[index].metadata = { ...metadata, altText: '' };
+      newImages[index].url = publicUrl;
+      newImages[index].metadata = { ...metadata, altText: newImages[index].alt || '' };
       setBannerImages(newImages);
 
       toast.success("Banner image uploaded successfully!");
-      e.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingBannerIndex(null);
+      setUploading(false);
     }
   };
 
@@ -3623,10 +3569,10 @@ const AdminDashboard = () => {
                   <Button
                     type="button"
                     onClick={() => document.getElementById('hero_image')?.click()}
-                    disabled={uploadingHero}
+                    disabled={uploading}
                     className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                   >
-                    {uploadingHero ? "Uploading..." : "Replace Image"}
+                    {uploading ? "Uploading..." : "Replace Image"}
                   </Button>
                 ) : null}
                 
@@ -3635,10 +3581,10 @@ const AdminDashboard = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
-                  disabled={uploadingHero}
+                  disabled={uploading}
                   className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
                 />
-                {uploadingHero && <p className="text-sm text-white mt-2">Uploading...</p>}
+                {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
                 
                 {/* Image Metadata Display */}
                 {heroImageMetadata && (
@@ -3994,26 +3940,25 @@ const AdminDashboard = () => {
                           </div>
                         )}
                         
-                        <div className="space-y-2">
-                          <Input
-                            id={`app_image_${index}`}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              addDebugLog(`🔵 Tiles: File input onChange for index ${index}`);
-                              if (file) {
-                                addDebugLog(`✅ Tiles: File selected - ${file.name}`);
-                                handleTileImageUpload(index, file);
-                              }
-                              e.target.value = ''; // Reset input
-                            }}
-                            className="bg-white border-2 border-gray-600 text-black cursor-pointer"
-                          />
-                          {uploadingTileIndex === index && (
-                            <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
-                          )}
-                        </div>
+                        {app.imageUrl ? (
+                          <Button
+                            type="button"
+                            onClick={() => document.getElementById(`app_image_${index}`)?.click()}
+                            disabled={uploading}
+                            className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                          >
+                            {uploading ? "Uploading..." : "Replace Image"}
+                          </Button>
+                        ) : null}
+                        
+                        <Input
+                          id={`app_image_${index}`}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleTileImageUpload(e, index)}
+                          disabled={uploading}
+                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
+                        />
                         
                         {/* Image Metadata Display */}
                         {app.metadata && (
@@ -4397,7 +4342,7 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleBannerImageUpload(e, index)}
-                            disabled={uploadingBannerIndex === index}
+                            disabled={uploading}
                             className="border-2 border-gray-600"
                           />
                         </div>
@@ -4746,7 +4691,7 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleSolutionImageUpload(e, index)}
-                            disabled={uploadingSolutionIndex === index}
+                            disabled={uploading}
                             className="border-2 border-gray-600"
                           />
                           
@@ -5014,12 +4959,9 @@ const AdminDashboard = () => {
                           type="file"
                           accept="image/*"
                           onChange={handleFooterTeamImageUpload}
-                          disabled={uploadingFooter}
+                          disabled={uploading}
                           className="border-2 border-gray-600"
                         />
-                        {uploadingFooter && (
-                          <p className="text-sm text-[#f9dc24] font-semibold">Uploading...</p>
-                        )}
                       </div>
                       {footerTeamImageUrl && (
                         <div className="mt-2 relative inline-block">
@@ -5233,30 +5175,24 @@ const AdminDashboard = () => {
                       const file = e.target.files?.[0];
                       if (!file) return;
 
-                      console.log('[AdminDashboard HeroSegment] Starting image upload for page:', selectedPage, 'segmentId:', segment.id, 'file:', file.name);
-
                       try {
                         // Upload to Supabase Storage first
                         const fileExt = file.name.split('.').pop();
-                        const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-                        const fileName = `${selectedPage}/dynamic-hero-${segment.id}-${uniqueId}-${Date.now()}.${fileExt}`;
-                        const filePath = `${fileName}`;
+                        const fileName = `${Date.now()}.${fileExt}`;
+                        const filePath = `${selectedPage}/${fileName}`;
 
                         const { error: uploadError } = await supabase.storage
                           .from('page-images')
-                          .upload(filePath, file, { upsert: false });
+                          .upload(filePath, file);
 
-                        if (uploadError) {
-                          console.error('[AdminDashboard HeroSegment] Upload error:', uploadError);
-                          throw uploadError;
-                        }
+                        if (uploadError) throw uploadError;
 
                         // Get public URL
                         const { data: urlData } = supabase.storage
                           .from('page-images')
                           .getPublicUrl(filePath);
 
-                        console.log('[AdminDashboard HeroSegment] Upload successful, URL:', urlData.publicUrl);
+                        // Extract metadata with URL
                         const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
                         const metadata: ImageMetadata = {
                           ...metadataWithoutAlt,
@@ -5932,91 +5868,74 @@ const AdminDashboard = () => {
                                   </div>
                                 )}
                                 
-                                <div className="space-y-2">
-                                  <Input
-                                    id={`dynamic_tile_image_${index}_${tileIndex}`}
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={async (e) => {
-                                      addDebugLog(`🔵 Tiles-Segment (ID ${segment.id || 'unknown'}): onChange gefeuert für Tile ${tileIndex}`);
-                                      
-                                      const input = e.target as HTMLInputElement;
-                                      const file = input.files?.[0];
+                                {tile.imageUrl ? (
+                                  <Button
+                                    type="button"
+                                    onClick={() => document.getElementById(`dynamic_tile_image_${index}_${tileIndex}`)?.click()}
+                                    disabled={uploading}
+                                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                                  >
+                                    {uploading ? "Uploading..." : "Replace Image"}
+                                  </Button>
+                                ) : null}
+                                
+                                <Input
+                                  id={`dynamic_tile_image_${index}_${tileIndex}`}
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={async (e) => {
+                                    if (!e.target.files || !e.target.files[0]) return;
+                                    
+                                    const file = e.target.files[0];
+                                    
+                                    if (!file.type.startsWith('image/')) {
+                                      toast.error("Please upload an image file");
+                                      return;
+                                    }
 
-                                      if (!file) {
-                                        addDebugLog('🟡 Tiles: Kein File ausgewählt');
-                                        return;
-                                      }
+                                    if (file.size > 5 * 1024 * 1024) {
+                                      toast.error("Image size must be less than 5MB");
+                                      return;
+                                    }
 
-                                      addDebugLog(`🟢 Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
+                                    setUploading(true);
 
-                                      if (!file.type.startsWith('image/')) {
-                                        addDebugLog(`❌ Tiles: Ungültiger Dateityp: ${file.type}`);
-                                        toast.error("Bitte ein Bild hochladen");
-                                        return;
-                                      }
+                                    try {
+                                      const fileExt = file.name.split('.').pop();
+                                      const fileName = `dynamic-tile-${index}-${tileIndex}-${Date.now()}.${fileExt}`;
+                                      const filePath = `${fileName}`;
 
-                                      if (file.size > 5 * 1024 * 1024) {
-                                        addDebugLog(`❌ Tiles: Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
-                                        toast.error("Bildgröße muss unter 5MB sein");
-                                        return;
-                                      }
+                                      const { error: uploadError } = await supabase.storage
+                                        .from('page-images')
+                                        .upload(filePath, file, {
+                                          cacheControl: '3600',
+                                          upsert: false
+                                        });
 
-                                      setUploadingTileIndex(tileIndex);
-                                      addDebugLog('🚀 Tiles: Upload gestartet...');
+                                      if (uploadError) throw uploadError;
 
-                                      try {
-                                        const fileExt = file.name.split('.').pop();
-                                        const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
-                                        const fileName = `tile-${segment.id}-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
-                                        const filePath = `${fileName}`;
+                                      const { data: { publicUrl } } = supabase.storage
+                                        .from('page-images')
+                                        .getPublicUrl(filePath);
 
-                                        addDebugLog(`📂 Tiles: Pfad generiert - ${filePath}`);
+                                      // Extract image metadata
+                                      const metadata = await extractImageMetadata(file, publicUrl);
 
-                                        const { error: uploadError } = await supabase.storage
-                                          .from('page-images')
-                                          .upload(filePath, file, {
-                                            cacheControl: '3600',
-                                            upsert: false
-                                          });
+                                      const newSegments = [...pageSegments];
+                                      newSegments[index].data.items[tileIndex].imageUrl = publicUrl;
+                                      newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
+                                      setPageSegments(newSegments);
 
-                                        if (uploadError) {
-                                          addDebugLog(`❌ Tiles: Upload FEHLER - ${uploadError.message}`);
-                                          throw uploadError;
-                                        }
-
-                                        const { data: { publicUrl } } = supabase.storage
-                                          .from('page-images')
-                                          .getPublicUrl(filePath);
-
-                                        addDebugLog(`✅ Tiles: Upload erfolgreich! URL: ${publicUrl}`);
-
-                                        const metadata = await extractImageMetadata(file, publicUrl);
-
-                                        const newSegments = [...pageSegments];
-                                        newSegments[index].data.items[tileIndex].imageUrl = publicUrl;
-                                        newSegments[index].data.items[tileIndex].metadata = { ...metadata, altText: '' };
-                                        setPageSegments(newSegments);
-
-                                        addDebugLog('💾 Tiles: State aktualisiert');
-                                        toast.success("Tile-Bild erfolgreich hochgeladen!");
-
-                                        e.target.value = '';
-                                      } catch (error: any) {
-                                        addDebugLog(`❌ Tiles: CATCH FEHLER - ${error.message}`);
-                                        toast.error("Fehler beim Upload: " + error.message);
-                                      } finally {
-                                        setUploadingTileIndex(null);
-                                        addDebugLog('🏁 Tiles: Upload abgeschlossen');
-                                      }
-                                    }}
-                                    disabled={uploadingTileIndex === tileIndex}
-                                    className="bg-white border-2 border-gray-600 text-black cursor-pointer"
-                                  />
-                                  {uploadingTileIndex === tileIndex && (
-                                    <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
-                                  )}
-                                </div>
+                                      toast.success("Tile image uploaded successfully!");
+                                    } catch (error: any) {
+                                      toast.error("Error uploading image: " + error.message);
+                                    } finally {
+                                      setUploading(false);
+                                    }
+                                  }}
+                                  disabled={uploading}
+                                  className={`border-2 border-gray-600 ${tile.imageUrl ? "hidden" : ""}`}
+                                />
                                 
                                 {/* Image Metadata Display */}
                                 {tile.metadata && (
@@ -6258,10 +6177,10 @@ const AdminDashboard = () => {
                             <Button
                               type="button"
                               onClick={() => document.getElementById(`image_text_hero_${index}`)?.click()}
-                              disabled={uploadingImageTextHero === index}
+                              disabled={uploading}
                               className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                             >
-                              {uploadingImageTextHero === index ? "Uploading..." : "Replace Image"}
+                              {uploading ? "Uploading..." : "Replace Image"}
                             </Button>
                           ) : null}
                           
@@ -6270,7 +6189,7 @@ const AdminDashboard = () => {
                             type="file"
                             accept="image/*"
                             onChange={(e) => handleImageTextHeroImageUpload(index, e)}
-                            disabled={uploadingImageTextHero === index}
+                            disabled={uploading}
                             className={`border-2 border-gray-600 ${segment.data.heroImageUrl ? "hidden" : ""}`}
                           />
                           
@@ -6462,10 +6381,10 @@ const AdminDashboard = () => {
                                     <Button
                                       type="button"
                                       onClick={() => document.getElementById(`image_text_item_${index}_${itemIndex}`)?.click()}
-                                      disabled={uploadingImageTextItem?.segmentIndex === index && uploadingImageTextItem?.itemIndex === itemIndex}
+                                      disabled={uploading}
                                       className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
                                     >
-                                      {uploadingImageTextItem?.segmentIndex === index && uploadingImageTextItem?.itemIndex === itemIndex ? "Uploading..." : "Replace Image"}
+                                      {uploading ? "Uploading..." : "Replace Image"}
                                     </Button>
                                   ) : null}
                                   
@@ -6474,7 +6393,7 @@ const AdminDashboard = () => {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => handleImageTextItemImageUpload(index, itemIndex, e)}
-                                    disabled={uploadingImageTextItem?.segmentIndex === index && uploadingImageTextItem?.itemIndex === itemIndex}
+                                    disabled={uploading}
                                     className={`border-2 border-gray-600 ${item.imageUrl ? "hidden" : ""}`}
                                   />
                                   
@@ -6867,60 +6786,6 @@ const AdminDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Visual Debug Window */}
-      {showDebugWindow && (
-        <div className="fixed bottom-4 left-4 w-96 bg-gray-900 border-2 border-[#f9dc24] rounded-lg shadow-2xl z-[9999]">
-          <div className="flex items-center justify-between bg-[#f9dc24] px-4 py-2 rounded-t-lg">
-            <h3 className="font-bold text-black">🔍 Upload Debug Monitor</h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowDebugWindow(false)}
-              className="h-6 w-6 p-0 hover:bg-black/10"
-            >
-              <X className="h-4 w-4 text-black" />
-            </Button>
-          </div>
-          <div className="p-4 max-h-64 overflow-y-auto bg-black font-mono text-xs">
-            {debugLogs.length === 0 ? (
-              <p className="text-gray-500">Keine Logs. Versuche ein Bild hochzuladen...</p>
-            ) : (
-              debugLogs.map((log, idx) => (
-                <div key={idx} className="mb-1 text-green-400">{log}</div>
-              ))
-            )}
-          </div>
-          <div className="px-4 py-2 bg-gray-800 rounded-b-lg flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setDebugLogs([])}
-              className="w-full text-xs"
-            >
-              Logs löschen
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => addDebugLog('📝 Manueller Test-Log aus Debug Monitor')}
-              className="w-full text-xs"
-            >
-              Test-Log
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Toggle Debug Window Button */}
-      {!showDebugWindow && (
-        <Button
-          onClick={() => setShowDebugWindow(true)}
-          className="fixed bottom-4 left-4 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 shadow-lg z-[9999]"
-        >
-          🔍 Debug Monitor öffnen
-        </Button>
-      )}
     </div>
   );
 };
