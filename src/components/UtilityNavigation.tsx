@@ -53,15 +53,32 @@ const UtilityNavigation = () => {
         }}
       >
         <div className="flex items-center w-full h-full">
-          {/* Search Icon Button */}
-          <button
-            type="button"
-            onClick={handleSearchToggle}
-            className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors z-10"
-            aria-label="Search"
-          >
-            <Search className="h-5 w-5 text-gray-700" />
-          </button>
+          {/* Search Icon Button - only visible when closed */}
+          {!isSearchOpen && (
+            <button
+              type="button"
+              onClick={handleSearchToggle}
+              className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors z-10"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5 text-gray-700" />
+            </button>
+          )}
+          
+          {/* Close Button - only visible when open */}
+          {isSearchOpen && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchOpen(false);
+                setSearchQuery("");
+              }}
+              className="w-10 h-10 flex items-center justify-center flex-shrink-0 hover:bg-gray-100 transition-colors z-10"
+              aria-label="Close search"
+            >
+              <X className="h-5 w-5 text-gray-700" />
+            </button>
+          )}
           
           {/* Expandable Input Field */}
           <div 
@@ -77,22 +94,8 @@ const UtilityNavigation = () => {
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-full pl-3 pr-8 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
-              onBlur={() => {
-                if (!searchQuery) {
-                  setTimeout(() => setIsSearchOpen(false), 150);
-                }
-              }}
+              className="w-full h-full pl-3 pr-3 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
             />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={handleClearSearch}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-5 w-5 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
-              >
-                <X className="h-3 w-3 text-gray-500" />
-              </button>
-            )}
           </div>
         </div>
       </form>
