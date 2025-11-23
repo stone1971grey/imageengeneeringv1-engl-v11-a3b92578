@@ -2547,7 +2547,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Full Hero</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Full Hero - A</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Full-width hero with background image, title, subtitle and description
                             </p>
@@ -2573,7 +2573,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Intro</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Intro - B</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Introduction section with optional image, title and text content
                             </p>
@@ -2594,7 +2594,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Industries</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Industries - C</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Icon grid with industry categories, descriptions and optional links
                             </p>
@@ -2615,7 +2615,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Latest News</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Latest News - D</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Display news articles in a carousel slider
                             </p>
@@ -2668,7 +2668,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Meta Navigation</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Meta Navigation - E</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Navigation links to related pages or sections
                             </p>
@@ -2692,7 +2692,7 @@ const AdminDashboard = () => {
                             <Eye className="h-7 w-7 text-gray-900" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Produkt Hero</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Produkt Hero - F</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Main page hero with image, title, description and CTA button
                             </p>
@@ -2713,7 +2713,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Product Gallery</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Product Gallery - G</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Product hero with image gallery and description
                             </p>
@@ -2753,7 +2753,7 @@ const AdminDashboard = () => {
                             <GripVertical className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Tiles</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Tiles - H</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Feature cards with icons, titles, descriptions and CTA links
                             </p>
@@ -2774,7 +2774,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Image & Text</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Image & Text - I</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Side-by-side image and text content with flexible layout
                             </p>
@@ -2795,7 +2795,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Banner</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Banner - J</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Full-width promotional banner with title, subtitle and CTA
                             </p>
@@ -2816,7 +2816,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Feature</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Feature - K</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Feature list with checkmarks, descriptions and optional image
                             </p>
@@ -2837,7 +2837,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Table</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Table - L</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Data table with customizable columns and rows
                             </p>
@@ -2859,7 +2859,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Video</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Video - M</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Embedded video player with title and description
                             </p>
@@ -2901,7 +2901,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">FAQ - M</h3>
+                            <h3 className="text-lg font-bold text-gray-900">FAQ - O</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Frequently Asked Questions with expandable answers
                             </p>
@@ -3427,7 +3427,7 @@ const AdminDashboard = () => {
                       value={segment.id}
                       className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
                     >
-                      ID {segmentId}: Meta Nav {displayNumber}
+                      ID {segmentId}: Meta Nav - E {displayNumber}
                     </TabsTrigger>
                   );
                 })}
@@ -3447,7 +3447,7 @@ const AdminDashboard = () => {
                       value={segment.id}
                       className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
                     >
-                      ID {segmentId}: Full Hero {displayNumber}
+                      ID {segmentId}: Full Hero - A {displayNumber}
                     </TabsTrigger>
                   );
                 })}
@@ -3458,7 +3458,7 @@ const AdminDashboard = () => {
                   value="hero" 
                   className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
                 >
-                  ID {segmentRegistry['hero']}: Produkt-Hero
+                  ID {segmentRegistry['hero']}: Produkt-Hero - F
                 </TabsTrigger>
               )}
 
@@ -3482,21 +3482,21 @@ const AdminDashboard = () => {
                   if (tabId === 'tiles' && segmentRegistry['tiles']) {
                     return (
                       <SortableTab key="tiles" id="tiles" value="tiles">
-                        ID {segmentRegistry['tiles']}: Tiles
+                        ID {segmentRegistry['tiles']}: Tiles - H
                       </SortableTab>
                     );
                   }
                   if (tabId === 'banner' && segmentRegistry['banner']) {
                     return (
                       <SortableTab key="banner" id="banner" value="banner">
-                        ID {segmentRegistry['banner']}: Banner
+                        ID {segmentRegistry['banner']}: Banner - J
                       </SortableTab>
                     );
                   }
                   if (tabId === 'solutions' && segmentRegistry['solutions']) {
                     return (
                       <SortableTab key="solutions" id="solutions" value="solutions">
-                        ID {segmentRegistry['solutions']}: Image & Text
+                        ID {segmentRegistry['solutions']}: Image & Text - I
                       </SortableTab>
                     );
                   }
@@ -3517,20 +3517,20 @@ const AdminDashboard = () => {
                     if (customKey && customKey !== String(segmentId)) {
                       label = customKey;
                     } else {
-                      if (segment.type === 'hero') label = `Produkt Hero ${displayNumber}`;
-                      if (segment.type === 'product-hero-gallery') label = `Product Gallery ${displayNumber}`;
-                      if (segment.type === 'tiles') label = `Tiles ${displayNumber}`;
-                      if (segment.type === 'banner') label = `Banner ${displayNumber}`;
-                      if (segment.type === 'image-text') label = `Image & Text ${displayNumber}`;
-                      if (segment.type === 'feature-overview') label = `Features ${displayNumber}`;
-                      if (segment.type === 'table') label = `Table ${displayNumber}`;
-                      if (segment.type === 'faq') label = `FAQ ${displayNumber}`;
-                      if (segment.type === 'video') label = `Video ${displayNumber}`;
-                      if (segment.type === 'specification') label = `Specification ${displayNumber}`;
-                      if (segment.type === 'news') label = `Latest News ${displayNumber}`;
-                      if (segment.type === 'full-hero') label = `Full Hero ${displayNumber}`;
-                      if (segment.type === 'intro') label = `Intro ${displayNumber}`;
-                      if (segment.type === 'industries') label = `Industries ${displayNumber}`;
+                      if (segment.type === 'hero') label = `Produkt Hero - F ${displayNumber}`;
+                      if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
+                      if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
+                      if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
+                      if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
+                      if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
+                      if (segment.type === 'table') label = `Table - L ${displayNumber}`;
+                      if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
+                      if (segment.type === 'video') label = `Video - M ${displayNumber}`;
+                      if (segment.type === 'specification') label = `Specification - N ${displayNumber}`;
+                      if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
+                      if (segment.type === 'full-hero') label = `Full Hero - A ${displayNumber}`;
+                      if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
+                      if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
                       if (segment.type === 'debug') label = `Debug ${displayNumber}`;
                     }
                     
@@ -5141,17 +5141,22 @@ const AdminDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-white">
-                        {segment.type === 'hero' && `Produkt Hero ${segment.position + 1}`}
-                        {segment.type === 'meta-navigation' && `Meta Navigation ${segment.position + 1}`}
-                        {segment.type === 'product-hero-gallery' && `Product Hero Gallery ${segment.position + 1}`}
-                        {segment.type === 'tiles' && `Tiles Section ${segment.position + 1}`}
-                        {segment.type === 'banner' && `Banner Section ${segment.position + 1}`}
-                        {segment.type === 'image-text' && `Image & Text Section ${segment.position + 1}`}
-                        {segment.type === 'full-hero' && `Full Hero ${segment.position + 1}`}
-                        {segment.type === 'intro' && `Intro ${segment.position + 1}`}
-                        {segment.type === 'industries' && `Industries ${segment.position + 1}`}
-                        {segment.type === 'news' && `Latest News ${segment.position + 1}`}
+                        {segment.type === 'hero' && `Produkt Hero - F ${segment.position + 1}`}
+                        {segment.type === 'meta-navigation' && `Meta Navigation - E ${segment.position + 1}`}
+                        {segment.type === 'product-hero-gallery' && `Product Hero Gallery - G ${segment.position + 1}`}
+                        {segment.type === 'tiles' && `Tiles Section - H ${segment.position + 1}`}
+                        {segment.type === 'banner' && `Banner Section - J ${segment.position + 1}`}
+                        {segment.type === 'image-text' && `Image & Text Section - I ${segment.position + 1}`}
+                        {segment.type === 'full-hero' && `Full Hero - A ${segment.position + 1}`}
+                        {segment.type === 'intro' && `Intro - B ${segment.position + 1}`}
+                        {segment.type === 'industries' && `Industries - C ${segment.position + 1}`}
+                        {segment.type === 'news' && `Latest News - D ${segment.position + 1}`}
                         {segment.type === 'debug' && `Debug ${segment.position + 1}`}
+                        {segment.type === 'feature-overview' && `Features - K ${segment.position + 1}`}
+                        {segment.type === 'table' && `Table - L ${segment.position + 1}`}
+                        {segment.type === 'faq' && `FAQ - O ${segment.position + 1}`}
+                        {segment.type === 'video' && `Video - M ${segment.position + 1}`}
+                        {segment.type === 'specification' && `Specification - N ${segment.position + 1}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
