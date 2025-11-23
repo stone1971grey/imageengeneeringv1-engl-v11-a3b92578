@@ -241,8 +241,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         }
 
         const updatedSegments = segments.map((seg: any) => {
-          const segId = String(seg.id || seg.segment_key || "");
-          if (seg.type === "full-hero" && segId === String(segmentId)) {
+          if (seg.type === "full-hero") {
             return {
               ...seg,
               data: content,
