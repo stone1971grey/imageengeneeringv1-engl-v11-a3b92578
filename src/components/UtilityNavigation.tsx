@@ -20,35 +20,40 @@ const UtilityNavigation = () => {
 
   return (
     <div className="flex items-center gap-4 relative">
-      {/* Search Icon Button or Expanded Search */}
-      <div className="relative flex items-center">
-        {!isSearchOpen ? (
-          <button
-            onClick={() => setIsSearchOpen(true)}
-            className="w-10 h-10 bg-white hover:bg-gray-100 rounded-md flex items-center justify-center transition-all duration-300"
-            aria-label="Open search"
+      {/* Search - Modern Expandable */}
+      <div className="relative overflow-hidden">
+        <div className="flex items-center">
+          {/* Search Input - slides in smoothly */}
+          <div 
+            className={`transition-all duration-500 ease-in-out ${
+              isSearchOpen ? 'w-[220px] opacity-100 mr-2' : 'w-0 opacity-0 mr-0'
+            } overflow-hidden`}
           >
-            <Search className="h-5 w-5 text-gray-700" />
-          </button>
-        ) : (
-          <div className="flex items-center gap-2 animate-in slide-in-from-right-5 fade-in duration-300">
-            <div className="w-[300px]">
-              <IntelligentSearchBar />
-            </div>
-            <button
-              onClick={() => setIsSearchOpen(false)}
-              className="w-10 h-10 bg-white hover:bg-gray-100 rounded-md flex items-center justify-center transition-all duration-300 flex-shrink-0"
-              aria-label="Close search"
-            >
-              <X className="h-5 w-5 text-gray-700" />
-            </button>
+            <IntelligentSearchBar />
           </div>
-        )}
+          
+          {/* Search Icon Button - morphs smoothly */}
+          <button
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className={`w-10 h-10 rounded-md flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+              isSearchOpen 
+                ? 'bg-gray-100 hover:bg-gray-200 rotate-90' 
+                : 'bg-white hover:bg-gray-100 rotate-0'
+            }`}
+            aria-label={isSearchOpen ? "Close search" : "Open search"}
+          >
+            {isSearchOpen ? (
+              <X className="h-5 w-5 text-gray-700 transition-transform duration-300" />
+            ) : (
+              <Search className="h-5 w-5 text-gray-700 transition-transform duration-300" />
+            )}
+          </button>
+        </div>
       </div>
       
       {/* Language Selector */}
       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
-        <SelectTrigger className="w-[70px] h-10 bg-white border-none text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-0 focus:ring-0 focus:ring-offset-0">
+        <SelectTrigger className="w-[70px] h-10 bg-white border-none text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-0 focus:ring-0 focus:ring-offset-0 rounded-md">
           <SelectValue className="text-center w-full flex justify-center">
             {languages.find(lang => lang.code === language)?.flag}
           </SelectValue>
@@ -69,7 +74,7 @@ const UtilityNavigation = () => {
       <Link to="/contact">
         <Button 
           variant="default" 
-          className="h-10 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black border border-[#f9dc24] hover:border-[#f9dc24]/90 transition-all duration-300 flex items-center justify-center px-6"
+          className="h-10 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black border border-[#f9dc24] hover:border-[#f9dc24]/90 transition-all duration-300 flex items-center justify-center px-6 rounded-md font-medium"
         >
           Contact
         </Button>
