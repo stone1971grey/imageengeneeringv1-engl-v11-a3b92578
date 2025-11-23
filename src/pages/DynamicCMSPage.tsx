@@ -583,26 +583,6 @@ const DynamicCMSPage = () => {
             ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             : "grid-cols-1 md:grid-cols-2";
 
-        // DEBUG: Log full segment data to console
-        console.log(`[DynamicCMSPage] 🔍 Image-Text Segment Debug:`, {
-          segmentId,
-          segmentDbId,
-          segmentType: segment.type,
-          segmentDataKeys: Object.keys(segment.data || {}),
-          fullSegmentData: segment.data,
-          itemsCount: segment.data?.items?.length || 0,
-          items: segment.data?.items,
-        });
-
-        // DEBUG: Log each item's image URL
-        (segment.data?.items || []).forEach((item: any, idx: number) => {
-          console.log(`[DynamicCMSPage] 📸 Item ${idx + 1} Image:`, {
-            hasImageUrl: !!item.imageUrl,
-            imageUrl: item.imageUrl,
-            title: item.title,
-          });
-        });
-
         return (
           <section
             key={segmentId}
@@ -612,6 +592,17 @@ const DynamicCMSPage = () => {
             className="py-20 bg-gray-50"
           >
             <div className="container mx-auto px-6">
+              {/* Section Hero Image - Full Width (if present) */}
+              {segment.data?.heroImageUrl && (
+                <div className="mb-16 rounded-xl overflow-hidden shadow-xl">
+                  <img
+                    src={segment.data.heroImageUrl}
+                    alt={segment.data?.heroImageMetadata?.altText || segment.data?.title || "Section image"}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              )}
+              
               {segment.data?.title && (
                 <div className="text-center mb-16">
                   <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -625,23 +616,14 @@ const DynamicCMSPage = () => {
                 </div>
               )}
               <div className={`grid gap-8 max-w-7xl mx-auto ${layoutClass}`}>
-                {(segment.data?.items || []).map((solution: any, idx: number) => {
-                  console.log(`[DynamicCMSPage] 🖼️ Rendering Item ${idx + 1}:`, {
-                    hasImageUrl: !!solution.imageUrl,
-                    imageUrl: solution.imageUrl,
-                    willRenderImage: !!solution.imageUrl
-                  });
-                  
-                  return (
+                {(segment.data?.items || []).map((solution: any, idx: number) => (
                   <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
                     {solution.imageUrl && (
                       <div className="w-full h-64 overflow-hidden">
                         <img
                           src={solution.imageUrl}
-                          alt={solution.title}
+                          alt={solution.metadata?.altText || solution.title}
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          onLoad={() => console.log(`[DynamicCMSPage] ✅ Image loaded successfully: Item ${idx + 1}`)}
-                          onError={(e) => console.error(`[DynamicCMSPage] ❌ Image failed to load: Item ${idx + 1}`, solution.imageUrl, e)}
                         />
                       </div>
                     )}
@@ -650,7 +632,7 @@ const DynamicCMSPage = () => {
                       <p className="text-gray-600 leading-relaxed">{solution.description}</p>
                     </div>
                   </div>
-                )})}
+                ))}
               </div>
             </div>
           </section>
@@ -725,6 +707,19 @@ const DynamicCMSPage = () => {
                     <div><strong>Items Count:</strong> {seg.data?.items?.length || 0}</div>
                     <div><strong>Layout:</strong> {seg.data?.layout || '2-col'}</div>
                   </div>
+                  
+                  {/* Section Hero Image Check */}
+                  {seg.data?.heroImageUrl && (
+                    <div className="bg-blue-50 p-3 rounded border border-blue-300 mb-3">
+                      <div className="font-semibold text-blue-800 mb-2">📸 Section Hero Image (vorhanden)</div>
+                      <div className="text-xs break-all mb-2"><strong>URL:</strong> {seg.data.heroImageUrl}</div>
+                      <img 
+                        src={seg.data.heroImageUrl} 
+                        alt="Section Hero"
+                        className="w-32 h-32 object-cover border-2 border-blue-500"
+                      />
+                    </div>
+                  )}
                   
                   {seg.data?.items?.length > 0 ? (
                     <div className="space-y-3">
