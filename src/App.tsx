@@ -48,6 +48,7 @@ import ImageDownload from "./pages/ImageDownload";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNews from "./pages/AdminNews";
+import UploadDebug from "./pages/UploadDebug";
 import NotFound from "./pages/NotFound";
 import { MauticTracker } from "./components/MauticTracker";
 
@@ -121,6 +122,7 @@ const App = () => (
          <Route path="/auth" element={<Auth />} />
          <Route path="/admin-dashboard" element={<AdminDashboard />} />
          <Route path="/admin-dashboard/news" element={<AdminNews />} />
+         <Route path="/upload-debug" element={<UploadDebug />} />
            {/* Page ID Route - MUST be after all specific routes */}
            <Route path="/:pageId" element={<PageIdRouter />} />
            
