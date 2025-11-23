@@ -180,19 +180,19 @@ const FullHero = ({
           <div className="text-left space-y-8">
             <div>
               {useH1 ? (
-                <h1 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white drop-shadow-lg">
-                  <span className="font-light block">{titleLine1}</span>
+                <h1 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 drop-shadow-lg">
+                  <span className="block">{titleLine1}</span>
                   <span className="font-medium block">{titleLine2}</span>
                 </h1>
               ) : (
-                <h2 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white drop-shadow-lg">
-                  <span className="font-light block">{titleLine1}</span>
+                <h2 className="text-6xl lg:text-7xl xl:text-8xl font-light text-white leading-[0.9] tracking-tight mb-6 drop-shadow-lg">
+                  <span className="block">{titleLine1}</span>
                   <span className="font-medium block">{titleLine2}</span>
                 </h2>
               )}
               
               {subtitle && (
-                <p className="text-lg lg:text-xl text-white/90 leading-relaxed drop-shadow-md">
+                <p className="text-xl lg:text-2xl text-white/90 font-light leading-relaxed max-w-2xl drop-shadow-lg">
                   {subtitle}
                 </p>
               )}
