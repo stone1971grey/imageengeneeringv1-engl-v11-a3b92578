@@ -26,6 +26,7 @@ interface ProductImage {
   title: string;
   description: string;
   metadata?: ImageMetadata;
+  cropPosition?: 'top' | 'center' | 'bottom';
 }
 
 interface ProductHeroGalleryData {
@@ -35,6 +36,7 @@ interface ProductHeroGalleryData {
   imagePosition: 'left' | 'right';
   layoutRatio: '1-1' | '2-3' | '2-5';
   topSpacing: 'small' | 'medium' | 'large' | 'extra-large';
+  imageDimensions?: '600x600' | '800x600' | '1200x800' | '1920x1080';
   cta1Text: string;
   cta1Link: string;
   cta1Style: 'standard' | 'technical' | 'outline-white';
@@ -56,6 +58,57 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
+  const cropImage = async (file: File, dimensions: string, position: 'top' | 'center' | 'bottom'): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const [targetWidth, targetHeight] = dimensions.split('x').map(Number);
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'));
+        return;
+      }
+
+      img.onload = () => {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+
+        const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const x = (targetWidth - scaledWidth) / 2;
+        
+        let y: number;
+        switch (position) {
+          case 'top':
+            y = 0;
+            break;
+          case 'bottom':
+            y = targetHeight - scaledHeight;
+            break;
+          case 'center':
+          default:
+            y = (targetHeight - scaledHeight) / 2;
+            break;
+        }
+
+        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/jpeg', 0.92);
+      };
+
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Please upload an image file');
@@ -70,12 +123,19 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
     setUploadingIndex(index);
 
     try {
-      const fileExt = file.name.split('.').pop();
+      const dimensions = data.imageDimensions || '600x600';
+      const position = data.images[index]?.cropPosition || 'center';
+      
+      // Crop the image first
+      const croppedBlob = await cropImage(file, dimensions, position);
+      const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
+
+      const fileExt = 'jpg';
       const fileName = `${pageSlug}/segment-${segmentId}/gallery-${index}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError, data: uploadData } = await supabase.storage
         .from('page-images')
-        .upload(fileName, file);
+        .upload(fileName, croppedFile);
 
       if (uploadError) throw uploadError;
 
@@ -83,8 +143,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
         .from('page-images')
         .getPublicUrl(fileName);
 
-      // Extract image metadata
-      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      // Extract image metadata from cropped file
+      const baseMetadata = await extractImageMetadata(croppedFile, publicUrl);
       const fullMetadata: ImageMetadata = {
         ...baseMetadata,
         altText: data.images[index]?.metadata?.altText || ''
@@ -227,6 +287,27 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                   <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Image Dimensions</Label>
+              <Select 
+                value={data.imageDimensions || '600x600'} 
+                onValueChange={(value: any) => onChange({ ...data, imageDimensions: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="600x600">600 × 600px (Square - Default)</SelectItem>
+                  <SelectItem value="800x600">800 × 600px (4:3)</SelectItem>
+                  <SelectItem value="1200x800">1200 × 800px (3:2)</SelectItem>
+                  <SelectItem value="1920x1080">1920 × 1080px (16:9)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Uploaded images will be automatically cropped to this size
+              </p>
             </div>
           </TabsContent>
 
@@ -407,6 +488,31 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                     }}
                     placeholder="Describe this image for accessibility and SEO"
                   />
+                </div>
+
+                {/* Crop Position */}
+                <div className="space-y-2">
+                  <Label>Crop Position (for next upload)</Label>
+                  <Select 
+                    value={image.cropPosition || 'center'} 
+                    onValueChange={(value: any) => {
+                      const updatedImages = [...data.images];
+                      updatedImages[index] = { ...updatedImages[index], cropPosition: value };
+                      onChange({ ...data, images: updatedImages });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="top">Top (Crop from bottom)</SelectItem>
+                      <SelectItem value="center">Center (Crop equally)</SelectItem>
+                      <SelectItem value="bottom">Bottom (Crop from top)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Choose which part of the image to keep when cropping to fit dimensions
+                  </p>
                 </div>
 
                 <div>
