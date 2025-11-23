@@ -5134,29 +5134,34 @@ const AdminDashboard = () => {
           </TabsContent>
 
           {/* Dynamic Segment Tabs */}
-          {pageSegments.map((segment, index) => (
+          {pageSegments.map((segment, index) => {
+            // Calculate display number based on same type before this index (consistent with Tab Label logic)
+            const sameTypeBefore = pageSegments.slice(0, index).filter(s => s.type === segment.type).length;
+            const displayNumber = sameTypeBefore + 1;
+            
+            return (
             <TabsContent key={`segment-content-${segment.id}`} value={segment.id}>
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-white">
-                        {segment.type === 'hero' && `Produkt Hero - F ${segment.position + 1}`}
-                        {segment.type === 'meta-navigation' && `Meta Navigation - E ${segment.position + 1}`}
-                        {segment.type === 'product-hero-gallery' && `Product Hero Gallery - G ${segment.position + 1}`}
-                        {segment.type === 'tiles' && `Tiles Section - H ${segment.position + 1}`}
-                        {segment.type === 'banner' && `Banner Section - J ${segment.position + 1}`}
-                        {segment.type === 'image-text' && `Image & Text Section - I ${segment.position + 1}`}
-                        {segment.type === 'full-hero' && `Full Hero - A ${segment.position + 1}`}
-                        {segment.type === 'intro' && `Intro - B ${segment.position + 1}`}
-                        {segment.type === 'industries' && `Industries - C ${segment.position + 1}`}
-                        {segment.type === 'news' && `Latest News - D ${segment.position + 1}`}
-                        {segment.type === 'debug' && `Debug ${segment.position + 1}`}
-                        {segment.type === 'feature-overview' && `Features - K ${segment.position + 1}`}
-                        {segment.type === 'table' && `Table - L ${segment.position + 1}`}
-                        {segment.type === 'faq' && `FAQ - O ${segment.position + 1}`}
-                        {segment.type === 'video' && `Video - M ${segment.position + 1}`}
-                        {segment.type === 'specification' && `Specification - N ${segment.position + 1}`}
+                        {segment.type === 'hero' && `Produkt Hero - F ${displayNumber}`}
+                        {segment.type === 'meta-navigation' && `Meta Navigation - E ${displayNumber}`}
+                        {segment.type === 'product-hero-gallery' && `Product Hero Gallery - G ${displayNumber}`}
+                        {segment.type === 'tiles' && `Tiles Section - H ${displayNumber}`}
+                        {segment.type === 'banner' && `Banner Section - J ${displayNumber}`}
+                        {segment.type === 'image-text' && `Image & Text Section - I ${displayNumber}`}
+                        {segment.type === 'full-hero' && `Full Hero - A ${displayNumber}`}
+                        {segment.type === 'intro' && `Intro - B ${displayNumber}`}
+                        {segment.type === 'industries' && `Industries - C ${displayNumber}`}
+                        {segment.type === 'news' && `Latest News - D ${displayNumber}`}
+                        {segment.type === 'debug' && `Debug ${displayNumber}`}
+                        {segment.type === 'feature-overview' && `Features - K ${displayNumber}`}
+                        {segment.type === 'table' && `Table - L ${displayNumber}`}
+                        {segment.type === 'faq' && `FAQ - O ${displayNumber}`}
+                        {segment.type === 'video' && `Video - M ${displayNumber}`}
+                        {segment.type === 'specification' && `Specification - N ${displayNumber}`}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
                         Edit this {segment.type} segment
@@ -6779,7 +6784,8 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
             </TabsContent>
-          ))}
+            );
+          })}
         </Tabs>
         )}
       </div>
