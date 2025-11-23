@@ -3978,17 +3978,17 @@ const AdminDashboard = () => {
                         )}
                         
                         <div className="space-y-2">
-                          <Input
+                          <input
                             id={`app_image_${index}`}
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
-                              addDebugLog(`🔵 Bereits vorhandene Tiles: Input onChange für Index ${index} getriggert`);
-                              addDebugLog(`🔵 Event target: ${e.target.tagName}, files: ${e.target.files?.length || 0}`);
-                              handleTileImageUpload(e, index);
+                              addDebugLog(`🔵 Bereits vorhandene Tiles: NATIVE input onChange für Index ${index} getriggert`);
+                              addDebugLog(`🔵 Native Event target: ${e.target.tagName}, files: ${e.target.files?.length || 0}`);
+                              handleTileImageUpload(e as React.ChangeEvent<HTMLInputElement>, index);
                             }}
                             disabled={uploading}
-                            className="bg-white border-2 border-gray-600 text-black cursor-pointer"
+                            className="block w-full text-sm text-black bg-white border-2 border-gray-600 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f9dc24] file:text-black hover:file:bg-[#f9dc24]/90"
                           />
                           {uploading && (
                             <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
@@ -6864,7 +6864,7 @@ const AdminDashboard = () => {
               ))
             )}
           </div>
-          <div className="px-4 py-2 bg-gray-800 rounded-b-lg">
+          <div className="px-4 py-2 bg-gray-800 rounded-b-lg flex gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -6872,6 +6872,14 @@ const AdminDashboard = () => {
               className="w-full text-xs"
             >
               Logs löschen
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => addDebugLog('📝 Manueller Test-Log aus Debug Monitor')}
+              className="w-full text-xs"
+            >
+              Test-Log
             </Button>
           </div>
         </div>
