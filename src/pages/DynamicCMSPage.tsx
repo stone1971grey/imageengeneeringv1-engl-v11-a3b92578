@@ -15,6 +15,7 @@ import FullHero from "@/components/segments/FullHero";
 import Intro from "@/components/segments/Intro";
 import IndustriesSegment from "@/components/segments/IndustriesSegment";
 import NewsSegment from "@/components/segments/NewsSegment";
+import Debug from "@/components/segments/Debug";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -425,6 +426,16 @@ const DynamicCMSPage = () => {
             sectionDescription={segment.data?.description}
             articleLimit={segment.data?.articleLimit}
             categories={segment.data?.categories}
+          />
+        );
+
+      case "debug":
+        return (
+          <Debug
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            imageUrl={segment.data?.imageUrl}
+            title={segment.data?.title}
           />
         );
 
