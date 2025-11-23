@@ -100,15 +100,27 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('[FullHeroEditor] No file selected');
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      console.log('[FullHeroEditor] Invalid file type:', file.type);
+      toast.error('Please upload an image file');
+      return;
+    }
 
     setIsUploading(true);
-    console.log('[FullHeroEditor] Starting image upload for pageSlug:', pageSlug, 'file:', file.name);
+    console.log('[FullHeroEditor] Starting image upload for pageSlug:', pageSlug, 'file:', file.name, 'size:', file.size);
+    
     try {
       const fileExt = file.name.split('.').pop();
       const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
       const fileName = `${pageSlug}/full-hero-${segmentId}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
+      
+      console.log('[FullHeroEditor] Uploading to path:', filePath);
 
       const { error: uploadError } = await supabase.storage
         .from('page-images')
@@ -126,9 +138,12 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       console.log('[FullHeroEditor] Upload successful, URL:', publicUrl);
       setImageUrl(publicUrl);
       toast.success("Image uploaded successfully");
-    } catch (error) {
+      
+      // Reset input to allow re-uploading same file
+      e.target.value = '';
+    } catch (error: any) {
       console.error("[FullHeroEditor] Error uploading image:", error);
-      toast.error("Failed to upload image");
+      toast.error("Failed to upload image: " + error.message);
     } finally {
       setIsUploading(false);
     }
@@ -340,14 +355,17 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
               <>
                 <div className="space-y-2">
                   <Label htmlFor="imageUpload">Upload Image</Label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <Input
                       id="imageUpload"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
-                      disabled={isUploading}
+                      className="bg-white border-2 cursor-pointer"
                     />
+                    {isUploading && (
+                      <span className="text-sm text-primary font-medium">Uploading...</span>
+                    )}
                     {imageUrl && (
                       <Button
                         variant="ghost"

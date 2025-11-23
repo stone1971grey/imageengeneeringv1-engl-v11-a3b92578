@@ -56,13 +56,17 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
-  const handleImageUpload = async (index: number, file: File) => {
+  const handleImageUpload = async (index: number, file: File, inputElement: HTMLInputElement) => {
+    console.log('[ProductHeroGalleryEditor] Starting upload for index:', index, 'file:', file.name);
+    
     if (!file.type.startsWith('image/')) {
+      console.log('[ProductHeroGalleryEditor] Invalid file type:', file.type);
       toast.error('Please upload an image file');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
+      console.log('[ProductHeroGalleryEditor] File too large:', file.size);
       toast.error('Image size must be less than 5MB');
       return;
     }
@@ -73,6 +77,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
       const fileExt = file.name.split('.').pop();
       const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
       const fileName = `${pageSlug}/segment-${segmentId}/gallery-${index}-${uniqueId}-${Date.now()}.${fileExt}`;
+      
+      console.log('[ProductHeroGalleryEditor] Uploading to path:', fileName);
 
       const { error: uploadError } = await supabase.storage
         .from('page-images')
@@ -105,9 +111,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
       onChange({ ...data, images: updatedImages });
 
       toast.success('Image uploaded successfully');
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Failed to upload image');
+      
+      // Reset input to allow re-uploading same file
+      inputElement.value = '';
+    } catch (error: any) {
+      console.error('[ProductHeroGalleryEditor] Upload error:', error);
+      toast.error('Failed to upload image: ' + error.message);
     } finally {
       setUploadingIndex(null);
     }
@@ -334,17 +343,19 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
 
                 <div>
                   <Label>Upload Image</Label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <Input
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) handleImageUpload(index, file);
+                        if (file) handleImageUpload(index, file, e.target);
                       }}
-                      disabled={uploadingIndex === index}
+                      className="bg-white border-2 cursor-pointer"
                     />
-                    {uploadingIndex === index && <span className="text-sm text-gray-500">Uploading...</span>}
+                    {uploadingIndex === index && (
+                      <span className="text-sm text-primary font-medium">Uploading...</span>
+                    )}
                   </div>
                   {image.imageUrl && (
                     <img src={image.imageUrl} alt={image.metadata?.altText || `Gallery ${index + 1}`} className="mt-2 h-20 object-contain" />
