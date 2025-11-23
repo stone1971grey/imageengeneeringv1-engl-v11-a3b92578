@@ -42,6 +42,7 @@ const DynamicCMSPage = () => {
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
   const [seoData, setSeoData] = useState<any>({});
   const [pageNotFound, setPageNotFound] = useState(false);
+  const [fullHeroOverrides, setFullHeroOverrides] = useState<Record<string, any>>({});
 
   // Extract page_slug from URL pathname
   // Examples:
@@ -103,7 +104,7 @@ const DynamicCMSPage = () => {
     if (!error && data) {
       let loadedSegments: any[] = [];
       let loadedTabOrder: string[] = [];
-      const fullHeroOverrides: Record<string, any> = {};
+      const fullHeroOverridesLocal: Record<string, any> = {};
       
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
@@ -129,7 +130,7 @@ const DynamicCMSPage = () => {
             const heroData = JSON.parse(item.content_value);
             const segmentIdFromKey = item.section_key.split("full_hero_")[1];
             if (segmentIdFromKey) {
-              fullHeroOverrides[segmentIdFromKey] = heroData;
+              fullHeroOverridesLocal[segmentIdFromKey] = heroData;
             }
           } catch (e) {
             console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
@@ -137,24 +138,8 @@ const DynamicCMSPage = () => {
         }
       });
 
-      // Wende Full-Hero Overrides aus spezifischen section_keys auf page_segments an
-      if (loadedSegments.length > 0 && Object.keys(fullHeroOverrides).length > 0) {
-        loadedSegments = loadedSegments.map((seg: any) => {
-          // Try multiple ID formats for matching
-          const segId = String(seg.id || seg.segment_key || '');
-          
-          if (seg.type === 'full-hero' && fullHeroOverrides[segId]) {
-            // Deep merge: override data takes precedence over page_segments data
-            return {
-              ...seg,
-              data: {
-                ...fullHeroOverrides[segId],
-              },
-            };
-          }
-          return seg;
-        });
-      }
+      // Speichere Full-Hero-Overrides separat im State
+      setFullHeroOverrides(fullHeroOverridesLocal);
 
       setPageSegments(loadedSegments);
       setTabOrder(loadedTabOrder);
@@ -375,29 +360,39 @@ const DynamicCMSPage = () => {
           />
         );
 
-      case "full-hero":
+      case "full-hero": {
+        const segmentKey = segment.segment_key || segment.id;
+        const overrideKey = segmentDbId?.toString() || String(segmentKey || "");
+        const override = fullHeroOverrides[overrideKey] || fullHeroOverrides[String(segmentKey || "")] || {};
+        const heroData = {
+          ...(segment.data || {}),
+          ...override,
+        };
+
         return (
           <FullHero
             key={segmentId}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
-            titleLine1={segment.data?.titleLine1 || ""}
-            titleLine2={segment.data?.titleLine2 || ""}
-            subtitle={segment.data?.subtitle || ""}
-            button1Text={segment.data?.button1Text}
-            button1Link={segment.data?.button1Link}
-            button1Color={segment.data?.button1Color || "yellow"}
-            button2Text={segment.data?.button2Text}
-            button2Link={segment.data?.button2Link}
-            button2Color={segment.data?.button2Color || "black"}
-            backgroundType={segment.data?.backgroundType || "image"}
-            imageUrl={segment.data?.imageUrl}
-            videoUrl={segment.data?.videoUrl}
-            kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
-            overlayOpacity={segment.data?.overlayOpacity || 15}
-            useH1={segment.data?.useH1 || false}
+            titleLine1={heroData.titleLine1 || ""}
+            titleLine2={heroData.titleLine2 || ""}
+            subtitle={heroData.subtitle || ""}
+            button1Text={heroData.button1Text}
+            button1Link={heroData.button1Link}
+            button1Color={heroData.button1Color || "yellow"}
+            button2Text={heroData.button2Text}
+            button2Link={heroData.button2Link}
+            button2Color={heroData.button2Color || "black"}
+            backgroundType={heroData.backgroundType || "image"}
+            imageUrl={heroData.imageUrl}
+            videoUrl={heroData.videoUrl}
+            kenBurnsEffect={heroData.kenBurnsEffect || "standard"}
+            overlayOpacity={heroData.overlayOpacity || 15}
+            useH1={heroData.useH1 || false}
           />
         );
+      }
+
 
       case "intro":
         return (
