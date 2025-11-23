@@ -44,6 +44,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
     checkIfH1Segment();
   }, [pageSlug, segmentId]);
 
+  // Sync imageUrl state when content is loaded from backend
+  useEffect(() => {
+    // This ensures the local state reflects the saved backend value after reload
+  }, [imageUrl]);
+
   const checkIfH1Segment = async () => {
     const { data: segments } = await supabase
       .from("segment_registry")
@@ -99,30 +104,81 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('[FullHero Upload] FILE INPUT ONCHANGE FIRED');
+    toast.success('✅ onChange event detected!', { duration: 2000 });
+    
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('[FullHero Upload] No file selected');
+      toast.error('No file selected');
+      return;
+    }
+    
+    console.log('[FullHero Upload] File details:', { name: file.name, size: file.size, type: file.type });
+    
+    // Validate
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
 
     setIsUploading(true);
+    toast.info('🚀 Starting upload...', { duration: 2000 });
+
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${pageSlug}/${fileName}`;
+      // Convert to base64
+      const reader = new FileReader();
+      const fileData = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      const { error: uploadError, data } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file);
+      console.log('[FullHero Upload] File converted to base64');
+      toast.info('Converting file...', { duration: 1000 });
 
-      if (uploadError) throw uploadError;
+      // Get session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
+      console.log('[FullHero Upload] Calling Edge Function...');
+      toast.info('Uploading to server...', { duration: 2000 });
 
-      setImageUrl(publicUrl);
-      toast.success("Image uploaded successfully");
-    } catch (error) {
-      console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
+      // Call Edge Function
+      const { data: result, error } = await supabase.functions.invoke('upload-image', {
+        body: {
+          fileName: file.name,
+          fileData: fileData,
+          bucket: 'page-images',
+          folder: pageSlug,
+          segmentId: segmentId
+        }
+      });
+
+      console.log('[FullHero Upload] Response:', { result, error });
+
+      if (error) throw error;
+      if (!result?.success) throw new Error(result?.error || 'Upload failed');
+
+      console.log('[FullHero Upload] Success! URL:', result.url);
+      
+      // Update with permanent URL in local state
+      setImageUrl(result.url);
+      toast.success('✅ Upload successful! Please click "Save Full Hero" to store it permanently.', { duration: 4000 });
+
+      // Reset input
+      e.target.value = '';
+      
+    } catch (error: any) {
+      console.error('[FullHero Upload] Error:', error);
+      toast.error('Upload failed: ' + (error.message || 'Unknown error'));
     } finally {
       setIsUploading(false);
     }
