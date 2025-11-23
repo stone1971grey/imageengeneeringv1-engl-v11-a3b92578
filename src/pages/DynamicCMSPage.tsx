@@ -42,7 +42,6 @@ const DynamicCMSPage = () => {
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
   const [seoData, setSeoData] = useState<any>({});
   const [pageNotFound, setPageNotFound] = useState(false);
-  const [fullHeroOverrides, setFullHeroOverrides] = useState<Record<string, any>>({});
 
   // Extract page_slug from URL pathname
   // Examples:
@@ -104,42 +103,28 @@ const DynamicCMSPage = () => {
     if (!error && data) {
       let loadedSegments: any[] = [];
       let loadedTabOrder: string[] = [];
-      const fullHeroOverridesLocal: Record<string, any> = {};
       
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
-          const segments = JSON.parse(item.content_value);
-          loadedSegments = segments;
+          try {
+            loadedSegments = JSON.parse(item.content_value);
+          } catch (e) {
+            console.error('[DynamicCMSPage] Error parsing page_segments:', e);
+          }
         } else if (item.section_key === "tab_order") {
           try {
-            const order = JSON.parse(item.content_value);
-            loadedTabOrder = order || [];
-          } catch {
-            loadedTabOrder = [];
-          }
-        } else if (item.section_key === "seo_settings") {
-          try {
-            const seo = JSON.parse(item.content_value);
-            setSeoData(seo);
-          } catch {
-            setSeoData({});
-          }
-        } else if (item.section_key.startsWith("full_hero_")) {
-          // Segment-spezifische Full-Hero Daten (z.B. full_hero_245)
-          try {
-            const heroData = JSON.parse(item.content_value);
-            const segmentIdFromKey = item.section_key.split("full_hero_")[1];
-            if (segmentIdFromKey) {
-              fullHeroOverridesLocal[segmentIdFromKey] = heroData;
-            }
+            loadedTabOrder = JSON.parse(item.content_value);
           } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
+            console.error('[DynamicCMSPage] Error parsing tab_order:', e);
+          }
+        } else if (item.section_key === "seo") {
+          try {
+            setSeoData(JSON.parse(item.content_value));
+          } catch (e) {
+            console.error('[DynamicCMSPage] Error parsing SEO data:', e);
           }
         }
       });
-
-      // Speichere Full-Hero-Overrides separat im State
-      setFullHeroOverrides(fullHeroOverridesLocal);
 
       setPageSegments(loadedSegments);
       setTabOrder(loadedTabOrder);
@@ -360,38 +345,29 @@ const DynamicCMSPage = () => {
           />
         );
 
-      case "full-hero": {
-        const segmentKey = segment.segment_key || segment.id;
-        const overrideKey = segmentDbId?.toString() || String(segmentKey || "");
-        const override = fullHeroOverrides[overrideKey] || fullHeroOverrides[String(segmentKey || "")] || {};
-        const heroData = {
-          ...(segment.data || {}),
-          ...override,
-        };
-
+      case "full-hero":
         return (
           <FullHero
             key={segmentId}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
-            titleLine1={heroData.titleLine1 || ""}
-            titleLine2={heroData.titleLine2 || ""}
-            subtitle={heroData.subtitle || ""}
-            button1Text={heroData.button1Text}
-            button1Link={heroData.button1Link}
-            button1Color={heroData.button1Color || "yellow"}
-            button2Text={heroData.button2Text}
-            button2Link={heroData.button2Link}
-            button2Color={heroData.button2Color || "black"}
-            backgroundType={heroData.backgroundType || "image"}
-            imageUrl={heroData.imageUrl}
-            videoUrl={heroData.videoUrl}
-            kenBurnsEffect={heroData.kenBurnsEffect || "standard"}
-            overlayOpacity={heroData.overlayOpacity || 15}
-            useH1={heroData.useH1 || false}
+            titleLine1={segment.data?.titleLine1 || ""}
+            titleLine2={segment.data?.titleLine2 || ""}
+            subtitle={segment.data?.subtitle || ""}
+            button1Text={segment.data?.button1Text}
+            button1Link={segment.data?.button1Link}
+            button1Color={segment.data?.button1Color || "yellow"}
+            button2Text={segment.data?.button2Text}
+            button2Link={segment.data?.button2Link}
+            button2Color={segment.data?.button2Color || "black"}
+            backgroundType={segment.data?.backgroundType || "image"}
+            imageUrl={segment.data?.imageUrl}
+            videoUrl={segment.data?.videoUrl}
+            kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
+            overlayOpacity={segment.data?.overlayOpacity || 15}
+            useH1={segment.data?.useH1 || false}
           />
         );
-      }
 
 
       case "intro":
