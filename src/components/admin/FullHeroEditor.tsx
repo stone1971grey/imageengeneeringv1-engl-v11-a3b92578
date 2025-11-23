@@ -434,15 +434,22 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
                 <div className="space-y-2">
                   <Label htmlFor="imageUpload">Upload Image</Label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <Input
                       id="imageUpload"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
                       disabled={isUploading}
+                      className={isUploading ? "opacity-50" : ""}
                     />
-                    {imageUrl && (
+                    {isUploading && (
+                      <div className="flex items-center gap-2 text-sm text-primary">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        <span>Uploading...</span>
+                      </div>
+                    )}
+                    {imageUrl && !isUploading && (
                       <Button
                         variant="ghost"
                         size="icon"

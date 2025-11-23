@@ -328,7 +328,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
 
                 <div>
                   <Label>Upload Image</Label>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <Input
                       type="file"
                       accept="image/*"
@@ -337,8 +337,14 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                         if (file) handleImageUpload(index, file);
                       }}
                       disabled={uploadingIndex === index}
+                      className={uploadingIndex === index ? "opacity-50" : ""}
                     />
-                    {uploadingIndex === index && <span className="text-sm text-gray-500">Uploading...</span>}
+                    {uploadingIndex === index && (
+                      <div className="flex items-center gap-2 text-sm text-primary">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                        <span>Uploading...</span>
+                      </div>
+                    )}
                   </div>
                   {image.imageUrl && (
                     <img src={image.imageUrl} alt={image.metadata?.altText || `Gallery ${index + 1}`} className="mt-2 h-20 object-contain" />

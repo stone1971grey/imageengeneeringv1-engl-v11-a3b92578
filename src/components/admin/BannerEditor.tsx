@@ -187,11 +187,14 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                         const file = e.target.files?.[0];
                         if (file) handleImageUpload(index, file);
                       }}
-                      className="bg-white border-2 border-gray-300 text-black"
+                      className={`bg-white border-2 border-gray-300 text-black ${uploadingIndex === index ? 'opacity-50' : ''}`}
                       disabled={uploadingIndex === index}
                     />
                     {uploadingIndex === index && (
-                      <span className="text-[#f9dc24]">Uploading...</span>
+                      <div className="flex items-center gap-2 text-sm text-[#f9dc24]">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#f9dc24]"></div>
+                        <span>Uploading...</span>
+                      </div>
                     )}
                   </div>
                   {image.url && (
