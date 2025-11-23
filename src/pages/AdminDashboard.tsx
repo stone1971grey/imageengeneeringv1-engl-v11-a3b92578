@@ -162,7 +162,16 @@ const AdminDashboard = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState(false); // legacy global flag, kept for compatibility
+  // Separate uploading states per area to avoid blocking all uploads when one fails
+  const [heroUploading, setHeroUploading] = useState(false);
+  const [tileUploadingIndex, setTileUploadingIndex] = useState<number | null>(null);
+  const [solutionsUploadingIndex, setSolutionsUploadingIndex] = useState<number | null>(null);
+  const [imageTextHeroUploadingIndex, setImageTextHeroUploadingIndex] = useState<number | null>(null);
+  const [imageTextItemUploadingKey, setImageTextItemUploadingKey] = useState<string | null>(null);
+  const [footerUploading, setFooterUploading] = useState(false);
+  const [bannerUploadingIndex, setBannerUploadingIndex] = useState<number | null>(null);
+  const [dynamicTileUploadingKey, setDynamicTileUploadingKey] = useState<string | null>(null);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImageMetadata, setHeroImageMetadata] = useState<ImageMetadata | null>(null);
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
@@ -1238,74 +1247,74 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploading(true);
-
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      // Upload to storage
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      // Extract image metadata
-      const baseMetadata = await extractImageMetadata(file, publicUrl);
-      const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
-      
-      setHeroImageUrl(publicUrl);
-      setHeroImageMetadata(metadata);
-      
-      // Save URL to database
-      const { error: dbError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: selectedPage,
-          section_key: "hero_image_url",
-          content_type: "image_url",
-          content_value: publicUrl,
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      if (dbError) throw dbError;
-
-      // Save metadata to database
-      const { error: metadataError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: selectedPage,
-          section_key: "hero_image_metadata",
-          content_type: "json",
-          content_value: JSON.stringify(metadata),
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      if (metadataError) throw metadataError;
-
-      toast.success("Image uploaded successfully!");
-    } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
+    setHeroUploading(true);
+ 
+     try {
+       const fileExt = file.name.split('.').pop();
+       const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
+       const filePath = `${fileName}`;
+ 
+       // Upload to storage
+       const { error: uploadError } = await supabase.storage
+         .from('page-images')
+         .upload(filePath, file, {
+           cacheControl: '3600',
+           upsert: false
+         });
+ 
+       if (uploadError) throw uploadError;
+ 
+       // Get public URL
+       const { data: { publicUrl } } = supabase.storage
+         .from('page-images')
+         .getPublicUrl(filePath);
+ 
+       // Extract image metadata
+       const baseMetadata = await extractImageMetadata(file, publicUrl);
+       const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
+       
+       setHeroImageUrl(publicUrl);
+       setHeroImageMetadata(metadata);
+       
+       // Save URL to database
+       const { error: dbError } = await supabase
+         .from("page_content")
+         .upsert({
+           page_slug: selectedPage,
+           section_key: "hero_image_url",
+           content_type: "image_url",
+           content_value: publicUrl,
+           updated_at: new Date().toISOString(),
+           updated_by: user?.id
+         }, {
+           onConflict: 'page_slug,section_key'
+         });
+ 
+       if (dbError) throw dbError;
+ 
+       // Save metadata to database
+       const { error: metadataError } = await supabase
+         .from("page_content")
+         .upsert({
+           page_slug: selectedPage,
+           section_key: "hero_image_metadata",
+           content_type: "json",
+           content_value: JSON.stringify(metadata),
+           updated_at: new Date().toISOString(),
+           updated_by: user?.id
+         }, {
+           onConflict: 'page_slug,section_key'
+         });
+ 
+       if (metadataError) throw metadataError;
+ 
+       toast.success("Image uploaded successfully!");
+     } catch (error: any) {
+       toast.error("Error uploading image: " + error.message);
+     } finally {
+       setHeroUploading(false);
+     }
+   };
 
   const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
     if (!e.target.files || !e.target.files[0]) return;
@@ -3568,23 +3577,23 @@ const AdminDashboard = () => {
                 {heroImageUrl ? (
                   <Button
                     type="button"
-                    onClick={() => document.getElementById('hero_image')?.click()}
-                    disabled={uploading}
-                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                  >
-                    {uploading ? "Uploading..." : "Replace Image"}
+                     onClick={() => document.getElementById('hero_image')?.click()}
+                     disabled={false}
+                     className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                   >
+                     Replace Image
                   </Button>
                 ) : null}
                 
                 <Input
-                  id="hero_image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  disabled={uploading}
-                  className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
-                />
-                {uploading && <p className="text-sm text-white mt-2">Uploading...</p>}
+                   id="hero_image"
+                   type="file"
+                   accept="image/*"
+                   onChange={handleImageUpload}
+                   disabled={false}
+                   className={`border-2 border-gray-600 ${heroImageUrl ? "hidden" : ""}`}
+                 />
+                
                 
                 {/* Image Metadata Display */}
                 {heroImageMetadata && (
@@ -3941,15 +3950,15 @@ const AdminDashboard = () => {
                         )}
                         
                         {app.imageUrl ? (
-                          <Button
-                            type="button"
-                            onClick={() => document.getElementById(`app_image_${index}`)?.click()}
-                            disabled={uploading}
-                            className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                          >
-                            {uploading ? "Uploading..." : "Replace Image"}
-                          </Button>
-                        ) : null}
+                           <Button
+                              type="button"
+                              onClick={() => document.getElementById(`app_image_${index}`)?.click()}
+                              disabled={false}
+                              className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                            >
+                              Replace Image
+                           </Button>
+                         ) : null}
                         
                         <Input
                           id={`app_image_${index}`}
