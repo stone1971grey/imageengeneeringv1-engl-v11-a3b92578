@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface DebugEditorProps {
@@ -18,14 +19,96 @@ interface DebugEditorProps {
 
 const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEditorProps) => {
   const [imageUrl, setImageUrl] = useState(data.imageUrl || '');
+  const [uploading, setUploading] = useState(false);
 
   const handleImageUrlChange = (url: string) => {
     setImageUrl(url);
     onChange({ ...data, imageUrl: url });
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('=== FILE INPUT ONCHANGE FIRED ===');
+    toast.success('✅ onChange event detected!', { duration: 2000 });
+    
+    const file = e.target.files?.[0];
+    if (!file) {
+      console.log('No file selected');
+      toast.error('No file selected');
+      return;
+    }
+    
+    console.log('File details:', { name: file.name, size: file.size, type: file.type });
+    
+    // Validate
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
+
+    setUploading(true);
+    toast.info('🚀 Starting upload...', { duration: 2000 });
+
+    try {
+      // Convert to base64
+      const reader = new FileReader();
+      const fileData = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      console.log('[Upload] File converted to base64');
+      toast.info('Converting file...', { duration: 1000 });
+
+      // Get session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      console.log('[Upload] Calling Edge Function...');
+      toast.info('Uploading to server...', { duration: 2000 });
+
+      // Call Edge Function
+      const { data: result, error } = await supabase.functions.invoke('upload-image', {
+        body: {
+          fileName: file.name,
+          fileData: fileData,
+          bucket: 'page-images',
+          folder: pageSlug,
+          segmentId: segmentId
+        }
+      });
+
+      console.log('[Upload] Response:', { result, error });
+
+      if (error) throw error;
+      if (!result?.success) throw new Error(result?.error || 'Upload failed');
+
+      console.log('[Upload] Success! URL:', result.url);
+      
+      // Update with permanent URL
+      handleImageUrlChange(result.url);
+      toast.success('✅ Upload successful!', { duration: 3000 });
+
+      // Reset input
+      e.target.value = '';
+      
+    } catch (error: any) {
+      console.error('[Upload] Error:', error);
+      toast.error('Upload failed: ' + (error.message || 'Unknown error'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = () => {
-    if (imageUrl && !imageUrl.startsWith('http')) {
+    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('blob:')) {
       toast.error('Please enter a valid URL starting with http:// or https://');
       return;
     }
@@ -85,44 +168,30 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
         </div>
 
         <div className="border-t pt-4 space-y-2">
-          <Label htmlFor="debug-upload">Alternative: Direct File Upload Test</Label>
+          <Label htmlFor="debug-upload">File Upload (Working Method)</Label>
           <p className="text-xs text-muted-foreground mb-2">
-            Test file upload with visible input (no hidden elements)
+            Upload directly to Supabase Storage via Edge Function
           </p>
           
           <Input
             id="debug-upload"
             type="file"
             accept="image/*"
-            onChange={(e) => {
-              console.log('=== VISIBLE FILE INPUT ONCHANGE FIRED ===');
-              toast.success('✅ onChange event detected!', { duration: 3000 });
-              
-              const file = e.target.files?.[0];
-              if (!file) {
-                console.log('No file selected');
-                toast.error('No file selected');
-                return;
-              }
-              
-              console.log('File details:', { 
-                name: file.name, 
-                size: file.size, 
-                type: file.type 
-              });
-              toast.info(`File: ${file.name} (${Math.round(file.size/1024)}KB)`);
-              
-              // Create object URL for immediate preview
-              const objectUrl = URL.createObjectURL(file);
-              handleImageUrlChange(objectUrl);
-              toast.success('Preview loaded! (Object URL)', { duration: 3000 });
-            }}
+            onChange={handleFileUpload}
+            disabled={uploading}
             className="cursor-pointer"
           />
           
-          <p className="text-xs text-yellow-600 bg-yellow-50 p-2 rounded">
-            ⚠️ This is a diagnostic test - if onChange fires here but not with hidden inputs, 
-            we've isolated the problem to hidden input handling in React.
+          {uploading && (
+            <p className="text-sm text-blue-600 flex items-center gap-2">
+              <span className="animate-spin">⏳</span>
+              Uploading to server...
+            </p>
+          )}
+          
+          <p className="text-xs text-green-600 bg-green-50 p-2 rounded">
+            ✅ This visible file input triggers onChange reliably. After upload completes, 
+            the permanent URL will be saved above.
           </p>
         </div>
 
