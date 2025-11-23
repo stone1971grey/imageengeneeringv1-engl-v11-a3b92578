@@ -57,9 +57,11 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         try {
           const segments = JSON.parse(segmentsRow.content_value);
           const introSegment = Array.isArray(segments)
-            ? segments.find((seg: any) =>
-                (seg.segment_key === segmentKey || seg.id === segmentKey) && seg.type === 'intro'
-              )
+            ? segments.find((seg: any) => {
+                const key = seg.segment_key ?? seg.id;
+                if (!key) return false;
+                return String(key) === String(segmentKey) && String(seg.type || '').toLowerCase() === 'intro';
+              })
             : null;
 
           if (introSegment?.data) {
@@ -138,7 +140,11 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
           const segments = JSON.parse(segmentsRow.content_value);
           const updatedSegments = Array.isArray(segments)
             ? segments.map((seg: any) => {
-                if (seg.type === 'intro' && (seg.segment_key === segmentKey || seg.id === segmentKey)) {
+                const key = seg.segment_key ?? seg.id;
+                const isIntroType = String(seg.type || '').toLowerCase() === 'intro';
+                const isSameSegment = key && String(key) === String(segmentKey);
+
+                if (isIntroType && isSameSegment) {
                   return {
                     ...seg,
                     data: {
