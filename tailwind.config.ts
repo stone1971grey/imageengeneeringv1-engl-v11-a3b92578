@@ -215,11 +215,17 @@ export default {
 				'hover-lift': 'hover-lift 0.3s ease-out',
 				'fade-in': 'fade-in 1.2s ease-out',
 				'ken-burns': 'ken-burns 40s ease-in-out 1 forwards',
+				'ken-burns-loop': 'ken-burns 40s ease-in-out infinite',
 				'ken-burns-slow': 'ken-burns-slow 60s ease-in-out 1 forwards',
+				'ken-burns-slow-loop': 'ken-burns-slow 60s ease-in-out infinite',
 				'ken-burns-fast': 'ken-burns-fast 20s ease-in-out 1 forwards',
+				'ken-burns-fast-loop': 'ken-burns-fast 20s ease-in-out infinite',
 				'ken-burns-zoom-out': 'ken-burns-zoom-out 30s ease-out 1 forwards',
-				'ken-burns-pan-left': 'ken-burns-pan-left 40s linear infinite alternate',
-				'ken-burns-pan-right': 'ken-burns-pan-right 40s linear infinite alternate',
+				'ken-burns-zoom-out-loop': 'ken-burns-zoom-out 30s ease-out infinite',
+				'ken-burns-pan-left': 'ken-burns-pan-left 40s linear 1 alternate',
+				'ken-burns-pan-left-loop': 'ken-burns-pan-left 40s linear infinite alternate',
+				'ken-burns-pan-right': 'ken-burns-pan-right 40s linear 1 alternate',
+				'ken-burns-pan-right-loop': 'ken-burns-pan-right 40s linear infinite alternate',
 				'slide-in-right': 'slide-in-right 3s ease-in-out infinite'
 			}
 		}
