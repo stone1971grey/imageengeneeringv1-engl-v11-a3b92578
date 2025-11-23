@@ -168,6 +168,8 @@ const AdminDashboard = () => {
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
   const [heroLayout, setHeroLayout] = useState<string>("2-5");
   const [heroTopPadding, setHeroTopPadding] = useState<string>("medium");
+  const [heroImageDimensions, setHeroImageDimensions] = useState<'600x600' | '800x600' | '1200x800' | '1920x1080'>('600x600');
+  const [heroCropPosition, setHeroCropPosition] = useState<'top' | 'center' | 'bottom'>('center');
   const [heroCtaLink, setHeroCtaLink] = useState<string>("#applications-start");
   const [heroCtaStyle, setHeroCtaStyle] = useState<string>("standard");
   const [bannerTitle, setBannerTitle] = useState<string>("");
@@ -1221,6 +1223,57 @@ const AdminDashboard = () => {
     }
   };
 
+  const cropHeroImage = async (file: File, dimensions: string, position: 'top' | 'center' | 'bottom'): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const [targetWidth, targetHeight] = dimensions.split('x').map(Number);
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'));
+        return;
+      }
+
+      img.onload = () => {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+
+        const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const x = (targetWidth - scaledWidth) / 2;
+        
+        let y: number;
+        switch (position) {
+          case 'top':
+            y = 0;
+            break;
+          case 'bottom':
+            y = targetHeight - scaledHeight;
+            break;
+          case 'center':
+          default:
+            y = (targetHeight - scaledHeight) / 2;
+            break;
+        }
+
+        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/jpeg', 0.92);
+      };
+
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
     
@@ -1241,14 +1294,18 @@ const AdminDashboard = () => {
     setUploading(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
+      // Crop the image first
+      const croppedBlob = await cropHeroImage(file, heroImageDimensions, heroCropPosition);
+      const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
+
+      const fileExt = 'jpg';
       const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload to storage
+      // Upload cropped image to storage
       const { error: uploadError } = await supabase.storage
         .from('page-images')
-        .upload(filePath, file, {
+        .upload(filePath, croppedFile, {
           cacheControl: '3600',
           upsert: false
         });
@@ -1260,8 +1317,8 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract image metadata
-      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      // Extract image metadata from cropped file
+      const baseMetadata = await extractImageMetadata(croppedFile, publicUrl);
       const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
       
       setHeroImageUrl(publicUrl);
@@ -3632,6 +3689,39 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                 )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="hero_image_dimensions" className="text-white">Image Dimensions</Label>
+                  <select
+                    id="hero_image_dimensions"
+                    value={heroImageDimensions}
+                    onChange={(e) => setHeroImageDimensions(e.target.value as any)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="600x600">600 × 600px (Square)</option>
+                    <option value="800x600">800 × 600px (4:3)</option>
+                    <option value="1200x800">1200 × 800px (3:2)</option>
+                    <option value="1920x1080">1920 × 1080px (16:9)</option>
+                  </select>
+                  <p className="text-sm text-gray-400 mt-1">Images will be cropped to this size</p>
+                </div>
+
+                <div>
+                  <Label htmlFor="hero_crop_position" className="text-white">Crop Position</Label>
+                  <select
+                    id="hero_crop_position"
+                    value={heroCropPosition}
+                    onChange={(e) => setHeroCropPosition(e.target.value as any)}
+                    className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
+                  >
+                    <option value="top">Top (Keep top, crop bottom)</option>
+                    <option value="center">Center (Crop equally)</option>
+                    <option value="bottom">Bottom (Keep bottom, crop top)</option>
+                  </select>
+                  <p className="text-sm text-gray-400 mt-1">Which part to keep when cropping</p>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
