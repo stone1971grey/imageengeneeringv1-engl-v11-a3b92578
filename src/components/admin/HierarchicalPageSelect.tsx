@@ -442,7 +442,6 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
           <SelectValue placeholder="Select a page to edit..." />
         </SelectTrigger>
         <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] w-[700px] z-50 shadow-2xl">
-          {/* Search Bar */}
           <div className="sticky top-0 z-10 bg-gray-900 border-b border-gray-700 p-3 space-y-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -451,8 +450,16 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
                 placeholder="Search: Page ID, Name, Category, or Slug..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onClick={(e) => {
+                  // Prevent Radix Select from stealing focus
+                  e.stopPropagation();
+                }}
+                onKeyDownCapture={(e) => {
+                  // Block capture phase so Select root never sees these keys
+                  e.stopPropagation();
+                }}
                 onKeyDown={(e) => {
-                  // Prevent Select from capturing keyboard events
+                  // Ensure keys are only handled by the input, not the Select
                   e.stopPropagation();
                 }}
                 autoFocus
@@ -460,7 +467,11 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
               />
               {searchQuery && (
                 <button
-                  onClick={() => setSearchQuery("")}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSearchQuery("");
+                  }}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
                 >
                   <X className="h-4 w-4" />
