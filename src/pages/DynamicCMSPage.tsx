@@ -42,6 +42,7 @@ const DynamicCMSPage = () => {
   const [segmentIdMap, setSegmentIdMap] = useState<Record<string, number>>({});
   const [seoData, setSeoData] = useState<any>({});
   const [pageNotFound, setPageNotFound] = useState(false);
+  const [fullHeroOverrides, setFullHeroOverrides] = useState<Record<string, any>>({});
 
   // Extract page_slug from URL pathname
   // Examples:
@@ -103,6 +104,7 @@ const DynamicCMSPage = () => {
     if (!error && data) {
       let loadedSegments: any[] = [];
       let loadedTabOrder: string[] = [];
+      const fullHeroOverridesLocal: Record<string, any> = {};
       
       data.forEach((item: any) => {
         if (item.section_key === "page_segments") {
@@ -123,8 +125,20 @@ const DynamicCMSPage = () => {
           } catch (e) {
             console.error('[DynamicCMSPage] Error parsing SEO data:', e);
           }
+        } else if (item.section_key.startsWith('full_hero_')) {
+          try {
+            const heroData = JSON.parse(item.content_value);
+            const segmentIdFromKey = item.section_key.split('full_hero_')[1];
+            if (segmentIdFromKey) {
+              fullHeroOverridesLocal[segmentIdFromKey] = heroData;
+            }
+          } catch (e) {
+            console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
+          }
         }
       });
+
+      setFullHeroOverrides(fullHeroOverridesLocal);
 
       setPageSegments(loadedSegments);
       setTabOrder(loadedTabOrder);
@@ -345,29 +359,42 @@ const DynamicCMSPage = () => {
           />
         );
 
-      case "full-hero":
+      case "full-hero": {
+        const segmentKey = segment.segment_key || segment.id;
+        const overrideKey = segmentDbId?.toString() || String(segmentKey || "");
+        const override = fullHeroOverrides[overrideKey] || fullHeroOverrides[String(segmentKey || "")] || {};
+        const heroData = {
+          ...(segment.data || {}),
+        };
+
+        // Fallback: wenn kein imageUrl im gemeinsamen Segment steht, nutze alten Full-Hero-Eintrag
+        const finalHeroData = (!heroData.imageUrl && override.imageUrl)
+          ? { ...heroData, ...override }
+          : heroData;
+
         return (
           <FullHero
             key={segmentId}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
-            titleLine1={segment.data?.titleLine1 || ""}
-            titleLine2={segment.data?.titleLine2 || ""}
-            subtitle={segment.data?.subtitle || ""}
-            button1Text={segment.data?.button1Text}
-            button1Link={segment.data?.button1Link}
-            button1Color={segment.data?.button1Color || "yellow"}
-            button2Text={segment.data?.button2Text}
-            button2Link={segment.data?.button2Link}
-            button2Color={segment.data?.button2Color || "black"}
-            backgroundType={segment.data?.backgroundType || "image"}
-            imageUrl={segment.data?.imageUrl}
-            videoUrl={segment.data?.videoUrl}
-            kenBurnsEffect={segment.data?.kenBurnsEffect || "standard"}
-            overlayOpacity={segment.data?.overlayOpacity || 15}
-            useH1={segment.data?.useH1 || false}
+            titleLine1={finalHeroData.titleLine1 || ""}
+            titleLine2={finalHeroData.titleLine2 || ""}
+            subtitle={finalHeroData.subtitle || ""}
+            button1Text={finalHeroData.button1Text}
+            button1Link={finalHeroData.button1Link}
+            button1Color={finalHeroData.button1Color || "yellow"}
+            button2Text={finalHeroData.button2Text}
+            button2Link={finalHeroData.button2Link}
+            button2Color={finalHeroData.button2Color || "black"}
+            backgroundType={finalHeroData.backgroundType || "image"}
+            imageUrl={finalHeroData.imageUrl}
+            videoUrl={finalHeroData.videoUrl}
+            kenBurnsEffect={finalHeroData.kenBurnsEffect || "standard"}
+            overlayOpacity={finalHeroData.overlayOpacity || 15}
+            useH1={finalHeroData.useH1 || false}
           />
         );
+      }
 
 
       case "intro":
