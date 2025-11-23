@@ -71,17 +71,23 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${pageSlug}/segment-${segmentId}/gallery-${index}-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `${pageSlug}/segment-${segmentId}/gallery-${index}-${uniqueId}-${Date.now()}.${fileExt}`;
 
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('page-images')
-        .upload(fileName, file);
+        .upload(fileName, file, { upsert: false });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('[ProductHeroGalleryEditor] Upload error:', uploadError);
+        throw uploadError;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(fileName);
+
+      console.log('[ProductHeroGalleryEditor] Upload successful, URL:', publicUrl);
 
       // Extract image metadata
       const baseMetadata = await extractImageMetadata(file, publicUrl);

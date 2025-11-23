@@ -5175,24 +5175,30 @@ const AdminDashboard = () => {
                       const file = e.target.files?.[0];
                       if (!file) return;
 
+                      console.log('[AdminDashboard HeroSegment] Starting image upload for page:', selectedPage, 'segmentId:', segment.id, 'file:', file.name);
+
                       try {
                         // Upload to Supabase Storage first
                         const fileExt = file.name.split('.').pop();
-                        const fileName = `${Date.now()}.${fileExt}`;
-                        const filePath = `${selectedPage}/${fileName}`;
+                        const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+                        const fileName = `${selectedPage}/dynamic-hero-${segment.id}-${uniqueId}-${Date.now()}.${fileExt}`;
+                        const filePath = `${fileName}`;
 
                         const { error: uploadError } = await supabase.storage
                           .from('page-images')
-                          .upload(filePath, file);
+                          .upload(filePath, file, { upsert: false });
 
-                        if (uploadError) throw uploadError;
+                        if (uploadError) {
+                          console.error('[AdminDashboard HeroSegment] Upload error:', uploadError);
+                          throw uploadError;
+                        }
 
                         // Get public URL
                         const { data: urlData } = supabase.storage
                           .from('page-images')
                           .getPublicUrl(filePath);
 
-                        // Extract metadata with URL
+                        console.log('[AdminDashboard HeroSegment] Upload successful, URL:', urlData.publicUrl);
                         const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
                         const metadata: ImageMetadata = {
                           ...metadataWithoutAlt,
