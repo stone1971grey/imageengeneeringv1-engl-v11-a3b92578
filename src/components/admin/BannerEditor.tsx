@@ -76,13 +76,28 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
 
       console.log('[BANNER UPLOAD] Got public URL:', urlData.publicUrl);
 
-      const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
-      const metadata: ImageMetadata = {
-        ...metadataWithoutAlt,
-        altText: data.images[index]?.alt || ''
-      };
-
-      console.log('[BANNER UPLOAD] Extracted metadata:', metadata);
+      let metadata: ImageMetadata;
+      try {
+        const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
+        metadata = {
+          ...metadataWithoutAlt,
+          altText: data.images[index]?.alt || ''
+        };
+        console.log('[BANNER UPLOAD] Extracted metadata:', metadata);
+      } catch (error) {
+        console.warn('[BANNER UPLOAD] Metadata extraction failed, using minimal metadata:', error);
+        // Fallback metadata if extraction fails
+        metadata = {
+          url: urlData.publicUrl,
+          originalFileName: file.name,
+          width: 0,
+          height: 0,
+          fileSizeKB: Math.round(file.size / 1024),
+          format: file.type.replace('image/', '').toUpperCase(),
+          uploadDate: new Date().toISOString(),
+          altText: data.images[index]?.alt || ''
+        };
+      }
 
       const updatedImages = [...data.images];
       

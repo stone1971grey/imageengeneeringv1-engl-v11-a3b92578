@@ -171,11 +171,27 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         .getPublicUrl(filePath);
 
       // Extract metadata from cropped file
-      const metadataWithoutAlt = await extractImageMetadata(croppedFile, publicUrl);
-      const metadata: ImageMetadata = {
-        ...metadataWithoutAlt,
-        altText: imageMetadata?.altText || ''
-      };
+      let metadata: ImageMetadata;
+      try {
+        const metadataWithoutAlt = await extractImageMetadata(croppedFile, publicUrl);
+        metadata = {
+          ...metadataWithoutAlt,
+          altText: imageMetadata?.altText || ''
+        };
+      } catch (error) {
+        console.warn('[FULL HERO] Metadata extraction failed, using minimal metadata:', error);
+        // Fallback metadata if extraction fails
+        metadata = {
+          url: publicUrl,
+          originalFileName: croppedFile.name,
+          width: 0,
+          height: 0,
+          fileSizeKB: Math.round(croppedFile.size / 1024),
+          format: 'JPEG',
+          uploadDate: new Date().toISOString(),
+          altText: imageMetadata?.altText || ''
+        };
+      }
 
       setImageUrl(publicUrl);
       setImageMetadata(metadata);
