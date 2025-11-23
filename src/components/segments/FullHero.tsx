@@ -140,93 +140,88 @@ const FullHero = ({
 
   return (
     <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()}`}>
+      {/* Background layer: image or video full-width */}
+      {backgroundType === 'image' && imageUrl && (
+        <div className="absolute inset-0 -z-10">
+          <img
+            src={imageUrl}
+            alt="Full hero background"
+            className={`w-full h-full object-cover ${getKenBurnsClass()}`}
+            style={{ transform: kenBurnsEffect !== 'none' ? 'scale(1.05)' : 'scale(1)' }}
+          />
+          <div
+            className="absolute inset-0 bg-black"
+            style={{ opacity: overlayOpacity / 100 }}
+          />
+        </div>
+      )}
+
+      {backgroundType === 'video' && videoUrl && (
+        <div className="absolute inset-0 -z-10">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <source src={videoUrl} type="video/mp4" />
+          </video>
+          <div
+            className="absolute inset-0 bg-black"
+            style={{ opacity: overlayOpacity / 100 }}
+          />
+        </div>
+      )}
+
+      {/* Content layer */}
       <div className="container mx-auto px-6 pb-16 lg:pb-24 relative z-10">
-        <div className={layoutClasses.container}>
-          
-          {/* Text Content */}
-          <div className={`text-left space-y-8 ${layoutClasses.text} ${layoutClasses.order}`}>
-            <div>
-              {useH1 ? (
-                <h1 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-foreground">
-                  <span className="font-light block">{titleLine1}</span>
-                  <span className="font-medium block">{titleLine2}</span>
-                </h1>
-              ) : (
-                <h2 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-foreground">
-                  <span className="font-light block">{titleLine1}</span>
-                  <span className="font-medium block">{titleLine2}</span>
-                </h2>
+        <div className="max-w-3xl">
+          {useH1 ? (
+            <h1 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white">
+              <span className="font-light block">{titleLine1}</span>
+              <span className="font-medium block">{titleLine2}</span>
+            </h1>
+          ) : (
+            <h2 className="text-4xl lg:text-5xl xl:text-6xl leading-tight tracking-tight mb-6 text-white">
+              <span className="font-light block">{titleLine1}</span>
+              <span className="font-medium block">{titleLine2}</span>
+            </h2>
+          )}
+
+          {subtitle && (
+            <p className="text-lg lg:text-xl text-white/80 leading-relaxed max-w-2xl">
+              {subtitle}
+            </p>
+          )}
+
+          {(button1Text || button2Text) && (
+            <div className="pt-6 flex flex-col sm:flex-row gap-4">
+              {button1Text && (
+                <Button
+                  size="lg"
+                  className="px-8 py-6 text-base font-semibold shadow-lg"
+                  style={getButtonStyle(button1Color)}
+                  onClick={() => handleButtonClick(button1Link)}
+                >
+                  {button1Text}
+                </Button>
               )}
-              
-              {subtitle && (
-                <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
-                  {subtitle}
-                </p>
+
+              {button2Text && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="px-8 py-6 text-base font-semibold bg-transparent border-white/40 text-white hover:bg-white/10"
+                  style={button2Color === 'white' ? getButtonStyle(button2Color) : undefined}
+                  onClick={() => handleButtonClick(button2Link)}
+                >
+                  {button2Text}
+                </Button>
               )}
             </div>
-            
-            {(button1Text || button2Text) && (
-              <div className="pt-4 flex flex-col sm:flex-row gap-4">
-                {button1Text && (
-                  <Button 
-                    size="lg"
-                    className="px-8 py-6 text-base"
-                    style={getButtonStyle(button1Color)}
-                    onClick={() => handleButtonClick(button1Link)}
-                  >
-                    {button1Text}
-                  </Button>
-                )}
-                
-                {button2Text && (
-                  <Button 
-                    size="lg"
-                    variant="outline"
-                    className="px-8 py-6 text-base"
-                    style={getButtonStyle(button2Color)}
-                    onClick={() => handleButtonClick(button2Link)}
-                  >
-                    {button2Text}
-                  </Button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Image Section */}
-          <div className={`relative ${layoutClasses.image} ${imagePosition === 'left' ? 'lg:order-1' : 'lg:order-2'}`}>
-            {backgroundType === 'image' && imageUrl ? (
-              <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                <img 
-                  src={imageUrl}
-                  alt="Product Hero"
-                  className={`w-full h-auto object-cover ${getKenBurnsClass()}`}
-                  style={{ transform: kenBurnsEffect !== 'none' ? 'scale(1.1)' : 'scale(1)' }}
-                />
-                <div 
-                  className="absolute inset-0 bg-black"
-                  style={{ opacity: overlayOpacity / 100 }}
-                />
-              </div>
-            ) : backgroundType === 'video' && videoUrl ? (
-              <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-auto object-cover"
-                  onContextMenu={(e) => e.preventDefault()}
-                >
-                  <source src={videoUrl} type="video/mp4" />
-                </video>
-                <div 
-                  className="absolute inset-0 bg-black"
-                  style={{ opacity: overlayOpacity / 100 }}
-                />
-              </div>
-            ) : null}
-          </div>
+          )}
         </div>
       </div>
     </section>
