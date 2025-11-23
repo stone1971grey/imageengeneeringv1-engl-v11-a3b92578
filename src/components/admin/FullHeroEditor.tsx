@@ -41,6 +41,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [kenBurnsLoop, setKenBurnsLoop] = useState(true);
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [gradientDirection, setGradientDirection] = useState<'none' | 'left-to-right' | 'right-to-left'>('none');
+  const [imageDimensions, setImageDimensions] = useState<'600x600' | '800x600' | '1200x800' | '1920x1080'>('600x600');
   const [isUploading, setIsUploading] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
 
@@ -103,7 +104,46 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       setKenBurnsLoop(content.kenBurnsLoop !== undefined ? content.kenBurnsLoop : true);
       setOverlayOpacity(content.overlayOpacity || 15);
       setGradientDirection(content.gradientDirection || 'none');
+      setImageDimensions(content.imageDimensions || '600x600');
     }
+  };
+
+  const cropImage = async (file: File, dimensions: string): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const [targetWidth, targetHeight] = dimensions.split('x').map(Number);
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'));
+        return;
+      }
+
+      img.onload = () => {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+
+        const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
+        const scaledWidth = img.width * scale;
+        const scaledHeight = img.height * scale;
+        const x = (targetWidth - scaledWidth) / 2;
+        const y = (targetHeight - scaledHeight) / 2;
+
+        ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/jpeg', 0.92);
+      };
+
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = URL.createObjectURL(file);
+    });
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,13 +152,17 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
     setIsUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
+      // Crop the image first
+      const croppedBlob = await cropImage(file, imageDimensions);
+      const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
+
+      const fileExt = 'jpg';
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${pageSlug}/${fileName}`;
 
       const { error: uploadError, data } = await supabase.storage
         .from('page-images')
-        .upload(filePath, file);
+        .upload(filePath, croppedFile);
 
       if (uploadError) throw uploadError;
 
@@ -126,8 +170,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract metadata
-      const metadataWithoutAlt = await extractImageMetadata(file, publicUrl);
+      // Extract metadata from cropped file
+      const metadataWithoutAlt = await extractImageMetadata(croppedFile, publicUrl);
       const metadata: ImageMetadata = {
         ...metadataWithoutAlt,
         altText: imageMetadata?.altText || ''
@@ -135,7 +179,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
       setImageUrl(publicUrl);
       setImageMetadata(metadata);
-      toast.success("Image uploaded successfully");
+      toast.success("Image uploaded and cropped successfully");
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Failed to upload image");
@@ -184,6 +228,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       kenBurnsLoop,
       overlayOpacity,
       gradientDirection,
+      imageDimensions,
     };
 
     const { error } = await supabase
@@ -369,6 +414,24 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
             {backgroundType === 'image' ? (
               <>
+                <div className="space-y-2">
+                  <Label>Image Dimensions</Label>
+                  <Select value={imageDimensions} onValueChange={(val: any) => setImageDimensions(val)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="600x600">600 × 600px (Square - Default)</SelectItem>
+                      <SelectItem value="800x600">800 × 600px (4:3)</SelectItem>
+                      <SelectItem value="1200x800">1200 × 800px (3:2)</SelectItem>
+                      <SelectItem value="1920x1080">1920 × 1080px (16:9)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Uploaded images will be automatically cropped to this size
+                  </p>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="imageUpload">Upload Image</Label>
                   <div className="flex gap-2">
