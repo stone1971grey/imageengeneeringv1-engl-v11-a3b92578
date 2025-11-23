@@ -42,6 +42,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [gradientDirection, setGradientDirection] = useState<'none' | 'left-to-right' | 'right-to-left'>('none');
   const [imageDimensions, setImageDimensions] = useState<'600x600' | '800x600' | '1200x800' | '1920x1080'>('600x600');
+  const [cropPosition, setCropPosition] = useState<'top' | 'center' | 'bottom'>('center');
   const [isUploading, setIsUploading] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
 
@@ -105,10 +106,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       setOverlayOpacity(content.overlayOpacity || 15);
       setGradientDirection(content.gradientDirection || 'none');
       setImageDimensions(content.imageDimensions || '600x600');
+      setCropPosition(content.cropPosition || 'center');
     }
   };
 
-  const cropImage = async (file: File, dimensions: string): Promise<Blob> => {
+  const cropImage = async (file: File, dimensions: string, position: 'top' | 'center' | 'bottom'): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       const [targetWidth, targetHeight] = dimensions.split('x').map(Number);
       const img = new Image();
@@ -124,11 +126,28 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         canvas.width = targetWidth;
         canvas.height = targetHeight;
 
+        // Calculate scale to cover the entire target area
         const scale = Math.max(targetWidth / img.width, targetHeight / img.height);
         const scaledWidth = img.width * scale;
         const scaledHeight = img.height * scale;
+        
+        // Center horizontally
         const x = (targetWidth - scaledWidth) / 2;
-        const y = (targetHeight - scaledHeight) / 2;
+        
+        // Calculate vertical position based on crop position
+        let y: number;
+        switch (position) {
+          case 'top':
+            y = 0;
+            break;
+          case 'bottom':
+            y = targetHeight - scaledHeight;
+            break;
+          case 'center':
+          default:
+            y = (targetHeight - scaledHeight) / 2;
+            break;
+        }
 
         ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
 
@@ -152,8 +171,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
     setIsUploading(true);
     try {
-      // Crop the image first
-      const croppedBlob = await cropImage(file, imageDimensions);
+      // Crop the image first with selected position
+      const croppedBlob = await cropImage(file, imageDimensions, cropPosition);
       const croppedFile = new File([croppedBlob], file.name, { type: 'image/jpeg' });
 
       const fileExt = 'jpg';
@@ -229,6 +248,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       overlayOpacity,
       gradientDirection,
       imageDimensions,
+      cropPosition,
     };
 
     const { error } = await supabase
@@ -429,6 +449,23 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                   </Select>
                   <p className="text-xs text-muted-foreground">
                     Uploaded images will be automatically cropped to this size
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Crop Position (Vertical)</Label>
+                  <Select value={cropPosition} onValueChange={(val: any) => setCropPosition(val)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="top">Top (Crop from bottom)</SelectItem>
+                      <SelectItem value="center">Center (Crop equally)</SelectItem>
+                      <SelectItem value="bottom">Bottom (Crop from top)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Vertical position of the crop area when scaling the image
                   </p>
                 </div>
 
