@@ -124,12 +124,13 @@ const DynamicCMSPage = () => {
             setSeoData({});
           }
         } else if (item.section_key.startsWith("full_hero_")) {
-          // Segment-spezifische Full-Hero Daten (z.B. full_hero_246)
+          // Segment-spezifische Full-Hero Daten (z.B. full_hero_245)
           try {
-            const data = JSON.parse(item.content_value);
+            const heroData = JSON.parse(item.content_value);
             const segmentIdFromKey = item.section_key.split("full_hero_")[1];
             if (segmentIdFromKey) {
-              fullHeroOverrides[segmentIdFromKey] = data;
+              console.log(`[DynamicCMSPage] Loading full_hero_${segmentIdFromKey} override:`, heroData);
+              fullHeroOverrides[segmentIdFromKey] = heroData;
             }
           } catch {
             // ignore parse errors here, fall back to page_segments data
@@ -139,9 +140,13 @@ const DynamicCMSPage = () => {
 
       // Wende Full-Hero Overrides aus spezifischen section_keys auf page_segments an
       if (loadedSegments.length > 0 && Object.keys(fullHeroOverrides).length > 0) {
+        console.log('[DynamicCMSPage] Applying full-hero overrides:', fullHeroOverrides);
+        console.log('[DynamicCMSPage] Before merge, segments:', loadedSegments);
+        
         loadedSegments = loadedSegments.map((seg: any) => {
           const key = seg.id || seg.segment_key;
           if (key && fullHeroOverrides[key]) {
+            console.log(`[DynamicCMSPage] Merging full-hero override for segment ${key}`);
             return {
               ...seg,
               data: {
@@ -152,6 +157,8 @@ const DynamicCMSPage = () => {
           }
           return seg;
         });
+        
+        console.log('[DynamicCMSPage] After merge, segments:', loadedSegments);
       }
 
       setPageSegments(loadedSegments);
