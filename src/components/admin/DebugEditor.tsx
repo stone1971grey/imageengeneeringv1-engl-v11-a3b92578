@@ -92,9 +92,17 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
 
       console.log('[Upload] Success! URL:', result.url);
       
-      // Update with permanent URL
+      // Update with permanent URL and persist immediately
       handleImageUrlChange(result.url);
       toast.success('✅ Upload successful!', { duration: 3000 });
+
+      // Auto-save so the new image persists in backend and frontend
+      try {
+        onSave();
+      } catch (saveError) {
+        console.error('[Upload] Auto-save error:', saveError);
+        toast.error('Image uploaded, but saving failed. Please click "Save Changes".');
+      }
 
       // Reset input
       e.target.value = '';
