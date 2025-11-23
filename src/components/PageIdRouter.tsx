@@ -27,6 +27,8 @@ const PageIdRouter = () => {
         return;
       }
 
+      console.log(`[PageIdRouter] Looking up page_id: ${numericPageId}`);
+      
       // Fetch page_slug and parent_slug from page_registry based on page_id
       const { data, error } = await supabase
         .from("page_registry")
@@ -34,34 +36,41 @@ const PageIdRouter = () => {
         .eq("page_id", numericPageId)
         .maybeSingle();
 
+      console.log(`[PageIdRouter] Database response:`, { data, error });
+
       if (error || !data) {
-        console.error("Error fetching page:", error);
+        console.error("[PageIdRouter] Error fetching page or page not found:", error);
         setRedirectUrl(null);
       } else {
         // Build hierarchical URL based on parent structure
+        let constructedUrl = '';
+        
         if (data.parent_slug) {
           if (data.parent_slug === "your-solution") {
-            setRedirectUrl(`/your-solution/${data.page_slug}`);
+            constructedUrl = `/your-solution/${data.page_slug}`;
           } else if (data.parent_slug === "automotive") {
-            setRedirectUrl(`/your-solution/automotive/${data.page_slug}`);
+            constructedUrl = `/your-solution/automotive/${data.page_slug}`;
           } else if (data.parent_slug === "scanners-archiving") {
-            setRedirectUrl(`/your-solution/scanners-archiving/${data.page_slug}`);
+            constructedUrl = `/your-solution/scanners-archiving/${data.page_slug}`;
           } else if (data.parent_slug === "web-camera") {
-            setRedirectUrl(`/your-solution/web-camera/${data.page_slug}`);
+            constructedUrl = `/your-solution/web-camera/${data.page_slug}`;
           } else if (data.parent_slug === "machine-vision") {
-            setRedirectUrl(`/your-solution/machine-vision/${data.page_slug}`);
+            constructedUrl = `/your-solution/machine-vision/${data.page_slug}`;
           } else if (data.parent_slug === "mobile-phone") {
-            setRedirectUrl(`/your-solution/mobile-phone/${data.page_slug}`);
+            constructedUrl = `/your-solution/mobile-phone/${data.page_slug}`;
           } else if (data.parent_slug === "medical-endoscopy") {
-            setRedirectUrl(`/your-solution/medical-endoscopy/${data.page_slug}`);
+            constructedUrl = `/your-solution/medical-endoscopy/${data.page_slug}`;
           } else {
             // For products or other hierarchies
-            setRedirectUrl(`/${data.parent_slug}/${data.page_slug}`);
+            constructedUrl = `/${data.parent_slug}/${data.page_slug}`;
           }
         } else {
           // No parent - top-level page
-          setRedirectUrl(`/${data.page_slug}`);
+          constructedUrl = `/${data.page_slug}`;
         }
+        
+        console.log(`[PageIdRouter] Redirecting to: ${constructedUrl}`);
+        setRedirectUrl(constructedUrl);
       }
 
       setLoading(false);
