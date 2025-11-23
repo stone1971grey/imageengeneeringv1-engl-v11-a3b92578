@@ -196,6 +196,24 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   };
 
   const handleSave = async () => {
+    // VALIDATION: Image-type background requires imageUrl
+    if (backgroundType === 'image' && !imageUrl?.trim()) {
+      toast.error('⚠️ Background Image is required when Background Type is "Image"', {
+        description: 'Please upload an image or switch Background Type to "Video"',
+        duration: 5000
+      });
+      return;
+    }
+
+    // VALIDATION: Video-type background requires videoUrl
+    if (backgroundType === 'video' && !videoUrl?.trim()) {
+      toast.error('⚠️ Video URL is required when Background Type is "Video"', {
+        description: 'Please enter a video URL or switch Background Type to "Image"',
+        duration: 5000
+      });
+      return;
+    }
+
     const content = {
       titleLine1,
       titleLine2,
@@ -455,6 +473,24 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           </TabsContent>
 
           <TabsContent value="background" className="space-y-4">
+            {/* Validation Alert für fehlende Image URL */}
+            {backgroundType === 'image' && !imageUrl?.trim() && (
+              <Alert className="border-destructive/50 bg-destructive/5">
+                <AlertDescription className="text-destructive font-medium">
+                  ⚠️ Background Image is required. Please upload an image before saving.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {/* Validation Alert für fehlende Video URL */}
+            {backgroundType === 'video' && !videoUrl?.trim() && (
+              <Alert className="border-destructive/50 bg-destructive/5">
+                <AlertDescription className="text-destructive font-medium">
+                  ⚠️ Video URL is required. Please enter a video URL before saving.
+                </AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
               <Label>Background Type</Label>
               <Select value={backgroundType} onValueChange={(val: any) => setBackgroundType(val)}>
@@ -471,7 +507,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
             {backgroundType === 'image' ? (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="imageUpload">Upload Image</Label>
+                  <Label htmlFor="imageUpload" className="text-destructive">
+                    Upload Image <span className="text-destructive">*</span>
+                  </Label>
                   <div className="flex gap-2">
                     <Input
                       id="imageUpload"
@@ -515,12 +553,15 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
               </>
             ) : (
               <div className="space-y-2">
-                <Label htmlFor="videoUrl">Video URL</Label>
+                <Label htmlFor="videoUrl" className="text-destructive">
+                  Video URL <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="videoUrl"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                   placeholder="https://example.com/video.mp4"
+                  className={!videoUrl?.trim() ? 'border-destructive' : ''}
                 />
               </div>
             )}
@@ -538,7 +579,20 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           </TabsContent>
         </Tabs>
 
-        <Button onClick={handleSave} className="w-full">
+        {/* Validation Status Summary */}
+        {((backgroundType === 'image' && !imageUrl?.trim()) || (backgroundType === 'video' && !videoUrl?.trim())) && (
+          <Alert className="border-destructive/50 bg-destructive/5">
+            <AlertDescription className="text-destructive font-medium">
+              ⚠️ Cannot save: Please complete all required fields in the Background tab
+            </AlertDescription>
+          </Alert>
+        )}
+
+        <Button 
+          onClick={handleSave} 
+          className="w-full"
+          disabled={(backgroundType === 'image' && !imageUrl?.trim()) || (backgroundType === 'video' && !videoUrl?.trim())}
+        >
           Save Full Hero
         </Button>
       </CardContent>
