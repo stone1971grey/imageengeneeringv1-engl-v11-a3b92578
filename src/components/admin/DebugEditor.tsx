@@ -20,51 +20,81 @@ interface DebugEditorProps {
 
 const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEditorProps) => {
   const [uploading, setUploading] = useState(false);
+  const [statusLog, setStatusLog] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const addLog = (message: string) => {
+    console.log(`[DebugEditor] ${message}`);
+    setStatusLog(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+    toast.info(message);
+  };
+
+  const handleButtonClick = () => {
+    addLog('Upload button clicked');
+    if (!fileInputRef.current) {
+      addLog('ERROR: File input ref is null!');
+      toast.error('File input not initialized');
+      return;
+    }
+    addLog('Triggering file picker...');
+    fileInputRef.current.click();
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    addLog('File input onChange triggered');
+    
     const file = e.target.files?.[0];
     if (!file) {
-      console.log('[DebugEditor] No file selected');
+      addLog('No file selected by user');
       return;
     }
 
-    console.log('[DebugEditor] File selected:', { name: file.name, size: file.size, type: file.type });
+    addLog(`File selected: ${file.name} (${Math.round(file.size / 1024)}KB)`);
 
     if (!file.type.startsWith('image/')) {
       toast.error('Please upload an image file');
+      addLog('ERROR: Not an image file');
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
       toast.error('Image size must be less than 5MB');
+      addLog('ERROR: File too large');
       return;
     }
 
     setUploading(true);
-    console.log('[DebugEditor] Starting upload via Edge Function...');
+    addLog('Starting upload process...');
 
     try {
       // Convert file to base64
+      addLog('Converting file to base64...');
       const reader = new FileReader();
       const fileDataPromise = new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
+        reader.onload = () => {
+          addLog('File converted to base64 successfully');
+          resolve(reader.result as string);
+        };
+        reader.onerror = () => {
+          addLog('ERROR: FileReader failed');
+          reject(new Error('Failed to read file'));
+        };
         reader.readAsDataURL(file);
       });
 
       const fileData = await fileDataPromise;
-      console.log('[DebugEditor] File converted to base64');
 
       // Get auth token
+      addLog('Checking authentication...');
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        throw new Error('No active session');
+        addLog('ERROR: No active session');
+        throw new Error('No active session - please log in again');
       }
-
-      console.log('[DebugEditor] Calling upload-image Edge Function');
+      addLog(`Authenticated as: ${session.user.email}`);
 
       // Call Edge Function
+      addLog('Calling upload-image Edge Function...');
       const { data: uploadResult, error: uploadError } = await supabase.functions.invoke('upload-image', {
         body: {
           fileName: file.name,
@@ -75,29 +105,34 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
         }
       });
 
-      console.log('[DebugEditor] Edge Function response:', { uploadResult, uploadError });
+      addLog(`Edge Function response received`);
+      console.log('[DebugEditor] Full response:', { uploadResult, uploadError });
 
       if (uploadError) {
-        console.error('[DebugEditor] Edge Function error:', uploadError);
+        addLog(`ERROR from Edge Function: ${uploadError.message}`);
         throw uploadError;
       }
 
       if (!uploadResult?.success) {
-        throw new Error(uploadResult?.error || 'Upload failed');
+        const errorMsg = uploadResult?.error || 'Upload failed without error message';
+        addLog(`ERROR: ${errorMsg}`);
+        throw new Error(errorMsg);
       }
 
-      console.log('[DebugEditor] Upload successful, URL:', uploadResult.url);
-
+      addLog(`Upload successful! URL: ${uploadResult.url}`);
       onChange({ ...data, imageUrl: uploadResult.url });
       toast.success('Image uploaded successfully!');
 
       // Reset file input
       e.target.value = '';
     } catch (error: any) {
+      const errorMsg = error.message || 'Unknown error';
+      addLog(`FATAL ERROR: ${errorMsg}`);
       console.error('[DebugEditor] Upload failed:', error);
-      toast.error('Failed to upload image: ' + (error.message || 'Unknown error'));
+      toast.error('Upload failed: ' + errorMsg);
     } finally {
       setUploading(false);
+      addLog('Upload process completed');
     }
   };
 
@@ -148,10 +183,7 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
           
           <Button
             type="button"
-            onClick={() => {
-              console.log('[DebugEditor] Button clicked, triggering file input');
-              fileInputRef.current?.click();
-            }}
+            onClick={handleButtonClick}
             disabled={uploading}
             variant="outline"
             className="w-full"
@@ -168,6 +200,18 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
               </>
             )}
           </Button>
+
+          {/* Status Log */}
+          {statusLog.length > 0 && (
+            <div className="mt-4 p-3 bg-gray-900 rounded-lg border border-gray-700 max-h-48 overflow-y-auto">
+              <p className="text-xs font-mono text-green-400 mb-2">Upload Status Log:</p>
+              {statusLog.map((log, idx) => (
+                <p key={idx} className="text-xs font-mono text-gray-300 mb-1">
+                  {log}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end pt-4 border-t">
