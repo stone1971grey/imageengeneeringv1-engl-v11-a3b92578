@@ -613,8 +613,8 @@ const DynamicCMSPage = () => {
                   const imageSrc = solution.imageUrl || (idx === 0 ? segment.data?.heroImageUrl : undefined);
                   const imageAlt = solution.metadata?.altText || solution.title || segment.data?.heroImageMetadata?.altText || segment.data?.title;
                   
-                  // Dynamic image height based on layout
-                  const imageHeightClass = segment.data?.layout === "1-col" ? "h-128" : "h-64";
+                  // Dynamic image height based on layout (1-col needs double height)
+                  const imageHeightClass = segment.data?.layout === "1-col" ? "h-[32rem]" : "h-64";
 
                   return (
                     <div key={idx} className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
