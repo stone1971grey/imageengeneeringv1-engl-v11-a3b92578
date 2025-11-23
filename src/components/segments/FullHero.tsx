@@ -142,7 +142,7 @@ const FullHero = ({
     <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()}`}>
       {/* Background layer: image or video full-width */}
       {backgroundType === 'image' && imageUrl && (
-        <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 z-0">
           <img
             src={imageUrl}
             alt="Full hero background"
@@ -157,7 +157,7 @@ const FullHero = ({
       )}
 
       {backgroundType === 'video' && videoUrl && (
-        <div className="absolute inset-0 -z-10">
+        <div className="absolute inset-0 z-0">
           <video
             autoPlay
             loop
@@ -194,18 +194,6 @@ const FullHero = ({
             <p className="text-lg lg:text-xl text-white/80 leading-relaxed max-w-2xl">
               {subtitle}
             </p>
-          )}
-
-          {/* TEMP: Inline debug image to verify imageUrl rendering */}
-          {imageUrl && (
-            <div className="mt-6 inline-block bg-black/40 p-2 rounded">
-              <p className="text-xs text-white/70 mb-1">Debug image preview (only for testing):</p>
-              <img
-                src={imageUrl}
-                alt="Full hero debug preview"
-                className="max-w-xs rounded border border-white/20"
-              />
-            </div>
           )}
 
           {(button1Text || button2Text) && (
