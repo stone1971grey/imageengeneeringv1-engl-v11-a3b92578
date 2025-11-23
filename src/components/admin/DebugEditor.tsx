@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,6 +20,10 @@ interface DebugEditorProps {
 const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEditorProps) => {
   const [imageUrl, setImageUrl] = useState(data.imageUrl || '');
   const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    setImageUrl(data.imageUrl || '');
+  }, [data.imageUrl]);
 
   const handleImageUrlChange = (url: string) => {
     setImageUrl(url);
@@ -96,13 +100,16 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
       handleImageUrlChange(result.url);
       toast.success('✅ Upload successful!', { duration: 3000 });
 
-      // Auto-save so the new image persists in backend and frontend
-      try {
-        onSave();
-      } catch (saveError) {
-        console.error('[Upload] Auto-save error:', saveError);
-        toast.error('Image uploaded, but saving failed. Please click "Save Changes".');
-      }
+      // Auto-save so the new image persists in backend and frontend.
+      // Use a small timeout so React can flush the state update from onChange first.
+      setTimeout(() => {
+        try {
+          onSave();
+        } catch (saveError) {
+          console.error('[Upload] Auto-save error:', saveError);
+          toast.error('Image uploaded, but saving failed. Please click "Save Changes".');
+        }
+      }, 0);
 
       // Reset input
       e.target.value = '';
