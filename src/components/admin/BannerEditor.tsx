@@ -193,7 +193,6 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                         e.target.value = '';
                       }}
                       className="bg-white border-2 border-gray-300 text-black cursor-pointer"
-                      disabled={uploadingIndex === index}
                     />
                     {uploadingIndex === index && (
                       <span className="text-[#f9dc24] font-semibold">Uploading...</span>
