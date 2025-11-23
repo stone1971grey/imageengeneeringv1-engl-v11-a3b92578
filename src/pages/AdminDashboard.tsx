@@ -162,7 +162,11 @@ const AdminDashboard = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [uploadingTileIndex, setUploadingTileIndex] = useState<number | null>(null);
+  const [uploadingSolutionIndex, setUploadingSolutionIndex] = useState<number | null>(null);
+  const [uploadingBannerIndex, setUploadingBannerIndex] = useState<number | null>(null);
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [uploadingFooter, setUploadingFooter] = useState(false);
   const [heroImageUrl, setHeroImageUrl] = useState<string>("");
   const [heroImageMetadata, setHeroImageMetadata] = useState<ImageMetadata | null>(null);
   const [heroImagePosition, setHeroImagePosition] = useState<string>("right");
@@ -1232,30 +1236,39 @@ const AdminDashboard = () => {
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0]) return;
+    const file = e.target.files?.[0];
+    if (!file) {
+      console.log('[AdminDashboard] Hero: No file selected');
+      return;
+    }
     
-    const file = e.target.files[0];
+    console.log('[AdminDashboard] Hero: File selected -', file.name);
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
+      console.log('[AdminDashboard] Hero: Invalid file type');
       toast.error("Please upload an image file");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
+      console.log('[AdminDashboard] Hero: File too large');
       toast.error("Image size must be less than 5MB");
       return;
     }
 
-    setUploading(true);
+    setUploadingHero(true);
+    console.log('[AdminDashboard] Hero: Starting upload...');
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `${selectedPage}-hero-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload to storage
+      console.log('[AdminDashboard] Hero: Uploading to', filePath);
+
       const { error: uploadError } = await supabase.storage
         .from('page-images')
         .upload(filePath, file, {
@@ -1263,14 +1276,17 @@ const AdminDashboard = () => {
           upsert: false
         });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('[AdminDashboard] Hero: Upload error', uploadError);
+        throw uploadError;
+      }
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract image metadata
+      console.log('[AdminDashboard] Hero: Upload successful', publicUrl);
+
       const baseMetadata = await extractImageMetadata(file, publicUrl);
       const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
       
@@ -1278,7 +1294,7 @@ const AdminDashboard = () => {
       setHeroImageMetadata(metadata);
       
       // Save URL to database
-      const { error: dbError } = await supabase
+      await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
@@ -1291,10 +1307,8 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
-      if (dbError) throw dbError;
-
       // Save metadata to database
-      const { error: metadataError } = await supabase
+      await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
@@ -1307,43 +1321,36 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
-      if (metadataError) throw metadataError;
-
       toast.success("Image uploaded successfully!");
+      e.target.value = ''; // Reset input
     } catch (error: any) {
+      console.error('[AdminDashboard] Hero: Upload failed', error);
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploading(false);
+      setUploadingHero(false);
+      console.log('[AdminDashboard] Hero: Upload complete');
     }
   };
 
-  const handleTileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tileIndex: number) => {
-    addDebugLog(`🟢 Bereits vorhandene Tiles: handleTileImageUpload für Index ${tileIndex} aufgerufen`);
-    
-    if (!e.target.files || !e.target.files[0]) {
-      addDebugLog('❌ Bereits vorhandene Tiles: Kein File ausgewählt');
-      return;
-    }
-    
-    const file = e.target.files[0];
-    addDebugLog(`✅ Bereits vorhandene Tiles: File ausgewählt - ${file.name}, ${(file.size/1024).toFixed(2)} KB, ${file.type}`);
+  const handleTileImageUpload = async (tileIndex: number, file: File) => {
+    addDebugLog(`🟢 Tiles: Starting upload for index ${tileIndex}, file: ${file.name}`);
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      addDebugLog(`❌ Bereits vorhandene Tiles: FEHLER - Ungültiger Dateityp: ${file.type}`);
+      addDebugLog(`❌ Tiles: Invalid file type: ${file.type}`);
       toast.error("Bitte ein Bild hochladen");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      addDebugLog(`❌ Bereits vorhandene Tiles: FEHLER - Datei zu groß: ${(file.size/1024/1024).toFixed(2)} MB`);
+      addDebugLog(`❌ Tiles: File too large: ${(file.size/1024/1024).toFixed(2)} MB`);
       toast.error("Bildgröße muss unter 5MB sein");
       return;
     }
 
-    setUploading(true);
-    addDebugLog('🚀 Bereits vorhandene Tiles: Upload gestartet...');
+    setUploadingTileIndex(tileIndex);
+    addDebugLog('🚀 Tiles: Upload started...');
 
     try {
       const fileExt = file.name.split('.').pop();
@@ -1351,11 +1358,9 @@ const AdminDashboard = () => {
       const fileName = `tile-${tileIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
       
-      addDebugLog(`📂 Bereits vorhandene Tiles: Pfad generiert - ${filePath}`);
-      addDebugLog('📤 Bereits vorhandene Tiles: Rufe supabase.storage.upload auf...');
+      addDebugLog(`📂 Tiles: Generated path - ${filePath}`);
 
-      // Upload to storage
-      const { error: uploadError, data: uploadData } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('page-images')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -1363,41 +1368,35 @@ const AdminDashboard = () => {
         });
 
       if (uploadError) {
-        addDebugLog(`❌ Bereits vorhandene Tiles: Upload FEHLER - ${uploadError.message}`);
+        addDebugLog(`❌ Tiles: Upload error - ${uploadError.message}`);
         throw uploadError;
       }
       
-      addDebugLog(`✅ Bereits vorhandene Tiles: Upload erfolgreich! Data: ${JSON.stringify(uploadData)}`);
+      addDebugLog(`✅ Tiles: Upload successful!`);
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('page-images')
         .getPublicUrl(filePath);
       
-      addDebugLog(`🔗 Bereits vorhandene Tiles: Public URL: ${publicUrl}`);
+      addDebugLog(`🔗 Tiles: Public URL: ${publicUrl}`);
 
-      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
-      addDebugLog('📊 Bereits vorhandene Tiles: Metadata extrahiert');
+      addDebugLog('📊 Tiles: Metadata extracted');
 
-      // Update applications array with URL and metadata
       const newApps = [...applications];
       newApps[tileIndex].imageUrl = publicUrl;
       newApps[tileIndex].metadata = { ...metadata, altText: '' };
       setApplications(newApps);
       
-      addDebugLog('💾 Bereits vorhandene Tiles: Applications aktualisiert');
+      addDebugLog('💾 Tiles: Applications updated');
 
       toast.success("Tile-Bild erfolgreich hochgeladen!");
-      
-      // Reset input to allow re-uploading same file
-      e.target.value = '';
     } catch (error: any) {
-      addDebugLog(`❌ Bereits vorhandene Tiles: CATCH FEHLER - ${error.message}`);
+      addDebugLog(`❌ Tiles: Upload failed - ${error.message}`);
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploading(false);
-      addDebugLog('🏁 Bereits vorhandene Tiles: Upload abgeschlossen');
+      setUploadingTileIndex(null);
+      addDebugLog('🏁 Tiles: Upload complete');
     }
   };
   const handleLogout = async () => {
@@ -1694,11 +1693,12 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploading(true);
+    setUploadingSolutionIndex(index);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `solution-${index}-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `solution-${index}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1714,7 +1714,6 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newItems = [...solutionsItems];
@@ -1723,10 +1722,11 @@ const AdminDashboard = () => {
       setSolutionsItems(newItems);
 
       toast.success("Solution image uploaded successfully!");
+      e.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploading(false);
+      setUploadingSolutionIndex(null);
     }
   };
 
@@ -1744,10 +1744,11 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploading(true);
+    setUploadingSolutionIndex(segmentIndex);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `image-text-hero-${segmentIndex}-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `image-text-hero-${segmentIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1763,7 +1764,6 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newSegments = [...pageSegments];
@@ -1772,10 +1772,11 @@ const AdminDashboard = () => {
       setPageSegments(newSegments);
 
       toast.success("Hero image uploaded successfully!");
+      event.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploading(false);
+      setUploadingSolutionIndex(null);
     }
   };
 
@@ -1793,10 +1794,11 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploading(true);
+    setUploadingSolutionIndex(itemIndex);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `image-text-item-${segmentIndex}-${itemIndex}-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `image-text-item-${segmentIndex}-${itemIndex}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1812,7 +1814,6 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newSegments = [...pageSegments];
@@ -1821,10 +1822,11 @@ const AdminDashboard = () => {
       setPageSegments(newSegments);
 
       toast.success("Item image uploaded successfully!");
+      event.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploading(false);
+      setUploadingSolutionIndex(null);
     }
   };
 
@@ -1843,11 +1845,12 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploading(true);
+    setUploadingFooter(true);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `footer-team-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `footer-team-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1863,18 +1866,17 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract image metadata
-      const metadata = await extractImageMetadata(file, publicUrl);
-
-      setFooterTeamImageUrl(publicUrl);
-      setFooterTeamImageMetadata({ ...metadata, altText: '' });
+      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      const metadata: ImageMetadata = { ...baseMetadata, altText: '' };
       
-      // Save to database
-      const { error: dbError } = await supabase
+      setFooterTeamImageUrl(publicUrl);
+      setFooterTeamImageMetadata(metadata);
+
+      await supabase
         .from("page_content")
         .upsert({
           page_slug: selectedPage,
-          section_key: "footer_team_image_url",
+          section_key: "footer_team_image",
           content_type: "image_url",
           content_value: publicUrl,
           updated_at: new Date().toISOString(),
@@ -1883,13 +1885,25 @@ const AdminDashboard = () => {
           onConflict: 'page_slug,section_key'
         });
 
-      if (dbError) throw dbError;
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "footer_team_image_metadata",
+          content_type: "json",
+          content_value: JSON.stringify(metadata),
+          updated_at: new Date().toISOString(),
+          updated_by: user?.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
 
       toast.success("Team image uploaded successfully!");
+      e.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploading(false);
+      setUploadingFooter(false);
     }
   };
 
@@ -1923,11 +1937,12 @@ const AdminDashboard = () => {
       return;
     }
 
-    setUploading(true);
+    setUploadingBannerIndex(index);
 
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `banner-image-${index}-${Date.now()}.${fileExt}`;
+      const uniqueId = crypto.randomUUID?.().substring(0, 8) || Math.random().toString(36).substring(2, 10);
+      const fileName = `banner-image-${index}-${uniqueId}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage
@@ -1943,19 +1958,19 @@ const AdminDashboard = () => {
         .from('page-images')
         .getPublicUrl(filePath);
 
-      // Extract image metadata
       const metadata = await extractImageMetadata(file, publicUrl);
 
       const newImages = [...bannerImages];
-      newImages[index].url = publicUrl;
-      newImages[index].metadata = { ...metadata, altText: newImages[index].alt || '' };
+      newImages[index].imageUrl = publicUrl;
+      newImages[index].metadata = { ...metadata, altText: '' };
       setBannerImages(newImages);
 
       toast.success("Banner image uploaded successfully!");
+      e.target.value = ''; // Reset input
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploading(false);
+      setUploadingBannerIndex(null);
     }
   };
 
@@ -3978,19 +3993,22 @@ const AdminDashboard = () => {
                         )}
                         
                         <div className="space-y-2">
-                          <input
+                          <Input
                             id={`app_image_${index}`}
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
-                              addDebugLog(`🔵 Bereits vorhandene Tiles: NATIVE input onChange für Index ${index} getriggert`);
-                              addDebugLog(`🔵 Native Event target: ${e.target.tagName}, files: ${e.target.files?.length || 0}`);
-                              handleTileImageUpload(e as React.ChangeEvent<HTMLInputElement>, index);
+                              const file = e.target.files?.[0];
+                              addDebugLog(`🔵 Tiles: File input onChange for index ${index}`);
+                              if (file) {
+                                addDebugLog(`✅ Tiles: File selected - ${file.name}`);
+                                handleTileImageUpload(index, file);
+                              }
+                              e.target.value = ''; // Reset input
                             }}
-                            disabled={uploading}
-                            className="block w-full text-sm text-black bg-white border-2 border-gray-600 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#f9dc24] file:text-black hover:file:bg-[#f9dc24]/90"
+                            className="bg-white border-2 border-gray-600 text-black cursor-pointer"
                           />
-                          {uploading && (
+                          {uploadingTileIndex === index && (
                             <p className="text-[#f9dc24] font-semibold">Uploading image...</p>
                           )}
                         </div>
@@ -4994,9 +5012,12 @@ const AdminDashboard = () => {
                           type="file"
                           accept="image/*"
                           onChange={handleFooterTeamImageUpload}
-                          disabled={uploading}
+                          disabled={uploadingFooter}
                           className="border-2 border-gray-600"
                         />
+                        {uploadingFooter && (
+                          <p className="text-sm text-[#f9dc24] font-semibold">Uploading...</p>
+                        )}
                       </div>
                       {footerTeamImageUrl && (
                         <div className="mt-2 relative inline-block">
