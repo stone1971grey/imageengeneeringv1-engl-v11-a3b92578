@@ -65,7 +65,26 @@ const UtilityNavigation = () => {
             </button>
           )}
           
-          {/* Close Button - only visible when open */}
+          {/* Expandable Input Field */}
+          <div 
+            className="relative flex-1 h-full flex items-center overflow-hidden transition-all duration-500 ease-in-out"
+            style={{
+              width: isSearchOpen ? '100%' : '0px',
+              opacity: isSearchOpen ? 1 : 0,
+            }}
+          >
+            <Search className="absolute left-3 h-4 w-4 text-gray-500 pointer-events-none" />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-full pl-10 pr-3 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
+            />
+          </div>
+          
+          {/* Close Button - only visible when open, on the right side */}
           {isSearchOpen && (
             <button
               type="button"
@@ -79,24 +98,6 @@ const UtilityNavigation = () => {
               <X className="h-5 w-5 text-gray-700" />
             </button>
           )}
-          
-          {/* Expandable Input Field */}
-          <div 
-            className="relative flex-1 h-full flex items-center overflow-hidden transition-all duration-500 ease-in-out"
-            style={{
-              width: isSearchOpen ? '100%' : '0px',
-              opacity: isSearchOpen ? 1 : 0,
-            }}
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-full pl-3 pr-3 bg-transparent border-none outline-none text-sm text-gray-900 placeholder:text-gray-500"
-            />
-          </div>
         </div>
       </form>
       
