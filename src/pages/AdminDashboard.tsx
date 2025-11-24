@@ -530,8 +530,7 @@ const AdminDashboard = () => {
 
       if (pageAccessError || !pageAccessData || pageAccessData.length === 0) {
         toast.error("You don't have access to any pages");
-        await supabase.auth.signOut();
-        navigate("/auth");
+        navigate("/");
         return;
       }
 
@@ -541,10 +540,9 @@ const AdminDashboard = () => {
       setIsAdmin(false);
       setAllowedPages(pages);
       
-      // Redirect to first allowed page if current page is empty or not in allowed pages
-      if (pages.length > 0 && (!selectedPage || !pages.includes(selectedPage))) {
-        window.location.href = `/admin-dashboard?page=${pages[0]}`;
-        return;
+      // Redirect to first allowed page if current page is not in allowed pages
+      if (pages.length > 0 && !pages.includes(selectedPage)) {
+        navigate(`/admin-dashboard?page=${pages[0]}`);
       }
       
       setLoading(false);
@@ -553,9 +551,7 @@ const AdminDashboard = () => {
 
     // No valid role found
     toast.error("You don't have admin or editor access");
-    // Sign out so user can log in with a different account
-    await supabase.auth.signOut();
-    navigate("/auth");
+    navigate("/");
   };
 
   
@@ -563,33 +559,21 @@ const AdminDashboard = () => {
   const resolvePageSlug = async (slug: string): Promise<string> => {
     if (!slug) return slug;
     
-    try {
-      // Try to find full hierarchical slug in page_registry
-      const { data: pageData, error } = await supabase
-        .from('page_registry')
-        .select('page_slug')
-        .or(`page_slug.eq.${slug},page_slug.ilike.%/${slug}`)
-        .maybeSingle();
-      
-      if (error) {
-        console.error("Error resolving slug:", error);
-        setResolvedPageSlug(slug);
-        return slug;
-      }
-      
-      if (pageData) {
-        console.log(`🔍 Resolved slug "${slug}" to "${pageData.page_slug}"`);
-        setResolvedPageSlug(pageData.page_slug);
-        return pageData.page_slug;
-      }
-      
-      setResolvedPageSlug(slug);
-      return slug;
-    } catch (err) {
-      console.error("Exception resolving slug:", err);
-      setResolvedPageSlug(slug);
-      return slug;
+    // Try to find full hierarchical slug in page_registry
+    const { data: pageData } = await supabase
+      .from('page_registry')
+      .select('page_slug')
+      .or(`page_slug.eq.${slug},page_slug.ilike.%/${slug}`)
+      .maybeSingle();
+    
+    if (pageData) {
+      console.log(`🔍 Resolved slug "${slug}" to "${pageData.page_slug}"`);
+      setResolvedPageSlug(pageData.page_slug);
+      return pageData.page_slug;
     }
+    
+    setResolvedPageSlug(slug);
+    return slug;
   };
 
   // Load segment registry to get all segment IDs
