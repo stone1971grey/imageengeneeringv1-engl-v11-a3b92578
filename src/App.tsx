@@ -98,6 +98,9 @@ const App = () => (
         <Route path="/vega" element={<Navigate to="/products/software/vega" replace />} />
         <Route path="/product-bundle-ieee" element={<Navigate to="/products/bundles-services/product-bundle-ieee" replace />} />
         <Route path="/vcx-webcam-service" element={<Navigate to="/your-solution/web-camera/vcx-webcam-service" replace />} />
+        <Route path="/camera-stabilization" element={<Navigate to="/your-solution/mobile-phone/camera-stabilization" replace />} />
+        <Route path="/geometric-calibration-automotive" element={<Navigate to="/your-solution/automotive/geometric-calibration-automotive" replace />} />
+        <Route path="/vcx-webcam" element={<Navigate to="/your-solution/web-camera/vcx-webcam" replace />} />
         
         {/* Hierarchical Your Solution Routes - Catch-all for automatic CMS pages */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
