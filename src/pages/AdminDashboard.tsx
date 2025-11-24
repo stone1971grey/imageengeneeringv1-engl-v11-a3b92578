@@ -893,10 +893,10 @@ const AdminDashboard = () => {
       const slugParts = pageInfo.page_slug.split('/').filter(Boolean);
       const lastSlugPart = slugParts[slugParts.length - 1];
       
-      // Navigate to the newly created page
+      // Navigate to the newly created page with full page reload to ensure proper initialization
       setTimeout(() => {
-        navigate(`/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
-      }, 300);
+        window.location.href = `/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`;
+      }, 500);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
