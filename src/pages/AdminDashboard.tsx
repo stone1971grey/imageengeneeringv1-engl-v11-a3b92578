@@ -2924,10 +2924,14 @@ const AdminDashboard = () => {
                     return;
                   }
 
+                  // selectedPage enthält meist nur den letzten Slug-Teil (z.B. "iec-62676-5-testing"),
+                  // deshalb suchen wir in page_registry nach einem hierarchischen Slug, der damit endet.
                   const { data: pageData } = await supabase
                     .from('page_registry')
                     .select('page_slug, parent_slug, parent_id')
-                    .eq('page_slug', selectedPage)
+                    .or(`page_slug.eq.${selectedPage},page_slug.ilike.%/${selectedPage}`)
+                    .order('page_id', { ascending: false })
+                    .limit(1)
                     .maybeSingle();
 
                   let previewUrl = '/';
