@@ -644,6 +644,12 @@ const AdminDashboard = () => {
       return;
     }
 
+    // For Sicherheit: Nur Admins dürfen neue CMS-Seiten anlegen (RLS erzwingt das ohnehin)
+    if (!isAdmin) {
+      toast.error("Only admins can create new CMS pages.");
+      return;
+    }
+
     setIsCreatingCMS(true);
     
     try {
