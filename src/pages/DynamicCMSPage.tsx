@@ -47,14 +47,13 @@ const DynamicCMSPage = () => {
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
 
-  // Extract page_slug from URL pathname
+  // Extract page_slug from full URL pathname (hierarchical)
   // Examples:
-  // /your-solution/photography -> photography
-  // /your-solution/scanners-archiving/iso-21550 -> iso-21550
+  // /your-solution/photography -> your-solution/photography
+  // /your-solution/scanners-archiving/iso-21550 -> your-solution/scanners-archiving/iso-21550
   const extractPageSlug = (pathname: string): string => {
-    const parts = pathname.split('/').filter(Boolean);
-    // Return the last segment of the URL
-    return parts[parts.length - 1];
+    // Remove leading slash, keep full hierarchical path
+    return pathname.replace(/^\/+/, "");
   };
 
   const pageSlug = extractPageSlug(location.pathname);
