@@ -2175,7 +2175,7 @@ const AdminDashboard = () => {
         .from("segment_registry")
         .insert({
           segment_id: segmentId,
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           segment_type: templateType,
           segment_key: String(segmentId),
           is_static: false,
@@ -2191,7 +2191,7 @@ const AdminDashboard = () => {
       const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(updatedSegments),
@@ -2207,7 +2207,7 @@ const AdminDashboard = () => {
       const { error: orderError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
@@ -2248,7 +2248,7 @@ const AdminDashboard = () => {
         .from("segment_registry")
         .update({ deleted: true })
         .eq("segment_key", segmentId)
-        .eq("page_slug", selectedPage);
+        .eq("page_slug", resolvedPageSlug || selectedPage);
 
       if (registryError) {
         console.error("Error marking segment as deleted in registry:", registryError);
@@ -2258,7 +2258,7 @@ const AdminDashboard = () => {
       const { error: segmentsError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(updatedSegments),
@@ -2273,7 +2273,7 @@ const AdminDashboard = () => {
       const { error: orderError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
@@ -2315,7 +2315,7 @@ const AdminDashboard = () => {
       const { error } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(segmentsWithPositions),
@@ -2349,7 +2349,7 @@ const AdminDashboard = () => {
       const { error } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "seo_settings",
           content_type: "json",
           content_value: JSON.stringify(seoData),
