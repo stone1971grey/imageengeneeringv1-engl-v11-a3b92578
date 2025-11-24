@@ -54,7 +54,11 @@ const PageIdRouter = () => {
         // Build hierarchical URL based on parent structure
         let constructedUrl = '';
         
-        if (data.parent_slug) {
+        // If page_slug already contains slashes, it's already hierarchical - use it directly
+        if (data.page_slug.includes('/')) {
+          constructedUrl = `/${data.page_slug}`;
+        } else if (data.parent_slug) {
+          // Legacy handling for flat slugs with parent_slug
           if (data.parent_slug === "your-solution") {
             constructedUrl = `/your-solution/${data.page_slug}`;
           } else if (data.parent_slug === "automotive") {

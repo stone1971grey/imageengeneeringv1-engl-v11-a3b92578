@@ -74,8 +74,29 @@ const App = () => (
         
         {/* Redirects for old URLs */}
         <Route path="/automotive" element={<Navigate to="/your-solution/automotive" replace />} />
-        <Route path="/product/le7" element={<Navigate to="/products/test-charts/le7" replace />} />
+        <Route path="/photography" element={<Navigate to="/your-solution/photography" replace />} />
+        <Route path="/scanners-archiving" element={<Navigate to="/your-solution/scanners-archiving" replace />} />
+        <Route path="/broadcast-video" element={<Navigate to="/your-solution/broadcast-video" replace />} />
+        <Route path="/security-surveillance" element={<Navigate to="/your-solution/security-surveillance" replace />} />
+        <Route path="/medical-endoscopy" element={<Navigate to="/your-solution/medical-endoscopy" replace />} />
+        <Route path="/web-camera" element={<Navigate to="/your-solution/web-camera" replace />} />
+        <Route path="/machine-vision" element={<Navigate to="/your-solution/machine-vision" replace />} />
+        <Route path="/mobile-phone" element={<Navigate to="/your-solution/mobile-phone" replace />} />
         <Route path="/in-cabin-testing" element={<Navigate to="/your-solution/automotive/in-cabin-testing" replace />} />
+        <Route path="/product/le7" element={<Navigate to="/products/test-charts/le7" replace />} />
+        <Route path="/product/arcturus" element={<Navigate to="/products/illumination-devices/arcturus" replace />} />
+        <Route path="/le7" element={<Navigate to="/products/test-charts/le7" replace />} />
+        <Route path="/arcturus" element={<Navigate to="/products/illumination-devices/arcturus" replace />} />
+        <Route path="/iq-led" element={<Navigate to="/products/illumination-devices/iq-led" replace />} />
+        <Route path="/te42-ll" element={<Navigate to="/products/test-charts/te42-ll" replace />} />
+        <Route path="/te292" element={<Navigate to="/products/test-charts/te292" replace />} />
+        <Route path="/te294" element={<Navigate to="/products/test-charts/te294" replace />} />
+        <Route path="/te42" element={<Navigate to="/products/test-charts/te42" replace />} />
+        <Route path="/iq-analyzer" element={<Navigate to="/products/software/iq-analyzer" replace />} />
+        <Route path="/camspecs" element={<Navigate to="/products/software/camspecs" replace />} />
+        <Route path="/vega" element={<Navigate to="/products/software/vega" replace />} />
+        <Route path="/product-bundle-ieee" element={<Navigate to="/products/bundles-services/product-bundle-ieee" replace />} />
+        <Route path="/vcx-webcam-service" element={<Navigate to="/your-solution/web-camera/vcx-webcam-service" replace />} />
         
         {/* Hierarchical Your Solution Routes - Catch-all for automatic CMS pages */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
@@ -90,8 +111,14 @@ const App = () => (
         <Route path="/your-solution/web-camera/:slug" element={<DynamicCMSPage />} />
         <Route path="/your-solution/machine-vision/:slug" element={<DynamicCMSPage />} />
         <Route path="/your-solution/medical-endoscopy/:slug" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/broadcast-video/:slug" element={<DynamicCMSPage />} />
+        <Route path="/your-solution/security-surveillance/:slug" element={<DynamicCMSPage />} />
         
-        {/* Hierarchical Product Routes */}
+        {/* Universal catch-all routes for Products */}
+        <Route path="/products/test-charts/:slug" element={<DynamicCMSPage />} />
+        <Route path="/products/illumination-devices/:slug" element={<DynamicCMSPage />} />
+        <Route path="/products/software/:slug" element={<DynamicCMSPage />} />
+        <Route path="/products/bundles-services/:slug" element={<DynamicCMSPage />} />
         
         <Route path="/downloads" element={<Downloads />} />
          <Route path="/hidden-segments" element={<HiddenSegments />} />
