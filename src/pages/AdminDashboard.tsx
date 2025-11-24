@@ -6318,18 +6318,18 @@ const AdminDashboard = () => {
         position: idx
       }));
       
-      const { error } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: selectedPage,
-          section_key: "page_segments",
-                                  content_type: "json",
-                                  content_value: JSON.stringify(segmentsWithPositions),
-                                  updated_at: new Date().toISOString(),
-                                  updated_by: user?.id
-                                }, {
-                                  onConflict: 'page_slug,section_key'
-                                });
+        const { error } = await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: resolvedPageSlug || selectedPage,
+            section_key: "page_segments",
+            content_type: "json",
+            content_value: JSON.stringify(segmentsWithPositions),
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
+          }, {
+            onConflict: 'page_slug,section_key'
+          });
 
                               if (error) throw error;
                               
@@ -6783,7 +6783,7 @@ const AdminDashboard = () => {
                           setPageSegments(updatedSegments);
                         }}
                         onSave={() => handleSaveSegments()}
-                        currentPageSlug={selectedPage}
+                        currentPageSlug={resolvedPageSlug || selectedPage}
                         segmentId={segment.id}
                       />
                     );
@@ -6821,7 +6821,7 @@ const AdminDashboard = () => {
 
                   {segment.type === 'full-hero' && (
                     <FullHeroEditor
-                      pageSlug={selectedPage}
+                      pageSlug={resolvedPageSlug || selectedPage}
                       segmentId={segment.id}
                       onSave={() => handleSaveSegments()}
                     />
