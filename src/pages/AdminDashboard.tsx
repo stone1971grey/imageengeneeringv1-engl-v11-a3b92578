@@ -481,7 +481,7 @@ const AdminDashboard = () => {
         supabase
           .from("page_content")
           .upsert({
-            page_slug: selectedPage,
+            page_slug: resolvedPageSlug || selectedPage,
             section_key: "tab_order",
             content_type: "json",
             content_value: JSON.stringify(newOrder),
@@ -1299,7 +1299,7 @@ const AdminDashboard = () => {
        const { error: dbError } = await supabase
          .from("page_content")
          .upsert({
-           page_slug: selectedPage,
+           page_slug: resolvedPageSlug || selectedPage,
            section_key: "hero_image_url",
            content_type: "image_url",
            content_value: publicUrl,
@@ -1315,7 +1315,7 @@ const AdminDashboard = () => {
        const { error: metadataError } = await supabase
          .from("page_content")
          .upsert({
-           page_slug: selectedPage,
+           page_slug: resolvedPageSlug || selectedPage,
            section_key: "hero_image_metadata",
            content_type: "json",
            content_value: JSON.stringify(metadata),
@@ -1444,7 +1444,7 @@ const AdminDashboard = () => {
           await supabase
             .from("page_content")
             .upsert({
-              page_slug: selectedPage,
+              page_slug: resolvedPageSlug || selectedPage,
               section_key: key,
               content_type: "text",
               content_value: content[key],
@@ -1460,7 +1460,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "applications_items",
           content_type: "json",
           content_value: JSON.stringify(updatedApps),
@@ -1474,7 +1474,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "tiles_columns",
           content_type: "text",
           content_value: tilesColumns,
@@ -1546,7 +1546,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
@@ -1594,7 +1594,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(newOrder),
@@ -1622,7 +1622,7 @@ const AdminDashboard = () => {
           const { error } = await supabase
             .from("page_content")
             .upsert({
-              page_slug: selectedPage,
+              page_slug: resolvedPageSlug || selectedPage,
               section_key: key,
               content_type: "text",
               content_value: content[key],
@@ -1640,7 +1640,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "hero_image_position",
           content_type: "text",
           content_value: heroImagePosition,
@@ -1654,7 +1654,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "hero_layout",
           content_type: "text",
           content_value: heroLayout,
@@ -1668,7 +1668,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "hero_top_padding",
           content_type: "text",
           content_value: heroTopPadding,
@@ -1682,7 +1682,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "hero_cta_link",
           content_type: "text",
           content_value: heroCtaLink,
@@ -1696,7 +1696,7 @@ const AdminDashboard = () => {
       await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "hero_cta_style",
           content_type: "text",
           content_value: heroCtaStyle,
@@ -1711,7 +1711,7 @@ const AdminDashboard = () => {
         await supabase
           .from("page_content")
           .upsert({
-            page_slug: selectedPage,
+            page_slug: resolvedPageSlug || selectedPage,
             section_key: "hero_image_metadata",
             content_type: "json",
             content_value: JSON.stringify(heroImageMetadata),
@@ -1996,7 +1996,7 @@ const AdminDashboard = () => {
       const { error: dbError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "footer_team_image_url",
           content_type: "image_url",
           content_value: publicUrl,
@@ -2518,7 +2518,7 @@ const AdminDashboard = () => {
           const { error } = await supabase
             .from("page_content")
             .upsert({
-              page_slug: selectedPage,
+              page_slug: resolvedPageSlug || selectedPage,
               section_key: key,
               content_type: "text",
               content_value: content[key],
@@ -2536,7 +2536,7 @@ const AdminDashboard = () => {
       const { error: appsError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "applications_items",
           content_type: "json",
           content_value: JSON.stringify(applications),
@@ -2552,7 +2552,7 @@ const AdminDashboard = () => {
       const { error: columnsError } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: selectedPage,
+          page_slug: resolvedPageSlug || selectedPage,
           section_key: "tiles_columns",
           content_type: "text",
           content_value: tilesColumns,
@@ -2597,7 +2597,7 @@ const AdminDashboard = () => {
         await supabase
           .from("page_content")
           .upsert({
-            page_slug: selectedPage,
+            page_slug: resolvedPageSlug || selectedPage,
             section_key: key,
             content_type: "text",
             content_value: value,
@@ -4629,7 +4629,7 @@ const AdminDashboard = () => {
                       try {
                         const updates = [
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "banner_title",
                             content_type: "heading",
                             content_value: bannerTitle,
@@ -4637,7 +4637,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "banner_subtext",
                             content_type: "text",
                             content_value: bannerSubtext,
@@ -4645,7 +4645,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "banner_images",
                             content_type: "json",
                             content_value: JSON.stringify(bannerImages),
@@ -4653,7 +4653,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "banner_button_text",
                             content_type: "text",
                             content_value: bannerButtonText,
@@ -4661,7 +4661,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "banner_button_link",
                             content_type: "text",
                             content_value: bannerButtonLink,
@@ -4669,7 +4669,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "banner_button_style",
                             content_type: "text",
                             content_value: bannerButtonStyle,
@@ -4964,7 +4964,7 @@ const AdminDashboard = () => {
                       try {
                         const updates = [
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "solutions_title",
                             content_type: "heading",
                             content_value: solutionsTitle,
@@ -4972,7 +4972,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "solutions_subtext",
                             content_type: "text",
                             content_value: solutionsSubtext,
@@ -4980,7 +4980,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "solutions_layout",
                             content_type: "text",
                             content_value: solutionsLayout,
@@ -4988,7 +4988,7 @@ const AdminDashboard = () => {
                             updated_by: user?.id
                           },
                           {
-                            page_slug: selectedPage,
+                            page_slug: resolvedPageSlug || selectedPage,
                             section_key: "solutions_items",
                             content_type: "json",
                             content_value: JSON.stringify(solutionsItems),
