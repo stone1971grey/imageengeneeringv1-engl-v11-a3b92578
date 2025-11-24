@@ -60,6 +60,12 @@ export const navigationDataEn = {
         { name: "Endoscopic Illumination", link: "#" }
       ]
     },
+    "Scanners & Archiving": {
+      description: "Document scanning, archiving, and digitalization systems",
+      subgroups: [
+        { name: "Multispectral Illumination", link: "/your-solution/scanners-archiving/multispectral-illumination" }
+      ]
+    },
     "Photo & Video": {
       description: "Digital cameras for professional and amateur applications",
       subgroups: [

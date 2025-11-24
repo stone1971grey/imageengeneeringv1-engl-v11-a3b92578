@@ -27,7 +27,7 @@ export const navigationDataDe = {
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
         { name: "Farbkalibrierung", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "Kamerastabilisierung", link: "#" },
+        { name: "Kamerastabilisierung", link: "/your-solution/mobile-phone/camera-stabilization" },
         { name: "ISP-Tuning", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "Timing-Messungen", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
@@ -35,7 +35,7 @@ export const navigationDataDe = {
     "Web Camera": {
       description: "Webkameras für Videokonferenzen und Streaming-Anwendungen",
       subgroups: [
-        { name: "VCX WebCam", link: "#" },
+        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
         { name: "ISP-Tuning", link: "#" },
         { name: "Farbkalibrierung", link: "#" },
         { name: "Timing-Messungen", link: "#" }
@@ -58,6 +58,12 @@ export const navigationDataDe = {
         { name: "Optische Verzerrung", link: "#" },
         { name: "ISP-Tuning", link: "#" },
         { name: "Endoskopische Beleuchtung", link: "#" }
+      ]
+    },
+    "Scanners & Archiving": {
+      description: "Dokumentenscanning, Archivierung und Digitalisierungssysteme",
+      subgroups: [
+        { name: "Multispektrale Beleuchtung", link: "/your-solution/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {

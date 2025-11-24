@@ -27,7 +27,7 @@ export const navigationDataJa = {
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
         { name: "色較正", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "カメラ手ブレ補正", link: "#" },
+        { name: "カメラ手ブレ補正", link: "/your-solution/mobile-phone/camera-stabilization" },
         { name: "ISPチューニング", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "タイミング測定", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
@@ -35,7 +35,7 @@ export const navigationDataJa = {
     "Web Camera": {
       description: "ビデオ会議およびストリーミングアプリケーション用Webカメラ",
       subgroups: [
-        { name: "VCX WebCam", link: "#" },
+        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
         { name: "ISPチューニング", link: "#" },
         { name: "色較正", link: "#" },
         { name: "タイミング測定", link: "#" }
@@ -58,6 +58,12 @@ export const navigationDataJa = {
         { name: "光学歪み", link: "#" },
         { name: "ISPチューニング", link: "#" },
         { name: "内視鏡照明", link: "#" }
+      ]
+    },
+    "Scanners & Archiving": {
+      description: "文書スキャン、アーカイブ、デジタル化システム",
+      subgroups: [
+        { name: "マルチスペクトル照明", link: "/your-solution/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {
