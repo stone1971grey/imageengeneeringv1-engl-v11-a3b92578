@@ -543,7 +543,7 @@ const AdminDashboard = () => {
       
       // Redirect to first allowed page if current page is empty or not in allowed pages
       if (pages.length > 0 && (!selectedPage || !pages.includes(selectedPage))) {
-        navigate(`/admin-dashboard?page=${pages[0]}`, { replace: true });
+        window.location.href = `/admin-dashboard?page=${pages[0]}`;
         return;
       }
       
