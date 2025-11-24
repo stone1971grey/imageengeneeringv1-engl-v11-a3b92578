@@ -530,7 +530,8 @@ const AdminDashboard = () => {
 
       if (pageAccessError || !pageAccessData || pageAccessData.length === 0) {
         toast.error("You don't have access to any pages");
-        navigate("/");
+        await supabase.auth.signOut();
+        navigate("/auth");
         return;
       }
 
@@ -540,9 +541,10 @@ const AdminDashboard = () => {
       setIsAdmin(false);
       setAllowedPages(pages);
       
-      // Redirect to first allowed page if current page is not in allowed pages
-      if (pages.length > 0 && !pages.includes(selectedPage)) {
-        navigate(`/admin-dashboard?page=${pages[0]}`);
+      // Redirect to first allowed page if current page is empty or not in allowed pages
+      if (pages.length > 0 && (!selectedPage || !pages.includes(selectedPage))) {
+        navigate(`/admin-dashboard?page=${pages[0]}`, { replace: true });
+        return;
       }
       
       setLoading(false);
