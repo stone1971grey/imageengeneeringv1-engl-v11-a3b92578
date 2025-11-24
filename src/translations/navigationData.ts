@@ -16,7 +16,7 @@ export const navigationDataEn = {
       description: "CCTV systems, video surveillance",
       subgroups: [
         { name: "IEC 62676-5 Testing", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
-        { name: "Low-light (ISO 19093)", link: "/your-solution/security-surveillance/low-light-(iso-19093)" },
+        { name: "Low-light (ISO 19093)", link: "#" },
         { name: "High Dynamic Range (HDR)", link: "#" },
         { name: "ISP Tuning", link: "#" },
         { name: "Spectral Sensitivities", link: "#" }
