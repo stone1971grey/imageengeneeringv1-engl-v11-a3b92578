@@ -16,7 +16,7 @@ export const navigationDataJa = {
       description: "CCTVシステム、ビデオ監視",
       subgroups: [
         { name: "IEC 62676-5テスト", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
-        { name: "低照度(ISO 19093)", link: "/your-solution/security-surveillance/low-light-(iso-19093)" },
+        { name: "低照度(ISO 19093)", link: "#" },
         { name: "ハイダイナミックレンジ(HDR)", link: "#" },
         { name: "ISPチューニング", link: "#" },
         { name: "分光感度", link: "#" }
