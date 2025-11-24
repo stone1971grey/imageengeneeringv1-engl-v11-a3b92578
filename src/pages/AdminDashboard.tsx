@@ -1045,7 +1045,7 @@ const AdminDashboard = () => {
             supabase
               .from("page_content")
               .upsert({
-                page_slug: selectedPage,
+                page_slug: resolvedPageSlug || selectedPage,
                 section_key: "page_segments",
                 content_type: "json",
                 content_value: JSON.stringify(segmentsWithIds),
@@ -1090,7 +1090,7 @@ const AdminDashboard = () => {
             supabase
               .from("page_content")
               .upsert({
-                page_slug: selectedPage,
+                page_slug: resolvedPageSlug || selectedPage,
                 section_key: "tab_order",
                 content_type: "json",
                 content_value: JSON.stringify(validOrder),
@@ -1162,17 +1162,17 @@ const AdminDashboard = () => {
       if (rebuiltTabOrder.length > 0 && user) {
         // Save the rebuilt tab_order to database
         supabase
-          .from("page_content")
-          .upsert({
-            page_slug: selectedPage,
-            section_key: "tab_order",
-            content_type: "json",
-            content_value: JSON.stringify(rebuiltTabOrder),
-            updated_at: new Date().toISOString(),
-            updated_by: user.id
-          }, {
-            onConflict: 'page_slug,section_key'
-          })
+           .from("page_content")
+           .upsert({
+             page_slug: resolvedPageSlug || selectedPage,
+             section_key: "tab_order",
+             content_type: "json",
+             content_value: JSON.stringify(rebuiltTabOrder),
+             updated_at: new Date().toISOString(),
+             updated_by: user.id
+           }, {
+             onConflict: 'page_slug,section_key'
+           })
           .then(({ error }) => {
             if (!error) {
               console.log("✅ tab_order successfully rebuilt:", rebuiltTabOrder);
