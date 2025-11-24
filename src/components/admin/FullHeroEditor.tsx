@@ -15,7 +15,7 @@ import { Upload, X, Heading1 } from "lucide-react";
 interface FullHeroEditorProps {
   pageSlug: string;
   segmentId: number;
-  onSave?: (updatedData: any) => void;
+  onSave: () => void;
 }
 
 export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorProps) => {
@@ -275,7 +275,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         console.error("Auto-save error:", updateError);
       } else {
         console.log("✅ Image URL auto-saved to database");
-        onSave?.(content);
+        onSave?.();
       }
     } catch (e) {
       console.error("Auto-save failed:", e);
@@ -361,7 +361,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       }
 
       toast.success("Full Hero saved successfully");
-      onSave?.(content);
+      onSave?.();
     } catch (e) {
       console.error("Error parsing/updating page_segments:", e);
       toast.error("Failed to save Full Hero");
