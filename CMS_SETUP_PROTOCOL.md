@@ -87,7 +87,182 @@ Direkter ID-Zugriff:
 - Beispiel: /307 → redirect zu /your-solution/mobile-phone/isp-tuning
 ```
 
-## 🚀 VOLLAUTOMATIK - Ein Klick genügt!
+---
+
+## 🎯 SITEMAP-BASIERTE CMS-SEITENERSTELLUNG (Next Generation)
+
+### ⚡ Das Problem der alten Methode:
+- ❌ Manuelle `parent_slug` Eingabe führt zu Hierarchie-Fehlern
+- ❌ `navigationData.ts` Updates in 5 Sprachdateien fehleranfällig
+- ❌ Inkonsistenzen zwischen Slug-Hierarchie und Navigation
+- ❌ Nachträgliche Korrekturzyklen notwendig
+
+### ✨ Die Sitemap-Lösung (ab Version 2.0):
+
+**Grundprinzip:** Die Navigation IST die Quelle der Wahrheit - nicht umgekehrt!
+
+### Workflow:
+
+**1️⃣ Redakteur klickt "Create New CMS Page"**
+```
+Admin Dashboard → visuelle Sitemap-Ansicht öffnet sich
+```
+
+**2️⃣ Sitemap zeigt die komplette Website-Struktur:**
+```
+📁 Homepage
+├── 📁 Your Solution
+│   ├── ✅ Photography (CMS)
+│   ├── ✅ Scanners & Archiving (CMS)
+│   │   ├── ✅ Universal Test Target (CMS)
+│   │   ├── ✅ ISO 21550 (CMS)
+│   │   └── 📄 [+ NEUE SEITE HIER ERSTELLEN]
+│   ├── ✅ Medical & Endoscopy (CMS)
+│   ├── 📄 Broadcast & Video (statisch)
+│   └── ✅ Security & Surveillance (CMS)
+│       ├── ✅ IEC 62676-5 Testing (CMS)
+│       └── 📄 [+ NEUE SEITE HIER ERSTELLEN]
+├── 📁 Products
+│   ├── 📁 Test Charts
+│   │   └── 📄 [+ NEUE SEITE HIER ERSTELLEN]
+...
+```
+
+**Visuelle Unterscheidung:**
+- ✅ **Grüner Checkmark** = CMS-Seite (editierbar)
+- 📄 **Graues Icon** = Statische Seite (wird später durch CMS ersetzt)
+- 📄 **[+ Neue Seite]** = Platzhalter zum Hinzufügen
+
+**3️⃣ Redakteur wählt Position in der Hierarchie:**
+```
+Klick auf: "Security & Surveillance" → "+ Add child page"
+```
+
+**4️⃣ System leitet automatisch ab:**
+```json
+{
+  "parent_id": 222,                    // Aus page_registry
+  "parent_slug": "security-surveillance", // Aus page_registry
+  "page_slug": "low-light-iso-19093",     // User-Eingabe (nur der letzte Teil!)
+  "hierarchical_slug": "your-solution/security-surveillance/low-light-iso-19093",  // Automatisch konstruiert!
+  "page_title": "Low Light (ISO 19093)"   // User-Eingabe (deutsch als Default)
+}
+```
+
+**5️⃣ Automatische Backend-Erstellung:**
+```sql
+-- 1. page_registry (mit korrekter Hierarchie)
+INSERT INTO page_registry (page_id, page_slug, page_title, parent_id, parent_slug)
+VALUES (318, 'your-solution/security-surveillance/low-light-iso-19093', 
+        'Low Light (ISO 19093)', 222, 'security-surveillance');
+
+-- 2. segment_registry (Footer)
+INSERT INTO segment_registry (segment_id, page_slug, segment_type, segment_key, is_static)
+VALUES (400, 'your-solution/security-surveillance/low-light-iso-19093', 
+        'footer', 'footer', true);
+
+-- 3. page_content (tab_order, page_segments, seo_data)
+INSERT INTO page_content ...
+```
+
+**6️⃣ Automatische navigationData.ts Synchronisation:**
+```typescript
+// System aktualisiert ALLE 5 Sprachdateien automatisch:
+// navigationData.ts (EN)
+// navigationData.de.ts (DE) 
+// navigationData.ja.ts (JA)
+// navigationData.ko.ts (KO)
+// navigationData.zh.ts (ZH)
+
+// Beispiel navigationData.ts:
+"Security & Surveillance": {
+  description: "CCTV systems, video surveillance",
+  subgroups: [
+    { name: "IEC 62676-5 Testing", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
+    { name: "Low Light (ISO 19093)", link: "/your-solution/security-surveillance/low-light-iso-19093" }, // ✅ NEU!
+    { name: "High Dynamic Range (HDR)", link: "#" }
+  ]
+}
+```
+
+**7️⃣ Mehrsprachigkeit (Phase 1):**
+```
+Default: Seite wird in DEUTSCH angelegt
+- navigationData.de.ts: "Schwachlicht (ISO 19093)"
+- navigationData.ts: "Low Light (ISO 19093)" [Placeholder oder manuell]
+- navigationData.ja.ts: "低照度(ISO 19093)" [Placeholder oder manuell]
+- ...andere Sprachen: [Placeholder oder manuell]
+```
+
+**Mehrsprachigkeit Phase 2 (Admin Interface V2 - nächster Meilenstein):**
+```
+Separater Prozess im Admin Dashboard:
+- "Erstelle englische Version dieser Seite"
+- "Erstelle chinesische Version dieser Seite"
+- → Übersetzt Content & navigationData automatisch
+```
+
+### 🎯 Vorteile:
+
+| Vorteil | Beschreibung |
+|---------|-------------|
+| **Single Source of Truth** | Sitemap IST die Hierarchie → keine Diskrepanzen mehr |
+| **Visuelle Klarheit** | Redakteur sieht exakt, wo die Seite erscheinen wird |
+| **Automatische Slug-Hierarchie** | Wird direkt aus der Sitemap-Position abgeleitet |
+| **Automatische navigationData.ts Sync** | Alle 5 Sprachdateien werden synchron aktualisiert |
+| **Fehlerprävention** | Unmöglich, falsche `parent_slug` einzugeben |
+| **Redaktions-Flexibilität** | Sitemap kann frei gestaltet werden |
+| **Zero Post-Processing** | Keine manuellen Korrekturen mehr nötig |
+
+### 🔧 Technische Implementierung:
+
+**Sitemap Datenquelle:**
+```typescript
+// Liest navigationData.ts als Basis
+import { navigationDataEn } from '@/translations/navigationData';
+
+// Anreichert mit page_registry Status
+const enrichedSitemap = await enrichWithCMSStatus(navigationDataEn);
+
+// Zeigt: ✅ CMS | 📄 Static | 📄 [+ Add]
+```
+
+**Status-Check-Logik:**
+```typescript
+async function enrichWithCMSStatus(navData) {
+  for each page in navData:
+    // Check if page exists in page_registry
+    const exists = await supabase
+      .from('page_registry')
+      .select('page_id')
+      .eq('page_slug', page.link.replace('/', ''))
+      .maybeSingle();
+    
+    // Check if page has segments in segment_registry
+    const hasSegments = await supabase
+      .from('segment_registry')
+      .select('segment_id')
+      .eq('page_slug', page.link.replace('/', ''))
+      .not('deleted', 'eq', true);
+    
+    page.status = exists && hasSegments.length > 0 ? 'CMS' : 'STATIC';
+}
+```
+
+### ⚠️ Übergangsphase:
+
+**Aktuell:** Statische Seiten existieren noch parallel
+- 📄 Statische React-Komponenten (nicht im CMS)
+- ✅ CMS-Seiten (über UDPS gerendert)
+
+**Ziel:** Alle statischen Seiten werden sukzessive durch CMS-Seiten ersetzt
+- Sitemap zeigt beide Typen während der Migration
+- Statische Seiten werden nicht vom Erstellungsprozess betroffen
+- Nach vollständiger Migration: Nur noch CMS-Seiten
+
+---
+
+## 🚀 VOLLAUTOMATIK - Ein Klick genügt! (Legacy-Methode)
 
 ### ✨ So funktioniert es:
 
