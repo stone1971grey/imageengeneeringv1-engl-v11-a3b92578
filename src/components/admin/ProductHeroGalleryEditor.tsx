@@ -96,14 +96,61 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
         imageUrl: publicUrl,
         metadata: fullMetadata
       };
+      
+      // Update local state
       onChange({ ...data, images: updatedImages });
 
-      toast.success('Image uploaded successfully');
+      // Auto-save after successful upload
+      await autoSaveAfterUpload({ ...data, images: updatedImages });
+
+      toast.success('Image uploaded and saved successfully');
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload image');
     } finally {
       setUploadingIndex(null);
+    }
+  };
+
+  const autoSaveAfterUpload = async (updatedData: ProductHeroGalleryData) => {
+    try {
+      const { data: pageContentData, error: fetchError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .single();
+
+      if (fetchError || !pageContentData) {
+        console.error("Error loading page_segments:", fetchError);
+        return;
+      }
+
+      const segments = JSON.parse(pageContentData.content_value);
+      const updatedSegments = segments.map((seg: any) => {
+        if (seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)) {
+          return { ...seg, data: updatedData };
+        }
+        return seg;
+      });
+
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(updatedSegments),
+          updated_by: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments");
+
+      if (updateError) {
+        console.error("Auto-save error:", updateError);
+      } else {
+        console.log("✅ Image auto-saved to database");
+        onSave?.();
+      }
+    } catch (e) {
+      console.error("Auto-save failed:", e);
     }
   };
 

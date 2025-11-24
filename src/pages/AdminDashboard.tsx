@@ -1382,11 +1382,71 @@ const AdminDashboard = () => {
       newApps[tileIndex].metadata = { ...metadata, altText: '' };
       setApplications(newApps);
 
-      toast.success("Image uploaded successfully!");
+      // Auto-save after successful upload
+      await autoSaveTileImageUpload(newApps);
+
+      toast.success("Image uploaded and saved successfully!");
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const autoSaveTileImageUpload = async (updatedApps: any[]) => {
+    if (!user) return;
+    
+    try {
+      const appFields = ['applications_title', 'applications_description'];
+      
+      for (const key of appFields) {
+        if (content[key] !== undefined) {
+          await supabase
+            .from("page_content")
+            .upsert({
+              page_slug: selectedPage,
+              section_key: key,
+              content_type: "text",
+              content_value: content[key],
+              updated_at: new Date().toISOString(),
+              updated_by: user.id
+            }, {
+              onConflict: 'page_slug,section_key'
+            });
+        }
+      }
+
+      // Update applications items
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "applications_items",
+          content_type: "json",
+          content_value: JSON.stringify(updatedApps),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      // Save tiles columns setting
+      await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: selectedPage,
+          section_key: "tiles_columns",
+          content_type: "text",
+          content_value: tilesColumns,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      console.log("✅ Tile image auto-saved to database");
+    } catch (error: any) {
+      console.error("Auto-save error:", error);
     }
   };
 
@@ -1761,7 +1821,10 @@ const AdminDashboard = () => {
       newSegments[segmentIndex].data.heroImageMetadata = { ...metadata, altText: '' };
       setPageSegments(newSegments);
 
-      toast.success("Hero image uploaded successfully!");
+      // Auto-save after upload
+      await autoSaveImageTextSegment(newSegments);
+
+      toast.success("Hero image uploaded and saved successfully!");
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
@@ -1810,11 +1873,41 @@ const AdminDashboard = () => {
       newSegments[segmentIndex].data.items[itemIndex].metadata = { ...metadata, altText: '' };
       setPageSegments(newSegments);
 
-      toast.success("Item image uploaded successfully!");
+      // Auto-save after upload
+      await autoSaveImageTextSegment(newSegments);
+
+      toast.success("Item image uploaded and saved successfully!");
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const autoSaveImageTextSegment = async (updatedSegments: any[]) => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: resolvedPageSlug || selectedPage,
+          section_key: "page_segments",
+          content_type: "json",
+          content_value: JSON.stringify(updatedSegments),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, {
+          onConflict: 'page_slug,section_key'
+        });
+
+      if (error) {
+        console.error("Auto-save error:", error);
+      } else {
+        console.log("✅ Image & Text segment auto-saved to database");
+      }
+    } catch (error: any) {
+      console.error("Auto-save error:", error);
     }
   };
 
