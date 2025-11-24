@@ -658,7 +658,7 @@ const AdminDashboard = () => {
       let { data: pageInfo } = await supabase
         .from("page_registry")
         .select("page_id, page_title, page_slug, parent_id, parent_slug")
-        .eq("page_slug", selectedPageForCMS)
+        .or(`page_slug.eq.${selectedPageForCMS},page_slug.ilike.%/${selectedPageForCMS}`)
         .maybeSingle();
 
     if (!pageInfo) {
