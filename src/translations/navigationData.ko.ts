@@ -27,7 +27,7 @@ export const navigationDataKo = {
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
         { name: "색상 보정", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "카메라 안정화", link: "#" },
+        { name: "카메라 안정화", link: "/your-solution/mobile-phone/camera-stabilization" },
         { name: "ISP 튜닝", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "타이밍 측정", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
@@ -35,7 +35,7 @@ export const navigationDataKo = {
     "Web Camera": {
       description: "화상 회의 및 스트리밍 애플리케이션용 웹 카메라",
       subgroups: [
-        { name: "VCX WebCam", link: "#" },
+        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
         { name: "ISP 튜닝", link: "#" },
         { name: "색상 보정", link: "#" },
         { name: "타이밍 측정", link: "#" }
@@ -58,6 +58,12 @@ export const navigationDataKo = {
         { name: "광학 왜곡", link: "#" },
         { name: "ISP 튜닝", link: "#" },
         { name: "내시경 조명", link: "#" }
+      ]
+    },
+    "Scanners & Archiving": {
+      description: "문서 스캔, 아카이빙 및 디지털화 시스템",
+      subgroups: [
+        { name: "다분광 조명", link: "/your-solution/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {

@@ -27,7 +27,7 @@ export const navigationDataZh = {
       subgroups: [
         { name: "VCX手机摄像头", link: "#" },
         { name: "色彩校准", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "相机防抖", link: "#" },
+        { name: "相机防抖", link: "/your-solution/mobile-phone/camera-stabilization" },
         { name: "ISP调优", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "时序测量", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
@@ -35,7 +35,7 @@ export const navigationDataZh = {
     "Web Camera": {
       description: "用于视频会议和流媒体应用的网络摄像头",
       subgroups: [
-        { name: "VCX网络摄像头", link: "#" },
+        { name: "VCX网络摄像头", link: "/your-solution/web-camera/vcx-webcam" },
         { name: "ISP调优", link: "#" },
         { name: "色彩校准", link: "#" },
         { name: "时序测量", link: "#" }
@@ -58,6 +58,12 @@ export const navigationDataZh = {
         { name: "光学畸变", link: "#" },
         { name: "ISP调优", link: "#" },
         { name: "内窥镜照明", link: "#" }
+      ]
+    },
+    "Scanners & Archiving": {
+      description: "文档扫描、归档和数字化系统",
+      subgroups: [
+        { name: "多光谱照明", link: "/your-solution/scanners-archiving/multispectral-illumination" }
       ]
     },
     "Photo & Video": {
