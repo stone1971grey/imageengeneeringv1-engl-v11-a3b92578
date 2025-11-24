@@ -6823,7 +6823,7 @@ const AdminDashboard = () => {
                     <FullHeroEditor
                       pageSlug={resolvedPageSlug || selectedPage}
                       segmentId={segment.id}
-                      onSave={() => handleSaveSegments()}
+                      onSave={() => loadContent()}
                     />
                   )}
 
