@@ -19,7 +19,6 @@ interface FullHeroEditorProps {
 }
 
 export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorProps) => {
-  const [resolvedSlug, setResolvedSlug] = useState(pageSlug);
   const [titleLine1, setTitleLine1] = useState("");
   const [titleLine2, setTitleLine2] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -40,37 +39,10 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [isUploading, setIsUploading] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
 
-  // Resolve hierarchical slug once, similar to AdminDashboard
   useEffect(() => {
-    const resolveSlug = async () => {
-      if (!pageSlug) return;
-      try {
-        const { data, error } = await supabase
-          .from('page_registry')
-          .select('page_slug')
-          .or(`page_slug.eq.${pageSlug},page_slug.ilike.%/${pageSlug}`)
-          .maybeSingle();
-        
-        if (error) {
-          console.error("Error resolving slug:", error);
-          setResolvedSlug(pageSlug);
-          return;
-        }
-        
-        setResolvedSlug(data?.page_slug || pageSlug);
-      } catch (err) {
-        console.error("Exception resolving slug:", err);
-        setResolvedSlug(pageSlug);
-      }
-    };
-    resolveSlug();
-  }, [pageSlug]);
-
-  useEffect(() => {
-    if (!resolvedSlug) return;
     loadContent();
     checkIfH1Segment();
-  }, [resolvedSlug, segmentId]);
+  }, [pageSlug, segmentId]);
 
   // Sync imageUrl state when content is loaded from backend
   useEffect(() => {
@@ -78,11 +50,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   }, [imageUrl]);
 
   const checkIfH1Segment = async () => {
-    if (!resolvedSlug) return;
+    if (!pageSlug) return;
     const { data: segments } = await supabase
       .from("segment_registry")
       .select("*")
-      .eq("page_slug", resolvedSlug)
+      .eq("page_slug", pageSlug)
       .eq("deleted", false)
       .order("position", { ascending: true });
 
@@ -99,11 +71,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   };
 
   const loadContent = async () => {
-    if (!resolvedSlug) return;
+    if (!pageSlug) return;
     const { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", resolvedSlug)
+      .eq("page_slug", pageSlug)
       .eq("section_key", "page_segments");
 
     if (error) {
@@ -253,11 +225,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
     };
 
     try {
-      if (!resolvedSlug) return;
+      if (!pageSlug) return;
       const { data: pageContentData, error: fetchError } = await supabase
         .from("page_content")
         .select("*")
-        .eq("page_slug", resolvedSlug)
+        .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
         .single();
 
@@ -280,7 +252,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           content_value: JSON.stringify(updatedSegments),
           updated_by: (await supabase.auth.getUser()).data.user?.id,
         })
-        .eq("page_slug", resolvedSlug)
+        .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments");
 
       if (updateError) {
