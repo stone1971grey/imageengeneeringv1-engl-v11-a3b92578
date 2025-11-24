@@ -44,12 +44,24 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   useEffect(() => {
     const resolveSlug = async () => {
       if (!pageSlug) return;
-      const { data } = await supabase
-        .from('page_registry')
-        .select('page_slug')
-        .or(`page_slug.eq.${pageSlug},page_slug.like.%/${pageSlug}`)
-        .maybeSingle();
-      setResolvedSlug(data?.page_slug || pageSlug);
+      try {
+        const { data, error } = await supabase
+          .from('page_registry')
+          .select('page_slug')
+          .or(`page_slug.eq.${pageSlug},page_slug.ilike.%/${pageSlug}`)
+          .maybeSingle();
+        
+        if (error) {
+          console.error("Error resolving slug:", error);
+          setResolvedSlug(pageSlug);
+          return;
+        }
+        
+        setResolvedSlug(data?.page_slug || pageSlug);
+      } catch (err) {
+        console.error("Exception resolving slug:", err);
+        setResolvedSlug(pageSlug);
+      }
     };
     resolveSlug();
   }, [pageSlug]);
