@@ -559,21 +559,33 @@ const AdminDashboard = () => {
   const resolvePageSlug = async (slug: string): Promise<string> => {
     if (!slug) return slug;
     
-    // Try to find full hierarchical slug in page_registry
-    const { data: pageData } = await supabase
-      .from('page_registry')
-      .select('page_slug')
-      .or(`page_slug.eq.${slug},page_slug.like.%/${slug}`)
-      .maybeSingle();
-    
-    if (pageData) {
-      console.log(`🔍 Resolved slug "${slug}" to "${pageData.page_slug}"`);
-      setResolvedPageSlug(pageData.page_slug); // Store resolved slug
-      return pageData.page_slug;
+    try {
+      // Try to find full hierarchical slug in page_registry
+      const { data: pageData, error } = await supabase
+        .from('page_registry')
+        .select('page_slug')
+        .or(`page_slug.eq.${slug},page_slug.ilike.%/${slug}`)
+        .maybeSingle();
+      
+      if (error) {
+        console.error("Error resolving slug:", error);
+        setResolvedPageSlug(slug);
+        return slug;
+      }
+      
+      if (pageData) {
+        console.log(`🔍 Resolved slug "${slug}" to "${pageData.page_slug}"`);
+        setResolvedPageSlug(pageData.page_slug);
+        return pageData.page_slug;
+      }
+      
+      setResolvedPageSlug(slug);
+      return slug;
+    } catch (err) {
+      console.error("Exception resolving slug:", err);
+      setResolvedPageSlug(slug);
+      return slug;
     }
-    
-    setResolvedPageSlug(slug); // Use original if not found
-    return slug;
   };
 
   // Load segment registry to get all segment IDs
