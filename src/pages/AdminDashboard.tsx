@@ -551,7 +551,9 @@ const AdminDashboard = () => {
 
     // No valid role found
     toast.error("You don't have admin or editor access");
-    navigate("/");
+    // Sign out so user can log in with a different account
+    await supabase.auth.signOut();
+    navigate("/auth");
   };
 
   
