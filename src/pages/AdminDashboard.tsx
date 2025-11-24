@@ -893,7 +893,7 @@ const AdminDashboard = () => {
       // Show success
       toast.success(
         <div className="space-y-2">
-          <p className="font-bold">🎉 CMS-Seite erfolgreich erstellt!</p>
+          <p className="font-bold">🎉 Page Created Successfully ID {pageInfo.page_id}</p>
           <p className="text-sm">Die Seite ist vollständig eingerichtet und sofort verfügbar.</p>
           <p className="text-sm"><strong>URL:</strong> {hierarchicalUrl}</p>
         </div>,
