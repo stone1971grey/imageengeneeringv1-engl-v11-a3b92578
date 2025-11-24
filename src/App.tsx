@@ -101,6 +101,7 @@ const App = () => (
         <Route path="/camera-stabilization" element={<Navigate to="/your-solution/mobile-phone/camera-stabilization" replace />} />
         <Route path="/geometric-calibration-automotive" element={<Navigate to="/your-solution/automotive/geometric-calibration-automotive" replace />} />
         <Route path="/vcx-webcam" element={<Navigate to="/your-solution/web-camera/vcx-webcam" replace />} />
+        <Route path="/iec-62676-5-testing" element={<Navigate to="/your-solution/security-surveillance/iec-62676-5-testing" replace />} />
         
         {/* Hierarchical Your Solution Routes - Catch-all for automatic CMS pages */}
         <Route path="/your-solution/automotive" element={<Automotive />} />
