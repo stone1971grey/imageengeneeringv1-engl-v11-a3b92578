@@ -182,7 +182,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       
       // Update with permanent URL in local state
       setImageUrl(result.url);
-      toast.success('✅ Upload successful! Please click "Save Full Hero" to store it permanently.', { duration: 4000 });
+      
+      // Auto-save after successful upload
+      await autoSaveAfterUpload(result.url);
+      
+      toast.success('✅ Image uploaded and saved successfully!', { duration: 3000 });
 
       // Reset input
       e.target.value = '';
@@ -192,6 +196,70 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       toast.error('Upload failed: ' + (error.message || 'Unknown error'));
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const autoSaveAfterUpload = async (uploadedImageUrl: string) => {
+    // Auto-save immediately after successful image upload
+    const content = {
+      titleLine1,
+      titleLine2,
+      subtitle,
+      button1Text,
+      button1Link,
+      button1Color,
+      button2Text,
+      button2Link,
+      button2Color,
+      backgroundType,
+      imageUrl: uploadedImageUrl, // Use the freshly uploaded URL
+      videoUrl,
+      imagePosition,
+      layoutRatio,
+      topSpacing,
+      kenBurnsEffect,
+      overlayOpacity,
+      useH1: isH1Segment,
+    };
+
+    try {
+      const { data: pageContentData, error: fetchError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .single();
+
+      if (fetchError || !pageContentData) {
+        console.error("Error loading page_segments:", fetchError);
+        return;
+      }
+
+      const segments = JSON.parse(pageContentData.content_value);
+      const updatedSegments = segments.map((seg: any) => {
+        if (seg.type === "full-hero" && String(seg.id) === String(segmentId)) {
+          return { ...seg, data: content };
+        }
+        return seg;
+      });
+
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(updatedSegments),
+          updated_by: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments");
+
+      if (updateError) {
+        console.error("Auto-save error:", updateError);
+      } else {
+        console.log("✅ Image URL auto-saved to database");
+        onSave?.();
+      }
+    } catch (e) {
+      console.error("Auto-save failed:", e);
     }
   };
 
