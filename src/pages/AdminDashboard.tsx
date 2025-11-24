@@ -861,14 +861,28 @@ const AdminDashboard = () => {
 
       if (contentError) throw contentError;
 
-      // 5. Build hierarchical URL from page_slug (which is now already hierarchical)
+      // 5. If current user is an editor, automatically grant access to this new page
+      if (isEditor && !isAdmin && user) {
+        const { error: accessError } = await supabase
+          .from("editor_page_access")
+          .insert({
+            user_id: user.id,
+            page_slug: finalSlug,
+          });
+
+        if (accessError) {
+          console.error("Error granting editor access to new page:", accessError);
+        }
+      }
+
+      // 6. Build hierarchical URL from page_slug (which is now already hierarchical)
       const hierarchicalUrl = `/${pageInfo.page_slug}`;
 
       toast.success(`✅ Backend erstellt! Starte automatisches Frontend-Setup...`, {
         duration: 3000,
       });
 
-      // 6. AUTO-UPDATE APP.TSX - Add route
+      // 7. AUTO-UPDATE APP.TSX - Add route
       // This will be handled by a separate function call after this completes
       
       // Show success
