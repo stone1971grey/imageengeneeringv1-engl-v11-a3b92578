@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -201,6 +201,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<string>("");
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
   const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
   const [footerContactHeadline, setFooterContactHeadline] = useState<string>("");
@@ -1391,6 +1392,45 @@ const AdminDashboard = () => {
     } finally {
       setUploading(false);
     }
+  };
+
+  // Auto-save tiles segment content with debounce
+  const autoSaveTilesSegment = (segmentIndex: number, updatedSegments: any[]) => {
+    if (!user) return;
+    
+    // Clear existing timer
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+    
+    // Set new timer for 1 second debounce
+    autoSaveTimerRef.current = setTimeout(async () => {
+      try {
+        const segmentsWithPositions = updatedSegments.map((seg, idx) => ({
+          ...seg,
+          position: idx
+        }));
+        
+        const { error } = await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: resolvedPageSlug || selectedPage,
+            section_key: "page_segments",
+            content_type: "json",
+            content_value: JSON.stringify(segmentsWithPositions),
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key'
+          });
+
+        if (error) throw error;
+        
+        console.log('[AUTO-SAVE] Tiles segment auto-saved successfully');
+      } catch (error: any) {
+        console.error('[AUTO-SAVE] Error auto-saving tiles segment:', error.message);
+      }
+    }, 1000);
   };
 
   const autoSaveTileImageUpload = async (updatedApps: any[]) => {
@@ -5892,7 +5932,7 @@ const AdminDashboard = () => {
                     
                     return (
                       <div className="space-y-4">
-                        <div>
+                         <div>
                           <Label htmlFor={`segment_${index}_title`} className="text-white">Section Title</Label>
                           <Input
                             id={`segment_${index}_title`}
@@ -5901,6 +5941,7 @@ const AdminDashboard = () => {
                               const newSegments = [...pageSegments];
                               newSegments[index].data.title = e.target.value;
                               setPageSegments(newSegments);
+                              autoSaveTilesSegment(index, newSegments);
                             }}
                             className="border-2 border-gray-600"
                           />
@@ -5914,6 +5955,7 @@ const AdminDashboard = () => {
                               const newSegments = [...pageSegments];
                               newSegments[index].data.description = e.target.value;
                               setPageSegments(newSegments);
+                              autoSaveTilesSegment(index, newSegments);
                             }}
                             rows={3}
                             className="border-2 border-gray-600"
@@ -5930,6 +5972,7 @@ const AdminDashboard = () => {
                               const newSegments = [...pageSegments];
                               newSegments[index].data.columns = e.target.value;
                               setPageSegments(newSegments);
+                              autoSaveTilesSegment(index, newSegments);
                             }}
                             className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                           >
@@ -6149,10 +6192,11 @@ const AdminDashboard = () => {
                                 <Label htmlFor={`dynamic_tile_icon_${index}_${tileIndex}`} className="text-white">Icon (Optional)</Label>
                                 <Select
                                   value={tile.icon || "none"}
-                                  onValueChange={(value) => {
+                                   onValueChange={(value) => {
                                     const newSegments = [...pageSegments];
                                     newSegments[index].data.items[tileIndex].icon = value === "none" ? "" : value;
                                     setPageSegments(newSegments);
+                                    autoSaveTilesSegment(index, newSegments);
                                   }}
                                 >
                                   <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
@@ -6188,6 +6232,7 @@ const AdminDashboard = () => {
                                     const newSegments = [...pageSegments];
                                     newSegments[index].data.items[tileIndex].title = e.target.value;
                                     setPageSegments(newSegments);
+                                    autoSaveTilesSegment(index, newSegments);
                                   }}
                                   className="border-2 border-gray-600"
                                 />
@@ -6202,6 +6247,7 @@ const AdminDashboard = () => {
                                     const newSegments = [...pageSegments];
                                     newSegments[index].data.items[tileIndex].description = e.target.value;
                                     setPageSegments(newSegments);
+                                    autoSaveTilesSegment(index, newSegments);
                                   }}
                                   rows={3}
                                   className="border-2 border-gray-600"
@@ -6217,6 +6263,7 @@ const AdminDashboard = () => {
                                     const newSegments = [...pageSegments];
                                     newSegments[index].data.items[tileIndex].ctaText = e.target.value;
                                     setPageSegments(newSegments);
+                                    autoSaveTilesSegment(index, newSegments);
                                   }}
                                   className="border-2 border-gray-600"
                                 />
@@ -6231,6 +6278,7 @@ const AdminDashboard = () => {
                                     const newSegments = [...pageSegments];
                                     newSegments[index].data.items[tileIndex].ctaLink = e.target.value;
                                     setPageSegments(newSegments);
+                                    autoSaveTilesSegment(index, newSegments);
                                   }}
                                   placeholder="/page, #section, or https://..."
                                   className="border-2 border-gray-600"
@@ -6246,6 +6294,7 @@ const AdminDashboard = () => {
                                     const newSegments = [...pageSegments];
                                     newSegments[index].data.items[tileIndex].ctaStyle = e.target.value;
                                     setPageSegments(newSegments);
+                                    autoSaveTilesSegment(index, newSegments);
                                   }}
                                   className="w-full pl-3 pr-12 py-2 bg-white text-black border-2 border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#f9dc24] focus:border-[#f9dc24] cursor-pointer"
                                 >
