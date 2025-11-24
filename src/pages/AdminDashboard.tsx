@@ -2933,45 +2933,11 @@ const AdminDashboard = () => {
                   let previewUrl = '/';
                   
                   if (pageData) {
-                    if (pageData.parent_slug) {
-                      // Check if parent is a product category (illumination, standards, test-charts, software)
-                      const productCategories = ['illumination', 'standards', 'test-charts', 'software', 'illumination-devices'];
-                      
-                      if (productCategories.includes(pageData.parent_slug)) {
-                        // Product pages: /products/{category}/{slug}
-                        previewUrl = `/products/${pageData.parent_slug}/${pageData.page_slug}`;
-                      } else {
-                        // Check if parent_slug is already "your-solution" (Industry pages)
-                        if (pageData.parent_slug === 'your-solution') {
-                          // Industry pages: /your-solution/{page}
-                          previewUrl = `/your-solution/${pageData.page_slug}`;
-                        } else {
-                          // Check if parent has its own parent (3-level hierarchy)
-                          const { data: parentData } = await supabase
-                            .from('page_registry')
-                            .select('parent_slug')
-                            .eq('page_slug', pageData.parent_slug)
-                            .maybeSingle();
-                          
-                          if (parentData?.parent_slug) {
-                            // Check if grandparent is "your-solution"
-                            if (parentData.parent_slug === 'your-solution') {
-                              // 3-level Industry: /your-solution/{parent}/{page}
-                              previewUrl = `/your-solution/${pageData.parent_slug}/${pageData.page_slug}`;
-                            } else {
-                              // 3-level other: /{grandparent}/{parent}/{page}
-                              previewUrl = `/${parentData.parent_slug}/${pageData.parent_slug}/${pageData.page_slug}`;
-                            }
-                          } else {
-                            // 2-level: /your-solution/{parent}/{page}
-                            previewUrl = `/your-solution/${pageData.parent_slug}/${pageData.page_slug}`;
-                          }
-                        }
-                      }
-                    } else {
-                      previewUrl = `/${pageData.page_slug}`;
-                    }
+                    // Neue, robuste Logik: nutze den gespeicherten page_slug direkt als Pfad
+                    // Beispiel: "your-solution/security-surveillance/iec-62676-5-testing" → "/your-solution/security-surveillance/iec-62676-5-testing"
+                    previewUrl = `/${pageData.page_slug}`;
                   } else {
+                    // Fallback für sehr alte/statische Seiten ohne page_registry Eintrag
                     const urlMap: Record<string, string> = {
                       'index': '/',
                       'your-solution': '/your-solution',
@@ -2982,7 +2948,7 @@ const AdminDashboard = () => {
                       'inside-lab': '/inside-lab',
                       'contact': '/contact'
                     };
-                    // Fallback: assume new CMS page under /your-solution/{slug} instead of sending user to homepage
+                    // Fallback: gehe von /your-solution/{slug} aus, wenn nichts bekannt ist
                     previewUrl = urlMap[selectedPage] || `/your-solution/${selectedPage}`;
                   }
 
