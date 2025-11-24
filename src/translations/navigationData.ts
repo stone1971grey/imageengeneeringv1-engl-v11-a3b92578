@@ -27,7 +27,7 @@ export const navigationDataEn = {
       subgroups: [
         { name: "VCX PhoneCam", link: "#" },
         { name: "Color Calibration", link: "/your-solution/mobile-phone/color-calibration" },
-        { name: "Camera Stabilization", link: "#" },
+        { name: "Camera Stabilization", link: "/your-solution/mobile-phone/camera-stabilization" },
         { name: "ISP Tuning", link: "/your-solution/mobile-phone/isp-tuning" },
         { name: "Timing Measurements", link: "/your-solution/mobile-phone/timing-measurements" }
       ]
@@ -35,7 +35,7 @@ export const navigationDataEn = {
     "Web Camera": {
       description: "Web cameras for video conferencing and streaming applications",
       subgroups: [
-        { name: "VCX WebCam", link: "#" },
+        { name: "VCX WebCam", link: "/your-solution/web-camera/vcx-webcam" },
         { name: "ISP Tuning", link: "#" },
         { name: "Color Calibration", link: "#" },
         { name: "Timing Measurements", link: "#" }
