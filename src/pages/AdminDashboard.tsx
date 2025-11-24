@@ -651,6 +651,7 @@ const AdminDashboard = () => {
     }
 
     setIsCreatingCMS(true);
+    toast("Step 1: Start CMS page creation");
     
     try {
       // 1. Ensure page exists in page_registry; create entry if missing
@@ -660,18 +661,19 @@ const AdminDashboard = () => {
         .eq("page_slug", selectedPageForCMS)
         .maybeSingle();
 
-      if (!pageInfo) {
-        console.log("Page not in registry, creating entry...");
+    if (!pageInfo) {
+      toast("Step 2: Page not in registry, creating entry");
+      console.log("Page not in registry, creating entry...");
 
-        // Get highest page_id to generate next ID
-        const { data: maxPage } = await supabase
-          .from("page_registry")
-          .select("page_id")
-          .order("page_id", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+      // Get highest page_id to generate next ID
+      const { data: maxPage } = await supabase
+        .from("page_registry")
+        .select("page_id")
+        .order("page_id", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-        const nextPageId = (maxPage?.page_id || 0) + 1;
+      const nextPageId = (maxPage?.page_id || 0) + 1;
 
         // Infer parent info based on navigation structure first
         let parent_id: number | null = null;
