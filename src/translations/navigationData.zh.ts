@@ -16,7 +16,7 @@ export const navigationDataZh = {
       description: "闭路电视系统、视频监控",
       subgroups: [
         { name: "IEC 62676-5测试", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
-        { name: "低照度(ISO 19093)", link: "#" },
+        { name: "低照度(ISO 19093)", link: "/your-solution/security-surveillance/low-light-(iso-19093)" },
         { name: "高动态范围(HDR)", link: "#" },
         { name: "ISP调优", link: "#" },
         { name: "光谱灵敏度", link: "#" }

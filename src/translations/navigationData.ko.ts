@@ -16,7 +16,7 @@ export const navigationDataKo = {
       description: "CCTV 시스템, 비디오 감시",
       subgroups: [
         { name: "IEC 62676-5 테스트", link: "/your-solution/security-surveillance/iec-62676-5-testing" },
-        { name: "저조도(ISO 19093)", link: "#" },
+        { name: "저조도(ISO 19093)", link: "/your-solution/security-surveillance/low-light-(iso-19093)" },
         { name: "하이 다이내믹 레인지(HDR)", link: "#" },
         { name: "ISP 튜닝", link: "#" },
         { name: "분광 감도", link: "#" }
