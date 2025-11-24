@@ -6671,7 +6671,7 @@ const AdminDashboard = () => {
                                 const { error } = await supabase
                                   .from("page_content")
                                   .upsert({
-                                    page_slug: selectedPage,
+                                    page_slug: resolvedPageSlug || selectedPage,
                                     section_key: "page_segments",
                                     content_type: "json",
                                     content_value: JSON.stringify(segmentsWithPositions),
