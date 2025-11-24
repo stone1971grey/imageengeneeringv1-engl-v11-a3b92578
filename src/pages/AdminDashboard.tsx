@@ -872,19 +872,15 @@ const AdminDashboard = () => {
 
         if (accessError) {
           console.error("Error granting editor access to new page:", accessError);
+        } else {
+          // Update allowedPages state immediately so editor can access the new page
+          setAllowedPages(prev => [...prev, finalSlug]);
         }
       }
 
       // 6. Build hierarchical URL from page_slug (which is now already hierarchical)
       const hierarchicalUrl = `/${pageInfo.page_slug}`;
 
-      toast.success(`✅ Backend erstellt! Starte automatisches Frontend-Setup...`, {
-        duration: 3000,
-      });
-
-      // 7. AUTO-UPDATE APP.TSX - Add route
-      // This will be handled by a separate function call after this completes
-      
       // Show success
       toast.success(
         <div className="space-y-2">
@@ -893,7 +889,7 @@ const AdminDashboard = () => {
           <p className="text-sm"><strong>URL:</strong> {hierarchicalUrl}</p>
         </div>,
         {
-          duration: 8000,
+          duration: 5000,
         }
       );
 
@@ -907,10 +903,8 @@ const AdminDashboard = () => {
       const slugParts = pageInfo.page_slug.split('/').filter(Boolean);
       const lastSlugPart = slugParts[slugParts.length - 1];
       
-      // Navigate to the newly created page with full page reload to ensure proper initialization
-      setTimeout(() => {
-        window.location.href = `/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`;
-      }, 500);
+      // Navigate using React Router (no full page reload)
+      navigate(`/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
