@@ -784,11 +784,12 @@ const AdminDashboard = () => {
               .eq('page_slug', parent_slug)
               .maybeSingle();
 
-            if (parentPage?.parent_slug) {
+            if (parentPage?.parent_slug && parentPage.parent_slug !== 'index') {
               // Build full hierarchy, e.g. your-solution/automotive/geometric-calibration-automotive
+              // Skip 'index' as it's not part of URL structure
               hierarchicalSlug = `${parentPage.parent_slug}/${parent_slug}/${selectedPageForCMS}`;
             } else {
-              // Simple parent/child, e.g. products/test-charts
+              // Simple parent/child, e.g. products/test-charts OR your-solution/automotive
               hierarchicalSlug = `${parent_slug}/${selectedPageForCMS}`;
             }
           }
