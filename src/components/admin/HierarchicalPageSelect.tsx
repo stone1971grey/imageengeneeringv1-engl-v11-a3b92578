@@ -147,13 +147,28 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         const normalizedTitle = item.page_title.toLowerCase().replace(/[^a-z0-9]/g, '');
         mapping.set(`title:${normalizedTitle}`, item.page_id);
         
-        // Partial slug mapping (for pages with displaySlug mismatch)
-        // e.g. "vcx-phonecam" should match "mobile-phone-vcx-phonecam"
-        const slugParts = item.page_slug.split('-');
+        // For hierarchical slugs like "products/test-charts/le7", map by:
+        // 1) Last segment only: "le7"
+        // 2) Last two segments: "test-charts/le7"
+        // 3) Last three segments: "products/test-charts/le7" (already covered by direct mapping)
+        const slugParts = item.page_slug.split('/');
         if (slugParts.length > 1) {
-          // Store by last 2-3 parts of slug
-          const lastTwoParts = slugParts.slice(-2).join('-');
-          const lastThreeParts = slugParts.slice(-3).join('-');
+          // Map by last segment only (most specific extraction)
+          const lastSegment = slugParts[slugParts.length - 1];
+          mapping.set(lastSegment, item.page_id);
+          
+          // Map by last two segments
+          if (slugParts.length >= 2) {
+            const lastTwoSegments = slugParts.slice(-2).join('/');
+            mapping.set(lastTwoSegments, item.page_id);
+          }
+        }
+        
+        // Partial slug mapping with hyphens (legacy logic for backwards compatibility)
+        const hyphenParts = item.page_slug.split('-');
+        if (hyphenParts.length > 1) {
+          const lastTwoParts = hyphenParts.slice(-2).join('-');
+          const lastThreeParts = hyphenParts.slice(-3).join('-');
           mapping.set(`partial:${lastTwoParts}`, item.page_id);
           mapping.set(`partial:${lastThreeParts}`, item.page_id);
         }
