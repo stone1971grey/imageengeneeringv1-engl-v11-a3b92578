@@ -95,6 +95,7 @@ export const navigationDataJa = {
     "Illumination Devices": {
       description: "安定したテスト環境のためのプロフェッショナルLED照明システムと均一光源",
       subgroups: [
+        { name: "Arcturus-LED", link: "/products/illumination-devices/arcturus-led" },
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
         { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "生産ラインキャリブレーション", link: "#" },
