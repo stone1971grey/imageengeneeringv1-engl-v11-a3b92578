@@ -95,6 +95,7 @@ export const navigationDataZh = {
     "Illumination Devices": {
       description: "专业LED照明系统和均匀光源，用于稳定的测试环境",
       subgroups: [
+        { name: "Arcturus LED", link: "/products/illumination-devices/arcturus-led" },
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
         { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "生产线校准", link: "#" },
