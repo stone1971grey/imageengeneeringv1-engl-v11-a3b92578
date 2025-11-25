@@ -239,7 +239,7 @@ const Navigation = () => {
         {/* Single row - logo left, main nav center, utility right */}
         <div className="flex items-center w-full gap-2 sm:gap-8">
           {/* Logo on the left - integrated for proper vertical centering */}
-          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0">
+          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity flex-shrink-0 pl-2 md:pl-6 lg:pl-8">
             <img 
               src={logoIE} 
               alt="Image Engineering" 
