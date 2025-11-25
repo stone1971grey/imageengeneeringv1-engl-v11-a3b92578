@@ -95,7 +95,6 @@ export const navigationDataDe = {
     "Illumination Devices": {
       description: "Professionelle LED-Beleuchtungssysteme und gleichmäßige Lichtquellen für stabile Testumgebungen",
       subgroups: [
-        { name: "Arcturus LED", link: "/products/illumination-devices/arcturus-led" },
         { name: "iQ-LED", link: "/products/illumination-devices/iq-led" },
         { name: "IEEE-P2020", link: "/products/standards/ieee-p2020" },
         { name: "Produktionslinienkalibrierung", link: "#" },
