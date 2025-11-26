@@ -53,7 +53,7 @@ const handler = async (req: Request): Promise<Response> => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Construct full image URL for both database and Mautic
-    const baseUrl = "https://preview--imageengeneeringv1-engl-v11.lovable.app";
+    const baseUrl = "https://www.image-engineering.de";
     const fullImageUrl = data.eventImage 
       ? `${baseUrl}${data.eventImage.startsWith('/') ? '' : '/'}${data.eventImage}`
       : '';
