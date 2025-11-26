@@ -47,26 +47,39 @@ const Navigation = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdminOrEditor, setIsAdminOrEditor] = useState(false);
   const [allowedPages, setAllowedPages] = useState<string[]>([]);
-  const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string }>>([]);
+  const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string; children?: Array<{ slug: string; title: string }> }>>([]);
+  const [hoveredStyleguide, setHoveredStyleguide] = useState<string | null>(null);
 
   // Check if current path is within styleguide section
   const isStyleguidePath = location.pathname.startsWith('/styleguide');
 
-  // Load styleguide pages from page_registry
+  // Load styleguide pages from page_registry with hierarchy
   useEffect(() => {
     const loadStyleguidePages = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, page_title')
-        .or('page_slug.eq.styleguide,parent_slug.eq.styleguide')
+        .select('page_slug, page_title, parent_slug')
+        .ilike('page_slug', 'styleguide%')
         .order('page_title', { ascending: true });
 
       if (!error && data) {
-        // Filter out the parent page itself, only show children
-        const children = data
-          .filter(p => p.page_slug !== 'styleguide')
-          .map(p => ({ slug: p.page_slug, title: p.page_title }));
-        setStyleguidePages(children);
+        // Build hierarchy: pages directly under styleguide
+        const directChildren = data.filter(p => p.parent_slug === 'styleguide');
+        
+        // For each direct child, find its children
+        const pagesWithChildren = directChildren.map(parent => {
+          const children = data
+            .filter(p => p.parent_slug === parent.page_slug)
+            .map(child => ({ slug: child.page_slug, title: child.page_title }));
+          
+          return {
+            slug: parent.page_slug,
+            title: parent.page_title,
+            children: children.length > 0 ? children : undefined
+          };
+        });
+        
+        setStyleguidePages(pagesWithChildren);
       }
     };
 
@@ -280,25 +293,75 @@ const Navigation = () => {
           {/* Main Navigation - aligned with search */}
           <div className="hidden 2xl:flex items-center gap-6">
             {isStyleguidePath ? (
-              /* Styleguide-specific Navigation */
+              /* Styleguide-specific Navigation with Flyout */
               <SimpleDropdown trigger="Styleguide">
-                <div className="flex flex-col gap-2 w-[500px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50">
-                  <div className="p-6">
-                    <h4 className="font-semibold mb-4 text-lg text-black">Styleguide Pages</h4>
-                    <div className="space-y-3">
-                      {styleguidePages.length > 0 ? (
-                        styleguidePages.map((page) => (
-                          <Link 
-                            key={page.slug}
-                            to={`/${page.slug}`}
-                            className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
-                          >
-                            <FileText className="h-5 w-5" />
-                            <span>{page.title}</span>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-gray-500 text-center py-4">No styleguide pages yet</p>
+                <div className="flex gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
+                     onMouseLeave={() => setHoveredStyleguide(null)}>
+                  <div className="flex gap-6 p-6">
+                    {/* Left Column: Main Styleguide Pages */}
+                    <div className="space-y-4 flex-1 pr-6 border-r border-border">
+                      <h4 className="font-semibold mb-4 text-lg text-black">Styleguide Pages</h4>
+                      <div className="space-y-3">
+                        {styleguidePages.length > 0 ? (
+                          styleguidePages.map((page) => (
+                            <div key={page.slug}>
+                              {page.children ? (
+                                <div 
+                                  className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                                  onMouseEnter={() => setHoveredStyleguide(page.slug)}
+                                >
+                                  <FileText className="h-5 w-5" />
+                                  <span>{page.title}</span>
+                                  <ChevronRight className="h-4 w-4 ml-auto" />
+                                </div>
+                              ) : (
+                                <Link 
+                                  to={`/${page.slug}`}
+                                  className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
+                                  onMouseEnter={() => setHoveredStyleguide(null)}
+                                >
+                                  <FileText className="h-5 w-5" />
+                                  <span>{page.title}</span>
+                                </Link>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 text-center py-4">No styleguide pages yet</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Right Column: Sub-pages */}
+                    <div className="space-y-4 flex-1">
+                      <h4 className="font-semibold mb-3 text-lg text-black">
+                        {hoveredStyleguide 
+                          ? `${styleguidePages.find(p => p.slug === hoveredStyleguide)?.title || ''} - Subpages` 
+                          : 'Subpages'}
+                      </h4>
+                      
+                      {/* Conditional Rendering of Subpages */}
+                      {hoveredStyleguide && styleguidePages.find(p => p.slug === hoveredStyleguide)?.children && (
+                        <div className="space-y-3">
+                          {styleguidePages.find(p => p.slug === hoveredStyleguide)?.children?.map((subpage) => (
+                            <Link 
+                              key={subpage.slug}
+                              to={`/${subpage.slug}`}
+                              className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                              <span>{subpage.title}</span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {/* Default state when no page is hovered or no children */}
+                      {(!hoveredStyleguide || !styleguidePages.find(p => p.slug === hoveredStyleguide)?.children) && (
+                        <div className="text-gray-500 text-center py-8">
+                          <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                          <p>Hover over a page to see subpages</p>
+                        </div>
                       )}
                     </div>
                   </div>
