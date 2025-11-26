@@ -160,9 +160,10 @@ const AdminDashboard = () => {
     solutions: 4
   };
   
-  // Get selected page from URL parameter
+  // Get selected page from URL parameter (normalize to last slug segment)
   const searchParams = new URLSearchParams(location.search);
-  const selectedPage = searchParams.get('page') || '';
+  const rawSelectedPage = searchParams.get('page') || '';
+  const selectedPage = rawSelectedPage.split('/').filter(Boolean).slice(-1)[0] || '';
   const [resolvedPageSlug, setResolvedPageSlug] = useState<string>('');
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
@@ -4129,7 +4130,8 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  navigate(`/${language}/admin-dashboard?page=${targetPageSlug}`);
+                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
+                  navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
                 }}
               />
             </CardContent>
@@ -4536,7 +4538,8 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  navigate(`/${language}/admin-dashboard?page=${targetPageSlug}`);
+                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
+                  navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
                 }}
               />
             </CardContent>
