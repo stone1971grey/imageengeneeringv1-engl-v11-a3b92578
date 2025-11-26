@@ -356,7 +356,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Produkt Hero
+          Full Hero
           <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
         </CardTitle>
         <CardDescription>
@@ -383,9 +383,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         )}
         
         <Tabs defaultValue="content">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="content">Content</TabsTrigger>
-            <TabsTrigger value="layout">Layout</TabsTrigger>
             <TabsTrigger value="buttons">Buttons</TabsTrigger>
             <TabsTrigger value="background">Background</TabsTrigger>
           </TabsList>
@@ -427,50 +426,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
             </div>
           </TabsContent>
 
-          <TabsContent value="layout" className="space-y-4">
-            <div className="space-y-2">
-              <Label>Image Position</Label>
-              <Select value={imagePosition} onValueChange={(val: any) => setImagePosition(val)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="left">Left</SelectItem>
-                  <SelectItem value="right">Right</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Layout Ratio (Text : Image)</Label>
-              <Select value={layoutRatio} onValueChange={(val: any) => setLayoutRatio(val)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1-1">1:1 (50% : 50%)</SelectItem>
-                  <SelectItem value="2-3">2:3 (40% : 60%)</SelectItem>
-                  <SelectItem value="2-5">2:5 (30% : 70%)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Top Spacing</Label>
-              <Select value={topSpacing} onValueChange={(val: any) => setTopSpacing(val)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="small">Small (PT-16)</SelectItem>
-                  <SelectItem value="medium">Medium (PT-24)</SelectItem>
-                  <SelectItem value="large">Large (PT-32)</SelectItem>
-                  <SelectItem value="extra-large">Extra Large (PT-40)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </TabsContent>
-
           <TabsContent value="buttons" className="space-y-6">
             <div className="space-y-4">
               <h3 className="font-semibold">Button 1</h3>
@@ -499,9 +454,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="yellow">Yellow</SelectItem>
-                    <SelectItem value="black">Black</SelectItem>
-                    <SelectItem value="white">White</SelectItem>
+                    <SelectItem value="yellow">Yellow Standard</SelectItem>
+                    <SelectItem value="black">Black (Technical)</SelectItem>
+                    <SelectItem value="white">Transparent (White Border)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -534,9 +489,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="yellow">Yellow</SelectItem>
-                    <SelectItem value="black">Black</SelectItem>
-                    <SelectItem value="white">White</SelectItem>
+                    <SelectItem value="yellow">Yellow Standard</SelectItem>
+                    <SelectItem value="black">Black (Technical)</SelectItem>
+                    <SelectItem value="white">Transparent (White Border)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
