@@ -501,7 +501,7 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.products}</h4>
                        
-                       <Link to={`/${language}/products/test-charts`} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                       <Link to={`/${language}/products/charts`} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                           onMouseEnter={() => setHoveredProduct("Test Charts")}>
                           <CustomTargetIcon className="h-5 w-5" />
                           <span>{t.nav.testCharts}</span>
