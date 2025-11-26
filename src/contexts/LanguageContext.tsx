@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-type Language = 'en' | 'de' | 'zh' | 'ja' | 'ko';
+export type Language = 'en' | 'de' | 'zh' | 'ja' | 'ko';
 
 interface LanguageContextType {
   language: Language;
@@ -10,17 +11,56 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Extract language from URL path (e.g., /en/page -> 'en')
+  const getLanguageFromPath = (): Language => {
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    const firstPart = pathParts[0];
+    
+    if (['en', 'de', 'zh', 'ja', 'ko'].includes(firstPart)) {
+      return firstPart as Language;
+    }
+    return 'en'; // Default to English if no language prefix
+  };
+
   const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem('language');
-    return (saved as Language) || 'en';
+    return getLanguageFromPath();
   });
 
+  // Update language when URL changes
+  useEffect(() => {
+    const urlLang = getLanguageFromPath();
+    if (urlLang !== language) {
+      setLanguageState(urlLang);
+      localStorage.setItem('language', urlLang);
+    }
+  }, [location.pathname]);
+
+  // Persist language to localStorage
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
+    
+    // Update URL with new language prefix
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    const currentLang = ['en', 'de', 'zh', 'ja', 'ko'].includes(pathParts[0]) ? pathParts[0] : null;
+    
+    let newPath: string;
+    if (currentLang) {
+      // Replace existing language prefix
+      pathParts[0] = lang;
+      newPath = '/' + pathParts.join('/');
+    } else {
+      // Add language prefix
+      newPath = `/${lang}${location.pathname}`;
+    }
+    
+    navigate(newPath, { replace: true });
   };
 
   return (
