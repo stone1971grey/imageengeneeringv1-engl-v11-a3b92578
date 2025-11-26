@@ -5487,23 +5487,6 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="px-3 py-1 bg-[#f9dc24] text-black text-sm font-medium rounded-md">
-                        {segment.type === 'hero' && 'Produkt-Hero Template'}
-                        {segment.type === 'meta-navigation' && 'Meta Navigation'}
-                        {segment.type === 'product-hero-gallery' && 'Product Hero Gallery'}
-                        {segment.type === 'tiles' && 'Tiles Template'}
-                        {segment.type === 'banner' && 'Banner Template'}
-                        {segment.type === 'image-text' && 'Image & Text Template'}
-                        {segment.type === 'feature-overview' && 'Feature Overview Template'}
-                        {segment.type === 'table' && 'Table Template'}
-                        {segment.type === 'faq' && 'FAQ Template'}
-                        {segment.type === 'video' && 'Video Template'}
-                        {segment.type === 'specification' && 'Specification Template'}
-                        {segment.type === 'news' && 'Latest News Template'}
-                        {segment.type === 'intro' && 'Intro Template'}
-                        {segment.type === 'industries' && 'Industries Template'}
-                        {segment.type === 'debug' && 'Debug Template'}
-                      </div>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
