@@ -16,6 +16,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
 import lovableLogo from "@/assets/lovable-logo.png";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Select,
   SelectContent,
@@ -148,6 +149,7 @@ const AdminDashboard = () => {
   const [content, setContent] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const location = useLocation();
+  const { language } = useLanguage();
   const navigationData = useNavigationData();
   
   // Static segment IDs - these are fixed and never change
@@ -545,7 +547,7 @@ const AdminDashboard = () => {
       
       // Redirect to first allowed page if current page is not in allowed pages
       if (pages.length > 0 && !pages.includes(selectedPage)) {
-        navigate(`/admin-dashboard?page=${pages[0]}`);
+        navigate(`/${language}/admin-dashboard?page=${pages[0]}`);
       }
       
       setLoading(false);
@@ -916,7 +918,7 @@ const AdminDashboard = () => {
       const lastSlugPart = slugParts[slugParts.length - 1];
       
       // Navigate using React Router (no full page reload)
-      navigate(`/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
+      navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
@@ -1074,11 +1076,11 @@ const AdminDashboard = () => {
       setIsCreateCMSDialogOpen(false);
       setSelectedPageForCMS("");
       
-      // Trigger refresh
-      window.dispatchEvent(new Event('refreshPageSelector'));
-      
-      // Navigate to new page in admin
-      navigate(`/admin-dashboard?page=${encodeURIComponent(childSlug)}`);
+    // Trigger refresh
+    window.dispatchEvent(new Event('refreshPageSelector'));
+    
+    // Navigate to new page in admin
+    navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(childSlug)}`);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
@@ -2808,7 +2810,7 @@ const AdminDashboard = () => {
               <p className="text-gray-600">Editing:</p>
               <HierarchicalPageSelect 
                 value={selectedPage} 
-                onValueChange={(value) => navigate(`/admin-dashboard?page=${value}`)}
+                onValueChange={(value) => navigate(`/${language}/admin-dashboard?page=${value}`)}
               />
             </div>
           </div>
@@ -3289,7 +3291,7 @@ const AdminDashboard = () => {
             {/* Zweite Reihe: Manage News, CMS Pages Overview, SEO Settings */}
             <div className="flex items-center gap-3">
               <Button
-                onClick={() => navigate("/admin-dashboard/news")}
+                onClick={() => navigate(`/${language}/admin-dashboard/news`)}
                 className="!bg-indigo-600 !text-white hover:!bg-indigo-700 flex items-center gap-2 border-0"
               >
                 <Pencil className="h-4 w-4" />
@@ -4127,7 +4129,7 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  navigate(`/admin-dashboard?page=${targetPageSlug}`);
+                  navigate(`/${language}/admin-dashboard?page=${targetPageSlug}`);
                 }}
               />
             </CardContent>
@@ -4534,7 +4536,7 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  navigate(`/admin-dashboard?page=${targetPageSlug}`);
+                  navigate(`/${language}/admin-dashboard?page=${targetPageSlug}`);
                 }}
               />
             </CardContent>
