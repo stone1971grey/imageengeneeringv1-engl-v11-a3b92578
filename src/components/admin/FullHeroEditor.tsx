@@ -550,13 +550,23 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                     Upload Image <span className="text-destructive">*</span>
                   </Label>
                   <div className="flex gap-2">
-                    <Input
+                    <input
                       id="imageUpload"
                       type="file"
                       accept="image/*"
                       onChange={handleImageUpload}
                       disabled={isUploading}
+                      className="hidden"
                     />
+                    <Button
+                      type="button"
+                      onClick={() => document.getElementById('imageUpload')?.click()}
+                      disabled={isUploading}
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-medium"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      {isUploading ? 'Uploading...' : 'Choose Image'}
+                    </Button>
                     {imageUrl && (
                       <Button
                         variant="ghost"
