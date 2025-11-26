@@ -3,7 +3,7 @@ import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smar
 import { BadgeCheck, Sprout } from "lucide-react";
 import { CustomTargetIcon } from "./CustomTargetIcon";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-new-v7.png";
 import UtilityNavigation from "@/components/UtilityNavigation";
 import { SimpleDropdown } from "./SimpleNavigation";
@@ -38,6 +38,7 @@ const Navigation = () => {
   const { t } = useTranslation();
   const navData = useNavigationData();
   const { language, setLanguage } = useLanguage();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredIndustry, setHoveredIndustry] = useState<string | null>(null);
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
@@ -46,6 +47,33 @@ const Navigation = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdminOrEditor, setIsAdminOrEditor] = useState(false);
   const [allowedPages, setAllowedPages] = useState<string[]>([]);
+  const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string }>>([]);
+
+  // Check if current path is within styleguide section
+  const isStyleguidePath = location.pathname.startsWith('/styleguide');
+
+  // Load styleguide pages from page_registry
+  useEffect(() => {
+    const loadStyleguidePages = async () => {
+      const { data, error } = await supabase
+        .from('page_registry')
+        .select('page_slug, page_title')
+        .or('page_slug.eq.styleguide,parent_slug.eq.styleguide')
+        .order('page_title', { ascending: true });
+
+      if (!error && data) {
+        // Filter out the parent page itself, only show children
+        const children = data
+          .filter(p => p.page_slug !== 'styleguide')
+          .map(p => ({ slug: p.page_slug, title: p.page_title }));
+        setStyleguidePages(children);
+      }
+    };
+
+    if (isStyleguidePath) {
+      loadStyleguidePages();
+    }
+  }, [isStyleguidePath]);
 
   // Check authentication status
   useEffect(() => {
@@ -251,6 +279,34 @@ const Navigation = () => {
           <div className="flex-1"></div>
           {/* Main Navigation - aligned with search */}
           <div className="hidden 2xl:flex items-center gap-6">
+            {isStyleguidePath ? (
+              /* Styleguide-specific Navigation */
+              <SimpleDropdown trigger="Styleguide">
+                <div className="flex flex-col gap-2 w-[500px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50">
+                  <div className="p-6">
+                    <h4 className="font-semibold mb-4 text-lg text-black">Styleguide Pages</h4>
+                    <div className="space-y-3">
+                      {styleguidePages.length > 0 ? (
+                        styleguidePages.map((page) => (
+                          <Link 
+                            key={page.slug}
+                            to={`/${page.slug}`}
+                            className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
+                          >
+                            <FileText className="h-5 w-5" />
+                            <span>{page.title}</span>
+                          </Link>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-center py-4">No styleguide pages yet</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </SimpleDropdown>
+            ) : (
+              /* Regular Navigation */
+              <>
             <SimpleDropdown trigger={t.nav.yourSolution}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredIndustry(null)}>
@@ -724,10 +780,12 @@ const Navigation = () => {
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>ISO 9001</span>
                          </Link>
-                       </div>
-                    </div>
-                  </div>
-                </SimpleDropdown>
+                        </div>
+                     </div>
+                   </div>
+                 </SimpleDropdown>
+              </>
+            )}
           </div>
           
           {/* Utility Navigation - aligned with main nav */}
