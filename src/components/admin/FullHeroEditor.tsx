@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, X, Heading1 } from "lucide-react";
+import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -31,7 +32,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [backgroundType, setBackgroundType] = useState<'image' | 'video'>('image');
   const [imageUrl, setImageUrl] = useState("");
   const [imageAlt, setImageAlt] = useState("");
-  const [imageDescription, setImageDescription] = useState("");
+  const [imageMetadata, setImageMetadata] = useState<Omit<ImageMetadata, 'altText'> | null>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [imagePosition, setImagePosition] = useState<'left' | 'right'>('right');
   const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('1-1');
@@ -106,7 +107,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           setBackgroundType(content.backgroundType || 'image');
           setImageUrl(content.imageUrl || "");
           setImageAlt(content.imageAlt || "");
-          setImageDescription(content.imageDescription || "");
+          setImageMetadata(content.imageMetadata || null);
           setVideoUrl(content.videoUrl || "");
           setImagePosition(content.imagePosition || 'right');
           setLayoutRatio(content.layoutRatio || '1-1');
@@ -186,11 +187,15 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
 
       console.log('[FullHero Upload] Success! URL:', result.url);
       
+      // Extract image metadata
+      const metadata = await extractImageMetadata(file, result.url);
+      setImageMetadata(metadata);
+      
       // Update with permanent URL in local state
       setImageUrl(result.url);
       
       // Auto-save after successful upload
-      await autoSaveAfterUpload(result.url);
+      await autoSaveAfterUpload(result.url, metadata);
       
       toast.success('✅ Image uploaded and saved successfully!', { duration: 3000 });
 
@@ -205,7 +210,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
     }
   };
 
-  const autoSaveAfterUpload = async (uploadedImageUrl: string) => {
+  const autoSaveAfterUpload = async (uploadedImageUrl: string, metadata: Omit<ImageMetadata, 'altText'>) => {
     // Auto-save immediately after successful image upload
     const content = {
       titleLine1,
@@ -220,7 +225,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       backgroundType,
       imageUrl: uploadedImageUrl, // Use the freshly uploaded URL
       imageAlt,
-      imageDescription,
+      imageMetadata: metadata,
       videoUrl,
       imagePosition,
       layoutRatio,
@@ -304,7 +309,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       backgroundType,
       imageUrl,
       imageAlt,
-      imageDescription,
+      imageMetadata,
       videoUrl,
       imagePosition,
       layoutRatio,
@@ -577,16 +582,29 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="imageDescription">Meta Description</Label>
-                  <Textarea
-                    id="imageDescription"
-                    value={imageDescription}
-                    onChange={(e) => setImageDescription(e.target.value)}
-                    placeholder="Detailed description for SEO purposes"
-                    rows={3}
-                  />
-                </div>
+                {imageMetadata && (
+                  <div className="space-y-2">
+                    <Label>Image Information</Label>
+                    <div className="bg-muted/30 border rounded-md p-3 space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Format:</span>
+                        <span className="font-medium">{imageMetadata.format}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Resolution:</span>
+                        <span className="font-medium">{imageMetadata.width} × {imageMetadata.height} px</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">File Size:</span>
+                        <span className="font-medium">{formatFileSize(imageMetadata.fileSizeKB)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Uploaded:</span>
+                        <span className="font-medium">{formatUploadDate(imageMetadata.uploadDate)}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label>Ken Burns Effect</Label>

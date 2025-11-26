@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { ImageMetadata } from "@/types/imageMetadata";
 
 interface FullHeroProps {
   id?: string | number;
@@ -16,7 +17,7 @@ interface FullHeroProps {
   backgroundType: 'image' | 'video';
   imageUrl?: string;
   imageAlt?: string;
-  imageDescription?: string;
+  imageMetadata?: Omit<ImageMetadata, 'altText'> | null;
   videoUrl?: string;
   imagePosition?: 'left' | 'right';
   layoutRatio?: '1-1' | '2-3' | '2-5';
@@ -41,7 +42,7 @@ const FullHero = ({
   backgroundType,
   imageUrl,
   imageAlt,
-  imageDescription,
+  imageMetadata,
   videoUrl,
   imagePosition = 'right',
   layoutRatio = '1-1',
