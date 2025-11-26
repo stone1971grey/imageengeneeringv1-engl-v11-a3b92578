@@ -30,6 +30,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   const [button2Color, setButton2Color] = useState<'yellow' | 'black' | 'white'>('black');
   const [backgroundType, setBackgroundType] = useState<'image' | 'video'>('image');
   const [imageUrl, setImageUrl] = useState("");
+  const [imageAlt, setImageAlt] = useState("");
+  const [imageDescription, setImageDescription] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [imagePosition, setImagePosition] = useState<'left' | 'right'>('right');
   const [layoutRatio, setLayoutRatio] = useState<'1-1' | '2-3' | '2-5'>('1-1');
@@ -103,6 +105,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           setButton2Color(content.button2Color || 'black');
           setBackgroundType(content.backgroundType || 'image');
           setImageUrl(content.imageUrl || "");
+          setImageAlt(content.imageAlt || "");
+          setImageDescription(content.imageDescription || "");
           setVideoUrl(content.videoUrl || "");
           setImagePosition(content.imagePosition || 'right');
           setLayoutRatio(content.layoutRatio || '1-1');
@@ -215,6 +219,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       button2Color,
       backgroundType,
       imageUrl: uploadedImageUrl, // Use the freshly uploaded URL
+      imageAlt,
+      imageDescription,
       videoUrl,
       imagePosition,
       layoutRatio,
@@ -297,6 +303,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       button2Color,
       backgroundType,
       imageUrl,
+      imageAlt,
+      imageDescription,
       videoUrl,
       imagePosition,
       layoutRatio,
@@ -555,7 +563,30 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                     )}
                   </div>
                   {imageUrl && (
-                    <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded" />
+                    <div className="space-y-4">
+                      <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded" />
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="imageAlt">Alt Text (Alternative Text)</Label>
+                        <Input
+                          id="imageAlt"
+                          value={imageAlt}
+                          onChange={(e) => setImageAlt(e.target.value)}
+                          placeholder="Describe the image for accessibility"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="imageDescription">Meta Description</Label>
+                        <Textarea
+                          id="imageDescription"
+                          value={imageDescription}
+                          onChange={(e) => setImageDescription(e.target.value)}
+                          placeholder="Detailed description for SEO purposes"
+                          rows={2}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
 
