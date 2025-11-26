@@ -178,6 +178,29 @@ const handler = async (req: Request): Promise<Response> => {
           // Update existing contact - update all fields including name changes
           console.log("Updating existing Mautic contact - updating all fields");
           
+          // First, fetch existing contact to get current tags
+          const contactResponse = await fetch(`${mauticBaseUrl}/api/contacts/${mauticContactId}`, {
+            method: "GET",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          let existingTags: string[] = [];
+          if (contactResponse.ok) {
+            const contactData = await contactResponse.json();
+            if (contactData.contact && contactData.contact.tags) {
+              existingTags = contactData.contact.tags.map((tag: any) => tag.tag || tag);
+            }
+            console.log("Existing tags:", existingTags);
+          }
+
+          // Add new event tags to existing tags (avoid duplicates)
+          const newEventTag = `evt:${data.eventSlug}`;
+          const allTags = [...new Set([...existingTags, "evt", newEventTag])];
+          console.log("Combined tags:", allTags);
+          
           const updateData: any = {
             firstname: data.firstName,
             lastname: data.lastName,
@@ -187,6 +210,7 @@ const handler = async (req: Request): Promise<Response> => {
             event_date: data.eventDate,
             event_location: data.eventLocation,
             evt_image_url: fullImageUrl,
+            tags: allTags, // Use combined tags array
           };
 
           // Only update these fields if they have values
@@ -196,9 +220,6 @@ const handler = async (req: Request): Promise<Response> => {
           if (data.automotiveInterests && data.automotiveInterests.length > 0) {
             updateData.automotive_interests = data.automotiveInterests.join(', ');
           }
-
-          // IMPORTANT: Add new tags without removing existing ones
-          updateData.tags = ["evt", `evt:${data.eventSlug}`];
 
           mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/${mauticContactId}/edit`, {
             method: "PATCH",
