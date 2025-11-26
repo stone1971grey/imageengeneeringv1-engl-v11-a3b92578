@@ -5770,7 +5770,7 @@ const AdminDashboard = () => {
                             .eq("page_slug", resolvedPageSlug || selectedPage)
                             .eq("section_key", "page_segments")
                             .eq("language", lang)
-                            .single();
+                            .maybeSingle();
                           
                           if (existingContent) {
                             const existingSegments = JSON.parse(existingContent.content_value);
