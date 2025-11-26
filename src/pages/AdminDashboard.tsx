@@ -5796,6 +5796,46 @@ const AdminDashboard = () => {
                                 .eq("section_key", "page_segments")
                                 .eq("language", lang);
                             }
+                          } else {
+                            // No existing segments for this language - create from current English version
+                            const newLanguageSegments = pageSegments.map(seg => {
+                              if (seg.segment_id === segmentId) {
+                                // For this segment, copy the image but clear text fields
+                                return {
+                                  ...seg,
+                                  data: {
+                                    ...seg.data,
+                                    hero_image_url: urlData.publicUrl,
+                                    hero_image_metadata: metadata,
+                                    hero_title: '',
+                                    hero_subtitle: '',
+                                    hero_description: ''
+                                  }
+                                };
+                              }
+                              // For other segments, just clear text fields
+                              return {
+                                ...seg,
+                                data: {
+                                  ...seg.data,
+                                  hero_title: '',
+                                  hero_subtitle: '',
+                                  hero_description: ''
+                                }
+                              };
+                            });
+                            
+                            await supabase
+                              .from("page_content")
+                              .insert({
+                                page_slug: resolvedPageSlug || selectedPage,
+                                section_key: "page_segments",
+                                content_type: "json",
+                                content_value: JSON.stringify(newLanguageSegments),
+                                language: lang,
+                                updated_at: new Date().toISOString(),
+                                updated_by: user?.id
+                              });
                           }
                         }
                         
