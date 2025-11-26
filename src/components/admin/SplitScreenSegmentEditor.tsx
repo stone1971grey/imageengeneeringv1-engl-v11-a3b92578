@@ -1,0 +1,112 @@
+import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Languages } from "lucide-react";
+
+interface SplitScreenSegmentEditorProps {
+  children: (language: string) => React.ReactNode;
+  segmentTitle: string;
+  segmentType: string;
+}
+
+const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+];
+
+export const SplitScreenSegmentEditor = ({ 
+  children, 
+  segmentTitle,
+  segmentType 
+}: SplitScreenSegmentEditorProps) => {
+  const [targetLanguage, setTargetLanguage] = useState('de');
+
+  return (
+    <div className="space-y-4">
+      {/* Language Selector */}
+      <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Languages className="h-5 w-5 text-blue-300" />
+              <div>
+                <CardTitle className="text-white text-lg">Multi-Language Editor</CardTitle>
+                <CardDescription className="text-blue-200 text-sm mt-1">
+                  Compare and edit {segmentTitle} in multiple languages side-by-side
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="bg-blue-950/50 text-blue-200 border-blue-600">
+                Split-Screen Mode
+              </Badge>
+            </div>
+          </div>
+          
+          {/* Target Language Selector */}
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
+            <label className="text-white font-medium text-sm">Target Language:</label>
+            <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+              <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-900 border-blue-700">
+                {LANGUAGES.filter(lang => lang.code !== 'en').map(lang => (
+                  <SelectItem 
+                    key={lang.code} 
+                    value={lang.code}
+                    className="text-white hover:bg-blue-900/50 cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-lg">{lang.flag}</span>
+                      <span>{lang.name}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardHeader>
+      </Card>
+
+      {/* Split Screen Layout */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* Left Panel - English (Reference) */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+            <span className="text-2xl">🇬🇧</span>
+            <div>
+              <p className="text-white font-semibold text-sm">English (Reference)</p>
+              <p className="text-green-200 text-xs">Master language - all translations reference this</p>
+            </div>
+          </div>
+          <div className="border-2 border-green-600/30 rounded-lg p-1 bg-green-950/20">
+            {children('en')}
+          </div>
+        </div>
+
+        {/* Right Panel - Target Language */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-900/30 to-purple-800/30 border-2 border-purple-600/50 rounded-lg">
+            <span className="text-2xl">
+              {LANGUAGES.find(l => l.code === targetLanguage)?.flag}
+            </span>
+            <div>
+              <p className="text-white font-semibold text-sm">
+                {LANGUAGES.find(l => l.code === targetLanguage)?.name}
+              </p>
+              <p className="text-purple-200 text-xs">Edit translation for this language</p>
+            </div>
+          </div>
+          <div className="border-2 border-purple-600/30 rounded-lg p-1 bg-purple-950/20">
+            {children(targetLanguage)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

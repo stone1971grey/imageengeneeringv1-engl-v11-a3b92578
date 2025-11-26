@@ -17,9 +17,10 @@ interface FullHeroEditorProps {
   pageSlug: string;
   segmentId: number;
   onSave: () => void;
+  language?: string; // For split-screen mode
 }
 
-export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorProps) => {
+export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }: FullHeroEditorProps) => {
   const [titleLine1, setTitleLine1] = useState("");
   const [titleLine2, setTitleLine2] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -45,7 +46,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
   useEffect(() => {
     loadContent();
     checkIfH1Segment();
-  }, [pageSlug, segmentId]);
+  }, [pageSlug, segmentId, language]); // Add language dependency
 
   // Sync imageUrl state when content is loaded from backend
   useEffect(() => {
@@ -79,7 +80,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       .from("page_content")
       .select("*")
       .eq("page_slug", pageSlug)
-      .eq("section_key", "page_segments");
+      .eq("section_key", "page_segments")
+      .eq("language", language); // Filter by language
 
     if (error) {
       console.error("Error loading page_segments:", error);
@@ -242,6 +244,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         .select("*")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
+        .eq("language", language) // Filter by language
         .single();
 
       if (fetchError || !pageContentData) {
@@ -264,12 +267,13 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           updated_by: (await supabase.auth.getUser()).data.user?.id,
         })
         .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments");
+        .eq("section_key", "page_segments")
+        .eq("language", language); // Filter by language
 
       if (updateError) {
         console.error("Auto-save error:", updateError);
       } else {
-        console.log("✅ Image URL auto-saved to database");
+        console.log(`✅ Image URL auto-saved to database (${language})`);
         onSave?.();
       }
     } catch (e) {
@@ -325,6 +329,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
       .select("*")
       .eq("page_slug", pageSlug)
       .eq("section_key", "page_segments")
+      .eq("language", language) // Filter by language
       .single();
 
     if (fetchError || !pageContentData) {
@@ -349,7 +354,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           updated_by: (await supabase.auth.getUser()).data.user?.id,
         })
         .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments");
+        .eq("section_key", "page_segments")
+        .eq("language", language); // Filter by language
 
       if (updateError) {
         console.error("Error updating page_segments:", updateError);
@@ -357,7 +363,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
         return;
       }
 
-      toast.success("Full Hero saved successfully");
+      toast.success(`Full Hero saved successfully (${language.toUpperCase()})`);
       onSave?.();
     } catch (e) {
       console.error("Error parsing/updating page_segments:", e);
