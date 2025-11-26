@@ -26,7 +26,7 @@ export const SimpleDropdown = ({ trigger, children, className = "", disabled = f
         {trigger}
       </Button>
       
-      {isOpen && (
+      {!disabled && isOpen && (
         <>
           {/* Invisible bridge to prevent hover gaps */}
           <div className="absolute top-full w-full h-4 z-[9999]" />
