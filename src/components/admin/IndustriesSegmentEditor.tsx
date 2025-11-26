@@ -47,12 +47,12 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
       {/* Header Section */}
       <div className="space-y-4">
         <div>
-          <Label htmlFor="title" className="font-medium">Titel (H2)</Label>
+          <Label htmlFor="title" className="font-medium">Title (H2)</Label>
           <Input
             id="title"
             value={data.title || ''}
             onChange={(e) => onChange({ ...data, title: e.target.value })}
-            placeholder="z.B. Trusted Across All Industries"
+            placeholder="e.g. Trusted Across All Industries"
             className="mt-2"
           />
         </div>
@@ -63,13 +63,13 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
             id="subtitle"
             value={data.subtitle || ''}
             onChange={(e) => onChange({ ...data, subtitle: e.target.value })}
-            placeholder="z.B. Professional solutions for diverse applications"
+            placeholder="e.g. Professional solutions for diverse applications"
             className="mt-2"
           />
         </div>
 
         <div>
-          <Label htmlFor="columns" className="font-medium">Spaltenzahl (1-4)</Label>
+          <Label htmlFor="columns" className="font-medium">Number of Columns (1-4)</Label>
           <Select
             value={columns.toString()}
             onValueChange={(value) => onChange({ ...data, columns: parseInt(value) })}
@@ -78,10 +78,10 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="1">1 Spalte</SelectItem>
-              <SelectItem value="2">2 Spalten</SelectItem>
-              <SelectItem value="3">3 Spalten</SelectItem>
-              <SelectItem value="4">4 Spalten</SelectItem>
+              <SelectItem value="1">1 Column</SelectItem>
+              <SelectItem value="2">2 Columns</SelectItem>
+              <SelectItem value="3">3 Columns</SelectItem>
+              <SelectItem value="4">4 Columns</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -99,7 +99,7 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
-            Hinzufügen
+            Add
           </Button>
         </div>
 
@@ -147,7 +147,7 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
                 </div>
 
                 <div>
-                  <Label className="text-xs">Titel</Label>
+                  <Label className="text-xs">Title</Label>
                   <Input
                     value={item.title}
                     onChange={(e) => handleItemChange(index, 'title', e.target.value)}
@@ -158,11 +158,11 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
               </div>
 
               <div>
-                <Label className="text-xs">Beschreibung</Label>
+                <Label className="text-xs">Description</Label>
                 <Textarea
                   value={item.description}
                   onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                  placeholder="Kurze Beschreibung..."
+                  placeholder="Short description..."
                   rows={2}
                   className="mt-1 resize-none"
                 />
@@ -183,7 +183,7 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
 
         {items.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            Keine Industries vorhanden. Klicke auf "Hinzufügen" um eine hinzuzufügen.
+            No industries available. Click "Add" to add one.
           </div>
         )}
       </div>
@@ -195,7 +195,7 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
             onClick={onSave}
             className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
           >
-            Speichern
+            Save
           </Button>
         </div>
       )}

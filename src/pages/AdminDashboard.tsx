@@ -5600,10 +5600,10 @@ const AdminDashboard = () => {
                         };
                         setPageSegments(newSegments);
                         
-                        toast.success("Bild erfolgreich gelöscht");
+                        toast.success("Image deleted successfully");
                       } catch (error) {
                         console.error('Image delete error:', error);
-                        toast.error("Löschen fehlgeschlagen");
+                        toast.error("Delete failed");
                       }
                     };
                     

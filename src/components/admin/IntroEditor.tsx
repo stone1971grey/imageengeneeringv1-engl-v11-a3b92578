@@ -194,8 +194,8 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
     } catch (error) {
       console.error('Error saving content:', error);
       toast({
-        title: "Fehler beim Speichern",
-        description: "Der Inhalt konnte nicht gespeichert werden.",
+        title: "Error saving",
+        description: "Content could not be saved.",
         variant: "destructive",
       });
     } finally {
@@ -212,24 +212,24 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
   };
 
   if (isLoading) {
-    return <div className="p-4">Lade...</div>;
+    return <div className="p-4">Loading...</div>;
   }
 
   return (
     <div className="space-y-4 p-4 bg-background border rounded-lg">
-      <h3 className="text-lg font-semibold">Intro Segment bearbeiten</h3>
+      <h3 className="text-lg font-semibold">Edit Intro Segment</h3>
       
       {isH1Segment && (
         <Alert className="border-primary/50 bg-primary/5">
           <Heading1 className="h-4 w-4" />
           <AlertDescription>
-            Der Titel dieses Intro trägt die H1-Überschrift für SEO-Optimierung
+            The title of this Intro carries the H1 heading for SEO optimization
           </AlertDescription>
         </Alert>
       )}
       
       <div className="space-y-2">
-        <Label htmlFor="intro-title">Titel (H1)</Label>
+        <Label htmlFor="intro-title">Title (H1)</Label>
         <Input
           id="intro-title"
           value={title}
@@ -239,7 +239,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="intro-description">Beschreibung</Label>
+        <Label htmlFor="intro-description">Description</Label>
         <Textarea
           id="intro-description"
           value={description}
@@ -255,7 +255,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
       >
         <Save className="h-4 w-4 mr-2" />
-        {isSaving ? "Speichere..." : "Änderungen speichern"}
+        {isSaving ? "Saving..." : "Save Changes"}
       </Button>
     </div>
   );
