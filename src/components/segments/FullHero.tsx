@@ -15,6 +15,8 @@ interface FullHeroProps {
   button2Color?: 'yellow' | 'black' | 'white';
   backgroundType: 'image' | 'video';
   imageUrl?: string;
+  imageAlt?: string;
+  imageDescription?: string;
   videoUrl?: string;
   imagePosition?: 'left' | 'right';
   layoutRatio?: '1-1' | '2-3' | '2-5';
@@ -38,6 +40,8 @@ const FullHero = ({
   button2Color = 'black',
   backgroundType,
   imageUrl,
+  imageAlt,
+  imageDescription,
   videoUrl,
   imagePosition = 'right',
   layoutRatio = '1-1',
@@ -145,7 +149,7 @@ const FullHero = ({
         <div className="absolute inset-0 z-0 animate-fade-in">
           <img
             src={imageUrl}
-            alt="Full hero background"
+            alt={imageAlt || "Full hero background"}
             className={`w-full h-full object-cover ${getKenBurnsClass()}`}
             style={{ 
               objectPosition: 'center center',
