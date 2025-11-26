@@ -379,7 +379,7 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                        <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
                        
-                       <Link to="/your-solution/automotive" className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                       <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                           onMouseEnter={() => setHoveredIndustry("Automotive")}>
                           <Car className="h-5 w-5" />
                           <span>{t.nav.automotive}</span>
@@ -501,7 +501,7 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.products}</h4>
                        
-                       <Link to="/products/charts" className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
+                       <Link to={`/${language}/products/test-charts`} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
                           onMouseEnter={() => setHoveredProduct("Test Charts")}>
                           <CustomTargetIcon className="h-5 w-5" />
                           <span>{t.nav.testCharts}</span>
@@ -948,7 +948,7 @@ const Navigation = () => {
                             <AccordionItem value="automotive" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <Link to="/your-solution/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                   <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <Car className="h-4 w-4" />
                                       <span>{t.nav.automotive}</span>
                                       <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
@@ -1362,7 +1362,7 @@ const Navigation = () => {
                              <AccordionItem value="auto-test" className="border-none">
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
-                                   <Link to="/your-solution/automotive" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
+                                   <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                        <CustomTargetIcon className="h-4 w-4" />
                                       <span>{t.nav.automotive}</span>
                                     </Link>
@@ -1371,7 +1371,7 @@ const Navigation = () => {
                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
                                    <div className="block py-2 text-sm text-gray-600">camPAS</div>
-                                    <Link to="/your-solution/automotive/in-cabin-testing" className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                    <Link to={`/${language}/your-solution/automotive/in-cabin-testing`} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
                                       {t.nav.inCabinTesting} <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">{t.nav.active}</span>
                                     </Link>
                                    <div className="block py-2 text-sm text-gray-600">HDR Testing</div>
