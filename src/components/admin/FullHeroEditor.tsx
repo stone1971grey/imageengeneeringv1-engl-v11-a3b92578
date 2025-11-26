@@ -373,7 +373,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
         </CardTitle>
         <CardDescription>
-          Fullscreen Hero mit zweizeiligem Titel, Untertitel, Buttons und Hintergrundbild/-video
+          Fullscreen Hero with two-line title, subtitle, buttons and background image/video
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -381,7 +381,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           <Alert className="border-primary/50 bg-primary/5">
             <Heading1 className="h-4 w-4" />
             <AlertDescription>
-              Die Titelzeilen (Title Line 1 + Title Line 2) tragen die H1-Überschrift für SEO-Optimierung
+              The title lines (Title Line 1 + Title Line 2) carry the H1 heading for SEO optimization
             </AlertDescription>
           </Alert>
         )}
@@ -390,7 +390,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
           <Alert className="border-muted bg-muted/20">
             <Heading1 className="h-4 w-4" />
             <AlertDescription>
-              Die Titelzeilen (Title Line 1 + Title Line 2) werden als H2 dargestellt, da ein Intro-Segment die H1 trägt
+              The title lines (Title Line 1 + Title Line 2) are displayed as H2, as an Intro segment carries the H1
             </AlertDescription>
           </Alert>
         )}

@@ -529,7 +529,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             </span>
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            Erscheint als Titel in Suchmaschinen. Optimal: 50-60 Zeichen mit Fokus Keyword.
+            Appears as title in search engines. Optimal: 50-60 characters with focus keyword.
           </p>
         </div>
 
@@ -538,10 +538,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 Meta Description
                 <Badge variant="outline" className="text-xs">Pflicht</Badge>
                 {data.metaDescription && (
-                  <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+                  <Badge variant="secondary" className="text-xs">✓ Set</Badge>
                 )}
                 {data.metaDescription && data.focusKeyword && data.metaDescription.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-                  <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+                  <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
                 )}
               </Label>
           <Textarea
@@ -568,7 +568,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 ? 'text-yellow-600'
                 : 'text-red-500'
             }`}>
-              {data.metaDescription?.length || 0} / 160 Zeichen
+              {data.metaDescription?.length || 0} / 160 characters
             </p>
             <span className={`text-xs font-medium ${
               (data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
@@ -582,14 +582,14 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
               {(data.metaDescription?.length || 0) >= 120 && (data.metaDescription?.length || 0) <= 160
                 ? '✓ Optimal'
                 : (data.metaDescription?.length || 0) > 160
-                ? '⚠ Zu lang'
+                ? '⚠ Too long'
                 : (data.metaDescription?.length || 0) >= 100
-                ? '→ Fast optimal'
-                : '⚠ Zu kurz'}
+                ? '→ Almost optimal'
+                : '⚠ Too short'}
             </span>
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            Erscheint als Beschreibung in Suchmaschinen. Optimal: 120-160 Zeichen mit Fokus Keyword.
+            Appears as description in search engines. Optimal: 120-160 characters with focus keyword.
           </p>
         </div>
 
@@ -598,10 +598,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             URL Slug
             <Badge variant="outline" className="text-xs">Pflicht</Badge>
             {data.slug && (
-              <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+              <Badge variant="secondary" className="text-xs">✓ Set</Badge>
             )}
             {data.slug && data.focusKeyword && data.slug.toLowerCase().includes(data.focusKeyword.toLowerCase().replace(/\s+/g, '-')) && (
-              <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+              <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
             )}
           </Label>
           <div className="flex items-center mt-2">
@@ -617,7 +617,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             />
           </div>
           <p className="text-sm text-muted-foreground mt-2">
-            Nur Kleinbuchstaben, Zahlen und Bindestriche. FKW sollte enthalten sein.
+            Only lowercase letters, numbers and hyphens. FKW should be included.
           </p>
         </div>
 
@@ -626,14 +626,14 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             H1 Heading
             <Badge variant="secondary" className="text-xs">Auto-detect</Badge>
             {data.h1 && (
-              <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+              <Badge variant="secondary" className="text-xs">✓ Set</Badge>
             )}
             {data.h1 && data.focusKeyword && data.h1.toLowerCase().includes(data.focusKeyword.toLowerCase()) && (
-              <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+              <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
             )}
           </Label>
           <div className="mt-2 px-3 py-2 h-10 bg-muted/50 border-2 border-border rounded-md cursor-not-allowed flex items-center text-sm">
-            {data.h1 || <span className="text-muted-foreground">Automatisch erkannt...</span>}
+            {data.h1 || <span className="text-muted-foreground">Auto-detected...</span>}
           </div>
           {data.h1 && data.focusKeyword && (
             <div className="mt-2 px-3 py-2 bg-muted/30 border-2 border-border rounded-md text-sm min-h-[40px] flex items-center">
@@ -642,7 +642,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
             </div>
           )}
           <p className="text-sm text-muted-foreground mt-2">
-            Wird automatisch vom Intro-Titel oder Hero-Titel erkannt. Nur ein H1 pro Seite erlaubt.
+            Auto-detected from Intro title or Hero title. Only one H1 per page allowed.
           </p>
         </div>
       </div>
@@ -665,11 +665,11 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 id="og-title"
                 value={data.ogTitle || ''}
                 onChange={(e) => handleChange('ogTitle', e.target.value)}
-                placeholder="Leer lassen = SEO Title verwenden"
+                placeholder="Leave empty = use SEO Title"
                 className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
               />
               <p className="text-sm text-muted-foreground mt-2">
-                Titel für Social Media Shares. Falls leer, wird der SEO Title verwendet.
+                Title for social media shares. If empty, SEO Title is used.
               </p>
             </div>
 
@@ -679,12 +679,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 id="og-description"
                 value={data.ogDescription || ''}
                 onChange={(e) => handleChange('ogDescription', e.target.value)}
-                placeholder="Leer lassen = Meta Description verwenden"
+                placeholder="Leave empty = use Meta Description"
                 className="mt-2 min-h-[80px] border-2 border-border hover:border-primary/50 focus:border-primary transition-colors resize-none"
                 rows={3}
               />
               <p className="text-sm text-muted-foreground mt-2">
-                Beschreibung für Social Media Shares. Falls leer, wird die Meta Description verwendet.
+                Description for social media shares. If empty, Meta Description is used.
               </p>
             </div>
 
@@ -701,7 +701,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                   id="og-image"
                   value={data.ogImage || heroImageUrl || ''}
                   onChange={(e) => handleChange('ogImage', e.target.value)}
-                  placeholder={heroImageUrl ? "Auto: Hero-Bild wird verwendet (1200×630px)" : "https://... (empfohlen: 1200×630px)"}
+                  placeholder={heroImageUrl ? "Auto: Hero image is used (1200×630px)" : "https://... (recommended: 1200×630px)"}
                   className="flex-1 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
                 />
                 <label className="cursor-pointer">
@@ -748,7 +748,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 )}
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                Bild für Social Media Shares (1200x630px empfohlen). Falls leer, wird das Hero Image verwendet.
+                Image for social media shares (1200x630px recommended). If empty, Hero image is used.
               </p>
               
               {/* Image Preview */}
@@ -782,7 +782,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 </SelectContent>
               </Select>
               <p className="text-sm text-muted-foreground mt-2">
-                Art der Twitter Card für Shares. "Summary Large Image" wird empfohlen.
+                Type of Twitter Card for shares. "Summary Large Image" is recommended.
               </p>
             </div>
           </div>
@@ -797,12 +797,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 Introduction Text
                 <Badge variant="secondary" className="text-xs">Auto-detected (Read-only)</Badge>
                 {(introductionText.title || introductionText.description) && (
-                  <Badge variant="secondary" className="text-xs">✓ Gesetzt</Badge>
+                  <Badge variant="secondary" className="text-xs">✓ Set</Badge>
                 )}
                 {(introductionText.title || introductionText.description) && data.focusKeyword && (
                   (introductionText.title.toLowerCase().includes(data.focusKeyword.toLowerCase()) || 
                    introductionText.description.toLowerCase().includes(data.focusKeyword.toLowerCase())) && (
-                    <Badge className="bg-green-500 text-white text-xs">✓ FKW enthalten</Badge>
+                    <Badge className="bg-green-500 text-white text-xs">✓ FKW included</Badge>
                   )
                 )}
               </Label>
@@ -821,12 +821,12 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 )}
                 {!introductionText.title && !introductionText.description && (
                   <p className="text-sm text-muted-foreground italic">
-                    Kein Introduction Text gefunden. Füge ein Intro, Tiles oder Image-Text Segment hinzu.
+                    No introduction text found. Add an Intro, Tiles or Image-Text segment.
                   </p>
                 )}
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                Wird automatisch vom ersten Intro-, Tiles- oder Image-Text-Segment erkannt. Dieser Text wird für SEO-Prüfungen verwendet.
+                Auto-detected from first Intro, Tiles or Image-Text segment. This text is used for SEO checks.
               </p>
             </div>
           </div>
@@ -846,7 +846,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                 className="mt-2 h-10 border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
               />
               <p className="text-sm text-muted-foreground mt-2">
-                Wenn diese Seite eine Kopie einer anderen ist, gib hier die Original-URL an. Leer lassen für normale Seiten.
+                If this page is a copy of another, enter the original URL here. Leave empty for normal pages.
               </p>
             </div>
           </div>
@@ -860,7 +860,7 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
           className="gap-2"
         >
           <Save className="h-4 w-4" />
-          SEO Änderungen speichern
+          Save SEO Changes
         </Button>
       </div>
     </div>

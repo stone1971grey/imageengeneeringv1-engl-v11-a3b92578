@@ -182,7 +182,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
             const hasSelection = from !== to;
             
             if (!hasSelection) {
-              toast.error('Bitte markieren Sie zuerst den Text, der zur Überschrift werden soll');
+              toast.error('Please select the text that should become a heading first');
               return;
             }
             
@@ -192,7 +192,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
             
             // Check if selection is within a single node
             if ($from.parent !== $to.parent) {
-              toast.error('Bitte markieren Sie Text innerhalb eines Absatzes');
+              toast.error('Please select text within a paragraph');
               return;
             }
             
@@ -254,7 +254,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
             const hasSelection = from !== to;
             
             if (!hasSelection) {
-              toast.error('Bitte markieren Sie zuerst den Text, der zur Überschrift werden soll');
+              toast.error('Please select the text that should become a heading first');
               return;
             }
             
@@ -264,7 +264,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
             
             // Check if selection is within a single node
             if ($from.parent !== $to.parent) {
-              toast.error('Bitte markieren Sie Text innerhalb eines Absatzes');
+              toast.error('Please select text within a paragraph');
               return;
             }
             
