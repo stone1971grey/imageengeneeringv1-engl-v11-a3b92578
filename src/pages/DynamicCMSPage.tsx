@@ -72,6 +72,9 @@ const DynamicCMSPage = () => {
     }
 
     // Check if page exists in page_registry
+    // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
+    // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
+    // generischen "Page Created Successfully" Screen statt einer 404.
     const { data: pageExists } = await supabase
       .from("page_registry")
       .select("page_slug")
@@ -79,7 +82,7 @@ const DynamicCMSPage = () => {
       .maybeSingle();
 
     if (!pageExists) {
-      setPageNotFound(true);
+      console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
       setLoading(false);
       return;
     }
