@@ -2438,6 +2438,148 @@ const AdminDashboard = () => {
     }
   };
 
+  // Helper function to extract language-independent fields from segment data
+  const getLanguageIndependentFields = (templateType: string, data: any) => {
+    // These fields should be copied from English to all other languages
+    const baseFields: any = {};
+    
+    switch (templateType) {
+      case 'hero':
+        return {
+          hero_image_url: data.hero_image_url || '',
+          hero_image_metadata: data.hero_image_metadata || null,
+          hero_cta_link: data.hero_cta_link || '#',
+          hero_cta_style: data.hero_cta_style || 'standard',
+          hero_image_position: data.hero_image_position || 'right',
+          hero_layout_ratio: data.hero_layout_ratio || '2-5',
+          hero_top_spacing: data.hero_top_spacing || 'medium',
+          // Text fields empty
+          hero_title: '',
+          hero_subtitle: '',
+          hero_description: '',
+          hero_cta_text: ''
+        };
+      
+      case 'product-hero-gallery':
+        return {
+          imagePosition: data.imagePosition || 'right',
+          layoutRatio: data.layoutRatio || '1-1',
+          topSpacing: data.topSpacing || 'medium',
+          cta1Link: data.cta1Link || '#contact',
+          cta1Style: data.cta1Style || 'standard',
+          cta2Link: data.cta2Link || '',
+          cta2Style: data.cta2Style || 'outline-white',
+          images: data.images || [],
+          // Text fields empty
+          title: '',
+          subtitle: '',
+          description: '',
+          cta1Text: '',
+          cta2Text: ''
+        };
+      
+      case 'tiles':
+        return {
+          columns: data.columns || '3',
+          items: (data.items || []).map((item: any) => ({
+            imageUrl: item.imageUrl || '',
+            icon: item.icon || '',
+            ctaLink: item.ctaLink || '',
+            ctaStyle: item.ctaStyle || 'standard',
+            // Text fields empty
+            title: '',
+            description: '',
+            ctaText: ''
+          })),
+          // Text fields empty
+          title: '',
+          description: ''
+        };
+      
+      case 'banner':
+        return {
+          images: data.images || [],
+          buttonLink: data.buttonLink || '',
+          buttonStyle: data.buttonStyle || 'standard',
+          // Text fields empty
+          title: '',
+          subtext: '',
+          buttonText: ''
+        };
+      
+      case 'image-text':
+        return {
+          layout: data.layout || '2-col',
+          items: (data.items || []).map((item: any) => ({
+            imageUrl: item.imageUrl || '',
+            // Text fields empty
+            title: '',
+            description: ''
+          })),
+          // Text fields empty
+          title: '',
+          subtext: ''
+        };
+      
+      case 'feature-overview':
+        return {
+          layout: data.layout || '3',
+          items: (data.items || []).map((item: any) => ({
+            icon: item.icon || '',
+            // Text fields empty
+            title: '',
+            description: ''
+          })),
+          // Text fields empty
+          title: '',
+          subtext: ''
+        };
+      
+      case 'meta-navigation':
+        return {
+          links: (data.links || []).map((link: any) => ({
+            anchor: link.anchor || '',
+            // Text fields empty
+            label: ''
+          }))
+        };
+      
+      case 'full-hero':
+        return {
+          backgroundImage: data.backgroundImage || '',
+          ctaLink: data.ctaLink || '#',
+          ctaStyle: data.ctaStyle || 'standard',
+          // Text fields empty
+          title: '',
+          subtitle: '',
+          description: '',
+          ctaText: ''
+        };
+      
+      case 'video':
+        return {
+          videoUrl: data.videoUrl || '',
+          thumbnailUrl: data.thumbnailUrl || '',
+          // Text fields empty
+          title: '',
+          description: ''
+        };
+      
+      case 'table':
+      case 'faq':
+      case 'specification':
+      case 'intro':
+      case 'industries':
+      case 'news':
+      case 'debug':
+        // These segment types are mostly text-based, so return empty structure
+        return {};
+      
+      default:
+        return {};
+    }
+  };
+
   const handleAddSegment = async (templateType: string) => {
     if (!user) return;
 
@@ -2460,14 +2602,13 @@ const AdminDashboard = () => {
     console.log("Creating new segment with global ID:", segmentId);
     setNextSegmentId(nextSegmentId + 1);
     
+    const defaultData = getDefaultSegmentData(templateType);
     const newSegment = {
       id: String(segmentId),
       type: templateType,
-      data: getDefaultSegmentData(templateType)
+      data: defaultData
     };
 
-    const updatedSegments = [...pageSegments, newSegment];
-    
     // Add new segment to end of tab order
     // Meta-navigation and full-hero are fixed position and NOT added to tabOrder
     let updatedTabOrder: string[];
@@ -2497,48 +2638,85 @@ const AdminDashboard = () => {
         throw registryError;
       }
 
-      // Save segments
-      const { error: segmentsError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "page_segments",
-          content_type: "json",
-          content_value: JSON.stringify(updatedSegments),
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
+      // Create segment for all languages
+      const allLanguages: Array<'en' | 'de' | 'ja' | 'ko' | 'zh'> = ['en', 'de', 'ja', 'ko', 'zh'];
+      
+      for (const lang of allLanguages) {
+        // Load existing segments for this language
+        const { data: existingContent } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", resolvedPageSlug || selectedPage)
+          .eq("section_key", "page_segments")
+          .eq("language", lang)
+          .single();
 
-      if (segmentsError) throw segmentsError;
+        const existingSegments = existingContent?.content_value 
+          ? JSON.parse(existingContent.content_value) 
+          : [];
 
-      // Save tab order
-      const { error: orderError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "tab_order",
-          content_type: "json",
-          content_value: JSON.stringify(updatedTabOrder),
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
+        // For English: use full default data
+        // For other languages: use language-independent fields from English, leave text fields empty
+        const segmentData = lang === 'en' 
+          ? defaultData 
+          : getLanguageIndependentFields(templateType, defaultData);
 
-      if (orderError) throw orderError;
+        const languageSegment = {
+          id: String(segmentId),
+          type: templateType,
+          data: segmentData
+        };
 
-      setPageSegments(updatedSegments);
+        const updatedSegments = [...existingSegments, languageSegment];
+        
+        // Save segments for this language
+        const { error: segmentsError } = await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: resolvedPageSlug || selectedPage,
+            section_key: "page_segments",
+            content_type: "json",
+            content_value: JSON.stringify(updatedSegments),
+            language: lang,
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key,language'
+          });
+
+        if (segmentsError) throw segmentsError;
+
+        // Save tab order for this language
+        const { error: orderError } = await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: resolvedPageSlug || selectedPage,
+            section_key: "tab_order",
+            content_type: "json",
+            content_value: JSON.stringify(updatedTabOrder),
+            language: lang,
+            updated_at: new Date().toISOString(),
+            updated_by: user.id
+          }, {
+            onConflict: 'page_slug,section_key,language'
+          });
+
+        if (orderError) throw orderError;
+      }
+
+      // Update UI state with current language segment
+      const currentLanguageSegments = editorLanguage === 'en' 
+        ? [...pageSegments, newSegment]
+        : [...pageSegments, { ...newSegment, data: getLanguageIndependentFields(templateType, defaultData) }];
+
+      setPageSegments(currentLanguageSegments);
       setTabOrder(updatedTabOrder);
       setIsTemplateDialogOpen(false);
       
       // Switch to the newly added segment tab
       setActiveTab(String(segmentId));
       
-      toast.success(`New segment added successfully with ID ${segmentId}!`);
+      toast.success(`New segment added successfully with ID ${segmentId} for all languages!`);
     } catch (error: any) {
       toast.error("Error adding segment: " + error.message);
     }
