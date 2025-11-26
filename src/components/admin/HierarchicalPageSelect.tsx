@@ -39,6 +39,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredStatuses, setFilteredStatuses] = useState<PageStatus[]>([]);
   const [refreshKey, setRefreshKey] = useState<number>(0);
+  const [styleguideRegistryPages, setStyleguideRegistryPages] = useState<Array<{ slug: string; title: string; pageId: number }>>([]);
 
   // Expose refresh function to parent via custom event
   useEffect(() => {
@@ -56,12 +57,13 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   useEffect(() => {
     loadCMSPages();
     loadPageIds();
+    loadStyleguidePages();
   }, [refreshKey]);
 
   useEffect(() => {
     // Always build page statuses when data changes, even if no CMS pages exist yet
     buildPageStatuses();
-  }, [cmsPages, navigationData, pageIdMap]);
+  }, [cmsPages, navigationData, pageIdMap, styleguideRegistryPages]);
 
   useEffect(() => {
     // Filter statuses based on search query with smart ranking
@@ -128,6 +130,22 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     if (data) {
       const uniqueSlugs = new Set(data.map(item => item.page_slug));
       setCmsPages(uniqueSlugs);
+    }
+  };
+
+  const loadStyleguidePages = async () => {
+    const { data } = await supabase
+      .from('page_registry')
+      .select('page_slug, page_id, page_title')
+      .ilike('page_slug', 'styleguide%')
+      .order('page_slug', { ascending: true });
+
+    if (data) {
+      setStyleguideRegistryPages(data.map(item => ({
+        slug: item.page_slug,
+        title: item.page_title,
+        pageId: item.page_id
+      })));
     }
   };
 
@@ -225,6 +243,22 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         ...page,
         isCMS: isPageInCMS(page.slug, page.url),
         pageId: pageIdMap.get(page.slug),
+      });
+    });
+
+    // Styleguide pages from page_registry
+    styleguideRegistryPages.forEach(page => {
+      // Skip if already added as static page
+      if (page.slug === 'styleguide') return;
+      
+      const url = `/${page.slug}`;
+      statuses.push({
+        slug: page.slug,
+        title: page.title,
+        url: url,
+        isCMS: isPageInCMS(page.slug, url),
+        isStatic: false,
+        pageId: page.pageId,
       });
     });
 
