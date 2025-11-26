@@ -296,12 +296,11 @@ const Navigation = () => {
             {isStyleguidePath ? (
               /* Styleguide-specific Navigation with Flyout */
               <SimpleDropdown trigger="Styleguide" className="right-aligned">
-                <div className="flex gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
+                <div className="flex gap-2 w-[500px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredStyleguide(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Main Styleguide Pages */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-4 text-lg text-black">Styleguide Pages</h4>
                       <div className="space-y-3">
                         {styleguidePages.length > 0 ? (
                           styleguidePages.map((page) => (
@@ -335,12 +334,6 @@ const Navigation = () => {
                     
                     {/* Right Column: Sub-pages */}
                     <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">
-                        {hoveredStyleguide 
-                          ? `${styleguidePages.find(p => p.slug === hoveredStyleguide)?.title || ''} - Subpages` 
-                          : 'Subpages'}
-                      </h4>
-                      
                       {/* Conditional Rendering of Subpages */}
                       {hoveredStyleguide && styleguidePages.find(p => p.slug === hoveredStyleguide)?.children && (
                         <div className="space-y-3">
