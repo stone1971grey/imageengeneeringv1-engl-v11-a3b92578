@@ -483,7 +483,6 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
 
   const handleClearSelection = () => {
     onValueChange("");
-    window.location.href = "/admin-dashboard";
   };
 
   return (

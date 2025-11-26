@@ -69,7 +69,7 @@ const AdminNews = () => {
             <p className="text-gray-600 mt-2">Create and manage news articles</p>
           </div>
           <Button
-            onClick={() => navigate("/admin-dashboard")}
+            onClick={() => navigate("/en/admin-dashboard")}
             variant="outline"
             className="flex items-center gap-2"
           >

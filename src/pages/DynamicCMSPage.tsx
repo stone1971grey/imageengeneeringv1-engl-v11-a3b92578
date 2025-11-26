@@ -764,7 +764,7 @@ const DynamicCMSPage = () => {
             </p>
             <div className="mt-8">
               <Link
-                to="/admin-dashboard"
+                to="/en/admin-dashboard"
                 className="inline-flex items-center px-6 py-3 bg-[#f9dc24] text-gray-900 rounded-lg font-semibold hover:bg-yellow-400 transition-colors"
               >
                 Go to Admin Dashboard

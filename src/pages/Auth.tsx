@@ -28,9 +28,9 @@ const Auth = () => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Redirect to admin dashboard after successful login
+          // Redirect to admin dashboard after successful login (English default)
           setTimeout(() => {
-            navigate("/admin-dashboard");
+            navigate("/en/admin-dashboard");
           }, 0);
         }
       }
@@ -42,7 +42,7 @@ const Auth = () => {
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        navigate("/admin-dashboard");
+        navigate("/en/admin-dashboard");
       }
     });
 
