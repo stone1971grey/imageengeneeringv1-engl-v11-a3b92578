@@ -1469,34 +1469,36 @@ const AdminDashboard = () => {
        setHeroImageMetadata(metadata);
        
        // Save URL to database
-       const { error: dbError } = await supabase
-         .from("page_content")
-         .upsert({
-           page_slug: resolvedPageSlug || selectedPage,
-           section_key: "hero_image_url",
-           content_type: "image_url",
-           content_value: publicUrl,
-           updated_at: new Date().toISOString(),
-           updated_by: user?.id
-         }, {
-           onConflict: 'page_slug,section_key'
-         });
- 
-       if (dbError) throw dbError;
- 
-       // Save metadata to database
-       const { error: metadataError } = await supabase
-         .from("page_content")
-         .upsert({
-           page_slug: resolvedPageSlug || selectedPage,
-           section_key: "hero_image_metadata",
-           content_type: "json",
-           content_value: JSON.stringify(metadata),
-           updated_at: new Date().toISOString(),
-           updated_by: user?.id
-         }, {
-           onConflict: 'page_slug,section_key'
-         });
+        const { error: dbError } = await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: resolvedPageSlug || selectedPage,
+            section_key: "hero_image_url",
+            content_type: "image_url",
+            content_value: publicUrl,
+            language: editorLanguage,
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
+          }, {
+            onConflict: 'page_slug,section_key,language'
+          });
+  
+        if (dbError) throw dbError;
+  
+        // Save metadata to database
+        const { error: metadataError } = await supabase
+          .from("page_content")
+          .upsert({
+            page_slug: resolvedPageSlug || selectedPage,
+            section_key: "hero_image_metadata",
+            content_type: "json",
+            content_value: JSON.stringify(metadata),
+            language: editorLanguage,
+            updated_at: new Date().toISOString(),
+            updated_by: user?.id
+          }, {
+            onConflict: 'page_slug,section_key,language'
+          });
  
        if (metadataError) throw metadataError;
  
@@ -1771,10 +1773,11 @@ const AdminDashboard = () => {
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(newOrder),
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user?.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
     } catch (error: any) {
       toast.error("Error saving tab order: " + error.message);
@@ -2501,10 +2504,11 @@ const AdminDashboard = () => {
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(updatedSegments),
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (segmentsError) throw segmentsError;
@@ -2517,10 +2521,11 @@ const AdminDashboard = () => {
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (orderError) throw orderError;
@@ -2568,10 +2573,11 @@ const AdminDashboard = () => {
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(updatedSegments),
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (segmentsError) throw segmentsError;
@@ -2583,10 +2589,11 @@ const AdminDashboard = () => {
           section_key: "tab_order",
           content_type: "json",
           content_value: JSON.stringify(updatedTabOrder),
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (orderError) throw orderError;
@@ -2625,10 +2632,11 @@ const AdminDashboard = () => {
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(segmentsWithPositions),
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (error) throw error;
@@ -2659,10 +2667,11 @@ const AdminDashboard = () => {
           section_key: "seo_settings",
           content_type: "json",
           content_value: JSON.stringify(seoData),
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (error) throw error;
