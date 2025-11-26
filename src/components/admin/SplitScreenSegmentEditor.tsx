@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Languages } from "lucide-react";
 
 interface SplitScreenSegmentEditorProps {
@@ -24,6 +26,7 @@ export const SplitScreenSegmentEditor = ({
   segmentType 
 }: SplitScreenSegmentEditorProps) => {
   const [targetLanguage, setTargetLanguage] = useState('de');
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(true);
 
   return (
     <div className="space-y-4">
@@ -40,72 +43,105 @@ export const SplitScreenSegmentEditor = ({
                 </CardDescription>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Badge variant="outline" className="bg-blue-950/50 text-blue-200 border-blue-600">
-                Split-Screen Mode
-              </Badge>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Switch 
+                  id="split-screen-toggle"
+                  checked={isSplitScreenEnabled}
+                  onCheckedChange={setIsSplitScreenEnabled}
+                  className="data-[state=checked]:bg-blue-600"
+                />
+                <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
+                  Split-Screen Mode
+                </Label>
+              </div>
+              {isSplitScreenEnabled && (
+                <Badge variant="outline" className="bg-blue-950/50 text-blue-200 border-blue-600">
+                  Active
+                </Badge>
+              )}
             </div>
           </div>
           
-          {/* Target Language Selector */}
-          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
-            <label className="text-white font-medium text-sm">Target Language:</label>
-            <Select value={targetLanguage} onValueChange={setTargetLanguage}>
-              <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-blue-700">
-                {LANGUAGES.filter(lang => lang.code !== 'en').map(lang => (
-                  <SelectItem 
-                    key={lang.code} 
-                    value={lang.code}
-                    className="text-white hover:bg-blue-900/50 cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="text-lg">{lang.flag}</span>
-                      <span>{lang.name}</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Target Language Selector - only visible when split-screen is enabled */}
+          {isSplitScreenEnabled && (
+            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
+              <label className="text-white font-medium text-sm">Target Language:</label>
+              <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+                <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-blue-700 z-50">
+                  {LANGUAGES.filter(lang => lang.code !== 'en').map(lang => (
+                    <SelectItem 
+                      key={lang.code} 
+                      value={lang.code}
+                      className="text-white hover:bg-blue-900/50 cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-lg">{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </CardHeader>
       </Card>
 
-      {/* Split Screen Layout */}
-      <div className="grid grid-cols-2 gap-6">
-        {/* Left Panel - English (Reference) */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
-            <span className="text-2xl">🇬🇧</span>
-            <div>
-              <p className="text-white font-semibold text-sm">English (Reference)</p>
-              <p className="text-green-200 text-xs">Master language - all translations reference this</p>
+      {/* Split Screen Layout or Single View */}
+      <div className={isSplitScreenEnabled ? "grid grid-cols-2 gap-6" : ""}>
+        {isSplitScreenEnabled ? (
+          <>
+            {/* Left Panel - English (Reference) */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+                <span className="text-2xl">🇬🇧</span>
+                <div>
+                  <p className="text-white font-semibold text-sm">English (Reference)</p>
+                  <p className="text-green-200 text-xs">Master language - all translations reference this</p>
+                </div>
+              </div>
+              <div className="border-2 border-green-600/30 rounded-lg p-1 bg-green-950/20">
+                {children('en')}
+              </div>
             </div>
-          </div>
-          <div className="border-2 border-green-600/30 rounded-lg p-1 bg-green-950/20">
-            {children('en')}
-          </div>
-        </div>
 
-        {/* Right Panel - Target Language */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-900/30 to-purple-800/30 border-2 border-purple-600/50 rounded-lg">
-            <span className="text-2xl">
-              {LANGUAGES.find(l => l.code === targetLanguage)?.flag}
-            </span>
-            <div>
-              <p className="text-white font-semibold text-sm">
-                {LANGUAGES.find(l => l.code === targetLanguage)?.name}
-              </p>
-              <p className="text-purple-200 text-xs">Edit translation for this language</p>
+            {/* Right Panel - Target Language */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-900/30 to-purple-800/30 border-2 border-purple-600/50 rounded-lg">
+                <span className="text-2xl">
+                  {LANGUAGES.find(l => l.code === targetLanguage)?.flag}
+                </span>
+                <div>
+                  <p className="text-white font-semibold text-sm">
+                    {LANGUAGES.find(l => l.code === targetLanguage)?.name}
+                  </p>
+                  <p className="text-purple-200 text-xs">Edit translation for this language</p>
+                </div>
+              </div>
+              <div className="border-2 border-purple-600/30 rounded-lg p-1 bg-purple-950/20">
+                {children(targetLanguage)}
+              </div>
+            </div>
+          </>
+        ) : (
+          /* Single View - English Only */
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+              <span className="text-2xl">🇬🇧</span>
+              <div>
+                <p className="text-white font-semibold text-sm">English (Single View)</p>
+                <p className="text-green-200 text-xs">Editing in single-language mode</p>
+              </div>
+            </div>
+            <div className="border-2 border-green-600/30 rounded-lg p-1 bg-green-950/20">
+              {children('en')}
             </div>
           </div>
-          <div className="border-2 border-purple-600/30 rounded-lg p-1 bg-purple-950/20">
-            {children(targetLanguage)}
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
