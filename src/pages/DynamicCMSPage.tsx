@@ -81,6 +81,11 @@ const DynamicCMSPage = () => {
       return;
     }
 
+    // Extract language from URL
+    const pathParts = location.pathname.replace(/^\/+/, "").split('/');
+    const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+    const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
+
     // Check if page exists in page_registry
     // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
     // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
@@ -97,10 +102,25 @@ const DynamicCMSPage = () => {
       return;
     }
 
-    const { data, error } = await supabase
+    // Try to load content in requested language first
+    let { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", pageSlug);
+      .eq("page_slug", pageSlug)
+      .eq("language", urlLanguage);
+
+    // Fallback to English if no content found in requested language
+    if (!data || data.length === 0) {
+      console.log(`[DynamicCMSPage] No content found for ${pageSlug} in ${urlLanguage}, falling back to English`);
+      const fallback = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("language", 'en');
+      
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     const { data: segmentData } = await supabase
       .from("segment_registry")

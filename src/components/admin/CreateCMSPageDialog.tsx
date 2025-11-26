@@ -119,6 +119,7 @@ export function CreateCMSPageDialog({ open, onOpenChange, onSuccess }: CreateCMS
 
     try {
       // Call the creation function with slug and selected languages
+      // The parent function (createNewCMSPage) will create entries for all selected languages
       onSuccess(slug, selectedLanguages);
       
       // Reset form
