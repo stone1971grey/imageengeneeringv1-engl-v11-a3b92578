@@ -60,6 +60,7 @@ import { useAdminAutosave, loadAutosavedData, clearAutosavedData, hasAutosavedDa
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import NewsEditor from '@/components/admin/NewsEditor';
 import DebugEditor from '@/components/admin/DebugEditor';
+import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -231,6 +232,7 @@ const AdminDashboard = () => {
   const [isCreateCMSDialogOpen, setIsCreateCMSDialogOpen] = useState(false);
   const [selectedPageForCMS, setSelectedPageForCMS] = useState<string>("");
   const [isCreatingCMS, setIsCreatingCMS] = useState(false);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
 
   // Autosave for Hero section - only saves to localStorage
   useAdminAutosave({
@@ -914,6 +916,168 @@ const AdminDashboard = () => {
       
       // Navigate using React Router (no full page reload)
       navigate(`/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
+      
+    } catch (error: any) {
+      console.error("Error creating CMS page:", error);
+      toast.error(`Failed to create CMS page: ${error.message}`);
+    } finally {
+      setIsCreatingCMS(false);
+    }
+  };
+
+  // New simplified slug-based CMS page creation
+  const createNewCMSPageWithSlug = async (slug: string, languages: string[]) => {
+    if (!slug || !user) {
+      toast.error("Please provide a valid slug");
+      return;
+    }
+
+    if (!isAdmin) {
+      toast.error("Only admins can create new CMS pages.");
+      return;
+    }
+
+    setIsCreatingCMS(true);
+    toast("Starting CMS page creation...");
+    
+    try {
+      // Parse slug to extract parent and child
+      const slugParts = slug.split('/').filter(Boolean);
+      const childSlug = slugParts[slugParts.length - 1];
+      const parentSlug = slugParts.length > 1 ? slugParts.slice(0, -1).join('/') : null;
+
+      // Get highest page_id
+      const { data: maxPage } = await supabase
+        .from("page_registry")
+        .select("page_id")
+        .order("page_id", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const nextPageId = (maxPage?.page_id || 0) + 1;
+
+      let parent_id: number | null = null;
+      let parent_slug_value: string | null = null;
+
+      // If there's a parent, validate it exists
+      if (parentSlug) {
+        const { data: parentPage } = await supabase
+          .from('page_registry')
+          .select('page_id, page_slug')
+          .or(`page_slug.eq.${parentSlug},page_slug.ilike.%/${parentSlug}`)
+          .maybeSingle();
+
+        if (!parentPage) {
+          toast.error(`Parent page "${parentSlug}" not found. Create parent first.`);
+          setIsCreatingCMS(false);
+          return;
+        }
+
+        parent_id = parentPage.page_id;
+        parent_slug_value = parentPage.page_slug;
+      }
+
+      // Generate page title from child slug
+      const pageTitle = childSlug
+        .split('-')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+
+      // Create page_registry entry
+      const { data: newPageData, error: insertError } = await supabase
+        .from("page_registry")
+        .insert({
+          page_id: nextPageId,
+          page_slug: slug,
+          page_title: pageTitle,
+          parent_id,
+          parent_slug: parent_slug_value,
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("Error creating page_registry entry:", insertError);
+        toast.error("Failed to create page registry entry");
+        setIsCreatingCMS(false);
+        return;
+      }
+
+      toast.success("✅ Page registry entry created!");
+
+      // Get highest segment_id
+      const { data: maxSegment } = await supabase
+        .from("segment_registry")
+        .select("segment_id")
+        .order("segment_id", { ascending: false})
+        .limit(1)
+        .maybeSingle();
+
+      const baseSegmentId = (maxSegment?.segment_id || 0) + 1;
+
+      // Create segment_registry entry for footer
+      const segmentEntries = [
+        { page_slug: slug, segment_key: 'footer', segment_id: baseSegmentId, segment_type: 'footer', is_static: true, deleted: false, position: 999 },
+      ];
+
+      const { error: segmentError } = await supabase
+        .from("segment_registry")
+        .insert(segmentEntries);
+
+      if (segmentError) throw segmentError;
+
+      toast.success("✅ Segment registry created!");
+
+      // Create page_content entries
+      const contentEntries = [
+        { page_slug: slug, section_key: 'tab_order', content_type: 'json', content_value: '["footer"]' },
+        { page_slug: slug, section_key: 'page_segments', content_type: 'json', content_value: '[]' },
+        { page_slug: slug, section_key: 'seo_settings', content_type: 'json', content_value: JSON.stringify({
+          title: `${pageTitle} | Image Engineering`,
+          description: '',
+          canonical: `https://www.image-engineering.de/${slug}`,
+          robotsIndex: true,
+          robotsFollow: true
+        }) },
+      ];
+
+      const { error: contentError } = await supabase
+        .from("page_content")
+        .insert(contentEntries);
+
+      if (contentError) throw contentError;
+
+      toast.success("✅ Page content initialized!");
+
+      // Grant editor access if needed
+      if (isEditor && !isAdmin) {
+        await supabase
+          .from("editor_page_access")
+          .insert({ user_id: user.id, page_slug: slug });
+        setAllowedPages(prev => [...prev, slug]);
+      }
+
+      // Success notification
+      toast.success(
+        <div className="space-y-2">
+          <p className="font-bold">🎉 Page Created Successfully ID {nextPageId}</p>
+          <p className="text-sm">Page is fully configured and immediately available.</p>
+          <p className="text-sm"><strong>URL:</strong> /{slug}</p>
+          <p className="text-sm"><strong>Languages:</strong> {languages.join(', ')}</p>
+        </div>,
+        {
+          duration: 5000,
+        }
+      );
+
+      setIsCreateCMSDialogOpen(false);
+      setSelectedPageForCMS("");
+      
+      // Trigger refresh
+      window.dispatchEvent(new Event('refreshPageSelector'));
+      
+      // Navigate to new page in admin
+      navigate(`/admin-dashboard?page=${encodeURIComponent(childSlug)}`);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
@@ -6929,92 +7093,11 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* Create New CMS Page Dialog */}
-      <Dialog open={isCreateCMSDialogOpen} onOpenChange={setIsCreateCMSDialogOpen}>
-        <DialogContent className="max-w-4xl bg-gray-900 border-2 border-gray-700">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-white">Create New CMS Page</DialogTitle>
-            <DialogDescription className="text-base text-gray-300">
-              Fully automated CMS page creation with one click. The system will handle all backend setup, routing, and frontend rendering automatically.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-6 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="page-select" className="text-base font-semibold text-white">
-                Select Page
-              </Label>
-              <HierarchicalPageSelect
-                value={selectedPageForCMS}
-                onValueChange={setSelectedPageForCMS}
-              />
-              <p className="text-sm text-gray-400">
-                Choose a page that is not yet CMS-enabled (pages without ✓ checkmark)
-              </p>
-            </div>
-
-              {selectedPageForCMS && (
-              <div className="rounded-lg border-2 border-[#f9dc24] bg-gray-800 p-5">
-                <h4 className="font-semibold text-[#f9dc24] mb-3 text-lg">🚀 Fully Automated Setup</h4>
-                <ul className="space-y-2 text-sm text-gray-200">
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#f9dc24] mt-0.5">✓</span>
-                    <span><strong>Backend Infrastructure:</strong> Automatic creation in segment_registry, page_content, and page_registry</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#f9dc24] mt-0.5">✓</span>
-                    <span><strong>Frontend Rendering:</strong> Catch-all routes handle any new page automatically via DynamicCMSPage</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#f9dc24] mt-0.5">✓</span>
-                    <span><strong>SEO Configuration:</strong> Default meta tags, Open Graph, and schema markup initialized</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#f9dc24] mt-0.5">✓</span>
-                    <span><strong>Admin Dashboard:</strong> Instant access to edit all page segments</span>
-                  </li>
-                </ul>
-                <div className="mt-4 pt-4 border-t border-gray-700">
-                  <p className="text-sm text-gray-300">
-                    <strong className="text-white">Note:</strong> After creation, you can immediately start editing content. To add the page to the main navigation, manually update navigationData.ts files.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-end gap-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsCreateCMSDialogOpen(false);
-                setSelectedPageForCMS("");
-              }}
-              disabled={isCreatingCMS}
-              className="border-2 border-gray-600 text-white hover:bg-gray-800"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={createNewCMSPage}
-              disabled={!selectedPageForCMS || isCreatingCMS}
-              className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-bold border-2 border-black"
-            >
-              {isCreatingCMS ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
-                  Creating...
-                </>
-              ) : (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create CMS Page
-                </>
-              )}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CreateCMSPageDialog
+        open={isCreateCMSDialogOpen}
+        onOpenChange={setIsCreateCMSDialogOpen}
+        onSuccess={(slug, languages) => createNewCMSPageWithSlug(slug, languages)}
+      />
     </div>
   );
 };

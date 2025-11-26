@@ -121,6 +121,10 @@ const App = () => (
         
         {/* Universal catch-all routes for Products */}
         <Route path="/products/test-charts/:slug" element={<DynamicCMSPage />} />
+        
+        {/* Styleguide Routes */}
+        <Route path="/styleguide" element={<DynamicCMSPage />} />
+        <Route path="/styleguide/:slug" element={<DynamicCMSPage />} />
         <Route path="/products/illumination-devices/:slug" element={<DynamicCMSPage />} />
         <Route path="/products/software/:slug" element={<DynamicCMSPage />} />
         <Route path="/products/bundles-services/:slug" element={<DynamicCMSPage />} />
