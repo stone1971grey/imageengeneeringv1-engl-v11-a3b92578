@@ -52,6 +52,9 @@ const Navigation = () => {
 
   // Check if current path is within styleguide section (with language prefix support)
   const isStyleguidePath = location.pathname.includes('/styleguide');
+  
+  // Check if current path is admin dashboard
+  const isAdminDashboard = location.pathname.includes('/admin-dashboard');
 
   // Load styleguide pages from page_registry with hierarchy
   useEffect(() => {
@@ -297,7 +300,7 @@ const Navigation = () => {
               /* Styleguide-specific Navigation with Flyout */
               <SimpleDropdown trigger="Styleguide" className="right-aligned">
                 <div className="flex gap-2 w-[500px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
-                     onMouseLeave={() => setHoveredStyleguide(null)}>
+                     onMouseLeave={() => !isAdminDashboard && setHoveredStyleguide(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Main Styleguide Pages */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
@@ -308,7 +311,7 @@ const Navigation = () => {
                               {page.children ? (
                                 <div 
                                   className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                                  onMouseEnter={() => setHoveredStyleguide(page.slug)}
+                                  onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
                                 >
                                   <FileText className="h-5 w-5" />
                                   <span>{page.title}</span>
@@ -318,7 +321,7 @@ const Navigation = () => {
                                 <Link 
                                   to={`/${language}/${page.slug}`}
                                   className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
-                                  onMouseEnter={() => setHoveredStyleguide(null)}
+                                  onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(null)}
                                 >
                                   <FileText className="h-5 w-5" />
                                   <span>{page.title}</span>
@@ -366,57 +369,57 @@ const Navigation = () => {
               <>
             <SimpleDropdown trigger={t.nav.yourSolution}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
-                     onMouseLeave={() => setHoveredIndustry(null)}>
+                     onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Industries */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                        <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
                        
                        <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
-                          onMouseEnter={() => setHoveredIndustry("Automotive")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
                           <Car className="h-5 w-5" />
                           <span>{t.nav.automotive}</span>
                           <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                        </Link>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredIndustry("Security & Surveillance")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
                          <Shield className="h-5 w-5" />
                          <span>{t.nav.securitySurveillance}</span>
                        </div>
                        
                        <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredIndustry("Mobile Phone")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
                          <Smartphone className="h-5 w-5" />
                          <span>{t.nav.mobilePhone}</span>
                        </Link>
                        
                          <Link to={getLink("web-camera", "/your-solution/web-camera")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                          onMouseEnter={() => setHoveredIndustry("Web Camera")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
                           <Camera className="h-5 w-5" />
                           <span>{t.nav.webCamera}</span>
                         </Link>
                         
                         <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                          onMouseEnter={() => setHoveredIndustry("Machine Vision")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
                           <Cog className="h-5 w-5" />
                           <span>{t.nav.machineVision}</span>
                         </Link>
-                       
+                        
                         <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                          onMouseEnter={() => setHoveredIndustry("Medical & Endoscopy")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
                           <Stethoscope className="h-5 w-5" />
                           <span>{t.nav.medicalEndoscopy}</span>
                         </Link>
-                       
+                        
                         <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                          onMouseEnter={() => setHoveredIndustry("Scanners & Archiving")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
                           <ScanLine className="h-5 w-5" />
                           <span>{t.nav.scannersArchiving}</span>
                         </Link>
                         
                         <Link to={getLink("photography", "/your-solution/photography")} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                          onMouseEnter={() => setHoveredIndustry("Photo & Video")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Photo & Video")}>
                           <Camera className="h-5 w-5" />
                           <span>{t.nav.photoVideo}</span>
                         </Link>
@@ -488,39 +491,39 @@ const Navigation = () => {
 
             <SimpleDropdown trigger={t.nav.products}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
-                     onMouseLeave={() => setHoveredProduct(null)}>
+                     onMouseLeave={() => !isAdminDashboard && setHoveredProduct(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Product Groups */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.products}</h4>
                        
                        <Link to={`/${language}/products/charts`} className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer bg-green-100 p-2 rounded-md border-2 border-green-300"
-                          onMouseEnter={() => setHoveredProduct("Test Charts")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Test Charts")}>
                           <CustomTargetIcon className="h-5 w-5" />
                           <span>{t.nav.testCharts}</span>
                           <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                        </Link>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredProduct("Illumination Devices")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Illumination Devices")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.illuminationDevices}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredProduct("Measurement Devices")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Measurement Devices")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.measurementDevices}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredProduct("Software & APIs")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Software & APIs")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.softwareApis}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredProduct("Product Accessories")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Product Accessories")}>
                          <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.productAccessories}</span>
                        </div>
@@ -591,44 +594,44 @@ const Navigation = () => {
 
               <SimpleDropdown trigger={t.nav.testServices}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
-                     onMouseLeave={() => setHoveredTestService(null)}>
+                     onMouseLeave={() => !isAdminDashboard && setHoveredTestService(null)}>
                   <div className="flex gap-6 p-6">
                     {/* Left Column: Service Categories */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.testServices}</h4>
                       
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredTestService("Overview")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Overview")}>
                          <FlaskConical className="h-5 w-5" />
                          <span>{t.nav.overview}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredTestService("Automotive")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Automotive")}>
                          <Car className="h-5 w-5" />
                          <span>{t.nav.automotive}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredTestService("VCX")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredTestService("VCX")}>
                          <Smartphone className="h-5 w-5" />
                          <span>VCX</span>
                        </div>
                        
                         <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                          onMouseEnter={() => setHoveredTestService("Image Quality")}>
+                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Image Quality")}>
                           <Camera className="h-5 w-5" />
                           <span>{t.nav.infoHub}</span>
                         </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredTestService("Standardized")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Standardized")}>
                          <CheckCircle className="h-5 w-5" />
                          <span>{t.nav.standardized}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
-                         onMouseEnter={() => setHoveredTestService("Specialized/Custom")}>
+                         onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Specialized/Custom")}>
                          <Settings className="h-5 w-5" />
                          <span>{t.nav.specializedCustom}</span>
                        </div>
