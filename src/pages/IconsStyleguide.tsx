@@ -189,7 +189,7 @@ const IconsStyleguide = () => {
           <div className="max-w-4xl mx-auto mb-16 text-center">
             <div className="flex items-center justify-center gap-4 mb-8">
               <Link 
-                to="/styleguide" 
+                to="/en/styleguide" 
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -312,7 +312,7 @@ const IconsStyleguide = () => {
 
           {/* Navigation */}
           <div className="text-center mt-16">
-            <Link to="/styleguide">
+            <Link to="/en/styleguide">
               <Button variant="outline" size="lg">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Main Styleguide

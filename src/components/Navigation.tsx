@@ -181,7 +181,8 @@ const Navigation = () => {
       return path;
     }
     
-    return `/admin-dashboard?page=${pageSlug}`;
+    // Always go through English admin dashboard (admin UI ist englisch)
+    return `/en/admin-dashboard?page=${pageSlug}`;
   };
 
   // Prevent background scroll when mobile menu is open

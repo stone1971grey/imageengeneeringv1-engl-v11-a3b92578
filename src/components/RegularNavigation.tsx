@@ -41,7 +41,7 @@ const RegularNavigation = () => {
     <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border py-12">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <Link to="/en" className="flex items-center hover:opacity-80 transition-opacity">
             <img 
               src={logoIE} 
               alt="Image Engineering" 
@@ -51,19 +51,19 @@ const RegularNavigation = () => {
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="/#services" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/en#services" className="text-muted-foreground hover:text-foreground transition-colors">
               Leistungen
             </a>
-            <Link to="/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/en/your-solution/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
               Automotive
             </Link>
-            <Link to="/downloads" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/en/downloads" className="text-muted-foreground hover:text-foreground transition-colors">
               Downloads
             </Link>
-            <a href="/#technology" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/en#technology" className="text-muted-foreground hover:text-foreground transition-colors">
               Technologie
             </a>
-            <a href="/#about" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="/en#about" className="text-muted-foreground hover:text-foreground transition-colors">
               Über uns
             </a>
             <Button variant="default" className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
@@ -87,19 +87,19 @@ const RegularNavigation = () => {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-border">
             <div className="flex flex-col space-y-3">
-              <a href="/#services" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="/en#services" className="text-muted-foreground hover:text-foreground transition-colors">
                 Leistungen
               </a>
-              <Link to="/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/en/your-solution/automotive" className="text-muted-foreground hover:text-foreground transition-colors">
                 Automotive
               </Link>
-              <Link to="/downloads" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/en/downloads" className="text-muted-foreground hover:text-foreground transition-colors">
                 Downloads
               </Link>
-              <a href="/#technology" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="/en#technology" className="text-muted-foreground hover:text-foreground transition-colors">
                 Technologie
               </a>
-              <a href="/#about" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="/en#about" className="text-muted-foreground hover:text-foreground transition-colors">
                 Über uns
               </a>
               <Button variant="default" className="bg-gradient-primary w-fit">
