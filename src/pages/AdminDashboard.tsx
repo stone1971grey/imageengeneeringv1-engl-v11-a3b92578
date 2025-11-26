@@ -61,6 +61,7 @@ import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate }
 import NewsEditor from '@/components/admin/NewsEditor';
 import DebugEditor from '@/components/admin/DebugEditor';
 import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
+import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -3286,7 +3287,7 @@ const AdminDashboard = () => {
               </Button>
             </div>
             
-            {/* Zweite Reihe: Manage News, SEO Settings */}
+            {/* Zweite Reihe: Manage News, CMS Pages Overview, SEO Settings */}
             <div className="flex items-center gap-3">
               <Button
                 onClick={() => navigate("/admin-dashboard/news")}
@@ -3295,6 +3296,7 @@ const AdminDashboard = () => {
                 <Pencil className="h-4 w-4" />
                 Manage News
               </Button>
+              <CMSPageOverview />
               <Button
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
                 className="!bg-teal-600 !text-white hover:!bg-teal-700 border-0"
