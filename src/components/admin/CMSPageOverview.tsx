@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Search, ExternalLink, FileText, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface CMSPage {
   page_id: number;
@@ -25,6 +26,7 @@ interface CMSPage {
 }
 
 export const CMSPageOverview = () => {
+  const { language } = useLanguage();
   const [pages, setPages] = useState<CMSPage[]>([]);
   const [filteredPages, setFilteredPages] = useState<CMSPage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,8 +114,15 @@ export const CMSPageOverview = () => {
     return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Other</Badge>;
   };
 
-  const getPageUrl = (slug: string) => {
-    return `/${slug}`;
+  const getPageUrl = (pageId: number) => {
+    // Use Page ID Router for reliable routing with language prefix
+    return `/${language}/${pageId}`;
+  };
+  
+  const getEditUrl = (slug: string) => {
+    // Extract last part of slug for admin-dashboard navigation
+    const lastPart = slug.split('/').filter(Boolean).slice(-1)[0] || slug;
+    return `/${language}/admin-dashboard?page=${lastPart}`;
   };
 
   return (
@@ -221,7 +230,7 @@ export const CMSPageOverview = () => {
                     <TableCell>
                       <div className="flex items-center justify-center gap-2">
                         <Link
-                          to={`/admin-dashboard?page=${page.page_slug}`}
+                          to={getEditUrl(page.page_slug)}
                           onClick={() => setIsOpen(false)}
                         >
                           <Button
@@ -233,7 +242,7 @@ export const CMSPageOverview = () => {
                           </Button>
                         </Link>
                         <a
-                          href={getPageUrl(page.page_slug)}
+                          href={getPageUrl(page.page_id)}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
