@@ -277,6 +277,7 @@ export type Database = {
           content_type: string
           content_value: string
           id: string
+          language: string
           page_slug: string
           section_key: string
           updated_at: string | null
@@ -286,6 +287,7 @@ export type Database = {
           content_type: string
           content_value: string
           id?: string
+          language?: string
           page_slug: string
           section_key: string
           updated_at?: string | null
@@ -295,6 +297,7 @@ export type Database = {
           content_type?: string
           content_value?: string
           id?: string
+          language?: string
           page_slug?: string
           section_key?: string
           updated_at?: string | null
