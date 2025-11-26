@@ -237,6 +237,7 @@ const AdminDashboard = () => {
   const [selectedPageForCMS, setSelectedPageForCMS] = useState<string>("");
   const [isCreatingCMS, setIsCreatingCMS] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
+  const [editorLanguage, setEditorLanguage] = useState<'en' | 'de' | 'ja' | 'ko' | 'zh'>('en');
 
   // Autosave for Hero section - only saves to localStorage
   useAdminAutosave({
@@ -452,7 +453,7 @@ const AdminDashboard = () => {
         });
       });
     }
-  }, [user, selectedPage, isAdmin, isEditor]);
+  }, [user, selectedPage, isAdmin, isEditor, editorLanguage]);
 
   // Sync tabOrder with pageSegments - ensure consistency
   useEffect(() => {
@@ -1095,10 +1096,13 @@ const AdminDashboard = () => {
   const loadContent = async () => {
     const querySlug = await resolvePageSlug(selectedPage);
     
+    console.log('[AdminDashboard] Loading content for page:', querySlug, 'language:', editorLanguage);
+    
     const { data, error } = await supabase
       .from("page_content")
       .select("*")
-      .eq("page_slug", querySlug);
+      .eq("page_slug", querySlug)
+      .eq("language", editorLanguage);
 
     if (error) {
       toast.error("Error loading content");
