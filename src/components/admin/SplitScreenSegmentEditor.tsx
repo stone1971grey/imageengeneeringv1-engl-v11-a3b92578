@@ -13,7 +13,7 @@ interface SplitScreenSegmentEditorProps {
 }
 
 const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'de', name: 'German', flag: '🇩🇪' },
   { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
   { code: 'ko', name: 'Korean', flag: '🇰🇷' },
@@ -98,7 +98,7 @@ export const SplitScreenSegmentEditor = ({
             {/* Left Panel - English (Reference) */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
-                <span className="text-2xl">🇬🇧</span>
+                <span className="text-2xl">🇺🇸</span>
                 <div>
                   <p className="text-white font-semibold text-sm">English (Reference)</p>
                   <p className="text-green-200 text-xs">Master language - all translations reference this</p>
@@ -131,7 +131,7 @@ export const SplitScreenSegmentEditor = ({
           /* Single View - English Only */
           <div className="space-y-3">
             <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
-              <span className="text-2xl">🇬🇧</span>
+              <span className="text-2xl">🇺🇸</span>
               <div>
                 <p className="text-white font-semibold text-sm">English (Single View)</p>
                 <p className="text-green-200 text-xs">Editing in single-language mode</p>
