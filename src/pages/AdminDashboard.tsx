@@ -5498,7 +5498,6 @@ const AdminDashboard = () => {
                         {segment.type === 'table' && 'Table Template'}
                         {segment.type === 'faq' && 'FAQ Template'}
                         {segment.type === 'video' && 'Video Template'}
-                        {segment.type === 'full-hero' && 'Full Hero Template'}
                         {segment.type === 'specification' && 'Specification Template'}
                         {segment.type === 'news' && 'Latest News Template'}
                         {segment.type === 'intro' && 'Intro Template'}
