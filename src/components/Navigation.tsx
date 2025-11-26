@@ -294,7 +294,7 @@ const Navigation = () => {
           <div className="hidden 2xl:flex items-center gap-6">
             {isStyleguidePath ? (
               /* Styleguide-specific Navigation with Flyout */
-              <SimpleDropdown trigger="Styleguide">
+              <SimpleDropdown trigger="Styleguide" className="right-aligned">
                 <div className="flex gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => setHoveredStyleguide(null)}>
                   <div className="flex gap-6 p-6">
