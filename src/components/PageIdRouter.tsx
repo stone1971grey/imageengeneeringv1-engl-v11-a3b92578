@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 /**
- * PageIdRouter - Routes numeric page IDs to their hierarchical URLs
- * Example: /3 -> /your-solution/photography
+ * PageIdRouter - Routes numeric page IDs to their hierarchical URLs with language prefix
+ * Example: /en/3 -> /en/your-solution/photography
  * 
  * Now simplified for Universal Dynamic Page System - no component mapping needed
  */
 const PageIdRouter = () => {
-  const { pageId } = useParams<{ pageId: string }>();
+  const { pageId, lang } = useParams<{ pageId: string; lang: string }>();
+  const { language } = useLanguage();
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,44 +44,44 @@ const PageIdRouter = () => {
         console.error("[PageIdRouter] Error fetching page or page not found:", error);
         
         // Hard fallback for legacy VCX WebCam Service page (Page ID 287)
-        // This issue is very old – if lookup fails we still want the page to work.
         if (numericPageId === 287) {
-          const legacyUrl = "/your-solution/web-camera/vcx-webcam-service";
+          const legacyUrl = `/${lang || language}/your-solution/web-camera/vcx-webcam-service`;
           console.warn("[PageIdRouter] Falling back to hardcoded URL for Page ID 287:", legacyUrl);
           setRedirectUrl(legacyUrl);
         } else {
           setRedirectUrl(null);
         }
       } else {
-        // Build hierarchical URL based on parent structure
+        // Build hierarchical URL with language prefix
         let constructedUrl = '';
+        const langPrefix = `/${lang || language}`;
         
         // If page_slug already contains slashes, it's already hierarchical - use it directly
         if (data.page_slug.includes('/')) {
-          constructedUrl = `/${data.page_slug}`;
+          constructedUrl = `${langPrefix}/${data.page_slug}`;
         } else if (data.parent_slug) {
           // Legacy handling for flat slugs with parent_slug
           if (data.parent_slug === "your-solution") {
-            constructedUrl = `/your-solution/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/your-solution/${data.page_slug}`;
           } else if (data.parent_slug === "automotive") {
-            constructedUrl = `/your-solution/automotive/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/your-solution/automotive/${data.page_slug}`;
           } else if (data.parent_slug === "scanners-archiving") {
-            constructedUrl = `/your-solution/scanners-archiving/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/your-solution/scanners-archiving/${data.page_slug}`;
           } else if (data.parent_slug === "web-camera") {
-            constructedUrl = `/your-solution/web-camera/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/your-solution/web-camera/${data.page_slug}`;
           } else if (data.parent_slug === "machine-vision") {
-            constructedUrl = `/your-solution/machine-vision/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/your-solution/machine-vision/${data.page_slug}`;
           } else if (data.parent_slug === "mobile-phone") {
-            constructedUrl = `/your-solution/mobile-phone/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/your-solution/mobile-phone/${data.page_slug}`;
           } else if (data.parent_slug === "medical-endoscopy") {
-            constructedUrl = `/your-solution/medical-endoscopy/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/your-solution/medical-endoscopy/${data.page_slug}`;
           } else {
             // For products or other hierarchies
-            constructedUrl = `/${data.parent_slug}/${data.page_slug}`;
+            constructedUrl = `${langPrefix}/${data.parent_slug}/${data.page_slug}`;
           }
         } else {
           // No parent - top-level page
-          constructedUrl = `/${data.page_slug}`;
+          constructedUrl = `${langPrefix}/${data.page_slug}`;
         }
         
         console.log(`[PageIdRouter] Redirecting to: ${constructedUrl}`);
@@ -90,7 +92,7 @@ const PageIdRouter = () => {
     };
 
     fetchPageData();
-  }, [pageId]);
+  }, [pageId, lang, language]);
 
   if (loading) {
     return (

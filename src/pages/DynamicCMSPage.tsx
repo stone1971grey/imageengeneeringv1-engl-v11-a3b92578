@@ -48,12 +48,22 @@ const DynamicCMSPage = () => {
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
 
   // Extract page_slug from full URL pathname (hierarchical)
-  // Examples:
-  // /your-solution/photography -> your-solution/photography
-  // /your-solution/scanners-archiving/iso-21550 -> your-solution/scanners-archiving/iso-21550
+  // Examples with language prefix:
+  // /en/your-solution/photography -> your-solution/photography
+  // /de/your-solution/scanners-archiving/iso-21550 -> your-solution/scanners-archiving/iso-21550
   const extractPageSlug = (pathname: string): string => {
-    // Remove leading slash, keep full hierarchical path
-    return pathname.replace(/^\/+/, "");
+    // Remove leading slash, split into parts
+    const parts = pathname.replace(/^\/+/, "").split('/');
+    
+    // Check if first part is a language code
+    const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+    if (validLanguages.includes(parts[0])) {
+      // Remove language prefix and rejoin
+      return parts.slice(1).join('/');
+    }
+    
+    // No language prefix, return as is
+    return parts.join('/');
   };
 
   const pageSlug = extractPageSlug(location.pathname);
