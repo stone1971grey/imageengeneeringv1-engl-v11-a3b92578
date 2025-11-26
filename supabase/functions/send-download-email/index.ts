@@ -148,10 +148,14 @@ const handler = async (req: Request): Promise<Response> => {
         let mauticResponse;
 
         if (isExistingMauticContact && mauticContactId) {
-          // Update existing contact - only send download data and tags, preserve marketing_optin
-          console.log("Updating existing Mautic contact - preserving marketing_optin and all segments");
+          // Update existing contact - update all fields including contact data
+          console.log("Updating existing Mautic contact - updating all fields including name/company");
           
           const updateData: any = {
+            firstname: firstName,
+            lastname: lastName,
+            company: company,
+            position: position,
             download_type: downloadType,
             item_title: title,
             item_id: itemId || title,
