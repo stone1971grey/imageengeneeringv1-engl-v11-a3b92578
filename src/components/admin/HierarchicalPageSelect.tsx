@@ -489,7 +489,24 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     <div className="flex items-center gap-2 w-full">
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger className="flex-1 bg-gray-900 border-gray-700 text-white hover:bg-gray-800 hover:border-[#f9dc24] transition-all duration-200">
-          <SelectValue placeholder="Select a page to edit..." />
+          <SelectValue placeholder="Select a page to edit...">
+            {value ? (
+              (() => {
+                // Find matching page status for display
+                const matchingStatus = pageStatuses.find(s => 
+                  s.slug === value || 
+                  s.slug.endsWith(`/${value}`) ||
+                  s.slug.split('/').pop() === value
+                );
+                if (matchingStatus) {
+                  return getItemLabel(matchingStatus);
+                }
+                // Fallback: show the value itself with page ID if available
+                const pageId = pageIdMap.get(value);
+                return pageId ? `${value} [${pageId}]` : value;
+              })()
+            ) : "Select a page to edit..."}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-gray-900 border-gray-700 max-h-[600px] w-[700px] z-50 shadow-2xl">
           {/* Search Bar */}
