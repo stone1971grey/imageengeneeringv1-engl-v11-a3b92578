@@ -418,6 +418,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
 
   // Group by main category and subcategory
   const static_pages = filteredStatuses.filter(p => p.isStatic);
+  const styleGuidePages = filteredStatuses.filter(p => p.slug.startsWith('styleguide'));
   
   // Group Your Solution by subcategory
   const yourSolutionPages = filteredStatuses.filter(p => p.category === 'Your Solution');
@@ -638,6 +639,24 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
             ))}
           </SelectGroup>
         )}
+
+              {/* Styleguide */}
+              {styleGuidePages.length > 0 && (
+                <SelectGroup>
+                  <SelectLabel className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 py-2 mt-2 bg-gray-800/50">
+                    Styleguide
+                  </SelectLabel>
+                  {styleGuidePages.map((status) => (
+                    <SelectItem 
+                      key={status.slug} 
+                      value={status.slug}
+                      className={`${getItemClassName(status)} hover:bg-gray-800 px-3 py-2.5 cursor-pointer transition-colors text-sm`}
+                    >
+                      {getItemLabel(status)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              )}
 
             </>
           )}
