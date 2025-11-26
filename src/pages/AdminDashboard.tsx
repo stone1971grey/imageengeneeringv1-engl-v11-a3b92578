@@ -978,7 +978,8 @@ const AdminDashboard = () => {
         }
 
         parent_id = parentPage.page_id;
-        parent_slug_value = parentPage.page_slug;
+        // Skip 'index' as parent_slug - it's the root and should not be part of the hierarchy
+        parent_slug_value = (parentPage.page_slug !== 'index') ? parentPage.page_slug : null;
       }
 
       // Generate page title from child slug

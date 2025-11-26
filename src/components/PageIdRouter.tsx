@@ -59,8 +59,8 @@ const PageIdRouter = () => {
         // If page_slug already contains slashes, it's already hierarchical - use it directly
         if (data.page_slug.includes('/')) {
           constructedUrl = `${langPrefix}/${data.page_slug}`;
-        } else if (data.parent_slug) {
-          // Legacy handling for flat slugs with parent_slug
+        } else if (data.parent_slug && data.parent_slug !== 'index') {
+          // Legacy handling for flat slugs with parent_slug (skip 'index' as it's the root)
           if (data.parent_slug === "your-solution") {
             constructedUrl = `${langPrefix}/your-solution/${data.page_slug}`;
           } else if (data.parent_slug === "automotive") {
@@ -80,7 +80,7 @@ const PageIdRouter = () => {
             constructedUrl = `${langPrefix}/${data.parent_slug}/${data.page_slug}`;
           }
         } else {
-          // No parent - top-level page
+          // No parent or parent is 'index' - top-level page
           constructedUrl = `${langPrefix}/${data.page_slug}`;
         }
         
