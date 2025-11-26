@@ -50,8 +50,8 @@ const Navigation = () => {
   const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string; children?: Array<{ slug: string; title: string }> }>>([]);
   const [hoveredStyleguide, setHoveredStyleguide] = useState<string | null>(null);
 
-  // Check if current path is within styleguide section
-  const isStyleguidePath = location.pathname.startsWith('/styleguide');
+  // Check if current path is within styleguide section (with language prefix support)
+  const isStyleguidePath = location.pathname.includes('/styleguide');
 
   // Load styleguide pages from page_registry with hierarchy
   useEffect(() => {
@@ -317,7 +317,7 @@ const Navigation = () => {
                                 </div>
                               ) : (
                                 <Link 
-                                  to={`/${page.slug}`}
+                                  to={`/${language}/${page.slug}`}
                                   className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
                                   onMouseEnter={() => setHoveredStyleguide(null)}
                                 >
@@ -347,7 +347,7 @@ const Navigation = () => {
                           {styleguidePages.find(p => p.slug === hoveredStyleguide)?.children?.map((subpage) => (
                             <Link 
                               key={subpage.slug}
-                              to={`/${subpage.slug}`}
+                              to={`/${language}/${subpage.slug}`}
                               className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
                             >
                               <ChevronRight className="h-4 w-4" />
