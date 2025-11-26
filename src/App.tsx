@@ -84,6 +84,7 @@ const App = () => (
             <Route path="/machine-vision" element={<Navigate to="/en/your-solution/machine-vision" replace />} />
             <Route path="/mobile-phone" element={<Navigate to="/en/your-solution/mobile-phone" replace />} />
             <Route path="/in-cabin-testing" element={<Navigate to="/en/your-solution/automotive/in-cabin-testing" replace />} />
+            <Route path="/your-solution/automotive/in-cabin-testing" element={<Navigate to="/en/your-solution/automotive/in-cabin-testing" replace />} />
             <Route path="/adas" element={<Navigate to="/en/your-solution/automotive/adas" replace />} />
             <Route path="/product/le7" element={<Navigate to="/en/products/test-charts/le7" replace />} />
             <Route path="/product/arcturus" element={<Navigate to="/en/products/illumination-devices/arcturus" replace />} />
@@ -133,6 +134,8 @@ const App = () => (
             <Route path="/admin-dashboard" element={<Navigate to="/en/admin-dashboard" replace />} />
             <Route path="/full-hero-migration" element={<Navigate to="/en/full-hero-migration" replace />} />
             <Route path="/segment-debug" element={<Navigate to="/en/segment-debug" replace />} />
+            {/* New redirect for static Test Charts page without language prefix */}
+            <Route path="/products/test-charts" element={<Navigate to="/en/products/test-charts" replace />} />
             
             {/* Language-prefixed routes - all actual pages */}
             <Route path="/:lang" element={<Index />} />
@@ -157,6 +160,7 @@ const App = () => (
             <Route path="/:lang/your-solution/security-surveillance/:slug" element={<DynamicCMSPage />} />
             
             {/* Universal catch-all routes for Products */}
+            <Route path="/:lang/products/test-charts" element={<DynamicCMSPage />} />
             <Route path="/:lang/products/test-charts/:slug" element={<DynamicCMSPage />} />
             <Route path="/:lang/products/illumination-devices/:slug" element={<DynamicCMSPage />} />
             <Route path="/:lang/products/software/:slug" element={<DynamicCMSPage />} />
