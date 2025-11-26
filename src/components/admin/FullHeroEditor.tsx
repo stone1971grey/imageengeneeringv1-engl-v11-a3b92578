@@ -563,32 +563,34 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave }: FullHeroEditorPr
                     )}
                   </div>
                   {imageUrl && (
-                    <div className="space-y-4">
-                      <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded" />
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="imageAlt">Alt Text (Alternative Text)</Label>
-                        <Input
-                          id="imageAlt"
-                          value={imageAlt}
-                          onChange={(e) => setImageAlt(e.target.value)}
-                          placeholder="Describe the image for accessibility"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="imageDescription">Meta Description</Label>
-                        <Textarea
-                          id="imageDescription"
-                          value={imageDescription}
-                          onChange={(e) => setImageDescription(e.target.value)}
-                          placeholder="Detailed description for SEO purposes"
-                          rows={2}
-                        />
-                      </div>
-                    </div>
+                    <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded mt-2" />
                   )}
                 </div>
+
+                {imageUrl && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="imageAlt">Alt Text (Alternative Text)</Label>
+                      <Input
+                        id="imageAlt"
+                        value={imageAlt}
+                        onChange={(e) => setImageAlt(e.target.value)}
+                        placeholder="Describe the image for accessibility"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="imageDescription">Meta Description</Label>
+                      <Textarea
+                        id="imageDescription"
+                        value={imageDescription}
+                        onChange={(e) => setImageDescription(e.target.value)}
+                        placeholder="Detailed description for SEO purposes"
+                        rows={2}
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div className="space-y-2">
                   <Label>Ken Burns Effect</Label>
