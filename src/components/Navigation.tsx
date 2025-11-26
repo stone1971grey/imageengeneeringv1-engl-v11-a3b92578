@@ -298,7 +298,7 @@ const Navigation = () => {
           <div className="hidden 2xl:flex items-center gap-6">
             {isStyleguidePath ? (
               /* Styleguide-specific Navigation with Flyout */
-              <SimpleDropdown trigger="Styleguide" className="right-aligned">
+              <SimpleDropdown trigger="Styleguide" className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex gap-2 w-[500px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredStyleguide(null)}>
                   <div className="flex gap-6 p-6">
@@ -367,7 +367,7 @@ const Navigation = () => {
             ) : (
               /* Regular Navigation */
               <>
-            <SimpleDropdown trigger={t.nav.yourSolution}>
+            <SimpleDropdown trigger={t.nav.yourSolution} disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
                   <div className="flex gap-6 p-6">
@@ -489,7 +489,7 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger={t.nav.products}>
+            <SimpleDropdown trigger={t.nav.products} disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredProduct(null)}>
                   <div className="flex gap-6 p-6">
@@ -592,7 +592,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.testServices}>
+              <SimpleDropdown trigger={t.nav.testServices} disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredTestService(null)}>
                   <div className="flex gap-6 p-6">
@@ -703,7 +703,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.resources} className="right-aligned">
+              <SimpleDropdown trigger={t.nav.resources} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[315px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-6 p-6">
                      <div className="space-y-4 flex-1">
@@ -739,7 +739,7 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.about} className="right-aligned">
+              <SimpleDropdown trigger={t.nav.about} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-6 p-6">
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
@@ -791,7 +791,7 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger={t.nav.company} className="right-aligned">
+            <SimpleDropdown trigger={t.nav.company} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-8 p-6">
                        <div className="space-y-4 flex-1 pr-6 border-r border-border">

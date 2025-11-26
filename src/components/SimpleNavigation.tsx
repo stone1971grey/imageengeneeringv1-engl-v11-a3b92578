@@ -5,9 +5,10 @@ interface SimpleDropdownProps {
   trigger: string;
   children: React.ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
-export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDropdownProps) => {
+export const SimpleDropdown = ({ trigger, children, className = "", disabled = false }: SimpleDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const isRightAligned = className.includes('right-aligned');
@@ -15,8 +16,8 @@ export const SimpleDropdown = ({ trigger, children, className = "" }: SimpleDrop
   return (
     <div 
       className={`relative ${className}`}
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      onMouseEnter={() => !disabled && setIsOpen(true)}
+      onMouseLeave={() => !disabled && setIsOpen(false)}
     >
       <Button 
         variant="ghost"
