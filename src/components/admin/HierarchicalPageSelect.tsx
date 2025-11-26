@@ -217,6 +217,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       { slug: 'events', title: 'Events', url: '/events', isStatic: true },
       { slug: 'news', title: 'News', url: '/news', isStatic: true },
       { slug: 'contact', title: 'Contact', url: '/contact', isStatic: true },
+      { slug: 'styleguide', title: 'Styleguide', url: '/styleguide', isStatic: false },
     ];
 
     staticPages.forEach(page => {
