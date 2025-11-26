@@ -3248,26 +3248,25 @@ const AdminDashboard = () => {
                     .limit(1)
                     .maybeSingle();
 
-                  let previewUrl = '/';
+                  let previewUrl = '/en/';
                   
                   if (pageData) {
-                    // Neue, robuste Logik: nutze den gespeicherten page_slug direkt als Pfad
-                    // Beispiel: "your-solution/security-surveillance/iec-62676-5-testing" → "/your-solution/security-surveillance/iec-62676-5-testing"
-                    previewUrl = `/${pageData.page_slug}`;
+                    // Add language prefix to hierarchical page_slug
+                    previewUrl = `/en/${pageData.page_slug}`;
                   } else {
                     // Fallback für sehr alte/statische Seiten ohne page_registry Eintrag
                     const urlMap: Record<string, string> = {
-                      'index': '/',
-                      'your-solution': '/your-solution',
-                      'products': '/products',
-                      'downloads': '/downloads',
-                      'events': '/events',
-                      'news': '/news',
-                      'inside-lab': '/inside-lab',
-                      'contact': '/contact'
+                      'photography': '/en/your-solution/photography',
+                      'scanners-archiving': '/en/your-solution/scanners-archiving',
+                      'medical-endoscopy': '/en/your-solution/medical-endoscopy',
+                      'web-camera': '/en/your-solution/web-camera',
+                      'machine-vision': '/en/your-solution/machine-vision',
+                      'mobile-phone': '/en/your-solution/mobile-phone',
+                      'automotive': '/en/your-solution/automotive',
+                      'in-cabin-testing': '/en/your-solution/automotive/in-cabin-testing'
                     };
-                    // Fallback: gehe von /your-solution/{slug} aus, wenn nichts bekannt ist
-                    previewUrl = urlMap[selectedPage] || `/your-solution/${selectedPage}`;
+                    // Fallback: gehe von /en/your-solution/{slug} aus, wenn nichts bekannt ist
+                    previewUrl = urlMap[selectedPage] || `/en/your-solution/${selectedPage}`;
                   }
 
                   window.open(previewUrl, '_blank');
