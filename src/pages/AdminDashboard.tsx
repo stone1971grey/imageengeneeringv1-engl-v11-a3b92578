@@ -1469,41 +1469,46 @@ const AdminDashboard = () => {
        setHeroImageUrl(publicUrl);
        setHeroImageMetadata(metadata);
        
-       // Save URL to database
-        const { error: dbError } = await supabase
-          .from("page_content")
-          .upsert({
-            page_slug: resolvedPageSlug || selectedPage,
-            section_key: "hero_image_url",
-            content_type: "image_url",
-            content_value: publicUrl,
-            language: editorLanguage,
-            updated_at: new Date().toISOString(),
-            updated_by: user?.id
-          }, {
-            onConflict: 'page_slug,section_key,language'
-          });
+       // Auto-sync to all languages
+       const allLanguages: Array<'en' | 'de' | 'ja' | 'ko' | 'zh'> = ['en', 'de', 'ja', 'ko', 'zh'];
+       
+       for (const lang of allLanguages) {
+         // Save URL to database for each language
+         const { error: dbError } = await supabase
+           .from("page_content")
+           .upsert({
+             page_slug: resolvedPageSlug || selectedPage,
+             section_key: "hero_image_url",
+             content_type: "image_url",
+             content_value: publicUrl,
+             language: lang,
+             updated_at: new Date().toISOString(),
+             updated_by: user?.id
+           }, {
+             onConflict: 'page_slug,section_key,language'
+           });
+   
+         if (dbError) throw dbError;
+   
+         // Save metadata to database for each language
+         const { error: metadataError } = await supabase
+           .from("page_content")
+           .upsert({
+             page_slug: resolvedPageSlug || selectedPage,
+             section_key: "hero_image_metadata",
+             content_type: "json",
+             content_value: JSON.stringify(metadata),
+             language: lang,
+             updated_at: new Date().toISOString(),
+             updated_by: user?.id
+           }, {
+             onConflict: 'page_slug,section_key,language'
+           });
   
-        if (dbError) throw dbError;
-  
-        // Save metadata to database
-        const { error: metadataError } = await supabase
-          .from("page_content")
-          .upsert({
-            page_slug: resolvedPageSlug || selectedPage,
-            section_key: "hero_image_metadata",
-            content_type: "json",
-            content_value: JSON.stringify(metadata),
-            language: editorLanguage,
-            updated_at: new Date().toISOString(),
-            updated_by: user?.id
-          }, {
-            onConflict: 'page_slug,section_key,language'
-          });
+         if (metadataError) throw metadataError;
+       }
  
-       if (metadataError) throw metadataError;
- 
-       toast.success("Image uploaded successfully!");
+       toast.success("Image uploaded and synced to all languages!");
      } catch (error: any) {
        toast.error("Error uploading image: " + error.message);
      } finally {
@@ -5744,7 +5749,7 @@ const AdminDashboard = () => {
                           altText: ''
                         };
 
-                        // Update segment with image URL and metadata
+                        // Update segment with image URL and metadata in current state
                         const newSegments = [...pageSegments];
                         newSegments[index].data = {
                           ...heroData,
@@ -5753,7 +5758,48 @@ const AdminDashboard = () => {
                         };
                         setPageSegments(newSegments);
                         
-                        toast.success("Bild erfolgreich hochgeladen");
+                        // Auto-sync to all languages in database
+                        const allLanguages: Array<'en' | 'de' | 'ja' | 'ko' | 'zh'> = ['en', 'de', 'ja', 'ko', 'zh'];
+                        const segmentId = newSegments[index].segment_id;
+                        
+                        for (const lang of allLanguages) {
+                          // Load existing segments for this language
+                          const { data: existingContent } = await supabase
+                            .from("page_content")
+                            .select("content_value")
+                            .eq("page_slug", resolvedPageSlug || selectedPage)
+                            .eq("section_key", "page_segments")
+                            .eq("language", lang)
+                            .single();
+                          
+                          if (existingContent) {
+                            const existingSegments = JSON.parse(existingContent.content_value);
+                            const segmentIndex = existingSegments.findIndex((s: any) => s.segment_id === segmentId);
+                            
+                            if (segmentIndex !== -1) {
+                              // Update image URL and metadata for this segment
+                              existingSegments[segmentIndex].data = {
+                                ...existingSegments[segmentIndex].data,
+                                hero_image_url: urlData.publicUrl,
+                                hero_image_metadata: metadata
+                              };
+                              
+                              // Save back to database
+                              await supabase
+                                .from("page_content")
+                                .update({
+                                  content_value: JSON.stringify(existingSegments),
+                                  updated_at: new Date().toISOString(),
+                                  updated_by: user?.id
+                                })
+                                .eq("page_slug", resolvedPageSlug || selectedPage)
+                                .eq("section_key", "page_segments")
+                                .eq("language", lang);
+                            }
+                          }
+                        }
+                        
+                        toast.success("Image uploaded and synced to all languages!");
                       } catch (error) {
                         console.error('Image upload error:', error);
                         toast.error("Upload fehlgeschlagen");
