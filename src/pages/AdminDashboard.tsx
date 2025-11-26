@@ -53,6 +53,7 @@ import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { FullHeroEditor } from '@/components/admin/FullHeroEditor';
+import { SplitScreenSegmentEditor } from '@/components/admin/SplitScreenSegmentEditor';
 import IntroEditor from '@/components/admin/IntroEditor';
 import { IndustriesSegmentEditor } from '@/components/admin/IndustriesSegmentEditor';
 import { CopySegmentDialog } from '@/components/admin/CopySegmentDialog';
@@ -6988,11 +6989,19 @@ const AdminDashboard = () => {
                   })()}
 
                   {segment.type === 'full-hero' && (
-                    <FullHeroEditor
-                      pageSlug={resolvedPageSlug || selectedPage}
-                      segmentId={segment.id}
-                      onSave={() => loadContent()}
-                    />
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Full Hero"
+                      segmentType="full-hero"
+                    >
+                      {(language) => (
+                        <FullHeroEditor
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          onSave={() => loadContent()}
+                          language={language}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
                   )}
 
                   {segment.type === 'intro' && (
