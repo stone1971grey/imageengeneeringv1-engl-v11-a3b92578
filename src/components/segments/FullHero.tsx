@@ -218,9 +218,8 @@ const FullHero = ({
               {button2Text && (
                 <Button
                   size="lg"
-                  variant="outline"
-                  className="px-12 py-4 w-full md:w-auto bg-transparent border-white/40 text-white hover:bg-white/10"
-                  style={button2Color === 'white' ? getButtonStyle(button2Color) : undefined}
+                  className={`px-12 py-4 w-full md:w-auto ${button2Color === 'white' ? 'border border-white/40 hover:bg-black hover:text-white' : 'border-0'}`}
+                  style={getButtonStyle(button2Color)}
                   onClick={() => handleButtonClick(button2Link)}
                 >
                   {button2Text}
