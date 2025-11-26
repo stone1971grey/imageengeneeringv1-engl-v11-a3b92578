@@ -3242,34 +3242,36 @@ const AdminDashboard = () => {
                   }
 
                   // selectedPage enthält meist nur den letzten Slug-Teil (z.B. "iec-62676-5-testing"),
-                  // deshalb suchen wir in page_registry nach einem hierarchischen Slug, der damit endet.
+                  // deshalb suchen wir in page_registry nach einem passenden Eintrag.
                   const { data: pageData } = await supabase
                     .from('page_registry')
-                    .select('page_slug, parent_slug, parent_id')
+                    .select('page_id, page_slug, parent_slug, parent_id')
                     .or(`page_slug.eq.${selectedPage},page_slug.ilike.%/${selectedPage}`)
                     .order('page_id', { ascending: false })
                     .limit(1)
                     .maybeSingle();
 
-                  let previewUrl = '/en/';
+                  // Standard: nutze aktuelle Sprache als Präfix
+                  let previewUrl = `/${language}/`;
                   
-                  if (pageData) {
-                    // Add language prefix to hierarchical page_slug
-                    previewUrl = `/en/${pageData.page_slug}`;
+                  if (pageData?.page_id) {
+                    // WICHTIG: Immer über PageIdRouter gehen, damit hierarchische URLs korrekt
+                    // aufgelöst werden und keine 404 mehr entstehen.
+                    previewUrl = `/${language}/${pageData.page_id}`;
                   } else {
                     // Fallback für sehr alte/statische Seiten ohne page_registry Eintrag
                     const urlMap: Record<string, string> = {
-                      'photography': '/en/your-solution/photography',
-                      'scanners-archiving': '/en/your-solution/scanners-archiving',
-                      'medical-endoscopy': '/en/your-solution/medical-endoscopy',
-                      'web-camera': '/en/your-solution/web-camera',
-                      'machine-vision': '/en/your-solution/machine-vision',
-                      'mobile-phone': '/en/your-solution/mobile-phone',
-                      'automotive': '/en/your-solution/automotive',
-                      'in-cabin-testing': '/en/your-solution/automotive/in-cabin-testing'
+                      'photography': `/${language}/your-solution/photography`,
+                      'scanners-archiving': `/${language}/your-solution/scanners-archiving`,
+                      'medical-endoscopy': `/${language}/your-solution/medical-endoscopy`,
+                      'web-camera': `/${language}/your-solution/web-camera`,
+                      'machine-vision': `/${language}/your-solution/machine-vision`,
+                      'mobile-phone': `/${language}/your-solution/mobile-phone`,
+                      'automotive': `/${language}/your-solution/automotive`,
+                      'in-cabin-testing': `/${language}/your-solution/automotive/in-cabin-testing`,
                     };
-                    // Fallback: gehe von /en/your-solution/{slug} aus, wenn nichts bekannt ist
-                    previewUrl = urlMap[selectedPage] || `/en/your-solution/${selectedPage}`;
+                    // Fallback: gehe von /{lang}/your-solution/{slug} aus, wenn nichts bekannt ist
+                    previewUrl = urlMap[selectedPage] || `/${language}/your-solution/${selectedPage}`;
                   }
 
                   window.open(previewUrl, '_blank');
