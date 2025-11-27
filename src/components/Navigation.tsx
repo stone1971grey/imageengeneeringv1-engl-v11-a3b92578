@@ -356,10 +356,13 @@ const Navigation = () => {
                       {hoveredStyleguide && styleguidePages.find(p => p.slug === hoveredStyleguide)?.children && (
                         <div className="space-y-3">
                           {styleguidePages.find(p => p.slug === hoveredStyleguide)?.children?.map((subpage) => {
-                            // Translate subpage titles
+                            // Translate subpage titles based on slug
                             let translatedSubTitle = subpage.title;
-                            if (subpage.title === "Full Hero") translatedSubTitle = t.nav.fullHero;
-                            else if (subpage.title === "Full Hero Video") translatedSubTitle = t.nav.fullHeroVideo;
+                            if (subpage.slug.endsWith('full-hero-a')) {
+                              translatedSubTitle = `${t.nav.fullHero} A`;
+                            } else if (subpage.slug.endsWith('full-hero-video')) {
+                              translatedSubTitle = t.nav.fullHeroVideo;
+                            }
                             
                             return (
                               <Link 
