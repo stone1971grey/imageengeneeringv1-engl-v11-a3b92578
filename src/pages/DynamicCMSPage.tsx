@@ -253,56 +253,16 @@ const DynamicCMSPage = () => {
       setPageSegments(enhancedSegments);
       setTabOrder(loadedTabOrder);
 
-      // CRITICAL: Auto-sync tab_order with page_segments
-      // Ensure all segments in page_segments are also in tab_order
-      if (Array.isArray(enhancedSegments) && enhancedSegments.length > 0) {
-        const allSegmentIds = enhancedSegments.map((s) => s.id || s.segment_key);
-        const missingInTabOrder = allSegmentIds.filter((id) => !loadedTabOrder.includes(id));
-        
-        if (missingInTabOrder.length > 0) {
-          console.log(`[DynamicCMSPage] Auto-syncing tab_order: adding missing segments ${missingInTabOrder.join(', ')}`);
-          
-          // Add missing segments to tab_order
-          const updatedTabOrder = [...missingInTabOrder, ...loadedTabOrder];
-          
-          // Update tab_order in database
-          const { data: existingTabOrder } = await supabase
-            .from("page_content")
-            .select("id")
-            .eq("page_slug", pageSlug)
-            .eq("section_key", "tab_order")
-            .maybeSingle();
+      console.log('[DynamicCMSPage] Loaded content', {
+        pageSlug,
+        urlLanguage,
+        segmentsCount: enhancedSegments.length,
+        tabOrderCount: loadedTabOrder.length,
+      });
 
-          if (existingTabOrder) {
-            await supabase
-              .from("page_content")
-              .update({
-                content_value: JSON.stringify(updatedTabOrder),
-                updated_at: new Date().toISOString(),
-              })
-              .eq("page_slug", pageSlug)
-              .eq("section_key", "tab_order");
-          } else {
-            await supabase
-              .from("page_content")
-              .insert({
-                page_slug: pageSlug,
-                section_key: "tab_order",
-                content_type: "json",
-                content_value: JSON.stringify(updatedTabOrder),
-              });
-          }
-          
-          setTabOrder(updatedTabOrder);
-        }
-      }
+      // REMOVED: Auto-sync tab_order logic that was adding unwanted empty segments
+      // tab_order is now authoritative - only segments explicitly in tab_order will be rendered
     }
-
-    console.log('[DynamicCMSPage] Loaded content', {
-      pageSlug,
-      urlLanguage,
-      segmentsCount: Array.isArray(pageSegments) ? pageSegments.length : 'not-set-yet',
-    });
 
     setLoading(false);
   };
@@ -314,7 +274,17 @@ const DynamicCMSPage = () => {
     const segment = pageSegments.find((s) => s.id === segmentId || s.segment_key === segmentId);
     
     if (!segment) {
+      console.warn(`[DynamicCMSPage] Segment not found for ID: ${segmentId}`);
       return null;
+    }
+
+    // Skip segments with empty/invalid data for Full Hero
+    if (segment.type === 'full-hero') {
+      const hasValidData = segment.data?.titleLine1 || segment.data?.titleLine2 || segment.data?.imageUrl;
+      if (!hasValidData) {
+        console.warn(`[DynamicCMSPage] Skipping empty Full Hero segment: ${segmentId}`);
+        return null;
+      }
     }
 
     const segmentDbId = segmentIdMap[segment.segment_key || segment.id];
