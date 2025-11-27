@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { ImageMetadata } from "@/types/imageMetadata";
+import { navigateToLink } from "@/lib/utils";
 
 interface FullHeroProps {
   id?: string | number;
@@ -131,16 +132,7 @@ const FullHero = ({
   };
 
   const handleButtonClick = (link?: string) => {
-    if (!link) return;
-    
-    if (link.startsWith('#')) {
-      const element = document.getElementById(link.substring(1));
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      window.location.href = link;
-    }
+    navigateToLink(link);
   };
 
   return (
