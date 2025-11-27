@@ -7317,12 +7317,19 @@ const AdminDashboard = () => {
                   )}
 
                   {segment.type === 'intro' && (
-                    <IntroEditor
-                      pageSlug={resolvedPageSlug || selectedPage}
-                      segmentKey={segment.id}
-                      editorLanguage={editorLanguage}
-                      onSave={() => handleSaveSegments()}
-                    />
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Intro Section"
+                      segmentType="intro"
+                    >
+                      {(language) => (
+                        <IntroEditor
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentKey={segment.id}
+                          language={language}
+                          onSave={() => loadContent()}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
                   )}
 
                   {segment.type === 'industries' && (
