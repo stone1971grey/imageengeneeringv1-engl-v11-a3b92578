@@ -68,18 +68,14 @@ const DynamicCMSPage = () => {
 
   const pageSlug = extractPageSlug(location.pathname);
 
-  const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
-  const pathPartsForLang = location.pathname.replace(/^\/+/, "").split('/');
-  const urlLanguage = validLanguages.includes(pathPartsForLang[0]) ? pathPartsForLang[0] : 'en';
-
   useEffect(() => {
     if (pageSlug) {
-      loadContent(urlLanguage);
+      loadContent();
     }
-  }, [pageSlug, urlLanguage]);
+  }, [pageSlug, location.pathname]);
 
-  const loadContent = async (currentLanguage: string) => {
-    console.log('[DynamicCMSPage] loadContent start', { pageSlug, currentLanguage });
+  const loadContent = async () => {
+    console.log('[DynamicCMSPage] loadContent start', { pageSlug, pathname: location.pathname });
 
     if (!pageSlug) {
       console.warn('[DynamicCMSPage] No pageSlug found, marking as not found');
@@ -92,8 +88,10 @@ const DynamicCMSPage = () => {
     setPageNotFound(false);
 
     try {
-      // Use the provided language (derived from URL) instead of recalculating here
-      const urlLanguage = currentLanguage;
+      // Extract language from current URL
+      const pathParts = location.pathname.replace(/^\/+/, "").split('/');
+      const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+      const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
       // Check if page exists in page_registry
       // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
@@ -273,7 +271,7 @@ const DynamicCMSPage = () => {
       console.error('[DynamicCMSPage] Unexpected error in loadContent', e);
     } finally {
       setLoading(false);
-      console.log('[DynamicCMSPage] loadContent end', { pageSlug, currentLanguage });
+      console.log('[DynamicCMSPage] loadContent end', { pageSlug, pathname: location.pathname });
     }
   };
 
