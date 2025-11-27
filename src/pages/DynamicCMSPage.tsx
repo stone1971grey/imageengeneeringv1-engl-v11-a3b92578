@@ -231,14 +231,11 @@ const DynamicCMSPage = () => {
       setFullHeroOverrides(fullHeroOverridesLocal);
 
       // Intro-Segmente mit ggf. vorhandenen Legacy-Texten anreichern
-      console.log('[DynamicCMSPage] Intro Legacy Map:', introLegacyMap);
-      console.log('[DynamicCMSPage] Loaded Segments before enhancement:', loadedSegments);
       const enhancedSegments = Array.isArray(loadedSegments)
         ? loadedSegments.map((seg: any) => {
             if (String(seg.type || '').toLowerCase() === 'intro') {
               const key = seg.id ?? seg.segment_key;
               const legacy = key ? introLegacyMap[String(key)] : undefined;
-              console.log('[DynamicCMSPage] Processing Intro segment:', { key, legacy, segData: seg.data });
               if (legacy) {
                 return {
                   ...seg,
@@ -484,11 +481,15 @@ const DynamicCMSPage = () => {
 
 
       case "intro":
+        // Render Intro even with empty data (shows section structure)
+        const introTitle = segment.data?.title || "";
+        const introDescription = segment.data?.description || "";
+        
         return (
           <Intro
             key={segmentId}
-            title={segment.data?.title || ""}
-            description={segment.data?.description || ""}
+            title={introTitle}
+            description={introDescription}
           />
         );
 
