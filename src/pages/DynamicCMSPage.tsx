@@ -147,53 +147,86 @@ const DynamicCMSPage = () => {
       const fullHeroOverridesLocal: Record<string, any> = {};
       const introLegacyMap: Record<string, { title?: string; description?: string }> = {};
       
-      data.forEach((item: any) => {
-        if (item.section_key === "page_segments") {
-          try {
-            loadedSegments = JSON.parse(item.content_value);
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing page_segments:', e);
-          }
-        } else if (item.section_key === "tab_order") {
-          try {
-            loadedTabOrder = JSON.parse(item.content_value);
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing tab_order:', e);
-          }
-        } else if (item.section_key === "seo") {
-          try {
-            setSeoData(JSON.parse(item.content_value));
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing SEO data:', e);
-          }
-        } else if (item.section_key.startsWith('full_hero_')) {
-          try {
-            const heroData = JSON.parse(item.content_value);
-            const segmentIdFromKey = item.section_key.split('full_hero_')[1];
-            if (segmentIdFromKey) {
-              fullHeroOverridesLocal[segmentIdFromKey] = heroData;
-            }
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
-          }
-        } else {
-          // Legacy Intro: numerischer section_key + headingLevel-Feld
-          const isNumericKey = /^\d+$/.test(item.section_key);
-          if (isNumericKey) {
+      const parseContentRows = (rows: any[] | null | undefined) => {
+        let segments: any[] = [];
+        let tabs: string[] = [];
+        const localIntroLegacyMap: Record<string, { title?: string; description?: string }> = {};
+
+        (rows || []).forEach((item: any) => {
+          if (item.section_key === "page_segments") {
             try {
-              const legacy = JSON.parse(item.content_value || '{}');
-              if (legacy && typeof legacy === 'object' && 'headingLevel' in legacy) {
-                introLegacyMap[item.section_key] = {
-                  title: legacy.title,
-                  description: legacy.description,
-                };
+              segments = JSON.parse(item.content_value || "[]");
+            } catch (e) {
+              console.error('[DynamicCMSPage] Error parsing page_segments:', e);
+            }
+          } else if (item.section_key === "tab_order") {
+            try {
+              tabs = JSON.parse(item.content_value || "[]");
+            } catch (e) {
+              console.error('[DynamicCMSPage] Error parsing tab_order:', e);
+            }
+          } else if (item.section_key === "seo") {
+            try {
+              setSeoData(JSON.parse(item.content_value || '{}'));
+            } catch (e) {
+              console.error('[DynamicCMSPage] Error parsing SEO data:', e);
+            }
+          } else if (item.section_key.startsWith('full_hero_')) {
+            try {
+              const heroData = JSON.parse(item.content_value || '{}');
+              const segmentIdFromKey = item.section_key.split('full_hero_')[1];
+              if (segmentIdFromKey) {
+                fullHeroOverridesLocal[segmentIdFromKey] = heroData;
               }
             } catch (e) {
-              console.error('[DynamicCMSPage] Error parsing legacy intro content:', e);
+              console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
+            }
+          } else {
+            // Legacy Intro: numerischer section_key + headingLevel-Feld
+            const isNumericKey = /^\d+$/.test(item.section_key);
+            if (isNumericKey) {
+              try {
+                const legacy = JSON.parse(item.content_value || '{}');
+                if (legacy && typeof legacy === 'object' && 'headingLevel' in legacy) {
+                  localIntroLegacyMap[item.section_key] = {
+                    title: legacy.title,
+                    description: legacy.description,
+                  };
+                }
+              } catch (e) {
+                console.error('[DynamicCMSPage] Error parsing legacy intro content:', e);
+              }
             }
           }
+        });
+
+        return { segments, tabs, localIntroLegacyMap };
+      };
+
+      // Zuerst versuchen, die Inhalte der gewünschten Sprache zu verwenden
+      let { segments, tabs, localIntroLegacyMap } = parseContentRows(data);
+
+      // Wenn für die gewünschte Sprache keine gültigen Segmente gefunden wurden,
+      // auf Englisch zurückfallen (wichtig für Fälle mit kaputtem JSON in der Zielsprache)
+      if ((!segments || segments.length === 0) && urlLanguage !== 'en') {
+        console.warn(`[DynamicCMSPage] No valid segments for ${pageSlug} in ${urlLanguage}, falling back to English segments`);
+        const { data: fallbackRows, error: fallbackErr } = await supabase
+          .from("page_content")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("language", 'en');
+
+        if (!fallbackErr) {
+          const fallbackParsed = parseContentRows(fallbackRows || []);
+          segments = fallbackParsed.segments;
+          tabs = fallbackParsed.tabs;
+          localIntroLegacyMap = fallbackParsed.localIntroLegacyMap;
         }
-      });
+      }
+
+      loadedSegments = segments;
+      loadedTabOrder = tabs;
+      Object.assign(introLegacyMap, localIntroLegacyMap);
 
       setFullHeroOverrides(fullHeroOverridesLocal);
 
