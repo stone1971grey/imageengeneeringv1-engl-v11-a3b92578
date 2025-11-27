@@ -47,18 +47,20 @@ serve(async (req) => {
 
     const targetLangName = languageNames[targetLanguage] || targetLanguage;
 
-    // Build glossary instructions
+    // Build glossary instructions and collect rules
     let glossaryInstructions = '';
-    if (glossaryEntries && glossaryEntries.length > 0) {
-      const nonTranslatable: string[] = [];
-      const preferredTranslations: Record<string, string> = {};
-      const abbreviations: string[] = [];
-      const companySpecific: Record<string, string> = {};
+    const nonTranslatable: string[] = [];
+    const preferredTranslations: Record<string, string> = {};
+    const abbreviations: string[] = [];
+    const companySpecific: Record<string, string> = {};
 
+    if (glossaryEntries && glossaryEntries.length > 0) {
       glossaryEntries.forEach((entry: any) => {
-        const term = entry.term;
-        const type = entry.term_type;
-        const translations = entry.translations || {};
+        const term = entry.term as string;
+        const type = entry.term_type as string;
+        const translations = (entry.translations || {}) as Record<string, string>;
+
+        if (!term) return;
 
         if (type === 'non-translate') {
           nonTranslatable.push(term);
@@ -74,7 +76,7 @@ serve(async (req) => {
       const glossaryParts: string[] = [];
       
       if (nonTranslatable.length > 0) {
-        glossaryParts.push(`DO NOT TRANSLATE these terms (keep them in English): ${nonTranslatable.join(', ')}`);
+        glossaryParts.push(`DO NOT TRANSLATE these terms (keep them EXACTLY as in source, case-sensitive): ${nonTranslatable.join(', ')}`);
       }
       
       if (Object.keys(preferredTranslations).length > 0) {
@@ -100,13 +102,43 @@ serve(async (req) => {
       }
     }
 
+    // Helper for escaping regex special chars
+    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    // Replace non-translatable terms with placeholders before sending to AI
+    const placeholderPrefix = '__GLOSSARY_TERM_';
+    let placeholderIndex = 0;
+    const placeholderMap: Record<string, string> = {};
+
+    const maskText = (text: string): string => {
+      if (!text || nonTranslatable.length === 0) return text;
+
+      let result = text;
+      for (const term of nonTranslatable) {
+        if (!term) continue;
+        const placeholder = `${placeholderPrefix}${placeholderIndex++}__`;
+        const regex = new RegExp(escapeRegExp(term), 'g');
+        if (regex.test(result)) {
+          result = result.replace(regex, placeholder);
+          placeholderMap[placeholder] = term;
+        }
+      }
+      return result;
+    };
+
+    const maskedTexts: Record<string, string> = {};
+    for (const key of Object.keys(texts || {})) {
+      const value = (texts as any)[key];
+      maskedTexts[key] = typeof value === 'string' ? maskText(value) : '';
+    }
+
     // Create translation prompt
     const systemPrompt = `You are a professional translator. Translate the provided English texts to ${targetLangName}.
 Maintain the tone, style, and formatting of the original text.
 Return ONLY a JSON object with the same keys as the input, containing the translated texts.
 Do not add any explanations or additional text.${glossaryInstructions}`;
 
-    const userPrompt = `Translate these texts to ${targetLangName}:\n\n${JSON.stringify(texts, null, 2)}`;
+    const userPrompt = `Translate these texts to ${targetLangName} (placeholders like ${placeholderPrefix}*_ must be kept EXACTLY as they are):\n\n${JSON.stringify(maskedTexts, null, 2)}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -149,10 +181,9 @@ Do not add any explanations or additional text.${glossaryInstructions}`;
     
     console.log('AI response:', translatedContent);
 
-    // Parse the JSON response
-    let translatedTexts;
+    // Parse the JSON response and restore placeholders
+    let translatedTexts: Record<string, string>;
     try {
-      // Remove markdown code blocks if present
       const cleanedContent = translatedContent.replace(/```json\n?|\n?```/g, '').trim();
       translatedTexts = JSON.parse(cleanedContent);
     } catch (parseError) {
@@ -160,7 +191,20 @@ Do not add any explanations or additional text.${glossaryInstructions}`;
       throw new Error('Failed to parse translation response');
     }
 
-    return new Response(JSON.stringify({ translatedTexts }), {
+    const restoredTexts: Record<string, string> = {};
+    for (const key of Object.keys(translatedTexts || {})) {
+      let value = translatedTexts[key];
+      if (typeof value === 'string') {
+        for (const [placeholder, term] of Object.entries(placeholderMap)) {
+          if (value.includes(placeholder)) {
+            value = value.replace(new RegExp(escapeRegExp(placeholder), 'g'), term);
+          }
+        }
+      }
+      restoredTexts[key] = value;
+    }
+
+    return new Response(JSON.stringify({ translatedTexts: restoredTexts }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
