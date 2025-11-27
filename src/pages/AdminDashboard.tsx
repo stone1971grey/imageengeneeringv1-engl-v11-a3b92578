@@ -64,6 +64,7 @@ import NewsEditor from '@/components/admin/NewsEditor';
 import DebugEditor from '@/components/admin/DebugEditor';
 import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
 import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
+import { GlossaryManager } from '@/components/admin/GlossaryManager';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -221,6 +222,7 @@ const AdminDashboard = () => {
   const [footerButtonText, setFooterButtonText] = useState<string>("");
   const [segmentRegistry, setSegmentRegistry] = useState<Record<string, number>>({});
   const [isSEOEditorOpen, setIsSEOEditorOpen] = useState(false);
+  const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
   const [seoData, setSeoData] = useState<any>({
     title: '',
     metaDescription: '',
@@ -3489,7 +3491,7 @@ const AdminDashboard = () => {
               </Button>
             </div>
             
-            {/* Zweite Reihe: Manage News, CMS Pages Overview, SEO Settings */}
+            {/* Zweite Reihe: Manage News, CMS Pages Overview, SEO Settings, Glossary */}
             <div className="flex items-center gap-3">
               <Button
                 onClick={() => navigate(`/${language}/admin-dashboard/news`)}
@@ -3504,6 +3506,12 @@ const AdminDashboard = () => {
                 className="!bg-teal-600 !text-white hover:!bg-teal-700 border-0"
               >
                 SEO Settings
+              </Button>
+              <Button
+                onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
+                className="!bg-purple-600 !text-white hover:!bg-purple-700 border-0"
+              >
+                Translation Glossary
               </Button>
             </div>
           </div>
@@ -3528,6 +3536,13 @@ const AdminDashboard = () => {
               />
             </CardContent>
           </Card>
+        )}
+
+        {/* Glossary Manager - Conditional Rendering */}
+        {isGlossaryOpen && (
+          <div className="mb-8">
+            <GlossaryManager />
+          </div>
         )}
 
         {/* Welcome Screen - Show when no page is selected or page has no segments */}
