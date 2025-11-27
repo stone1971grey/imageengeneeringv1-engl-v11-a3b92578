@@ -69,10 +69,10 @@ export const CMSPageOverview = () => {
 
       if (pagesError) throw pagesError;
 
-      // Load segment counts for each page
+      // Load segments per page (unique segment_id, language-agnostic)
       const { data: segmentsData, error: segmentsError } = await supabase
         .from("segment_registry")
-        .select("page_slug")
+        .select("page_slug, segment_id")
         .eq("deleted", false);
 
       if (segmentsError) throw segmentsError;
@@ -84,14 +84,17 @@ export const CMSPageOverview = () => {
 
       if (contentError) throw contentError;
 
-      // Count segments per page_slug
-      const segmentCounts = segmentsData.reduce((acc, seg) => {
-        acc[seg.page_slug] = (acc[seg.page_slug] || 0) + 1;
+      // Count UNIQUE segments per page_slug (one Full Hero with 5 languages = 1 segment)
+      const segmentCounts = (segmentsData || []).reduce((acc, seg) => {
+        if (!acc[seg.page_slug]) {
+          acc[seg.page_slug] = new Set<number>();
+        }
+        acc[seg.page_slug].add(seg.segment_id);
         return acc;
-      }, {} as Record<string, number>);
+      }, {} as Record<string, Set<number>>);
 
       // Get unique languages per page_slug
-      const pageLanguages = contentData.reduce((acc, content) => {
+      const pageLanguages = (contentData || []).reduce((acc, content) => {
         if (!acc[content.page_slug]) {
           acc[content.page_slug] = new Set<string>();
         }
@@ -107,9 +110,11 @@ export const CMSPageOverview = () => {
         parent_slug: page.parent_slug,
         parent_id: page.parent_id,
         created_at: page.created_at || "",
-        segment_count: segmentCounts[page.page_slug] || 0,
-        segment_languages: pageLanguages[page.page_slug] 
-          ? Array.from(pageLanguages[page.page_slug]).sort() 
+        segment_count: segmentCounts[page.page_slug]
+          ? segmentCounts[page.page_slug].size
+          : 0,
+        segment_languages: pageLanguages[page.page_slug]
+          ? Array.from(pageLanguages[page.page_slug]).sort()
           : [],
       }));
 
