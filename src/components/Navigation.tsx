@@ -476,11 +476,8 @@ const Navigation = () => {
                                   <span>{application.name}</span>
                                 ) : (
                                   <Link to={application.link}>{application.name}</Link>
-                                )}
-                                {(application as any).active && (
-                                   <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
-                                )}
-                              </div>
+                                 )}
+                               </div>
                             ))}
                          </div>
                        )}
@@ -691,11 +688,8 @@ const Navigation = () => {
                                  <span>{service.name}</span>
                                ) : (
                                  <Link to={service.link}>{service.name}</Link>
-                               )}
-                               {(service as any).active && (
-                                 <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
-                               )}
-                             </div>
+                                )}
+                              </div>
                            ))}
                          </div>
                        )}
@@ -770,7 +764,6 @@ const Navigation = () => {
                       <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
                         <GraduationCap className="h-5 w-5 mr-3" />
                         <span className="text-lg font-medium">{t.nav.viewTrainingEvents}</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{t.nav.active}</span>
                       </Button>
                     </Link>
                   </div>
@@ -822,7 +815,6 @@ const Navigation = () => {
                       <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
                         <Microscope className="h-5 w-5 mr-3" />
                         <span className="text-lg font-medium">{t.nav.exploreInfoHub}</span>
-                        <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
                       </Button>
                     </Link>
                   </div>
@@ -1005,7 +997,6 @@ const Navigation = () => {
                                    <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                       <Car className="h-4 w-4" />
                                       <span>{t.nav.automotive}</span>
-                                      <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
                                     </Link>
                                  </div>
                                </AccordionTrigger>
@@ -1014,11 +1005,11 @@ const Navigation = () => {
                                    {industryData["Automotive"].subgroups.map((item, idx) => (
                                      item.link === "#" ? (
                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
-                                     ) : (
-                                       <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                         {item.name} {(item as any).active && <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">{t.nav.active}</span>}
-                                       </Link>
-                                     )
+                                      ) : (
+                                        <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                          {item.name}
+                                        </Link>
+                                      )
                                    ))}
                                  </div>
                                </AccordionContent>
@@ -1241,10 +1232,9 @@ const Navigation = () => {
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                      <Link to="/charts" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                       <CustomTargetIcon className="h-4 w-4" />
-                                       <span>{t.nav.testCharts}</span>
-                                       <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-semibold">{t.nav.active}</span>
-                                     </Link>
+                                        <CustomTargetIcon className="h-4 w-4" />
+                                        <span>{t.nav.testCharts}</span>
+                                      </Link>
                                    </div>
                                 </AccordionTrigger>
                                <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
@@ -1424,11 +1414,11 @@ const Navigation = () => {
                                </AccordionTrigger>
                               <AccordionContent className="px-4 pb-2 bg-[#f3f3f5] mx-2 rounded-lg">
                                  <div className="space-y-2">
-                                   <div className="block py-2 text-sm text-gray-600">camPAS</div>
-                                    <Link to={`/${language}/your-solution/automotive/in-cabin-testing`} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                      {t.nav.inCabinTesting} <span className="text-xs bg-green-200 text-green-800 px-1 py-0.5 rounded ml-1">{t.nav.active}</span>
-                                    </Link>
-                                   <div className="block py-2 text-sm text-gray-600">HDR Testing</div>
+                                    <div className="block py-2 text-sm text-gray-600">camPAS</div>
+                                     <Link to={`/${language}/your-solution/automotive/in-cabin-testing`} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                       {t.nav.inCabinTesting}
+                                     </Link>
+                                    <div className="block py-2 text-sm text-gray-600">HDR Testing</div>
                                    <div className="block py-2 text-sm text-gray-600">Geometric Calibration</div>
                                    <div className="block py-2 text-sm text-gray-600">Baseline Evaluations</div>
                                  </div>
@@ -1562,7 +1552,6 @@ const Navigation = () => {
                             <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium">
                               <GraduationCap className="h-4 w-4 mr-2" />
                               {t.nav.viewTrainingEvents}
-                              <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{t.nav.active}</span>
                             </Button>
                           </Link>
                         </div>
@@ -1613,7 +1602,6 @@ const Navigation = () => {
                                <Microscope className="h-4 w-4 mr-2" />
                                <span className="hidden sm:inline">{t.nav.exploreInfoHub}</span>
                                <span className="sm:hidden">Info Hub</span>
-                               <span className="ml-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded font-bold">{t.nav.active}</span>
                              </Button>
                           </Link>
                         </div>
