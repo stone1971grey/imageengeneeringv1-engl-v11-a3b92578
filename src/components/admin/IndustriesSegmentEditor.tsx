@@ -1,10 +1,16 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, GripVertical } from "lucide-react";
+import { Plus, Trash2, GripVertical, Languages, Sparkles } from "lucide-react";
 import { availableIcons, IconName, IndustryItem } from "@/components/segments/IndustriesSegment";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface IndustriesSegmentEditorProps {
   data: {
@@ -15,11 +21,59 @@ interface IndustriesSegmentEditorProps {
   };
   onChange: (data: any) => void;
   onSave?: () => void;
+  pageSlug: string;
+  segmentKey: string;
+  language: string;
 }
 
-export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSegmentEditorProps) => {
+const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+];
+
+export const IndustriesSegmentEditor = ({ 
+  data, 
+  onChange, 
+  onSave, 
+  pageSlug, 
+  segmentKey,
+  language: editorLanguage 
+}: IndustriesSegmentEditorProps) => {
+  const [targetLanguage, setTargetLanguage] = useState('de');
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(true);
+  const [targetData, setTargetData] = useState<any>(data);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
   const items = data.items || [];
   const columns = data.columns || 4;
+  const targetItems = targetData.items || [];
+
+  // Load target language data
+  const loadTargetLanguageData = async (lang: string) => {
+    const { data: content, error } = await supabase
+      .from('page_content')
+      .select('content_value')
+      .eq('page_slug', pageSlug)
+      .eq('section_key', segmentKey)
+      .eq('language', lang)
+      .maybeSingle();
+
+    if (!error && content) {
+      const parsedData = JSON.parse(content.content_value);
+      setTargetData(parsedData);
+    } else {
+      setTargetData(data);
+    }
+  };
+
+  const handleTargetLanguageChange = async (lang: string) => {
+    setTargetLanguage(lang);
+    await loadTargetLanguageData(lang);
+  };
 
   const handleAddItem = () => {
     const newItem: IndustryItem = {
@@ -42,171 +96,385 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
     onChange({ ...data, items: newItems });
   };
 
-  return (
-    <div className="space-y-6 p-4 bg-background border rounded-lg">
-      {/* Top Save Button */}
-      {onSave && (
-        <Button
-          onClick={onSave}
-          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-        >
-          Save Changes
-        </Button>
-      )}
+  const handleTargetItemChange = (index: number, field: keyof IndustryItem, value: string) => {
+    const newItems = [...targetItems];
+    newItems[index] = { ...newItems[index], [field]: value };
+    setTargetData({ ...targetData, items: newItems });
+  };
 
-      {/* Header Section */}
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="title" className="font-medium">Title (H2)</Label>
-          <Input
-            id="title"
-            value={data.title || ''}
-            onChange={(e) => onChange({ ...data, title: e.target.value })}
-            placeholder="e.g. Trusted Across All Industries"
-            className="mt-2"
-          />
-        </div>
+  const handleTranslate = async () => {
+    setIsTranslating(true);
+    try {
+      const { data: translationResult, error } = await supabase.functions.invoke('translate-content', {
+        body: {
+          text: JSON.stringify({
+            title: data.title,
+            subtitle: data.subtitle,
+            items: items.map(item => ({
+              title: item.title,
+              description: item.description
+            }))
+          }),
+          targetLanguage,
+          sourceLanguage: 'en',
+          pageSlug,
+          segmentKey,
+          contentType: 'industries'
+        }
+      });
 
-        <div>
-          <Label htmlFor="subtitle" className="font-medium">Subtitle</Label>
-          <Input
-            id="subtitle"
-            value={data.subtitle || ''}
-            onChange={(e) => onChange({ ...data, subtitle: e.target.value })}
-            placeholder="e.g. Professional solutions for diverse applications"
-            className="mt-2"
-          />
-        </div>
+      if (error) throw error;
 
-        <div>
-          <Label htmlFor="columns" className="font-medium">Number of Columns (1-4)</Label>
-          <Select
-            value={columns.toString()}
-            onValueChange={(value) => onChange({ ...data, columns: parseInt(value) })}
-          >
-            <SelectTrigger className="mt-2">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">1 Column</SelectItem>
-              <SelectItem value="2">2 Columns</SelectItem>
-              <SelectItem value="3">3 Columns</SelectItem>
-              <SelectItem value="4">4 Columns</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      const translated = JSON.parse(translationResult.translatedText);
+      const translatedItems = items.map((item, index) => ({
+        ...item,
+        title: translated.items[index]?.title || item.title,
+        description: translated.items[index]?.description || item.description
+      }));
 
-      {/* Items Section */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label className="font-medium text-lg">Industries ({items.length})</Label>
-          <Button
-            type="button"
-            onClick={handleAddItem}
-            variant="outline"
-            size="sm"
-            className="gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Add
-          </Button>
-        </div>
+      setTargetData({
+        ...targetData,
+        title: translated.title,
+        subtitle: translated.subtitle,
+        items: translatedItems,
+        columns: data.columns
+      });
 
+      toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name}`);
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error('Translation failed');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleSaveTarget = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: segmentKey,
+          language: targetLanguage,
+          content_type: 'industries',
+          content_value: JSON.stringify(targetData)
+        }, {
+          onConflict: 'page_slug,section_key,language'
+        });
+
+      if (error) throw error;
+      toast.success(`Saved ${LANGUAGES.find(l => l.code === targetLanguage)?.name} version`);
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('Save failed');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const renderEditor = (lang: string, isTarget: boolean = false) => {
+    const currentData = isTarget ? targetData : data;
+    const currentItems = isTarget ? targetItems : items;
+    const handleChange = isTarget 
+      ? (newData: any) => setTargetData(newData)
+      : onChange;
+    const handleItemUpdate = isTarget ? handleTargetItemChange : handleItemChange;
+
+    return (
+      <div className="space-y-6 p-4 bg-background border rounded-lg">
+        {/* Header Section */}
         <div className="space-y-4">
-          {items.map((item, index) => (
-            <div key={index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
-              <div className="flex items-center gap-2">
-                <GripVertical className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium text-sm">Industry {index + 1}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveItem(index)}
-                  className="ml-auto"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+          <div>
+            <Label htmlFor={`title-${lang}`} className="font-medium">Title (H2)</Label>
+            <Input
+              id={`title-${lang}`}
+              value={currentData.title || ''}
+              onChange={(e) => handleChange({ ...currentData, title: e.target.value })}
+              placeholder="e.g. Trusted Across All Industries"
+              className="mt-2"
+            />
+          </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">Icon</Label>
-                  <Select
-                    value={item.icon}
-                    onValueChange={(value) => handleItemChange(index, 'icon', value)}
-                  >
-                    <SelectTrigger className="mt-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.keys(availableIcons).map((iconName) => {
-                        const Icon = availableIcons[iconName as IconName];
-                        return (
-                          <SelectItem key={iconName} value={iconName}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="h-4 w-4" />
-                              <span>{iconName}</span>
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
+          <div>
+            <Label htmlFor={`subtitle-${lang}`} className="font-medium">Subtitle</Label>
+            <Input
+              id={`subtitle-${lang}`}
+              value={currentData.subtitle || ''}
+              onChange={(e) => handleChange({ ...currentData, subtitle: e.target.value })}
+              placeholder="e.g. Professional solutions for diverse applications"
+              className="mt-2"
+            />
+          </div>
+
+          {!isTarget && (
+            <div>
+              <Label htmlFor="columns" className="font-medium">Number of Columns (1-4)</Label>
+              <Select
+                value={columns.toString()}
+                onValueChange={(value) => onChange({ ...data, columns: parseInt(value) })}
+              >
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 Column</SelectItem>
+                  <SelectItem value="2">2 Columns</SelectItem>
+                  <SelectItem value="3">3 Columns</SelectItem>
+                  <SelectItem value="4">4 Columns</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
+
+        {/* Items Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label className="font-medium text-lg">Industries ({currentItems.length})</Label>
+            {!isTarget && (
+              <Button
+                type="button"
+                onClick={handleAddItem}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add
+              </Button>
+            )}
+          </div>
+
+          <div className="space-y-4">
+            {currentItems.map((item, index) => (
+              <div key={index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
+                <div className="flex items-center gap-2">
+                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium text-sm">Industry {index + 1}</span>
+                  {!isTarget && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveItem(index)}
+                      className="ml-auto"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {!isTarget && (
+                    <div>
+                      <Label className="text-xs">Icon</Label>
+                      <Select
+                        value={item.icon}
+                        onValueChange={(value) => handleItemUpdate(index, 'icon', value)}
+                      >
+                        <SelectTrigger className="mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.keys(availableIcons).map((iconName) => {
+                            const Icon = availableIcons[iconName as IconName];
+                            return (
+                              <SelectItem key={iconName} value={iconName}>
+                                <div className="flex items-center gap-2">
+                                  <Icon className="h-4 w-4" />
+                                  <span>{iconName}</span>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className={!isTarget ? "" : "col-span-2"}>
+                    <Label className="text-xs">Title</Label>
+                    <Input
+                      value={item.title}
+                      onChange={(e) => handleItemUpdate(index, 'title', e.target.value)}
+                      placeholder="Industry Name"
+                      className="mt-1"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <Label className="text-xs">Title</Label>
-                  <Input
-                    value={item.title}
-                    onChange={(e) => handleItemChange(index, 'title', e.target.value)}
-                    placeholder="Industry Name"
-                    className="mt-1"
+                  <Label className="text-xs">Description</Label>
+                  <Textarea
+                    value={item.description}
+                    onChange={(e) => handleItemUpdate(index, 'description', e.target.value)}
+                    placeholder="Short description..."
+                    rows={2}
+                    className="mt-1 resize-none"
                   />
                 </div>
-              </div>
 
-              <div>
-                <Label className="text-xs">Description</Label>
-                <Textarea
-                  value={item.description}
-                  onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                  placeholder="Short description..."
-                  rows={2}
-                  className="mt-1 resize-none"
-                />
+                {!isTarget && (
+                  <div>
+                    <Label className="text-xs">Link (Optional)</Label>
+                    <Input
+                      value={item.link || ''}
+                      onChange={(e) => handleItemUpdate(index, 'link', e.target.value)}
+                      placeholder="/automotive"
+                      className="mt-1"
+                    />
+                  </div>
+                )}
               </div>
+            ))}
+          </div>
 
-              <div>
-                <Label className="text-xs">Link (Optional)</Label>
-                <Input
-                  value={item.link || ''}
-                  onChange={(e) => handleItemChange(index, 'link', e.target.value)}
-                  placeholder="/automotive"
-                  className="mt-1"
-                />
-              </div>
+          {currentItems.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              No industries available. {!isTarget && "Click \"Add\" to add one."}
             </div>
-          ))}
+          )}
         </div>
 
-        {items.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            No industries available. Click "Add" to add one.
+        {/* Save Button */}
+        {isTarget ? (
+          <Button
+            onClick={handleSaveTarget}
+            disabled={isSaving}
+            className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+          >
+            {isSaving ? "Saving..." : "Save Changes"}
+          </Button>
+        ) : (
+          onSave && (
+            <Button
+              onClick={onSave}
+              className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+            >
+              Save Changes
+            </Button>
+          )
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Language Selector Card */}
+      <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Languages className="h-5 w-5 text-blue-300" />
+              <div>
+                <CardTitle className="text-white text-lg">Multi-Language Editor</CardTitle>
+                <CardDescription className="text-blue-200 text-sm mt-1">
+                  Compare and edit Industries Segment in multiple languages side-by-side
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Switch 
+                  id="split-screen-toggle"
+                  checked={isSplitScreenEnabled}
+                  onCheckedChange={setIsSplitScreenEnabled}
+                  className="data-[state=checked]:bg-blue-600"
+                />
+                <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
+                  Split-Screen Mode
+                </Label>
+              </div>
+              {isSplitScreenEnabled && (
+                <Badge variant="outline" className="bg-blue-950/50 text-blue-200 border-blue-600">
+                  Active
+                </Badge>
+              )}
+            </div>
+          </div>
+          
+          {isSplitScreenEnabled && (
+            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
+              <label className="text-white font-medium text-sm">Target Language:</label>
+              <Select value={targetLanguage} onValueChange={handleTargetLanguageChange}>
+                <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-blue-700">
+                  {LANGUAGES.filter(lang => lang.code !== 'en').map(lang => (
+                    <SelectItem 
+                      key={lang.code} 
+                      value={lang.code}
+                      className="text-white hover:bg-blue-900/50 cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-lg">{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Button
+                onClick={handleTranslate}
+                disabled={isTranslating}
+                className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                <Sparkles className="h-4 w-4 mr-2" />
+                {isTranslating ? "Translating..." : "Translate Automatically"}
+              </Button>
+            </div>
+          )}
+        </CardHeader>
+      </Card>
+
+      {/* Split Screen or Single View */}
+      <div className={isSplitScreenEnabled ? "grid grid-cols-2 gap-6" : ""}>
+        {isSplitScreenEnabled ? (
+          <>
+            {/* Left Panel - English */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+                <span className="text-2xl">🇺🇸</span>
+                <div>
+                  <div className="text-white font-semibold">English (Reference)</div>
+                  <div className="text-green-300 text-xs">Source Language</div>
+                </div>
+              </div>
+              {renderEditor('en', false)}
+            </div>
+
+            {/* Right Panel - Target Language */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-2 border-blue-600/50 rounded-lg">
+                <span className="text-2xl">{LANGUAGES.find(l => l.code === targetLanguage)?.flag}</span>
+                <div>
+                  <div className="text-white font-semibold">
+                    {LANGUAGES.find(l => l.code === targetLanguage)?.name}
+                  </div>
+                  <div className="text-blue-300 text-xs">Target Language</div>
+                </div>
+              </div>
+              {renderEditor(targetLanguage, true)}
+            </div>
+          </>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+              <span className="text-2xl">🇺🇸</span>
+              <div>
+                <div className="text-white font-semibold">English (Reference)</div>
+                <div className="text-green-300 text-xs">Source Language</div>
+              </div>
+            </div>
+            {renderEditor('en', false)}
           </div>
         )}
       </div>
-
-      {/* Save Button */}
-      {onSave && (
-        <Button
-          onClick={onSave}
-          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-        >
-          Save Changes
-        </Button>
-      )}
     </div>
   );
 };
