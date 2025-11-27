@@ -161,16 +161,18 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
           const segments = JSON.parse(segmentsRow.content_value);
           const updatedSegments = Array.isArray(segments)
             ? segments.map((seg: any) => {
-                const isIntroType = String(seg.type || '').toLowerCase() === 'intro';
-
-                // Für maximale Robustheit: immer das erste Intro-Segment updaten
-                if (isIntroType) {
+                // Match by segment ID, not just by type
+                const segId = String(seg.id || seg.segment_key || '');
+                const targetSegId = String(segmentKey);
+                
+                if (segId === targetSegId) {
                   return {
                     ...seg,
                     data: {
                       ...(seg.data || {}),
                       title,
                       description,
+                      headingLevel: 'h1'
                     },
                   };
                 }
