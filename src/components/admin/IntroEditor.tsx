@@ -12,11 +12,11 @@ import { Save, Heading1 } from "lucide-react";
 interface IntroEditorProps {
   pageSlug: string;
   segmentKey: string;
-  editorLanguage: string;
+  language: string;
   onSave?: () => void;
 }
 
-const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEditorProps) => {
+const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProps) => {
   const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -27,7 +27,7 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
   useEffect(() => {
     loadContent();
     checkIfH1Segment();
-  }, [pageSlug, segmentKey, editorLanguage]);
+  }, [pageSlug, segmentKey, language]);
 
   const checkIfH1Segment = async () => {
     const { data: segments } = await supabase
@@ -52,7 +52,7 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
         .select('content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', segmentKey)
-        .eq('language', editorLanguage)
+        .eq('language', language)
         .maybeSingle();
 
       if (!legacyError && legacyRow?.content_value) {
@@ -73,7 +73,7 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
         .select('content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', 'page_segments')
-        .eq('language', editorLanguage)
+        .eq('language', language)
         .maybeSingle();
 
       if (!segmentsError && segmentsRow?.content_value) {
@@ -128,7 +128,7 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
       console.log('[IntroEditor] Starting save with:', {
         pageSlug,
         segmentKey,
-        editorLanguage,
+        language,
         title,
         description
       });
@@ -145,7 +145,7 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
         .upsert({
           page_slug: pageSlug,
           section_key: segmentKey,
-          language: editorLanguage,
+          language: language,
           content_type: 'json',
           content_value: JSON.stringify(content),
           updated_at: new Date().toISOString(),
@@ -165,7 +165,7 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
         .select('id, content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', 'page_segments')
-        .eq('language', editorLanguage)
+        .eq('language', language)
         .maybeSingle();
 
       console.log('[IntroEditor] Loaded page_segments:', { segmentsRow, segmentsError });
