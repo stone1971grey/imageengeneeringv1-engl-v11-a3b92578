@@ -212,6 +212,94 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     }
   };
 
+  const syncToOtherLanguages = async (updatedSegments: any[], contentType?: string | null) => {
+    // Only sync when editing the master language (English)
+    if (language !== 'en') return;
+    if (!pageSlug) return;
+
+    const targetLanguages: Array<'de' | 'ja' | 'ko' | 'zh'> = ['de', 'ja', 'ko', 'zh'];
+
+    for (const targetLang of targetLanguages) {
+      try {
+        const { data: targetRow, error: targetError } = await supabase
+          .from("page_content")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .eq("language", targetLang)
+          .maybeSingle();
+
+        if (targetError) {
+          console.error(`Error loading page_segments for language ${targetLang}:`, targetError);
+          continue;
+        }
+
+        // Find the just-saved source segment in the EN array
+        const sourceSegment = updatedSegments.find((seg: any) =>
+          seg.type === "full-hero" && String(seg.id) === String(segmentId)
+        );
+
+        if (!sourceSegment) continue;
+
+        if (!targetRow) {
+          // No row yet for this language -> create full copy of segments array
+          const { error: insertError } = await supabase
+            .from("page_content")
+            .insert({
+              page_slug: pageSlug,
+              section_key: "page_segments",
+              content_type: contentType || "json",
+              content_value: JSON.stringify(updatedSegments),
+              language: targetLang,
+            });
+
+          if (insertError) {
+            console.error(`Error inserting page_segments for language ${targetLang}:`, insertError);
+          } else {
+            console.log(`✅ Created page_segments copy for ${targetLang}`);
+          }
+
+          continue;
+        }
+
+        let targetSegments: any[] = [];
+        try {
+          targetSegments = JSON.parse(targetRow.content_value || "[]");
+        } catch (e) {
+          console.error(`Error parsing page_segments for language ${targetLang}:`, e);
+          continue;
+        }
+
+        const hasSegment = targetSegments.some((seg: any) =>
+          seg.type === "full-hero" && String(seg.id) === String(segmentId)
+        );
+
+        if (hasSegment) {
+          // Respect existing translation – do not overwrite
+          continue;
+        }
+
+        const newSegments = [...targetSegments, sourceSegment];
+
+        const { error: updateError } = await supabase
+          .from("page_content")
+          .update({
+            content_value: JSON.stringify(newSegments),
+            updated_by: (await supabase.auth.getUser()).data.user?.id,
+          })
+          .eq("id", targetRow.id);
+
+        if (updateError) {
+          console.error(`Error updating page_segments for language ${targetLang}:`, updateError);
+        } else {
+          console.log(`✅ Synced Full Hero segment ${segmentId} to language ${targetLang}`);
+        }
+      } catch (e) {
+        console.error(`Unexpected error syncing language ${targetLang}:`, e);
+      }
+    }
+  };
+
   const autoSaveAfterUpload = async (uploadedImageUrl: string, metadata: Omit<ImageMetadata, 'altText'>) => {
     // Auto-save immediately after successful image upload
     const content = {
@@ -274,6 +362,8 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
         console.error("Auto-save error:", updateError);
       } else {
         console.log(`✅ Image URL auto-saved to database (${language})`);
+        // After successful EN save, sync to other languages
+        await syncToOtherLanguages(updatedSegments, pageContentData.content_type);
         onSave?.();
       }
     } catch (e) {
@@ -362,6 +452,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
         toast.error("Failed to save Full Hero");
         return;
       }
+
+      // After successful EN save, sync to other languages
+      await syncToOtherLanguages(updatedSegments, pageContentData.content_type);
 
       toast.success(`Full Hero saved successfully (${language.toUpperCase()})`);
       onSave?.();
