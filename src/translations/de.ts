@@ -39,7 +39,7 @@ export const de = {
     contact: "Kontakt",
     active: "AKTIV",
     styleguide: "Styleguide",
-    segments: "Segmente",
+    segments: "Segment",
     fullHero: "Full Hero",
     fullHeroVideo: "Full Hero Video",
     trainingEvents: "Schulung & Veranstaltungen",
