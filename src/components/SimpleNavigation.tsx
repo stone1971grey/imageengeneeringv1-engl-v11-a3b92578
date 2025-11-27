@@ -21,7 +21,7 @@ export const SimpleDropdown = ({ trigger, children, className = "", disabled = f
     >
       <Button 
         variant="ghost"
-        className="px-3 py-2 rounded-md text-lg font-medium text-black hover:bg-[hsl(var(--orange))] hover:text-black transition-colors duration-200 bg-transparent border-none h-auto"
+        className="px-3 py-2 rounded-md text-lg font-medium text-black hover:bg-[#f9dc24] transition-colors duration-200 bg-transparent border-none h-auto"
       >
         {trigger}
       </Button>
