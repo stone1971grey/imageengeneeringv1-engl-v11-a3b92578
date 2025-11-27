@@ -87,9 +87,9 @@ const App = () => (
             <Route path="/your-solution/automotive/in-cabin-testing" element={<Navigate to="/en/your-solution/automotive/in-cabin-testing" replace />} />
             <Route path="/adas" element={<Navigate to="/en/your-solution/automotive/adas" replace />} />
             <Route path="/product/le7" element={<Navigate to="/en/products/test-charts/le7" replace />} />
-            <Route path="/product/arcturus" element={<Navigate to="/en/products/illumination-devices/arcturus" replace />} />
+            <Route path="/product/arcturus" element={<Navigate to="/en/products/illumination-devices/arcturus-led" replace />} />
             <Route path="/le7" element={<Navigate to="/en/products/test-charts/le7" replace />} />
-            <Route path="/arcturus" element={<Navigate to="/en/products/illumination-devices/arcturus" replace />} />
+            <Route path="/arcturus" element={<Navigate to="/en/products/illumination-devices/arcturus-led" replace />} />
             <Route path="/iq-led" element={<Navigate to="/en/products/illumination-devices/iq-led" replace />} />
             <Route path="/te42-ll" element={<Navigate to="/en/products/test-charts/te42-ll" replace />} />
             <Route path="/te292" element={<Navigate to="/en/products/test-charts/te292" replace />} />
