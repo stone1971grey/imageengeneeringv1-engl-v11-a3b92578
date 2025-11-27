@@ -146,11 +146,13 @@ const DynamicCMSPage = () => {
       let loadedTabOrder: string[] = [];
       const fullHeroOverridesLocal: Record<string, any> = {};
       const introLegacyMap: Record<string, { title?: string; description?: string }> = {};
+      const industriesOverrideMap: Record<string, any> = {};
       
       const parseContentRows = (rows: any[] | null | undefined) => {
         let segments: any[] = [];
         let tabs: string[] = [];
         const localIntroLegacyMap: Record<string, { title?: string; description?: string }> = {};
+        const localIndustriesOverrideMap: Record<string, any> = {};
 
         (rows || []).forEach((item: any) => {
           if (item.section_key === "page_segments") {
@@ -182,29 +184,33 @@ const DynamicCMSPage = () => {
               console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
             }
           } else {
-            // Legacy Intro: numerischer section_key + headingLevel-Feld
+            // Numerische section_keys können für Intro (legacy) oder Industries-Overrides verwendet werden
             const isNumericKey = /^\d+$/.test(item.section_key);
             if (isNumericKey) {
               try {
-                const legacy = JSON.parse(item.content_value || '{}');
-                if (legacy && typeof legacy === 'object' && 'headingLevel' in legacy) {
+                const parsed = JSON.parse(item.content_value || '{}');
+                // Legacy Intro: headingLevel-Feld vorhanden
+                if (parsed && typeof parsed === 'object' && 'headingLevel' in parsed) {
                   localIntroLegacyMap[item.section_key] = {
-                    title: legacy.title,
-                    description: legacy.description,
+                    title: parsed.title,
+                    description: parsed.description,
                   };
+                } else if (item.content_type === 'industries') {
+                  // Industries-Overrides pro Sprache
+                  localIndustriesOverrideMap[item.section_key] = parsed;
                 }
               } catch (e) {
-                console.error('[DynamicCMSPage] Error parsing legacy intro content:', e);
+                console.error('[DynamicCMSPage] Error parsing numeric section content:', e);
               }
             }
           }
         });
 
-        return { segments, tabs, localIntroLegacyMap };
+        return { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap };
       };
 
       // Zuerst versuchen, die Inhalte der gewünschten Sprache zu verwenden
-      let { segments, tabs, localIntroLegacyMap } = parseContentRows(data);
+      let { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap } = parseContentRows(data);
 
       // Wenn für die gewünschte Sprache keine gültigen Segmente gefunden wurden,
       // auf Englisch zurückfallen (wichtig für Fälle mit kaputtem JSON in der Zielsprache)
@@ -221,20 +227,24 @@ const DynamicCMSPage = () => {
           segments = fallbackParsed.segments;
           tabs = fallbackParsed.tabs;
           localIntroLegacyMap = fallbackParsed.localIntroLegacyMap;
+          localIndustriesOverrideMap = fallbackParsed.localIndustriesOverrideMap;
         }
       }
 
       loadedSegments = segments;
       loadedTabOrder = tabs;
       Object.assign(introLegacyMap, localIntroLegacyMap);
+      Object.assign(industriesOverrideMap, localIndustriesOverrideMap);
 
       setFullHeroOverrides(fullHeroOverridesLocal);
 
-      // Intro-Segmente mit ggf. vorhandenen Legacy-Texten anreichern
+      // Intro- und Industries-Segmente mit ggf. vorhandenen Overrides anreichern
       const enhancedSegments = Array.isArray(loadedSegments)
         ? loadedSegments.map((seg: any) => {
-            if (String(seg.type || '').toLowerCase() === 'intro') {
-              const key = seg.id ?? seg.segment_key;
+            const type = String(seg.type || '').toLowerCase();
+            const key = seg.id ?? seg.segment_key;
+
+            if (type === 'intro') {
               const legacy = key ? introLegacyMap[String(key)] : undefined;
               if (legacy) {
                 return {
@@ -246,6 +256,20 @@ const DynamicCMSPage = () => {
                 };
               }
             }
+
+            if (type === 'industries') {
+              const override = key ? industriesOverrideMap[String(key)] : undefined;
+              if (override) {
+                return {
+                  ...seg,
+                  data: {
+                    ...(seg.data || {}),
+                    ...override,
+                  },
+                };
+              }
+            }
+
             return seg;
           })
         : loadedSegments;
