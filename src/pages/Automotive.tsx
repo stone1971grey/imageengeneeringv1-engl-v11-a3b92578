@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import AnnouncementBanner from "@/components/AnnouncementBanner";
 import Footer from "@/components/Footer";
+import { useLanguage } from "@/contexts/LanguageContext";
 import automotiveLab from "@/assets/automotive-lab.jpg";
 import automotiveHero from "@/assets/automotive-hero-clean-new.jpg";
 import HotspotImage from "@/components/HotspotImage";
@@ -30,6 +31,7 @@ import solutionsClimate from "@/assets/solutions-climate-control.png";
 
 // Automotive & ADAS landing page component
 const Automotive = () => {
+  const { language } = useLanguage();
   const [hoveredPoint, setHoveredPoint] = useState<string>("Live Processing");
 
   const hotspotMarkers = [
@@ -86,13 +88,13 @@ const Automotive = () => {
       title: "Arcturus",
       description: "A high-intensity light source with unmatched stability and consistency.",
       image: arcturusProduct,
-      link: "/products/illumination-devices/arcturus-led"
+      link: `/${language}/products/illumination-devices/arcturus-led`
     },
     {
       title: "LE7 VIS-IR",
       description: "A uniform light source for testing cameras in the near-infrared (NIR) range.",
       image: le7Image,
-      link: "/products/test-charts/le7"
+      link: `/${language}/products/test-charts/le7`
     },
     {
       title: "GEOCAL",
