@@ -227,6 +227,39 @@ export type Database = {
         }
         Relationships: []
       }
+      glossary: {
+        Row: {
+          context: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          term: string
+          term_type: string
+          translations: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          term: string
+          term_type: string
+          translations?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          context?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          term?: string
+          term_type?: string
+          translations?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       news_articles: {
         Row: {
           author: string | null
