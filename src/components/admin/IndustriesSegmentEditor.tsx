@@ -105,47 +105,81 @@ export const IndustriesSegmentEditor = ({
   const handleTranslate = async () => {
     setIsTranslating(true);
     try {
+      const textsToTranslate: Record<string, string> = {
+        title: data.title || '',
+        subtitle: data.subtitle || ''
+      };
+
+      // Add all item titles and descriptions
+      items.forEach((item, index) => {
+        textsToTranslate[`item_${index}_title`] = item.title || '';
+        textsToTranslate[`item_${index}_description`] = item.description || '';
+      });
+
+      console.log('Translating Industries Segment:', textsToTranslate);
+
       const { data: translationResult, error } = await supabase.functions.invoke('translate-content', {
         body: {
-          text: JSON.stringify({
-            title: data.title,
-            subtitle: data.subtitle,
-            items: items.map(item => ({
-              title: item.title,
-              description: item.description
-            }))
-          }),
-          targetLanguage,
-          sourceLanguage: 'en',
-          pageSlug,
-          segmentKey,
-          contentType: 'industries'
+          texts: textsToTranslate,
+          targetLanguage
         }
       });
 
       if (error) throw error;
 
-      const translated = JSON.parse(translationResult.translatedText);
-      const translatedItems = items.map((item, index) => ({
-        ...item,
-        title: translated.items[index]?.title || item.title,
-        description: translated.items[index]?.description || item.description
-      }));
+      console.log('Translation result:', translationResult);
 
-      setTargetData({
-        ...targetData,
-        title: translated.title,
-        subtitle: translated.subtitle,
-        items: translatedItems,
-        columns: data.columns
-      });
+      if (translationResult?.translatedTexts) {
+        const translated = translationResult.translatedTexts;
+        
+        // Update translated items
+        const translatedItems = items.map((item, index) => ({
+          ...item,
+          title: translated[`item_${index}_title`] || item.title,
+          description: translated[`item_${index}_description`] || item.description
+        }));
 
-      toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name}`);
+        setTargetData({
+          ...targetData,
+          title: translated.title || data.title || '',
+          subtitle: translated.subtitle || data.subtitle || '',
+          items: translatedItems,
+          columns: data.columns
+        });
+
+        toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name}`);
+      }
     } catch (error) {
       console.error('Translation error:', error);
       toast.error('Translation failed');
     } finally {
       setIsTranslating(false);
+    }
+  };
+
+  const handleSaveEnglish = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('page_content')
+        .upsert({
+          page_slug: pageSlug,
+          section_key: segmentKey,
+          language: 'en',
+          content_type: 'industries',
+          content_value: JSON.stringify(data)
+        }, {
+          onConflict: 'page_slug,section_key,language'
+        });
+
+      if (error) throw error;
+      toast.success('Saved English version');
+      if (onSave) onSave();
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('Save failed');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -339,24 +373,13 @@ export const IndustriesSegmentEditor = ({
         </div>
 
         {/* Save Button */}
-        {isTarget ? (
-          <Button
-            onClick={handleSaveTarget}
-            disabled={isSaving}
-            className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-          >
-            {isSaving ? "Saving..." : "Save Changes"}
-          </Button>
-        ) : (
-          onSave && (
-            <Button
-              onClick={onSave}
-              className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-            >
-              Save Changes
-            </Button>
-          )
-        )}
+        <Button
+          onClick={isTarget ? handleSaveTarget : handleSaveEnglish}
+          disabled={isSaving}
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+        >
+          {isSaving ? "Saving..." : "Save Changes"}
+        </Button>
       </div>
     );
   };
