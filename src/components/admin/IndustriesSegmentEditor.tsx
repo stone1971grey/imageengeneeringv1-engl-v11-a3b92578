@@ -190,14 +190,12 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
 
       {/* Save Button */}
       {onSave && (
-        <div className="flex justify-end pt-4 border-t">
-          <Button
-            onClick={onSave}
-            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-          >
-            Save
-          </Button>
-        </div>
+        <Button
+          onClick={onSave}
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+        >
+          Save Changes
+        </Button>
       )}
     </div>
   );
