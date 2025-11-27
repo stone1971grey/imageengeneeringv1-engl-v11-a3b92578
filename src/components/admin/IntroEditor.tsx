@@ -125,6 +125,14 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
     try {
       setIsSaving(true);
       
+      console.log('[IntroEditor] Starting save with:', {
+        pageSlug,
+        segmentKey,
+        editorLanguage,
+        title,
+        description
+      });
+      
       const content = {
         title,
         description,
@@ -145,7 +153,11 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
           onConflict: 'page_slug,section_key,language'
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[IntroEditor] Error saving legacy row:', error);
+        throw error;
+      }
+      console.log('[IntroEditor] Legacy row saved successfully');
 
       // Primary: sync into unified page_segments structure
       const { data: segmentsRow, error: segmentsError } = await supabase
@@ -156,17 +168,23 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
         .eq('language', editorLanguage)
         .maybeSingle();
 
+      console.log('[IntroEditor] Loaded page_segments:', { segmentsRow, segmentsError });
+
       if (!segmentsError && segmentsRow?.content_value) {
         try {
           const segments = JSON.parse(segmentsRow.content_value);
+          console.log('[IntroEditor] Current segments:', segments);
+          
           const updatedSegments = Array.isArray(segments)
             ? segments.map((seg: any) => {
                 // Match by segment ID, not just by type
                 const segId = String(seg.id || seg.segment_key || '');
                 const targetSegId = String(segmentKey);
                 
+                console.log('[IntroEditor] Checking segment:', { segId, targetSegId, match: segId === targetSegId });
+                
                 if (segId === targetSegId) {
-                  return {
+                  const updated = {
                     ...seg,
                     data: {
                       ...(seg.data || {}),
@@ -175,18 +193,28 @@ const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEdit
                       headingLevel: 'h1'
                     },
                   };
+                  console.log('[IntroEditor] Updating segment:', updated);
+                  return updated;
                 }
                 return seg;
               })
             : segments;
 
-          await supabase
+          console.log('[IntroEditor] Updated segments array:', updatedSegments);
+
+          const updateResult = await supabase
             .from('page_content')
             .update({
               content_value: JSON.stringify(updatedSegments),
               updated_at: new Date().toISOString(),
             })
             .eq('id', segmentsRow.id);
+            
+          console.log('[IntroEditor] Update result:', updateResult);
+          
+          if (updateResult.error) {
+            console.error('[IntroEditor] Error updating page_segments:', updateResult.error);
+          }
         } catch (syncError) {
           console.error('Error syncing Intro to page_segments:', syncError);
         }
