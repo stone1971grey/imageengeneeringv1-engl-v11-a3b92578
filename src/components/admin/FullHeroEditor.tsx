@@ -448,32 +448,78 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     setIsTranslating(true);
 
     try {
-      // Collect all text fields to translate
+      // STEP 1: Load complete segment data from English version
+      const { data: enData, error: enError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", "en")
+        .maybeSingle();
+
+      if (enError) throw enError;
+
+      if (!enData?.content_value) {
+        toast.error('No English version found to translate from');
+        return;
+      }
+
+      const enSegments = JSON.parse(enData.content_value);
+      const enFullHeroSegment = enSegments.find((seg: any) => 
+        seg.type === "full-hero" && String(seg.id) === String(segmentId)
+      );
+
+      if (!enFullHeroSegment?.data) {
+        toast.error('English segment data not found');
+        return;
+      }
+
+      const enContent = enFullHeroSegment.data;
+
+      // STEP 2: Collect text fields to translate
       const textsToTranslate = {
-        titleLine1,
-        titleLine2,
-        subtitle,
-        button1Text,
-        button2Text,
+        titleLine1: enContent.titleLine1 || '',
+        titleLine2: enContent.titleLine2 || '',
+        subtitle: enContent.subtitle || '',
+        button1Text: enContent.button1Text || '',
+        button2Text: enContent.button2Text || '',
       };
 
-      const { data, error } = await supabase.functions.invoke('translate-content', {
+      // STEP 3: Translate text fields
+      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
         body: {
           texts: textsToTranslate,
           targetLanguage: language,
         },
       });
 
-      if (error) throw error;
+      if (translateError) throw translateError;
 
-      if (data?.translatedTexts) {
-        setTitleLine1(data.translatedTexts.titleLine1 || titleLine1);
-        setTitleLine2(data.translatedTexts.titleLine2 || titleLine2);
-        setSubtitle(data.translatedTexts.subtitle || subtitle);
-        setButton1Text(data.translatedTexts.button1Text || button1Text);
-        setButton2Text(data.translatedTexts.button2Text || button2Text);
+      if (translateData?.translatedTexts) {
+        // STEP 4: Apply translated texts to state
+        setTitleLine1(translateData.translatedTexts.titleLine1 || enContent.titleLine1 || '');
+        setTitleLine2(translateData.translatedTexts.titleLine2 || enContent.titleLine2 || '');
+        setSubtitle(translateData.translatedTexts.subtitle || enContent.subtitle || '');
+        setButton1Text(translateData.translatedTexts.button1Text || enContent.button1Text || '');
+        setButton2Text(translateData.translatedTexts.button2Text || enContent.button2Text || '');
 
-        toast.success('Content has been automatically translated');
+        // STEP 5: Copy all non-text fields directly from English version
+        setButton1Link(enContent.button1Link || '');
+        setButton1Color(enContent.button1Color || 'yellow');
+        setButton2Link(enContent.button2Link || '');
+        setButton2Color(enContent.button2Color || 'black');
+        setBackgroundType(enContent.backgroundType || 'image');
+        setImageUrl(enContent.imageUrl || '');
+        setImageAlt(enContent.imageAlt || '');
+        setImageMetadata(enContent.imageMetadata || null);
+        setVideoUrl(enContent.videoUrl || '');
+        setImagePosition(enContent.imagePosition || 'right');
+        setLayoutRatio(enContent.layoutRatio || '1-1');
+        setTopSpacing(enContent.topSpacing || 'medium');
+        setKenBurnsEffect(enContent.kenBurnsEffect || 'standard');
+        setOverlayOpacity(enContent.overlayOpacity || 15);
+
+        toast.success('Content translated and synced with English configuration');
       }
     } catch (error) {
       console.error('Translation error:', error);
