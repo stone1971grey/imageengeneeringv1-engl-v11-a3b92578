@@ -72,7 +72,7 @@ const DynamicCMSPage = () => {
     if (pageSlug) {
       loadContent();
     }
-  }, [pageSlug]);
+  }, [pageSlug, location.pathname]);
 
   const loadContent = async () => {
     if (!pageSlug) {
