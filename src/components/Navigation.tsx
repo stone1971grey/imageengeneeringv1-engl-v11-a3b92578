@@ -315,8 +315,8 @@ const Navigation = () => {
                       <div className="space-y-3">
                         {styleguidePages.length > 0 ? (
                           styleguidePages.map((page) => {
-                            // Translate page titles
-                            const translatedTitle = page.title === "Segments" ? t.nav.segments : page.title;
+                            // Use page title directly from database/slug - no custom translations
+                            const translatedTitle = page.title;
                             
                             return (
                               <div key={page.slug}>
@@ -356,13 +356,8 @@ const Navigation = () => {
                       {hoveredStyleguide && styleguidePages.find(p => p.slug === hoveredStyleguide)?.children && (
                         <div className="space-y-3">
                           {styleguidePages.find(p => p.slug === hoveredStyleguide)?.children?.map((subpage) => {
-                            // Translate subpage titles based on slug
-                            let translatedSubTitle = subpage.title;
-                            if (subpage.slug.endsWith('full-hero-a')) {
-                              translatedSubTitle = `${t.nav.fullHero} A`;
-                            } else if (subpage.slug.endsWith('full-hero-video')) {
-                              translatedSubTitle = t.nav.fullHeroVideo;
-                            }
+                            // Use subpage title directly from database/slug - no custom translations
+                            const translatedSubTitle = subpage.title;
                             
                             return (
                               <Link 
