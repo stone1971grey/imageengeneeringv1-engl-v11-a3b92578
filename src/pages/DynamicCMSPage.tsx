@@ -79,190 +79,202 @@ const DynamicCMSPage = () => {
   }, [pageSlug, urlLanguage]);
 
   const loadContent = async (currentLanguage: string) => {
+    console.log('[DynamicCMSPage] loadContent start', { pageSlug, currentLanguage });
+
     if (!pageSlug) {
+      console.warn('[DynamicCMSPage] No pageSlug found, marking as not found');
       setPageNotFound(true);
       setLoading(false);
       return;
     }
 
-    // Use the provided language (derived from URL) instead of recalculating here
-    const urlLanguage = currentLanguage;
+    setLoading(true);
+    setPageNotFound(false);
 
-    // Check if page exists in page_registry
-    // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
-    // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
-    // generischen "Page Created Successfully" Screen statt einer 404.
-    const { data: pageExists } = await supabase
-      .from("page_registry")
-      .select("page_slug")
-      .eq("page_slug", pageSlug)
-      .maybeSingle();
+    try {
+      // Use the provided language (derived from URL) instead of recalculating here
+      const urlLanguage = currentLanguage;
 
-    if (!pageExists) {
-      console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
-      setLoading(false);
-      return;
-    }
+      // Check if page exists in page_registry
+      // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
+      // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
+      // generischen "Page Created Successfully" Screen statt einer 404.
+      const { data: pageExists } = await supabase
+        .from("page_registry")
+        .select("page_slug")
+        .eq("page_slug", pageSlug)
+        .maybeSingle();
 
-    // Try to load content in requested language first
-    let { data, error } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", pageSlug)
-      .eq("language", urlLanguage);
+      if (!pageExists) {
+        console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
+        setPageSegments([]);
+        setTabOrder([]);
+        return;
+      }
 
-    // Fallback to English if no content found in requested language
-    if (!data || data.length === 0) {
-      console.log(`[DynamicCMSPage] No content found for ${pageSlug} in ${urlLanguage}, falling back to English`);
-      const fallback = await supabase
+      // Try to load content in requested language first
+      let { data, error } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", pageSlug)
-        .eq("language", 'en');
-      
-      data = fallback.data;
-      error = fallback.error;
-    }
+        .eq("language", urlLanguage);
 
-    const { data: segmentData } = await supabase
-      .from("segment_registry")
-      .select("*")
-      .eq("page_slug", pageSlug)
-      .eq("deleted", false);
+      // Fallback to English if no content found in requested language
+      if (!data || data.length === 0) {
+        console.log(`[DynamicCMSPage] No content found for ${pageSlug} in ${urlLanguage}, falling back to English`);
+        const fallback = await supabase
+          .from("page_content")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("language", 'en');
+        
+        data = fallback.data;
+        error = fallback.error;
+      }
 
-    if (segmentData) {
-      const idMap: Record<string, number> = {};
-      segmentData.forEach((seg: any) => {
-        idMap[seg.segment_key] = seg.segment_id;
-      });
-      setSegmentIdMap(idMap);
-    }
+      const { data: segmentData } = await supabase
+        .from("segment_registry")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("deleted", false);
 
-    if (!error && data) {
-      let loadedSegments: any[] = [];
-      let loadedTabOrder: string[] = [];
-      const fullHeroOverridesLocal: Record<string, any> = {};
-      const introLegacyMap: Record<string, { title?: string; description?: string }> = {};
-      
-      data.forEach((item: any) => {
-        if (item.section_key === "page_segments") {
-          try {
-            loadedSegments = JSON.parse(item.content_value);
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing page_segments:', e);
-          }
-        } else if (item.section_key === "tab_order") {
-          try {
-            loadedTabOrder = JSON.parse(item.content_value);
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing tab_order:', e);
-          }
-        } else if (item.section_key === "seo") {
-          try {
-            setSeoData(JSON.parse(item.content_value));
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing SEO data:', e);
-          }
-        } else if (item.section_key.startsWith('full_hero_')) {
-          try {
-            const heroData = JSON.parse(item.content_value);
-            const segmentIdFromKey = item.section_key.split('full_hero_')[1];
-            if (segmentIdFromKey) {
-              fullHeroOverridesLocal[segmentIdFromKey] = heroData;
-            }
-          } catch (e) {
-            console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
-          }
-        } else {
-          // Legacy Intro: numerischer section_key + headingLevel-Feld
-          const isNumericKey = /^\d+$/.test(item.section_key);
-          if (isNumericKey) {
+      if (segmentData) {
+        const idMap: Record<string, number> = {};
+        segmentData.forEach((seg: any) => {
+          idMap[seg.segment_key] = seg.segment_id;
+        });
+        setSegmentIdMap(idMap);
+      }
+
+      if (!error && data) {
+        let loadedSegments: any[] = [];
+        let loadedTabOrder: string[] = [];
+        const fullHeroOverridesLocal: Record<string, any> = {};
+        const introLegacyMap: Record<string, { title?: string; description?: string }> = {};
+        
+        data.forEach((item: any) => {
+          if (item.section_key === "page_segments") {
             try {
-              const legacy = JSON.parse(item.content_value || '{}');
-              if (legacy && typeof legacy === 'object' && 'headingLevel' in legacy) {
-                introLegacyMap[item.section_key] = {
-                  title: legacy.title,
-                  description: legacy.description,
-                };
+              loadedSegments = JSON.parse(item.content_value);
+            } catch (e) {
+              console.error('[DynamicCMSPage] Error parsing page_segments:', e);
+            }
+          } else if (item.section_key === "tab_order") {
+            try {
+              loadedTabOrder = JSON.parse(item.content_value);
+            } catch (e) {
+              console.error('[DynamicCMSPage] Error parsing tab_order:', e);
+            }
+          } else if (item.section_key === "seo") {
+            try {
+              setSeoData(JSON.parse(item.content_value));
+            } catch (e) {
+              console.error('[DynamicCMSPage] Error parsing SEO data:', e);
+            }
+          } else if (item.section_key.startsWith('full_hero_')) {
+            try {
+              const heroData = JSON.parse(item.content_value);
+              const segmentIdFromKey = item.section_key.split('full_hero_')[1];
+              if (segmentIdFromKey) {
+                fullHeroOverridesLocal[segmentIdFromKey] = heroData;
               }
             } catch (e) {
-              console.error('[DynamicCMSPage] Error parsing legacy intro content:', e);
+              console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
             }
-          }
-        }
-      });
-
-      setFullHeroOverrides(fullHeroOverridesLocal);
-
-      // Intro-Segmente mit ggf. vorhandenen Legacy-Texten anreichern
-      const enhancedSegments = Array.isArray(loadedSegments)
-        ? loadedSegments.map((seg: any) => {
-            if (String(seg.type || '').toLowerCase() === 'intro') {
-              const key = seg.id ?? seg.segment_key;
-              const legacy = key ? introLegacyMap[String(key)] : undefined;
-              if (legacy) {
-                return {
-                  ...seg,
-                  data: {
-                    ...(seg.data || {}),
-                    ...legacy,
-                  },
-                };
+          } else {
+            // Legacy Intro: numerischer section_key + headingLevel-Feld
+            const isNumericKey = /^\d+$/.test(item.section_key);
+            if (isNumericKey) {
+              try {
+                const legacy = JSON.parse(item.content_value || '{}');
+                if (legacy && typeof legacy === 'object' && 'headingLevel' in legacy) {
+                  introLegacyMap[item.section_key] = {
+                    title: legacy.title,
+                    description: legacy.description,
+                  };
+                }
+              } catch (e) {
+                console.error('[DynamicCMSPage] Error parsing legacy intro content:', e);
               }
             }
-            return seg;
-          })
-        : loadedSegments;
-
-      setPageSegments(enhancedSegments);
-      setTabOrder(loadedTabOrder);
-
-      // CRITICAL: Auto-sync tab_order with page_segments
-      // Ensure all segments in page_segments are also in tab_order
-      if (Array.isArray(enhancedSegments) && enhancedSegments.length > 0) {
-        const allSegmentIds = enhancedSegments.map((s) => s.id || s.segment_key);
-        const missingInTabOrder = allSegmentIds.filter((id) => !loadedTabOrder.includes(id));
-        
-        if (missingInTabOrder.length > 0) {
-          console.log(`[DynamicCMSPage] Auto-syncing tab_order: adding missing segments ${missingInTabOrder.join(', ')}`);
-          
-          // Add missing segments to tab_order
-          const updatedTabOrder = [...missingInTabOrder, ...loadedTabOrder];
-          
-          // Update tab_order in database
-          const { data: existingTabOrder } = await supabase
-            .from("page_content")
-            .select("id")
-            .eq("page_slug", pageSlug)
-            .eq("section_key", "tab_order")
-            .maybeSingle();
-
-          if (existingTabOrder) {
-            await supabase
-              .from("page_content")
-              .update({
-                content_value: JSON.stringify(updatedTabOrder),
-                updated_at: new Date().toISOString(),
-              })
-              .eq("page_slug", pageSlug)
-              .eq("section_key", "tab_order");
-          } else {
-            await supabase
-              .from("page_content")
-              .insert({
-                page_slug: pageSlug,
-                section_key: "tab_order",
-                content_type: "json",
-                content_value: JSON.stringify(updatedTabOrder),
-              });
           }
+        });
+
+        setFullHeroOverrides(fullHeroOverridesLocal);
+
+        // Intro-Segmente mit ggf. vorhandenen Legacy-Texten anreichern
+        const enhancedSegments = Array.isArray(loadedSegments)
+          ? loadedSegments.map((seg: any) => {
+              if (String(seg.type || '').toLowerCase() === 'intro') {
+                const key = seg.id ?? seg.segment_key;
+                const legacy = key ? introLegacyMap[String(key)] : undefined;
+                if (legacy) {
+                  return {
+                    ...seg,
+                    data: {
+                      ...(seg.data || {}),
+                      ...legacy,
+                    },
+                  };
+                }
+              }
+              return seg;
+            })
+          : loadedSegments;
+
+        setPageSegments(enhancedSegments);
+        setTabOrder(loadedTabOrder);
+
+        // CRITICAL: Auto-sync tab_order with page_segments
+        // Ensure all segments in page_segments are also in tab_order
+        if (Array.isArray(enhancedSegments) && enhancedSegments.length > 0) {
+          const allSegmentIds = enhancedSegments.map((s) => s.id || s.segment_key);
+          const missingInTabOrder = allSegmentIds.filter((id) => !loadedTabOrder.includes(id));
           
-          setTabOrder(updatedTabOrder);
+          if (missingInTabOrder.length > 0) {
+            console.log(`[DynamicCMSPage] Auto-syncing tab_order: adding missing segments ${missingInTabOrder.join(', ')}`);
+            
+            // Add missing segments to tab_order
+            const updatedTabOrder = [...missingInTabOrder, ...loadedTabOrder];
+            
+            // Update tab_order in database
+            const { data: existingTabOrder } = await supabase
+              .from("page_content")
+              .select("id")
+              .eq("page_slug", pageSlug)
+              .eq("section_key", "tab_order")
+              .maybeSingle();
+
+            if (existingTabOrder) {
+              await supabase
+                .from("page_content")
+                .update({
+                  content_value: JSON.stringify(updatedTabOrder),
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("page_slug", pageSlug)
+                .eq("section_key", "tab_order");
+            } else {
+              await supabase
+                .from("page_content")
+                .insert({
+                  page_slug: pageSlug,
+                  section_key: "tab_order",
+                  content_type: "json",
+                  content_value: JSON.stringify(updatedTabOrder),
+                });
+            }
+            
+            setTabOrder(updatedTabOrder);
+          }
         }
       }
+    } catch (e) {
+      console.error('[DynamicCMSPage] Unexpected error in loadContent', e);
+    } finally {
+      setLoading(false);
+      console.log('[DynamicCMSPage] loadContent end', { pageSlug, currentLanguage });
     }
-
-    setLoading(false);
   };
 
   // Check if page has Meta Navigation segment
