@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Heading1, Languages } from "lucide-react";
+import { Heading1, Languages } from "lucide-react";
 import { toast } from "sonner";
 
 interface IntroEditorProps {
@@ -342,7 +342,6 @@ const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProp
         disabled={isSaving}
         className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
       >
-        <Save className="h-4 w-4 mr-2" />
         {isSaving ? "Saving..." : "Save Changes"}
       </Button>
 
