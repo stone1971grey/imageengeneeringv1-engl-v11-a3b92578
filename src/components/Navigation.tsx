@@ -182,13 +182,23 @@ const Navigation = () => {
   const getLink = (pageSlugOrPath: string, defaultPath?: string) => {
     const path = defaultPath || pageSlugOrPath;
     
-    if (!isAdminOrEditor) return path;
+    if (!isAdminOrEditor) {
+      // For regular users, add language prefix if not already present
+      if (!path.startsWith(`/${language}/`) && !path.startsWith('#')) {
+        return `/${language}${path}`;
+      }
+      return path;
+    }
     
     // Try to find page_slug from URL mapping
     const pageSlug = urlToPageSlug[path] || pageSlugOrPath;
     
     // For editors, check if they have access to this page
     if (allowedPages.length > 0 && !allowedPages.includes(pageSlug)) {
+      // Return with language prefix for non-accessible pages
+      if (!path.startsWith(`/${language}/`) && !path.startsWith('#')) {
+        return `/${language}${path}`;
+      }
       return path;
     }
     
@@ -472,10 +482,10 @@ const Navigation = () => {
                              {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
                               <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:bg-[#f9dc24] p-2 rounded-md">
                                 <ChevronRight className="h-4 w-4" />
-                                {application.link === "#" ? (
-                                  <span>{application.name}</span>
-                                ) : (
-                                  <Link to={application.link}>{application.name}</Link>
+                                 {application.link === "#" ? (
+                                   <span>{application.name}</span>
+                                 ) : (
+                                   <Link to={getLink(application.link)}>{application.name}</Link>
                                  )}
                                </div>
                             ))}
@@ -684,10 +694,10 @@ const Navigation = () => {
                                (service as any).active ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                              }`}>
                                <ChevronRight className="h-4 w-4" />
-                               {service.link === "#" ? (
-                                 <span>{service.name}</span>
-                               ) : (
-                                 <Link to={service.link}>{service.name}</Link>
+                                {service.link === "#" ? (
+                                  <span>{service.name}</span>
+                                ) : (
+                                  <Link to={getLink(service.link)}>{service.name}</Link>
                                 )}
                               </div>
                            ))}
@@ -1005,9 +1015,9 @@ const Navigation = () => {
                                    {industryData["Automotive"].subgroups.map((item, idx) => (
                                      item.link === "#" ? (
                                        <div key={idx} className="block py-2 text-sm text-gray-600">{item.name}</div>
-                                      ) : (
-                                        <Link key={idx} to={item.link} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
-                                          {item.name}
+                                       ) : (
+                                         <Link key={idx} to={getLink(item.link)} className="block py-2 text-sm text-gray-600 hover:text-gray-800" onClick={() => setIsOpen(false)}>
+                                           {item.name}
                                         </Link>
                                       )
                                    ))}
