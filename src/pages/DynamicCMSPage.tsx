@@ -437,38 +437,35 @@ const DynamicCMSPage = () => {
         );
 
       case "full-hero": {
-        const segmentKey = segment.segment_key || segment.id;
-        const overrideKey = segmentDbId?.toString() || String(segmentKey || "");
-        const override = fullHeroOverrides[overrideKey] || fullHeroOverrides[String(segmentKey || "")] || {};
-        const heroData = {
-          ...(segment.data || {}),
-        };
-
-        // Fallback: wenn kein imageUrl im gemeinsamen Segment steht, nutze alten Full-Hero-Eintrag
-        const finalHeroData = (!heroData.imageUrl && override.imageUrl)
-          ? { ...heroData, ...override }
-          : heroData;
+        // Full Hero data comes from page_segments which is already language-specific
+        // No need for overrides anymore, use segment.data directly
+        const heroData = segment.data || {};
 
         return (
           <FullHero
             key={segmentId}
             id={segmentDbId?.toString()}
             hasMetaNavigation={hasMetaNavigation}
-            titleLine1={finalHeroData.titleLine1 || ""}
-            titleLine2={finalHeroData.titleLine2 || ""}
-            subtitle={finalHeroData.subtitle || ""}
-            button1Text={finalHeroData.button1Text}
-            button1Link={finalHeroData.button1Link}
-            button1Color={finalHeroData.button1Color || "yellow"}
-            button2Text={finalHeroData.button2Text}
-            button2Link={finalHeroData.button2Link}
-            button2Color={finalHeroData.button2Color || "black"}
-            backgroundType={finalHeroData.backgroundType || "image"}
-            imageUrl={finalHeroData.imageUrl}
-            videoUrl={finalHeroData.videoUrl}
-            kenBurnsEffect={finalHeroData.kenBurnsEffect || "standard"}
-            overlayOpacity={finalHeroData.overlayOpacity || 15}
-            useH1={finalHeroData.useH1 || false}
+            titleLine1={heroData.titleLine1 || ""}
+            titleLine2={heroData.titleLine2 || ""}
+            subtitle={heroData.subtitle || ""}
+            button1Text={heroData.button1Text}
+            button1Link={heroData.button1Link}
+            button1Color={heroData.button1Color || "yellow"}
+            button2Text={heroData.button2Text}
+            button2Link={heroData.button2Link}
+            button2Color={heroData.button2Color || "black"}
+            backgroundType={heroData.backgroundType || "image"}
+            imageUrl={heroData.imageUrl}
+            imageAlt={heroData.imageMetadata?.altText || heroData.titleLine1}
+            imageMetadata={heroData.imageMetadata}
+            videoUrl={heroData.videoUrl}
+            imagePosition={heroData.imagePosition}
+            layoutRatio={heroData.layoutRatio}
+            topSpacing={heroData.topSpacing}
+            kenBurnsEffect={heroData.kenBurnsEffect || "standard"}
+            overlayOpacity={heroData.overlayOpacity ?? 15}
+            useH1={heroData.useH1 ?? false}
           />
         );
       }
