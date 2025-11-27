@@ -67,12 +67,17 @@ const DynamicCMSPage = () => {
   };
 
   const pageSlug = extractPageSlug(location.pathname);
+  
+  // Extract language from URL for dependency tracking
+  const pathParts = location.pathname.replace(/^\/+/, "").split('/');
+  const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+  const currentUrlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
   useEffect(() => {
     if (pageSlug) {
       loadContent();
     }
-  }, [pageSlug]);
+  }, [pageSlug, currentUrlLanguage]);
 
   const loadContent = async () => {
     if (!pageSlug) {
