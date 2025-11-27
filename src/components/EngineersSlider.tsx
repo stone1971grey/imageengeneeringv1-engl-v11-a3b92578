@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { navigateToLink } from "@/lib/utils";
 import lauraImage from "@/assets/team-laura.jpg";
 import markusImage from "@/assets/team-markus.jpg";
 import aishaImage from "@/assets/team-aisha.jpg";
@@ -145,7 +146,7 @@ const EngineersSlider = () => {
               <Button 
                 size="lg" 
                 className="text-lg px-8 py-3"
-                onClick={() => window.location.href = currentEngineer.ctaLink}
+                onClick={() => navigateToLink(currentEngineer.ctaLink)}
               >
                 Book a consultation
               </Button>

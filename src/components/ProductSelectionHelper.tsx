@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { navigateToLink } from "@/lib/utils";
 import { 
   ArrowRight, 
   ArrowLeft, 
@@ -243,7 +244,7 @@ const ProductSelectionHelper = () => {
                       
                       <Button 
                         className="w-full text-lg font-medium"
-                        onClick={() => window.location.href = product.link}
+                        onClick={() => navigateToLink(product.link)}
                       >
                         More Details
                         <ArrowRight className="w-4 h-4 ml-2" />
