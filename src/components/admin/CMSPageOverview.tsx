@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, FileText, Layers } from "lucide-react";
+import { Search, ExternalLink, FileText, Layers, Edit } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EditSlugDialog } from "./EditSlugDialog";
@@ -24,6 +24,7 @@ interface CMSPage {
   parent_id: number | null;
   created_at: string;
   segment_count: number;
+  segment_languages: string[];
 }
 
 export const CMSPageOverview = () => {
@@ -76,11 +77,27 @@ export const CMSPageOverview = () => {
 
       if (segmentsError) throw segmentsError;
 
+      // Load languages per page from page_content
+      const { data: contentData, error: contentError } = await supabase
+        .from("page_content")
+        .select("page_slug, language");
+
+      if (contentError) throw contentError;
+
       // Count segments per page_slug
       const segmentCounts = segmentsData.reduce((acc, seg) => {
         acc[seg.page_slug] = (acc[seg.page_slug] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
+
+      // Get unique languages per page_slug
+      const pageLanguages = contentData.reduce((acc, content) => {
+        if (!acc[content.page_slug]) {
+          acc[content.page_slug] = new Set<string>();
+        }
+        acc[content.page_slug].add(content.language);
+        return acc;
+      }, {} as Record<string, Set<string>>);
 
       // Merge data
       const enrichedPages: CMSPage[] = (pagesData || []).map((page) => ({
@@ -91,6 +108,9 @@ export const CMSPageOverview = () => {
         parent_id: page.parent_id,
         created_at: page.created_at || "",
         segment_count: segmentCounts[page.page_slug] || 0,
+        segment_languages: pageLanguages[page.page_slug] 
+          ? Array.from(pageLanguages[page.page_slug]).sort() 
+          : [],
       }));
 
       setPages(enrichedPages);
@@ -113,6 +133,17 @@ export const CMSPageOverview = () => {
       return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Products</Badge>;
     }
     return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Other</Badge>;
+  };
+
+  const getLanguageLabel = (langCode: string) => {
+    const labels: Record<string, string> = {
+      en: "EN",
+      de: "DE",
+      ja: "JA",
+      ko: "KO",
+      zh: "ZH"
+    };
+    return labels[langCode] || langCode.toUpperCase();
   };
 
   const getPageUrl = (pageId: number) => {
@@ -210,23 +241,46 @@ export const CMSPageOverview = () => {
                     </TableCell>
                     <TableCell className="text-white font-medium">{page.page_title}</TableCell>
                     <TableCell className="font-mono text-sm text-gray-400">
-                      {page.page_slug}
+                      <div className="flex items-center gap-2">
+                        <span>{page.page_slug}</span>
+                        <EditSlugDialog
+                          pageId={page.page_id}
+                          currentSlug={page.page_slug}
+                          pageTitle={page.page_title}
+                          onSlugUpdated={loadPages}
+                        />
+                      </div>
                     </TableCell>
                     <TableCell>{getCategoryBadge(page.page_slug)}</TableCell>
                     <TableCell className="text-gray-400 text-sm">
                       {page.parent_slug || <span className="text-gray-600 italic">none</span>}
                     </TableCell>
                     <TableCell className="text-center">
-                      <Badge
-                        variant={page.segment_count > 0 ? "default" : "outline"}
-                        className={
-                          page.segment_count > 0
-                            ? "bg-green-600 text-white"
-                            : "bg-gray-700 text-gray-400"
-                        }
-                      >
-                        {page.segment_count}
-                      </Badge>
+                      <div className="flex flex-col items-center gap-2">
+                        <Badge
+                          variant={page.segment_count > 0 ? "default" : "outline"}
+                          className={
+                            page.segment_count > 0
+                              ? "bg-green-600 text-white"
+                              : "bg-gray-700 text-gray-400"
+                          }
+                        >
+                          {page.segment_count} Segments
+                        </Badge>
+                        {page.segment_languages.length > 0 && (
+                          <div className="flex gap-1 flex-wrap justify-center">
+                            {page.segment_languages.map((lang) => (
+                              <Badge
+                                key={lang}
+                                variant="outline"
+                                className="text-xs bg-blue-900/30 border-blue-600 text-blue-200"
+                              >
+                                {getLanguageLabel(lang)}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2">
@@ -237,17 +291,12 @@ export const CMSPageOverview = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="bg-gray-700 border-gray-600 text-white hover:bg-[#f9dc24] hover:text-black hover:border-[#f9dc24]"
+                            className="bg-gray-700 border-gray-600 text-white hover:bg-[#f9dc24] hover:text-black hover:border-[#f9dc24] flex items-center gap-1"
                           >
-                            Edit
+                            <Edit className="h-3 w-3" />
+                            Edit Page
                           </Button>
                         </Link>
-                        <EditSlugDialog
-                          pageId={page.page_id}
-                          currentSlug={page.page_slug}
-                          pageTitle={page.page_title}
-                          onSlugUpdated={loadPages}
-                        />
                         <a
                           href={getPageUrl(page.page_id)}
                           target="_blank"
@@ -257,6 +306,7 @@ export const CMSPageOverview = () => {
                             size="sm"
                             variant="ghost"
                             className="text-gray-400 hover:text-white hover:bg-gray-700"
+                            title="Preview Page"
                           >
                             <ExternalLink className="h-4 w-4" />
                           </Button>

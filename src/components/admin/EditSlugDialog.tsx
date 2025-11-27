@@ -137,8 +137,8 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
         <Button
           size="sm"
           variant="ghost"
-          className="text-gray-400 hover:text-white hover:bg-gray-700"
-          onClick={handleOpen}
+          className="text-gray-400 hover:text-blue-400 hover:bg-gray-700"
+          title="Edit Slug"
         >
           <Edit2 className="h-4 w-4" />
         </Button>
