@@ -107,6 +107,7 @@ const DynamicCMSPage = () => {
         console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
         setPageSegments([]);
         setTabOrder([]);
+        setLoading(false);
         return;
       }
 
