@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Heading1, Languages } from "lucide-react";
+import { Heading1, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 interface IntroEditorProps {
@@ -349,10 +349,9 @@ const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProp
         <Button 
           onClick={handleTranslate}
           disabled={isTranslating}
-          variant="outline"
-          className="w-full"
+          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
         >
-          <Languages className="h-4 w-4 mr-2" />
+          <Sparkles className="h-4 w-4 mr-2" />
           {isTranslating ? "Translating..." : "Translate Automatically"}
         </Button>
       )}
