@@ -7403,7 +7403,7 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && segment.type !== 'video' && segment.type !== 'specification' && segment.type !== 'product-hero-gallery' && segment.type !== 'meta-navigation' && segment.type !== 'banner' && segment.type !== 'full-hero' && (
+                  {segment.type !== 'tiles' && segment.type !== 'image-text' && segment.type !== 'feature-overview' && segment.type !== 'table' && segment.type !== 'faq' && segment.type !== 'video' && segment.type !== 'specification' && segment.type !== 'product-hero-gallery' && segment.type !== 'meta-navigation' && segment.type !== 'banner' && segment.type !== 'full-hero' && segment.type !== 'intro' && segment.type !== 'industries' && segment.type !== 'news' && segment.type !== 'debug' && (
                     <div className="p-8 bg-gray-700 rounded-lg border border-gray-600">
                        <p className="text-white text-center">
                         Segment editor for {segment.type} coming soon. This segment has been saved.
