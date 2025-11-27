@@ -2752,37 +2752,71 @@ const AdminDashboard = () => {
         throw registryError;
       }
 
-      const { error: segmentsError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "page_segments",
-          content_type: "json",
-          content_value: JSON.stringify(updatedSegments),
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
+      // CRITICAL: Remove segment from ALL language versions, not just current editor language
+      const languages = ['en', 'de', 'ja', 'ko', 'zh'];
+      
+      for (const lang of languages) {
+        // Load page_segments for this language
+        const { data: langContent } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", resolvedPageSlug || selectedPage)
+          .eq("section_key", "page_segments")
+          .eq("language", lang)
+          .maybeSingle();
 
-      if (segmentsError) throw segmentsError;
+        if (langContent?.content_value) {
+          const langSegments = JSON.parse(langContent.content_value);
+          const cleanedSegments = langSegments.filter((seg: any) => seg.id !== segmentId);
 
-      const { error: orderError } = await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "tab_order",
-          content_type: "json",
-          content_value: JSON.stringify(updatedTabOrder),
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
+          // Update page_segments for this language
+          const { error: segmentsError } = await supabase
+            .from("page_content")
+            .upsert({
+              page_slug: resolvedPageSlug || selectedPage,
+              section_key: "page_segments",
+              content_type: "json",
+              content_value: JSON.stringify(cleanedSegments),
+              language: lang,
+              updated_at: new Date().toISOString(),
+              updated_by: user.id
+            }, {
+              onConflict: 'page_slug,section_key,language'
+            });
 
-      if (orderError) throw orderError;
+          if (segmentsError) throw segmentsError;
+        }
+
+        // Update tab_order for this language (remove deleted segment)
+        const { data: langTabOrder } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", resolvedPageSlug || selectedPage)
+          .eq("section_key", "tab_order")
+          .eq("language", lang)
+          .maybeSingle();
+
+        if (langTabOrder?.content_value) {
+          const langOrder = JSON.parse(langTabOrder.content_value);
+          const cleanedOrder = langOrder.filter((id: string) => id !== segmentId);
+
+          const { error: orderError } = await supabase
+            .from("page_content")
+            .upsert({
+              page_slug: resolvedPageSlug || selectedPage,
+              section_key: "tab_order",
+              content_type: "json",
+              content_value: JSON.stringify(cleanedOrder),
+              language: lang,
+              updated_at: new Date().toISOString(),
+              updated_by: user.id
+            }, {
+              onConflict: 'page_slug,section_key,language'
+            });
+
+          if (orderError) throw orderError;
+        }
+      }
 
       setPageSegments(updatedSegments);
       setTabOrder(updatedTabOrder);
@@ -2791,7 +2825,7 @@ const AdminDashboard = () => {
       const firstTab = updatedTabOrder[0] || 'tiles';
       setActiveTab(firstTab);
       
-      toast.success("Segment deleted successfully! (ID will never be reused)");
+      toast.success("Segment deleted from all languages! (ID will never be reused)");
     } catch (error: any) {
       toast.error("Error deleting segment: " + error.message);
     }
