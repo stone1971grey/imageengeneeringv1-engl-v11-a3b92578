@@ -12,10 +12,11 @@ import { Save, Heading1 } from "lucide-react";
 interface IntroEditorProps {
   pageSlug: string;
   segmentKey: string;
+  editorLanguage: string;
   onSave?: () => void;
 }
 
-const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
+const IntroEditor = ({ pageSlug, segmentKey, editorLanguage, onSave }: IntroEditorProps) => {
   const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -26,7 +27,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
   useEffect(() => {
     loadContent();
     checkIfH1Segment();
-  }, [pageSlug, segmentKey]);
+  }, [pageSlug, segmentKey, editorLanguage]);
 
   const checkIfH1Segment = async () => {
     const { data: segments } = await supabase
@@ -45,12 +46,13 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
 
   const loadContent = async () => {
     try {
-      // 1) Primär: Legacy-Row pro Intro-Segment (aktuell zuverlässigste Quelle)
+      // 1) Primär: Legacy-Row pro Intro-Segment mit language
       const { data: legacyRow, error: legacyError } = await supabase
         .from('page_content')
         .select('content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', segmentKey)
+        .eq('language', editorLanguage)
         .maybeSingle();
 
       if (!legacyError && legacyRow?.content_value) {
@@ -71,6 +73,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         .select('content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', 'page_segments')
+        .eq('language', editorLanguage)
         .maybeSingle();
 
       if (!segmentsError && segmentsRow?.content_value) {
@@ -128,17 +131,18 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         headingLevel: 'h1'
       };
 
-      // Legacy: keep per-segment content row in sync
+      // Legacy: keep per-segment content row in sync WITH LANGUAGE
       const { error } = await supabase
         .from('page_content')
         .upsert({
           page_slug: pageSlug,
           section_key: segmentKey,
+          language: editorLanguage,
           content_type: 'json',
           content_value: JSON.stringify(content),
           updated_at: new Date().toISOString(),
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (error) throw error;
@@ -149,6 +153,7 @@ const IntroEditor = ({ pageSlug, segmentKey, onSave }: IntroEditorProps) => {
         .select('id, content_value')
         .eq('page_slug', pageSlug)
         .eq('section_key', 'page_segments')
+        .eq('language', editorLanguage)
         .maybeSingle();
 
       if (!segmentsError && segmentsRow?.content_value) {

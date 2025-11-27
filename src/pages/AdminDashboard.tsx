@@ -7320,6 +7320,7 @@ const AdminDashboard = () => {
                     <IntroEditor
                       pageSlug={selectedPage}
                       segmentKey={segment.id}
+                      editorLanguage={editorLanguage}
                       onSave={() => handleSaveSegments()}
                     />
                   )}
