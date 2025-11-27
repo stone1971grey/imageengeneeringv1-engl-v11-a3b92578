@@ -918,7 +918,9 @@ const DynamicCMSPage = () => {
       {/* Render all other segments in tab order (excluding meta-navigation) */}
       {tabOrder
         .filter(segmentId => {
-          const segment = pageSegments.find(s => s.segment_id === segmentId);
+          const segment = pageSegments.find(
+            s => s.id === segmentId || s.segment_key === segmentId
+          );
           return segment?.type !== 'meta-navigation';
         })
         .map((segmentId) => renderSegment(segmentId))
