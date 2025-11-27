@@ -302,7 +302,7 @@ const Navigation = () => {
                 <div className="flex gap-2 w-[500px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredStyleguide(null)}>
                   <div className="flex gap-6 p-6">
-                    {/* Left Column: Main Styleguide Pages */}
+                     {/* Left Column: Main Styleguide Pages */}
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <div className="space-y-3">
                         {styleguidePages.length > 0 ? (
@@ -310,20 +310,20 @@ const Navigation = () => {
                             <div key={page.slug}>
                               {page.children ? (
                                 <div 
-                                  className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors cursor-pointer"
+                                  className="flex items-center gap-3 text-lg text-black hover:bg-gray-100 transition-colors cursor-pointer whitespace-nowrap rounded px-2 py-1"
                                   onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
                                 >
-                                  <FileText className="h-5 w-5" />
+                                  <FileText className="h-5 w-5 flex-shrink-0" />
                                   <span>{page.title}</span>
-                                  <ChevronRight className="h-4 w-4 ml-auto" />
+                                  <ChevronRight className="h-4 w-4 ml-auto flex-shrink-0" />
                                 </div>
                               ) : (
                                 <Link 
                                   to={`/${language}/${page.slug}`}
-                                  className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
+                                  className="flex items-center gap-3 text-lg text-black hover:bg-gray-100 transition-colors whitespace-nowrap rounded px-2 py-1"
                                   onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(null)}
                                 >
-                                  <FileText className="h-5 w-5" />
+                                  <FileText className="h-5 w-5 flex-shrink-0" />
                                   <span>{page.title}</span>
                                 </Link>
                               )}
@@ -344,9 +344,9 @@ const Navigation = () => {
                             <Link 
                               key={subpage.slug}
                               to={`/${language}/${subpage.slug}`}
-                              className="flex items-center gap-3 text-lg text-black hover:text-[#f9dc24] transition-colors"
+                              className="flex items-center gap-3 text-lg text-black hover:bg-gray-100 transition-colors whitespace-nowrap rounded px-2 py-1"
                             >
-                              <ChevronRight className="h-4 w-4" />
+                              <ChevronRight className="h-4 w-4 flex-shrink-0" />
                               <span>{subpage.title}</span>
                             </Link>
                           ))}
