@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
@@ -37,7 +36,6 @@ const iconMap: Record<string, any> = {
 
 const DynamicCMSPage = () => {
   const location = useLocation();
-  const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
@@ -70,23 +68,25 @@ const DynamicCMSPage = () => {
 
   const pageSlug = extractPageSlug(location.pathname);
 
+  const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+  const pathPartsForLang = location.pathname.replace(/^\/+/, "").split('/');
+  const urlLanguage = validLanguages.includes(pathPartsForLang[0]) ? pathPartsForLang[0] : 'en';
+
   useEffect(() => {
     if (pageSlug) {
-      loadContent();
+      loadContent(urlLanguage);
     }
-  }, [pageSlug, language]);
+  }, [pageSlug, urlLanguage]);
 
-  const loadContent = async () => {
+  const loadContent = async (currentLanguage: string) => {
     if (!pageSlug) {
       setPageNotFound(true);
       setLoading(false);
       return;
     }
 
-    // Extract language from URL
-    const pathParts = location.pathname.replace(/^\/+/, "").split('/');
-    const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
-    const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
+    // Use the provided language (derived from URL) instead of recalculating here
+    const urlLanguage = currentLanguage;
 
     // Check if page exists in page_registry
     // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
