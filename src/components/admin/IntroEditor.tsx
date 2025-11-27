@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Save, Heading1 } from "lucide-react";
+import { Save, Heading1, Languages } from "lucide-react";
+import { toast } from "sonner";
 
 interface IntroEditorProps {
   pageSlug: string;
@@ -17,11 +18,12 @@ interface IntroEditorProps {
 }
 
 const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProps) => {
-  const { toast } = useToast();
+  const { toast: hookToast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
 
   useEffect(() => {
@@ -111,13 +113,71 @@ const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProp
       setDescription("");
     } catch (error) {
       console.error('Error loading content:', error);
-      toast({
+      hookToast({
         title: "Fehler beim Laden",
         description: "Der Inhalt konnte nicht geladen werden.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (language === 'en') {
+      toast.error('Translation not needed - English is the source language');
+      return;
+    }
+
+    setIsTranslating(true);
+
+    try {
+      // STEP 1: Load English version
+      const { data: enData, error: enError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', segmentKey)
+        .eq('language', 'en')
+        .maybeSingle();
+
+      if (enError) throw enError;
+
+      if (!enData?.content_value) {
+        toast.error('No English version found to translate from');
+        return;
+      }
+
+      const enContent = JSON.parse(enData.content_value);
+
+      // STEP 2: Collect text fields to translate
+      const textsToTranslate = {
+        title: enContent.title || '',
+        description: enContent.description || ''
+      };
+
+      // STEP 3: Translate text fields
+      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
+        body: {
+          texts: textsToTranslate,
+          targetLanguage: language,
+        },
+      });
+
+      if (translateError) throw translateError;
+
+      if (translateData?.translatedTexts) {
+        // STEP 4: Apply translated texts to state
+        setTitle(translateData.translatedTexts.title || enContent.title || '');
+        setDescription(translateData.translatedTexts.description || enContent.description || '');
+
+        toast.success('Content translated successfully');
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to translate content');
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -220,19 +280,12 @@ const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProp
         }
       }
       
-      toast({
-        title: "Gespeichert",
-        description: "Die Änderungen wurden erfolgreich gespeichert.",
-      });
+      toast.success('Changes saved successfully');
       
       if (onSave) onSave();
     } catch (error) {
       console.error('Error saving content:', error);
-      toast({
-        title: "Error saving",
-        description: "Content could not be saved.",
-        variant: "destructive",
-      });
+      toast.error('Content could not be saved.');
     } finally {
       setIsSaving(false);
     }
@@ -292,6 +345,18 @@ const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProp
         <Save className="h-4 w-4 mr-2" />
         {isSaving ? "Saving..." : "Save Changes"}
       </Button>
+
+      {language !== 'en' && (
+        <Button 
+          onClick={handleTranslate}
+          disabled={isTranslating}
+          variant="outline"
+          className="w-full"
+        >
+          <Languages className="h-4 w-4 mr-2" />
+          {isTranslating ? "Translating..." : "Translate Automatically"}
+        </Button>
+      )}
     </div>
   );
 };
