@@ -65,6 +65,7 @@ const Navigation = () => {
   };
 
   // Load styleguide pages from page_registry with hierarchy
+  // ALWAYS load (not just when on styleguide path) so flyout menu shows current data
   useEffect(() => {
     const loadStyleguidePages = async () => {
       const { data, error } = await supabase
@@ -94,10 +95,9 @@ const Navigation = () => {
       }
     };
 
-    if (isStyleguidePath) {
-      loadStyleguidePages();
-    }
-  }, [isStyleguidePath]);
+    // Load styleguide pages immediately on mount for flyout menu
+    loadStyleguidePages();
+  }, []); // Empty dependency array - load once on mount
 
   // Check authentication status
   useEffect(() => {
