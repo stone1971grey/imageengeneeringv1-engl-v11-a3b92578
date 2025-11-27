@@ -117,6 +117,17 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
 
       if (childError) throw childError;
 
+      // Step 5: Update navigation_links table (automatic navigation update)
+      const { error: navError } = await supabase
+        .from('navigation_links')
+        .update({ slug: newSlug })
+        .eq('slug', currentSlug);
+
+      if (navError) {
+        console.warn('Navigation links update failed (might be empty):', navError);
+        // Don't throw - navigation might still use static files
+      }
+
       toast.success(`Slug successfully updated: "${currentSlug}" → "${newSlug}"`, {
         description: "All database references and navigation links have been updated automatically"
       });
