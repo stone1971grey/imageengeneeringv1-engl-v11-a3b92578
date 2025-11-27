@@ -218,15 +218,46 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     if (!pageSlug) return;
 
     const targetLanguages: Array<'de' | 'ja' | 'ko' | 'zh'> = ['de', 'ja', 'ko', 'zh'];
+    const languageNames: Record<string, string> = {
+      de: 'German',
+      ja: 'Japanese',
+      ko: 'Korean',
+      zh: 'Chinese',
+    };
+
+    // Helper: build a version of the segment data that clearly marks it for translation
+    const buildTranslatableContent = (baseData: any, targetLang: 'de' | 'ja' | 'ko' | 'zh') => {
+      const langName = languageNames[targetLang] || targetLang.toUpperCase();
+      const prefix = `Translate to ${langName}: `;
+
+      const withPrefix = (value?: string) =>
+        value && value.trim().length > 0 ? `${prefix}${value}` : '';
+
+      return {
+        ...baseData,
+        titleLine1: withPrefix(baseData?.titleLine1),
+        titleLine2: withPrefix(baseData?.titleLine2),
+        subtitle: withPrefix(baseData?.subtitle),
+        button1Text: withPrefix(baseData?.button1Text),
+        button2Text: withPrefix(baseData?.button2Text),
+        // Keep non-text fields (image, layout, links, etc.) 1:1 so the visual setup is identical
+      };
+    };
+
+    // Find the just-saved source segment in the EN array once
+    const sourceSegment = updatedSegments.find((seg: any) =>
+      seg.type === 'full-hero' && String(seg.id) === String(segmentId)
+    );
+    if (!sourceSegment) return;
 
     for (const targetLang of targetLanguages) {
       try {
         const { data: targetRow, error: targetError } = await supabase
-          .from("page_content")
-          .select("*")
-          .eq("page_slug", pageSlug)
-          .eq("section_key", "page_segments")
-          .eq("language", targetLang)
+          .from('page_content')
+          .select('*')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', targetLang)
           .maybeSingle();
 
         if (targetError) {
@@ -234,22 +265,27 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
           continue;
         }
 
-        // Find the just-saved source segment in the EN array
-        const sourceSegment = updatedSegments.find((seg: any) =>
-          seg.type === "full-hero" && String(seg.id) === String(segmentId)
-        );
-
-        if (!sourceSegment) continue;
+        const translatedSegment = {
+          ...sourceSegment,
+          data: buildTranslatableContent(sourceSegment.data, targetLang),
+        };
 
         if (!targetRow) {
           // No row yet for this language -> create full copy of segments array
+          // but with the Full Hero segment prepared for translation
+          const segmentsForTarget = updatedSegments.map((seg: any) =>
+            seg.type === 'full-hero' && String(seg.id) === String(segmentId)
+              ? translatedSegment
+              : seg
+          );
+
           const { error: insertError } = await supabase
-            .from("page_content")
+            .from('page_content')
             .insert({
               page_slug: pageSlug,
-              section_key: "page_segments",
-              content_type: contentType || "json",
-              content_value: JSON.stringify(updatedSegments),
+              section_key: 'page_segments',
+              content_type: contentType || 'json',
+              content_value: JSON.stringify(segmentsForTarget),
               language: targetLang,
             });
 
@@ -264,35 +300,66 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
 
         let targetSegments: any[] = [];
         try {
-          targetSegments = JSON.parse(targetRow.content_value || "[]");
+          targetSegments = JSON.parse(targetRow.content_value || '[]');
         } catch (e) {
           console.error(`Error parsing page_segments for language ${targetLang}:`, e);
           continue;
         }
 
-        const hasSegment = targetSegments.some((seg: any) =>
-          seg.type === "full-hero" && String(seg.id) === String(segmentId)
+        const heroIndex = targetSegments.findIndex((seg: any) =>
+          seg.type === 'full-hero' && String(seg.id) === String(segmentId)
         );
 
-        if (hasSegment) {
-          // Respect existing translation – do not overwrite
+        if (heroIndex === -1) {
+          // No Full Hero yet in this language -> just append prepared copy
+          const newSegments = [...targetSegments, translatedSegment];
+
+          const { error: updateError } = await supabase
+            .from('page_content')
+            .update({
+              content_value: JSON.stringify(newSegments),
+              updated_by: (await supabase.auth.getUser()).data.user?.id,
+            })
+            .eq('id', targetRow.id);
+
+          if (updateError) {
+            console.error(`Error updating page_segments for language ${targetLang}:`, updateError);
+          } else {
+            console.log(`✅ Synced Full Hero segment ${segmentId} to language ${targetLang}`);
+          }
+
           continue;
         }
 
-        const newSegments = [...targetSegments, sourceSegment];
+        const existingHero = targetSegments[heroIndex];
+        const existingData = existingHero?.data || {};
+        const hasAnyTranslatedText = ['titleLine1', 'titleLine2', 'subtitle', 'button1Text', 'button2Text'].some(
+          (key) => {
+            const val = (existingData as any)[key];
+            return typeof val === 'string' && val.trim().length > 0;
+          }
+        );
+
+        if (hasAnyTranslatedText) {
+          // Respect existing translation – never overwrite manual work
+          continue;
+        }
+
+        const newSegments = [...targetSegments];
+        newSegments[heroIndex] = translatedSegment;
 
         const { error: updateError } = await supabase
-          .from("page_content")
+          .from('page_content')
           .update({
             content_value: JSON.stringify(newSegments),
             updated_by: (await supabase.auth.getUser()).data.user?.id,
           })
-          .eq("id", targetRow.id);
+          .eq('id', targetRow.id);
 
         if (updateError) {
           console.error(`Error updating page_segments for language ${targetLang}:`, updateError);
         } else {
-          console.log(`✅ Synced Full Hero segment ${segmentId} to language ${targetLang}`);
+          console.log(`✅ Updated Full Hero placeholder for language ${targetLang}`);
         }
       } catch (e) {
         console.error(`Unexpected error syncing language ${targetLang}:`, e);
