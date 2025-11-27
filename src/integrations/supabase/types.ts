@@ -260,6 +260,51 @@ export type Database = {
         }
         Relationships: []
       }
+      navigation_links: {
+        Row: {
+          active: boolean | null
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          label_key: string
+          language: string
+          parent_category: string | null
+          parent_label: string | null
+          position: number | null
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          label_key: string
+          language: string
+          parent_category?: string | null
+          parent_label?: string | null
+          position?: number | null
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          label_key?: string
+          language?: string
+          parent_category?: string | null
+          parent_label?: string | null
+          position?: number | null
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       news_articles: {
         Row: {
           author: string | null

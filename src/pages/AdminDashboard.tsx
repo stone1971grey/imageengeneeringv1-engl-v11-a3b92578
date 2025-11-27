@@ -65,6 +65,7 @@ import DebugEditor from '@/components/admin/DebugEditor';
 import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
 import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 import { GlossaryManager } from '@/components/admin/GlossaryManager';
+import { NavigationMigrationButton } from '@/components/admin/NavigationMigrationButton';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -3535,6 +3536,7 @@ const AdminDashboard = () => {
                 Manage News
               </Button>
               <CMSPageOverview />
+              <NavigationMigrationButton />
               <Button
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
                 className="!bg-teal-600 !text-white hover:!bg-teal-700 border-0"
