@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, ExternalLink, FileText, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { EditSlugDialog } from "./EditSlugDialog";
 
 interface CMSPage {
   page_id: number;
@@ -241,6 +242,12 @@ export const CMSPageOverview = () => {
                             Edit
                           </Button>
                         </Link>
+                        <EditSlugDialog
+                          pageId={page.page_id}
+                          currentSlug={page.page_slug}
+                          pageTitle={page.page_title}
+                          onSlugUpdated={loadPages}
+                        />
                         <a
                           href={getPageUrl(page.page_id)}
                           target="_blank"
