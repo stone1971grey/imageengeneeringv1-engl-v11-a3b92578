@@ -298,6 +298,12 @@ const DynamicCMSPage = () => {
       }
     }
 
+    console.log('[DynamicCMSPage] Loaded content', {
+      pageSlug,
+      urlLanguage,
+      segmentsCount: Array.isArray(pageSegments) ? pageSegments.length : 'not-set-yet',
+    });
+
     setLoading(false);
   };
 
