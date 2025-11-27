@@ -3451,27 +3451,27 @@ const AdminDashboard = () => {
                     .limit(1)
                     .maybeSingle();
 
-                  // Standard: nutze aktuelle Sprache als Präfix
-                  let previewUrl = `/${language}/`;
+                  // Standard: nutze die im Editor ausgewählte Sprache als Präfix
+                  let previewUrl = `/${editorLanguage}/`;
                   
                   if (pageData?.page_id) {
                     // WICHTIG: Immer über PageIdRouter gehen, damit hierarchische URLs korrekt
                     // aufgelöst werden und keine 404 mehr entstehen.
-                    previewUrl = `/${language}/${pageData.page_id}`;
+                    previewUrl = `/${editorLanguage}/${pageData.page_id}`;
                   } else {
                     // Fallback für sehr alte/statische Seiten ohne page_registry Eintrag
                     const urlMap: Record<string, string> = {
-                      'photography': `/${language}/your-solution/photography`,
-                      'scanners-archiving': `/${language}/your-solution/scanners-archiving`,
-                      'medical-endoscopy': `/${language}/your-solution/medical-endoscopy`,
-                      'web-camera': `/${language}/your-solution/web-camera`,
-                      'machine-vision': `/${language}/your-solution/machine-vision`,
-                      'mobile-phone': `/${language}/your-solution/mobile-phone`,
-                      'automotive': `/${language}/your-solution/automotive`,
-                      'in-cabin-testing': `/${language}/your-solution/automotive/in-cabin-testing`,
+                      'photography': `/${editorLanguage}/your-solution/photography`,
+                      'scanners-archiving': `/${editorLanguage}/your-solution/scanners-archiving`,
+                      'medical-endoscopy': `/${editorLanguage}/your-solution/medical-endoscopy`,
+                      'web-camera': `/${editorLanguage}/your-solution/web-camera`,
+                      'machine-vision': `/${editorLanguage}/your-solution/machine-vision`,
+                      'mobile-phone': `/${editorLanguage}/your-solution/mobile-phone`,
+                      'automotive': `/${editorLanguage}/your-solution/automotive`,
+                      'in-cabin-testing': `/${editorLanguage}/your-solution/automotive/in-cabin-testing`,
                     };
                     // Fallback: gehe von /{lang}/your-solution/{slug} aus, wenn nichts bekannt ist
-                    previewUrl = urlMap[selectedPage] || `/${language}/your-solution/${selectedPage}`;
+                    previewUrl = urlMap[selectedPage] || `/${editorLanguage}/your-solution/${selectedPage}`;
                   }
 
                   window.open(previewUrl, '_blank');
