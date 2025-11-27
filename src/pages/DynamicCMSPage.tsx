@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
@@ -36,6 +37,7 @@ const iconMap: Record<string, any> = {
 
 const DynamicCMSPage = () => {
   const location = useLocation();
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
@@ -72,7 +74,7 @@ const DynamicCMSPage = () => {
     if (pageSlug) {
       loadContent();
     }
-  }, [pageSlug, location.pathname]);
+  }, [pageSlug, language]);
 
   const loadContent = async () => {
     if (!pageSlug) {
