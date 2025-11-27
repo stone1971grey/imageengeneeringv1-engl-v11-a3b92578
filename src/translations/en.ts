@@ -39,7 +39,7 @@ export const en = {
     contact: "Contact",
     active: "ACTIVE",
     styleguide: "Styleguide",
-    segments: "Segment",
+    segments: "Segments",
     fullHero: "Full Hero",
     fullHeroVideo: "Full Hero Video",
     trainingEvents: "Training & Events",

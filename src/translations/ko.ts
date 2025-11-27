@@ -39,7 +39,7 @@ export const ko = {
     contact: "문의하기",
     active: "활성",
     styleguide: "스타일 가이드",
-    segments: "세그먼트",
+    segments: "세그먼트들",
     fullHero: "풀 히어로",
     fullHeroVideo: "풀 히어로 비디오",
     trainingEvents: "교육 및 이벤트",
