@@ -306,7 +306,7 @@ const Navigation = () => {
           <div className="hidden 2xl:flex items-center gap-6">
             {isStyleguidePath ? (
               /* Styleguide-specific Navigation with Flyout */
-              <SimpleDropdown trigger="Styleguide" className="right-aligned" disabled={isAdminDashboard}>
+              <SimpleDropdown trigger={t.nav.styleguide} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex gap-2 w-[500px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredStyleguide(null)}>
                   <div className="flex gap-6 p-6">
@@ -314,31 +314,36 @@ const Navigation = () => {
                     <div className="space-y-4 flex-1 pr-6 border-r border-border">
                       <div className="space-y-3">
                         {styleguidePages.length > 0 ? (
-                          styleguidePages.map((page) => (
-                            <div key={page.slug}>
-                              {page.children ? (
-                                <div 
-                                  className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer whitespace-nowrap rounded px-2 py-1"
-                                  onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
-                                >
-                                  <FileText className="h-5 w-5 flex-shrink-0" />
-                                  <span>{page.title}</span>
-                                  <ChevronRight className="h-4 w-4 ml-auto flex-shrink-0" />
-                                </div>
-                              ) : (
-                                <Link 
-                                  to={`/${language}/${page.slug}`}
-                                  className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
-                                    isActive(`/${page.slug}`) ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                                  }`}
-                                  onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(null)}
-                                >
-                                  <FileText className="h-5 w-5 flex-shrink-0" />
-                                  <span>{page.title}</span>
-                                </Link>
-                              )}
-                            </div>
-                          ))
+                          styleguidePages.map((page) => {
+                            // Translate page titles
+                            const translatedTitle = page.title === "Segments" ? t.nav.segments : page.title;
+                            
+                            return (
+                              <div key={page.slug}>
+                                {page.children ? (
+                                  <div 
+                                    className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer whitespace-nowrap rounded px-2 py-1"
+                                    onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
+                                  >
+                                    <FileText className="h-5 w-5 flex-shrink-0" />
+                                    <span>{translatedTitle}</span>
+                                    <ChevronRight className="h-4 w-4 ml-auto flex-shrink-0" />
+                                  </div>
+                                ) : (
+                                  <Link 
+                                    to={`/${language}/${page.slug}`}
+                                    className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
+                                      isActive(`/${page.slug}`) ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                                    }`}
+                                    onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(null)}
+                                  >
+                                    <FileText className="h-5 w-5 flex-shrink-0" />
+                                    <span>{translatedTitle}</span>
+                                  </Link>
+                                )}
+                              </div>
+                            );
+                          })
                         ) : (
                           <p className="text-gray-500 text-center py-4">No styleguide pages yet</p>
                         )}
@@ -350,18 +355,25 @@ const Navigation = () => {
                       {/* Conditional Rendering of Subpages */}
                       {hoveredStyleguide && styleguidePages.find(p => p.slug === hoveredStyleguide)?.children && (
                         <div className="space-y-3">
-                          {styleguidePages.find(p => p.slug === hoveredStyleguide)?.children?.map((subpage) => (
-                            <Link 
-                              key={subpage.slug}
-                              to={`/${language}/${subpage.slug}`}
-                              className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
-                                isActive(`/${subpage.slug}`) ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                              }`}
-                            >
-                              <ChevronRight className="h-4 w-4 flex-shrink-0" />
-                              <span>{subpage.title}</span>
-                            </Link>
-                          ))}
+                          {styleguidePages.find(p => p.slug === hoveredStyleguide)?.children?.map((subpage) => {
+                            // Translate subpage titles
+                            let translatedSubTitle = subpage.title;
+                            if (subpage.title === "Full Hero") translatedSubTitle = t.nav.fullHero;
+                            else if (subpage.title === "Full Hero Video") translatedSubTitle = t.nav.fullHeroVideo;
+                            
+                            return (
+                              <Link 
+                                key={subpage.slug}
+                                to={`/${language}/${subpage.slug}`}
+                                className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
+                                  isActive(`/${subpage.slug}`) ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                                }`}
+                              >
+                                <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                                <span>{translatedSubTitle}</span>
+                              </Link>
+                            );
+                          })}
                         </div>
                       )}
                       
