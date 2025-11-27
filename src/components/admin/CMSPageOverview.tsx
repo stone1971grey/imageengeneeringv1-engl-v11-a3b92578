@@ -69,10 +69,10 @@ export const CMSPageOverview = () => {
 
       if (pagesError) throw pagesError;
 
-      // Load segments per page (unique segment_id, language-agnostic)
+      // Load segments per page (grouped by segment_type + segment_key, language-agnostic)
       const { data: segmentsData, error: segmentsError } = await supabase
         .from("segment_registry")
-        .select("page_slug, segment_id")
+        .select("page_slug, segment_type, segment_key")
         .eq("deleted", false);
 
       if (segmentsError) throw segmentsError;
@@ -86,12 +86,13 @@ export const CMSPageOverview = () => {
 
       // Count UNIQUE segments per page_slug (one Full Hero with 5 languages = 1 segment)
       const segmentCounts = (segmentsData || []).reduce((acc, seg) => {
+        const key = `${seg.segment_type}:${seg.segment_key}`;
         if (!acc[seg.page_slug]) {
-          acc[seg.page_slug] = new Set<number>();
+          acc[seg.page_slug] = new Set<string>();
         }
-        acc[seg.page_slug].add(seg.segment_id);
+        acc[seg.page_slug].add(key);
         return acc;
-      }, {} as Record<string, Set<number>>);
+      }, {} as Record<string, Set<string>>);
 
       // Get unique languages per page_slug
       const pageLanguages = (contentData || []).reduce((acc, content) => {
