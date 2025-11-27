@@ -19,22 +19,14 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const pathParts = location.pathname.split('/').filter(Boolean);
     const firstPart = pathParts[0];
     
-    const supportedLanguages: Language[] = ['en', 'de', 'zh', 'ja', 'ko'];
-    const urlLang = supportedLanguages.includes(firstPart as Language) ? (firstPart as Language) : 'en';
-
-    console.log('[LanguageProvider] getLanguageFromPath', {
-      pathname: location.pathname,
-      pathParts,
-      resolvedLanguage: urlLang,
-    });
-
-    return urlLang;
+    if (['en', 'de', 'zh', 'ja', 'ko'].includes(firstPart)) {
+      return firstPart as Language;
+    }
+    return 'en'; // Default to English if no language prefix
   };
 
   const [language, setLanguageState] = useState<Language>(() => {
-    const initialLang = getLanguageFromPath();
-    console.log('[LanguageProvider] initial language state', { initialLang });
-    return initialLang;
+    return getLanguageFromPath();
   });
 
   // Update language when URL changes
