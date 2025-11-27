@@ -265,7 +265,7 @@ export const CMSPageOverview = () => {
                               : "bg-gray-700 text-gray-400"
                           }
                         >
-                          {page.segment_count} Segments
+                          {page.segment_count} {page.segment_count === 1 ? "Segment" : "Segments"}
                         </Badge>
                         {page.segment_languages.length > 0 && (
                           <div className="flex gap-1 flex-wrap justify-center">
