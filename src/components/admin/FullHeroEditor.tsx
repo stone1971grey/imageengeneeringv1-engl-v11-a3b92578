@@ -41,6 +41,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
   const [kenBurnsEffect, setKenBurnsEffect] = useState<string>('standard');
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [isUploading, setIsUploading] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
 
   useEffect(() => {
@@ -435,6 +436,50 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
       }
     } catch (e) {
       console.error("Auto-save failed:", e);
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (language === 'en') {
+      toast.error('Translation not needed - English is the source language');
+      return;
+    }
+
+    setIsTranslating(true);
+
+    try {
+      // Collect all text fields to translate
+      const textsToTranslate = {
+        titleLine1,
+        titleLine2,
+        subtitle,
+        button1Text,
+        button2Text,
+      };
+
+      const { data, error } = await supabase.functions.invoke('translate-content', {
+        body: {
+          texts: textsToTranslate,
+          targetLanguage: language,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.translatedTexts) {
+        setTitleLine1(data.translatedTexts.titleLine1 || titleLine1);
+        setTitleLine2(data.translatedTexts.titleLine2 || titleLine2);
+        setSubtitle(data.translatedTexts.subtitle || subtitle);
+        setButton1Text(data.translatedTexts.button1Text || button1Text);
+        setButton2Text(data.translatedTexts.button2Text || button2Text);
+
+        toast.success('Content has been automatically translated');
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to translate content');
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -837,13 +882,25 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
           </Alert>
         )}
 
-        <Button 
-          onClick={handleSave} 
-          className="w-full"
-          disabled={(backgroundType === 'image' && !imageUrl?.trim()) || (backgroundType === 'video' && !videoUrl?.trim())}
-        >
-          Save Full Hero
-        </Button>
+        <div className="flex gap-2">
+          {language !== 'en' && (
+            <Button 
+              onClick={handleTranslate}
+              disabled={isTranslating}
+              variant="outline"
+              className="flex-1"
+            >
+              {isTranslating ? "Translating..." : "Translate Automatically"}
+            </Button>
+          )}
+          <Button 
+            onClick={handleSave} 
+            className="flex-1"
+            disabled={(backgroundType === 'image' && !imageUrl?.trim()) || (backgroundType === 'video' && !videoUrl?.trim())}
+          >
+            Save Full Hero
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
