@@ -44,6 +44,16 @@ export const IndustriesSegmentEditor = ({ data, onChange, onSave }: IndustriesSe
 
   return (
     <div className="space-y-6 p-4 bg-background border rounded-lg">
+      {/* Top Save Button */}
+      {onSave && (
+        <Button
+          onClick={onSave}
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+        >
+          Save Changes
+        </Button>
+      )}
+
       {/* Header Section */}
       <div className="space-y-4">
         <div>
