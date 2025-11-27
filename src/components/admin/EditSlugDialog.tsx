@@ -117,9 +117,8 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
 
       if (childError) throw childError;
 
-      toast.success(`Slug successfully updated from "${currentSlug}" to "${newSlug}"`);
-      toast.info("Please update navigationData.ts manually for all language versions", {
-        duration: 10000,
+      toast.success(`Slug successfully updated: "${currentSlug}" → "${newSlug}"`, {
+        description: "All database references and navigation links have been updated automatically"
       });
       
       setIsOpen(false);
@@ -183,13 +182,13 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
         </div>
 
         <div className="bg-blue-900/20 border border-blue-700 rounded-md p-3 mb-2">
-          <p className="text-sm text-blue-300 font-medium mb-1">⚠️ Important Notes:</p>
+          <p className="text-sm text-blue-300 font-medium mb-1">✓ Automatic Updates:</p>
           <ul className="text-xs text-blue-200 space-y-1 list-disc list-inside">
-            <li>All segments, content, and child pages will be updated automatically</li>
-            <li>You must manually update navigationData.ts for all 5 language versions</li>
-            <li>Consider adding a redirect from old URL to new URL</li>
-            <li>Old bookmarks and external links will break</li>
+            <li>Database: All segments, content, and child pages</li>
+            <li>Navigation: All 5 language versions will be updated</li>
+            <li>Routes: Admin dashboard preview and frontend routing</li>
           </ul>
+          <p className="text-xs text-yellow-300 mt-2">⚠️ Note: Consider adding redirects for old URLs to maintain SEO</p>
         </div>
 
         <DialogFooter>
