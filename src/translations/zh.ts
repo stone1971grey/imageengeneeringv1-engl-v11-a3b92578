@@ -39,7 +39,7 @@ export const zh = {
     contact: "联系我们",
     active: "活跃",
     styleguide: "样式指南",
-    segments: "片段",
+    segments: "片段们",
     fullHero: "完整英雄",
     fullHeroVideo: "完整英雄视频",
     trainingEvents: "培训与活动",

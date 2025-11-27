@@ -39,7 +39,7 @@ export const ja = {
     contact: "お問い合わせ",
     active: "アクティブ",
     styleguide: "スタイルガイド",
-    segments: "セグメント",
+    segments: "セグメント類",
     fullHero: "フルヒーロー",
     fullHeroVideo: "フルヒーロービデオ",
     trainingEvents: "トレーニング・イベント",
