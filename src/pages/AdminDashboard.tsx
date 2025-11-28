@@ -7408,7 +7408,7 @@ const AdminDashboard = () => {
                           setPageSegments(newSegments);
                         }}
                         onSave={() => handleSaveSegments()}
-                        pageSlug={selectedPage}
+                        pageSlug={resolvedPageSlug || selectedPage}
                         segmentKey={`segment_${segment.id}`}
                         language={editorLanguage}
                       />
