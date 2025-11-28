@@ -62,10 +62,15 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   const [localData, setLocalData] = useState<ProductHeroGalleryData>(data);
 
   useEffect(() => {
-    loadContent();
+    // For default language (EN), rely on data coming from AdminDashboard (already loaded from backend)
+    // To avoid race conditions or duplicate loading, we only fetch from the database
+    // for NON-English languages here.
+    if (language !== 'en') {
+      loadContent();
+    }
   }, [pageSlug, segmentId, language]);
 
-  // Sync local data with prop data
+  // Sync local data with prop data (AdminDashboard is source of truth for EN/default)
   useEffect(() => {
     setLocalData(data);
   }, [data]);
