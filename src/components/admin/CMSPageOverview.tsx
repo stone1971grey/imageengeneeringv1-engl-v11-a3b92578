@@ -15,6 +15,7 @@ import { Search, ExternalLink, FileText, Layers, Edit, Trash2 } from "lucide-rea
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EditSlugDialog } from "./EditSlugDialog";
+import { NAVIGATION_DATA_FILES, generateNavigationDataWithoutSlug } from "@/utils/updateNavigationSlug";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -195,8 +196,30 @@ export const CMSPageOverview = () => {
 
       if (pageError) throw pageError;
 
+      // Step 6: Update all navigationData.ts files to remove the deleted page
+      for (const filePath of NAVIGATION_DATA_FILES) {
+        try {
+          const { data: fileData } = await supabase.functions.invoke('read-file', {
+            body: { path: filePath }
+          });
+          
+          if (fileData?.content) {
+            const updatedContent = generateNavigationDataWithoutSlug(fileData.content, pageToDelete.page_slug);
+            
+            await supabase.functions.invoke('write-file', {
+              body: { 
+                path: filePath,
+                content: updatedContent
+              }
+            });
+          }
+        } catch (fileError) {
+          console.warn(`Failed to update ${filePath}:`, fileError);
+        }
+      }
+
       toast.success(`Page "${pageToDelete.page_title}" (ID ${pageToDelete.page_id}) permanently deleted`, {
-        description: "All segments, content, and navigation links have been removed from the database"
+        description: "All segments, content, navigation links, and navigationData entries have been removed"
       });
 
       setDeleteDialogOpen(false);
