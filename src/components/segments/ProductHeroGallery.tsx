@@ -79,6 +79,33 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
     }
   };
 
+  const isExternalLink = (link: string): boolean => {
+    // Check if it starts with protocol
+    if (link.startsWith('http://') || link.startsWith('https://')) return true;
+    
+    // Check if it starts with www.
+    if (link.startsWith('www.')) return true;
+    
+    // Check if it contains a TLD pattern (e.g., example.com, example.de)
+    // Must not start with / (internal route) or # (anchor)
+    if (!link.startsWith('/') && !link.startsWith('#')) {
+      const tldPattern = /\.[a-z]{2,}$/i;
+      return tldPattern.test(link);
+    }
+    
+    return false;
+  };
+
+  const normalizeExternalLink = (link: string): string => {
+    // If already has protocol, return as-is
+    if (link.startsWith('http://') || link.startsWith('https://')) {
+      return link;
+    }
+    
+    // Add https:// for www. or domain.tld links
+    return `https://${link}`;
+  };
+
   const renderButton = (text: string, link: string, style: string, size: string = 'lg', buttonId: string = 'cta1') => {
     const buttonStyle = getButtonStyle(style, true, buttonId);
     const buttonClasses = `border-0 px-8 py-4 text-lg font-medium shadow-soft transition-all duration-300`;
@@ -95,9 +122,9 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
       </Button>
     );
 
-    if (link.startsWith('http://') || link.startsWith('https://')) {
+    if (isExternalLink(link)) {
       return (
-        <a href={link} target="_blank" rel="noopener noreferrer">
+        <a href={normalizeExternalLink(link)} target="_blank" rel="noopener noreferrer">
           {buttonElement}
         </a>
       );
