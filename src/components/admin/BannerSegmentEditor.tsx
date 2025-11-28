@@ -342,7 +342,7 @@ export const BannerSegmentEditor = ({
             } else {
               // Fallback: create minimal banner segment
               updatedSegments.push({
-                id: englishBanner?.id || segmentId,
+                id: segmentId,
                 type: "banner",
                 data: targetData,
               });
@@ -392,6 +392,35 @@ export const BannerSegmentEditor = ({
             });
 
           if (insertError) throw insertError;
+        }
+      }
+
+      // Ensure tab_order exists for target language so segments are actually rendered
+      const { data: tabOrderRow } = await supabase
+        .from("page_content")
+        .select("id, content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "tab_order")
+        .eq("language", targetLanguage)
+        .maybeSingle();
+
+      if (!tabOrderRow) {
+        const { data: englishTab } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "tab_order")
+          .eq("language", "en")
+          .maybeSingle();
+
+        if (englishTab?.content_value) {
+          await supabase.from("page_content").insert({
+            page_slug: pageSlug,
+            section_key: "tab_order",
+            language: targetLanguage,
+            content_type: "json",
+            content_value: englishTab.content_value,
+          });
         }
       }
 
