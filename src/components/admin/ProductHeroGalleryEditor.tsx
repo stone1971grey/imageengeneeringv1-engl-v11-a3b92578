@@ -319,12 +319,33 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         return;
       }
 
-      if (!enData?.content_value) {
+      let enSegmentsJson: string | null = enData?.content_value || null;
+
+      // Fallback: legacy EN data without language field
+      if (!enSegmentsJson) {
+        const { data: legacyEnRow, error: legacyError } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .is("language", null)
+          .maybeSingle();
+
+        if (legacyError) {
+          console.error("Error loading legacy EN reference for translation:", legacyError);
+        }
+
+        if (legacyEnRow?.content_value) {
+          enSegmentsJson = legacyEnRow.content_value;
+        }
+      }
+
+      if (!enSegmentsJson) {
         toast.error("No English reference content found to translate");
         return;
       }
 
-      const segments = JSON.parse(enData.content_value);
+      const segments = JSON.parse(enSegmentsJson);
       const gallerySegment = segments.find((seg: any) => 
         seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
       );
