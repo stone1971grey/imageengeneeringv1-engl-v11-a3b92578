@@ -294,12 +294,11 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
       </div>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-600">
+      <div className="pt-4 border-t border-gray-600">
         <Button
           onClick={onSave}
-          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
         >
-          <Save className="h-4 w-4" />
           Save Changes
         </Button>
       </div>
