@@ -719,16 +719,43 @@ const DynamicCMSPage = () => {
               })()}
               {segment.data?.buttonText && segment.data?.buttonLink && (
                 <div className="text-center">
-                  <Link
-                    to={segment.data.buttonLink}
-                    className={`inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
+                  {(() => {
+                    let buttonLink = segment.data.buttonLink;
+                    let isExternal = false;
+                    
+                    // Check if it's an external link
+                    if (buttonLink.startsWith('www.')) {
+                      buttonLink = 'https://' + buttonLink;
+                      isExternal = true;
+                    } else if (buttonLink.startsWith('http://') || buttonLink.startsWith('https://')) {
+                      isExternal = true;
+                    }
+                    
+                    const buttonClasses = `inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
                       segment.data.buttonStyle === "technical"
                         ? "bg-gray-800 text-white hover:bg-gray-900"
                         : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
-                    }`}
-                  >
-                    {segment.data.buttonText}
-                  </Link>
+                    }`;
+                    
+                    if (isExternal) {
+                      return (
+                        <a
+                          href={buttonLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={buttonClasses}
+                        >
+                          {segment.data.buttonText}
+                        </a>
+                      );
+                    }
+                    
+                    return (
+                      <Link to={buttonLink} className={buttonClasses}>
+                        {segment.data.buttonText}
+                      </Link>
+                    );
+                  })()}
                 </div>
               )}
             </div>
