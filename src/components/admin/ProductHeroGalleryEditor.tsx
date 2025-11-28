@@ -59,7 +59,23 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [localData, setLocalData] = useState<ProductHeroGalleryData>(data);
+  
+  // Initialize with default data structure - do NOT use data prop to avoid shared state
+  const [localData, setLocalData] = useState<ProductHeroGalleryData>({
+    title: '',
+    subtitle: '',
+    description: '',
+    images: [],
+    cta1Text: '',
+    cta1Link: '',
+    cta1Style: 'standard',
+    cta2Text: '',
+    cta2Link: '',
+    cta2Style: 'standard',
+    imagePosition: 'right',
+    layoutRatio: '1-1',
+    topSpacing: 'medium'
+  });
 
   useEffect(() => {
     loadContent();
@@ -120,9 +136,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
         if (gallerySegment?.data) {
           console.log('[PHG Editor] Applying data from DB for segment', segmentId);
-          // Update both local state and parent state
+          // Update ONLY local state - do NOT call onChange to avoid parent state contamination
           setLocalData(gallerySegment.data);
-          onChange(gallerySegment.data);
         } else {
           // FALLBACK: If no data in current language, try loading from EN reference
           if (language !== 'en') {
@@ -159,8 +174,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
               if (enGallerySegment?.data) {
                 console.log(`✅ Fallback: Loading layout from EN reference for segment ${segmentId}`);
+                // Update ONLY local state - do NOT call onChange
                 setLocalData(enGallerySegment.data);
-                onChange(enGallerySegment.data);
               }
             }
           }
