@@ -85,10 +85,10 @@ const IndustriesSegment = ({
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold text-light-foreground mb-6 tracking-tight">
+          <h2 className="text-4xl md:text-5xl font-bold text-black mb-6 tracking-tight">
             {title}
           </h2>
-          <p className="text-xl text-light-muted max-w-2xl mx-auto font-light">
+          <p className="text-xl text-black max-w-2xl mx-auto font-light">
             {subtitle}
           </p>
         </div>
