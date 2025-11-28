@@ -52,6 +52,7 @@ import { SEOEditor } from '@/components/admin/SEOEditor';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
+import { BannerSegmentEditor } from '@/components/admin/BannerSegmentEditor';
 import { FullHeroEditor } from '@/components/admin/FullHeroEditor';
 import { SplitScreenSegmentEditor } from '@/components/admin/SplitScreenSegmentEditor';
 import IntroEditor from '@/components/admin/IntroEditor';
@@ -7399,7 +7400,7 @@ const AdminDashboard = () => {
                     }
                     
                     return (
-                      <BannerEditor
+                      <BannerSegmentEditor
                         data={segment.data}
                         onChange={(newData) => {
                           const newSegments = [...pageSegments];
@@ -7408,7 +7409,8 @@ const AdminDashboard = () => {
                         }}
                         onSave={() => handleSaveSegments()}
                         pageSlug={selectedPage}
-                        segmentId={segment.id}
+                        segmentKey={`segment_${segment.id}`}
+                        language={editorLanguage}
                       />
                     );
                   })()}
