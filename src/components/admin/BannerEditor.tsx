@@ -276,7 +276,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
             <Label className="text-white mb-2 block">Button Link</Label>
             <Input
               value={data.buttonLink || ''}
-              onChange={(e) => onChange({ ...data, buttonLink: e.target.value })}
+              onChange={(e) => onChange({ ...data, buttonLink: e.target.value.trim() })}
               placeholder="https://example.com or /path"
               className="bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black placeholder:text-gray-400"
             />

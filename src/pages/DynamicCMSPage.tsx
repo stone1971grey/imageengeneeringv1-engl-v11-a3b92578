@@ -720,7 +720,7 @@ const DynamicCMSPage = () => {
               {segment.data?.buttonText && segment.data?.buttonLink && (
                 <div className="text-center">
                   {(() => {
-                    let buttonLink = segment.data.buttonLink;
+                    let buttonLink = (segment.data.buttonLink || '').trim();
                     let isExternal = false;
                     
                     // Check if it's an external link
