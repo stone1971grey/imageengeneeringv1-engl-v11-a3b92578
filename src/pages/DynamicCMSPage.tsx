@@ -295,7 +295,9 @@ const DynamicCMSPage = () => {
   const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
 
   const renderSegment = (segmentId: string) => {
-    const segment = pageSegments.find((s) => s.id === segmentId || s.segment_key === segmentId);
+    const segment = pageSegments.find((s) =>
+      String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
+    );
     
     if (!segment) {
       console.warn(`[DynamicCMSPage] Segment not found for ID: ${segmentId}`);
@@ -1003,7 +1005,7 @@ const DynamicCMSPage = () => {
       {tabOrder
         .filter(segmentId => {
           const segment = pageSegments.find(
-            s => s.id === segmentId || s.segment_key === segmentId
+            s => String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
           );
           return segment?.type !== 'meta-navigation';
         })
