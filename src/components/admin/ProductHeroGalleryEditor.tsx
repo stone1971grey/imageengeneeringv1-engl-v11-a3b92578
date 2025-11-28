@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,7 +6,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Switch } from "@/components/ui/switch";
 import { Plus, Trash2, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -21,7 +20,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
-import { GeminiIcon } from '@/components/GeminiIcon';
 
 interface ProductImage {
   imageUrl: string;
@@ -57,29 +55,6 @@ interface ProductHeroGalleryEditorProps {
 const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId }: ProductHeroGalleryEditorProps) => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-  
-  // Multi-language state
-  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
-    const saved = localStorage.getItem('cms-split-screen-mode');
-    return saved !== null ? saved === 'true' : true;
-  });
-  const [targetLanguage, setTargetLanguage] = useState<'de' | 'ja' | 'ko' | 'zh'>('de');
-  const [targetData, setTargetData] = useState<ProductHeroGalleryData>({
-    title: '',
-    subtitle: '',
-    description: '',
-    imagePosition: 'left',
-    layoutRatio: '1-1',
-    topSpacing: 'medium',
-    cta1Text: '',
-    cta1Link: '',
-    cta1Style: 'standard',
-    cta2Text: '',
-    cta2Link: '',
-    cta2Style: 'standard',
-    images: []
-  });
-  const [isTranslating, setIsTranslating] = useState(false);
 
   const handleImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -198,189 +173,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
     setDeleteIndex(null);
   };
 
-  // Load target language data
-  const loadTargetLanguageData = async (lang: string) => {
-    try {
-      const { data: pageContentData, error } = await supabase
-        .from("page_content")
-        .select("content_value")
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", lang)
-        .single();
-
-      if (error) throw error;
-
-      if (pageContentData) {
-        const segments = JSON.parse(pageContentData.content_value);
-        const segment = segments.find((seg: any) => 
-          seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
-        );
-
-        if (segment && segment.data) {
-          setTargetData(segment.data);
-        } else {
-          // Initialize with empty structure
-          setTargetData({
-            title: '',
-            subtitle: '',
-            description: '',
-            imagePosition: data.imagePosition,
-            layoutRatio: data.layoutRatio,
-            topSpacing: data.topSpacing,
-            cta1Text: '',
-            cta1Link: data.cta1Link,
-            cta1Style: data.cta1Style,
-            cta2Text: '',
-            cta2Link: data.cta2Link,
-            cta2Style: data.cta2Style,
-            images: data.images.map(img => ({
-              ...img,
-              title: '',
-              description: ''
-            }))
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error loading target language data:", error);
-      toast.error(`Failed to load ${lang} version`);
-    }
-  };
-
-  useEffect(() => {
-    if (isSplitScreenEnabled) {
-      loadTargetLanguageData(targetLanguage);
-    }
-  }, [targetLanguage, isSplitScreenEnabled, pageSlug, segmentId]);
-
-  // Save both English and target language
-  const saveBothLanguages = async () => {
-    try {
-      // Save English version
-      const { data: enPageContent, error: enFetchError } = await supabase
-        .from("page_content")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", "en")
-        .single();
-
-      if (enFetchError) throw enFetchError;
-
-      const enSegments = JSON.parse(enPageContent.content_value);
-      const enUpdatedSegments = enSegments.map((seg: any) => {
-        if (seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)) {
-          return { ...seg, data };
-        }
-        return seg;
-      });
-
-      const { error: enUpdateError } = await supabase
-        .from("page_content")
-        .update({
-          content_value: JSON.stringify(enUpdatedSegments),
-          updated_by: (await supabase.auth.getUser()).data.user?.id,
-        })
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", "en");
-
-      if (enUpdateError) throw enUpdateError;
-
-      // Save target language version
-      const { data: targetPageContent, error: targetFetchError } = await supabase
-        .from("page_content")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", targetLanguage)
-        .single();
-
-      if (targetFetchError) throw targetFetchError;
-
-      const targetSegments = JSON.parse(targetPageContent.content_value);
-      const targetUpdatedSegments = targetSegments.map((seg: any) => {
-        if (seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)) {
-          return { ...seg, data: targetData };
-        }
-        return seg;
-      });
-
-      const { error: targetUpdateError } = await supabase
-        .from("page_content")
-        .update({
-          content_value: JSON.stringify(targetUpdatedSegments),
-          updated_by: (await supabase.auth.getUser()).data.user?.id,
-        })
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", targetLanguage);
-
-      if (targetUpdateError) throw targetUpdateError;
-
-      toast.success("Both language versions saved successfully");
-      onSave?.();
-    } catch (error) {
-      console.error("Error saving both languages:", error);
-      toast.error("Failed to save changes");
-    }
-  };
-
-  // Automatic translation
-  const translateAutomatically = async () => {
-    setIsTranslating(true);
-    try {
-      const { data: translationData, error } = await supabase.functions.invoke('translate-content', {
-        body: {
-          content: {
-            title: data.title,
-            subtitle: data.subtitle,
-            description: data.description,
-            cta1Text: data.cta1Text,
-            cta2Text: data.cta2Text,
-            images: data.images.map(img => ({
-              title: img.title,
-              description: img.description
-            }))
-          },
-          targetLanguage,
-          context: 'product-hero-gallery'
-        }
-      });
-
-      if (error) throw error;
-
-      if (translationData?.translation) {
-        const translated = translationData.translation;
-        setTargetData({
-          ...targetData,
-          title: translated.title || '',
-          subtitle: translated.subtitle || '',
-          description: translated.description || '',
-          cta1Text: translated.cta1Text || '',
-          cta2Text: translated.cta2Text || '',
-          images: targetData.images.map((img, index) => ({
-            ...img,
-            title: translated.images?.[index]?.title || img.title,
-            description: translated.images?.[index]?.description || img.description
-          }))
-        });
-        toast.success(`Content translated to ${targetLanguage.toUpperCase()}`);
-      }
-    } catch (error) {
-      console.error('Translation error:', error);
-      toast.error('Failed to translate content');
-    } finally {
-      setIsTranslating(false);
-    }
-  };
-
-  const handleSplitScreenToggle = (checked: boolean) => {
-    setIsSplitScreenEnabled(checked);
-    localStorage.setItem('cms-split-screen-mode', checked.toString());
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -394,69 +186,13 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Multi-Language Editor Block */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <Label className="text-sm font-semibold">Multi-Language Editor</Label>
-              <p className="text-xs text-muted-foreground">
-                Edit English and target language side by side
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Label htmlFor="split-screen-toggle" className="text-sm">Split Screen</Label>
-              <Switch
-                id="split-screen-toggle"
-                checked={isSplitScreenEnabled}
-                onCheckedChange={handleSplitScreenToggle}
-              />
-            </div>
-          </div>
-
-          {isSplitScreenEnabled && (
-            <div className="flex items-center gap-4 pt-2 border-t">
-              <div className="flex-1">
-                <Label className="text-xs text-muted-foreground mb-1 block">Target Language</Label>
-                <Select value={targetLanguage} onValueChange={(value: any) => setTargetLanguage(value)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="de">🇩🇪 German</SelectItem>
-                    <SelectItem value="ja">🇯🇵 Japanese</SelectItem>
-                    <SelectItem value="ko">🇰🇷 Korean</SelectItem>
-                    <SelectItem value="zh">🇨🇳 Chinese</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button
-                onClick={translateAutomatically}
-                disabled={isTranslating}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-              >
-                <GeminiIcon className="w-4 h-4 mr-2" />
-                {isTranslating ? 'Translating...' : 'Translate Automatically'}
-              </Button>
-            </div>
-          )}
-        </div>
-        {/* Split Screen Layout */}
-        <div className={isSplitScreenEnabled ? "grid grid-cols-2 gap-6" : ""}>
-          {/* English (Reference) Column */}
-          <div className={isSplitScreenEnabled ? "border-r pr-6" : ""}>
-            {isSplitScreenEnabled && (
-              <div className="mb-4 pb-2 border-b">
-                <Label className="text-sm font-semibold text-blue-600">English (Reference)</Label>
-              </div>
-            )}
-            
-            <Tabs defaultValue="content">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="content">Content</TabsTrigger>
-                <TabsTrigger value="layout">Layout</TabsTrigger>
-                <TabsTrigger value="buttons">Buttons</TabsTrigger>
-                <TabsTrigger value="gallery">Gallery</TabsTrigger>
-              </TabsList>
+        <Tabs defaultValue="content">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="content">Content</TabsTrigger>
+            <TabsTrigger value="layout">Layout</TabsTrigger>
+            <TabsTrigger value="buttons">Buttons</TabsTrigger>
+            <TabsTrigger value="gallery">Gallery</TabsTrigger>
+          </TabsList>
 
           {/* Content Tab */}
           <TabsContent value="content" className="space-y-4">
@@ -744,139 +480,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
               </div>
             ))}
           </TabsContent>
-            </Tabs>
+        </Tabs>
 
-            <Button onClick={onSave} className="w-full mt-6">
-              Save English Version
-            </Button>
-          </div>
-
-          {/* Target Language Column */}
-          {isSplitScreenEnabled && (
-            <div>
-              <div className="mb-4 pb-2 border-b">
-                <Label className="text-sm font-semibold text-green-600">
-                  {targetLanguage.toUpperCase()} (Target)
-                </Label>
-              </div>
-
-              <Tabs defaultValue="content">
-                <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="content">Content</TabsTrigger>
-                  <TabsTrigger value="layout">Layout</TabsTrigger>
-                  <TabsTrigger value="buttons">Buttons</TabsTrigger>
-                  <TabsTrigger value="gallery">Gallery</TabsTrigger>
-                </TabsList>
-
-                {/* Target Content Tab */}
-                <TabsContent value="content" className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Title (H1)</Label>
-                    <Input
-                      value={targetData.title}
-                      onChange={(e) => setTargetData({ ...targetData, title: e.target.value })}
-                      placeholder="Product Name"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Subtitle (H2)</Label>
-                    <Input
-                      value={targetData.subtitle}
-                      onChange={(e) => setTargetData({ ...targetData, subtitle: e.target.value })}
-                      placeholder="Product Variants"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Description</Label>
-                    <Textarea
-                      value={targetData.description}
-                      onChange={(e) => setTargetData({ ...targetData, description: e.target.value })}
-                      placeholder="Product description"
-                      rows={3}
-                    />
-                  </div>
-                </TabsContent>
-
-                {/* Target Layout Tab */}
-                <TabsContent value="layout" className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Layout settings are inherited from English version
-                  </p>
-                </TabsContent>
-
-                {/* Target Buttons Tab */}
-                <TabsContent value="buttons" className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Button 1</h3>
-                    <div className="space-y-2">
-                      <Label>Text</Label>
-                      <Input
-                        value={targetData.cta1Text}
-                        onChange={(e) => setTargetData({ ...targetData, cta1Text: e.target.value })}
-                        placeholder="Contact Sales"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Button 2 (Optional)</h3>
-                    <div className="space-y-2">
-                      <Label>Text</Label>
-                      <Input
-                        value={targetData.cta2Text}
-                        onChange={(e) => setTargetData({ ...targetData, cta2Text: e.target.value })}
-                        placeholder="Learn More"
-                      />
-                    </div>
-                  </div>
-                </TabsContent>
-
-                {/* Target Gallery Tab */}
-                <TabsContent value="gallery" className="space-y-4">
-                  {targetData.images.map((image, index) => (
-                    <div key={index} className="border rounded-lg p-4 space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Image {index + 1}</span>
-                      </div>
-
-                      <div>
-                        <Label>Image Title (optional)</Label>
-                        <Input
-                          value={image.title}
-                          onChange={(e) => {
-                            const updatedImages = [...targetData.images];
-                            updatedImages[index] = { ...updatedImages[index], title: e.target.value };
-                            setTargetData({ ...targetData, images: updatedImages });
-                          }}
-                          placeholder="Image title"
-                        />
-                      </div>
-
-                      <div>
-                        <Label>Image Description (optional)</Label>
-                        <Input
-                          value={image.description}
-                          onChange={(e) => {
-                            const updatedImages = [...targetData.images];
-                            updatedImages[index] = { ...updatedImages[index], description: e.target.value };
-                            setTargetData({ ...targetData, images: updatedImages });
-                          }}
-                          placeholder="Image description"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </TabsContent>
-              </Tabs>
-
-              <Button onClick={saveBothLanguages} className="w-full mt-6">
-                Save Both Languages
-              </Button>
-            </div>
-          )}
-        </div>
+        <Button onClick={onSave} className="w-full mt-6">
+          Save Product Hero Gallery
+        </Button>
       </CardContent>
 
       <AlertDialog open={deleteIndex !== null} onOpenChange={() => setDeleteIndex(null)}>
