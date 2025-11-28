@@ -66,11 +66,46 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
           setCtaText(heroSegment.data.hero_cta_text || '');
           setCtaLink(heroSegment.data.hero_cta_link || '');
           setCtaStyle(heroSegment.data.hero_cta_style || 'standard');
-          setImageUrl(heroSegment.data.hero_image_url || '');
-          setImageMetadata(heroSegment.data.hero_image_metadata || null);
-          setImagePosition(heroSegment.data.hero_image_position || 'right');
-          setLayoutRatio(heroSegment.data.hero_layout_ratio || '2-5');
-          setTopSpacing(heroSegment.data.hero_top_spacing || 'medium');
+          
+          // Load current language values
+          let currentImageUrl = heroSegment.data.hero_image_url || '';
+          let currentImageMetadata = heroSegment.data.hero_image_metadata || null;
+          let currentImagePosition = heroSegment.data.hero_image_position || 'right';
+          let currentLayoutRatio = heroSegment.data.hero_layout_ratio || '2-5';
+          let currentTopSpacing = heroSegment.data.hero_top_spacing || 'medium';
+
+          // FALLBACK: For non-EN languages, if image is missing, load from EN reference
+          if (language !== 'en' && !currentImageUrl) {
+            const { data: enData } = await supabase
+              .from("page_content")
+              .select("content_value")
+              .eq("page_slug", pageSlug)
+              .eq("section_key", "page_segments")
+              .eq("language", "en")
+              .maybeSingle();
+
+            if (enData?.content_value) {
+              const enSegments = JSON.parse(enData.content_value);
+              const enHeroSegment = enSegments.find((seg: any) => 
+                seg.type === "hero" && String(seg.id) === String(segmentId)
+              );
+
+              if (enHeroSegment?.data?.hero_image_url) {
+                console.log(`✅ Fallback: Loading image from EN reference for segment ${segmentId}`);
+                currentImageUrl = enHeroSegment.data.hero_image_url;
+                currentImageMetadata = enHeroSegment.data.hero_image_metadata;
+                currentImagePosition = enHeroSegment.data.hero_image_position || 'right';
+                currentLayoutRatio = enHeroSegment.data.hero_layout_ratio || '2-5';
+                currentTopSpacing = enHeroSegment.data.hero_top_spacing || 'medium';
+              }
+            }
+          }
+
+          setImageUrl(currentImageUrl);
+          setImageMetadata(currentImageMetadata);
+          setImagePosition(currentImagePosition);
+          setLayoutRatio(currentLayoutRatio);
+          setTopSpacing(currentTopSpacing);
         }
       } catch (error) {
         console.error("Error parsing segments:", error);
