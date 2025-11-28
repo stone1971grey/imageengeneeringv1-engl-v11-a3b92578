@@ -355,7 +355,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       if (translateData?.translatedTexts) {
         const translated = translateData.translatedTexts;
         const updatedData = {
-          ...localData,
+          ...sourceData, // Copy all language-independent fields (images, layout, links, styles) from EN
           title: translated["0"] || sourceData.title,
           subtitle: translated["1"] || sourceData.subtitle,
           description: translated["2"] || sourceData.description,
