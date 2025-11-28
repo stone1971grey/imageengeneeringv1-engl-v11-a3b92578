@@ -68,6 +68,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
   const loadContent = async () => {
     if (!pageSlug) return;
+
+    console.log('[PHG Editor] loadContent start', { pageSlug, segmentId, language });
     
     // 1) Try to load content for the current editor language
     const { data: currentLangRow, error } = await supabase
@@ -79,11 +81,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       .maybeSingle();
 
     if (error) {
-      console.error("Error loading page_segments:", error);
+      console.error("[PHG Editor] Error loading page_segments:", error);
       return;
     }
 
     let segmentsJson: string | null = currentLangRow?.content_value || null;
+    console.log('[PHG Editor] currentLangRow', { hasRow: !!currentLangRow, hasContent: !!segmentsJson });
 
     // 2) Fallback for legacy EN data without language field
     if (!segmentsJson && language === 'en') {
@@ -96,10 +99,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         .maybeSingle();
 
       if (legacyError) {
-        console.error("Error loading legacy EN page_segments:", legacyError);
+        console.error("[PHG Editor] Error loading legacy EN page_segments:", legacyError);
       }
 
       if (legacyEnRow?.content_value) {
+        console.log('[PHG Editor] Using legacy EN fallback row');
         segmentsJson = legacyEnRow.content_value;
       }
     }
@@ -107,11 +111,15 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     if (segmentsJson) {
       try {
         const segments = JSON.parse(segmentsJson);
+        console.log('[PHG Editor] Parsed segments count', segments.length);
+
         const gallerySegment = segments.find((seg: any) => 
           seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
         );
+        console.log('[PHG Editor] Found gallery segment?', { found: !!gallerySegment, ids: segments.map((s: any) => ({ id: s.id, type: s.type })) });
 
         if (gallerySegment?.data) {
+          console.log('[PHG Editor] Applying data from DB for segment', segmentId);
           // Update both local state and parent state
           setLocalData(gallerySegment.data);
           onChange(gallerySegment.data);
