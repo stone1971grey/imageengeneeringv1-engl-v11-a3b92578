@@ -74,8 +74,8 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
           let currentLayoutRatio = heroSegment.data.hero_layout_ratio || '2-5';
           let currentTopSpacing = heroSegment.data.hero_top_spacing || 'medium';
 
-          // FALLBACK: For non-EN languages, if image is missing, load from EN reference
-          if (language !== 'en' && !currentImageUrl) {
+          // FALLBACK: For non-EN languages, ALWAYS load layout settings from EN reference
+          if (language !== 'en') {
             const { data: enData } = await supabase
               .from("page_content")
               .select("content_value")
@@ -90,10 +90,16 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
                 seg.type === "hero" && String(seg.id) === String(segmentId)
               );
 
-              if (enHeroSegment?.data?.hero_image_url) {
-                console.log(`✅ Fallback: Loading image from EN reference for segment ${segmentId}`);
-                currentImageUrl = enHeroSegment.data.hero_image_url;
-                currentImageMetadata = enHeroSegment.data.hero_image_metadata;
+              if (enHeroSegment?.data) {
+                console.log(`✅ Fallback: Loading layout settings from EN reference for segment ${segmentId}`);
+                
+                // If no image in current language, use EN image
+                if (!currentImageUrl && enHeroSegment.data.hero_image_url) {
+                  currentImageUrl = enHeroSegment.data.hero_image_url;
+                  currentImageMetadata = enHeroSegment.data.hero_image_metadata;
+                }
+                
+                // ALWAYS use EN layout settings to ensure consistency
                 currentImagePosition = enHeroSegment.data.hero_image_position || 'right';
                 currentLayoutRatio = enHeroSegment.data.hero_layout_ratio || '2-5';
                 currentTopSpacing = enHeroSegment.data.hero_top_spacing || 'medium';
