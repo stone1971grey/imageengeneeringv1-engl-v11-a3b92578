@@ -200,10 +200,10 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
             <SelectTrigger className="bg-white border-2 border-gray-300 text-black">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-white z-50">
-              <SelectItem value="centered">Centered (2 Images)</SelectItem>
-              <SelectItem value="distributed">Distributed (3 Images)</SelectItem>
-              <SelectItem value="four-columns">Four Columns (4 Images)</SelectItem>
+            <SelectContent className="bg-white z-50 text-black">
+              <SelectItem value="centered" className="text-black">Centered (2 Images)</SelectItem>
+              <SelectItem value="distributed" className="text-black">Distributed (3 Images)</SelectItem>
+              <SelectItem value="four-columns" className="text-black">Four Columns (4 Images)</SelectItem>
             </SelectContent>
           </Select>
         </div>
