@@ -386,17 +386,36 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
     }
   };
 
+  const LANGUAGES = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'de', name: 'German', flag: '🇩🇪' },
+    { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+    { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+    { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+  ];
+
   return (
     <div className="space-y-6">
       {language !== 'en' && (
-        <Button
-          onClick={handleTranslate}
-          disabled={isTranslating}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-        >
-          <GeminiIcon className="mr-2 h-4 w-4" />
-          {isTranslating ? "Translating..." : "Translate Automatically"}
-        </Button>
+        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-2 border-blue-600/50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+            <div>
+              <div className="text-white font-semibold">
+                Target Language: {LANGUAGES.find(l => l.code === language)?.name}
+              </div>
+              <div className="text-blue-300 text-xs">Editing {LANGUAGES.find(l => l.code === language)?.name} version</div>
+            </div>
+          </div>
+          <Button
+            onClick={handleTranslate}
+            disabled={isTranslating}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          >
+            <GeminiIcon className="mr-2 h-4 w-4" />
+            {isTranslating ? "Translating..." : "Translate Automatically"}
+          </Button>
+        </div>
       )}
 
       <div className="space-y-4">
