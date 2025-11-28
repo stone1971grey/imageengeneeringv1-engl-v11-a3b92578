@@ -64,7 +64,10 @@ export const BannerSegmentEditor = ({
   language: editorLanguage 
 }: BannerSegmentEditorProps) => {
   const [targetLanguage, setTargetLanguage] = useState('de');
-  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(true);
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
+    const saved = localStorage.getItem('cms-split-screen-mode');
+    return saved !== null ? saved === 'true' : true;
+  });
   const [targetData, setTargetData] = useState<BannerData>({
     title: '',
     subtext: '',
@@ -78,6 +81,11 @@ export const BannerSegmentEditor = ({
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
  
+  const handleSplitScreenToggle = (checked: boolean) => {
+    setIsSplitScreenEnabled(checked);
+    localStorage.setItem('cms-split-screen-mode', String(checked));
+  };
+
   // Load target language data from backend
   const loadTargetLanguageData = async (lang: string) => {
     const { data: targetContent, error } = await supabase
@@ -685,7 +693,7 @@ export const BannerSegmentEditor = ({
                 <Switch 
                   id="split-screen-toggle"
                   checked={isSplitScreenEnabled}
-                  onCheckedChange={setIsSplitScreenEnabled}
+                  onCheckedChange={handleSplitScreenToggle}
                   className="data-[state=checked]:bg-blue-600"
                 />
                 <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">

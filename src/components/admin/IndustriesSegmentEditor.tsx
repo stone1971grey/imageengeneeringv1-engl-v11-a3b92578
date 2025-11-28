@@ -44,10 +44,18 @@ export const IndustriesSegmentEditor = ({
   language: editorLanguage 
 }: IndustriesSegmentEditorProps) => {
   const [targetLanguage, setTargetLanguage] = useState('de');
-  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(true);
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
+    const saved = localStorage.getItem('cms-split-screen-mode');
+    return saved !== null ? saved === 'true' : true;
+  });
   const [targetData, setTargetData] = useState<any>(data);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const handleSplitScreenToggle = (checked: boolean) => {
+    setIsSplitScreenEnabled(checked);
+    localStorage.setItem('cms-split-screen-mode', String(checked));
+  };
 
   const items = data.items || [];
   const columns = data.columns || 4;
@@ -410,7 +418,7 @@ export const IndustriesSegmentEditor = ({
                 <Switch 
                   id="split-screen-toggle"
                   checked={isSplitScreenEnabled}
-                  onCheckedChange={setIsSplitScreenEnabled}
+                  onCheckedChange={handleSplitScreenToggle}
                   className="data-[state=checked]:bg-blue-600"
                 />
                 <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
