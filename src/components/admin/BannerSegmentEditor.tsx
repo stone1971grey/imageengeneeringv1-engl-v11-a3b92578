@@ -72,17 +72,36 @@ export const BannerSegmentEditor = ({
 
   // Load target language data
   const loadTargetLanguageData = async (lang: string) => {
-    const { data: content, error } = await supabase
+    // Load target language page_segments
+    const { data: targetContent, error } = await supabase
       .from('page_content')
       .select('content_value')
       .eq('page_slug', pageSlug)
-      .eq('section_key', segmentKey)
+      .eq('section_key', 'page_segments')
       .eq('language', lang)
       .maybeSingle();
 
-    if (!error && content) {
-      const parsedData = JSON.parse(content.content_value);
-      setTargetData(parsedData);
+    if (!error && targetContent) {
+      const targetSegments = JSON.parse(targetContent.content_value || "[]");
+      const segmentId = segmentKey.replace('segment_', '');
+      
+      // Find the banner segment in target language
+      const targetSegment = targetSegments.find((seg: any) => 
+        seg.type === "banner" && String(seg.id) === String(segmentId)
+      );
+      
+      if (targetSegment?.data) {
+        setTargetData(targetSegment.data);
+      } else {
+        // Copy structure from English but with empty text fields
+        setTargetData({
+          ...data,
+          title: '',
+          subtext: '',
+          buttonText: '',
+          images: data.images.map(img => ({ ...img, alt: '' }))
+        });
+      }
     } else {
       // If no target language version exists, copy structure from English but with empty text fields
       setTargetData({
@@ -224,19 +243,41 @@ export const BannerSegmentEditor = ({
   const handleSaveEnglish = async () => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('page_content')
-        .upsert({
-          page_slug: pageSlug,
-          section_key: segmentKey,
-          language: 'en',
-          content_type: 'banner',
-          content_value: JSON.stringify(data)
-        }, {
-          onConflict: 'page_slug,section_key,language'
-        });
+      // Load current page_segments for English
+      const { data: pageContentData, error: fetchError } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", "en")
+        .single();
 
-      if (error) throw error;
+      if (fetchError) throw fetchError;
+
+      const segments = JSON.parse(pageContentData.content_value || "[]");
+      const segmentId = segmentKey.replace('segment_', '');
+      
+      // Update the banner segment in the array
+      const updatedSegments = segments.map((seg: any) => {
+        if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
+          return { ...seg, data };
+        }
+        return seg;
+      });
+
+      // Save back to page_segments
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(updatedSegments),
+          updated_by: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", "en");
+
+      if (updateError) throw updateError;
+      
       toast.success('Saved English version');
       if (onSave) onSave();
     } catch (error) {
@@ -250,19 +291,76 @@ export const BannerSegmentEditor = ({
   const handleSaveTarget = async () => {
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('page_content')
-        .upsert({
-          page_slug: pageSlug,
-          section_key: segmentKey,
-          language: targetLanguage,
-          content_type: 'banner',
-          content_value: JSON.stringify(targetData)
-        }, {
-          onConflict: 'page_slug,section_key,language'
+      // Load current page_segments for target language
+      const { data: pageContentData, error: fetchError } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", targetLanguage)
+        .maybeSingle();
+
+      let segments = [];
+      const segmentId = segmentKey.replace('segment_', '');
+      
+      if (pageContentData) {
+        // Target language version exists, update it
+        segments = JSON.parse(pageContentData.content_value || "[]");
+        
+        // Update the banner segment in the array
+        const updatedSegments = segments.map((seg: any) => {
+          if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
+            return { ...seg, data: targetData };
+          }
+          return seg;
         });
 
-      if (error) throw error;
+        const { error: updateError } = await supabase
+          .from("page_content")
+          .update({
+            content_value: JSON.stringify(updatedSegments),
+            updated_by: (await supabase.auth.getUser()).data.user?.id,
+          })
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .eq("language", targetLanguage);
+
+        if (updateError) throw updateError;
+      } else {
+        // No target language version exists, create from English structure
+        const { data: englishData } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .eq("language", "en")
+          .single();
+
+        if (englishData) {
+          const englishSegments = JSON.parse(englishData.content_value || "[]");
+          
+          // Create new language version with updated banner segment
+          const newSegments = englishSegments.map((seg: any) => {
+            if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
+              return { ...seg, data: targetData };
+            }
+            return seg;
+          });
+
+          const { error: insertError } = await supabase
+            .from("page_content")
+            .insert({
+              page_slug: pageSlug,
+              section_key: "page_segments",
+              language: targetLanguage,
+              content_type: "json",
+              content_value: JSON.stringify(newSegments)
+            });
+
+          if (insertError) throw insertError;
+        }
+      }
+
       toast.success(`Saved ${LANGUAGES.find(l => l.code === targetLanguage)?.name} version`);
     } catch (error) {
       console.error('Save error:', error);
