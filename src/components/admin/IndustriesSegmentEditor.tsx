@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,6 +52,11 @@ export const IndustriesSegmentEditor = ({
   const items = data.items || [];
   const columns = data.columns || 4;
   const targetItems = targetData.items || [];
+
+  // Load target language data on mount and when target language changes
+  useEffect(() => {
+    loadTargetLanguageData(targetLanguage);
+  }, [targetLanguage]);
 
   // Load target language data
   const loadTargetLanguageData = async (lang: string) => {
