@@ -650,7 +650,13 @@ const DynamicCMSPage = () => {
                   )}
                 </div>
               )}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+              <div className={`grid gap-8 mb-12 ${
+                segment.data?.imageLayout === 'centered' 
+                  ? 'grid-cols-2 max-w-2xl mx-auto' 
+                  : segment.data?.imageLayout === 'distributed'
+                  ? 'grid-cols-1 md:grid-cols-3'
+                  : 'grid-cols-2 md:grid-cols-4'
+              }`}>
                 {(segment.data?.images || []).map((banner: any, idx: number) => (
                   <div
                     key={idx}

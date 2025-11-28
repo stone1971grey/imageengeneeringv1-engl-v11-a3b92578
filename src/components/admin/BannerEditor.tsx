@@ -29,6 +29,7 @@ interface BannerData {
   title: string;
   subtext: string;
   images: BannerImage[];
+  imageLayout: string;
   buttonText: string;
   buttonLink: string;
   buttonStyle: string;
@@ -187,6 +188,24 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
             <Plus className="h-4 w-4 mr-2" />
             Add Image
           </Button>
+        </div>
+
+        {/* Image Layout Selection */}
+        <div className="mb-4">
+          <Label className="text-white mb-2 block">Image Layout</Label>
+          <Select
+            value={data.imageLayout || 'centered'}
+            onValueChange={(value) => onChange({ ...data, imageLayout: value })}
+          >
+            <SelectTrigger className="bg-white border-2 border-gray-300 text-black">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="centered">Centered (2 Images)</SelectItem>
+              <SelectItem value="distributed">Distributed (3 Images)</SelectItem>
+              <SelectItem value="four-columns">Four Columns (4 Images)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-4">
