@@ -404,7 +404,10 @@ export const BannerSegmentEditor = ({
         .eq("language", targetLanguage)
         .maybeSingle();
 
+      const segmentIdStr = String(segmentId);
+
       if (!tabOrderRow) {
+        // No tab_order for target language: clone from English
         const { data: englishTab } = await supabase
           .from("page_content")
           .select("content_value")
@@ -414,13 +417,38 @@ export const BannerSegmentEditor = ({
           .maybeSingle();
 
         if (englishTab?.content_value) {
+          let clonedOrder: string[] = [];
+          try {
+            clonedOrder = JSON.parse(englishTab.content_value || "[]");
+          } catch (e) {
+            console.error('Error parsing EN tab_order while cloning for target language', e);
+          }
+          if (!clonedOrder.includes(segmentIdStr)) {
+            clonedOrder.push(segmentIdStr);
+          }
+
           await supabase.from("page_content").insert({
             page_slug: pageSlug,
             section_key: "tab_order",
             language: targetLanguage,
             content_type: "json",
-            content_value: englishTab.content_value,
+            content_value: JSON.stringify(clonedOrder),
           });
+        }
+      } else {
+        // Tab_order exists for target language: ensure banner segment ID is present
+        let currentOrder: string[] = [];
+        try {
+          currentOrder = JSON.parse(tabOrderRow.content_value || "[]");
+        } catch (e) {
+          console.error('Error parsing tab_order for target language', e);
+        }
+        if (!currentOrder.includes(segmentIdStr)) {
+          currentOrder.push(segmentIdStr);
+          await supabase
+            .from("page_content")
+            .update({ content_value: JSON.stringify(currentOrder) })
+            .eq("id", tabOrderRow.id);
         }
       }
 
