@@ -650,26 +650,73 @@ const DynamicCMSPage = () => {
                   )}
                 </div>
               )}
-              <div className={`grid gap-8 mb-12 ${
-                segment.data?.imageLayout === 'centered' 
-                  ? 'grid-cols-2 max-w-2xl mx-auto' 
-                  : segment.data?.imageLayout === 'distributed'
-                  ? 'grid-cols-1 md:grid-cols-3'
-                  : 'grid-cols-2 md:grid-cols-4'
-              }`}>
-                {(segment.data?.images || []).map((banner: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                  >
-                    <img
-                      src={banner.url}
-                      alt={banner.alt}
-                      className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
-                    />
+              {(() => {
+                const imageCount = (segment.data?.images || []).length;
+                const images = segment.data?.images || [];
+                
+                // Bei 5+ Bildern: erste 4 oben, Rest unten mittig
+                if (imageCount >= 5) {
+                  const topImages = images.slice(0, 4);
+                  const bottomImages = images.slice(4);
+                  
+                  return (
+                    <div className="space-y-8 mb-12">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        {topImages.map((banner: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                          >
+                            <img
+                              src={banner.url}
+                              alt={banner.alt}
+                              className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex justify-center gap-8">
+                        {bottomImages.map((banner: any, idx: number) => (
+                          <div
+                            key={idx + 4}
+                            className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group w-1/4"
+                          >
+                            <img
+                              src={banner.url}
+                              alt={banner.alt}
+                              className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                
+                // Layout basierend auf Bildanzahl
+                const gridClass = 
+                  imageCount === 1 ? 'grid-cols-1 max-w-xs mx-auto' :
+                  imageCount === 2 ? 'grid-cols-2 max-w-2xl mx-auto' :
+                  imageCount === 3 ? 'grid-cols-1 md:grid-cols-3' :
+                  'grid-cols-2 md:grid-cols-4';
+                
+                return (
+                  <div className={`grid gap-8 mb-12 ${gridClass}`}>
+                    {images.map((banner: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                      >
+                        <img
+                          src={banner.url}
+                          alt={banner.alt}
+                          className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
               {segment.data?.buttonText && segment.data?.buttonLink && (
                 <div className="text-center">
                   <Link
