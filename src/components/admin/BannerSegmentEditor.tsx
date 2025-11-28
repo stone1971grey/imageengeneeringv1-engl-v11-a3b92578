@@ -4,7 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Upload, Languages, Sparkles } from "lucide-react";
+import { Plus, Trash2, Upload, Languages } from "lucide-react";
+import { GeminiIcon } from "@/components/GeminiIcon";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -727,7 +728,7 @@ export const BannerSegmentEditor = ({
                 disabled={isTranslating}
                 className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
-                <Sparkles className="h-4 w-4 mr-2" />
+                <GeminiIcon className="h-4 w-4 mr-2" />
                 {isTranslating ? "Translating..." : "Translate Automatically"}
               </Button>
             </div>
