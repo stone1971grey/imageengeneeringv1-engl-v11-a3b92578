@@ -300,20 +300,55 @@ export const BannerSegmentEditor = ({
         .eq("language", targetLanguage)
         .maybeSingle();
 
-      let segments = [];
       const segmentId = segmentKey.replace('segment_', '');
-      
+      let updatedSegments: any[] = [];
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        // PGRST116 = No rows found, which is fine for maybeSingle
+        throw fetchError;
+      }
+
       if (pageContentData) {
-        // Target language version exists, update it
-        segments = JSON.parse(pageContentData.content_value || "[]");
-        
-        // Update the banner segment in the array
-        const updatedSegments = segments.map((seg: any) => {
+        // Target language version exists, update or create banner segment
+        const segments = JSON.parse(pageContentData.content_value || "[]");
+        let segmentFound = false;
+
+        updatedSegments = segments.map((seg: any) => {
           if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
+            segmentFound = true;
             return { ...seg, data: targetData };
           }
           return seg;
         });
+
+        // If banner segment not found in target language, create it from English template
+        if (!segmentFound) {
+          const { data: englishData } = await supabase
+            .from("page_content")
+            .select("content_value")
+            .eq("page_slug", pageSlug)
+            .eq("section_key", "page_segments")
+            .eq("language", "en")
+            .single();
+
+          if (englishData) {
+            const englishSegments = JSON.parse(englishData.content_value || "[]");
+            const englishBanner = englishSegments.find((seg: any) => 
+              seg.type === "banner" && String(seg.id) === String(segmentId)
+            );
+
+            if (englishBanner) {
+              updatedSegments.push({ ...englishBanner, data: targetData });
+            } else {
+              // Fallback: create minimal banner segment
+              updatedSegments.push({
+                id: englishBanner?.id || segmentId,
+                type: "banner",
+                data: targetData,
+              });
+            }
+          }
+        }
 
         const { error: updateError } = await supabase
           .from("page_content")
@@ -338,9 +373,8 @@ export const BannerSegmentEditor = ({
 
         if (englishData) {
           const englishSegments = JSON.parse(englishData.content_value || "[]");
-          
-          // Create new language version with updated banner segment
-          const newSegments = englishSegments.map((seg: any) => {
+
+          updatedSegments = englishSegments.map((seg: any) => {
             if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
               return { ...seg, data: targetData };
             }
@@ -354,7 +388,7 @@ export const BannerSegmentEditor = ({
               section_key: "page_segments",
               language: targetLanguage,
               content_type: "json",
-              content_value: JSON.stringify(newSegments)
+              content_value: JSON.stringify(updatedSegments),
             });
 
           if (insertError) throw insertError;
