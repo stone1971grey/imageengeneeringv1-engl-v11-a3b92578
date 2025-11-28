@@ -6814,17 +6814,25 @@ const AdminDashboard = () => {
                     }
                     
                     return (
-                      <ProductHeroGalleryEditor
-                        data={segment.data}
-                        onChange={(newData) => {
-                          const newSegments = [...pageSegments];
-                          newSegments[index].data = newData;
-                          setPageSegments(newSegments);
-                        }}
-                        onSave={() => handleSaveSegments()}
-                        pageSlug={selectedPage}
-                        segmentId={segment.id}
-                      />
+                      <SplitScreenSegmentEditor
+                        segmentTitle="Product Hero Gallery"
+                        segmentType="product-hero-gallery"
+                      >
+                        {(language) => (
+                          <ProductHeroGalleryEditor
+                            data={segment.data}
+                            onChange={(newData) => {
+                              const newSegments = [...pageSegments];
+                              newSegments[index].data = newData;
+                              setPageSegments(newSegments);
+                            }}
+                            onSave={() => handleSaveSegments()}
+                            pageSlug={resolvedPageSlug || selectedPage}
+                            segmentId={segment.id}
+                            language={language}
+                          />
+                        )}
+                      </SplitScreenSegmentEditor>
                     );
                   })()}
 
