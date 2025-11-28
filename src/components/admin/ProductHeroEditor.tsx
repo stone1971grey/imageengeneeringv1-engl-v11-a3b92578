@@ -174,11 +174,7 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
   };
 
   const handleTranslate = async () => {
-    if (!title && !subtitle && !description && !ctaText) {
-      toast.error("No content to translate");
-      return;
-    }
-
+    // For non-English languages, always translate from the EN reference version
     if (language === 'en') {
       toast.error("Cannot translate from English to English");
       return;
@@ -186,27 +182,62 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
 
     setIsTranslating(true);
     try {
+      // Load EN reference content for this segment
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", "en")
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error loading EN reference for translation:", error);
+        toast.error("Could not load English reference content");
+        return;
+      }
+
+      if (!data?.content_value) {
+        toast.error("No English reference content found to translate");
+        return;
+      }
+
+      const segments = JSON.parse(data.content_value);
+      const heroSegment = segments.find((seg: any) => 
+        seg.type === "hero" && String(seg.id) === String(segmentId)
+      );
+
+      const sourceTitle = heroSegment?.data?.hero_title || '';
+      const sourceSubtitle = heroSegment?.data?.hero_subtitle || '';
+      const sourceDescription = heroSegment?.data?.hero_description || '';
+      const sourceCtaText = heroSegment?.data?.hero_cta_text || '';
+
+      if (!sourceTitle && !sourceSubtitle && !sourceDescription && !sourceCtaText) {
+        toast.error("No English content available to translate");
+        return;
+      }
+
       const textsToTranslate = [
-        title || '',
-        subtitle || '',
-        description || '',
-        ctaText || ''
+        sourceTitle,
+        sourceSubtitle,
+        sourceDescription,
+        sourceCtaText
       ];
 
-      const { data, error } = await supabase.functions.invoke('translate-content', {
+      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
         body: {
           texts: textsToTranslate,
           targetLanguage: language
         }
       });
 
-      if (error) throw error;
+      if (translateError) throw translateError;
 
-      if (data?.translatedTexts && Array.isArray(data.translatedTexts)) {
-        setTitle(data.translatedTexts[0] || title);
-        setSubtitle(data.translatedTexts[1] || subtitle);
-        setDescription(data.translatedTexts[2] || description);
-        setCtaText(data.translatedTexts[3] || ctaText);
+      if (translateData?.translatedTexts && Array.isArray(translateData.translatedTexts)) {
+        setTitle(translateData.translatedTexts[0] || sourceTitle);
+        setSubtitle(translateData.translatedTexts[1] || sourceSubtitle);
+        setDescription(translateData.translatedTexts[2] || sourceDescription);
+        setCtaText(translateData.translatedTexts[3] || sourceCtaText);
         toast.success("Content translated successfully!");
       }
     } catch (error: any) {
