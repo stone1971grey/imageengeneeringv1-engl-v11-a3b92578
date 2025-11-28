@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { Edit2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,10 +26,12 @@ interface EditSlugDialogProps {
 export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }: EditSlugDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newSlug, setNewSlug] = useState(currentSlug);
+  const [newTitle, setNewTitle] = useState(pageTitle);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const handleOpen = () => {
     setNewSlug(currentSlug);
+    setNewTitle(pageTitle);
     setIsOpen(true);
   };
 
@@ -85,10 +88,13 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
         return;
       }
 
-      // Step 1: Update page_registry
+      // Step 1: Update page_registry (slug AND title)
       const { error: pageError } = await supabase
         .from('page_registry')
-        .update({ page_slug: newSlug })
+        .update({ 
+          page_slug: newSlug,
+          page_title: newTitle.trim() || pageTitle // Use new title or keep old if empty
+        })
         .eq('page_id', pageId);
 
       if (pageError) throw pageError;
@@ -128,8 +134,12 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
         // Don't throw - navigation might still use static files
       }
 
-      toast.success(`Slug successfully updated: "${currentSlug}" → "${newSlug}"`, {
-        description: "All database references and navigation links have been updated automatically"
+      const changes = [];
+      if (newSlug !== currentSlug) changes.push(`Slug: "${currentSlug}" → "${newSlug}"`);
+      if (newTitle.trim() !== pageTitle) changes.push(`Title: "${pageTitle}" → "${newTitle.trim()}"`);
+      
+      toast.success(`Page successfully updated!`, {
+        description: changes.join(' | ') + " - All database references and navigation updated automatically"
       });
       
       setIsOpen(false);
@@ -156,13 +166,31 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white border-gray-700">
         <DialogHeader>
-          <DialogTitle className="text-[#f9dc24]">Edit Page Slug</DialogTitle>
+          <DialogTitle className="text-[#f9dc24]">Edit Page Slug & Title</DialogTitle>
           <DialogDescription className="text-gray-400">
-            Update the URL slug for "{pageTitle}" (Page ID: {pageId})
+            Update the URL slug and navigation title for Page ID {pageId}
           </DialogDescription>
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="new-title" className="text-gray-300">
+              Page Title (Navigation Display)
+            </Label>
+            <Input
+              id="new-title"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="e.g., Hub Page"
+              className="bg-gray-800 border-gray-700 text-white"
+            />
+            <p className="text-xs text-gray-500">
+              This title appears in the navigation menu
+            </p>
+          </div>
+
+          <Separator className="bg-gray-700" />
+          
           <div className="grid gap-2">
             <Label htmlFor="current-slug" className="text-gray-300">
               Current Slug
@@ -177,7 +205,7 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
           
           <div className="grid gap-2">
             <Label htmlFor="new-slug" className="text-gray-300">
-              New Slug
+              New Slug (URL)
             </Label>
             <Input
               id="new-slug"
