@@ -199,6 +199,7 @@ export const BannerSegmentEditor = ({
       });
 
       console.log('Translating Banner Segment:', textsToTranslate);
+      console.log('English images structure:', data.images);
 
       const { data: translationResult, error } = await supabase.functions.invoke('translate-content', {
         body: {
@@ -214,21 +215,24 @@ export const BannerSegmentEditor = ({
       if (translationResult?.translatedTexts) {
         const translated = translationResult.translatedTexts;
         
-        // Update translated images with new alt texts
+        // Update translated images with new alt texts, keep all other properties (url, metadata)
         const translatedImages = data.images.map((img, index) => ({
-          ...img,
-          alt: translated[`image_${index}_alt`] || img.alt
+          url: img.url,
+          alt: translated[`image_${index}_alt`] || img.alt,
+          metadata: img.metadata
         }));
 
-        setTargetData({
-          ...targetData,
+        const newTargetData = {
           title: translated.title || data.title || '',
           subtext: translated.subtext || data.subtext || '',
           buttonText: translated.buttonText || data.buttonText || '',
           images: translatedImages,
           buttonLink: data.buttonLink,  // Don't translate links
           buttonStyle: data.buttonStyle  // Don't translate button style
-        });
+        };
+
+        console.log('Setting targetData after translation:', newTargetData);
+        setTargetData(newTargetData);
 
         toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name}`);
       }
@@ -291,6 +295,11 @@ export const BannerSegmentEditor = ({
   const handleSaveTarget = async () => {
     setIsSaving(true);
     try {
+      console.log('handleSaveTarget called with targetData:', targetData);
+      console.log('Target language:', targetLanguage);
+      console.log('Page slug:', pageSlug);
+      console.log('Segment key:', segmentKey);
+
       // Load current page_segments for target language
       const { data: pageContentData, error: fetchError } = await supabase
         .from("page_content")
@@ -309,6 +318,7 @@ export const BannerSegmentEditor = ({
       }
 
       if (pageContentData) {
+        console.log('Target language page_segments exist, updating...');
         // Target language version exists, update or create banner segment
         const segments = JSON.parse(pageContentData.content_value || "[]");
         let segmentFound = false;
@@ -316,6 +326,7 @@ export const BannerSegmentEditor = ({
         updatedSegments = segments.map((seg: any) => {
           if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
             segmentFound = true;
+            console.log('Found existing banner segment, updating with targetData');
             return { ...seg, data: targetData };
           }
           return seg;
@@ -323,6 +334,7 @@ export const BannerSegmentEditor = ({
 
         // If banner segment not found in target language, create it from English template
         if (!segmentFound) {
+          console.log('Banner segment not found in target language, creating from English template');
           const { data: englishData } = await supabase
             .from("page_content")
             .select("content_value")
@@ -350,6 +362,7 @@ export const BannerSegmentEditor = ({
           }
         }
 
+        console.log('Updating page_segments for target language:', updatedSegments);
         const { error: updateError } = await supabase
           .from("page_content")
           .update({
@@ -362,6 +375,7 @@ export const BannerSegmentEditor = ({
 
         if (updateError) throw updateError;
       } else {
+        console.log('No target language page_segments exist, creating from English structure');
         // No target language version exists, create from English structure
         const { data: englishData } = await supabase
           .from("page_content")
@@ -376,11 +390,13 @@ export const BannerSegmentEditor = ({
 
           updatedSegments = englishSegments.map((seg: any) => {
             if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
+              console.log('Replacing English banner data with targetData');
               return { ...seg, data: targetData };
             }
             return seg;
           });
 
+          console.log('Inserting new page_segments for target language:', updatedSegments);
           const { error: insertError } = await supabase
             .from("page_content")
             .insert({
@@ -407,6 +423,7 @@ export const BannerSegmentEditor = ({
       const segmentIdStr = String(segmentId);
 
       if (!tabOrderRow) {
+        console.log('No tab_order for target language, cloning from English');
         // No tab_order for target language: clone from English
         const { data: englishTab } = await supabase
           .from("page_content")
@@ -427,6 +444,7 @@ export const BannerSegmentEditor = ({
             clonedOrder.push(segmentIdStr);
           }
 
+          console.log('Inserting tab_order for target language:', clonedOrder);
           await supabase.from("page_content").insert({
             page_slug: pageSlug,
             section_key: "tab_order",
@@ -436,6 +454,7 @@ export const BannerSegmentEditor = ({
           });
         }
       } else {
+        console.log('tab_order exists for target language, ensuring segment ID is present');
         // Tab_order exists for target language: ensure banner segment ID is present
         let currentOrder: string[] = [];
         try {
@@ -445,13 +464,17 @@ export const BannerSegmentEditor = ({
         }
         if (!currentOrder.includes(segmentIdStr)) {
           currentOrder.push(segmentIdStr);
+          console.log('Updating tab_order to include segment ID:', currentOrder);
           await supabase
             .from("page_content")
             .update({ content_value: JSON.stringify(currentOrder) })
             .eq("id", tabOrderRow.id);
+        } else {
+          console.log('Segment ID already in tab_order');
         }
       }
 
+      console.log('Save completed successfully');
       toast.success(`Saved ${LANGUAGES.find(l => l.code === targetLanguage)?.name} version`);
     } catch (error) {
       console.error('Save error:', error);
