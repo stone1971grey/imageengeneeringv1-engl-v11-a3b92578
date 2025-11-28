@@ -186,7 +186,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
               Hero mit Produktgalerie, Thumbnails, zwei CTA-Buttons und erweiterten Layout-Optionen
             </CardDescription>
           </div>
-          <Button onClick={onSave} style={{ backgroundColor: '#f9dc24', color: 'black' }}>
+          <Button onClick={onSave} className="w-full" style={{ backgroundColor: '#f9dc24', color: 'black' }}>
             Save Changes
           </Button>
         </div>
