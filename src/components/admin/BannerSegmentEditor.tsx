@@ -522,15 +522,15 @@ export const BannerSegmentEditor = ({
                         {uploadingIndex === index ? 'Uploading...' : 'Upload Image'}
                       </Button>
                     </div>
-                    {image.url && (
-                      <div className="mt-4 p-4 bg-background rounded">
-                        <img
-                          src={image.url}
-                          alt={image.alt || `Banner image ${index + 1}`}
-                          className="max-h-32 max-w-full object-contain mx-auto"
-                        />
-                      </div>
-                    )}
+                  </div>
+                )}
+                {image.url && (
+                  <div className="mt-4 p-4 bg-background rounded">
+                    <img
+                      src={image.url}
+                      alt={image.alt || `Banner image ${index + 1}`}
+                      className="max-h-32 max-w-full object-contain mx-auto"
+                    />
                   </div>
                 )}
 
