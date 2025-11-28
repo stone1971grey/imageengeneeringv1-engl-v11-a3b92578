@@ -65,10 +65,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     loadContent();
   }, [pageSlug, segmentId, language]);
 
-  // Sync local data with prop data - used mainly as fallback before DB load completes
-  useEffect(() => {
-    setLocalData(data);
-  }, [data]);
 
   const loadContent = async () => {
     if (!pageSlug) return;
