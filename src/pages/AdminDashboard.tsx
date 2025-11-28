@@ -7389,6 +7389,8 @@ const AdminDashboard = () => {
                         onSave={() => handleSaveSegments()}
                         pageSlug={selectedPage}
                         segmentId={segment.id}
+                        segmentKey={String(segment.id)}
+                        language={editorLanguage}
                       />
                     );
                   })()}

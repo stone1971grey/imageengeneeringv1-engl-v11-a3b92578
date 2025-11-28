@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,6 +20,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
+import { SplitScreenSegmentEditor } from './SplitScreenSegmentEditor';
+import { GeminiIcon } from '@/components/GeminiIcon';
 
 interface ProductImage {
   imageUrl: string;
@@ -50,9 +52,29 @@ interface ProductHeroGalleryEditorProps {
   onSave: () => void;
   pageSlug: string;
   segmentId: number;
+  segmentKey: string;
+  language: string;
 }
 
-const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId }: ProductHeroGalleryEditorProps) => {
+const ProductHeroGalleryEditorContent = ({ 
+  currentData,
+  onDataChange,
+  onSaveClick,
+  pageSlug,
+  segmentId,
+  currentLanguage,
+  showTranslateButton = false,
+  onTranslate
+}: {
+  currentData: ProductHeroGalleryData;
+  onDataChange: (data: ProductHeroGalleryData) => void;
+  onSaveClick: () => void;
+  pageSlug: string;
+  segmentId: number;
+  currentLanguage: string;
+  showTranslateButton?: boolean;
+  onTranslate?: () => void;
+}) => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
@@ -83,27 +105,21 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
         .from('page-images')
         .getPublicUrl(fileName);
 
-      // Extract image metadata
       const baseMetadata = await extractImageMetadata(file, publicUrl);
       const fullMetadata: ImageMetadata = {
         ...baseMetadata,
-        altText: data.images[index]?.metadata?.altText || ''
+        altText: currentData.images[index]?.metadata?.altText || ''
       };
 
-      const updatedImages = [...data.images];
+      const updatedImages = [...currentData.images];
       updatedImages[index] = { 
         ...updatedImages[index], 
         imageUrl: publicUrl,
         metadata: fullMetadata
       };
       
-      // Update local state
-      onChange({ ...data, images: updatedImages });
-
-      // Auto-save after successful upload
-      await autoSaveAfterUpload({ ...data, images: updatedImages });
-
-      toast.success('Image uploaded and saved successfully');
+      onDataChange({ ...currentData, images: updatedImages });
+      toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload image');
@@ -112,64 +128,22 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
     }
   };
 
-  const autoSaveAfterUpload = async (updatedData: ProductHeroGalleryData) => {
-    try {
-      const { data: pageContentData, error: fetchError } = await supabase
-        .from("page_content")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .single();
-
-      if (fetchError || !pageContentData) {
-        console.error("Error loading page_segments:", fetchError);
-        return;
-      }
-
-      const segments = JSON.parse(pageContentData.content_value);
-      const updatedSegments = segments.map((seg: any) => {
-        if (seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)) {
-          return { ...seg, data: updatedData };
-        }
-        return seg;
-      });
-
-      const { error: updateError } = await supabase
-        .from("page_content")
-        .update({
-          content_value: JSON.stringify(updatedSegments),
-          updated_by: (await supabase.auth.getUser()).data.user?.id,
-        })
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments");
-
-      if (updateError) {
-        console.error("Auto-save error:", updateError);
-      } else {
-        console.log("✅ Image auto-saved to database");
-        onSave?.();
-      }
-    } catch (e) {
-      console.error("Auto-save failed:", e);
-    }
-  };
-
   const handleImageChange = (index: number, field: keyof ProductImage, value: string) => {
-    const updatedImages = [...data.images];
+    const updatedImages = [...currentData.images];
     updatedImages[index] = { ...updatedImages[index], [field]: value };
-    onChange({ ...data, images: updatedImages });
+    onDataChange({ ...currentData, images: updatedImages });
   };
 
   const handleAddImage = () => {
-    onChange({
-      ...data,
-      images: [...data.images, { imageUrl: '', title: '', description: '' }]
+    onDataChange({
+      ...currentData,
+      images: [...currentData.images, { imageUrl: '', title: '', description: '' }]
     });
   };
 
   const handleDeleteImage = (index: number) => {
-    const updatedImages = data.images.filter((_, i) => i !== index);
-    onChange({ ...data, images: updatedImages });
+    const updatedImages = currentData.images.filter((_, i) => i !== index);
+    onDataChange({ ...currentData, images: updatedImages });
     setDeleteIndex(null);
   };
 
@@ -186,9 +160,20 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
               Hero mit Produktgalerie, Thumbnails, zwei CTA-Buttons und erweiterten Layout-Optionen
             </CardDescription>
           </div>
-          <Button onClick={onSave} className="w-full" style={{ backgroundColor: '#f9dc24', color: 'black' }}>
-            Save Changes
-          </Button>
+          <div className="flex gap-2">
+            {showTranslateButton && onTranslate && (
+              <Button 
+                onClick={onTranslate}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                <GeminiIcon className="w-4 h-4 mr-2" />
+                Translate Automatically
+              </Button>
+            )}
+            <Button onClick={onSaveClick} className="w-full" style={{ backgroundColor: '#f9dc24', color: 'black' }}>
+              Save Changes
+            </Button>
+          </div>
         </div>
       </CardHeader>
 
@@ -206,8 +191,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
             <div className="space-y-2">
               <Label>Title (H1)</Label>
               <Input
-                value={data.title}
-                onChange={(e) => onChange({ ...data, title: e.target.value })}
+                value={currentData.title}
+                onChange={(e) => onDataChange({ ...currentData, title: e.target.value })}
                 placeholder="Product Name"
               />
             </div>
@@ -215,8 +200,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
             <div className="space-y-2">
               <Label>Subtitle (H2)</Label>
               <Input
-                value={data.subtitle}
-                onChange={(e) => onChange({ ...data, subtitle: e.target.value })}
+                value={currentData.subtitle}
+                onChange={(e) => onDataChange({ ...currentData, subtitle: e.target.value })}
                 placeholder="Product Variants"
               />
             </div>
@@ -224,8 +209,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
             <div className="space-y-2">
               <Label>Description</Label>
               <Textarea
-                value={data.description}
-                onChange={(e) => onChange({ ...data, description: e.target.value })}
+                value={currentData.description}
+                onChange={(e) => onDataChange({ ...currentData, description: e.target.value })}
                 placeholder="Product description"
                 rows={3}
               />
@@ -236,7 +221,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
           <TabsContent value="layout" className="space-y-4">
             <div className="space-y-2">
               <Label>Image Position</Label>
-              <Select value={data.imagePosition} onValueChange={(value: any) => onChange({ ...data, imagePosition: value })}>
+              <Select value={currentData.imagePosition} onValueChange={(value: any) => onDataChange({ ...currentData, imagePosition: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -249,7 +234,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
 
             <div className="space-y-2">
               <Label>Layout Ratio (Text : Image)</Label>
-              <Select value={data.layoutRatio} onValueChange={(value: any) => onChange({ ...data, layoutRatio: value })}>
+              <Select value={currentData.layoutRatio} onValueChange={(value: any) => onDataChange({ ...currentData, layoutRatio: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -263,7 +248,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
 
             <div className="space-y-2">
               <Label>Top Spacing</Label>
-              <Select value={data.topSpacing} onValueChange={(value: any) => onChange({ ...data, topSpacing: value })}>
+              <Select value={currentData.topSpacing} onValueChange={(value: any) => onDataChange({ ...currentData, topSpacing: value })}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -285,8 +270,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                 <Label htmlFor="cta1Text">Text</Label>
                 <Input
                   id="cta1Text"
-                  value={data.cta1Text}
-                  onChange={(e) => onChange({ ...data, cta1Text: e.target.value })}
+                  value={currentData.cta1Text}
+                  onChange={(e) => onDataChange({ ...currentData, cta1Text: e.target.value })}
                   placeholder="Contact Sales"
                 />
               </div>
@@ -294,14 +279,14 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                 <Label htmlFor="cta1Link">Link (use # for anchor)</Label>
                 <Input
                   id="cta1Link"
-                  value={data.cta1Link}
-                  onChange={(e) => onChange({ ...data, cta1Link: e.target.value })}
+                  value={currentData.cta1Link}
+                  onChange={(e) => onDataChange({ ...currentData, cta1Link: e.target.value })}
                   placeholder="#contact or /path"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cta1Style">Color</Label>
-                <Select value={data.cta1Style} onValueChange={(value: any) => onChange({ ...data, cta1Style: value })}>
+                <Select value={currentData.cta1Style} onValueChange={(value: any) => onDataChange({ ...currentData, cta1Style: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -320,8 +305,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                 <Label htmlFor="cta2Text">Text</Label>
                 <Input
                   id="cta2Text"
-                  value={data.cta2Text}
-                  onChange={(e) => onChange({ ...data, cta2Text: e.target.value })}
+                  value={currentData.cta2Text}
+                  onChange={(e) => onDataChange({ ...currentData, cta2Text: e.target.value })}
                   placeholder="Learn More"
                 />
               </div>
@@ -329,14 +314,14 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                 <Label htmlFor="cta2Link">Link (use # for anchor)</Label>
                 <Input
                   id="cta2Link"
-                  value={data.cta2Link}
-                  onChange={(e) => onChange({ ...data, cta2Link: e.target.value })}
+                  value={currentData.cta2Link}
+                  onChange={(e) => onDataChange({ ...currentData, cta2Link: e.target.value })}
                   placeholder="#overview or /path"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cta2Style">Color</Label>
-                <Select value={data.cta2Style} onValueChange={(value: any) => onChange({ ...data, cta2Style: value })}>
+                <Select value={currentData.cta2Style} onValueChange={(value: any) => onDataChange({ ...currentData, cta2Style: value })}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -360,7 +345,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
               </Button>
             </div>
 
-            {data.images.map((image, index) => (
+            {currentData.images.map((image, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Image {index + 1}</span>
@@ -435,7 +420,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                   <Input
                     value={image.metadata?.altText || ''}
                     onChange={(e) => {
-                      const updatedImages = [...data.images];
+                      const updatedImages = [...currentData.images];
                       if (updatedImages[index].metadata) {
                         updatedImages[index].metadata!.altText = e.target.value;
                       } else {
@@ -450,14 +435,14 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                           altText: e.target.value
                         };
                       }
-                      onChange({ ...data, images: updatedImages });
+                      onDataChange({ ...currentData, images: updatedImages });
                     }}
-                    placeholder="Describe this image for accessibility and SEO"
+                    placeholder="Describe the image for accessibility"
                   />
                 </div>
 
-                <div>
-                  <Label>Image Title (optional)</Label>
+                <div className="space-y-2">
+                  <Label>Image Title</Label>
                   <Input
                     value={image.title}
                     onChange={(e) => handleImageChange(index, 'title', e.target.value)}
@@ -465,44 +450,233 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                   />
                 </div>
 
-                <div>
-                  <Label>Image Description (optional)</Label>
-                  <Input
+                <div className="space-y-2">
+                  <Label>Image Description</Label>
+                  <Textarea
                     value={image.description}
                     onChange={(e) => handleImageChange(index, 'description', e.target.value)}
                     placeholder="Image description"
+                    rows={2}
                   />
                 </div>
               </div>
             ))}
           </TabsContent>
         </Tabs>
-
-        <Button onClick={onSave} className="w-full mt-6">
-          Save Product Hero Gallery
-        </Button>
       </CardContent>
 
-      <AlertDialog open={deleteIndex !== null} onOpenChange={() => setDeleteIndex(null)}>
+      <AlertDialog open={deleteIndex !== null} onOpenChange={(open) => !open && setDeleteIndex(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Image</AlertDialogTitle>
+            <AlertDialogTitle>Delete Image?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this image? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteIndex !== null && handleDeleteImage(deleteIndex)}
-              className="bg-red-500 hover:bg-red-600"
-            >
+            <AlertDialogAction onClick={() => deleteIndex !== null && handleDeleteImage(deleteIndex)}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </Card>
+  );
+};
+
+const ProductHeroGalleryEditor = ({ 
+  data, 
+  onChange, 
+  onSave, 
+  pageSlug, 
+  segmentId,
+  segmentKey,
+  language 
+}: ProductHeroGalleryEditorProps) => {
+  const [targetData, setTargetData] = useState<ProductHeroGalleryData>({
+    title: '',
+    subtitle: '',
+    description: '',
+    imagePosition: 'left',
+    layoutRatio: '1-1',
+    topSpacing: 'medium',
+    cta1Text: '',
+    cta1Link: '',
+    cta1Style: 'standard',
+    cta2Text: '',
+    cta2Link: '',
+    cta2Style: 'standard',
+    images: []
+  });
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  useEffect(() => {
+    if (language !== 'en') {
+      loadTargetLanguageData();
+    }
+  }, [language, pageSlug, segmentKey]);
+
+  const loadTargetLanguageData = async () => {
+    try {
+      const { data: pageContentData, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error loading target language data:", error);
+        return;
+      }
+
+      if (pageContentData?.content_value) {
+        const segments = JSON.parse(pageContentData.content_value);
+        const segment = segments.find((seg: any) => 
+          seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
+        );
+
+        if (segment?.data) {
+          setTargetData(segment.data);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load target language data:", e);
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (language === 'en') {
+      toast.error('Translation not needed - English is the source language');
+      return;
+    }
+
+    setIsTranslating(true);
+
+    try {
+      const { data: functionData, error: functionError } = await supabase.functions.invoke('translate-content', {
+        body: {
+          content: {
+            title: data.title,
+            subtitle: data.subtitle,
+            description: data.description,
+            cta1Text: data.cta1Text,
+            cta2Text: data.cta2Text,
+            images: data.images.map(img => ({
+              title: img.title,
+              description: img.description
+            }))
+          },
+          targetLanguage: language,
+          contentType: 'product-hero-gallery'
+        }
+      });
+
+      if (functionError) throw functionError;
+
+      if (functionData?.translated) {
+        const translated = functionData.translated;
+        setTargetData({
+          ...data,
+          title: translated.title || data.title,
+          subtitle: translated.subtitle || data.subtitle,
+          description: translated.description || data.description,
+          cta1Text: translated.cta1Text || data.cta1Text,
+          cta2Text: translated.cta2Text || data.cta2Text,
+          images: data.images.map((img, idx) => ({
+            ...img,
+            title: translated.images?.[idx]?.title || img.title,
+            description: translated.images?.[idx]?.description || img.description
+          }))
+        });
+        toast.success('Content translated successfully');
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error('Failed to translate content');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleSaveTargetLanguage = async () => {
+    try {
+      const { data: pageContentData, error: fetchError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+
+      if (fetchError) throw fetchError;
+
+      let segments = [];
+      if (pageContentData?.content_value) {
+        segments = JSON.parse(pageContentData.content_value);
+      }
+
+      const segmentIndex = segments.findIndex((seg: any) => 
+        seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
+      );
+
+      if (segmentIndex >= 0) {
+        segments[segmentIndex] = {
+          ...segments[segmentIndex],
+          data: targetData
+        };
+      } else {
+        segments.push({
+          id: segmentId,
+          type: "product-hero-gallery",
+          segment_key: segmentKey,
+          data: targetData
+        });
+      }
+
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: pageSlug,
+          section_key: "page_segments",
+          content_type: "json",
+          content_value: JSON.stringify(segments),
+          language: language,
+          updated_by: (await supabase.auth.getUser()).data.user?.id,
+        }, {
+          onConflict: 'page_slug,section_key,language'
+        });
+
+      if (updateError) throw updateError;
+
+      toast.success(`${language.toUpperCase()} version saved successfully`);
+      onSave();
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('Failed to save changes');
+    }
+  };
+
+  return (
+    <SplitScreenSegmentEditor
+      segmentTitle="Product Hero Gallery"
+      segmentType="product-hero-gallery"
+    >
+      {(editorLanguage) => (
+        <ProductHeroGalleryEditorContent
+          currentData={editorLanguage === 'en' ? data : targetData}
+          onDataChange={editorLanguage === 'en' ? onChange : setTargetData}
+          onSaveClick={editorLanguage === 'en' ? onSave : handleSaveTargetLanguage}
+          pageSlug={pageSlug}
+          segmentId={segmentId}
+          currentLanguage={editorLanguage}
+          showTranslateButton={editorLanguage !== 'en'}
+          onTranslate={editorLanguage !== 'en' ? handleTranslate : undefined}
+        />
+      )}
+    </SplitScreenSegmentEditor>
   );
 };
 
