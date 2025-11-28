@@ -64,7 +64,14 @@ export const BannerSegmentEditor = ({
 }: BannerSegmentEditorProps) => {
   const [targetLanguage, setTargetLanguage] = useState('de');
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(true);
-  const [targetData, setTargetData] = useState<BannerData>(data);
+  const [targetData, setTargetData] = useState<BannerData>({
+    title: '',
+    subtext: '',
+    buttonText: '',
+    buttonLink: '',
+    buttonStyle: 'standard',
+    images: []
+  });
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -90,12 +97,14 @@ export const BannerSegmentEditor = ({
       );
       
       if (targetSegment?.data) {
+        console.log('[BannerSegmentEditor] Loaded target language data:', targetSegment.data);
         setTargetData(targetSegment.data);
         return;
       }
     }
  
     // If no target language version exists, copy structure from English but with empty text fields
+    console.log('[BannerSegmentEditor] No target language data found, creating empty structure from English');
     setTargetData({
       ...data,
       title: '',
@@ -105,15 +114,16 @@ export const BannerSegmentEditor = ({
     });
   };
  
-  // Initial load of target language data when editor opens
+  // Load target language data when editor opens OR when target language changes
   useEffect(() => {
-    loadTargetLanguageData(targetLanguage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (isSplitScreenEnabled) {
+      loadTargetLanguageData(targetLanguage);
+    }
+  }, [targetLanguage, isSplitScreenEnabled]);
  
   const handleTargetLanguageChange = async (lang: string) => {
     setTargetLanguage(lang);
-    await loadTargetLanguageData(lang);
+    // loadTargetLanguageData is now called by useEffect
   };
 
   const handleImageUpload = async (index: number, file: File) => {
