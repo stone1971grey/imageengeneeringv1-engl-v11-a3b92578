@@ -49,6 +49,7 @@ export const CMSPageOverview = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<CMSPage | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [hasChildren, setHasChildren] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -144,7 +145,14 @@ export const CMSPageOverview = () => {
     }
   };
 
-  const handleDeleteClick = (page: CMSPage) => {
+  const handleDeleteClick = async (page: CMSPage) => {
+    // Check if page has children
+    const { data: children } = await supabase
+      .from('page_registry')
+      .select('page_id')
+      .eq('parent_slug', page.page_slug);
+    
+    setHasChildren((children?.length || 0) > 0);
     setPageToDelete(page);
     setDeleteDialogOpen(true);
   };
@@ -453,18 +461,32 @@ export const CMSPageOverview = () => {
                 <div className="text-sm text-gray-400">Page ID: {pageToDelete?.page_id}</div>
                 <div className="text-sm text-gray-400">Slug: {pageToDelete?.page_slug}</div>
               </div>
-              <div className="mt-3 text-yellow-300">
-                ⚠️ This will permanently remove:
-                <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
-                  <li>The page entry from page_registry</li>
-                  <li>All {pageToDelete?.segment_count || 0} segment(s) from segment_registry</li>
-                  <li>All content from page_content (all languages)</li>
-                  <li>All navigation links</li>
-                </ul>
-              </div>
-              <div className="mt-2 text-red-300 font-semibold">
-                This action cannot be undone!
-              </div>
+              {hasChildren ? (
+                <div className="mt-3 p-3 bg-red-900/30 border border-red-600 rounded">
+                  <div className="text-red-300 font-semibold mb-2">
+                    ⛔ Cannot delete this page!
+                  </div>
+                  <div className="text-red-200 text-sm">
+                    This page has child pages (sub-pages) that reference it as their parent.
+                    You must delete all child pages first before you can delete this page.
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="mt-3 text-yellow-300">
+                    ⚠️ This will permanently remove:
+                    <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                      <li>The page entry from page_registry</li>
+                      <li>All {pageToDelete?.segment_count || 0} segment(s) from segment_registry</li>
+                      <li>All content from page_content (all languages)</li>
+                      <li>All navigation links</li>
+                    </ul>
+                  </div>
+                  <div className="mt-2 text-red-300 font-semibold">
+                    This action cannot be undone!
+                  </div>
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -472,15 +494,17 @@ export const CMSPageOverview = () => {
               disabled={isDeleting}
               className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
             >
-              Cancel
+              {hasChildren ? "Close" : "Cancel"}
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              disabled={isDeleting}
-              className="bg-red-600 text-white hover:bg-red-700"
-            >
-              {isDeleting ? "Deleting..." : "Delete Permanently"}
-            </AlertDialogAction>
+            {!hasChildren && (
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                {isDeleting ? "Deleting..." : "Delete Permanently"}
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
