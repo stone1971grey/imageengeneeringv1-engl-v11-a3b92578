@@ -176,20 +176,13 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              Product Hero Gallery
-              <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
-            </CardTitle>
-            <CardDescription>
-              Hero mit Produktgalerie, Thumbnails, zwei CTA-Buttons und erweiterten Layout-Optionen
-            </CardDescription>
-          </div>
-          <Button onClick={onSave} className="w-full" style={{ backgroundColor: '#f9dc24', color: 'black' }}>
-            Save Changes
-          </Button>
-        </div>
+        <CardTitle className="flex items-center gap-2">
+          Product Hero Gallery
+          <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
+        </CardTitle>
+        <CardDescription>
+          Hero mit Produktgalerie, Thumbnails, zwei CTA-Buttons und erweiterten Layout-Optionen
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -375,8 +368,9 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
 
                 <div>
                   <Label>Upload Image</Label>
-                  <div className="flex gap-2">
-                    <Input
+                  <div className="flex gap-2 items-center">
+                    <input
+                      id={`image-upload-${index}`}
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
@@ -384,8 +378,18 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
                         if (file) handleImageUpload(index, file);
                       }}
                       disabled={uploadingIndex === index}
+                      className="hidden"
                     />
-                    {uploadingIndex === index && <span className="text-sm text-gray-500">Uploading...</span>}
+                    <Button
+                      type="button"
+                      onClick={() => document.getElementById(`image-upload-${index}`)?.click()}
+                      disabled={uploadingIndex === index}
+                      style={{ backgroundColor: '#f9dc24', color: 'black' }}
+                      className="hover:opacity-90"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {uploadingIndex === index ? 'Uploading...' : 'Choose Image'}
+                    </Button>
                   </div>
                   {image.imageUrl && (
                     <img src={image.imageUrl} alt={image.metadata?.altText || `Gallery ${index + 1}`} className="mt-2 h-20 object-contain" />
