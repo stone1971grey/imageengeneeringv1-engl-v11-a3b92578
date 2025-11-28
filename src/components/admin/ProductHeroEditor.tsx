@@ -4,12 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, X, Trash2, Languages } from "lucide-react";
+import { Upload, X, Trash2 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
@@ -35,16 +32,6 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [targetLanguage, setTargetLanguage] = useState('de');
-  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
-    const saved = localStorage.getItem('cms-split-screen-mode');
-    return saved !== null ? saved === 'true' : true;
-  });
-
-  const handleSplitScreenToggle = (checked: boolean) => {
-    setIsSplitScreenEnabled(checked);
-    localStorage.setItem('cms-split-screen-mode', String(checked));
-  };
 
   useEffect(() => {
     loadContent();
@@ -407,83 +394,38 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
     { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
   ];
 
-  const handleTargetLanguageChange = async (lang: string) => {
-    setTargetLanguage(lang);
-    // Load target language content here if needed
-  };
-
   return (
     <div className="space-y-6">
-      {/* Multi-Language Editor Card */}
-      <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
-        <CardHeader className="pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Languages className="h-5 w-5 text-blue-300" />
-              <div>
-                <CardTitle className="text-white text-lg">Multi-Language Editor</CardTitle>
-                <CardDescription className="text-blue-200 text-sm mt-1">
-                  Compare and edit Product Hero in multiple languages side-by-side
-                </CardDescription>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Switch 
-                  id="split-screen-toggle"
-                  checked={isSplitScreenEnabled}
-                  onCheckedChange={handleSplitScreenToggle}
-                  className="data-[state=checked]:bg-blue-600"
-                />
-                <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
-                  Split-Screen Mode
-                </Label>
-              </div>
-              {isSplitScreenEnabled && (
-                <Badge variant="outline" className="bg-blue-950/50 text-blue-200 border-blue-600">
-                  Active
-                </Badge>
-              )}
+      {language !== 'en' && (
+        <div className="p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 rounded-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+            <div>
+              <div className="text-white font-semibold text-sm">Multi-Language Editor</div>
+              <div className="text-blue-300 text-xs">Compare and edit Product Hero in multiple languages</div>
             </div>
           </div>
-          
-          {isSplitScreenEnabled && (
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-blue-700/50">
-              <div className="flex items-center gap-2">
-                <label className="text-white font-medium text-sm">Target Language:</label>
-                <Select value={targetLanguage} onValueChange={handleTargetLanguageChange}>
-                  <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-blue-700 z-50">
-                    {LANGUAGES.filter(lang => lang.code !== 'en').map(lang => (
-                      <SelectItem 
-                        key={lang.code} 
-                        value={lang.code}
-                        className="text-white hover:bg-blue-900/50 cursor-pointer"
-                      >
-                        <span className="flex items-center gap-2">
-                          <span className="text-lg">{lang.flag}</span>
-                          <span>{lang.name}</span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <label className="text-white font-medium text-sm">Target Language:</label>
+              <div className="px-3 py-1.5 bg-blue-950/70 border border-blue-600 rounded-md text-white text-sm">
+                <span className="flex items-center gap-2">
+                  <span className="text-lg">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+                  <span>{LANGUAGES.find(l => l.code === language)?.name}</span>
+                </span>
               </div>
-              
-              <Button
-                onClick={handleTranslate}
-                disabled={isTranslating}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-              >
-                <GeminiIcon className="h-4 w-4 mr-2" />
-                {isTranslating ? "Translating..." : "Translate Automatically"}
-              </Button>
             </div>
-          )}
-        </CardHeader>
-      </Card>
+            <Button
+              onClick={handleTranslate}
+              disabled={isTranslating}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              <GeminiIcon className="mr-2 h-4 w-4" />
+              {isTranslating ? "Translating..." : "Translate Automatically"}
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         <div>
