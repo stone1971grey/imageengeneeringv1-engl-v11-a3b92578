@@ -397,24 +397,33 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
   return (
     <div className="space-y-6">
       {language !== 'en' && (
-        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-2 border-blue-600/50 rounded-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
-            <div>
-              <div className="text-white font-semibold">
-                Target Language: {LANGUAGES.find(l => l.code === language)?.name}
+        <div className="p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+              <div>
+                <div className="text-white font-semibold text-sm">Multi-Language Editor</div>
+                <div className="text-blue-300 text-xs">Compare and edit Product Hero in multiple languages</div>
               </div>
-              <div className="text-blue-300 text-xs">Editing {LANGUAGES.find(l => l.code === language)?.name} version</div>
+            </div>
+            <Button
+              onClick={handleTranslate}
+              disabled={isTranslating}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              <GeminiIcon className="mr-2 h-4 w-4" />
+              {isTranslating ? "Translating..." : "Translate Automatically"}
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-white font-medium text-sm">Target Language:</label>
+            <div className="px-3 py-1.5 bg-blue-950/70 border border-blue-600 rounded-md text-white text-sm">
+              <span className="flex items-center gap-2">
+                <span className="text-lg">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+                <span>{LANGUAGES.find(l => l.code === language)?.name}</span>
+              </span>
             </div>
           </div>
-          <Button
-            onClick={handleTranslate}
-            disabled={isTranslating}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-          >
-            <GeminiIcon className="mr-2 h-4 w-4" />
-            {isTranslating ? "Translating..." : "Translate Automatically"}
-          </Button>
         </div>
       )}
 
