@@ -10,7 +10,8 @@ import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, X, Heading1, Sparkles } from "lucide-react";
+import { Upload, X, Heading1 } from "lucide-react";
+import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
 interface FullHeroEditorProps {
@@ -935,7 +936,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
               disabled={isTranslating}
               className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
             >
-              <Sparkles className="h-4 w-4 mr-2" />
+              <GeminiIcon className="h-4 w-4 mr-2" />
               {isTranslating ? "Translating..." : "Translate Automatically"}
             </Button>
           )}
