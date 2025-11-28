@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { GeminiIcon } from '@/components/GeminiIcon';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,11 +51,49 @@ interface ProductHeroGalleryEditorProps {
   onSave: () => void;
   pageSlug: string;
   segmentId: number;
+  language?: string;
 }
 
-const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId }: ProductHeroGalleryEditorProps) => {
+const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId, language = 'en' }: ProductHeroGalleryEditorProps) => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    loadContent();
+  }, [pageSlug, segmentId, language]);
+
+  const loadContent = async () => {
+    if (!pageSlug) return;
+    
+    const { data: contentData, error } = await supabase
+      .from("page_content")
+      .select("*")
+      .eq("page_slug", pageSlug)
+      .eq("section_key", "page_segments")
+      .eq("language", language);
+
+    if (error) {
+      console.error("Error loading page_segments:", error);
+      return;
+    }
+
+    if (contentData && contentData.length > 0) {
+      try {
+        const segments = JSON.parse(contentData[0].content_value);
+        const gallerySegment = segments.find((seg: any) => 
+          seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
+        );
+
+        if (gallerySegment?.data) {
+          onChange(gallerySegment.data);
+        }
+      } catch (error) {
+        console.error("Error parsing segments:", error);
+      }
+    }
+  };
 
   const handleImageUpload = async (index: number, file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -173,6 +212,170 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
     setDeleteIndex(null);
   };
 
+  const handleTranslate = async () => {
+    if (language === 'en') {
+      toast.error("Cannot translate from English to English");
+      return;
+    }
+
+    setIsTranslating(true);
+    try {
+      const { data: enData, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", "en")
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error loading EN reference for translation:", error);
+        toast.error("Could not load English reference content");
+        return;
+      }
+
+      if (!enData?.content_value) {
+        toast.error("No English reference content found to translate");
+        return;
+      }
+
+      const segments = JSON.parse(enData.content_value);
+      const gallerySegment = segments.find((seg: any) => 
+        seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
+      );
+
+      if (!gallerySegment?.data) {
+        toast.error("English segment data not found");
+        return;
+      }
+
+      const sourceData = gallerySegment.data;
+      const textsToTranslate = {
+        "0": sourceData.title || '',
+        "1": sourceData.subtitle || '',
+        "2": sourceData.description || '',
+        "3": sourceData.cta1Text || '',
+        "4": sourceData.cta2Text || ''
+      };
+
+      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
+        body: {
+          texts: textsToTranslate,
+          targetLanguage: language
+        }
+      });
+
+      if (translateError) throw translateError;
+
+      if (translateData?.translatedTexts) {
+        const translated = translateData.translatedTexts;
+        onChange({
+          ...data,
+          title: translated["0"] || sourceData.title,
+          subtitle: translated["1"] || sourceData.subtitle,
+          description: translated["2"] || sourceData.description,
+          cta1Text: translated["3"] || sourceData.cta1Text,
+          cta2Text: translated["4"] || sourceData.cta2Text
+        });
+        toast.success("Content translated successfully!");
+      }
+    } catch (error: any) {
+      console.error('Translation error:', error);
+      toast.error(error.message || "Translation failed");
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    setIsSaving(true);
+    try {
+      const { data: existingContent } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .maybeSingle();
+
+      let segments = [];
+      if (existingContent) {
+        segments = JSON.parse(existingContent.content_value);
+      }
+
+      const segmentIndex = segments.findIndex((s: any) => s.id === segmentId);
+
+      if (segmentIndex !== -1) {
+        segments[segmentIndex].data = data;
+      } else {
+        segments.push({
+          id: segmentId,
+          type: 'product-hero-gallery',
+          data: data
+        });
+      }
+
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: pageSlug,
+          section_key: "page_segments",
+          content_type: "json",
+          content_value: JSON.stringify(segments),
+          language: language,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'page_slug,section_key,language'
+        });
+
+      if (error) throw error;
+
+      // Also update tab_order if needed
+      const { data: tabOrderData } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "tab_order")
+        .eq("language", language)
+        .maybeSingle();
+
+      if (tabOrderData) {
+        const tabOrder = JSON.parse(tabOrderData.content_value);
+        if (!tabOrder.includes(segmentId)) {
+          tabOrder.push(segmentId);
+          await supabase
+            .from("page_content")
+            .upsert({
+              page_slug: pageSlug,
+              section_key: "tab_order",
+              content_type: "json",
+              content_value: JSON.stringify(tabOrder),
+              language: language,
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'page_slug,section_key,language'
+            });
+        }
+      }
+
+      toast.success("Product Hero Gallery saved successfully!");
+      onSave();
+    } catch (error: any) {
+      console.error('Save error:', error);
+      toast.error("Save failed: " + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const LANGUAGES = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'de', name: 'German', flag: '🇩🇪' },
+    { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+    { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+    { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -186,6 +389,37 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {language !== 'en' && (
+          <div className="p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 rounded-lg">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+              <div>
+                <div className="text-white font-semibold text-sm">Multi-Language Editor</div>
+                <div className="text-blue-300 text-xs">Compare and edit Product Hero Gallery in multiple languages</div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <label className="text-white font-medium text-sm">Target Language:</label>
+                <div className="px-3 py-1.5 bg-blue-950/70 border border-blue-600 rounded-md text-white text-sm">
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+                    <span>{LANGUAGES.find(l => l.code === language)?.name}</span>
+                  </span>
+                </div>
+              </div>
+              <Button
+                onClick={handleTranslate}
+                disabled={isTranslating}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                <GeminiIcon className="mr-2 h-4 w-4" />
+                {isTranslating ? "Translating..." : "Translate Automatically"}
+              </Button>
+            </div>
+          </div>
+        )}
+
         <Tabs defaultValue="content">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="content">Content</TabsTrigger>
@@ -482,8 +716,13 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId 
           </TabsContent>
         </Tabs>
 
-        <Button onClick={onSave} className="w-full mt-6">
-          Save Product Hero Gallery
+        <Button 
+          onClick={handleSaveChanges} 
+          disabled={isSaving}
+          className="w-full mt-6"
+          style={{ backgroundColor: '#f9dc24', color: 'black' }}
+        >
+          {isSaving ? "Saving..." : `Save Product Hero Gallery (${LANGUAGES.find(l => l.code === language)?.name})`}
         </Button>
       </CardContent>
 
