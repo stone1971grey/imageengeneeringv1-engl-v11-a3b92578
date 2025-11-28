@@ -665,7 +665,7 @@ const DynamicCMSPage = () => {
                     <img
                       src={banner.url}
                       alt={banner.alt}
-                      className="max-h-16 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
+                      className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
                 ))}
