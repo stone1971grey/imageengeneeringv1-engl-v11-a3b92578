@@ -11,10 +11,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, FileText, Layers, Edit } from "lucide-react";
+import { Search, ExternalLink, FileText, Layers, Edit, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { EditSlugDialog } from "./EditSlugDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 interface CMSPage {
   page_id: number;
@@ -34,6 +45,9 @@ export const CMSPageOverview = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [pageToDelete, setPageToDelete] = useState<CMSPage | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -123,8 +137,76 @@ export const CMSPageOverview = () => {
       setFilteredPages(enrichedPages);
     } catch (error) {
       console.error("Error loading CMS pages:", error);
+      toast.error("Failed to load pages");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (page: CMSPage) => {
+    setPageToDelete(page);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!pageToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      // Step 1: Delete from segment_registry
+      const { error: segmentError } = await supabase
+        .from('segment_registry')
+        .delete()
+        .eq('page_slug', pageToDelete.page_slug);
+
+      if (segmentError) throw segmentError;
+
+      // Step 2: Delete from page_content
+      const { error: contentError } = await supabase
+        .from('page_content')
+        .delete()
+        .eq('page_slug', pageToDelete.page_slug);
+
+      if (contentError) throw contentError;
+
+      // Step 3: Delete from navigation_links
+      const { error: navError } = await supabase
+        .from('navigation_links')
+        .delete()
+        .eq('slug', pageToDelete.page_slug);
+
+      if (navError) {
+        console.warn('Navigation links delete failed (might be empty):', navError);
+      }
+
+      // Step 4: Update child pages (set parent_slug to null)
+      const { error: childError } = await supabase
+        .from('page_registry')
+        .update({ parent_slug: null, parent_id: null })
+        .eq('parent_slug', pageToDelete.page_slug);
+
+      if (childError) throw childError;
+
+      // Step 5: Delete from page_registry
+      const { error: pageError } = await supabase
+        .from('page_registry')
+        .delete()
+        .eq('page_id', pageToDelete.page_id);
+
+      if (pageError) throw pageError;
+
+      toast.success(`Page "${pageToDelete.page_title}" (ID ${pageToDelete.page_id}) permanently deleted`, {
+        description: "All segments, content, and navigation links have been removed from the database"
+      });
+
+      setDeleteDialogOpen(false);
+      setPageToDelete(null);
+      await loadPages();
+    } catch (error) {
+      console.error('Error deleting page:', error);
+      toast.error('Failed to delete page. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -317,6 +399,15 @@ export const CMSPageOverview = () => {
                             <ExternalLink className="h-4 w-4" />
                           </Button>
                         </a>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteClick(page)}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                          title="Delete Page"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -326,6 +417,50 @@ export const CMSPageOverview = () => {
           </Table>
         </div>
       </DialogContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-gray-900 text-white border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-400">Delete Page Permanently?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-300">
+              You are about to permanently delete:
+              <div className="mt-3 p-3 bg-gray-800 rounded border border-gray-700">
+                <div className="font-bold text-white">"{pageToDelete?.page_title}"</div>
+                <div className="text-sm text-gray-400">Page ID: {pageToDelete?.page_id}</div>
+                <div className="text-sm text-gray-400">Slug: {pageToDelete?.page_slug}</div>
+              </div>
+              <div className="mt-3 text-yellow-300">
+                ⚠️ This will permanently remove:
+                <ul className="list-disc list-inside mt-2 space-y-1 text-sm">
+                  <li>The page entry from page_registry</li>
+                  <li>All {pageToDelete?.segment_count || 0} segment(s) from segment_registry</li>
+                  <li>All content from page_content (all languages)</li>
+                  <li>All navigation links</li>
+                </ul>
+              </div>
+              <div className="mt-2 text-red-300 font-semibold">
+                This action cannot be undone!
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              disabled={isDeleting}
+              className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {isDeleting ? "Deleting..." : "Delete Permanently"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
