@@ -5761,6 +5761,7 @@ const AdminDashboard = () => {
                     >
                       {(language) => (
                         <ProductHeroEditor
+                          key={`hero-${segment.id}-${language}`}
                           pageSlug={resolvedPageSlug || selectedPage}
                           segmentId={segment.id}
                           onSave={() => loadContent()}
@@ -6743,6 +6744,7 @@ const AdminDashboard = () => {
                     >
                       {(language) => (
                         <FullHeroEditor
+                          key={`full-hero-${segment.id}-${language}`}
                           pageSlug={resolvedPageSlug || selectedPage}
                           segmentId={segment.id}
                           onSave={() => loadContent()}
@@ -6759,6 +6761,7 @@ const AdminDashboard = () => {
                     >
                       {(language) => (
                         <IntroEditor
+                          key={`intro-${segment.id}-${language}`}
                           pageSlug={resolvedPageSlug || selectedPage}
                           segmentKey={segment.id}
                           language={language}
@@ -6820,6 +6823,7 @@ const AdminDashboard = () => {
                       >
                         {(language) => (
                           <ProductHeroGalleryEditor
+                            key={`phg-${segment.id}-${language}`}
                             data={segment.data}
                             onChange={(newData) => {
                               const newSegments = [...pageSegments];
