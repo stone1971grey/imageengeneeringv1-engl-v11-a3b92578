@@ -26,7 +26,15 @@ export const SplitScreenSegmentEditor = ({
   segmentType 
 }: SplitScreenSegmentEditorProps) => {
   const [targetLanguage, setTargetLanguage] = useState('de');
-  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(true);
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
+    const saved = localStorage.getItem('cms-split-screen-mode');
+    return saved !== null ? saved === 'true' : true;
+  });
+
+  const handleSplitScreenToggle = (checked: boolean) => {
+    setIsSplitScreenEnabled(checked);
+    localStorage.setItem('cms-split-screen-mode', String(checked));
+  };
 
   return (
     <div className="space-y-4">
@@ -48,7 +56,7 @@ export const SplitScreenSegmentEditor = ({
                 <Switch 
                   id="split-screen-toggle"
                   checked={isSplitScreenEnabled}
-                  onCheckedChange={setIsSplitScreenEnabled}
+                  onCheckedChange={handleSplitScreenToggle}
                   className="data-[state=checked]:bg-blue-600"
                 />
                 <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
