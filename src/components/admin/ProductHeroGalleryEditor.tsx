@@ -73,21 +73,44 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   const loadContent = async () => {
     if (!pageSlug) return;
     
-    const { data: contentData, error } = await supabase
+    // 1) Try to load content for the current editor language
+    const { data: currentLangRow, error } = await supabase
       .from("page_content")
       .select("*")
       .eq("page_slug", pageSlug)
       .eq("section_key", "page_segments")
-      .eq("language", language);
+      .eq("language", language)
+      .maybeSingle();
 
     if (error) {
       console.error("Error loading page_segments:", error);
       return;
     }
 
-    if (contentData && contentData.length > 0) {
+    let segmentsJson: string | null = currentLangRow?.content_value || null;
+
+    // 2) Fallback for legacy EN data without language field
+    if (!segmentsJson && language === 'en') {
+      const { data: legacyEnRow, error: legacyError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .is("language", null)
+        .maybeSingle();
+
+      if (legacyError) {
+        console.error("Error loading legacy EN page_segments:", legacyError);
+      }
+
+      if (legacyEnRow?.content_value) {
+        segmentsJson = legacyEnRow.content_value;
+      }
+    }
+
+    if (segmentsJson) {
       try {
-        const segments = JSON.parse(contentData[0].content_value);
+        const segments = JSON.parse(segmentsJson);
         const gallerySegment = segments.find((seg: any) => 
           seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
         );
@@ -97,17 +120,35 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           setLocalData(gallerySegment.data);
           onChange(gallerySegment.data);
         } else {
-          // FALLBACK: If no data in current language, try loading from EN
+          // FALLBACK: If no data in current language, try loading from EN reference
           if (language !== 'en') {
-            const { data: enData } = await supabase
+            const { data: enRow } = await supabase
               .from("page_content")
               .select("*")
               .eq("page_slug", pageSlug)
               .eq("section_key", "page_segments")
-              .eq("language", "en");
+              .eq("language", "en")
+              .maybeSingle();
 
-            if (enData && enData.length > 0) {
-              const enSegments = JSON.parse(enData[0].content_value);
+            let enSegmentsJson: string | null = enRow?.content_value || null;
+
+            // Also consider legacy EN data without language for fallback
+            if (!enSegmentsJson) {
+              const { data: legacyEnRow } = await supabase
+                .from("page_content")
+                .select("*")
+                .eq("page_slug", pageSlug)
+                .eq("section_key", "page_segments")
+                .is("language", null)
+                .maybeSingle();
+
+              if (legacyEnRow?.content_value) {
+                enSegmentsJson = legacyEnRow.content_value;
+              }
+            }
+
+            if (enSegmentsJson) {
+              const enSegments = JSON.parse(enSegmentsJson);
               const enGallerySegment = enSegments.find((seg: any) => 
                 seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
               );
