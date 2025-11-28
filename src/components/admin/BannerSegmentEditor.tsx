@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -69,10 +69,9 @@ export const BannerSegmentEditor = ({
   const [isSaving, setIsSaving] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
-
-  // Load target language data
+ 
+  // Load target language data from backend
   const loadTargetLanguageData = async (lang: string) => {
-    // Load target language page_segments
     const { data: targetContent, error } = await supabase
       .from('page_content')
       .select('content_value')
@@ -80,7 +79,7 @@ export const BannerSegmentEditor = ({
       .eq('section_key', 'page_segments')
       .eq('language', lang)
       .maybeSingle();
-
+ 
     if (!error && targetContent) {
       const targetSegments = JSON.parse(targetContent.content_value || "[]");
       const segmentId = segmentKey.replace('segment_', '');
@@ -92,28 +91,26 @@ export const BannerSegmentEditor = ({
       
       if (targetSegment?.data) {
         setTargetData(targetSegment.data);
-      } else {
-        // Copy structure from English but with empty text fields
-        setTargetData({
-          ...data,
-          title: '',
-          subtext: '',
-          buttonText: '',
-          images: data.images.map(img => ({ ...img, alt: '' }))
-        });
+        return;
       }
-    } else {
-      // If no target language version exists, copy structure from English but with empty text fields
-      setTargetData({
-        ...data,
-        title: '',
-        subtext: '',
-        buttonText: '',
-        images: data.images.map(img => ({ ...img, alt: '' }))
-      });
     }
+ 
+    // If no target language version exists, copy structure from English but with empty text fields
+    setTargetData({
+      ...data,
+      title: '',
+      subtext: '',
+      buttonText: '',
+      images: data.images.map(img => ({ ...img, alt: '' }))
+    });
   };
-
+ 
+  // Initial load of target language data when editor opens
+  useEffect(() => {
+    loadTargetLanguageData(targetLanguage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+ 
   const handleTargetLanguageChange = async (lang: string) => {
     setTargetLanguage(lang);
     await loadTargetLanguageData(lang);
