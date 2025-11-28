@@ -209,19 +209,26 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
                 <div>
                   <Label className="text-white mb-2 block">Image File</Label>
                   <div className="flex items-center gap-4">
-                    <Input
+                    <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) handleImageUpload(index, file);
                       }}
-                      className="bg-white border-2 border-gray-300 text-black"
+                      className="hidden"
+                      id={`image-upload-${index}`}
                       disabled={uploadingIndex === index}
                     />
-                    {uploadingIndex === index && (
-                      <span className="text-[#f9dc24]">Uploading...</span>
-                    )}
+                    <Button
+                      type="button"
+                      onClick={() => document.getElementById(`image-upload-${index}`)?.click()}
+                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                      disabled={uploadingIndex === index}
+                    >
+                      <Upload className="h-4 w-4" />
+                      {uploadingIndex === index ? 'Uploading...' : 'Upload Image'}
+                    </Button>
                   </div>
                   {image.url && (
                     <div className="mt-4 p-4 bg-gray-800 rounded">
