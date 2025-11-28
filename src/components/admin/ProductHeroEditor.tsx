@@ -258,12 +258,13 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
         return;
       }
 
-      const textsToTranslate = [
-        sourceTitle,
-        sourceSubtitle,
-        sourceDescription,
-        sourceCtaText
-      ];
+      // Edge function expects an object with string keys, not an array
+      const textsToTranslate = {
+        "0": sourceTitle,
+        "1": sourceSubtitle,
+        "2": sourceDescription,
+        "3": sourceCtaText
+      };
 
       const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
         body: {
@@ -274,11 +275,13 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
 
       if (translateError) throw translateError;
 
-      if (translateData?.translatedTexts && Array.isArray(translateData.translatedTexts)) {
-        setTitle(translateData.translatedTexts[0] || sourceTitle);
-        setSubtitle(translateData.translatedTexts[1] || sourceSubtitle);
-        setDescription(translateData.translatedTexts[2] || sourceDescription);
-        setCtaText(translateData.translatedTexts[3] || sourceCtaText);
+      // Edge function returns an object with string keys
+      if (translateData?.translatedTexts) {
+        const translated = translateData.translatedTexts;
+        setTitle(translated["0"] || sourceTitle);
+        setSubtitle(translated["1"] || sourceSubtitle);
+        setDescription(translated["2"] || sourceDescription);
+        setCtaText(translated["3"] || sourceCtaText);
         toast.success("Content translated successfully!");
       }
     } catch (error: any) {
