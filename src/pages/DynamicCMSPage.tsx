@@ -282,6 +282,8 @@ const DynamicCMSPage = () => {
         urlLanguage,
         segmentsCount: enhancedSegments.length,
         tabOrderCount: loadedTabOrder.length,
+        tabOrder: loadedTabOrder,
+        segmentTypes: enhancedSegments.map(s => ({ id: s.id, key: s.segment_key, type: s.type })),
       });
 
       // REMOVED: Auto-sync tab_order logic that was adding unwanted empty segments
