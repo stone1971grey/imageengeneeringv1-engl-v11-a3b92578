@@ -70,9 +70,9 @@ const Navigation = () => {
     const loadStyleguidePages = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, page_title, parent_slug')
+        .select('page_slug, page_title, parent_slug, page_id')
         .ilike('page_slug', 'styleguide%')
-        .order('page_title', { ascending: true });
+        .order('page_id', { ascending: true }); // Sort by creation order (page_id)
 
       if (!error && data) {
         // Build hierarchy: pages directly under styleguide
