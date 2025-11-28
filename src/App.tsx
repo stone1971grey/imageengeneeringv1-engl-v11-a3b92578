@@ -83,6 +83,8 @@ const App = () => (
             <Route path="/web-camera" element={<Navigate to="/en/your-solution/web-camera" replace />} />
             <Route path="/machine-vision" element={<Navigate to="/en/your-solution/machine-vision" replace />} />
             <Route path="/mobile-phone" element={<Navigate to="/en/your-solution/mobile-phone" replace />} />
+            <Route path="/your-solution/medical-endoscopy" element={<Navigate to="/en/your-solution/medical-endoscopy" replace />} />
+            <Route path="/your-solution/mobile-phone" element={<Navigate to="/en/your-solution/mobile-phone" replace />} />
             <Route path="/in-cabin-testing" element={<Navigate to="/en/your-solution/automotive/in-cabin-testing" replace />} />
             <Route path="/your-solution/automotive/in-cabin-testing" element={<Navigate to="/en/your-solution/automotive/in-cabin-testing" replace />} />
             <Route path="/adas" element={<Navigate to="/en/your-solution/automotive/adas" replace />} />
