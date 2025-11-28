@@ -59,10 +59,16 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [localData, setLocalData] = useState<ProductHeroGalleryData>(data);
 
   useEffect(() => {
     loadContent();
   }, [pageSlug, segmentId, language]);
+
+  // Sync local data with prop data
+  useEffect(() => {
+    setLocalData(data);
+  }, [data]);
 
   const loadContent = async () => {
     if (!pageSlug) return;
@@ -87,7 +93,32 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         );
 
         if (gallerySegment?.data) {
+          // Update both local state and parent state
+          setLocalData(gallerySegment.data);
           onChange(gallerySegment.data);
+        } else {
+          // FALLBACK: If no data in current language, try loading from EN
+          if (language !== 'en') {
+            const { data: enData } = await supabase
+              .from("page_content")
+              .select("*")
+              .eq("page_slug", pageSlug)
+              .eq("section_key", "page_segments")
+              .eq("language", "en");
+
+            if (enData && enData.length > 0) {
+              const enSegments = JSON.parse(enData[0].content_value);
+              const enGallerySegment = enSegments.find((seg: any) => 
+                seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)
+              );
+
+              if (enGallerySegment?.data) {
+                console.log(`✅ Fallback: Loading layout from EN reference for segment ${segmentId}`);
+                setLocalData(enGallerySegment.data);
+                onChange(enGallerySegment.data);
+              }
+            }
+          }
         }
       } catch (error) {
         console.error("Error parsing segments:", error);
@@ -129,18 +160,21 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         altText: data.images[index]?.metadata?.altText || ''
       };
 
-      const updatedImages = [...data.images];
+      const updatedImages = [...localData.images];
       updatedImages[index] = { 
         ...updatedImages[index], 
         imageUrl: publicUrl,
         metadata: fullMetadata
       };
       
-      // Update local state
-      onChange({ ...data, images: updatedImages });
+      const updatedData = { ...localData, images: updatedImages };
+      
+      // Update local and parent state
+      setLocalData(updatedData);
+      onChange(updatedData);
 
       // Auto-save after successful upload
-      await autoSaveAfterUpload({ ...data, images: updatedImages });
+      await autoSaveAfterUpload(updatedData);
 
       toast.success('Image uploaded and saved successfully');
     } catch (error) {
@@ -194,21 +228,27 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   };
 
   const handleImageChange = (index: number, field: keyof ProductImage, value: string) => {
-    const updatedImages = [...data.images];
+    const updatedImages = [...localData.images];
     updatedImages[index] = { ...updatedImages[index], [field]: value };
-    onChange({ ...data, images: updatedImages });
+    const updatedData = { ...localData, images: updatedImages };
+    setLocalData(updatedData);
+    onChange(updatedData);
   };
 
   const handleAddImage = () => {
-    onChange({
-      ...data,
-      images: [...data.images, { imageUrl: '', title: '', description: '' }]
-    });
+    const updatedData = {
+      ...localData,
+      images: [...localData.images, { imageUrl: '', title: '', description: '' }]
+    };
+    setLocalData(updatedData);
+    onChange(updatedData);
   };
 
   const handleDeleteImage = (index: number) => {
-    const updatedImages = data.images.filter((_, i) => i !== index);
-    onChange({ ...data, images: updatedImages });
+    const updatedImages = localData.images.filter((_, i) => i !== index);
+    const updatedData = { ...localData, images: updatedImages };
+    setLocalData(updatedData);
+    onChange(updatedData);
     setDeleteIndex(null);
   };
 
@@ -269,14 +309,16 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
       if (translateData?.translatedTexts) {
         const translated = translateData.translatedTexts;
-        onChange({
-          ...data,
+        const updatedData = {
+          ...localData,
           title: translated["0"] || sourceData.title,
           subtitle: translated["1"] || sourceData.subtitle,
           description: translated["2"] || sourceData.description,
           cta1Text: translated["3"] || sourceData.cta1Text,
           cta2Text: translated["4"] || sourceData.cta2Text
-        });
+        };
+        setLocalData(updatedData);
+        onChange(updatedData);
         toast.success("Content translated successfully!");
       }
     } catch (error: any) {
@@ -306,12 +348,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       const segmentIndex = segments.findIndex((s: any) => s.id === segmentId);
 
       if (segmentIndex !== -1) {
-        segments[segmentIndex].data = data;
+        segments[segmentIndex].data = localData;
       } else {
         segments.push({
           id: segmentId,
           type: 'product-hero-gallery',
-          data: data
+          data: localData
         });
       }
 
@@ -433,8 +475,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
             <div className="space-y-2">
               <Label>Title (H1)</Label>
               <Input
-                value={data.title}
-                onChange={(e) => onChange({ ...data, title: e.target.value })}
+                value={localData.title}
+                onChange={(e) => {
+                  const updatedData = { ...localData, title: e.target.value };
+                  setLocalData(updatedData);
+                  onChange(updatedData);
+                }}
                 placeholder="Product Name"
               />
             </div>
@@ -442,8 +488,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
             <div className="space-y-2">
               <Label>Subtitle (H2)</Label>
               <Input
-                value={data.subtitle}
-                onChange={(e) => onChange({ ...data, subtitle: e.target.value })}
+                value={localData.subtitle}
+                onChange={(e) => {
+                  const updatedData = { ...localData, subtitle: e.target.value };
+                  setLocalData(updatedData);
+                  onChange(updatedData);
+                }}
                 placeholder="Product Variants"
               />
             </div>
@@ -451,8 +501,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
             <div className="space-y-2">
               <Label>Description</Label>
               <Textarea
-                value={data.description}
-                onChange={(e) => onChange({ ...data, description: e.target.value })}
+                value={localData.description}
+                onChange={(e) => {
+                  const updatedData = { ...localData, description: e.target.value };
+                  setLocalData(updatedData);
+                  onChange(updatedData);
+                }}
                 placeholder="Product description"
                 rows={3}
               />
@@ -463,7 +517,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           <TabsContent value="layout" className="space-y-4">
             <div className="space-y-2">
               <Label>Image Position</Label>
-              <Select value={data.imagePosition} onValueChange={(value: any) => onChange({ ...data, imagePosition: value })}>
+              <Select value={localData.imagePosition} onValueChange={(value: any) => {
+                const updatedData = { ...localData, imagePosition: value };
+                setLocalData(updatedData);
+                onChange(updatedData);
+              }}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -476,7 +534,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
             <div className="space-y-2">
               <Label>Layout Ratio (Text : Image)</Label>
-              <Select value={data.layoutRatio} onValueChange={(value: any) => onChange({ ...data, layoutRatio: value })}>
+              <Select value={localData.layoutRatio} onValueChange={(value: any) => {
+                const updatedData = { ...localData, layoutRatio: value };
+                setLocalData(updatedData);
+                onChange(updatedData);
+              }}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -490,7 +552,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
             <div className="space-y-2">
               <Label>Top Spacing</Label>
-              <Select value={data.topSpacing} onValueChange={(value: any) => onChange({ ...data, topSpacing: value })}>
+              <Select value={localData.topSpacing} onValueChange={(value: any) => {
+                const updatedData = { ...localData, topSpacing: value };
+                setLocalData(updatedData);
+                onChange(updatedData);
+              }}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -512,8 +578,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 <Label htmlFor="cta1Text">Text</Label>
                 <Input
                   id="cta1Text"
-                  value={data.cta1Text}
-                  onChange={(e) => onChange({ ...data, cta1Text: e.target.value })}
+                  value={localData.cta1Text}
+                  onChange={(e) => {
+                    const updatedData = { ...localData, cta1Text: e.target.value };
+                    setLocalData(updatedData);
+                    onChange(updatedData);
+                  }}
                   placeholder="Contact Sales"
                 />
               </div>
@@ -521,14 +591,22 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 <Label htmlFor="cta1Link">Link (use # for anchor)</Label>
                 <Input
                   id="cta1Link"
-                  value={data.cta1Link}
-                  onChange={(e) => onChange({ ...data, cta1Link: e.target.value })}
+                  value={localData.cta1Link}
+                  onChange={(e) => {
+                    const updatedData = { ...localData, cta1Link: e.target.value };
+                    setLocalData(updatedData);
+                    onChange(updatedData);
+                  }}
                   placeholder="#contact or /path"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cta1Style">Color</Label>
-                <Select value={data.cta1Style} onValueChange={(value: any) => onChange({ ...data, cta1Style: value })}>
+                <Select value={localData.cta1Style} onValueChange={(value: any) => {
+                  const updatedData = { ...localData, cta1Style: value };
+                  setLocalData(updatedData);
+                  onChange(updatedData);
+                }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -547,8 +625,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 <Label htmlFor="cta2Text">Text</Label>
                 <Input
                   id="cta2Text"
-                  value={data.cta2Text}
-                  onChange={(e) => onChange({ ...data, cta2Text: e.target.value })}
+                  value={localData.cta2Text}
+                  onChange={(e) => {
+                    const updatedData = { ...localData, cta2Text: e.target.value };
+                    setLocalData(updatedData);
+                    onChange(updatedData);
+                  }}
                   placeholder="Learn More"
                 />
               </div>
@@ -556,14 +638,22 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 <Label htmlFor="cta2Link">Link (use # for anchor)</Label>
                 <Input
                   id="cta2Link"
-                  value={data.cta2Link}
-                  onChange={(e) => onChange({ ...data, cta2Link: e.target.value })}
+                  value={localData.cta2Link}
+                  onChange={(e) => {
+                    const updatedData = { ...localData, cta2Link: e.target.value };
+                    setLocalData(updatedData);
+                    onChange(updatedData);
+                  }}
                   placeholder="#overview or /path"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cta2Style">Color</Label>
-                <Select value={data.cta2Style} onValueChange={(value: any) => onChange({ ...data, cta2Style: value })}>
+                <Select value={localData.cta2Style} onValueChange={(value: any) => {
+                  const updatedData = { ...localData, cta2Style: value };
+                  setLocalData(updatedData);
+                  onChange(updatedData);
+                }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -587,7 +677,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               </Button>
             </div>
 
-            {data.images.map((image, index) => (
+            {localData.images.map((image, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="font-medium">Image {index + 1}</span>
@@ -673,7 +763,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   <Input
                     value={image.metadata?.altText || ''}
                     onChange={(e) => {
-                      const updatedImages = [...data.images];
+                      const updatedImages = [...localData.images];
                       if (updatedImages[index].metadata) {
                         updatedImages[index].metadata!.altText = e.target.value;
                       } else {
@@ -688,7 +778,9 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                           altText: e.target.value
                         };
                       }
-                      onChange({ ...data, images: updatedImages });
+                      const updatedData = { ...localData, images: updatedImages };
+                      setLocalData(updatedData);
+                      onChange(updatedData);
                     }}
                     placeholder="Describe this image for accessibility and SEO"
                   />
