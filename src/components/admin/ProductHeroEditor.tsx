@@ -273,9 +273,8 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
   };
 
   const handleTranslate = async () => {
-    // For non-English languages, always translate from the EN reference version
+    // Silently skip translation for English (no toast)
     if (language === 'en') {
-      toast.error("Cannot translate from English to English");
       return;
     }
 
