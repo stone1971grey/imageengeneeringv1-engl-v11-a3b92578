@@ -690,9 +690,6 @@ export const BannerSegmentEditor = ({
                   />
                 )}
 
-                    currentImageUrl={image.url}
-                  />
-                )}
                 {image.url && (
                   <div className="mt-4 p-4 bg-background rounded relative">
                     <img
