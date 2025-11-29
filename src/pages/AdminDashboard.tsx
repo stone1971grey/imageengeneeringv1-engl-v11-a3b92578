@@ -66,6 +66,7 @@ import DebugEditor from '@/components/admin/DebugEditor';
 import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
 import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 import { GlossaryManager } from '@/components/admin/GlossaryManager';
+import { DataHubDialog } from '@/components/admin/DataHubDialog';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -3041,8 +3042,13 @@ const AdminDashboard = () => {
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-4">
-            {/* CMS Hub Button - nach links verschoben */}
-            <CMSPageOverview />
+            <div className="flex flex-col gap-2">
+              {/* CMS Hub Button - nach links verschoben */}
+              <CMSPageOverview />
+              
+              {/* Data Hub Button - unterhalb von CMS Hub */}
+              <DataHubDialog />
+            </div>
             
             {/* Home Icon - zur Welcome-Seite */}
             <Button
