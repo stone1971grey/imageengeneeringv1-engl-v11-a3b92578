@@ -498,6 +498,7 @@ export function DataHubDialog({
                     const isVid = isVideo(file.name);
 
                     const segmentId = file.metadata?.segmentId || file.metadata?.segment_id;
+                    const segmentIds = file.metadata?.segmentIds || (segmentId ? [segmentId] : []);
                     
                     return (
                       <div
@@ -522,14 +523,19 @@ export function DataHubDialog({
                                 }
                               }}
                             />
-                            {/* Segment Badge */}
-                            {segmentId && (
-                              <div 
-                                className="absolute top-2 right-2 flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
-                                title={`Assigned to Segment ${segmentId}`}
-                              >
-                                <Tag className="h-3 w-3 text-[#f9dc24]" />
-                                <span className="text-[10px] font-semibold text-[#f9dc24]">#{segmentId}</span>
+                            {/* Segment Badges - support multiple segments */}
+                            {segmentIds.length > 0 && (
+                              <div className="absolute top-2 right-2 flex items-center gap-1">
+                                {segmentIds.map((id: string, idx: number) => (
+                                  <div 
+                                    key={idx}
+                                    className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                    title={`Assigned to Segment ${id}`}
+                                  >
+                                    <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                    <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                  </div>
+                                ))}
                               </div>
                             )}
                           </div>
@@ -549,11 +555,11 @@ export function DataHubDialog({
                           <p className="text-xs text-gray-300 truncate font-medium" title={file.name}>
                             {file.name.includes('/') ? file.name.split('/').pop() : file.name}
                           </p>
-                          {/* Segment Assignment Info */}
-                          {segmentId && (
+                          {/* Segment Assignment Info - support multiple segments */}
+                          {segmentIds.length > 0 && (
                             <p className="text-[10px] text-[#f9dc24]/80 flex items-center gap-1">
                               <span>→</span>
-                              <span>Segment {segmentId}</span>
+                              <span>Segment {segmentIds.join(', ')}</span>
                             </p>
                           )}
                           <p className="text-xs text-gray-500">
