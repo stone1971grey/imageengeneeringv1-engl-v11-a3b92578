@@ -611,22 +611,31 @@ export function DataHubDialog({
                                   });
                                 }
                               }}
-                            />
-                            {/* Segment Badges - support multiple segments */}
-                            {segmentIds.length > 0 && (
-                              <div className="absolute top-2 right-2 flex items-center gap-1">
-                                {segmentIds.map((id: string, idx: number) => (
-                                  <div 
-                                    key={idx}
-                                    className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
-                                    title={`Assigned to Segment ${id}`}
-                                  >
-                                    <Tag className="h-3 w-3 text-[#f9dc24]" />
-                                    <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                             />
+                             {/* Image ID Badge - light blue on top-left */}
+                             <div className="absolute top-2 left-2">
+                               <div 
+                                 className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-blue-400/30 shadow-lg"
+                                 title={`Image ID: ${file.id}`}
+                               >
+                                 <span className="text-[10px] font-semibold text-blue-400">ID: {file.id.slice(0, 8)}</span>
+                               </div>
+                             </div>
+                             {/* Segment Badges - support multiple segments on top-right */}
+                             {segmentIds.length > 0 && (
+                               <div className="absolute top-2 right-2 flex items-center gap-1">
+                                 {segmentIds.map((id: string, idx: number) => (
+                                   <div 
+                                     key={idx}
+                                     className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                     title={`Assigned to Segment ${id}`}
+                                   >
+                                     <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                     <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                   </div>
+                                 ))}
+                               </div>
+                             )}
                           </div>
                         )}
                         {isVid && (
