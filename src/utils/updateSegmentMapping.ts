@@ -37,12 +37,14 @@ export function extractFilePathFromUrl(url: string): string | null {
  * Updates the file_segment_mappings table to add a segment ID to an image's mapping.
  * If the image already has a mapping, adds the segmentId to the segment_ids array.
  * If not, creates a new mapping entry.
+ * Optionally updates the alt_text if provided.
  */
 export async function updateSegmentMapping(
   imageUrl: string,
   segmentId: number,
   bucketId: string = 'page-images',
-  showToast: boolean = true
+  showToast: boolean = true,
+  altText?: string
 ): Promise<boolean> {
   if (!imageUrl || !segmentId) {
     return false;
@@ -81,12 +83,19 @@ export async function updateSegmentMapping(
       if (!currentIds.includes(segmentIdStr)) {
         const updatedIds = [...currentIds, segmentIdStr];
         
+        const updateData: any = { 
+          segment_ids: updatedIds,
+          updated_at: new Date().toISOString()
+        };
+        
+        // Only update alt_text if explicitly provided
+        if (altText !== undefined) {
+          updateData.alt_text = altText;
+        }
+        
         const { error: updateError } = await supabase
           .from('file_segment_mappings')
-          .update({ 
-            segment_ids: updatedIds,
-            updated_at: new Date().toISOString()
-          })
+          .update(updateData)
           .eq('file_path', filePath)
           .eq('bucket_id', bucketId);
         
@@ -107,13 +116,20 @@ export async function updateSegmentMapping(
       }
     } else {
       // No mapping exists - create new one
+      const insertData: any = {
+        file_path: filePath,
+        bucket_id: bucketId,
+        segment_ids: [segmentIdStr]
+      };
+      
+      // Include alt_text if provided
+      if (altText !== undefined) {
+        insertData.alt_text = altText;
+      }
+      
       const { error: insertError } = await supabase
         .from('file_segment_mappings')
-        .insert({
-          file_path: filePath,
-          bucket_id: bucketId,
-          segment_ids: [segmentIdStr]
-        });
+        .insert(insertData);
       
       if (insertError) {
         if (showToast) {
