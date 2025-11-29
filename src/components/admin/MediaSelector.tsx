@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Upload, FolderOpen } from "lucide-react";
+import { Upload, FolderOpen, Trash2 } from "lucide-react";
 import { DataHubDialog } from "./DataHubDialog";
 
 interface MediaSelectorProps {
@@ -38,6 +38,14 @@ export const MediaSelector = ({
             alt="Current image" 
             className="w-full h-full object-cover"
           />
+          <button
+            type="button"
+            onClick={() => onMediaSelect('', undefined)}
+            className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors z-10"
+            title="Delete Image"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
         </div>
       )}
       
