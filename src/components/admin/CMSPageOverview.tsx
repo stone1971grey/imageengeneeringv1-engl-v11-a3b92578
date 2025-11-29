@@ -344,6 +344,27 @@ export const CMSPageOverview = () => {
       lastDropModeRef.current = null; // Reset mode when hovering new element
     }
 
+    // Find dragged and target pages
+    const draggedPage = filteredPages.find(p => p.page_id === active.id);
+    const targetPage = filteredPages.find(p => p.page_id === over.id);
+
+    if (!draggedPage || !targetPage) {
+      return;
+    }
+
+    // INTELLIGENT MODE DETECTION: If dragged page is already a child of target page,
+    // only allow sibling mode (no point making it a child again)
+    const isAlreadyChild = draggedPage.parent_slug === targetPage.page_slug;
+
+    if (isAlreadyChild) {
+      // Force sibling mode when already a child
+      if (dropMode !== 'sibling') {
+        setDropMode('sibling');
+        lastDropModeRef.current = 'sibling';
+      }
+      return;
+    }
+
     // Calculate drop mode with hysteresis to prevent oscillation
     const overElement = document.querySelector(`[data-page-id="${over.id}"]`) as HTMLElement | null;
     const clientY = event.activatorEvent?.clientY as number | undefined;
