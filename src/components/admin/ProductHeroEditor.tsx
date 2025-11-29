@@ -694,6 +694,19 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
               currentImageUrl={imageUrl}
             />
             
+            {imageUrl && (
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={handleImageDelete}
+                className="mt-3 w-full"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Image
+              </Button>
+            )}
+            
             {imageMetadata && (
               <div className="mt-3 text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
                 <p><strong>Filename:</strong> {imageMetadata.originalFileName}</p>
