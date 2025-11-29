@@ -37,9 +37,16 @@ export async function updateSegmentMapping(
   segmentId: number,
   bucketId: string = 'page-images'
 ): Promise<void> {
-  if (!imageUrl || !segmentId) return;
+  console.log('[updateSegmentMapping] Called with:', { imageUrl, segmentId, bucketId });
+  
+  if (!imageUrl || !segmentId) {
+    console.warn('[updateSegmentMapping] Missing imageUrl or segmentId');
+    return;
+  }
   
   const filePath = extractFilePathFromUrl(imageUrl);
+  console.log('[updateSegmentMapping] Extracted file path:', filePath);
+  
   if (!filePath) {
     console.warn('[updateSegmentMapping] Could not extract file path from URL:', imageUrl);
     return;
@@ -47,12 +54,15 @@ export async function updateSegmentMapping(
   
   try {
     // Check if mapping exists
+    console.log('[updateSegmentMapping] Checking for existing mapping...');
     const { data: existing, error: fetchError } = await supabase
       .from('file_segment_mappings')
       .select('segment_ids')
       .eq('file_path', filePath)
       .eq('bucket_id', bucketId)
       .maybeSingle();
+    
+    console.log('[updateSegmentMapping] Existing mapping query result:', { existing, fetchError });
     
     if (fetchError) throw fetchError;
     
@@ -61,8 +71,11 @@ export async function updateSegmentMapping(
     if (existing) {
       // Mapping exists - add segmentId if not already present
       const currentIds = existing.segment_ids || [];
+      console.log('[updateSegmentMapping] Current segment IDs:', currentIds);
+      
       if (!currentIds.includes(segmentIdStr)) {
         const updatedIds = [...currentIds, segmentIdStr];
+        console.log('[updateSegmentMapping] Updating to:', updatedIds);
         
         const { error: updateError } = await supabase
           .from('file_segment_mappings')
@@ -70,16 +83,23 @@ export async function updateSegmentMapping(
           .eq('file_path', filePath)
           .eq('bucket_id', bucketId);
         
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error('[updateSegmentMapping] Update error:', updateError);
+          throw updateError;
+        }
         
-        console.log('[updateSegmentMapping] Added segment ID to existing mapping:', {
+        console.log('[updateSegmentMapping] ✅ Successfully added segment ID to existing mapping:', {
           filePath,
           segmentId: segmentIdStr,
           updatedIds
         });
+      } else {
+        console.log('[updateSegmentMapping] Segment ID already exists in mapping, skipping');
       }
     } else {
       // No mapping exists - create new one
+      console.log('[updateSegmentMapping] Creating new mapping entry');
+      
       const { error: insertError } = await supabase
         .from('file_segment_mappings')
         .insert({
@@ -88,15 +108,18 @@ export async function updateSegmentMapping(
           segment_ids: [segmentIdStr]
         });
       
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('[updateSegmentMapping] Insert error:', insertError);
+        throw insertError;
+      }
       
-      console.log('[updateSegmentMapping] Created new mapping:', {
+      console.log('[updateSegmentMapping] ✅ Successfully created new mapping:', {
         filePath,
         segmentId: segmentIdStr
       });
     }
   } catch (error) {
-    console.error('[updateSegmentMapping] Error updating segment mapping:', error);
+    console.error('[updateSegmentMapping] ❌ Error updating segment mapping:', error);
     // Don't throw - this is not critical for the save operation
   }
 }
