@@ -178,7 +178,7 @@ export function DataHubDialog() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300 flex items-center gap-2"
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 border-gray-400 flex items-center gap-2"
         >
           <Database className="h-4 w-4" />
           Data Hub
