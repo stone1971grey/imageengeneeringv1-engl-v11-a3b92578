@@ -3054,7 +3054,7 @@ const AdminDashboard = () => {
               
               {/* Home Icon - zur Welcome-Seite im Admin Dashboard */}
               <Button
-                onClick={() => navigate(`/en/admin-dashboard`)}
+                onClick={() => navigate(`/${language}/admin-dashboard`)}
                 variant="outline"
                 size="icon"
                 className="h-10 w-10"
