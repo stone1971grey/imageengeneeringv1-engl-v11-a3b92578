@@ -121,10 +121,11 @@ export function DataHubDialog({
           });
 
         if (!filesError && files) {
-          // Filter out segment subdirectories (they're not real assets)
+          // Filter out ALL subdirectories (they're not real assets)
           const actualFiles = files.filter(item => {
-            // If it's a directory (no name extension) and starts with "segment-", skip it
-            if (!item.name.includes('.') && item.name.startsWith('segment-')) {
+            // Skip all directories (items without file extensions)
+            // Real files must have a dot in their name (e.g., .jpg, .png, .pdf)
+            if (!item.name.includes('.')) {
               return false;
             }
             return true;
@@ -142,6 +143,7 @@ export function DataHubDialog({
           });
 
           // Also load files from segment subdirectories and tag them
+          // Only process directories that start with "segment-"
           const segmentSubdirs = files.filter(item => 
             !item.name.includes('.') && item.name.startsWith('segment-')
           );
