@@ -53,7 +53,8 @@ export const MediaSelector = ({
           <label htmlFor={`file-upload-${label}`}>
             <Button
               type="button"
-              className="w-full bg-blue-400 hover:bg-blue-500 text-white"
+              style={{ backgroundColor: '#60a5fa', color: 'white' }}
+              className="w-full hover:opacity-90 transition-opacity"
               onClick={(e) => {
                 e.preventDefault();
                 document.getElementById(`file-upload-${label}`)?.click();
@@ -67,7 +68,8 @@ export const MediaSelector = ({
 
         <Button
           type="button"
-          className="flex-1 bg-blue-900 hover:bg-blue-950 text-white"
+          style={{ backgroundColor: '#1e3a8a', color: 'white' }}
+          className="flex-1 hover:opacity-90 transition-opacity"
           onClick={() => setMediaDialogOpen(true)}
         >
           <FolderOpen className="h-4 w-4 mr-2" />
