@@ -172,17 +172,13 @@ export const BannerSegmentEditor = ({
     // loadTargetLanguageData is now called by useEffect
   };
 
-  const handleImageUpload = async (index: number, file: File) => {
-    setUploadingIndex(index);
-    
-    // Capture the image ID at the start of upload to identify which image to update
-    const imageId = data.images[index]?.id;
+  const handleImageUpload = async (imageId: string, file: File) => {
+    // Mark upload state by image ID is not needed visually yet, keep index-based spinner if added later
     if (!imageId) {
       toast.error("Image ID missing - cannot upload");
-      setUploadingIndex(null);
       return;
     }
-    
+
     try {
       // Convert to base64
       const reader = new FileReader();
@@ -210,9 +206,13 @@ export const BannerSegmentEditor = ({
       if (!result?.success) throw new Error(result?.error || 'Upload failed');
 
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
+
+      // Find the current image object to preserve its existing alt text
+      const currentImage = data.images.find(img => img.id === imageId);
+
       const metadata: ImageMetadata = {
         ...metadataWithoutAlt,
-        altText: data.images[index]?.alt || ''
+        altText: currentImage?.alt || ''
       };
 
       // Find and update the image by ID (not by index) to avoid race conditions
@@ -231,15 +231,22 @@ export const BannerSegmentEditor = ({
       setUploadingIndex(null);
     }
   };
-
-  const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
-    const imageId = data.images[index]?.id;
+ 
+  const handleMediaSelect = async (imageId: string, url: string, metadata?: any) => {
     if (!imageId) {
       toast.error("Image ID missing - cannot select");
       return;
     }
     
-    const imageMetadata: ImageMetadata = metadata ? { ...metadata, altText: data.images[index]?.alt || '' } : { altText: '' };
+    // Find the current image object to preserve its existing alt text when metadata is missing
+    const currentImage = data.images.find(img => img.id === imageId);
+
+    const imageMetadata: ImageMetadata = metadata 
+      ? { ...metadata, altText: currentImage?.alt || '' } 
+      : { 
+          ...(currentImage?.metadata as ImageMetadata | undefined),
+          altText: currentImage?.alt || ''
+        } as ImageMetadata;
     
     // Find and update the image by ID (not by index) to avoid race conditions
     const updatedImages = data.images.map(img => 
@@ -251,7 +258,7 @@ export const BannerSegmentEditor = ({
     onChange({ ...data, images: updatedImages });
     toast.success("Image selected successfully!");
   };
-
+ 
   const handleAddImage = () => {
     const newImage: BannerImage = {
       id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -675,10 +682,14 @@ export const BannerSegmentEditor = ({
 
                 {!isTarget && (
                   <MediaSelector
-                    onFileSelect={(file) => handleImageUpload(index, file)}
-                    onMediaSelect={(url, metadata) => handleMediaSelect(index, url, metadata)}
+                    onFileSelect={(file) => handleImageUpload(image.id, file)}
+                    onMediaSelect={(url, metadata) => handleMediaSelect(image.id, url, metadata)}
                     acceptedFileTypes="image/*"
                     label="Image File"
+                    currentImageUrl={image.url}
+                  />
+                )}
+
                     currentImageUrl={image.url}
                   />
                 )}
