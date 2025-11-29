@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, X, Heading1, Languages } from "lucide-react";
+import { Upload, X, Heading1 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 
@@ -43,16 +43,7 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
   const [overlayOpacity, setOverlayOpacity] = useState(15);
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
-
-  const LANGUAGES = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'de', name: 'German', flag: '🇩🇪' },
-    { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-    { code: 'ko', name: 'Korean', flag: '🇰🇷' },
-    { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
-  ];
 
   useEffect(() => {
     loadContent();
@@ -540,15 +531,12 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
-    
     // VALIDATION: Image-type background requires imageUrl
     if (backgroundType === 'image' && !imageUrl?.trim()) {
       toast.error('⚠️ Background Image is required when Background Type is "Image"', {
         description: 'Please upload an image or switch Background Type to "Video"',
         duration: 5000
       });
-      setIsSaving(false);
       return;
     }
 
@@ -558,7 +546,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
         description: 'Please enter a video URL or switch Background Type to "Image"',
         duration: 5000
       });
-      setIsSaving(false);
       return;
     }
 
@@ -597,7 +584,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     if (fetchError || !pageContentData) {
       console.error("Error loading page_segments:", fetchError);
       toast.error("Failed to load page segments");
-      setIsSaving(false);
       return;
     }
 
@@ -623,7 +609,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
       if (updateError) {
         console.error("Error updating page_segments:", updateError);
         toast.error("Failed to save Full Hero");
-        setIsSaving(false);
         return;
       }
 
@@ -635,59 +620,21 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     } catch (e) {
       console.error("Error parsing/updating page_segments:", e);
       toast.error("Failed to save Full Hero");
-    } finally {
-      setIsSaving(false);
     }
   };
 
   return (
-    <div className="space-y-4">
-      {/* Multilingual Rainbow Header */}
-      <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-3 mb-2">
-            <Languages className="h-5 w-5 text-blue-300" />
-            <div>
-              <CardTitle className="text-white text-lg">Multi-Language Editor</CardTitle>
-              <div className="text-blue-300 text-xs">Compare and edit Full Hero in multiple languages</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 mb-3">
-            <label className="text-white font-medium text-sm">Target Language:</label>
-            <div className="px-3 py-1.5 bg-blue-950/70 border border-blue-600 rounded-md text-white text-sm">
-              <span className="flex items-center gap-2">
-                <span className="text-lg">{LANGUAGES.find(l => l.code === language)?.flag}</span>
-                <span>{LANGUAGES.find(l => l.code === language)?.name}</span>
-              </span>
-            </div>
-          </div>
-          {language !== 'en' && (
-            <div className="flex justify-end">
-              <Button
-                onClick={handleTranslate}
-                disabled={isTranslating}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-              >
-                <GeminiIcon className="h-4 w-4 mr-2" />
-                {isTranslating ? "Translating..." : "Translate Automatically"}
-              </Button>
-            </div>
-          )}
-        </CardHeader>
-      </Card>
-
-      {/* Main Editor Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            Full Hero
-            <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
-          </CardTitle>
-          <CardDescription>
-            Fullscreen Hero with two-line title, subtitle, buttons and background image/video
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          Full Hero
+          <span className="text-xs font-normal text-muted-foreground">[Segment ID: {segmentId}]</span>
+        </CardTitle>
+        <CardDescription>
+          Fullscreen Hero with two-line title, subtitle, buttons and background image/video
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
         {isH1Segment && (
           <Alert className="border-primary/50 bg-primary/5">
             <Heading1 className="h-4 w-4" />
@@ -982,15 +929,26 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
           </Alert>
         )}
 
-        <Button 
-          onClick={handleSave} 
-          className="w-full"
-          disabled={(backgroundType === 'image' && !imageUrl?.trim()) || (backgroundType === 'video' && !videoUrl?.trim())}
-        >
-          {isSaving ? "Saving..." : "Save Full Hero"}
-        </Button>
+        <div className="flex gap-2">
+          {language !== 'en' && (
+            <Button 
+              onClick={handleTranslate}
+              disabled={isTranslating}
+              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              <GeminiIcon className="h-4 w-4 mr-2" />
+              {isTranslating ? "Translating..." : "Translate Automatically"}
+            </Button>
+          )}
+          <Button 
+            onClick={handleSave} 
+            className="flex-1"
+            disabled={(backgroundType === 'image' && !imageUrl?.trim()) || (backgroundType === 'video' && !videoUrl?.trim())}
+          >
+            Save Full Hero
+          </Button>
+        </div>
       </CardContent>
     </Card>
-    </div>
   );
 };
