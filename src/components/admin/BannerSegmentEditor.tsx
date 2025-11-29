@@ -173,13 +173,14 @@ export const BannerSegmentEditor = ({
   };
 
   const handleImageUpload = async (imageId: string, file: File) => {
-    // Mark upload state by image ID is not needed visually yet, keep index-based spinner if added later
     if (!imageId) {
       toast.error("Image ID missing - cannot upload");
       return;
     }
 
     try {
+      console.log('[BannerSegmentEditor] handleImageUpload start', { imageId, imagesBefore: data.images });
+
       // Convert to base64
       const reader = new FileReader();
       const fileData = await new Promise<string>((resolve, reject) => {
@@ -222,6 +223,8 @@ export const BannerSegmentEditor = ({
           : img
       );
       
+      console.log('[BannerSegmentEditor] handleImageUpload updatedImages', { imageId, updatedImages });
+
       onChange({ ...data, images: updatedImages });
       
       toast.success("Image uploaded successfully!");
@@ -258,7 +261,7 @@ export const BannerSegmentEditor = ({
     onChange({ ...data, images: updatedImages });
     toast.success("Image selected successfully!");
   };
- 
+
   const handleAddImage = () => {
     const newImage: BannerImage = {
       id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
