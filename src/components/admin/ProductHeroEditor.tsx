@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, X, Trash2 } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
+import { MediaSelector } from "@/components/admin/MediaSelector";
 
 interface ProductHeroEditorProps {
   pageSlug: string;
@@ -126,10 +127,7 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const handleImageUpload = async (file: File) => {
     setIsUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
@@ -198,6 +196,50 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleMediaSelect = async (url: string, metadata?: any) => {
+    const imageMetadata: ImageMetadata = metadata ? { ...metadata, altText: '' } : { altText: '' };
+    setImageUrl(url);
+    setImageMetadata(imageMetadata);
+    
+    // Auto-sync to all languages
+    const allLanguages: Array<'en' | 'de' | 'ja' | 'ko' | 'zh'> = ['en', 'de', 'ja', 'ko', 'zh'];
+    
+    for (const lang of allLanguages) {
+      const { data: existingContent } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", lang)
+        .maybeSingle();
+      
+      if (existingContent) {
+        const existingSegments = JSON.parse(existingContent.content_value);
+        const segmentIndex = existingSegments.findIndex((s: any) => s.id === segmentId);
+        
+        if (segmentIndex !== -1) {
+          existingSegments[segmentIndex].data = {
+            ...existingSegments[segmentIndex].data,
+            hero_image_url: url,
+            hero_image_metadata: imageMetadata
+          };
+          
+          await supabase
+            .from("page_content")
+            .update({
+              content_value: JSON.stringify(existingSegments),
+              updated_at: new Date().toISOString()
+            })
+            .eq("page_slug", pageSlug)
+            .eq("section_key", "page_segments")
+            .eq("language", lang);
+        }
+      }
+    }
+    
+    toast.success("Image selected and synced to all languages!");
   };
 
   const handleImageDelete = async () => {
@@ -680,25 +722,13 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
                 </div>
               </div>
             ) : (
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-[#f9dc24] transition-colors">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="hero-image-upload"
-                  disabled={isUploading}
-                />
-                <label htmlFor="hero-image-upload" className="cursor-pointer">
-                  <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-white mb-2">
-                    {isUploading ? "Uploading..." : "Click to upload image"}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    PNG, JPG or WEBP (max. 5MB)
-                  </p>
-                </label>
-              </div>
+              <MediaSelector
+                onFileSelect={handleImageUpload}
+                onMediaSelect={handleMediaSelect}
+                acceptedFileTypes="image/*"
+                label="Product Hero Image"
+                currentImageUrl={imageUrl}
+              />
             )}
           </div>
         </div>

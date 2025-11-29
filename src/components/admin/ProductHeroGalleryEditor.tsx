@@ -6,10 +6,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, Upload } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { GeminiIcon } from '@/components/GeminiIcon';
+import { MediaSelector } from '@/components/admin/MediaSelector';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -250,6 +251,28 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     } finally {
       setUploadingIndex(null);
     }
+  };
+
+  const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
+    const fullMetadata: ImageMetadata = metadata ? { ...metadata, altText: data.images[index]?.metadata?.altText || '' } : { altText: '' };
+    
+    const updatedImages = [...localData.images];
+    updatedImages[index] = { 
+      ...updatedImages[index], 
+      imageUrl: url,
+      metadata: fullMetadata
+    };
+    
+    const updatedData = { ...localData, images: updatedImages };
+    
+    // Update local and parent state
+    setLocalData(updatedData);
+    onChange(updatedData);
+
+    // Auto-save after selection
+    await autoSaveAfterUpload(updatedData);
+
+    toast.success('Image selected and saved successfully');
   };
 
   const autoSaveAfterUpload = async (updatedData: ProductHeroGalleryData) => {
@@ -759,35 +782,13 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                   </Button>
                 </div>
 
-                <div>
-                  <Label>Upload Image</Label>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      id={`image-upload-${index}`}
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageUpload(index, file);
-                      }}
-                      disabled={uploadingIndex === index}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => document.getElementById(`image-upload-${index}`)?.click()}
-                      disabled={uploadingIndex === index}
-                      style={{ backgroundColor: '#f9dc24', color: 'black' }}
-                      className="hover:opacity-90"
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {uploadingIndex === index ? 'Uploading...' : 'Choose Image'}
-                    </Button>
-                  </div>
-                  {image.imageUrl && (
-                    <img src={image.imageUrl} alt={image.metadata?.altText || `Gallery ${index + 1}`} className="mt-2 h-20 object-contain" />
-                  )}
-                </div>
+                <MediaSelector
+                  onFileSelect={(file) => handleImageUpload(index, file)}
+                  onMediaSelect={(url, metadata) => handleMediaSelect(index, url, metadata)}
+                  acceptedFileTypes="image/*"
+                  label={`Gallery Image ${index + 1}`}
+                  currentImageUrl={image.imageUrl}
+                />
 
                 {/* Image Metadata Display */}
                 {image.metadata && (

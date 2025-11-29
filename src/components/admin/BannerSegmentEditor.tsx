@@ -4,8 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Upload, Languages } from "lucide-react";
+import { Plus, Trash2, Languages } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
+import { MediaSelector } from "@/components/admin/MediaSelector";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -173,6 +174,20 @@ export const BannerSegmentEditor = ({
     } finally {
       setUploadingIndex(null);
     }
+  };
+
+  const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
+    const imageMetadata: ImageMetadata = metadata ? { ...metadata, altText: data.images[index]?.alt || '' } : { altText: '' };
+    
+    const updatedImages = [...data.images];
+    updatedImages[index] = {
+      ...updatedImages[index],
+      url: url,
+      metadata: imageMetadata
+    };
+    
+    onChange({ ...data, images: updatedImages });
+    toast.success("Image selected successfully!");
   };
 
   const handleAddImage = () => {
@@ -565,34 +580,16 @@ export const BannerSegmentEditor = ({
                 </div>
 
                 {!isTarget && (
-                  <div>
-                    <Label className="text-xs">Image File</Label>
-                    <div className="flex items-center gap-4 mt-2">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleImageUpload(index, file);
-                        }}
-                        className="hidden"
-                        id={`image-upload-${index}`}
-                        disabled={uploadingIndex === index}
-                      />
-                      <Button
-                        type="button"
-                        onClick={() => document.getElementById(`image-upload-${index}`)?.click()}
-                        className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                        disabled={uploadingIndex === index}
-                      >
-                        <Upload className="h-4 w-4" />
-                        {uploadingIndex === index ? 'Uploading...' : 'Upload Image'}
-                      </Button>
-                    </div>
-                  </div>
+                  <MediaSelector
+                    onFileSelect={(file) => handleImageUpload(index, file)}
+                    onMediaSelect={(url, metadata) => handleMediaSelect(index, url, metadata)}
+                    acceptedFileTypes="image/*"
+                    label="Image File"
+                    currentImageUrl={image.url}
+                  />
                 )}
                 {image.url && (
-                  <div className="mt-4 p-4 bg-background rounded">
+                  <div className="mt-4 p-4 bg-background rounded relative">
                     <img
                       src={image.url}
                       alt={image.alt || `Banner image ${index + 1}`}

@@ -10,9 +10,10 @@ import { Slider } from "@/components/ui/slider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, X, Heading1 } from "lucide-react";
+import { X, Heading1 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
+import { MediaSelector } from "@/components/admin/MediaSelector";
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -125,16 +126,9 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (file: File) => {
     console.log('[FullHero Upload] FILE INPUT ONCHANGE FIRED');
     toast.success('✅ onChange event detected!', { duration: 2000 });
-    
-    const file = e.target.files?.[0];
-    if (!file) {
-      console.log('[FullHero Upload] No file selected');
-      toast.error('No file selected');
-      return;
-    }
     
     console.log('[FullHero Upload] File details:', { name: file.name, size: file.size, type: file.type });
     
@@ -202,9 +196,6 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
       await autoSaveAfterUpload(result.url, metadata);
       
       toast.success('✅ Image uploaded and saved successfully!', { duration: 3000 });
-
-      // Reset input
-      e.target.value = '';
       
     } catch (error: any) {
       console.error('[FullHero Upload] Error:', error);
@@ -212,6 +203,13 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleMediaSelect = async (url: string, metadata?: any) => {
+    setImageUrl(url);
+    setImageMetadata(metadata || null);
+    await autoSaveAfterUpload(url, metadata || null);
+    toast.success('✅ Image selected and saved successfully!', { duration: 3000 });
   };
 
   const syncToOtherLanguages = async (updatedSegments: any[], contentType?: string | null) => {
@@ -803,42 +801,13 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
 
             {backgroundType === 'image' ? (
               <>
-                <div className="space-y-2">
-                  <Label htmlFor="imageUpload" className="text-destructive">
-                    Upload Image <span className="text-destructive">*</span>
-                  </Label>
-                  <div className="flex gap-2">
-                    <input
-                      id="imageUpload"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      disabled={isUploading}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => document.getElementById('imageUpload')?.click()}
-                      disabled={isUploading}
-                      className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-medium"
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      {isUploading ? 'Uploading...' : 'Choose Image'}
-                    </Button>
-                    {imageUrl && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setImageUrl("")}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  {imageUrl && (
-                    <img src={imageUrl} alt="Preview" className="w-full h-32 object-cover rounded mt-2" />
-                  )}
-                </div>
+                <MediaSelector
+                  onFileSelect={handleImageUpload}
+                  onMediaSelect={handleMediaSelect}
+                  acceptedFileTypes="image/*"
+                  label="Background Image *"
+                  currentImageUrl={imageUrl}
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="imageAlt">Alt Text (Alternative Text)</Label>
