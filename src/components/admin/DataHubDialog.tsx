@@ -497,7 +497,13 @@ export function DataHubDialog({
                     const isImg = isImage(file.name);
                     const isVid = isVideo(file.name);
 
-                    const segmentId = file.metadata?.segmentId || file.metadata?.segment_id;
+                    // Derive segment IDs from metadata or path (segment-XXX/filename)
+                    const pathParts = file.name.split('/');
+                    const segmentFromPath = pathParts.length > 1 && pathParts[0].startsWith('segment-')
+                      ? pathParts[0].replace('segment-', '')
+                      : undefined;
+
+                    const segmentId = file.metadata?.segmentId || file.metadata?.segment_id || segmentFromPath;
                     const segmentIds = file.metadata?.segmentIds || (segmentId ? [segmentId] : []);
                     
                     return (
