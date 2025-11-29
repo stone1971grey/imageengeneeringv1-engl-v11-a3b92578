@@ -677,58 +677,41 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
           </div>
 
           <div className="mt-6">
-            <Label className="text-white mb-2 block">Hero Image</Label>
-            {imageUrl ? (
-              <div className="space-y-3">
-                <div className="relative group">
-                  <img
-                    src={imageUrl}
-                    alt="Hero Preview"
-                    className="w-full h-48 object-cover rounded-lg"
-                  />
-                  <Button
-                    onClick={handleImageDelete}
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                {imageMetadata && (
-                  <div className="text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
-                    <p><strong>Filename:</strong> {imageMetadata.originalFileName}</p>
-                    <p><strong>Size:</strong> {imageMetadata.width} × {imageMetadata.height} px</p>
-                    <p><strong>File Size:</strong> {formatFileSize(imageMetadata.fileSizeKB)}</p>
-                    <p><strong>Format:</strong> {imageMetadata.format}</p>
-                    <p><strong>Uploaded:</strong> {formatUploadDate(imageMetadata.uploadDate)}</p>
-                  </div>
-                )}
-                <div>
-                  <Label className="text-white">Alt Text (SEO)</Label>
-                  <Input
-                    value={imageMetadata?.altText || ''}
-                    onChange={(e) => {
-                      if (imageMetadata) {
-                        setImageMetadata({
-                          ...imageMetadata,
-                          altText: e.target.value
-                        });
-                      }
-                    }}
-                    placeholder="Describe the image for SEO..."
-                    className="border-2 border-gray-600 text-white bg-gray-800"
-                  />
-                </div>
+            <MediaSelector
+              onFileSelect={handleImageUpload}
+              onMediaSelect={handleMediaSelect}
+              acceptedFileTypes="image/*"
+              label="Hero Image"
+              currentImageUrl={imageUrl}
+            />
+            
+            {imageMetadata && (
+              <div className="mt-3 text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
+                <p><strong>Filename:</strong> {imageMetadata.originalFileName}</p>
+                <p><strong>Size:</strong> {imageMetadata.width} × {imageMetadata.height} px</p>
+                <p><strong>File Size:</strong> {formatFileSize(imageMetadata.fileSizeKB)}</p>
+                <p><strong>Format:</strong> {imageMetadata.format}</p>
+                <p><strong>Uploaded:</strong> {formatUploadDate(imageMetadata.uploadDate)}</p>
               </div>
-            ) : (
-              <MediaSelector
-                onFileSelect={handleImageUpload}
-                onMediaSelect={handleMediaSelect}
-                acceptedFileTypes="image/*"
-                label="Product Hero Image"
-                currentImageUrl={imageUrl}
-              />
+            )}
+            
+            {imageUrl && (
+              <div className="mt-3">
+                <Label className="text-white">Alt Text (SEO)</Label>
+                <Input
+                  value={imageMetadata?.altText || ''}
+                  onChange={(e) => {
+                    if (imageMetadata) {
+                      setImageMetadata({
+                        ...imageMetadata,
+                        altText: e.target.value
+                      });
+                    }
+                  }}
+                  placeholder="Describe the image for SEO..."
+                  className="border-2 border-gray-600 text-white bg-gray-800"
+                />
+              </div>
             )}
           </div>
         </div>
