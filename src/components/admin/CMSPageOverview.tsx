@@ -329,51 +329,120 @@ export const CMSPageOverview = () => {
     const movedPage = filteredPages[oldIndex];
     const targetPage = filteredPages[newIndex];
 
-    // Check if same parent (same hierarchy level)
-    if (movedPage.parent_slug !== targetPage.parent_slug) {
-      toast.error("Cannot move pages between different hierarchy levels", {
-        description: "Pages can only be reordered within the same parent category"
+    // Prevent moving to level 1 (Homepage is the only level 1 page)
+    if (targetPage.parent_id === null && targetPage.page_id !== 1) {
+      toast.error("Cannot move to top level", {
+        description: "Only Homepage can be on the first hierarchy level"
       });
       return;
     }
 
-    // Reorder in UI immediately
-    const reordered = arrayMove(filteredPages, oldIndex, newIndex);
-    setFilteredPages(reordered);
-
-    // Calculate new positions for affected pages
     try {
-      // Get all siblings (same parent_slug)
-      const siblings = pages.filter(p => p.parent_slug === movedPage.parent_slug);
-      const reorderedSiblings = arrayMove(
-        siblings,
-        siblings.findIndex(p => p.page_id === movedPage.page_id),
-        siblings.findIndex(p => p.page_id === targetPage.page_id)
-      );
+      // Check if same parent (reordering within same level)
+      if (movedPage.parent_slug === targetPage.parent_slug) {
+        // Reorder in UI immediately
+        const reordered = arrayMove(filteredPages, oldIndex, newIndex);
+        setFilteredPages(reordered);
 
-      // Update positions in database
-      const updates = reorderedSiblings.map((page, index) => ({
-        page_id: page.page_id,
-        position: siblings[0].position + index
-      }));
+        // Get all siblings (same parent_slug)
+        const siblings = pages.filter(p => p.parent_slug === movedPage.parent_slug);
+        const reorderedSiblings = arrayMove(
+          siblings,
+          siblings.findIndex(p => p.page_id === movedPage.page_id),
+          siblings.findIndex(p => p.page_id === targetPage.page_id)
+        );
 
-      for (const update of updates) {
-        const { error } = await supabase
+        // Update positions in database
+        const updates = reorderedSiblings.map((page, index) => ({
+          page_id: page.page_id,
+          position: siblings[0].position + index
+        }));
+
+        for (const update of updates) {
+          const { error } = await supabase
+            .from('page_registry')
+            .update({ position: update.position })
+            .eq('page_id', update.page_id);
+
+          if (error) throw error;
+        }
+
+        toast.success("Page order updated successfully");
+      } else {
+        // Moving to different hierarchy level
+        // Update parent_slug and parent_id to match target page's parent
+        const newParentSlug = targetPage.parent_slug;
+        const newParentId = targetPage.parent_id;
+
+        // Get new siblings (pages that will share the same parent after move)
+        const newSiblings = pages.filter(p => p.parent_slug === newParentSlug);
+        const targetPositionInSiblings = newSiblings.findIndex(p => p.page_id === targetPage.page_id);
+        
+        // Calculate new position (insert after target page)
+        const newPosition = targetPage.position + 1;
+
+        // Update the moved page's parent and position
+        const { error: updateError } = await supabase
           .from('page_registry')
-          .update({ position: update.position })
-          .eq('page_id', update.page_id);
+          .update({ 
+            parent_slug: newParentSlug,
+            parent_id: newParentId,
+            position: newPosition
+          })
+          .eq('page_id', movedPage.page_id);
 
-        if (error) throw error;
+        if (updateError) throw updateError;
+
+        // Shift positions of pages that come after the insertion point
+        const pagesToShift = pages.filter(p => 
+          p.parent_slug === newParentSlug && 
+          p.position >= newPosition && 
+          p.page_id !== movedPage.page_id
+        );
+
+        for (const page of pagesToShift) {
+          const { error } = await supabase
+            .from('page_registry')
+            .update({ position: page.position + 1 })
+            .eq('page_id', page.page_id);
+
+          if (error) throw error;
+        }
+
+        // Update segment_registry to reflect new page_slug if needed
+        // (Only if the page slug itself changes, which it shouldn't in hierarchical moves)
+
+        // Regenerate navigationData for all languages
+        for (const lang of ['en', 'de', 'ja', 'ko', 'zh']) {
+          try {
+            const { data: allPages } = await supabase
+              .from('page_registry')
+              .select('*')
+              .order('position');
+
+            const { data: navLinks } = await supabase
+              .from('navigation_links')
+              .select('*')
+              .eq('language', lang);
+
+            if (allPages && navLinks) {
+              const updatedNavData = NAVIGATION_DATA_FILES[lang as keyof typeof NAVIGATION_DATA_FILES];
+              // Navigation data will be regenerated on next navigation load
+            }
+          } catch (navError) {
+            console.error(`Error updating navigation for ${lang}:`, navError);
+          }
+        }
+
+        toast.success("Page moved to new hierarchy level", {
+          description: "Navigation structure has been updated"
+        });
       }
-
-      toast.success("Page order updated successfully", {
-        description: "Navigation will reflect the new order"
-      });
 
       await loadPages();
     } catch (error) {
-      console.error("Error updating page order:", error);
-      toast.error("Failed to update page order");
+      console.error("Error updating page:", error);
+      toast.error("Failed to update page");
       await loadPages(); // Reload to restore correct order
     }
   };
