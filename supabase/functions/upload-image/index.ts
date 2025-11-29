@@ -206,13 +206,21 @@ Deno.serve(async (req) => {
 
     console.log('[upload-image] Uploading to path:', uploadPath);
 
+    // Prepare custom metadata including segmentId
+    const customMetadata: Record<string, string> = {};
+    if (segmentId) {
+      customMetadata.segmentId = segmentId.toString();
+      console.log('[upload-image] Adding segmentId to metadata:', segmentId);
+    }
+
     // Upload to storage using service role (bypasses RLS)
     const uploadResult = await supabase.storage
       .from(bucket)
       .upload(uploadPath, fileBytes, {
         contentType: `image/${fileName.split('.').pop()}`,
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        metadata: customMetadata
       });
 
     if (uploadResult.error) {
