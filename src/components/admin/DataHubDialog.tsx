@@ -56,7 +56,19 @@ export function DataHubDialog({
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
   const setIsOpen = controlledIsOpen !== undefined ? (onClose || (() => {})) : setInternalIsOpen;
-  const [openFolders, setOpenFolders] = useState<string[]>(["00000000-0000-0000-0000-000000000001"]); // Root folder open by default
+  
+  // Initialize openFolders from localStorage with Root folder as fallback
+  const [openFolders, setOpenFolders] = useState<string[]>(() => {
+    const stored = localStorage.getItem("mediaManagement_openFolders");
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return ["00000000-0000-0000-0000-000000000001"];
+      }
+    }
+    return ["00000000-0000-0000-0000-000000000001"];
+  });
   const [folders, setFolders] = useState<MediaFolder[]>([]);
   const [uploading, setUploading] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
@@ -205,11 +217,16 @@ export function DataHubDialog({
   }, [isOpen]);
 
   const toggleFolder = (folderId: string) => {
-    setOpenFolders((prev) =>
-      prev.includes(folderId)
+    setOpenFolders((prev) => {
+      const newState = prev.includes(folderId)
         ? prev.filter((id) => id !== folderId)
-        : [...prev, folderId]
-    );
+        : [...prev, folderId];
+      
+      // Persist to localStorage
+      localStorage.setItem("mediaManagement_openFolders", JSON.stringify(newState));
+      
+      return newState;
+    });
   };
 
   const handleCreateFolder = async (parentFolder: MediaFolder) => {
@@ -234,9 +251,11 @@ export function DataHubDialog({
       setCreatingFolderFor(null);
       await loadFolders();
       
-      // Open the parent folder
+      // Open the parent folder and persist to localStorage
       if (!openFolders.includes(parentFolder.id)) {
-        setOpenFolders([...openFolders, parentFolder.id]);
+        const newOpenFolders = [...openFolders, parentFolder.id];
+        setOpenFolders(newOpenFolders);
+        localStorage.setItem("mediaManagement_openFolders", JSON.stringify(newOpenFolders));
       }
     } catch (error: any) {
       console.error("Error creating folder:", error);
