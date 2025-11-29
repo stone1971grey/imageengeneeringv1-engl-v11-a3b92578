@@ -3067,8 +3067,8 @@ const AdminDashboard = () => {
             </div>
           </div>
           
-          {/* Rechte Seite: Action Buttons */}
-          <div className="flex flex-col items-end gap-3">
+          {/* Rechte Seite: Action Buttons - erhöht positioniert */}
+          <div className="flex flex-col items-end gap-3 -mt-1">
             {/* Erste Reihe: Add New Segment, Preview, Logout */}
             <div className="flex items-center gap-3">
               <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
