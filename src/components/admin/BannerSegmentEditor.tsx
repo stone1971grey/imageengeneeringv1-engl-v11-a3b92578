@@ -174,6 +174,15 @@ export const BannerSegmentEditor = ({
 
   const handleImageUpload = async (index: number, file: File) => {
     setUploadingIndex(index);
+    
+    // Capture the image ID at the start of upload to identify which image to update
+    const imageId = data.images[index]?.id;
+    if (!imageId) {
+      toast.error("Image ID missing - cannot upload");
+      setUploadingIndex(null);
+      return;
+    }
+    
     try {
       // Convert to base64
       const reader = new FileReader();
@@ -193,7 +202,7 @@ export const BannerSegmentEditor = ({
           bucket: 'page-images',
           folder: pageSlug,
           segmentId: segmentIdNum,
-          pageSlug: pageSlug // NEW: Automatic folder structure creation
+          pageSlug: pageSlug
         }
       });
 
@@ -206,12 +215,12 @@ export const BannerSegmentEditor = ({
         altText: data.images[index]?.alt || ''
       };
 
-      const updatedImages = [...data.images];
-      updatedImages[index] = {
-        ...updatedImages[index],
-        url: result.url,
-        metadata
-      };
+      // Find and update the image by ID (not by index) to avoid race conditions
+      const updatedImages = data.images.map(img => 
+        img.id === imageId
+          ? { ...img, url: result.url, metadata }
+          : img
+      );
       
       onChange({ ...data, images: updatedImages });
       
@@ -224,14 +233,20 @@ export const BannerSegmentEditor = ({
   };
 
   const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
+    const imageId = data.images[index]?.id;
+    if (!imageId) {
+      toast.error("Image ID missing - cannot select");
+      return;
+    }
+    
     const imageMetadata: ImageMetadata = metadata ? { ...metadata, altText: data.images[index]?.alt || '' } : { altText: '' };
     
-    const updatedImages = [...data.images];
-    updatedImages[index] = {
-      ...updatedImages[index],
-      url: url,
-      metadata: imageMetadata
-    };
+    // Find and update the image by ID (not by index) to avoid race conditions
+    const updatedImages = data.images.map(img => 
+      img.id === imageId
+        ? { ...img, url: url, metadata: imageMetadata }
+        : img
+    );
     
     onChange({ ...data, images: updatedImages });
     toast.success("Image selected successfully!");
