@@ -521,16 +521,16 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                 <div className="text-blue-300 text-xs">Compare and edit Product Hero Gallery in multiple languages</div>
               </div>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <label className="text-white font-medium text-sm">Target Language:</label>
-                <div className="px-3 py-1.5 bg-blue-950/70 border border-blue-600 rounded-md text-white text-sm">
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg">{LANGUAGES.find(l => l.code === language)?.flag}</span>
-                    <span>{LANGUAGES.find(l => l.code === language)?.name}</span>
-                  </span>
-                </div>
+            <div className="flex items-center gap-2 mb-3">
+              <label className="text-white font-medium text-sm">Target Language:</label>
+              <div className="px-3 py-1.5 bg-blue-950/70 border border-blue-600 rounded-md text-white text-sm">
+                <span className="flex items-center gap-2">
+                  <span className="text-lg">{LANGUAGES.find(l => l.code === language)?.flag}</span>
+                  <span>{LANGUAGES.find(l => l.code === language)?.name}</span>
+                </span>
               </div>
+            </div>
+            <div className="flex justify-end">
               <Button
                 onClick={handleTranslate}
                 disabled={isTranslating}
