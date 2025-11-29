@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 /**
  * Extracts the file path from a Supabase Storage public URL
@@ -9,6 +10,12 @@ export function extractFilePathFromUrl(url: string): string | null {
   if (!url) return null;
   
   try {
+    // Handle both full URLs and relative paths
+    if (!url.startsWith('http')) {
+      // If it's already a path, clean it up
+      return url.replace(/^\/+/, '');
+    }
+    
     const urlObj = new URL(url);
     const pathParts = urlObj.pathname.split('/');
     
@@ -22,7 +29,6 @@ export function extractFilePathFromUrl(url: string): string | null {
     const filePath = pathParts.slice(publicIndex + 2).join('/');
     return decodeURIComponent(filePath);
   } catch (error) {
-    console.error('[extractFilePathFromUrl] Error parsing URL:', error);
     return null;
   }
 }
@@ -35,26 +41,23 @@ export function extractFilePathFromUrl(url: string): string | null {
 export async function updateSegmentMapping(
   imageUrl: string,
   segmentId: number,
-  bucketId: string = 'page-images'
-): Promise<void> {
-  console.log('[updateSegmentMapping] Called with:', { imageUrl, segmentId, bucketId });
-  
+  bucketId: string = 'page-images',
+  showToast: boolean = true
+): Promise<boolean> {
   if (!imageUrl || !segmentId) {
-    console.warn('[updateSegmentMapping] Missing imageUrl or segmentId');
-    return;
+    return false;
   }
   
   const filePath = extractFilePathFromUrl(imageUrl);
-  console.log('[updateSegmentMapping] Extracted file path:', filePath);
-  
   if (!filePath) {
-    console.warn('[updateSegmentMapping] Could not extract file path from URL:', imageUrl);
-    return;
+    if (showToast) {
+      toast.error(`Could not extract file path from URL for segment ${segmentId}`);
+    }
+    return false;
   }
   
   try {
     // Check if mapping exists
-    console.log('[updateSegmentMapping] Checking for existing mapping...');
     const { data: existing, error: fetchError } = await supabase
       .from('file_segment_mappings')
       .select('segment_ids')
@@ -62,44 +65,48 @@ export async function updateSegmentMapping(
       .eq('bucket_id', bucketId)
       .maybeSingle();
     
-    console.log('[updateSegmentMapping] Existing mapping query result:', { existing, fetchError });
-    
-    if (fetchError) throw fetchError;
+    if (fetchError) {
+      if (showToast) {
+        toast.error(`Database error while checking segment mapping: ${fetchError.message}`);
+      }
+      return false;
+    }
     
     const segmentIdStr = String(segmentId);
     
     if (existing) {
       // Mapping exists - add segmentId if not already present
       const currentIds = existing.segment_ids || [];
-      console.log('[updateSegmentMapping] Current segment IDs:', currentIds);
       
       if (!currentIds.includes(segmentIdStr)) {
         const updatedIds = [...currentIds, segmentIdStr];
-        console.log('[updateSegmentMapping] Updating to:', updatedIds);
         
         const { error: updateError } = await supabase
           .from('file_segment_mappings')
-          .update({ segment_ids: updatedIds })
+          .update({ 
+            segment_ids: updatedIds,
+            updated_at: new Date().toISOString()
+          })
           .eq('file_path', filePath)
           .eq('bucket_id', bucketId);
         
         if (updateError) {
-          console.error('[updateSegmentMapping] Update error:', updateError);
-          throw updateError;
+          if (showToast) {
+            toast.error(`Failed to update segment mapping: ${updateError.message}`);
+          }
+          return false;
         }
         
-        console.log('[updateSegmentMapping] ✅ Successfully added segment ID to existing mapping:', {
-          filePath,
-          segmentId: segmentIdStr,
-          updatedIds
-        });
+        if (showToast) {
+          toast.success(`✅ Image linked to segment #${segmentId}`);
+        }
+        return true;
       } else {
-        console.log('[updateSegmentMapping] Segment ID already exists in mapping, skipping');
+        // Already mapped
+        return true;
       }
     } else {
       // No mapping exists - create new one
-      console.log('[updateSegmentMapping] Creating new mapping entry');
-      
       const { error: insertError } = await supabase
         .from('file_segment_mappings')
         .insert({
@@ -109,33 +116,47 @@ export async function updateSegmentMapping(
         });
       
       if (insertError) {
-        console.error('[updateSegmentMapping] Insert error:', insertError);
-        throw insertError;
+        if (showToast) {
+          toast.error(`Failed to create segment mapping: ${insertError.message}`);
+        }
+        return false;
       }
       
-      console.log('[updateSegmentMapping] ✅ Successfully created new mapping:', {
-        filePath,
-        segmentId: segmentIdStr
-      });
+      if (showToast) {
+        toast.success(`✅ Image linked to segment #${segmentId}`);
+      }
+      return true;
     }
-  } catch (error) {
-    console.error('[updateSegmentMapping] ❌ Error updating segment mapping:', error);
-    // Don't throw - this is not critical for the save operation
+  } catch (error: any) {
+    if (showToast) {
+      toast.error(`Segment mapping error: ${error.message || 'Unknown error'}`);
+    }
+    return false;
   }
 }
 
 /**
  * Updates segment mappings for multiple images (e.g., in a gallery).
  * Processes each image URL and adds the segmentId to its mapping.
+ * Shows a single summary toast instead of individual toasts.
  */
 export async function updateMultipleSegmentMappings(
   imageUrls: string[],
   segmentId: number,
-  bucketId: string = 'page-images'
-): Promise<void> {
-  if (!imageUrls || imageUrls.length === 0) return;
+  bucketId: string = 'page-images',
+  showToast: boolean = true
+): Promise<number> {
+  if (!imageUrls || imageUrls.length === 0) return 0;
   
-  await Promise.all(
-    imageUrls.map(url => updateSegmentMapping(url, segmentId, bucketId))
+  const results = await Promise.all(
+    imageUrls.map(url => updateSegmentMapping(url, segmentId, bucketId, false))
   );
+  
+  const successCount = results.filter(Boolean).length;
+  
+  if (showToast && successCount > 0) {
+    toast.success(`✅ ${successCount} image(s) linked to segment #${segmentId}`);
+  }
+  
+  return successCount;
 }
