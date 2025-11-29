@@ -243,6 +243,28 @@ Deno.serve(async (req) => {
 
     console.log('[upload-image] Public URL:', urlResult.data.publicUrl);
 
+    // Store segment mapping in database if segmentId provided
+    if (segmentId) {
+      const segmentIdsArray = Array.isArray(segmentId) ? segmentId : [segmentId.toString()];
+      
+      const { error: mappingError } = await supabase
+        .from('file_segment_mappings')
+        .upsert({
+          file_path: uploadPath,
+          bucket_id: bucket,
+          segment_ids: segmentIdsArray
+        }, {
+          onConflict: 'file_path,bucket_id'
+        });
+
+      if (mappingError) {
+        console.error('[upload-image] Failed to store segment mapping:', mappingError);
+        // Don't fail the upload, just log the error
+      } else {
+        console.log('[upload-image] Segment mapping stored:', segmentIdsArray);
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true,
