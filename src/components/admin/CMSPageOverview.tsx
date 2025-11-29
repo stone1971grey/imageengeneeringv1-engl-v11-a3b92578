@@ -329,14 +329,6 @@ export const CMSPageOverview = () => {
     const movedPage = filteredPages[oldIndex];
     const targetPage = filteredPages[newIndex];
 
-    // Prevent moving to level 1 (Homepage is the only level 1 page)
-    if (targetPage.parent_id === null && targetPage.page_id !== 1) {
-      toast.error("Cannot move to top level", {
-        description: "Only Homepage can be on the first hierarchy level"
-      });
-      return;
-    }
-
     try {
       // Check if same parent (reordering within same level)
       if (movedPage.parent_slug === targetPage.parent_slug) {
@@ -370,15 +362,25 @@ export const CMSPageOverview = () => {
         toast.success("Page order updated successfully");
       } else {
         // Moving to different hierarchy level
-        // Update parent_slug and parent_id to match target page's parent
-        const newParentSlug = targetPage.parent_slug;
-        const newParentId = targetPage.parent_id;
+        let newParentSlug: string | null;
+        let newParentId: number | null;
+        
+        // If target page is on level 1, make moved page a child of target (level 2)
+        // Otherwise, make moved page a sibling of target (same parent)
+        if (targetPage.parent_id === null) {
+          // Target is level 1 → moved page becomes its child (level 2)
+          newParentSlug = targetPage.page_slug;
+          newParentId = targetPage.page_id;
+        } else {
+          // Target is level 2+ → moved page becomes sibling (same parent)
+          newParentSlug = targetPage.parent_slug;
+          newParentId = targetPage.parent_id;
+        }
 
         // Get new siblings (pages that will share the same parent after move)
         const newSiblings = pages.filter(p => p.parent_slug === newParentSlug);
-        const targetPositionInSiblings = newSiblings.findIndex(p => p.page_id === targetPage.page_id);
         
-        // Calculate new position (insert after target page)
+        // Calculate new position (insert after target page or as last child)
         const newPosition = targetPage.position + 1;
 
         // Update the moved page's parent and position
