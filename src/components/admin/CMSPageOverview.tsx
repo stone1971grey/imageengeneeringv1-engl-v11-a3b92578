@@ -69,6 +69,19 @@ export const CMSPageOverview = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [hasChildren, setHasChildren] = useState(false);
 
+  // Load saved search query from localStorage on mount
+  useEffect(() => {
+    const savedSearch = localStorage.getItem('cmsHubSearch');
+    if (savedSearch) {
+      setSearchQuery(savedSearch);
+    }
+  }, []);
+
+  // Save search query to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('cmsHubSearch', searchQuery);
+  }, [searchQuery]);
+
   useEffect(() => {
     if (isOpen) {
       loadPages();
