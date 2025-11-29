@@ -11,84 +11,7 @@ interface UploadRequest {
   bucket: string;
   folder?: string;
   segmentId?: number;
-  pageSlug?: string; // NEW: For automatic folder structure creation
-}
-
-/**
- * Creates folder hierarchy in media_folders table based on page slug
- * Returns the deepest folder's ID and full storage path
- */
-async function ensureFolderHierarchy(
-  supabase: any,
-  pageSlug: string,
-  userId: string
-): Promise<{ folderId: string; storagePath: string }> {
-  console.log('[ensureFolderHierarchy] Creating folder structure for:', pageSlug);
-  
-  // Parse page slug into folder segments
-  // Example: "styleguide/segments/product-page" -> ["styleguide", "segments", "product-page"]
-  const segments = pageSlug.split('/').filter(s => s.trim().length > 0);
-  
-  let currentParentId: string | null = null;
-  let currentPath = '';
-  
-  // Iterate through each segment and ensure folder exists
-  for (let i = 0; i < segments.length; i++) {
-    const folderName = segments[i];
-    currentPath = segments.slice(0, i + 1).join('/');
-    
-    console.log(`[ensureFolderHierarchy] Processing: ${folderName}, path: ${currentPath}, parent: ${currentParentId}`);
-    
-    // Check if folder already exists
-    const queryResult = await supabase
-      .from('media_folders')
-      .select('id, storage_path')
-      .eq('storage_path', currentPath)
-      .maybeSingle();
-    
-    if (queryResult.error) {
-      console.error('[ensureFolderHierarchy] Query error:', queryResult.error);
-      throw new Error(`Failed to query folder: ${queryResult.error.message}`);
-    }
-    
-    if (queryResult.data) {
-      console.log(`[ensureFolderHierarchy] Folder exists: ${queryResult.data.id}`);
-      currentParentId = queryResult.data.id;
-      continue;
-    }
-    
-    // Folder doesn't exist, create it
-    console.log(`[ensureFolderHierarchy] Creating folder: ${folderName}`);
-    
-    const insertResult: any = await supabase
-      .from('media_folders')
-      .insert({
-        name: folderName,
-        storage_path: currentPath,
-        parent_id: currentParentId,
-        created_by: userId
-      })
-      .select()
-      .single();
-    
-    if (insertResult.error) {
-      console.error('[ensureFolderHierarchy] Insert error:', insertResult.error);
-      throw new Error(`Failed to create folder: ${insertResult.error.message}`);
-    }
-    
-    const createdFolder: any = insertResult.data;
-    if (!createdFolder) {
-      throw new Error('Failed to create folder: No data returned');
-    }
-    
-    console.log(`[ensureFolderHierarchy] Created folder: ${createdFolder.id}`);
-    currentParentId = createdFolder.id;
-  }
-  
-  return {
-    folderId: currentParentId!,
-    storagePath: currentPath
-  };
+  pageSlug?: string; // For storage path organization only
 }
 
 Deno.serve(async (req) => {
@@ -167,34 +90,16 @@ Deno.serve(async (req) => {
 
     console.log('[upload-image] File size:', fileBytes.length, 'bytes');
 
-    // Determine upload path based on pageSlug
-    let uploadPath: string;
-    let folderInfo: { folderId: string; storagePath: string } | null = null;
+    // Determine upload path - use pageSlug for organization without creating media_folders entries
+    const timestamp = Date.now();
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
     
+    let uploadPath: string;
     if (pageSlug) {
-      // Create folder hierarchy in media_folders and get storage path
-      try {
-        folderInfo = await ensureFolderHierarchy(supabase, pageSlug, user.id);
-        console.log('[upload-image] Folder hierarchy created:', folderInfo);
-        
-        // Use the folder structure for storage path
-        const timestamp = Date.now();
-        const fileExt = fileName.split('.').pop();
-        const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-        uploadPath = `${folderInfo.storagePath}/${timestamp}-${sanitizedFileName}`;
-      } catch (hierarchyError) {
-        console.error('[upload-image] Failed to create folder hierarchy:', hierarchyError);
-        return new Response(
-          JSON.stringify({ 
-            error: 'Failed to create folder structure', 
-            details: hierarchyError instanceof Error ? hierarchyError.message : 'Unknown error'
-          }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
+      // Use pageSlug directly for storage path organization (no media_folders entries)
+      uploadPath = `${pageSlug}/${timestamp}-${sanitizedFileName}`;
     } else {
       // Fallback to old logic if no pageSlug provided
-      const timestamp = Date.now();
       const fileExt = fileName.split('.').pop();
       uploadPath = segmentId 
         ? `${folder || 'uploads'}/segment-${segmentId}-${timestamp}.${fileExt}`
@@ -236,9 +141,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         success: true,
         url: urlResult.data.publicUrl,
-        path: uploadPath,
-        folderId: folderInfo?.folderId || null,
-        folderPath: folderInfo?.storagePath || null
+        path: uploadPath
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
