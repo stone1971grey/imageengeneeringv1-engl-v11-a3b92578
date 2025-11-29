@@ -3040,36 +3040,34 @@ const AdminDashboard = () => {
       <Navigation />
       
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
-        <div className="mb-8">
-          {/* Title oben */}
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Admin Dashboard</h1>
-          
-          {/* Buttons darunter */}
-          <div className="flex items-center gap-4">
-            {/* CMS Hub Button */}
-            <CMSPageOverview />
-            
-            {/* Media Management Button - in Gelb */}
-            <DataHubDialog />
-            
-            {/* Home Icon - zur Welcome-Seite */}
-            <Button
-              onClick={() => navigate(`/${language}/`)}
-              variant="outline"
-              size="icon"
-              className="h-10 w-10"
-              title="Go to Homepage"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            </Button>
-          </div>
-        </div>
-        
         <div className="flex items-start justify-between mb-8">
-          <div></div>
+          {/* Linke Seite: Title + Buttons */}
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Admin Dashboard</h1>
+            
+            <div className="flex items-center gap-4">
+              {/* CMS Hub Button */}
+              <CMSPageOverview />
+              
+              {/* Media Management Button - in Gelb */}
+              <DataHubDialog />
+              
+              {/* Home Icon - zur Welcome-Seite */}
+              <Button
+                onClick={() => navigate(`/${language}/`)}
+                variant="outline"
+                size="icon"
+                className="h-10 w-10"
+                title="Go to Homepage"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+              </Button>
+            </div>
+          </div>
           
+          {/* Rechte Seite: Action Buttons */}
           <div className="flex flex-col items-end gap-3">
             {/* Erste Reihe: Add New Segment, Preview, Logout */}
             <div className="flex items-center gap-3">
