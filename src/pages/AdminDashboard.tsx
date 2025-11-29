@@ -3042,13 +3042,11 @@ const AdminDashboard = () => {
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-2">
-              {/* CMS Hub Button - nach links verschoben */}
-              <CMSPageOverview />
-              
-              {/* Data Hub Button - unterhalb von CMS Hub */}
-              <DataHubDialog />
-            </div>
+            {/* CMS Hub Button */}
+            <CMSPageOverview />
+            
+            {/* Media Management Button - rechts neben CMS Hub */}
+            <DataHubDialog />
             
             {/* Home Icon - zur Welcome-Seite */}
             <Button
