@@ -11,6 +11,84 @@ interface UploadRequest {
   bucket: string;
   folder?: string;
   segmentId?: number;
+  pageSlug?: string; // NEW: For automatic folder structure creation
+}
+
+/**
+ * Creates folder hierarchy in media_folders table based on page slug
+ * Returns the deepest folder's ID and full storage path
+ */
+async function ensureFolderHierarchy(
+  supabase: any,
+  pageSlug: string,
+  userId: string
+): Promise<{ folderId: string; storagePath: string }> {
+  console.log('[ensureFolderHierarchy] Creating folder structure for:', pageSlug);
+  
+  // Parse page slug into folder segments
+  // Example: "styleguide/segments/product-page" -> ["styleguide", "segments", "product-page"]
+  const segments = pageSlug.split('/').filter(s => s.trim().length > 0);
+  
+  let currentParentId: string | null = null;
+  let currentPath = '';
+  
+  // Iterate through each segment and ensure folder exists
+  for (let i = 0; i < segments.length; i++) {
+    const folderName = segments[i];
+    currentPath = segments.slice(0, i + 1).join('/');
+    
+    console.log(`[ensureFolderHierarchy] Processing: ${folderName}, path: ${currentPath}, parent: ${currentParentId}`);
+    
+    // Check if folder already exists
+    const queryResult = await supabase
+      .from('media_folders')
+      .select('id, storage_path')
+      .eq('storage_path', currentPath)
+      .maybeSingle();
+    
+    if (queryResult.error) {
+      console.error('[ensureFolderHierarchy] Query error:', queryResult.error);
+      throw new Error(`Failed to query folder: ${queryResult.error.message}`);
+    }
+    
+    if (queryResult.data) {
+      console.log(`[ensureFolderHierarchy] Folder exists: ${queryResult.data.id}`);
+      currentParentId = queryResult.data.id;
+      continue;
+    }
+    
+    // Folder doesn't exist, create it
+    console.log(`[ensureFolderHierarchy] Creating folder: ${folderName}`);
+    
+    const insertResult: any = await supabase
+      .from('media_folders')
+      .insert({
+        name: folderName,
+        storage_path: currentPath,
+        parent_id: currentParentId,
+        created_by: userId
+      })
+      .select()
+      .single();
+    
+    if (insertResult.error) {
+      console.error('[ensureFolderHierarchy] Insert error:', insertResult.error);
+      throw new Error(`Failed to create folder: ${insertResult.error.message}`);
+    }
+    
+    const createdFolder: any = insertResult.data;
+    if (!createdFolder) {
+      throw new Error('Failed to create folder: No data returned');
+    }
+    
+    console.log(`[ensureFolderHierarchy] Created folder: ${createdFolder.id}`);
+    currentParentId = createdFolder.id;
+  }
+  
+  return {
+    folderId: currentParentId!,
+    storagePath: currentPath
+  };
 }
 
 Deno.serve(async (req) => {
@@ -40,40 +118,41 @@ Deno.serve(async (req) => {
 
     // Verify user role using the auth header
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const authResult = await supabase.auth.getUser(token);
     
-    if (authError || !user) {
-      console.error('[upload-image] Auth error:', authError);
+    if (authResult.error || !authResult.data.user) {
+      console.error('[upload-image] Auth error:', authResult.error);
       return new Response(
         JSON.stringify({ error: 'Unauthorized - Invalid token' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    const user = authResult.data.user;
     console.log('[upload-image] User authenticated:', user.email);
 
     // Check if user has admin or editor role
-    const { data: roles, error: roleError } = await supabase
+    const rolesResult = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
       .in('role', ['admin', 'editor']);
 
-    if (roleError || !roles || roles.length === 0) {
-      console.error('[upload-image] Role check failed:', roleError);
+    if (rolesResult.error || !rolesResult.data || rolesResult.data.length === 0) {
+      console.error('[upload-image] Role check failed:', rolesResult.error);
       return new Response(
         JSON.stringify({ error: 'Forbidden - Requires admin or editor role' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('[upload-image] User has role:', roles[0].role);
+    console.log('[upload-image] User has role:', rolesResult.data[0].role);
 
     // Parse request body
     const body: UploadRequest = await req.json();
-    const { fileName, fileData, bucket, folder, segmentId } = body;
+    const { fileName, fileData, bucket, folder, segmentId, pageSlug } = body;
 
-    console.log('[upload-image] Upload params:', { fileName, bucket, folder, segmentId });
+    console.log('[upload-image] Upload params:', { fileName, bucket, folder, segmentId, pageSlug });
 
     if (!fileName || !fileData || !bucket) {
       return new Response(
@@ -88,49 +167,78 @@ Deno.serve(async (req) => {
 
     console.log('[upload-image] File size:', fileBytes.length, 'bytes');
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const fileExt = fileName.split('.').pop();
-    const uniqueFileName = segmentId 
-      ? `${folder || 'uploads'}/segment-${segmentId}-${timestamp}.${fileExt}`
-      : `${folder || 'uploads'}/${timestamp}-${fileName}`;
+    // Determine upload path based on pageSlug
+    let uploadPath: string;
+    let folderInfo: { folderId: string; storagePath: string } | null = null;
+    
+    if (pageSlug) {
+      // Create folder hierarchy in media_folders and get storage path
+      try {
+        folderInfo = await ensureFolderHierarchy(supabase, pageSlug, user.id);
+        console.log('[upload-image] Folder hierarchy created:', folderInfo);
+        
+        // Use the folder structure for storage path
+        const timestamp = Date.now();
+        const fileExt = fileName.split('.').pop();
+        const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+        uploadPath = `${folderInfo.storagePath}/${timestamp}-${sanitizedFileName}`;
+      } catch (hierarchyError) {
+        console.error('[upload-image] Failed to create folder hierarchy:', hierarchyError);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Failed to create folder structure', 
+            details: hierarchyError instanceof Error ? hierarchyError.message : 'Unknown error'
+          }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } else {
+      // Fallback to old logic if no pageSlug provided
+      const timestamp = Date.now();
+      const fileExt = fileName.split('.').pop();
+      uploadPath = segmentId 
+        ? `${folder || 'uploads'}/segment-${segmentId}-${timestamp}.${fileExt}`
+        : `${folder || 'uploads'}/${timestamp}-${fileName}`;
+    }
 
-    console.log('[upload-image] Uploading to path:', uniqueFileName);
+    console.log('[upload-image] Uploading to path:', uploadPath);
 
     // Upload to storage using service role (bypasses RLS)
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const uploadResult = await supabase.storage
       .from(bucket)
-      .upload(uniqueFileName, fileBytes, {
-        contentType: `image/${fileExt}`,
+      .upload(uploadPath, fileBytes, {
+        contentType: `image/${fileName.split('.').pop()}`,
         cacheControl: '3600',
         upsert: false
       });
 
-    if (uploadError) {
-      console.error('[upload-image] Upload error:', uploadError);
+    if (uploadResult.error) {
+      console.error('[upload-image] Upload error:', uploadResult.error);
       return new Response(
         JSON.stringify({ 
           error: 'Upload failed', 
-          details: uploadError.message 
+          details: uploadResult.error.message 
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('[upload-image] Upload successful:', uploadData);
+    console.log('[upload-image] Upload successful:', uploadResult.data);
 
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
+    const urlResult = supabase.storage
       .from(bucket)
-      .getPublicUrl(uniqueFileName);
+      .getPublicUrl(uploadPath);
 
-    console.log('[upload-image] Public URL:', publicUrl);
+    console.log('[upload-image] Public URL:', urlResult.data.publicUrl);
 
     return new Response(
       JSON.stringify({ 
         success: true,
-        url: publicUrl,
-        path: uniqueFileName
+        url: urlResult.data.publicUrl,
+        path: uploadPath,
+        folderId: folderInfo?.folderId || null,
+        folderPath: folderInfo?.storagePath || null
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -167,14 +167,15 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
       console.log('[FullHero Upload] Calling Edge Function...');
       toast.info('Uploading to server...', { duration: 2000 });
 
-      // Call Edge Function
+      // Call Edge Function with pageSlug for automatic folder creation
       const { data: result, error } = await supabase.functions.invoke('upload-image', {
         body: {
           fileName: file.name,
           fileData: fileData,
           bucket: 'page-images',
           folder: pageSlug,
-          segmentId: segmentId
+          segmentId: segmentId,
+          pageSlug: pageSlug // NEW: Automatic folder structure creation
         }
       });
 
