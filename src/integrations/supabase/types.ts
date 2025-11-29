@@ -227,6 +227,33 @@ export type Database = {
         }
         Relationships: []
       }
+      file_segment_mappings: {
+        Row: {
+          bucket_id: string
+          created_at: string | null
+          file_path: string
+          id: string
+          segment_ids: string[]
+          updated_at: string | null
+        }
+        Insert: {
+          bucket_id?: string
+          created_at?: string | null
+          file_path: string
+          id?: string
+          segment_ids: string[]
+          updated_at?: string | null
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string | null
+          file_path?: string
+          id?: string
+          segment_ids?: string[]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       glossary: {
         Row: {
           context: string | null

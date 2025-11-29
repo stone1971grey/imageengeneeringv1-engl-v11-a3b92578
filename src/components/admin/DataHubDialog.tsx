@@ -100,6 +100,16 @@ export function DataHubDialog({
         }
       });
 
+      // Load segment mappings from database
+      const { data: segmentMappings } = await supabase
+        .from('file_segment_mappings')
+        .select('file_path, segment_ids');
+      
+      const mappingsMap = new Map<string, string[]>();
+      segmentMappings?.forEach(mapping => {
+        mappingsMap.set(mapping.file_path, mapping.segment_ids);
+      });
+
       // Load files for each folder
       for (const [folderId, folder] of folderMap.entries()) {
         const { data: files, error: filesError } = await supabase.storage
@@ -117,6 +127,17 @@ export function DataHubDialog({
               return false;
             }
             return true;
+          }).map(file => {
+            // Enrich file with segment IDs from database
+            const filePath = `${folder.storage_path}/${file.name}`;
+            const segmentIds = mappingsMap.get(filePath) || [];
+            return {
+              ...file,
+              metadata: {
+                ...file.metadata,
+                segmentIds
+              }
+            };
           });
 
           // Also load files from segment subdirectories and tag them
@@ -137,12 +158,15 @@ export function DataHubDialog({
               // Add segment files with metadata
               segmentFiles.forEach(file => {
                 if (file.name.includes('.')) { // Only actual files
+                  const fullPath = `${folder.storage_path}/${segmentDir.name}/${file.name}`;
+                  const dbSegmentIds = mappingsMap.get(fullPath) || [segmentId];
+                  
                   actualFiles.push({
                     ...file,
                     name: `${segmentDir.name}/${file.name}`, // Preserve path
                     metadata: {
                       ...file.metadata,
-                      segmentId: segmentId
+                      segmentIds: dbSegmentIds
                     }
                   });
                 }
