@@ -686,26 +686,26 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
           </div>
 
           <div className="mt-6">
-            <MediaSelector
-              onFileSelect={handleImageUpload}
-              onMediaSelect={handleMediaSelect}
-              acceptedFileTypes="image/*"
-              label="Hero Image"
-              currentImageUrl={imageUrl}
-            />
-            
-            {imageUrl && (
-              <Button
-                type="button"
-                variant="destructive"
-                size="sm"
-                onClick={handleImageDelete}
-                className="mt-3 w-full"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Image
-              </Button>
-            )}
+            <div className="relative">
+              <MediaSelector
+                onFileSelect={handleImageUpload}
+                onMediaSelect={handleMediaSelect}
+                acceptedFileTypes="image/*"
+                label="Hero Image"
+                currentImageUrl={imageUrl}
+              />
+              
+              {imageUrl && (
+                <button
+                  type="button"
+                  onClick={handleImageDelete}
+                  className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors z-10"
+                  title="Delete Image"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
+            </div>
             
             {imageMetadata && (
               <div className="mt-3 text-xs text-gray-400 space-y-1 bg-gray-900/50 p-3 rounded">
