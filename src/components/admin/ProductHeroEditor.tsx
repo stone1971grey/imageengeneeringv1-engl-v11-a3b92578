@@ -10,6 +10,7 @@ import { X, Trash2 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { MediaSelector } from "@/components/admin/MediaSelector";
+import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 
 interface ProductHeroEditorProps {
   pageSlug: string;
@@ -404,6 +405,11 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
         });
 
       if (error) throw error;
+
+      // Update segment mapping if image is present
+      if (imageUrl) {
+        await updateSegmentMapping(imageUrl, segmentId);
+      }
 
       // Also update tab_order if needed
       const { data: tabOrderData } = await supabase

@@ -22,6 +22,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
+import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 
 interface ProductImage {
   imageUrl: string;
@@ -492,6 +493,12 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         });
 
       if (error) throw error;
+
+      // Update segment mappings for all gallery images
+      const imageUrls = localData.images.map(img => img.imageUrl).filter(Boolean);
+      if (imageUrls.length > 0) {
+        await updateMultipleSegmentMappings(imageUrls, segmentId);
+      }
 
       // Also update tab_order if needed
       const { data: tabOrderData } = await supabase

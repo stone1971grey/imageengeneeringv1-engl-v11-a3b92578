@@ -14,6 +14,7 @@ import { X, Heading1 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { MediaSelector } from "@/components/admin/MediaSelector";
+import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -609,6 +610,11 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
         console.error("Error updating page_segments:", updateError);
         toast.error("Failed to save Full Hero");
         return;
+      }
+
+      // Update segment mapping if image is present
+      if (backgroundType === 'image' && imageUrl) {
+        await updateSegmentMapping(imageUrl, segmentId);
       }
 
       // After successful EN save, sync to other languages
