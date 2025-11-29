@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { AssetEditDialog } from "@/components/admin/AssetEditDialog";
 
 interface StorageFile {
   name: string;
@@ -64,6 +65,15 @@ export function DataHubDialog({
   const [editingFolder, setEditingFolder] = useState<{ id: string; name: string } | null>(null);
   const [deletingFolder, setDeletingFolder] = useState<MediaFolder | null>(null);
   const [deletingFile, setDeletingFile] = useState<{ folder: MediaFolder; fileName: string } | null>(null);
+  const [editingAsset, setEditingAsset] = useState<{
+    name: string;
+    url: string;
+    created_at: string;
+    metadata: any;
+    bucket_id: string;
+    segmentIds?: string[];
+    filePath: string;
+  } | null>(null);
 
   // Load folders from database with hierarchical structure
   const loadFolders = async () => {
@@ -632,25 +642,44 @@ export function DataHubDialog({
                               </Button>
                             ) : (
                               <>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="flex-1 text-xs bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(fileUrl);
-                                    toast.success("URL copied!");
-                                  }}
-                                >
-                                  Copy URL
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="destructive"
-                                  className="h-8 w-8 bg-red-900/50 hover:bg-red-900 border-red-800"
-                                  onClick={() => handleDeleteFile(folder, file.name)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                                 <Button
+                                   size="sm"
+                                   variant="outline"
+                                   className="flex-1 text-xs bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                                   onClick={() => {
+                                     navigator.clipboard.writeText(fileUrl);
+                                     toast.success("URL copied!");
+                                   }}
+                                 >
+                                   Copy URL
+                                 </Button>
+                                 <Button
+                                   size="icon"
+                                   variant="outline"
+                                   className="h-8 w-8 bg-blue-900/50 hover:bg-blue-900 border-blue-800"
+                                   onClick={() => {
+                                     setEditingAsset({
+                                       name: file.name,
+                                       url: fileUrl,
+                                       created_at: file.created_at,
+                                       metadata: file.metadata,
+                                       bucket_id: file.bucket_id,
+                                       segmentIds: segmentIds,
+                                       filePath: `${folder.storage_path}/${file.name}`
+                                     });
+                                   }}
+                                   title="Edit asset info and alt text"
+                                 >
+                                   <Edit2 className="h-4 w-4" />
+                                 </Button>
+                                 <Button
+                                   size="icon"
+                                   variant="destructive"
+                                   className="h-8 w-8 bg-red-900/50 hover:bg-red-900 border-red-800"
+                                   onClick={() => handleDeleteFile(folder, file.name)}
+                                 >
+                                   <Trash2 className="h-4 w-4" />
+                                 </Button>
                               </>
                             )}
                           </div>
@@ -801,6 +830,14 @@ export function DataHubDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Asset Edit Dialog */}
+      <AssetEditDialog
+        isOpen={editingAsset !== null}
+        onClose={() => setEditingAsset(null)}
+        asset={editingAsset}
+        onSave={loadFolders}
+      />
     </>
   );
 }
