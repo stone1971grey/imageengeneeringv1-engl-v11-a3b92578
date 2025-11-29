@@ -39,8 +39,22 @@ interface MediaFolder {
   files?: StorageFile[];
 }
 
-export function DataHubDialog() {
-  const [isOpen, setIsOpen] = useState(false);
+interface DataHubDialogProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  selectionMode?: boolean;
+  onSelect?: (url: string, metadata?: any) => void;
+}
+
+export function DataHubDialog({ 
+  isOpen: controlledIsOpen, 
+  onClose, 
+  selectionMode = false, 
+  onSelect 
+}: DataHubDialogProps = {}) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+  const setIsOpen = controlledIsOpen !== undefined ? (onClose || (() => {})) : setInternalIsOpen;
   const [openFolders, setOpenFolders] = useState<string[]>(["00000000-0000-0000-0000-000000000001"]); // Root folder open by default
   const [folders, setFolders] = useState<MediaFolder[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -309,8 +323,8 @@ export function DataHubDialog() {
             </CollapsibleTrigger>
 
             <div className="flex items-center gap-2">
-              {/* Create Subfolder Button */}
-              {creatingFolderFor === folder.id ? (
+              {/* Create Subfolder Button - hide in selection mode */}
+              {!selectionMode && creatingFolderFor === folder.id ? (
                 <div className="flex items-center gap-2">
                   <Input
                     placeholder="Folder name"
@@ -345,7 +359,7 @@ export function DataHubDialog() {
                     ✕
                   </Button>
                 </div>
-              ) : (
+              ) : !selectionMode && (
                 <Button
                   size="sm"
                   variant="ghost"
@@ -360,8 +374,8 @@ export function DataHubDialog() {
                 </Button>
               )}
 
-              {/* Rename Button (not for root) */}
-              {!isRootFolder && (
+              {/* Rename Button (not for root) - hide in selection mode */}
+              {!selectionMode && !isRootFolder && (
                 <Button
                   size="sm"
                   variant="ghost"
@@ -376,8 +390,8 @@ export function DataHubDialog() {
                 </Button>
               )}
 
-              {/* Delete Button (not for root) */}
-              {!isRootFolder && (
+              {/* Delete Button (not for root) - hide in selection mode */}
+              {!selectionMode && !isRootFolder && (
                 <Button
                   size="sm"
                   variant="ghost"
@@ -392,8 +406,9 @@ export function DataHubDialog() {
                 </Button>
               )}
 
-              {/* Upload Button */}
-              <div className="relative">
+              {/* Upload Button - hide in selection mode */}
+              {!selectionMode && (
+                <div className="relative">
                 <Input
                   type="file"
                   onChange={(e) => handleFileUpload(e, folder)}
@@ -412,6 +427,7 @@ export function DataHubDialog() {
                     : "Upload"}
                 </Button>
               </div>
+              )}
             </div>
           </div>
 
@@ -446,10 +462,21 @@ export function DataHubDialog() {
                       >
                         {isImg && (
                           <div className="aspect-video bg-gray-900 overflow-hidden">
-                            <img
+                             <img
                               src={fileUrl}
                               alt={file.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+                                selectionMode ? 'cursor-pointer' : ''
+                              }`}
+                              onClick={() => {
+                                if (selectionMode && onSelect) {
+                                  onSelect(fileUrl, {
+                                    name: file.name,
+                                    folder: folder.storage_path,
+                                    created_at: file.created_at
+                                  });
+                                }
+                              }}
                             />
                           </div>
                         )}
@@ -472,26 +499,46 @@ export function DataHubDialog() {
                             {new Date(file.created_at).toLocaleDateString()}
                           </p>
 
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="flex-1 text-xs bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
-                              onClick={() => {
-                                navigator.clipboard.writeText(fileUrl);
-                                toast.success("URL copied!");
-                              }}
-                            >
-                              Copy URL
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="destructive"
-                              className="h-8 w-8 bg-red-900/50 hover:bg-red-900 border-red-800"
-                              onClick={() => handleDeleteFile(folder, file.name)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                           <div className="flex gap-2">
+                            {selectionMode ? (
+                              <Button
+                                size="sm"
+                                className="flex-1 text-xs bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold"
+                                onClick={() => {
+                                  if (onSelect) {
+                                    onSelect(fileUrl, {
+                                      name: file.name,
+                                      folder: folder.storage_path,
+                                      created_at: file.created_at
+                                    });
+                                  }
+                                }}
+                              >
+                                Select
+                              </Button>
+                            ) : (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="flex-1 text-xs bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(fileUrl);
+                                    toast.success("URL copied!");
+                                  }}
+                                >
+                                  Copy URL
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="destructive"
+                                  className="h-8 w-8 bg-red-900/50 hover:bg-red-900 border-red-800"
+                                  onClick={() => handleDeleteFile(folder, file.name)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -508,26 +555,37 @@ export function DataHubDialog() {
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black border-[#f9dc24] flex items-center gap-2 font-semibold"
-          >
-            <Database className="h-4 w-4" />
-            Media Management
-          </Button>
-        </DialogTrigger>
+      <Dialog open={isOpen} onOpenChange={(open) => {
+        if (controlledIsOpen !== undefined) {
+          if (!open && onClose) onClose();
+        } else {
+          setInternalIsOpen(open);
+        }
+      }}>
+        {controlledIsOpen === undefined && (
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black border-[#f9dc24] flex items-center gap-2 font-semibold"
+            >
+              <Database className="h-4 w-4" />
+              Media Management
+            </Button>
+          </DialogTrigger>
+        )}
         <DialogContent className="max-w-6xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700">
           <DialogHeader className="border-b border-gray-700 pb-4">
             <DialogTitle className="text-3xl font-bold text-white flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-[#e6cc1f] flex items-center justify-center">
                 <Database className="h-5 w-5 text-gray-900" />
               </div>
-              Media Management
+              {selectionMode ? 'Select Media' : 'Media Management'}
             </DialogTitle>
             <DialogDescription className="text-gray-400 text-base">
-              Manage your hierarchical folder structure and upload assets
+              {selectionMode 
+                ? 'Click on an image to select it for your segment'
+                : 'Manage your hierarchical folder structure and upload assets'
+              }
             </DialogDescription>
           </DialogHeader>
 
