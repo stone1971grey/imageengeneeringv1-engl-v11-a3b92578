@@ -26,6 +26,7 @@ import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 
 interface BannerImage {
+  id: string; // Unique stable ID for React keys
   url: string;
   alt: string;
   metadata?: ImageMetadata;
@@ -78,6 +79,20 @@ export const BannerSegmentEditor = ({
     buttonStyle: 'standard',
     images: []
   });
+  
+  // Ensure all images have IDs on mount
+  useEffect(() => {
+    const ensureImageIds = (images: BannerImage[]): BannerImage[] => {
+      return images.map(img => ({
+        ...img,
+        id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      }));
+    };
+    
+    if (data.images.some(img => !img.id)) {
+      onChange({ ...data, images: ensureImageIds(data.images) });
+    }
+  }, []);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -121,7 +136,11 @@ export const BannerSegmentEditor = ({
       title: '',
       subtext: '',
       buttonText: '',
-      images: data.images.map(img => ({ ...img, alt: '' }))
+      images: data.images.map(img => ({ 
+        ...img, 
+        id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        alt: '' 
+      }))
     });
   };
  
@@ -203,9 +222,14 @@ export const BannerSegmentEditor = ({
   };
 
   const handleAddImage = () => {
+    const newImage: BannerImage = {
+      id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      url: '',
+      alt: ''
+    };
     onChange({
       ...data,
-      images: [...data.images, { url: '', alt: '' }]
+      images: [...data.images, newImage]
     });
   };
 
@@ -258,8 +282,9 @@ export const BannerSegmentEditor = ({
       if (translationResult?.translatedTexts) {
         const translated = translationResult.translatedTexts;
         
-        // Update translated images with new alt texts, keep all other properties (url, metadata)
+        // Update translated images with new alt texts, keep all other properties (id, url, metadata)
         const translatedImages = data.images.map((img, index) => ({
+          id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           url: img.url,
           alt: translated[`image_${index}_alt`] || img.alt,
           metadata: img.metadata
@@ -588,7 +613,7 @@ export const BannerSegmentEditor = ({
 
           <div className="space-y-4">
             {currentData.images.map((image, index) => (
-              <div key={index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
+              <div key={image.id || index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-sm">Image {index + 1}</span>
                   {!isTarget && (
