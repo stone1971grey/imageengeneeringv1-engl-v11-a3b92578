@@ -4,13 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Upload, ChevronDown, ChevronRight, Image, FileText, Video, Trash2, FolderOpen, Folder } from "lucide-react";
+import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface StorageFile {
   name: string;
@@ -20,108 +29,201 @@ interface StorageFile {
   bucket_id: string;
 }
 
-interface FolderStructure {
+interface MediaFolder {
+  id: string;
   name: string;
-  path: string;
-  acceptedTypes: string[];
-  icon: any;
+  parent_id: string | null;
+  storage_path: string;
+  created_at: string;
+  children?: MediaFolder[];
+  files?: StorageFile[];
 }
-
-const FOLDERS: FolderStructure[] = [
-  {
-    name: "Images",
-    path: "images",
-    acceptedTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
-    icon: Image,
-  },
-  {
-    name: "Documents",
-    path: "documents",
-    acceptedTypes: ["application/pdf"],
-    icon: FileText,
-  },
-  {
-    name: "Videos",
-    path: "videos",
-    acceptedTypes: ["video/mp4", "video/webm"],
-    icon: Video,
-  },
-];
 
 export function DataHubDialog() {
   const [isOpen, setIsOpen] = useState(false);
-  const [openFolders, setOpenFolders] = useState<string[]>(["images"]);
-  const [files, setFiles] = useState<Record<string, StorageFile[]>>({});
+  const [openFolders, setOpenFolders] = useState<string[]>(["00000000-0000-0000-0000-000000000001"]); // Root folder open by default
+  const [folders, setFolders] = useState<MediaFolder[]>([]);
   const [uploading, setUploading] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [creatingFolderFor, setCreatingFolderFor] = useState<string | null>(null);
+  const [editingFolder, setEditingFolder] = useState<{ id: string; name: string } | null>(null);
+  const [deletingFolder, setDeletingFolder] = useState<MediaFolder | null>(null);
 
-  // Load files from storage
-  const loadFiles = async () => {
+  // Load folders from database with hierarchical structure
+  const loadFolders = async () => {
     try {
-      const allFiles: Record<string, StorageFile[]> = {};
+      const { data, error } = await supabase
+        .from("media_folders")
+        .select("*")
+        .order("name");
 
-      for (const folder of FOLDERS) {
-        const { data, error } = await supabase.storage
+      if (error) throw error;
+
+      // Build hierarchical structure
+      const folderMap = new Map<string, MediaFolder>();
+      const rootFolders: MediaFolder[] = [];
+
+      // First pass: create map of all folders
+      data?.forEach((folder) => {
+        folderMap.set(folder.id, {
+          ...folder,
+          children: [],
+          files: [],
+        });
+      });
+
+      // Second pass: build hierarchy
+      data?.forEach((folder) => {
+        const folderNode = folderMap.get(folder.id)!;
+        if (folder.parent_id) {
+          const parent = folderMap.get(folder.parent_id);
+          if (parent) {
+            parent.children!.push(folderNode);
+          }
+        } else {
+          rootFolders.push(folderNode);
+        }
+      });
+
+      // Load files for each folder
+      for (const [folderId, folder] of folderMap.entries()) {
+        const { data: files, error: filesError } = await supabase.storage
           .from("page-images")
-          .list(folder.path, {
+          .list(folder.storage_path, {
             limit: 100,
             sortBy: { column: "created_at", order: "desc" },
           });
 
-        if (error) {
-          console.error(`Error loading ${folder.name}:`, error);
-          continue;
+        if (!filesError && files) {
+          folder.files = files;
         }
-
-        allFiles[folder.path] = data || [];
       }
 
-      setFiles(allFiles);
+      setFolders(rootFolders);
     } catch (error) {
-      console.error("Error loading files:", error);
-      toast.error("Failed to load files");
+      console.error("Error loading folders:", error);
+      toast.error("Failed to load folders");
     }
   };
 
   useEffect(() => {
     if (isOpen) {
-      loadFiles();
+      loadFolders();
     }
   }, [isOpen]);
 
-  const toggleFolder = (folderPath: string) => {
+  const toggleFolder = (folderId: string) => {
     setOpenFolders((prev) =>
-      prev.includes(folderPath)
-        ? prev.filter((p) => p !== folderPath)
-        : [...prev, folderPath]
+      prev.includes(folderId)
+        ? prev.filter((id) => id !== folderId)
+        : [...prev, folderId]
     );
+  };
+
+  const handleCreateFolder = async (parentFolder: MediaFolder) => {
+    if (!newFolderName.trim()) {
+      toast.error("Please enter a folder name");
+      return;
+    }
+
+    try {
+      const storagePath = `${parentFolder.storage_path}/${newFolderName.toLowerCase().replace(/\s+/g, '-')}`;
+
+      const { error } = await supabase.from("media_folders").insert({
+        name: newFolderName,
+        parent_id: parentFolder.id,
+        storage_path: storagePath,
+      });
+
+      if (error) throw error;
+
+      toast.success(`Folder "${newFolderName}" created`);
+      setNewFolderName("");
+      setCreatingFolderFor(null);
+      await loadFolders();
+      
+      // Open the parent folder
+      if (!openFolders.includes(parentFolder.id)) {
+        setOpenFolders([...openFolders, parentFolder.id]);
+      }
+    } catch (error: any) {
+      console.error("Error creating folder:", error);
+      toast.error(`Failed to create folder: ${error.message}`);
+    }
+  };
+
+  const handleRenameFolder = async () => {
+    if (!editingFolder || !editingFolder.name.trim()) {
+      toast.error("Please enter a folder name");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("media_folders")
+        .update({ name: editingFolder.name })
+        .eq("id", editingFolder.id);
+
+      if (error) throw error;
+
+      toast.success("Folder renamed");
+      setEditingFolder(null);
+      await loadFolders();
+    } catch (error: any) {
+      console.error("Error renaming folder:", error);
+      toast.error(`Failed to rename folder: ${error.message}`);
+    }
+  };
+
+  const handleDeleteFolder = async () => {
+    if (!deletingFolder) return;
+
+    try {
+      // Check if folder has files
+      if (deletingFolder.files && deletingFolder.files.length > 0) {
+        toast.error("Cannot delete folder with files. Please delete all files first.");
+        setDeletingFolder(null);
+        return;
+      }
+
+      // Check if folder has subfolders
+      if (deletingFolder.children && deletingFolder.children.length > 0) {
+        toast.error("Cannot delete folder with subfolders. Please delete all subfolders first.");
+        setDeletingFolder(null);
+        return;
+      }
+
+      const { error } = await supabase
+        .from("media_folders")
+        .delete()
+        .eq("id", deletingFolder.id);
+
+      if (error) throw error;
+
+      toast.success("Folder deleted");
+      setDeletingFolder(null);
+      await loadFolders();
+    } catch (error: any) {
+      console.error("Error deleting folder:", error);
+      toast.error(`Failed to delete folder: ${error.message}`);
+    }
   };
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    folderPath: string
+    folder: MediaFolder
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const folder = FOLDERS.find((f) => f.path === folderPath);
-    if (!folder) return;
-
-    // Validate file type
-    if (!folder.acceptedTypes.includes(file.type)) {
-      toast.error(
-        `Invalid file type. Accepted types: ${folder.acceptedTypes.join(", ")}`
-      );
-      return;
-    }
-
     setUploading(true);
-    setSelectedFolder(folderPath);
+    setSelectedFolder(folder.id);
 
     try {
       const timestamp = Date.now();
       const fileName = `${timestamp}-${file.name}`;
-      const filePath = `${folderPath}/${fileName}`;
+      const filePath = `${folder.storage_path}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("page-images")
@@ -130,21 +232,20 @@ export function DataHubDialog() {
       if (uploadError) throw uploadError;
 
       toast.success(`File uploaded to ${folder.name}`);
-      await loadFiles();
+      await loadFolders();
     } catch (error: any) {
       console.error("Upload error:", error);
       toast.error(`Upload failed: ${error.message}`);
     } finally {
       setUploading(false);
       setSelectedFolder(null);
-      // Reset input
       event.target.value = "";
     }
   };
 
-  const handleDeleteFile = async (folderPath: string, fileName: string) => {
+  const handleDeleteFile = async (folder: MediaFolder, fileName: string) => {
     try {
-      const filePath = `${folderPath}/${fileName}`;
+      const filePath = `${folder.storage_path}/${fileName}`;
 
       const { error } = await supabase.storage
         .from("page-images")
@@ -153,192 +254,358 @@ export function DataHubDialog() {
       if (error) throw error;
 
       toast.success("File deleted");
-      await loadFiles();
+      await loadFolders();
     } catch (error: any) {
       console.error("Delete error:", error);
       toast.error(`Delete failed: ${error.message}`);
     }
   };
 
-  const getFileUrl = (folderPath: string, fileName: string) => {
+  const getFileUrl = (folder: MediaFolder, fileName: string) => {
     const { data } = supabase.storage
       .from("page-images")
-      .getPublicUrl(`${folderPath}/${fileName}`);
+      .getPublicUrl(`${folder.storage_path}/${fileName}`);
     return data.publicUrl;
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  const isImage = (fileName: string) => {
+    return /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+  };
+
+  const isVideo = (fileName: string) => {
+    return /\.(mp4|webm)$/i.test(fileName);
+  };
+
+  const renderFolder = (folder: MediaFolder, level: number = 0) => {
+    const isOpen = openFolders.includes(folder.id);
+    const folderFiles = folder.files || [];
+    const isRootFolder = folder.parent_id === null;
+
+    return (
+      <Collapsible
+        key={folder.id}
+        open={isOpen}
+        onOpenChange={() => toggleFolder(folder.id)}
+      >
+        <div className="border border-gray-700 rounded-xl overflow-hidden bg-gray-800/50 backdrop-blur-sm mb-3" style={{ marginLeft: `${level * 20}px` }}>
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-800/80 to-gray-800/40 hover:from-gray-700/80 hover:to-gray-700/40 transition-all duration-300">
+            <CollapsibleTrigger className="flex items-center gap-3 flex-1">
+              {isOpen ? (
+                <ChevronDown className="h-5 w-5 text-[#f9dc24] transition-transform duration-200" />
+              ) : (
+                <ChevronRight className="h-5 w-5 text-gray-400 transition-transform duration-200" />
+              )}
+              {isOpen ? (
+                <FolderOpen className="h-6 w-6 text-[#f9dc24]" />
+              ) : (
+                <Folder className="h-6 w-6 text-gray-500" />
+              )}
+              <span className="font-semibold text-white text-lg">
+                {folder.name}
+              </span>
+              <span className="text-sm text-gray-400 bg-gray-700/50 px-2 py-1 rounded-full">
+                {folderFiles.length} files
+              </span>
+            </CollapsibleTrigger>
+
+            <div className="flex items-center gap-2">
+              {/* Create Subfolder Button */}
+              {creatingFolderFor === folder.id ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Folder name"
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleCreateFolder(folder);
+                      if (e.key === "Escape") {
+                        setCreatingFolderFor(null);
+                        setNewFolderName("");
+                      }
+                    }}
+                    className="h-8 w-40 bg-gray-700 border-gray-600 text-white"
+                    autoFocus
+                  />
+                  <Button
+                    size="sm"
+                    onClick={() => handleCreateFolder(folder)}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    ✓
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setCreatingFolderFor(null);
+                      setNewFolderName("");
+                    }}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    ✕
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCreatingFolderFor(folder.id);
+                  }}
+                  className="text-gray-400 hover:text-[#f9dc24]"
+                  title="Create subfolder"
+                >
+                  <FolderPlus className="h-4 w-4" />
+                </Button>
+              )}
+
+              {/* Rename Button (not for root) */}
+              {!isRootFolder && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingFolder({ id: folder.id, name: folder.name });
+                  }}
+                  className="text-gray-400 hover:text-blue-400"
+                  title="Rename folder"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+              )}
+
+              {/* Delete Button (not for root) */}
+              {!isRootFolder && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeletingFolder(folder);
+                  }}
+                  className="text-gray-400 hover:text-red-400"
+                  title="Delete folder"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+
+              {/* Upload Button */}
+              <div className="relative">
+                <Input
+                  type="file"
+                  onChange={(e) => handleFileUpload(e, folder)}
+                  disabled={uploading && selectedFolder === folder.id}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  id={`upload-${folder.id}`}
+                />
+                <Button
+                  size="sm"
+                  disabled={uploading && selectedFolder === folder.id}
+                  className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {uploading && selectedFolder === folder.id
+                    ? "Uploading..."
+                    : "Upload"}
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <CollapsibleContent>
+            <div className="p-4 bg-gray-900/30">
+              {/* Render subfolders */}
+              {folder.children && folder.children.length > 0 && (
+                <div className="mb-4">
+                  {folder.children.map((child) => renderFolder(child, level + 1))}
+                </div>
+              )}
+
+              {/* Render files */}
+              {folderFiles.length === 0 ? (
+                <div className="text-center py-12">
+                  <File className="h-16 w-16 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400 text-sm">
+                    No files in this folder yet
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {folderFiles.map((file) => {
+                    const fileUrl = getFileUrl(folder, file.name);
+                    const isImg = isImage(file.name);
+                    const isVid = isVideo(file.name);
+
+                    return (
+                      <div
+                        key={file.id}
+                        className="group relative border border-gray-700 rounded-lg overflow-hidden hover:border-[#f9dc24] transition-all duration-300 bg-gray-800/50 hover:bg-gray-800"
+                      >
+                        {isImg && (
+                          <div className="aspect-video bg-gray-900 overflow-hidden">
+                            <img
+                              src={fileUrl}
+                              alt={file.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+                        {isVid && (
+                          <div className="aspect-video bg-gray-900 flex items-center justify-center">
+                            <File className="h-10 w-10 text-gray-600" />
+                          </div>
+                        )}
+                        {!isImg && !isVid && (
+                          <div className="aspect-video bg-gray-900 flex items-center justify-center">
+                            <File className="h-10 w-10 text-gray-600" />
+                          </div>
+                        )}
+
+                        <div className="p-3 space-y-2">
+                          <p className="text-xs text-gray-300 truncate font-medium" title={file.name}>
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(file.created_at).toLocaleDateString()}
+                          </p>
+
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex-1 text-xs bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                              onClick={() => {
+                                navigator.clipboard.writeText(fileUrl);
+                                toast.success("URL copied!");
+                              }}
+                            >
+                              Copy URL
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              className="h-8 w-8 bg-red-900/50 hover:bg-red-900 border-red-800"
+                              onClick={() => handleDeleteFile(folder, file.name)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </CollapsibleContent>
+        </div>
+      </Collapsible>
+    );
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black border-[#f9dc24] flex items-center gap-2 font-semibold"
-        >
-          <Database className="h-4 w-4" />
-          Media Management
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-6xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700">
-        <DialogHeader className="border-b border-gray-700 pb-4">
-          <DialogTitle className="text-3xl font-bold text-white flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-[#e6cc1f] flex items-center justify-center">
-              <Database className="h-5 w-5 text-gray-900" />
-            </div>
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black border-[#f9dc24] flex items-center gap-2 font-semibold"
+          >
+            <Database className="h-4 w-4" />
             Media Management
-          </DialogTitle>
-          <DialogDescription className="text-gray-400 text-base">
-            Upload and manage your media assets
-          </DialogDescription>
-        </DialogHeader>
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-6xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700">
+          <DialogHeader className="border-b border-gray-700 pb-4">
+            <DialogTitle className="text-3xl font-bold text-white flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-[#e6cc1f] flex items-center justify-center">
+                <Database className="h-5 w-5 text-gray-900" />
+              </div>
+              Media Management
+            </DialogTitle>
+            <DialogDescription className="text-gray-400 text-base">
+              Manage your hierarchical folder structure and upload assets
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-3 overflow-y-auto max-h-[calc(90vh-140px)] pr-2">
-          {FOLDERS.map((folder) => {
-            const isOpen = openFolders.includes(folder.path);
-            const folderFiles = files[folder.path] || [];
-            const FolderIcon = folder.icon;
+          <div className="space-y-3 overflow-y-auto max-h-[calc(90vh-140px)] pr-2">
+            {folders.map((folder) => renderFolder(folder))}
+          </div>
+        </DialogContent>
+      </Dialog>
 
-            return (
-              <Collapsible
-                key={folder.path}
-                open={isOpen}
-                onOpenChange={() => toggleFolder(folder.path)}
-              >
-                <div className="border border-gray-700 rounded-xl overflow-hidden bg-gray-800/50 backdrop-blur-sm">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-800/80 to-gray-800/40 hover:from-gray-700/80 hover:to-gray-700/40 transition-all duration-300">
-                    <CollapsibleTrigger className="flex items-center gap-3 flex-1">
-                      {isOpen ? (
-                        <ChevronDown className="h-5 w-5 text-[#f9dc24] transition-transform duration-200" />
-                      ) : (
-                        <ChevronRight className="h-5 w-5 text-gray-400 transition-transform duration-200" />
-                      )}
-                      {isOpen ? (
-                        <FolderOpen className="h-6 w-6 text-[#f9dc24]" />
-                      ) : (
-                        <Folder className="h-6 w-6 text-gray-500" />
-                      )}
-                      <FolderIcon className="h-5 w-5 text-gray-300" />
-                      <span className="font-semibold text-white text-lg">
-                        {folder.name}
-                      </span>
-                      <span className="text-sm text-gray-400 bg-gray-700/50 px-2 py-1 rounded-full">
-                        {folderFiles.length} files
-                      </span>
-                    </CollapsibleTrigger>
+      {/* Rename Folder Dialog */}
+      <AlertDialog open={editingFolder !== null} onOpenChange={(open) => !open && setEditingFolder(null)}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Rename Folder</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Enter a new name for the folder
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            value={editingFolder?.name || ""}
+            onChange={(e) => setEditingFolder(editingFolder ? { ...editingFolder, name: e.target.value } : null)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleRenameFolder();
+              if (e.key === "Escape") setEditingFolder(null);
+            }}
+            className="bg-gray-800 border-gray-700 text-white"
+            autoFocus
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRenameFolder}
+              className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black"
+            >
+              Rename
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-                    <div className="relative">
-                      <Input
-                        type="file"
-                        accept={folder.acceptedTypes.join(",")}
-                        onChange={(e) => handleFileUpload(e, folder.path)}
-                        disabled={uploading && selectedFolder === folder.path}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        id={`upload-${folder.path}`}
-                      />
-                      <Button
-                        size="sm"
-                        disabled={uploading && selectedFolder === folder.path}
-                        className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        {uploading && selectedFolder === folder.path
-                          ? "Uploading..."
-                          : "Upload"}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <CollapsibleContent>
-                    <div className="p-4 bg-gray-900/30">
-                      {folderFiles.length === 0 ? (
-                        <div className="text-center py-12">
-                          <FolderIcon className="h-16 w-16 text-gray-600 mx-auto mb-3" />
-                          <p className="text-gray-400 text-sm">
-                            No files in this folder yet
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                          {folderFiles.map((file) => {
-                            const fileUrl = getFileUrl(folder.path, file.name);
-                            const isImage = folder.path === "images";
-                            const isVideo = folder.path === "videos";
-
-                            return (
-                              <div
-                                key={file.id}
-                                className="group relative border border-gray-700 rounded-lg overflow-hidden hover:border-[#f9dc24] transition-all duration-300 bg-gray-800/50 hover:bg-gray-800"
-                              >
-                                {isImage && (
-                                  <div className="aspect-video bg-gray-900 overflow-hidden">
-                                    <img
-                                      src={fileUrl}
-                                      alt={file.name}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                    />
-                                  </div>
-                                )}
-                                {isVideo && (
-                                  <div className="aspect-video bg-gray-900 flex items-center justify-center">
-                                    <Video className="h-10 w-10 text-gray-600" />
-                                  </div>
-                                )}
-                                {!isImage && !isVideo && (
-                                  <div className="aspect-video bg-gray-900 flex items-center justify-center">
-                                    <FileText className="h-10 w-10 text-gray-600" />
-                                  </div>
-                                )}
-
-                                <div className="p-3 space-y-2">
-                                  <p className="text-xs text-gray-300 truncate font-medium" title={file.name}>
-                                    {file.name}
-                                  </p>
-                                  <p className="text-xs text-gray-500">
-                                    {new Date(file.created_at).toLocaleDateString()}
-                                  </p>
-
-                                  <div className="flex gap-2">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="flex-1 text-xs bg-gray-700/50 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
-                                      onClick={() => {
-                                        navigator.clipboard.writeText(fileUrl);
-                                        toast.success("URL copied!");
-                                      }}
-                                    >
-                                      Copy URL
-                                    </Button>
-                                    <Button
-                                      size="icon"
-                                      variant="destructive"
-                                      className="h-8 w-8 bg-red-900/50 hover:bg-red-900 border-red-800"
-                                      onClick={() =>
-                                        handleDeleteFile(folder.path, file.name)
-                                      }
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  </CollapsibleContent>
-                </div>
-              </Collapsible>
-            );
-          })}
-        </div>
-      </DialogContent>
-    </Dialog>
+      {/* Delete Folder Confirmation */}
+      <AlertDialog open={deletingFolder !== null} onOpenChange={(open) => !open && setDeletingFolder(null)}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Folder?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Are you sure you want to delete "{deletingFolder?.name}"? This action cannot be undone.
+              {deletingFolder?.files && deletingFolder.files.length > 0 && (
+                <span className="block mt-2 text-red-400 font-semibold">
+                  This folder contains {deletingFolder.files.length} file(s) and cannot be deleted.
+                </span>
+              )}
+              {deletingFolder?.children && deletingFolder.children.length > 0 && (
+                <span className="block mt-2 text-red-400 font-semibold">
+                  This folder contains {deletingFolder.children.length} subfolder(s) and cannot be deleted.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteFolder}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={
+                (deletingFolder?.files && deletingFolder.files.length > 0) ||
+                (deletingFolder?.children && deletingFolder.children.length > 0)
+              }
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
