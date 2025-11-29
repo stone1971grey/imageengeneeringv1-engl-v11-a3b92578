@@ -3609,6 +3609,9 @@ const AdminDashboard = () => {
                             Lovable
                           </h1>
                           <span className="text-3xl font-bold text-[#f9dc24]">CMS</span>
+                          <span className="ml-3 px-3 py-1 text-sm font-bold bg-[#f9dc24] text-black rounded-full">
+                            v0.7
+                          </span>
                         </div>
                         <p className="text-xl text-gray-400 mt-1">Content Management System</p>
                       </div>
