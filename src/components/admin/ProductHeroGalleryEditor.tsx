@@ -353,8 +353,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   };
 
   const handleTranslate = async () => {
+    // Silently skip translation for English (no toast)
     if (language === 'en') {
-      toast.error("Cannot translate from English to English");
       return;
     }
 
