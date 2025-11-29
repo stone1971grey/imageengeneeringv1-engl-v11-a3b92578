@@ -362,6 +362,10 @@ export const CMSPageOverview = () => {
         toast.success("Page order updated successfully");
       } else {
         // Moving to different hierarchy level
+        console.log("🔄 Moving to different hierarchy level");
+        console.log("Moved page:", movedPage.page_slug, "parent:", movedPage.parent_slug);
+        console.log("Target page:", targetPage.page_slug, "parent:", targetPage.parent_slug);
+        
         let newParentSlug: string | null;
         let newParentId: number | null;
         let newPageSlug: string;
@@ -370,6 +374,7 @@ export const CMSPageOverview = () => {
         // Otherwise, make moved page a sibling of target (same parent)
         if (targetPage.parent_id === null) {
           // Target is level 1 → moved page becomes its child (level 2)
+          console.log("✅ Target is level 1 - making moved page a child");
           newParentSlug = targetPage.page_slug;
           newParentId = targetPage.page_id;
           // New slug: parent-slug/page-base-slug
@@ -377,6 +382,7 @@ export const CMSPageOverview = () => {
           newPageSlug = `${targetPage.page_slug}/${pageBaseName}`;
         } else {
           // Target is level 2+ → moved page becomes sibling (same parent)
+          console.log("✅ Target is level 2+ - making moved page a sibling");
           newParentSlug = targetPage.parent_slug;
           newParentId = targetPage.parent_id;
           // New slug: same parent structure as target
@@ -389,6 +395,8 @@ export const CMSPageOverview = () => {
         }
 
         const oldSlug = movedPage.page_slug;
+        console.log("📝 Old slug:", oldSlug, "→ New slug:", newPageSlug);
+        console.log("📝 New parent:", newParentSlug, "ID:", newParentId);
         
         // Calculate new position (insert after target page or as last child)
         const newPosition = targetPage.position + 1;
