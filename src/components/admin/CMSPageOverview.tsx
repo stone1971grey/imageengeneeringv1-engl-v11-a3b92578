@@ -308,16 +308,51 @@ export const CMSPageOverview = () => {
     return `/${language}/admin-dashboard?page=${lastPart}`;
   };
 
-  // Drag & Drop setup
+  // Drag & Drop setup with hover detection
+  const [dropMode, setDropMode] = useState<'sibling' | 'child' | null>(null);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
 
+  const handleDragMove = (event: any) => {
+    const { active, over } = event;
+    
+    if (!over || active.id === over.id) {
+      setDropMode(null);
+      setHoveredId(null);
+      return;
+    }
+
+    setHoveredId(over.id);
+
+    // Calculate drop mode based on cursor position
+    const overElement = document.querySelector(`[data-page-id="${over.id}"]`);
+    if (overElement && event.delta) {
+      const rect = overElement.getBoundingClientRect();
+      const cursorY = event.activatorEvent?.clientY || 0;
+      const relativeY = cursorY - rect.top;
+      const threshold = rect.height / 2;
+
+      // Upper half = sibling, lower half = child
+      setDropMode(relativeY < threshold ? 'sibling' : 'child');
+    }
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+
+    // Reset hover states
+    setDropMode(null);
+    setHoveredId(null);
 
     if (!over || active.id === over.id) {
       return;
@@ -331,7 +366,7 @@ export const CMSPageOverview = () => {
 
     try {
       // Check if same parent (reordering within same level)
-      if (movedPage.parent_slug === targetPage.parent_slug) {
+      if (movedPage.parent_slug === targetPage.parent_slug && dropMode === 'sibling') {
         // Reorder in UI immediately
         const reordered = arrayMove(filteredPages, oldIndex, newIndex);
         setFilteredPages(reordered);
@@ -361,44 +396,37 @@ export const CMSPageOverview = () => {
 
         toast.success("Page order updated successfully");
       } else {
-        // Moving to different hierarchy level
-        console.log("🔄 Moving to different hierarchy level");
-        console.log("Moved page:", movedPage.page_slug, "parent:", movedPage.parent_slug);
-        console.log("Target page:", targetPage.page_slug, "parent:", targetPage.parent_slug);
-        
+        // Moving to different hierarchy level OR making child
         let newParentSlug: string | null;
         let newParentId: number | null;
         let newPageSlug: string;
         
-        // If target page is on level 1, make moved page a child of target (level 2)
-        // Otherwise, make moved page a sibling of target (same parent)
-        if (targetPage.parent_id === null) {
-          // Target is level 1 → moved page becomes its child (level 2)
-          console.log("✅ Target is level 1 - making moved page a child");
+        if (dropMode === 'child') {
+          // Make moved page a child of target page
           newParentSlug = targetPage.page_slug;
           newParentId = targetPage.page_id;
-          // New slug: parent-slug/page-base-slug
           const pageBaseName = movedPage.page_slug.split('/').pop()!;
           newPageSlug = `${targetPage.page_slug}/${pageBaseName}`;
+          
+          toast.success(`"${movedPage.page_title}" als Kind unter "${targetPage.page_title}" verschoben`);
         } else {
-          // Target is level 2+ → moved page becomes sibling (same parent)
-          console.log("✅ Target is level 2+ - making moved page a sibling");
+          // Make moved page a sibling of target page
           newParentSlug = targetPage.parent_slug;
           newParentId = targetPage.parent_id;
-          // New slug: same parent structure as target
           const pageBaseName = movedPage.page_slug.split('/').pop()!;
+          
           if (newParentSlug) {
             newPageSlug = `${newParentSlug}/${pageBaseName}`;
           } else {
             newPageSlug = pageBaseName;
           }
+          
+          toast.success(`"${movedPage.page_title}" als Geschwister von "${targetPage.page_title}" verschoben`);
         }
 
         const oldSlug = movedPage.page_slug;
-        console.log("📝 Old slug:", oldSlug, "→ New slug:", newPageSlug);
-        console.log("📝 New parent:", newParentSlug, "ID:", newParentId);
         
-        // Calculate new position (insert after target page or as last child)
+        // Calculate new position
         const newPosition = targetPage.position + 1;
 
         // Update the moved page's parent, slug, and position
@@ -524,6 +552,8 @@ export const CMSPageOverview = () => {
     getPageUrl: (pageId: number) => string;
     handleDeleteClick: (page: CMSPage) => void;
     setIsOpen: (open: boolean) => void;
+    isHovered: boolean;
+    dropMode: 'sibling' | 'child' | null;
   }
 
   const SortablePageRow = ({
@@ -535,6 +565,8 @@ export const CMSPageOverview = () => {
     getPageUrl,
     handleDeleteClick,
     setIsOpen,
+    isHovered,
+    dropMode,
   }: SortablePageRowProps) => {
     const {
       attributes,
@@ -551,12 +583,34 @@ export const CMSPageOverview = () => {
       opacity: isDragging ? 0.5 : 1,
     };
 
+    // Visual feedback for drop zones
+    const dropIndicator = isHovered && dropMode ? (
+      <div className="absolute left-0 right-0 pointer-events-none">
+        {dropMode === 'sibling' ? (
+          <div className="h-0.5 bg-[#f9dc24] -top-1 absolute left-0 right-0 shadow-lg shadow-[#f9dc24]/50">
+            <div className="absolute -left-1 -top-1.5 w-3 h-3 bg-[#f9dc24] rounded-full" />
+            <span className="absolute left-4 -top-5 text-xs bg-[#f9dc24] text-black px-2 py-0.5 rounded font-semibold whitespace-nowrap">
+              Als Geschwister einfügen
+            </span>
+          </div>
+        ) : (
+          <div className="absolute inset-0 border-2 border-[#f9dc24] bg-[#f9dc24]/10 rounded pointer-events-none">
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs bg-[#f9dc24] text-black px-3 py-1 rounded font-semibold whitespace-nowrap">
+              Als Kind einfügen
+            </span>
+          </div>
+        )}
+      </div>
+    ) : null;
+
     return (
       <TableRow
         ref={setNodeRef}
         style={style}
-        className="border-gray-700 hover:bg-gray-800"
+        className="border-gray-700 hover:bg-gray-800 relative"
+        data-page-id={page.page_id}
       >
+        {dropIndicator}
         <TableCell className="w-12">
           <div
             {...attributes}
@@ -717,6 +771,7 @@ export const CMSPageOverview = () => {
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
+            onDragMove={handleDragMove}
           >
             <Table>
               <TableHeader className="sticky top-0 bg-gray-800 z-10">
@@ -760,6 +815,8 @@ export const CMSPageOverview = () => {
                       getPageUrl={getPageUrl}
                       handleDeleteClick={handleDeleteClick}
                       setIsOpen={setIsOpen}
+                      isHovered={hoveredId === page.page_id}
+                      dropMode={hoveredId === page.page_id ? dropMode : null}
                     />
                   ))}
                 </SortableContext>
