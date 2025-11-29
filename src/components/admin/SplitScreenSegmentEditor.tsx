@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Languages } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { GeminiIcon } from "@/components/GeminiIcon";
 
 interface SplitScreenSegmentEditorProps {
   children: (language: string) => React.ReactNode;
@@ -94,6 +96,16 @@ export const SplitScreenSegmentEditor = ({
                   ))}
                 </SelectContent>
               </Select>
+
+              {segmentType === 'product-hero-gallery' && (
+                <Button
+                  onClick={() => window.dispatchEvent(new CustomEvent('phg-translate'))}
+                  className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                >
+                  <GeminiIcon className="h-4 w-4 mr-2" />
+                  Translate Automatically
+                </Button>
+              )}
             </div>
           )}
         </CardHeader>
