@@ -23,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
+import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 
 interface BannerImage {
   url: string;
@@ -324,6 +325,12 @@ export const BannerSegmentEditor = ({
 
       if (updateError) throw updateError;
       
+      // Update segment mappings for all banner images
+      const imageUrls = data.images.map(img => img.url).filter(Boolean);
+      if (imageUrls.length > 0) {
+        await updateMultipleSegmentMappings(imageUrls, parseInt(segmentId));
+      }
+      
       toast.success('Saved English version');
       if (onSave) onSave();
     } catch (error) {
@@ -514,6 +521,12 @@ export const BannerSegmentEditor = ({
         } else {
           console.log('Segment ID already in tab_order');
         }
+      }
+
+      // Update segment mappings for all banner images
+      const imageUrls = targetData.images.map(img => img.url).filter(Boolean);
+      if (imageUrls.length > 0) {
+        await updateMultipleSegmentMappings(imageUrls, parseInt(segmentId));
       }
 
       console.log('Save completed successfully');
