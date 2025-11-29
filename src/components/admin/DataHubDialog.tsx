@@ -63,6 +63,7 @@ export function DataHubDialog({
   const [creatingFolderFor, setCreatingFolderFor] = useState<string | null>(null);
   const [editingFolder, setEditingFolder] = useState<{ id: string; name: string } | null>(null);
   const [deletingFolder, setDeletingFolder] = useState<MediaFolder | null>(null);
+  const [deletingFile, setDeletingFile] = useState<{ folder: MediaFolder; fileName: string } | null>(null);
 
   // Load folders from database with hierarchical structure
   const loadFolders = async () => {
@@ -321,10 +322,16 @@ export function DataHubDialog({
     }
   };
 
-  const handleDeleteFile = async (folder: MediaFolder, fileName: string) => {
+  const handleDeleteFile = (folder: MediaFolder, fileName: string) => {
+    setDeletingFile({ folder, fileName });
+  };
+
+  const confirmDeleteFile = async () => {
+    if (!deletingFile) return;
+
     try {
       // fileName kann jetzt segment-xxx/actual-file.png enthalten
-      const filePath = `${folder.storage_path}/${fileName}`;
+      const filePath = `${deletingFile.folder.storage_path}/${deletingFile.fileName}`;
 
       const { error } = await supabase.storage
         .from("page-images")
@@ -332,8 +339,16 @@ export function DataHubDialog({
 
       if (error) throw error;
 
+      // Remove from file_segment_mappings table
+      await supabase
+        .from("file_segment_mappings")
+        .delete()
+        .eq("file_path", filePath)
+        .eq("bucket_id", "page-images");
+
       toast.success("File deleted");
       await loadFolders();
+      setDeletingFile(null);
     } catch (error: any) {
       console.error("Delete error:", error);
       toast.error(`Delete failed: ${error.message}`);
@@ -755,6 +770,29 @@ export function DataHubDialog({
                 (deletingFolder?.files && deletingFolder.files.length > 0) ||
                 (deletingFolder?.children && deletingFolder.children.length > 0)
               }
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete File Confirmation */}
+      <AlertDialog open={deletingFile !== null} onOpenChange={(open) => !open && setDeletingFile(null)}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete File?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-400">
+              Are you sure you want to delete this file? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteFile}
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
               Delete
             </AlertDialogAction>
