@@ -308,15 +308,15 @@ export const CMSPageOverview = () => {
     return `/${language}/admin-dashboard?page=${lastPart}`;
   };
 
-  // Drag & Drop setup with stable hover detection
+  // Drag & Drop setup with stable, hysteresis-based hover detection
   const [dropMode, setDropMode] = useState<'sibling' | 'child' | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const dragTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastDropModeRef = useRef<'sibling' | 'child' | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 10,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -331,54 +331,62 @@ export const CMSPageOverview = () => {
       if (dropMode !== null || hoveredId !== null) {
         setDropMode(null);
         setHoveredId(null);
+        lastDropModeRef.current = null;
       }
       return;
     }
 
     const newHoveredId = over.id as number;
     
-    // Debounce the visual updates to prevent jitter
-    if (dragTimeoutRef.current) {
-      clearTimeout(dragTimeoutRef.current);
+    // Only update hovered ID if it changed
+    if (hoveredId !== newHoveredId) {
+      setHoveredId(newHoveredId);
+      lastDropModeRef.current = null; // Reset mode when hovering new element
     }
 
-    dragTimeoutRef.current = setTimeout(() => {
-      if (hoveredId !== newHoveredId) {
-        setHoveredId(newHoveredId);
+    // Calculate drop mode with hysteresis to prevent oscillation
+    const overElement = document.querySelector(`[data-page-id="${over.id}"]`) as HTMLElement | null;
+    const clientY = event.activatorEvent?.clientY as number | undefined;
+
+    if (!overElement || clientY == null) {
+      return;
+    }
+
+    const rect = overElement.getBoundingClientRect();
+    const relativeY = clientY - rect.top;
+    const relativePosition = relativeY / rect.height; // 0 to 1
+
+    let newMode: 'sibling' | 'child';
+
+    // Hysteresis logic: larger dead zones to prevent oscillation
+    if (lastDropModeRef.current === null) {
+      // Initial determination
+      newMode = relativePosition < 0.5 ? 'sibling' : 'child';
+    } else {
+      // Use hysteresis: only switch if clearly in the other zone
+      if (lastDropModeRef.current === 'sibling') {
+        // Stay sibling unless clearly in child zone (> 60%)
+        newMode = relativePosition > 0.6 ? 'child' : 'sibling';
+      } else {
+        // Stay child unless clearly in sibling zone (< 40%)
+        newMode = relativePosition < 0.4 ? 'sibling' : 'child';
       }
+    }
 
-      // Calculate drop mode based on cursor position
-      const overElement = document.querySelector(`[data-page-id="${over.id}"]`) as HTMLElement | null;
-      const clientY = event.activatorEvent?.clientY as number | undefined;
-
-      if (!overElement || clientY == null) {
-        return;
-      }
-
-      const rect = overElement.getBoundingClientRect();
-      const relativeY = clientY - rect.top;
-      const threshold = rect.height / 2;
-
-      const newMode: 'sibling' | 'child' = relativeY < threshold ? 'sibling' : 'child';
-
-      // Only update when mode changes
-      if (newMode !== dropMode) {
-        setDropMode(newMode);
-      }
-    }, 50); // 50ms debounce
+    // Only update if mode actually changed
+    if (newMode !== dropMode) {
+      setDropMode(newMode);
+      lastDropModeRef.current = newMode;
+    }
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
-    // Clear debounce timeout
-    if (dragTimeoutRef.current) {
-      clearTimeout(dragTimeoutRef.current);
-    }
-
-    // Reset hover states
+    // Reset hover states and ref
     setDropMode(null);
     setHoveredId(null);
+    lastDropModeRef.current = null;
 
     if (!over || active.id === over.id) {
       return;
