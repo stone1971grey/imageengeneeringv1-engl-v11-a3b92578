@@ -772,15 +772,30 @@ export const CMSPageOverview = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-hidden flex flex-col bg-gray-900 border-gray-700 text-white">
-        <DialogHeader>
+        <DialogHeader className="relative">
           <DialogTitle className="text-2xl font-bold text-[#f9dc24] flex items-center gap-2">
             <Layers className="h-6 w-6" />
             CMS Hub
           </DialogTitle>
+          
+          {/* Fixed Drop Mode Indicator */}
+          {dropMode && (
+            <div className="absolute top-2 right-2 z-50">
+              <Badge 
+                className={`text-sm font-semibold px-3 py-1.5 ${
+                  dropMode === 'sibling' 
+                    ? 'bg-blue-600 text-white border-blue-400' 
+                    : 'bg-purple-600 text-white border-purple-400'
+                } border-2 shadow-lg`}
+              >
+                {dropMode === 'sibling' ? '↔️ Als Geschwister einfügen' : '↓ Als Kind einfügen'}
+              </Badge>
+            </div>
+          )}
         </DialogHeader>
 
         {/* Search Bar */}
-        <div className="relative mb-4">
+        <div className="relative mb-2">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             type="text"
@@ -789,6 +804,14 @@ export const CMSPageOverview = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
           />
+        </div>
+        
+        {/* Drag & Drop Help */}
+        <div className="mb-4 px-3 py-2 bg-gray-800/50 border border-gray-700 rounded text-xs text-gray-400 flex items-center gap-2">
+          <GripVertical className="h-3 w-3 text-[#f9dc24]" />
+          <span>
+            <strong className="text-white">Drag & Drop:</strong> Obere Hälfte = Als Geschwister | Untere Hälfte = Als Kind
+          </span>
         </div>
 
         {/* Stats */}
