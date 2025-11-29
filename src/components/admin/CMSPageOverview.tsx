@@ -364,6 +364,7 @@ export const CMSPageOverview = () => {
         // Moving to different hierarchy level
         let newParentSlug: string | null;
         let newParentId: number | null;
+        let newPageSlug: string;
         
         // If target page is on level 1, make moved page a child of target (level 2)
         // Otherwise, make moved page a sibling of target (same parent)
@@ -371,29 +372,91 @@ export const CMSPageOverview = () => {
           // Target is level 1 → moved page becomes its child (level 2)
           newParentSlug = targetPage.page_slug;
           newParentId = targetPage.page_id;
+          // New slug: parent-slug/page-base-slug
+          const pageBaseName = movedPage.page_slug.split('/').pop()!;
+          newPageSlug = `${targetPage.page_slug}/${pageBaseName}`;
         } else {
           // Target is level 2+ → moved page becomes sibling (same parent)
           newParentSlug = targetPage.parent_slug;
           newParentId = targetPage.parent_id;
+          // New slug: same parent structure as target
+          const pageBaseName = movedPage.page_slug.split('/').pop()!;
+          if (newParentSlug) {
+            newPageSlug = `${newParentSlug}/${pageBaseName}`;
+          } else {
+            newPageSlug = pageBaseName;
+          }
         }
 
-        // Get new siblings (pages that will share the same parent after move)
-        const newSiblings = pages.filter(p => p.parent_slug === newParentSlug);
+        const oldSlug = movedPage.page_slug;
         
         // Calculate new position (insert after target page or as last child)
         const newPosition = targetPage.position + 1;
 
-        // Update the moved page's parent and position
+        // Update the moved page's parent, slug, and position
         const { error: updateError } = await supabase
           .from('page_registry')
           .update({ 
             parent_slug: newParentSlug,
             parent_id: newParentId,
+            page_slug: newPageSlug,
             position: newPosition
           })
           .eq('page_id', movedPage.page_id);
 
         if (updateError) throw updateError;
+
+        // Update segment_registry to use new slug
+        const { error: segmentError } = await supabase
+          .from('segment_registry')
+          .update({ page_slug: newPageSlug })
+          .eq('page_slug', oldSlug);
+
+        if (segmentError) {
+          console.error("Error updating segment_registry:", segmentError);
+        }
+
+        // Update page_content to use new slug
+        const { error: contentError } = await supabase
+          .from('page_content')
+          .update({ page_slug: newPageSlug })
+          .eq('page_slug', oldSlug);
+
+        if (contentError) {
+          console.error("Error updating page_content:", contentError);
+        }
+
+        // Update child pages' parent_slug if they exist
+        const { data: childPages } = await supabase
+          .from('page_registry')
+          .select('*')
+          .eq('parent_slug', oldSlug);
+
+        if (childPages && childPages.length > 0) {
+          for (const child of childPages) {
+            const childBaseName = child.page_slug.split('/').pop()!;
+            const newChildSlug = `${newPageSlug}/${childBaseName}`;
+            
+            await supabase
+              .from('page_registry')
+              .update({ 
+                parent_slug: newPageSlug,
+                page_slug: newChildSlug
+              })
+              .eq('page_id', child.page_id);
+
+            // Also update segments and content for child pages
+            await supabase
+              .from('segment_registry')
+              .update({ page_slug: newChildSlug })
+              .eq('page_slug', child.page_slug);
+
+            await supabase
+              .from('page_content')
+              .update({ page_slug: newChildSlug })
+              .eq('page_slug', child.page_slug);
+          }
+        }
 
         // Shift positions of pages that come after the insertion point
         const pagesToShift = pages.filter(p => 
@@ -414,33 +477,22 @@ export const CMSPageOverview = () => {
         // Update segment_registry to reflect new page_slug if needed
         // (Only if the page slug itself changes, which it shouldn't in hierarchical moves)
 
-        // Regenerate navigationData for all languages
-        for (const lang of ['en', 'de', 'ja', 'ko', 'zh']) {
-          try {
-            const { data: allPages } = await supabase
-              .from('page_registry')
-              .select('*')
-              .order('position');
+        // Update navigation_links table with new slug
+        const { error: navError } = await supabase
+          .from('navigation_links')
+          .update({ slug: newPageSlug })
+          .eq('slug', oldSlug);
 
-            const { data: navLinks } = await supabase
-              .from('navigation_links')
-              .select('*')
-              .eq('language', lang);
-
-            if (allPages && navLinks) {
-              const updatedNavData = NAVIGATION_DATA_FILES[lang as keyof typeof NAVIGATION_DATA_FILES];
-              // Navigation data will be regenerated on next navigation load
-            }
-          } catch (navError) {
-            console.error(`Error updating navigation for ${lang}:`, navError);
-          }
+        if (navError) {
+          console.warn('Navigation links update failed:', navError);
         }
 
         toast.success("Page moved to new hierarchy level", {
-          description: "Navigation structure has been updated"
+          description: "Page slug and navigation updated"
         });
       }
 
+      // Reload pages to refresh UI with correct hierarchy
       await loadPages();
     } catch (error) {
       console.error("Error updating page:", error);
