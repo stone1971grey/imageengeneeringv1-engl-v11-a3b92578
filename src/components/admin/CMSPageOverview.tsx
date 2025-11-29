@@ -327,23 +327,35 @@ export const CMSPageOverview = () => {
     const { active, over } = event;
     
     if (!over || active.id === over.id) {
-      setDropMode(null);
-      setHoveredId(null);
+      if (dropMode !== null || hoveredId !== null) {
+        setDropMode(null);
+        setHoveredId(null);
+      }
       return;
     }
 
-    setHoveredId(over.id);
+    const newHoveredId = over.id as number;
+    if (hoveredId !== newHoveredId) {
+      setHoveredId(newHoveredId);
+    }
 
-    // Calculate drop mode based on cursor position
-    const overElement = document.querySelector(`[data-page-id="${over.id}"]`);
-    if (overElement && event.delta) {
-      const rect = overElement.getBoundingClientRect();
-      const cursorY = event.activatorEvent?.clientY || 0;
-      const relativeY = cursorY - rect.top;
-      const threshold = rect.height / 2;
+    // Calculate drop mode based on cursor position (with debounce-like behavior)
+    const overElement = document.querySelector(`[data-page-id="${over.id}"]`) as HTMLElement | null;
+    const clientY = event.activatorEvent?.clientY as number | undefined;
 
-      // Upper half = sibling, lower half = child
-      setDropMode(relativeY < threshold ? 'sibling' : 'child');
+    if (!overElement || clientY == null) {
+      return;
+    }
+
+    const rect = overElement.getBoundingClientRect();
+    const relativeY = clientY - rect.top;
+    const threshold = rect.height / 2;
+
+    const newMode: 'sibling' | 'child' = relativeY < threshold ? 'sibling' : 'child';
+
+    // Only update state when mode actually changes to avoid UI jitter
+    if (newMode !== dropMode) {
+      setDropMode(newMode);
     }
   };
 
