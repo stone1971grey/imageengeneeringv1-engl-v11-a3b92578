@@ -312,11 +312,12 @@ const Navigation = () => {
           </Link>
           
           <div className="flex-1"></div>
-          {/* Main Navigation - aligned with search */}
-          <div className="hidden 2xl:flex items-center gap-6">
-            {isStyleguidePath ? (
-              /* Styleguide-specific Navigation with Flyout */
-              <SimpleDropdown trigger={t.nav.styleguide} className="right-aligned" disabled={isAdminDashboard}>
+          {/* Main Navigation - aligned with search - Hide in Admin Dashboard */}
+          {!isAdminDashboard && (
+            <div className="hidden 2xl:flex items-center gap-6">
+              {isStyleguidePath ? (
+                /* Styleguide-specific Navigation with Flyout */
+                <SimpleDropdown trigger={t.nav.styleguide} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="w-[640px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredStyleguide(null)}>
                   <div className="flex p-6 gap-6">
@@ -907,14 +908,18 @@ const Navigation = () => {
               </>
             )}
           </div>
+          )}
           
-          {/* Utility Navigation - aligned with main nav */}
-          <div className="hidden 2xl:flex">
-            <UtilityNavigation />
-          </div>
+          {/* Utility Navigation - aligned with main nav - Hide in Admin Dashboard */}
+          {!isAdminDashboard && (
+            <div className="hidden 2xl:flex">
+              <UtilityNavigation />
+            </div>
+          )}
 
-          {/* Mobile menu button - always on the right */}
-          <div className="2xl:hidden ml-auto relative z-50 flex-shrink-0">
+          {/* Mobile menu button - Hide in Admin Dashboard */}
+          {!isAdminDashboard && (
+            <div className="2xl:hidden ml-auto relative z-50 flex-shrink-0">
             <button 
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-[#f9dc24] text-black rounded-md hover:bg-[#f9dc24]/90 transition-colors shadow-lg"
@@ -926,9 +931,11 @@ const Navigation = () => {
               )}
             </button>
           </div>
+          )}
         </div>
 
-        {/* Mobile Navigation - positioned below navbar, right-aligned */}
+        {/* Mobile Navigation - Hide in Admin Dashboard */}
+        {!isAdminDashboard && (
         <div className="2xl:hidden relative">
           {isOpen && (
             <>
@@ -1738,6 +1745,7 @@ const Navigation = () => {
             </>
           )}
         </div>
+        )}
       </div>
     </nav>
   );
