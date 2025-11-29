@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File } from "lucide-react";
+import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -455,13 +455,15 @@ export function DataHubDialog({
                     const isImg = isImage(file.name);
                     const isVid = isVideo(file.name);
 
+                    const segmentId = file.metadata?.segmentId || file.metadata?.segment_id;
+                    
                     return (
                       <div
                         key={file.id}
                         className="group relative border border-gray-700 rounded-lg overflow-hidden hover:border-[#f9dc24] transition-all duration-300 bg-gray-800/50 hover:bg-gray-800"
                       >
                         {isImg && (
-                          <div className="aspect-video bg-gray-900 overflow-hidden">
+                          <div className="aspect-video bg-gray-900 overflow-hidden relative">
                              <img
                               src={fileUrl}
                               alt={file.name}
@@ -478,6 +480,16 @@ export function DataHubDialog({
                                 }
                               }}
                             />
+                            {/* Segment Badge */}
+                            {segmentId && (
+                              <div 
+                                className="absolute top-2 right-2 flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                title={`Assigned to Segment ${segmentId}`}
+                              >
+                                <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                <span className="text-[10px] font-semibold text-[#f9dc24]">#{segmentId}</span>
+                              </div>
+                            )}
                           </div>
                         )}
                         {isVid && (
@@ -491,10 +503,17 @@ export function DataHubDialog({
                           </div>
                         )}
 
-                        <div className="p-3 space-y-2">
+                        <div className="p-3 space-y-1.5">
                           <p className="text-xs text-gray-300 truncate font-medium" title={file.name}>
                             {file.name}
                           </p>
+                          {/* Segment Assignment Info */}
+                          {segmentId && (
+                            <p className="text-[10px] text-[#f9dc24]/80 flex items-center gap-1">
+                              <span>→</span>
+                              <span>Segment {segmentId}</span>
+                            </p>
+                          )}
                           <p className="text-xs text-gray-500">
                             {new Date(file.created_at).toLocaleDateString()}
                           </p>
