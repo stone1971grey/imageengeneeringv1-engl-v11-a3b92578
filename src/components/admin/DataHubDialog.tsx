@@ -110,7 +110,47 @@ export function DataHubDialog({
           });
 
         if (!filesError && files) {
-          folder.files = files;
+          // Filter out segment subdirectories (they're not real assets)
+          const actualFiles = files.filter(item => {
+            // If it's a directory (no name extension) and starts with "segment-", skip it
+            if (!item.name.includes('.') && item.name.startsWith('segment-')) {
+              return false;
+            }
+            return true;
+          });
+
+          // Also load files from segment subdirectories and tag them
+          const segmentSubdirs = files.filter(item => 
+            !item.name.includes('.') && item.name.startsWith('segment-')
+          );
+
+          for (const segmentDir of segmentSubdirs) {
+            const segmentId = segmentDir.name.replace('segment-', '');
+            const { data: segmentFiles, error: segmentError } = await supabase.storage
+              .from("page-images")
+              .list(`${folder.storage_path}/${segmentDir.name}`, {
+                limit: 100,
+                sortBy: { column: "created_at", order: "desc" },
+              });
+
+            if (!segmentError && segmentFiles) {
+              // Add segment files with metadata
+              segmentFiles.forEach(file => {
+                if (file.name.includes('.')) { // Only actual files
+                  actualFiles.push({
+                    ...file,
+                    name: `${segmentDir.name}/${file.name}`, // Preserve path
+                    metadata: {
+                      ...file.metadata,
+                      segmentId: segmentId
+                    }
+                  });
+                }
+              });
+            }
+          }
+
+          folder.files = actualFiles;
         }
       }
 
@@ -259,6 +299,7 @@ export function DataHubDialog({
 
   const handleDeleteFile = async (folder: MediaFolder, fileName: string) => {
     try {
+      // fileName kann jetzt segment-xxx/actual-file.png enthalten
       const filePath = `${folder.storage_path}/${fileName}`;
 
       const { error } = await supabase.storage
@@ -276,6 +317,7 @@ export function DataHubDialog({
   };
 
   const getFileUrl = (folder: MediaFolder, fileName: string) => {
+    // fileName kann jetzt segment-xxx/actual-file.png enthalten
     const { data } = supabase.storage
       .from("page-images")
       .getPublicUrl(`${folder.storage_path}/${fileName}`);
@@ -505,7 +547,7 @@ export function DataHubDialog({
 
                         <div className="p-3 space-y-1.5">
                           <p className="text-xs text-gray-300 truncate font-medium" title={file.name}>
-                            {file.name}
+                            {file.name.includes('/') ? file.name.split('/').pop() : file.name}
                           </p>
                           {/* Segment Assignment Info */}
                           {segmentId && (
