@@ -130,27 +130,36 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
   const handleImageUpload = async (file: File) => {
     setIsUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const filePath = `${pageSlug}/${fileName}`;
+      // Convert to base64
+      const reader = new FileReader();
+      const fileData = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file);
+      // Call Edge Function with pageSlug for automatic folder creation
+      const { data: result, error } = await supabase.functions.invoke('upload-image', {
+        body: {
+          fileName: file.name,
+          fileData: fileData,
+          bucket: 'page-images',
+          folder: pageSlug,
+          segmentId: segmentId,
+          pageSlug: pageSlug // NEW: Automatic folder structure creation
+        }
+      });
 
-      if (uploadError) throw uploadError;
+      if (error) throw error;
+      if (!result?.success) throw new Error(result?.error || 'Upload failed');
 
-      const { data: urlData } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
-
-      const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
+      const metadataWithoutAlt = await extractImageMetadata(file, result.url);
       const metadata: ImageMetadata = {
         ...metadataWithoutAlt,
         altText: ''
       };
 
-      setImageUrl(urlData.publicUrl);
+      setImageUrl(result.url);
       setImageMetadata(metadata);
 
       // Auto-sync to all languages
@@ -172,7 +181,7 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
           if (segmentIndex !== -1) {
             existingSegments[segmentIndex].data = {
               ...existingSegments[segmentIndex].data,
-              hero_image_url: urlData.publicUrl,
+              hero_image_url: result.url,
               hero_image_metadata: metadata
             };
             

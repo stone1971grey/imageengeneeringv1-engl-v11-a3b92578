@@ -139,21 +139,32 @@ export const BannerSegmentEditor = ({
   const handleImageUpload = async (index: number, file: File) => {
     setUploadingIndex(index);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${pageSlug}_banner_${segmentKey}_${index}_${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // Convert to base64
+      const reader = new FileReader();
+      const fileData = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      const { error: uploadError } = await supabase.storage
-        .from('page-images')
-        .upload(filePath, file, { upsert: true });
+      const segmentIdNum = parseInt(segmentKey.replace('segment_', ''));
 
-      if (uploadError) throw uploadError;
+      // Call Edge Function with pageSlug for automatic folder creation
+      const { data: result, error } = await supabase.functions.invoke('upload-image', {
+        body: {
+          fileName: file.name,
+          fileData: fileData,
+          bucket: 'page-images',
+          folder: pageSlug,
+          segmentId: segmentIdNum,
+          pageSlug: pageSlug // NEW: Automatic folder structure creation
+        }
+      });
 
-      const { data: urlData } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(filePath);
+      if (error) throw error;
+      if (!result?.success) throw new Error(result?.error || 'Upload failed');
 
-      const metadataWithoutAlt = await extractImageMetadata(file, urlData.publicUrl);
+      const metadataWithoutAlt = await extractImageMetadata(file, result.url);
       const metadata: ImageMetadata = {
         ...metadataWithoutAlt,
         altText: data.images[index]?.alt || ''
@@ -162,7 +173,7 @@ export const BannerSegmentEditor = ({
       const updatedImages = [...data.images];
       updatedImages[index] = {
         ...updatedImages[index],
-        url: urlData.publicUrl,
+        url: result.url,
         metadata
       };
       

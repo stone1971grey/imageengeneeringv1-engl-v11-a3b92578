@@ -208,21 +208,31 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
     setUploadingIndex(index);
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${pageSlug}/segment-${segmentId}/gallery-${index}-${Date.now()}.${fileExt}`;
+      // Convert to base64
+      const reader = new FileReader();
+      const fileData = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
 
-      const { error: uploadError, data: uploadData } = await supabase.storage
-        .from('page-images')
-        .upload(fileName, file);
+      // Call Edge Function with pageSlug for automatic folder creation
+      const { data: result, error } = await supabase.functions.invoke('upload-image', {
+        body: {
+          fileName: file.name,
+          fileData: fileData,
+          bucket: 'page-images',
+          folder: pageSlug,
+          segmentId: segmentId,
+          pageSlug: pageSlug // NEW: Automatic folder structure creation
+        }
+      });
 
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('page-images')
-        .getPublicUrl(fileName);
+      if (error) throw error;
+      if (!result?.success) throw new Error(result?.error || 'Upload failed');
 
       // Extract image metadata
-      const baseMetadata = await extractImageMetadata(file, publicUrl);
+      const baseMetadata = await extractImageMetadata(file, result.url);
       const fullMetadata: ImageMetadata = {
         ...baseMetadata,
         altText: data.images[index]?.metadata?.altText || ''
@@ -231,7 +241,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       const updatedImages = [...localData.images];
       updatedImages[index] = { 
         ...updatedImages[index], 
-        imageUrl: publicUrl,
+        imageUrl: result.url,
         metadata: fullMetadata
       };
       
