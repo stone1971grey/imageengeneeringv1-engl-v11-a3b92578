@@ -97,9 +97,12 @@ export const SplitScreenSegmentEditor = ({
                 </SelectContent>
               </Select>
 
-              {segmentType === 'product-hero-gallery' && (
+              {(segmentType === 'product-hero-gallery' || segmentType === 'hero') && (
                 <Button
-                  onClick={() => window.dispatchEvent(new CustomEvent('phg-translate'))}
+                  onClick={() => {
+                    const eventName = segmentType === 'product-hero-gallery' ? 'phg-translate' : 'ph-translate';
+                    window.dispatchEvent(new CustomEvent(eventName));
+                  }}
                   className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
                 >
                   <GeminiIcon className="h-4 w-4 mr-2" />

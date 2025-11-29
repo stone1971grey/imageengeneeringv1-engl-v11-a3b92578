@@ -35,6 +35,13 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
 
   useEffect(() => {
     loadContent();
+
+    const handleExternalTranslate = () => {
+      handleTranslate();
+    };
+
+    window.addEventListener('ph-translate', handleExternalTranslate);
+    return () => window.removeEventListener('ph-translate', handleExternalTranslate);
   }, [pageSlug, segmentId, language]);
 
   const loadContent = async () => {
@@ -398,31 +405,12 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
     <div className="space-y-6">
       {language !== 'en' && (
         <div className="p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 rounded-lg">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-2">
             <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
             <div>
               <div className="text-white font-semibold text-sm">Multi-Language Editor</div>
               <div className="text-blue-300 text-xs">Compare and edit Product Hero in multiple languages</div>
             </div>
-          </div>
-          <div className="flex items-center gap-2 mb-3">
-            <label className="text-white font-medium text-sm">Target Language:</label>
-            <div className="px-3 py-1.5 bg-blue-950/70 border border-blue-600 rounded-md text-white text-sm">
-              <span className="flex items-center gap-2">
-                <span className="text-lg">{LANGUAGES.find(l => l.code === language)?.flag}</span>
-                <span>{LANGUAGES.find(l => l.code === language)?.name}</span>
-              </span>
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <Button
-              onClick={handleTranslate}
-              disabled={isTranslating}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-            >
-              <GeminiIcon className="mr-2 h-4 w-4" />
-              {isTranslating ? "Translating..." : "Translate Automatically"}
-            </Button>
           </div>
         </div>
       )}
