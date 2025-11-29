@@ -404,12 +404,11 @@ export const CMSPageOverview = () => {
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
-    // Reset hover states and ref
-    setDropMode(null);
-    setHoveredId(null);
-    lastDropModeRef.current = null;
-
     if (!over || active.id === over.id) {
+      // Reset hover states and ref
+      setDropMode(null);
+      setHoveredId(null);
+      lastDropModeRef.current = null;
       return;
     }
 
@@ -419,9 +418,18 @@ export const CMSPageOverview = () => {
     const movedPage = filteredPages[oldIndex];
     const targetPage = filteredPages[newIndex];
 
+    // Intelligent: if moved page is already a direct child of target page,
+    // force sibling mode even if the UI thought "child".
+    let effectiveDropMode: 'sibling' | 'child' | null = dropMode;
+    const isAlreadyDirectChild = movedPage?.parent_slug === targetPage?.page_slug;
+
+    if (isAlreadyDirectChild && effectiveDropMode === 'child') {
+      effectiveDropMode = 'sibling';
+    }
+
     try {
       // Check if same parent (reordering within same level)
-      if (movedPage.parent_slug === targetPage.parent_slug && dropMode === 'sibling') {
+      if (movedPage.parent_slug === targetPage.parent_slug && effectiveDropMode === 'sibling') {
         // Reorder in UI immediately
         const reordered = arrayMove(filteredPages, oldIndex, newIndex);
         setFilteredPages(reordered);
@@ -454,7 +462,7 @@ export const CMSPageOverview = () => {
         // Moving to different hierarchy level OR making child
         
         // CRITICAL: Prevent moving a page under itself or its own children
-        if (dropMode === 'child') {
+        if (effectiveDropMode === 'child') {
           // Check if target page is the moved page itself or a descendant
           let currentCheck = targetPage;
           let isDescendant = false;
@@ -475,6 +483,10 @@ export const CMSPageOverview = () => {
           
           if (isDescendant || targetPage.page_id === movedPage.page_id) {
             toast.error("Kann eine Seite nicht unter sich selbst oder ihre eigenen Kinder verschieben");
+            // Reset hover states and ref
+            setDropMode(null);
+            setHoveredId(null);
+            lastDropModeRef.current = null;
             return;
           }
         }
@@ -483,7 +495,7 @@ export const CMSPageOverview = () => {
         let newParentId: number | null;
         let newPageSlug: string;
         
-        if (dropMode === 'child') {
+        if (effectiveDropMode === 'child') {
           // Make moved page a child of target page
           newParentSlug = targetPage.page_slug;
           newParentId = targetPage.page_id;
