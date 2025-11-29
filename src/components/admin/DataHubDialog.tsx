@@ -181,7 +181,7 @@ export function DataHubDialog() {
           className="bg-gray-300 hover:bg-gray-400 text-gray-800 border-gray-400 flex items-center gap-2"
         >
           <Database className="h-4 w-4" />
-          Data Hub
+          Media Management
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-6xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700">
@@ -190,7 +190,7 @@ export function DataHubDialog() {
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-[#e6cc1f] flex items-center justify-center">
               <Database className="h-5 w-5 text-gray-900" />
             </div>
-            Data Hub
+            Media Management
           </DialogTitle>
           <DialogDescription className="text-gray-400 text-base">
             Upload and manage your media assets
