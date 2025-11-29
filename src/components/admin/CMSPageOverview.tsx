@@ -397,6 +397,33 @@ export const CMSPageOverview = () => {
         toast.success("Page order updated successfully");
       } else {
         // Moving to different hierarchy level OR making child
+        
+        // CRITICAL: Prevent moving a page under itself or its own children
+        if (dropMode === 'child') {
+          // Check if target page is the moved page itself or a descendant
+          let currentCheck = targetPage;
+          let isDescendant = false;
+          
+          while (currentCheck && !isDescendant) {
+            if (currentCheck.page_id === movedPage.page_id) {
+              isDescendant = true;
+              break;
+            }
+            // Check if current page is a child of moved page
+            if (currentCheck.parent_slug === movedPage.page_slug) {
+              isDescendant = true;
+              break;
+            }
+            // Move up the hierarchy
+            currentCheck = pages.find(p => p.page_slug === currentCheck.parent_slug) || null;
+          }
+          
+          if (isDescendant || targetPage.page_id === movedPage.page_id) {
+            toast.error("Kann eine Seite nicht unter sich selbst oder ihre eigenen Kinder verschieben");
+            return;
+          }
+        }
+        
         let newParentSlug: string | null;
         let newParentId: number | null;
         let newPageSlug: string;
@@ -426,6 +453,11 @@ export const CMSPageOverview = () => {
 
         const oldSlug = movedPage.page_slug;
         
+        // Skip if nothing actually changes
+        if (oldSlug === newPageSlug && movedPage.parent_slug === newParentSlug) {
+          return;
+        }
+        
         // Calculate new position
         const newPosition = targetPage.position + 1;
 
@@ -442,90 +474,93 @@ export const CMSPageOverview = () => {
 
         if (updateError) throw updateError;
 
-        // Update segment_registry to use new slug
-        const { error: segmentError } = await supabase
-          .from('segment_registry')
-          .update({ page_slug: newPageSlug })
-          .eq('page_slug', oldSlug);
+        // Update related tables in parallel for better performance
+        await Promise.all([
+          // Update segment_registry
+          supabase
+            .from('segment_registry')
+            .update({ page_slug: newPageSlug })
+            .eq('page_slug', oldSlug),
+          
+          // Update page_content
+          supabase
+            .from('page_content')
+            .update({ page_slug: newPageSlug })
+            .eq('page_slug', oldSlug),
+          
+          // Update navigation_links
+          supabase
+            .from('navigation_links')
+            .update({ slug: newPageSlug })
+            .eq('slug', oldSlug)
+        ]);
 
-        if (segmentError) {
-          console.error("Error updating segment_registry:", segmentError);
-        }
-
-        // Update page_content to use new slug
-        const { error: contentError } = await supabase
-          .from('page_content')
-          .update({ page_slug: newPageSlug })
-          .eq('page_slug', oldSlug);
-
-        if (contentError) {
-          console.error("Error updating page_content:", contentError);
-        }
-
-        // Update child pages' parent_slug if they exist
-        const { data: childPages } = await supabase
-          .from('page_registry')
-          .select('*')
-          .eq('parent_slug', oldSlug);
-
-        if (childPages && childPages.length > 0) {
-          for (const child of childPages) {
-            const childBaseName = child.page_slug.split('/').pop()!;
-            const newChildSlug = `${newPageSlug}/${childBaseName}`;
-            
-            await supabase
+        // Update child pages ONLY if slug changed (recursively update all descendants)
+        if (oldSlug !== newPageSlug) {
+          const updateDescendants = async (parentOldSlug: string, parentNewSlug: string) => {
+            const { data: directChildren } = await supabase
               .from('page_registry')
-              .update({ 
-                parent_slug: newPageSlug,
-                page_slug: newChildSlug
-              })
-              .eq('page_id', child.page_id);
+              .select('*')
+              .eq('parent_slug', parentOldSlug);
 
-            // Also update segments and content for child pages
-            await supabase
-              .from('segment_registry')
-              .update({ page_slug: newChildSlug })
-              .eq('page_slug', child.page_slug);
+            if (!directChildren || directChildren.length === 0) return;
 
-            await supabase
-              .from('page_content')
-              .update({ page_slug: newChildSlug })
-              .eq('page_slug', child.page_slug);
-          }
+            for (const child of directChildren) {
+              const childBaseName = child.page_slug.split('/').pop()!;
+              const newChildSlug = `${parentNewSlug}/${childBaseName}`;
+              
+              // Update page_registry for child
+              await supabase
+                .from('page_registry')
+                .update({ 
+                  parent_slug: parentNewSlug,
+                  page_slug: newChildSlug
+                })
+                .eq('page_id', child.page_id);
+
+              // Update related tables for child
+              await Promise.all([
+                supabase
+                  .from('segment_registry')
+                  .update({ page_slug: newChildSlug })
+                  .eq('page_slug', child.page_slug),
+                
+                supabase
+                  .from('page_content')
+                  .update({ page_slug: newChildSlug })
+                  .eq('page_slug', child.page_slug),
+                
+                supabase
+                  .from('navigation_links')
+                  .update({ slug: newChildSlug })
+                  .eq('slug', child.page_slug)
+              ]);
+
+              // Recursively update grandchildren
+              await updateDescendants(child.page_slug, newChildSlug);
+            }
+          };
+
+          await updateDescendants(oldSlug, newPageSlug);
         }
 
-        // Shift positions of pages that come after the insertion point
+        // Shift positions of pages AFTER the update (avoid double-counting)
         const pagesToShift = pages.filter(p => 
           p.parent_slug === newParentSlug && 
           p.position >= newPosition && 
           p.page_id !== movedPage.page_id
         );
 
-        for (const page of pagesToShift) {
-          const { error } = await supabase
-            .from('page_registry')
-            .update({ position: page.position + 1 })
-            .eq('page_id', page.page_id);
-
-          if (error) throw error;
+        if (pagesToShift.length > 0) {
+          await Promise.all(
+            pagesToShift.map(page =>
+              supabase
+                .from('page_registry')
+                .update({ position: page.position + 1 })
+                .eq('page_id', page.page_id)
+            )
+          );
         }
-
-        // Update segment_registry to reflect new page_slug if needed
-        // (Only if the page slug itself changes, which it shouldn't in hierarchical moves)
-
-        // Update navigation_links table with new slug
-        const { error: navError } = await supabase
-          .from('navigation_links')
-          .update({ slug: newPageSlug })
-          .eq('slug', oldSlug);
-
-        if (navError) {
-          console.warn('Navigation links update failed:', navError);
-        }
-
-        toast.success("Page moved to new hierarchy level", {
-          description: "Page slug and navigation updated"
-        });
       }
 
       // Reload pages to refresh UI with correct hierarchy
