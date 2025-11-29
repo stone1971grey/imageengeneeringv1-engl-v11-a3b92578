@@ -526,14 +526,14 @@ export const CMSPageOverview = () => {
           className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700 hover:border-[#f9dc24]"
         >
           <FileText className="h-4 w-4 mr-2" />
-          CMS Pages Overview
+          CMS Hub
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[90vw] max-h-[90vh] overflow-hidden flex flex-col bg-gray-900 border-gray-700 text-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-[#f9dc24] flex items-center gap-2">
             <Layers className="h-6 w-6" />
-            CMS Pages Overview
+            CMS Hub
           </DialogTitle>
         </DialogHeader>
 
