@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -86,6 +86,18 @@ export function DataHubDialog({
     segmentIds?: string[];
     filePath: string;
   } | null>(null);
+  
+  // Debounced localStorage write
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  
+  const debouncedSaveToLocalStorage = useCallback((folders: string[]) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      localStorage.setItem("mediaManagement_openFolders", JSON.stringify(folders));
+    }, 300);
+  }, []);
 
   // Load folders from database with hierarchical structure
   const loadFolders = async () => {
@@ -216,18 +228,18 @@ export function DataHubDialog({
     }
   }, [isOpen]);
 
-  const toggleFolder = (folderId: string) => {
+  const toggleFolder = useCallback((folderId: string) => {
     setOpenFolders((prev) => {
       const newState = prev.includes(folderId)
         ? prev.filter((id) => id !== folderId)
         : [...prev, folderId];
       
-      // Persist to localStorage
-      localStorage.setItem("mediaManagement_openFolders", JSON.stringify(newState));
+      // Debounced persist to localStorage
+      debouncedSaveToLocalStorage(newState);
       
       return newState;
     });
-  };
+  }, [debouncedSaveToLocalStorage]);
 
   const handleCreateFolder = async (parentFolder: MediaFolder) => {
     if (!newFolderName.trim()) {
@@ -251,11 +263,11 @@ export function DataHubDialog({
       setCreatingFolderFor(null);
       await loadFolders();
       
-      // Open the parent folder and persist to localStorage
+      // Open the parent folder and persist to localStorage (debounced)
       if (!openFolders.includes(parentFolder.id)) {
         const newOpenFolders = [...openFolders, parentFolder.id];
         setOpenFolders(newOpenFolders);
-        localStorage.setItem("mediaManagement_openFolders", JSON.stringify(newOpenFolders));
+        debouncedSaveToLocalStorage(newOpenFolders);
       }
     } catch (error: any) {
       console.error("Error creating folder:", error);
@@ -386,21 +398,21 @@ export function DataHubDialog({
     }
   };
 
-  const getFileUrl = (folder: MediaFolder, fileName: string) => {
+  const getFileUrl = useCallback((folder: MediaFolder, fileName: string) => {
     // fileName kann jetzt segment-xxx/actual-file.png enthalten
     const { data } = supabase.storage
       .from("page-images")
       .getPublicUrl(`${folder.storage_path}/${fileName}`);
     return data.publicUrl;
-  };
+  }, []);
 
-  const isImage = (fileName: string) => {
+  const isImage = useCallback((fileName: string) => {
     return /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
-  };
+  }, []);
 
-  const isVideo = (fileName: string) => {
+  const isVideo = useCallback((fileName: string) => {
     return /\.(mp4|webm)$/i.test(fileName);
-  };
+  }, []);
 
   const renderFolder = (folder: MediaFolder, level: number = 0) => {
     const isOpen = openFolders.includes(folder.id);
@@ -589,6 +601,7 @@ export function DataHubDialog({
                               className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
                                 selectionMode ? 'cursor-pointer' : ''
                               }`}
+                              loading="lazy"
                               onClick={() => {
                                 if (selectionMode && onSelect) {
                                   onSelect(fileUrl, {
