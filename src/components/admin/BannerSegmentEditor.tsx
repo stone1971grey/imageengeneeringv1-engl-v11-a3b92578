@@ -80,15 +80,15 @@ export const BannerSegmentEditor = ({
     images: []
   });
   
-  // Ensure all images have IDs on mount
+  const ensureImageIds = (images: BannerImage[]): BannerImage[] => {
+    return images.map(img => ({
+      ...img,
+      id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    }));
+  };
+  
+  // Ensure all English images have IDs on mount
   useEffect(() => {
-    const ensureImageIds = (images: BannerImage[]): BannerImage[] => {
-      return images.map(img => ({
-        ...img,
-        id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      }));
-    };
-    
     if (data.images.some(img => !img.id)) {
       onChange({ ...data, images: ensureImageIds(data.images) });
     }
@@ -124,21 +124,37 @@ export const BannerSegmentEditor = ({
       
       if (targetSegment?.data) {
         console.log('[BannerSegmentEditor] Loaded target language data:', targetSegment.data);
-        setTargetData(targetSegment.data);
+        const englishImages = ensureImageIds(data.images || []);
+        const targetImages = ensureImageIds(targetSegment.data.images || []);
+        
+        // Merge: English defines which images exist (url/metadata),
+        // target keeps its alt texts where possible
+        const mergedImages: BannerImage[] = englishImages.map((enImg, idx) => {
+          const targetImg = targetImages[idx];
+          return {
+            ...enImg,
+            alt: targetImg?.alt || ''
+          };
+        });
+        
+        setTargetData({
+          ...targetSegment.data,
+          images: mergedImages
+        });
         return;
       }
     }
  
     // If no target language version exists, copy structure from English but with empty text fields
     console.log('[BannerSegmentEditor] No target language data found, creating empty structure from English');
+    const englishImages = ensureImageIds(data.images || []);
     setTargetData({
       ...data,
       title: '',
       subtext: '',
       buttonText: '',
-      images: data.images.map(img => ({ 
+      images: englishImages.map(img => ({ 
         ...img, 
-        id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         alt: '' 
       }))
     });
@@ -397,11 +413,25 @@ export const BannerSegmentEditor = ({
         const segments = JSON.parse(pageContentData.content_value || "[]");
         let segmentFound = false;
 
+        // Always sync images from English for target save
+        const englishImages = ensureImageIds(data.images || []);
+        const mergedImages: BannerImage[] = englishImages.map((enImg, idx) => {
+          const targetImg = targetData.images[idx];
+          return {
+            ...enImg,
+            alt: targetImg?.alt || ''
+          };
+        });
+        const finalTargetData: BannerData = {
+          ...targetData,
+          images: mergedImages
+        };
+
         updatedSegments = segments.map((seg: any) => {
           if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
             segmentFound = true;
-            console.log('Found existing banner segment, updating with targetData');
-            return { ...seg, data: targetData };
+            console.log('Found existing banner segment, updating with finalTargetData');
+            return { ...seg, data: finalTargetData };
           }
           return seg;
         });
