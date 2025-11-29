@@ -621,8 +621,6 @@ export const CMSPageOverview = () => {
     getPageUrl: (pageId: number) => string;
     handleDeleteClick: (page: CMSPage) => void;
     setIsOpen: (open: boolean) => void;
-    isHovered: boolean;
-    dropMode: 'sibling' | 'child' | null;
   }
 
   const SortablePageRow = ({
@@ -634,8 +632,6 @@ export const CMSPageOverview = () => {
     getPageUrl,
     handleDeleteClick,
     setIsOpen,
-    isHovered,
-    dropMode,
   }: SortablePageRowProps) => {
     const {
       attributes,
@@ -652,26 +648,6 @@ export const CMSPageOverview = () => {
       opacity: isDragging ? 0.5 : 1,
     };
 
-    // Visual feedback for drop zones with smooth transition
-    const dropIndicator = isHovered && dropMode ? (
-      <div className="absolute left-0 right-0 pointer-events-none transition-all duration-150">
-        {dropMode === 'sibling' ? (
-          <div className="h-0.5 bg-[#f9dc24] -top-1 absolute left-0 right-0 shadow-lg shadow-[#f9dc24]/50 transition-all duration-150">
-            <div className="absolute -left-1 -top-1.5 w-3 h-3 bg-[#f9dc24] rounded-full transition-all duration-150" />
-            <span className="absolute left-4 -top-5 text-xs bg-[#f9dc24] text-black px-2 py-0.5 rounded font-semibold whitespace-nowrap transition-all duration-150">
-              Als Geschwister einfügen
-            </span>
-          </div>
-        ) : (
-          <div className="absolute inset-0 border-2 border-[#f9dc24] bg-[#f9dc24]/10 rounded pointer-events-none transition-all duration-150">
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs bg-[#f9dc24] text-black px-3 py-1 rounded font-semibold whitespace-nowrap transition-all duration-150">
-              Als Kind einfügen
-            </span>
-          </div>
-        )}
-      </div>
-    ) : null;
-
     return (
       <TableRow
         ref={setNodeRef}
@@ -679,7 +655,6 @@ export const CMSPageOverview = () => {
         className="border-gray-700 hover:bg-gray-800 relative"
         data-page-id={page.page_id}
       >
-        {dropIndicator}
         <TableCell className="w-12">
           <div
             {...attributes}
@@ -884,8 +859,6 @@ export const CMSPageOverview = () => {
                       getPageUrl={getPageUrl}
                       handleDeleteClick={handleDeleteClick}
                       setIsOpen={setIsOpen}
-                      isHovered={hoveredId === page.page_id}
-                      dropMode={hoveredId === page.page_id ? dropMode : null}
                     />
                   ))}
                 </SortableContext>
