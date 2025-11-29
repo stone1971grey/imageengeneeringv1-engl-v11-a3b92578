@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -308,9 +308,10 @@ export const CMSPageOverview = () => {
     return `/${language}/admin-dashboard?page=${lastPart}`;
   };
 
-  // Drag & Drop setup with hover detection
+  // Drag & Drop setup with stable hover detection
   const [dropMode, setDropMode] = useState<'sibling' | 'child' | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const dragTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -335,32 +336,45 @@ export const CMSPageOverview = () => {
     }
 
     const newHoveredId = over.id as number;
-    if (hoveredId !== newHoveredId) {
-      setHoveredId(newHoveredId);
+    
+    // Debounce the visual updates to prevent jitter
+    if (dragTimeoutRef.current) {
+      clearTimeout(dragTimeoutRef.current);
     }
 
-    // Calculate drop mode based on cursor position (with debounce-like behavior)
-    const overElement = document.querySelector(`[data-page-id="${over.id}"]`) as HTMLElement | null;
-    const clientY = event.activatorEvent?.clientY as number | undefined;
+    dragTimeoutRef.current = setTimeout(() => {
+      if (hoveredId !== newHoveredId) {
+        setHoveredId(newHoveredId);
+      }
 
-    if (!overElement || clientY == null) {
-      return;
-    }
+      // Calculate drop mode based on cursor position
+      const overElement = document.querySelector(`[data-page-id="${over.id}"]`) as HTMLElement | null;
+      const clientY = event.activatorEvent?.clientY as number | undefined;
 
-    const rect = overElement.getBoundingClientRect();
-    const relativeY = clientY - rect.top;
-    const threshold = rect.height / 2;
+      if (!overElement || clientY == null) {
+        return;
+      }
 
-    const newMode: 'sibling' | 'child' = relativeY < threshold ? 'sibling' : 'child';
+      const rect = overElement.getBoundingClientRect();
+      const relativeY = clientY - rect.top;
+      const threshold = rect.height / 2;
 
-    // Only update state when mode actually changes to avoid UI jitter
-    if (newMode !== dropMode) {
-      setDropMode(newMode);
-    }
+      const newMode: 'sibling' | 'child' = relativeY < threshold ? 'sibling' : 'child';
+
+      // Only update when mode changes
+      if (newMode !== dropMode) {
+        setDropMode(newMode);
+      }
+    }, 50); // 50ms debounce
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
+
+    // Clear debounce timeout
+    if (dragTimeoutRef.current) {
+      clearTimeout(dragTimeoutRef.current);
+    }
 
     // Reset hover states
     setDropMode(null);
@@ -630,19 +644,19 @@ export const CMSPageOverview = () => {
       opacity: isDragging ? 0.5 : 1,
     };
 
-    // Visual feedback for drop zones
+    // Visual feedback for drop zones with smooth transition
     const dropIndicator = isHovered && dropMode ? (
-      <div className="absolute left-0 right-0 pointer-events-none">
+      <div className="absolute left-0 right-0 pointer-events-none transition-all duration-150">
         {dropMode === 'sibling' ? (
-          <div className="h-0.5 bg-[#f9dc24] -top-1 absolute left-0 right-0 shadow-lg shadow-[#f9dc24]/50">
-            <div className="absolute -left-1 -top-1.5 w-3 h-3 bg-[#f9dc24] rounded-full" />
-            <span className="absolute left-4 -top-5 text-xs bg-[#f9dc24] text-black px-2 py-0.5 rounded font-semibold whitespace-nowrap">
+          <div className="h-0.5 bg-[#f9dc24] -top-1 absolute left-0 right-0 shadow-lg shadow-[#f9dc24]/50 transition-all duration-150">
+            <div className="absolute -left-1 -top-1.5 w-3 h-3 bg-[#f9dc24] rounded-full transition-all duration-150" />
+            <span className="absolute left-4 -top-5 text-xs bg-[#f9dc24] text-black px-2 py-0.5 rounded font-semibold whitespace-nowrap transition-all duration-150">
               Als Geschwister einfügen
             </span>
           </div>
         ) : (
-          <div className="absolute inset-0 border-2 border-[#f9dc24] bg-[#f9dc24]/10 rounded pointer-events-none">
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs bg-[#f9dc24] text-black px-3 py-1 rounded font-semibold whitespace-nowrap">
+          <div className="absolute inset-0 border-2 border-[#f9dc24] bg-[#f9dc24]/10 rounded pointer-events-none transition-all duration-150">
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xs bg-[#f9dc24] text-black px-3 py-1 rounded font-semibold whitespace-nowrap transition-all duration-150">
               Als Kind einfügen
             </span>
           </div>
