@@ -246,7 +246,10 @@ export const BannerSegmentEditor = ({
       
       setEnglishImages(updatedImages);
       onChange({ ...data, images: updatedImages });
-      toast.success('✅ Upload successful! Click "Save Changes" to store.');
+      
+      // Find slot number for feedback
+      const slotNumber = englishImages.findIndex(img => img.id === imageId) + 1;
+      toast.success(`✅ Slot ${slotNumber} upload successful! Click "Save Changes" to store.`);
 
       e.target.value = '';
       
@@ -279,7 +282,10 @@ export const BannerSegmentEditor = ({
     
     setEnglishImages(updatedImages);
     onChange({ ...data, images: updatedImages });
-    toast.success('Image selected! Click "Save Changes" to store.');
+    
+    // Find slot number for feedback
+    const slotNumber = englishImages.findIndex(img => img.id === imageId) + 1;
+    toast.success(`✅ Slot ${slotNumber} image selected! Click "Save Changes" to store.`);
   };
 
   const handleAddImage = () => {
@@ -692,10 +698,35 @@ export const BannerSegmentEditor = ({
           </div>
 
           <div className="space-y-4">
-            {(isTarget ? currentData.images : englishImages).map((image, index) => (
-              <div key={image.id} className="p-4 border rounded-lg bg-muted/30 space-y-3">
+            {(isTarget ? currentData.images : englishImages).map((image, index) => {
+              const isUploading = uploadingId === image.id;
+              const hasImage = !!image.url;
+              
+              return (
+              <div 
+                key={image.id} 
+                className={`p-4 border rounded-lg space-y-3 transition-all duration-300 ${
+                  isUploading 
+                    ? 'bg-blue-50 border-blue-300 animate-pulse' 
+                    : hasImage && !isTarget
+                    ? 'bg-green-50 border-green-300'
+                    : 'bg-muted/30'
+                }`}
+              >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-sm">Image {index + 1}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-sm">Image {index + 1}</span>
+                    {isUploading && (
+                      <span className="text-xs px-2 py-1 bg-blue-500 text-white rounded-full animate-pulse">
+                        Uploading...
+                      </span>
+                    )}
+                    {hasImage && !isUploading && !isTarget && (
+                      <span className="text-xs px-2 py-1 bg-green-500 text-white rounded-full">
+                        ✓ Ready
+                      </span>
+                    )}
+                  </div>
                   {!isTarget && (
                     <Button
                       type="button"
@@ -767,7 +798,8 @@ export const BannerSegmentEditor = ({
                   />
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
 
         </div>
