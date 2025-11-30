@@ -244,19 +244,6 @@ export const BannerSegmentEditor = ({
         };
       }));
       
-      // Also update parent
-      onChange({ 
-        ...data, 
-        images: englishImages.map(img => {
-          if (img.id !== imageId) return img;
-          const metadata: ImageMetadata = {
-            ...metadataWithoutAlt,
-            altText: img.alt || ''
-          };
-          return { ...img, url: result.url, metadata };
-        })
-      });
-      
       toast.success('✅ Upload successful! Click "Save Changes" to store.');
 
       e.target.value = '';
@@ -288,18 +275,6 @@ export const BannerSegmentEditor = ({
       };
     }));
     
-    // Also update parent
-    onChange({ 
-      ...data, 
-      images: englishImages.map(img => {
-        if (img.id !== imageId) return img;
-        const imageMetadata: ImageMetadata = metadata 
-          ? { ...metadata, altText: img.alt || '' } 
-          : { ...(img.metadata as ImageMetadata | undefined), altText: img.alt || '' } as ImageMetadata;
-        return { ...img, url, metadata: imageMetadata };
-      })
-    });
-    
     toast.success('Image selected! Click "Save Changes" to store.');
   };
 
@@ -309,15 +284,11 @@ export const BannerSegmentEditor = ({
       url: '',
       alt: ''
     };
-    const updatedImages = [...englishImages, newImage];
-    setEnglishImages(updatedImages);
-    onChange({ ...data, images: updatedImages });
+    setEnglishImages(prev => [...prev, newImage]);
   };
 
   const handleDeleteImage = (imageId: string) => {
-    const updatedImages = englishImages.filter(img => img.id !== imageId);
-    setEnglishImages(updatedImages);
-    onChange({ ...data, images: updatedImages });
+    setEnglishImages(prev => prev.filter(img => img.id !== imageId));
     setDeleteId(null);
   };
 
@@ -328,11 +299,9 @@ export const BannerSegmentEditor = ({
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
-      const updatedImages = englishImages.map(img =>
+      setEnglishImages(prev => prev.map(img =>
         img.id === imageId ? { ...img, [field]: value } : img
-      );
-      setEnglishImages(updatedImages);
-      onChange({ ...data, images: updatedImages });
+      ));
     }
   };
 
