@@ -102,6 +102,11 @@ export const BannerSegmentEditor = ({
     setEnglishImages(ensureImageIds((data.images || []) as BannerImage[]));
   }, [segmentKey]);
 
+  // Sync englishImages changes to parent
+  useEffect(() => {
+    onChange({ ...data, images: englishImages });
+  }, [englishImages]);
+
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
