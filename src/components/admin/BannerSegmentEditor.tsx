@@ -112,7 +112,9 @@ export const BannerSegmentEditor = ({
   const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
-    const next = updater(englishImages);
+    // Always use fresh data.images to avoid closure issues
+    const currentImages = (data.images || []) as BannerImage[];
+    const next = updater(currentImages);
     onChange({ ...data, images: next });
   };
 
