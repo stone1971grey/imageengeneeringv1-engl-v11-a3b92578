@@ -93,14 +93,14 @@ export const BannerSegmentEditor = ({
     );
 
   // Simple state management EXACTLY like DebugEditor
-  const [englishImages, setEnglishImages] = useState<BannerImage[]>(() =>
+  const [images, setImages] = useState<BannerImage[]>(() =>
     ensureImageIds((data.images || []) as BannerImage[])
   );
 
   // Sync with parent data on segment change
   useEffect(() => {
-    setEnglishImages(ensureImageIds((data.images || []) as BannerImage[]));
-  }, [segmentKey]);
+    setImages(ensureImageIds((data.images || []) as BannerImage[]));
+  }, [segmentKey, data.images]);
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -133,7 +133,7 @@ export const BannerSegmentEditor = ({
       
       if (targetSegment?.data) {
         console.log('[BannerSegmentEditor] Loaded target language data:', targetSegment.data);
-        const englishImagesCurrent = ensureImageIds(englishImages || []);
+        const englishImagesCurrent = ensureImageIds(images || []);
         const targetImages = ensureImageIds(targetSegment.data.images || []);
         
         // Merge: English defines which images exist (url/metadata),
@@ -155,7 +155,7 @@ export const BannerSegmentEditor = ({
     }
  
     // If no target language version exists, copy structure from English but with empty text fields
-    const englishImagesCurrent = ensureImageIds(englishImages || []);
+    const englishImagesCurrent = ensureImageIds(images || []);
     setTargetData({
       ...data,
       title: '',
@@ -184,8 +184,8 @@ export const BannerSegmentEditor = ({
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, imageId: string) => {
     console.log('=== BANNER UPLOAD DEBUG ===');
     console.log('Received imageId:', imageId);
-    console.log('Current englishImages IDs:', englishImages.map(img => ({ id: img.id.slice(0, 20), url: img.url.slice(0, 30) })));
-    console.log('Slot number for this ID:', englishImages.findIndex(img => img.id === imageId) + 1);
+    console.log('Current images IDs:', images.map(img => ({ id: img.id.slice(0, 20), url: img.url.slice(0, 30) })));
+    console.log('Slot number for this ID:', images.findIndex(img => img.id === imageId) + 1);
     
     const file = e.target.files?.[0];
     if (!file) return;
@@ -234,8 +234,8 @@ export const BannerSegmentEditor = ({
 
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
-      // Use functional updater to avoid stale englishImages
-      setEnglishImages(prev => {
+      // Use functional updater based on latest images state
+      setImages(prev => {
         const updated = prev.map(img => {
           if (img.id !== imageId) return img;
           
@@ -272,7 +272,7 @@ export const BannerSegmentEditor = ({
  
   const handleMediaSelect = (imageId: string, url: string, metadata?: any) => {
     // Functional update based on latest state
-    setEnglishImages(prev => {
+    setImages(prev => {
       const updated = prev.map(img => {
         if (img.id !== imageId) return img;
 
@@ -300,19 +300,20 @@ export const BannerSegmentEditor = ({
   };
 
   const handleAddImage = () => {
+    ensureImageIds(images);
     const newImage: BannerImage = {
       id: generateImageId(),
       url: '',
       alt: ''
     };
-    const updatedImages = [...englishImages, newImage];
-    setEnglishImages(updatedImages);
+    const updatedImages = [...images, newImage];
+    setImages(updatedImages);
     onChange({ ...data, images: updatedImages });
   };
 
   const handleDeleteImage = (imageId: string) => {
-    const updatedImages = englishImages.filter(img => img.id !== imageId);
-    setEnglishImages(updatedImages);
+    const updatedImages = images.filter(img => img.id !== imageId);
+    setImages(updatedImages);
     onChange({ ...data, images: updatedImages });
     setDeleteId(null);
   };
@@ -324,10 +325,10 @@ export const BannerSegmentEditor = ({
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
-      const updatedImages = englishImages.map(img =>
+      const updatedImages = images.map(img =>
         img.id === imageId ? { ...img, [field]: value } : img
       );
-      setEnglishImages(updatedImages);
+      setImages(updatedImages);
       onChange({ ...data, images: updatedImages });
     }
   };
@@ -341,13 +342,13 @@ export const BannerSegmentEditor = ({
         buttonText: data.buttonText || ''
       };
 
-      // Add all image alt texts from local englishImages state
-      englishImages.forEach((img, index) => {
+      // Add all image alt texts from local images state
+      images.forEach((img, index) => {
         textsToTranslate[`image_${index}_alt`] = img.alt || '';
       });
-
+      
       console.log('Translating Banner Segment:', textsToTranslate);
-      console.log('English images structure:', englishImages);
+      console.log('Images structure:', images);
 
       const { data: translationResult, error } = await supabase.functions.invoke('translate-content', {
         body: {
@@ -364,7 +365,7 @@ export const BannerSegmentEditor = ({
         const translated = translationResult.translatedTexts;
         
         // Update translated images with new alt texts, keep all other properties (id, url, metadata)
-        const translatedImages = englishImages.map((img, index) => ({
+        const translatedImages = images.map((img, index) => ({
           id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           url: img.url,
           alt: translated[`image_${index}_alt`] || img.alt,
@@ -397,7 +398,7 @@ export const BannerSegmentEditor = ({
     setIsSaving(true);
     try {
       // Build current data with images derived from local state
-      const dataToSave = { ...data, images: englishImages };
+      const dataToSave = { ...data, images: images };
       
       // Load current page_segments for English
       const { data: pageContentData, error: fetchError } = await supabase
@@ -434,8 +435,8 @@ export const BannerSegmentEditor = ({
 
       if (updateError) throw updateError;
       
-      // Update segment mappings for all banner images from local state
-      const imageUrls = englishImages.map(img => img.url).filter(Boolean);
+        // Update segment mappings for all banner images from local state
+        const imageUrls = images.map(img => img.url).filter(Boolean);
       if (imageUrls.length > 0) {
         await updateMultipleSegmentMappings(imageUrls, parseInt(segmentId));
       }
@@ -481,8 +482,8 @@ export const BannerSegmentEditor = ({
         const segments = JSON.parse(pageContentData.content_value || "[]");
         let segmentFound = false;
 
-        // Always sync images from local englishImages state for target save (index-based)
-        const mergedImages: BannerImage[] = englishImages.map((enImg, idx) => {
+        // Always sync images from local images state for target save (index-based)
+        const mergedImages: BannerImage[] = images.map((enImg, idx) => {
           const targetImg = targetData.images[idx];
           return {
             ...enImg,
@@ -709,7 +710,7 @@ export const BannerSegmentEditor = ({
           </div>
 
           <div className="space-y-4">
-            {(isTarget ? currentData.images : englishImages).map((image, index) => {
+            {(isTarget ? currentData.images : images).map((image, index) => {
               const isUploading = uploadingId === image.id;
               const hasImage = !!image.url;
               
