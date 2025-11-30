@@ -3102,18 +3102,32 @@ const AdminDashboard = () => {
                 </svg>
               </Button>
 
-              {/* Page Info Display */}
-              {pageInfo && (
-                <div className="bg-white border border-gray-300 rounded px-4 py-2 flex flex-col gap-0.5">
-                  <div className="text-xs text-gray-500">Current Page</div>
-                  <div className="font-semibold text-sm text-gray-900">{pageInfo.pageTitle}</div>
-                  <div className="text-xs text-gray-600 flex items-center gap-2">
-                    <span>ID: {pageInfo.pageId}</span>
-                    <span>•</span>
-                    <span className="font-mono">{pageInfo.pageSlug}</span>
-                  </div>
-                </div>
-              )}
+              {/* Page Info Display – immer sichtbar zur Orientierung */}
+              <div className="bg-white border border-gray-300 rounded px-4 py-2 flex flex-col gap-0.5 min-w-[260px]">
+                <div className="text-xs text-gray-500">Current Page</div>
+                {selectedPage && pageInfo ? (
+                  <>
+                    <div className="font-semibold text-sm text-gray-900">
+                      {pageInfo.pageTitle}
+                    </div>
+                    <div className="text-xs text-gray-600 flex items-center gap-2">
+                      <span>ID: {pageInfo.pageId}</span>
+                      <span>•</span>
+                      <span className="font-mono">{pageInfo.pageSlug}</span>
+                    </div>
+                  </>
+                ) : selectedPage && !pageInfo ? (
+                  <>
+                    <div className="font-semibold text-sm text-gray-900">
+                      No page_registry entry</div>
+                    <div className="text-xs text-gray-600 flex items-center gap-2">
+                      <span className="font-mono">{selectedPage}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-xs text-gray-600">No page selected</div>
+                )}
+              </div>
             </div>
           </div>
           
