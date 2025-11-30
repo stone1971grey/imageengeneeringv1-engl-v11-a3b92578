@@ -26,7 +26,7 @@ import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 
 interface BannerImage {
-  id?: string; // Optional ID, we primarily work index-based in the editor now
+  id: string; // Stable unique ID for reliable image updates
   url: string;
   alt: string;
   metadata?: ImageMetadata;
@@ -80,20 +80,25 @@ export const BannerSegmentEditor = ({
     images: []
   });
   
-  const ensureImageIds = (images: BannerImage[]): BannerImage[] => images;
+  const generateImageId = () => `banner-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
-  // Single source of truth: always derive images from props (data.images)
-  const englishImages = data.images || [];
+  const ensureImageIds = (images: BannerImage[] = []): BannerImage[] =>
+    images.map((img) =>
+      img.id
+        ? img
+        : {
+            ...img,
+            id: generateImageId(),
+          }
+    );
 
-  // Legacy hook retained for possible future use (no-op for now)
-  useEffect(() => {
-    // no-op: we no longer mutate data.images here to avoid overwriting edits
-  }, [data.images]);
+  // Always work on the latest images from props and ensure they have IDs
+  const englishImages: BannerImage[] = ensureImageIds(data.images || []);
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
     const next = updater(englishImages);
@@ -174,10 +179,10 @@ export const BannerSegmentEditor = ({
     // loadTargetLanguageData is now called by useEffect
   };
 
-  const handleImageUpload = async (index: number, file: File) => {
+  const handleImageUpload = async (imageId: string, file: File) => {
     try {
-      setUploadingIndex(index);
-      console.log('[BannerSegmentEditor] handleImageUpload start', { index, imagesBefore: englishImages });
+      setUploadingId(imageId);
+      console.log('[BannerSegmentEditor] handleImageUpload start', { imageId, imagesBefore: englishImages });
 
       // Convert to base64
       const reader = new FileReader();
@@ -207,19 +212,21 @@ export const BannerSegmentEditor = ({
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
       updateEnglishImages(prev => {
-        const currentImage = prev[index];
-        const metadata: ImageMetadata = {
-          ...metadataWithoutAlt,
-          altText: currentImage?.alt || ''
-        };
+        const updated = prev.map((img) => {
+          if (img.id !== imageId) return img;
 
-        const updated = [...prev];
-        updated[index] = {
-          ...(currentImage || { url: '', alt: '' }),
-          url: result.url,
-          metadata,
-        };
-        console.log('[BannerSegmentEditor] handleImageUpload updatedImages', { index, updated });
+          const metadata: ImageMetadata = {
+            ...metadataWithoutAlt,
+            altText: img.alt || ''
+          };
+
+          return {
+            ...img,
+            url: result.url,
+            metadata,
+          };
+        });
+        console.log('[BannerSegmentEditor] handleImageUpload updatedImages', { imageId, updated });
         return updated;
       });
 
@@ -227,35 +234,36 @@ export const BannerSegmentEditor = ({
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
     } finally {
-      setUploadingIndex(null);
+      setUploadingId(null);
     }
   };
  
-  const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
+  const handleMediaSelect = async (imageId: string, url: string, metadata?: any) => {
     updateEnglishImages(prev => {
-      const currentImage = prev[index];
+      const updated = prev.map((img) => {
+        if (img.id !== imageId) return img;
 
-      const imageMetadata: ImageMetadata = metadata 
-        ? { ...metadata, altText: currentImage?.alt || '' } 
-        : { 
-            ...(currentImage?.metadata as ImageMetadata | undefined),
-            altText: currentImage?.alt || ''
-          } as ImageMetadata;
+        const imageMetadata: ImageMetadata = metadata 
+          ? { ...metadata, altText: img.alt || '' } 
+          : { 
+              ...(img.metadata as ImageMetadata | undefined),
+              altText: img.alt || ''
+            } as ImageMetadata;
 
-      const updated = [...prev];
-      updated[index] = {
-        ...(currentImage || { url: '', alt: '' }),
-        url,
-        metadata: imageMetadata,
-      };
+        return {
+          ...img,
+          url,
+          metadata: imageMetadata,
+        };
+      });
       return updated;
     });
     toast.success("Image selected successfully!");
   };
-
   const handleAddImage = () => {
     console.log('[BannerSegmentEditor] handleAddImage before', { images: englishImages });
     const newImage: BannerImage = {
+      id: generateImageId(),
       url: '',
       alt: ''
     };
@@ -266,20 +274,22 @@ export const BannerSegmentEditor = ({
     });
   };
 
-  const handleDeleteImage = (index: number) => {
-    updateEnglishImages(prev => prev.filter((_, i) => i !== index));
-    setDeleteIndex(null);
+  const handleDeleteImage = (imageId: string) => {
+    updateEnglishImages(prev => prev.filter((img) => img.id !== imageId));
+    setDeleteId(null);
   };
 
-  const handleImageChange = (index: number, field: keyof BannerImage, value: string, isTarget: boolean = false) => {
+  const handleImageChange = (imageId: string, field: keyof BannerImage, value: string, isTarget: boolean = false, index?: number) => {
     if (isTarget) {
+      if (index === undefined) return;
       const updatedImages = [...targetData.images];
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
       updateEnglishImages(prev => {
-        const updated = [...prev];
-        updated[index] = { ...updated[index], [field]: value };
+        const updated = prev.map((img) =>
+          img.id === imageId ? { ...img, [field]: value } : img
+        );
         return updated;
       });
     }
@@ -664,7 +674,7 @@ export const BannerSegmentEditor = ({
 
           <div className="space-y-4">
             {(isTarget ? currentData.images : englishImages).map((image, index) => (
-              <div key={index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
+              <div key={image.id} className="p-4 border rounded-lg bg-muted/30 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-sm">Image {index + 1}</span>
                   {!isTarget && (
@@ -672,7 +682,7 @@ export const BannerSegmentEditor = ({
                       type="button"
                       variant="destructive"
                       size="sm"
-                      onClick={() => setDeleteIndex(index)}
+                      onClick={() => setDeleteId(image.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -681,8 +691,8 @@ export const BannerSegmentEditor = ({
 
                 {!isTarget && (
                   <MediaSelector
-                    onFileSelect={(file) => handleImageUpload(index, file)}
-                    onMediaSelect={(url, metadata) => handleMediaSelect(index, url, metadata)}
+                    onFileSelect={(file) => handleImageUpload(image.id, file)}
+                    onMediaSelect={(url, metadata) => handleMediaSelect(image.id, url, metadata)}
                     acceptedFileTypes="image/*"
                     label="Image File"
                     currentImageUrl={image.url}
@@ -704,7 +714,7 @@ export const BannerSegmentEditor = ({
                   <Label className="text-xs">Alt Text</Label>
                   <Input
                     value={image.alt || ''}
-                    onChange={(e) => handleImageChange(index, 'alt', e.target.value, isTarget)}
+                    onChange={(e) => handleImageChange(image.id, 'alt', e.target.value, isTarget, index)}
                     placeholder="Descriptive alt text"
                     className="mt-1"
                   />
@@ -877,7 +887,7 @@ export const BannerSegmentEditor = ({
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteIndex !== null} onOpenChange={() => setDeleteIndex(null)}>
+      <AlertDialog open={deleteId !== null} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Image</AlertDialogTitle>
@@ -888,7 +898,7 @@ export const BannerSegmentEditor = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteIndex !== null && handleDeleteImage(deleteIndex)}
+              onClick={() => deleteId !== null && handleDeleteImage(deleteId)}
               className="bg-red-600 hover:bg-red-700"
             >
               Delete
