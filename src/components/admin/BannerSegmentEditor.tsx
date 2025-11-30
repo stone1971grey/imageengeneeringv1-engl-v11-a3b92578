@@ -92,30 +92,20 @@ export const BannerSegmentEditor = ({
           }
     );
 
-  // Lokaler, stabiler State für englische Banner-Bilder
+  // Simple state management like DebugEditor
   const [englishImages, setEnglishImages] = useState<BannerImage[]>(() =>
     ensureImageIds((data.images || []) as BannerImage[])
   );
 
-  // Bei Segment-Wechsel (oder hartem Reload) einmalig mit Backend-Daten synchronisieren
+  // Sync with parent data on segment change
   useEffect(() => {
     setEnglishImages(ensureImageIds((data.images || []) as BannerImage[]));
   }, [segmentKey]);
-
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
-
-  const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
-    setEnglishImages(prev => {
-      const next = updater(prev);
-      // Lokalen State immer wieder nach außen spiegeln
-      onChange({ ...data, images: next });
-      return next;
-    });
-  };
 
   const handleSplitScreenToggle = (checked: boolean) => {
     setIsSplitScreenEnabled(checked);
@@ -191,11 +181,25 @@ export const BannerSegmentEditor = ({
     // loadTargetLanguageData is now called by useEffect
   };
 
-  const handleImageUpload = async (imageId: string, file: File) => {
-    try {
-      setUploadingId(imageId);
-      console.log('[BannerSegmentEditor] handleImageUpload start', { imageId, imagesBefore: englishImages });
+  // ID-based image upload handler (matching DebugEditor pattern)
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, imageId: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File size must be less than 5MB');
+      return;
+    }
 
+    setUploadingId(imageId);
+    toast.info('🚀 Starting upload...');
+
+    try {
       // Convert to base64
       const reader = new FileReader();
       const fileData = await new Promise<string>((resolve, reject) => {
@@ -204,17 +208,19 @@ export const BannerSegmentEditor = ({
         reader.readAsDataURL(file);
       });
 
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
       const segmentIdNum = parseInt(segmentKey.replace('segment_', ''));
 
-      // Call Edge Function with pageSlug for automatic folder creation
+      // Call Edge Function
       const { data: result, error } = await supabase.functions.invoke('upload-image', {
         body: {
           fileName: file.name,
           fileData: fileData,
           bucket: 'page-images',
-          folder: pageSlug,
-          segmentId: segmentIdNum,
-          pageSlug: pageSlug
+          pageSlug,
+          segmentId: segmentIdNum
         }
       });
 
@@ -223,71 +229,75 @@ export const BannerSegmentEditor = ({
 
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
-      updateEnglishImages(prev => {
-        const updated = prev.map((img) => {
-          if (img.id !== imageId) return img;
+      // ID-based update to prevent race conditions
+      const updatedImages = englishImages.map(img => {
+        if (img.id !== imageId) return img;
+        
+        const metadata: ImageMetadata = {
+          ...metadataWithoutAlt,
+          altText: img.alt || ''
+        };
 
-          const metadata: ImageMetadata = {
-            ...metadataWithoutAlt,
-            altText: img.alt || ''
-          };
-
-          return {
-            ...img,
-            url: result.url,
-            metadata,
-          };
-        });
-        console.log('[BannerSegmentEditor] handleImageUpload updatedImages', { imageId, updated });
-        return updated;
+        return {
+          ...img,
+          url: result.url,
+          metadata,
+        };
       });
+      
+      setEnglishImages(updatedImages);
+      onChange({ ...data, images: updatedImages });
+      toast.success('✅ Upload successful! Click "Save Changes" to store.');
 
-      toast.success("Image uploaded successfully!");
+      e.target.value = '';
+      
     } catch (error: any) {
-      toast.error("Error uploading image: " + error.message);
+      console.error('[Upload] Error:', error);
+      toast.error('Upload failed: ' + (error.message || 'Unknown error'));
     } finally {
       setUploadingId(null);
     }
   };
  
-  const handleMediaSelect = async (imageId: string, url: string, metadata?: any) => {
-    updateEnglishImages(prev => {
-      const updated = prev.map((img) => {
-        if (img.id !== imageId) return img;
+  const handleMediaSelect = (imageId: string, url: string, metadata?: any) => {
+    // ID-based update
+    const updatedImages = englishImages.map(img => {
+      if (img.id !== imageId) return img;
 
-        const imageMetadata: ImageMetadata = metadata 
-          ? { ...metadata, altText: img.alt || '' } 
-          : { 
-              ...(img.metadata as ImageMetadata | undefined),
-              altText: img.alt || ''
-            } as ImageMetadata;
+      const imageMetadata: ImageMetadata = metadata 
+        ? { ...metadata, altText: img.alt || '' } 
+        : { 
+            ...(img.metadata as ImageMetadata | undefined),
+            altText: img.alt || ''
+          } as ImageMetadata;
 
-        return {
-          ...img,
-          url,
-          metadata: imageMetadata,
-        };
-      });
-      return updated;
+      return {
+        ...img,
+        url,
+        metadata: imageMetadata,
+      };
     });
-    toast.success("Image selected successfully!");
+    
+    setEnglishImages(updatedImages);
+    onChange({ ...data, images: updatedImages });
+    toast.success('Image selected! Click "Save Changes" to store.');
   };
+
   const handleAddImage = () => {
-    console.log('[BannerSegmentEditor] handleAddImage before', { images: englishImages });
     const newImage: BannerImage = {
       id: generateImageId(),
       url: '',
       alt: ''
     };
-    updateEnglishImages(prev => {
-      const next = [...prev, newImage];
-      console.log('[BannerSegmentEditor] handleAddImage after', { next });
-      return next;
-    });
+    const updatedImages = [...englishImages, newImage];
+    setEnglishImages(updatedImages);
+    onChange({ ...data, images: updatedImages });
   };
 
   const handleDeleteImage = (imageId: string) => {
-    updateEnglishImages(prev => prev.filter((img) => img.id !== imageId));
+    const updatedImages = englishImages.filter(img => img.id !== imageId);
+    setEnglishImages(updatedImages);
+    onChange({ ...data, images: updatedImages });
     setDeleteId(null);
   };
 
@@ -298,12 +308,11 @@ export const BannerSegmentEditor = ({
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
-      updateEnglishImages(prev => {
-        const updated = prev.map((img) =>
-          img.id === imageId ? { ...img, [field]: value } : img
-        );
-        return updated;
-      });
+      const updatedImages = englishImages.map(img =>
+        img.id === imageId ? { ...img, [field]: value } : img
+      );
+      setEnglishImages(updatedImages);
+      onChange({ ...data, images: updatedImages });
     }
   };
 
@@ -703,7 +712,15 @@ export const BannerSegmentEditor = ({
 
                 {!isTarget && (
                   <MediaSelector
-                    onFileSelect={(file) => handleImageUpload(image.id, file)}
+                    onFileSelect={(file) => {
+                      const fakeEvent = {
+                        target: { 
+                          files: [file],
+                          value: ''
+                        }
+                      } as any;
+                      handleImageUpload(fakeEvent, image.id);
+                    }}
                     onMediaSelect={(url, metadata) => handleMediaSelect(image.id, url, metadata)}
                     acceptedFileTypes="image/*"
                     label="Image File"
