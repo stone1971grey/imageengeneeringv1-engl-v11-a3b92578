@@ -3102,31 +3102,46 @@ const AdminDashboard = () => {
                 </svg>
               </Button>
 
-              {/* Page Info Display – immer sichtbar zur Orientierung */}
-              <div className="bg-white border border-gray-300 rounded px-4 py-2 flex flex-col gap-0.5 min-w-[260px]">
-                <div className="text-xs text-gray-500">Current Page</div>
-                {selectedPage && pageInfo ? (
-                  <>
-                    <div className="font-semibold text-sm text-gray-900">
-                      {pageInfo.pageTitle}
-                    </div>
-                    <div className="text-xs text-gray-600 flex items-center gap-2">
-                      <span>ID: {pageInfo.pageId}</span>
-                      <span>•</span>
-                      <span className="font-mono">{pageInfo.pageSlug}</span>
-                    </div>
-                  </>
-                ) : selectedPage && !pageInfo ? (
-                  <>
-                    <div className="font-semibold text-sm text-gray-900">
-                      No page_registry entry</div>
-                    <div className="text-xs text-gray-600 flex items-center gap-2">
-                      <span className="font-mono">{selectedPage}</span>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-xs text-gray-600">No page selected</div>
-                )}
+              {/* Page Info Display – modernes Design */}
+              <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-lg px-4 py-3 flex items-center gap-3 min-w-[280px] shadow-sm hover:shadow-md transition-shadow">
+                {/* Icon Container mit Gradient */}
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                
+                {/* Page Info Content */}
+                <div className="flex-grow">
+                  {selectedPage && pageInfo ? (
+                    <>
+                      <div className="font-semibold text-sm text-gray-900 leading-tight">
+                        {pageInfo.pageTitle}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-medium">
+                          <span className="text-[10px]">ID</span>
+                          {pageInfo.pageId}
+                        </span>
+                        <span className="text-gray-400">·</span>
+                        <span className="text-xs text-gray-600 font-mono truncate max-w-[140px]" title={pageInfo.pageSlug}>
+                          {pageInfo.pageSlug}
+                        </span>
+                      </div>
+                    </>
+                  ) : selectedPage && !pageInfo ? (
+                    <>
+                      <div className="font-semibold text-sm text-amber-700 leading-tight">
+                        No registry entry
+                      </div>
+                      <div className="text-xs text-gray-600 font-mono mt-1 truncate" title={selectedPage}>
+                        {selectedPage}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-sm text-gray-500 italic">No page selected</div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
