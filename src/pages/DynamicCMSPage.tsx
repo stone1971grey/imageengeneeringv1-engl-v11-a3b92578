@@ -641,7 +641,68 @@ const DynamicCMSPage = () => {
             data-segment-id={segmentDbId?.toString()}
             className="py-20 bg-white"
           >
-...
+            <div className="container mx-auto px-6">
+              <div className="max-w-4xl mx-auto text-center">
+                {segment.data?.title && (
+                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    {segment.data.title}
+                  </h2>
+                )}
+
+                {segment.data?.subtext && (
+                  <p className="text-lg text-gray-600 mb-8">
+                    {segment.data.subtext}
+                  </p>
+                )}
+
+                {segment.data?.images && segment.data.images.length > 0 && (
+                  <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
+                    {segment.data.images.map((image: any) => 
+                      image.url ? (
+                        <div key={image.id} className="flex items-center justify-center">
+                          <img
+                            src={image.url}
+                            alt={image.alt || 'Banner image'}
+                            className="max-h-24 w-auto object-contain"
+                          />
+                        </div>
+                      ) : null
+                    )}
+                  </div>
+                )}
+
+                {segment.data?.buttonText && segment.data?.buttonLink && (() => {
+                  const buttonClasses = 
+                    segment.data.buttonStyle === 'technical'
+                      ? 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-gray-800 text-white hover:bg-gray-900'
+                      : segment.data.buttonStyle === 'outline-white'
+                      ? 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-white text-black border border-gray-300 hover:bg-black hover:text-white'
+                      : 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90';
+
+                  const buttonLink = segment.data.buttonLink || '#';
+                  const isExternal = buttonLink.startsWith('http://') || buttonLink.startsWith('https://');
+
+                  if (isExternal) {
+                    return (
+                      <a
+                        href={buttonLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={buttonClasses}
+                      >
+                        {segment.data.buttonText}
+                      </a>
+                    );
+                  }
+
+                  return (
+                    <Link to={buttonLink} className={buttonClasses}>
+                      {segment.data.buttonText}
+                    </Link>
+                  );
+                })()}
+              </div>
+            </div>
           </section>
         );
 
