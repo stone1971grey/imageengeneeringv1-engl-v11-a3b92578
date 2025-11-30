@@ -92,8 +92,19 @@ export const BannerSegmentEditor = ({
           }
     );
 
-  // Always work on the latest images from props and ensure they have IDs
-  const englishImages: BannerImage[] = ensureImageIds(data.images || []);
+  const [idsInitialized, setIdsInitialized] = useState(false);
+
+  // Single source of truth: images from props, with IDs persisted once
+  const englishImages: BannerImage[] = (data.images || []) as BannerImage[];
+
+  useEffect(() => {
+    const imgs = data.images || [];
+    if (!idsInitialized && imgs.some((img) => !img.id)) {
+      const withIds = ensureImageIds(imgs as BannerImage[]);
+      setIdsInitialized(true);
+      onChange({ ...data, images: withIds });
+    }
+  }, [data, idsInitialized, onChange]);
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
