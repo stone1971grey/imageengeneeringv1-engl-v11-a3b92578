@@ -254,11 +254,16 @@ export const BannerSegmentEditor = ({
   };
 
   const handleAddImage = () => {
+    console.log('[BannerSegmentEditor] handleAddImage before', { images: englishImages });
     const newImage: BannerImage = {
       url: '',
       alt: ''
     };
-    updateEnglishImages(prev => [...prev, newImage]);
+    updateEnglishImages(prev => {
+      const next = [...prev, newImage];
+      console.log('[BannerSegmentEditor] handleAddImage after', { next });
+      return next;
+    });
   };
 
   const handleDeleteImage = (index: number) => {
