@@ -86,18 +86,35 @@ export const BannerSegmentEditor = ({
       id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     }));
   };
+
+  const [englishImages, setEnglishImages] = useState<BannerImage[]>(() => ensureImageIds(data.images || []));
   
-  // Ensure all English images have IDs on mount
+  // Keep a local, stable copy of English images and ensure all have IDs
   useEffect(() => {
-    if (data.images.some(img => !img.id)) {
-      onChange({ ...data, images: ensureImageIds(data.images) });
+    const imagesWithIds = ensureImageIds(data.images || []);
+    const hadMissingIds = (data.images || []).some(img => !img.id);
+
+    // If legacy data had missing IDs, update parent once
+    if (hadMissingIds) {
+      onChange({ ...data, images: imagesWithIds });
     }
-  }, []);
+
+    setEnglishImages(imagesWithIds);
+  }, [data.images]);
+
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
- 
+
+  const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
+    setEnglishImages(prev => {
+      const next = updater(prev);
+      onChange({ ...data, images: next });
+      return next;
+    });
+  };
+
   const handleSplitScreenToggle = (checked: boolean) => {
     setIsSplitScreenEnabled(checked);
     localStorage.setItem('cms-split-screen-mode', String(checked));
@@ -179,7 +196,7 @@ export const BannerSegmentEditor = ({
     }
 
     try {
-      console.log('[BannerSegmentEditor] handleImageUpload start', { imageId, imagesBefore: data.images });
+      console.log('[BannerSegmentEditor] handleImageUpload start', { imageId, imagesBefore: englishImages });
 
       // Convert to base64
       const reader = new FileReader();
@@ -209,7 +226,7 @@ export const BannerSegmentEditor = ({
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
       // Find the current image object to preserve its existing alt text
-      const currentImage = data.images.find(img => img.id === imageId);
+      const currentImage = englishImages.find(img => img.id === imageId);
 
       const metadata: ImageMetadata = {
         ...metadataWithoutAlt,
@@ -217,7 +234,7 @@ export const BannerSegmentEditor = ({
       };
 
       // Find and update the image by ID (not by index) to avoid race conditions
-      const updatedImages = data.images.map(img => 
+      const updatedImages = englishImages.map(img =>
         img.id === imageId
           ? { ...img, url: result.url, metadata }
           : img
@@ -225,7 +242,7 @@ export const BannerSegmentEditor = ({
       
       console.log('[BannerSegmentEditor] handleImageUpload updatedImages', { imageId, updatedImages });
 
-      onChange({ ...data, images: updatedImages });
+      updateEnglishImages(() => updatedImages);
       
       toast.success("Image uploaded successfully!");
     } catch (error: any) {
@@ -242,7 +259,7 @@ export const BannerSegmentEditor = ({
     }
     
     // Find the current image object to preserve its existing alt text when metadata is missing
-    const currentImage = data.images.find(img => img.id === imageId);
+    const currentImage = englishImages.find(img => img.id === imageId);
 
     const imageMetadata: ImageMetadata = metadata 
       ? { ...metadata, altText: currentImage?.alt || '' } 
@@ -252,13 +269,13 @@ export const BannerSegmentEditor = ({
         } as ImageMetadata;
     
     // Find and update the image by ID (not by index) to avoid race conditions
-    const updatedImages = data.images.map(img => 
+    const updatedImages = englishImages.map(img => 
       img.id === imageId
         ? { ...img, url: url, metadata: imageMetadata }
         : img
     );
     
-    onChange({ ...data, images: updatedImages });
+    updateEnglishImages(() => updatedImages);
     toast.success("Image selected successfully!");
   };
 
@@ -268,15 +285,11 @@ export const BannerSegmentEditor = ({
       url: '',
       alt: ''
     };
-    onChange({
-      ...data,
-      images: [...data.images, newImage]
-    });
+    updateEnglishImages(prev => [...prev, newImage]);
   };
 
   const handleDeleteImage = (index: number) => {
-    const updatedImages = data.images.filter((_, i) => i !== index);
-    onChange({ ...data, images: updatedImages });
+    updateEnglishImages(prev => prev.filter((_, i) => i !== index));
     setDeleteIndex(null);
   };
 
@@ -286,9 +299,11 @@ export const BannerSegmentEditor = ({
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
-      const updatedImages = [...data.images];
-      updatedImages[index] = { ...updatedImages[index], [field]: value };
-      onChange({ ...data, images: updatedImages });
+      updateEnglishImages(prev => {
+        const updated = [...prev];
+        updated[index] = { ...updated[index], [field]: value };
+        return updated;
+      });
     }
   };
 
@@ -667,7 +682,7 @@ export const BannerSegmentEditor = ({
           </div>
 
           <div className="space-y-4">
-            {currentData.images.map((image, index) => (
+            {(isTarget ? currentData.images : englishImages).map((image, index) => (
               <div key={image.id || index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-sm">Image {index + 1}</span>
@@ -716,6 +731,7 @@ export const BannerSegmentEditor = ({
               </div>
             ))}
           </div>
+
         </div>
 
         {/* Button Settings */}
