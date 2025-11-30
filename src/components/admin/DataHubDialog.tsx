@@ -389,7 +389,29 @@ export function DataHubDialog({
         .eq("file_path", filePath)
         .eq("bucket_id", "page-images");
 
-      toast.success("File deleted");
+      // Trigger automatic cleanup of orphaned image URLs in all segment data
+      try {
+        console.log('[DataHubDialog] Triggering cleanup-orphaned-images after file deletion');
+        const { data: cleanupResult, error: cleanupError } = await supabase.functions.invoke(
+          'cleanup-orphaned-images',
+          { body: {} }
+        );
+        
+        if (cleanupError) {
+          console.error('[DataHubDialog] Cleanup function error:', cleanupError);
+        } else {
+          console.log('[DataHubDialog] Cleanup result:', cleanupResult);
+          if (cleanupResult?.result?.imagesRemoved > 0) {
+            toast.success(`File deleted and ${cleanupResult.result.imagesRemoved} broken reference(s) removed from segments`);
+          } else {
+            toast.success("File deleted");
+          }
+        }
+      } catch (cleanupError) {
+        console.error('[DataHubDialog] Cleanup invocation failed:', cleanupError);
+        toast.success("File deleted (cleanup check skipped)");
+      }
+
       await loadFolders();
       setDeletingFile(null);
     } catch (error: any) {
