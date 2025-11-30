@@ -3101,42 +3101,42 @@ const AdminDashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
               </Button>
+            </div>
 
-              {/* Page Info Display – einzeilig, große Schrift */}
-              <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-lg px-5 py-3 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
-                {/* Icon Container mit Gradient */}
-                <div className="flex-shrink-0 w-11 h-11 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
-                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                
-                {/* Page Info Content – alles in einer Zeile */}
-                <div className="flex items-center gap-3">
-                  {selectedPage && pageInfo ? (
-                    <>
-                      <span className="font-bold text-base text-gray-900">
-                        {pageInfo.pageTitle}
-                      </span>
-                      <span className="text-gray-400 text-lg">|</span>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold">
-                        ID {pageInfo.pageId}
-                      </span>
-                      <span className="text-gray-400 text-lg">|</span>
-                      <span className="text-base text-gray-700 font-mono">
-                        {pageInfo.pageSlug}
-                      </span>
-                    </>
-                  ) : selectedPage && !pageInfo ? (
-                    <>
-                      <span className="font-bold text-base text-amber-700">No registry entry</span>
-                      <span className="text-gray-400 text-lg">|</span>
-                      <span className="text-base text-gray-700 font-mono">{selectedPage}</span>
-                    </>
-                  ) : (
-                    <span className="text-base text-gray-500 italic">No page selected</span>
-                  )}
-                </div>
+            {/* Page Info Display – einzeilig, große Schrift, unter Media Management */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-lg px-5 py-3 flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow mt-4 max-w-4xl">
+              {/* Icon Container mit Gradient */}
+              <div className="flex-shrink-0 w-11 h-11 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-sm">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              
+              {/* Page Info Content – alles in einer Zeile */}
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                {selectedPage && pageInfo ? (
+                  <>
+                    <span className="font-bold text-base text-gray-900 whitespace-nowrap">
+                      {pageInfo.pageTitle}
+                    </span>
+                    <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
+                      ID {pageInfo.pageId}
+                    </span>
+                    <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                    <span className="text-base text-gray-700 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
+                      {pageInfo.pageSlug}
+                    </span>
+                  </>
+                ) : selectedPage && !pageInfo ? (
+                  <>
+                    <span className="font-bold text-base text-amber-700 whitespace-nowrap">No registry entry</span>
+                    <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                    <span className="text-base text-gray-700 font-mono whitespace-nowrap">{selectedPage}</span>
+                  </>
+                ) : (
+                  <span className="text-base text-gray-500 italic whitespace-nowrap">No page selected</span>
+                )}
               </div>
             </div>
           </div>
