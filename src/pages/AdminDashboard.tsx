@@ -6898,7 +6898,7 @@ const AdminDashboard = () => {
                           setPageSegments(updatedSegments);
                         }}
                         onSave={() => handleSaveSegments()}
-                        pageSlug={selectedPage}
+                        pageSlug="styleguide/segments/hub-page"
                         segmentId={parseInt(segment.id)}
                       />
                     );
