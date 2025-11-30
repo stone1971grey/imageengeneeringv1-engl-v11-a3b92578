@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Upload, Image as ImageIcon, Trash2 } from 'lucide-react';
 import { MediaSelector } from './MediaSelector';
+import { updateSegmentMapping, updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 
 interface DebugImage {
   id: string;
@@ -236,13 +237,35 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
     initializeImages();
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('blob:')) {
       toast.error('Please enter a valid URL starting with http:// or https://');
       return;
     }
+
+    // Sync with file_segment_mappings for Media Management
+    try {
+      // Handle legacy single image
+      if (imageUrl) {
+        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false);
+      }
+
+      // Handle new multi-image array
+      if (images && images.length > 0) {
+        const validImageUrls = images
+          .filter(img => img.url && img.url.trim() !== '')
+          .map(img => img.url);
+        
+        if (validImageUrls.length > 0) {
+          await updateMultipleSegmentMappings(validImageUrls, segmentId, 'page-images', false);
+        }
+      }
+    } catch (error) {
+      console.error('Error syncing with Media Management:', error);
+    }
+
     onSave();
-    toast.success('Debug segment saved!');
+    toast.success('Debug segment saved and synced with Media Management!');
   };
 
 
