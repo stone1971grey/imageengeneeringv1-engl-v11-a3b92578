@@ -97,21 +97,27 @@ export const BannerSegmentEditor = ({
     ensureImageIds((data.images || []) as BannerImage[])
   );
 
-  // Track latest data props with ref to avoid stale closure
-  const dataRef = useRef(data);
-  useEffect(() => {
-    dataRef.current = data;
-  });
+  // Wrapper function that updates both local state and parent immediately
+  const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
+    setEnglishImages(prev => {
+      const newImages = updater(prev);
+      // Immediately sync to parent with fresh images
+      onChange({ 
+        title: data.title,
+        subtext: data.subtext,
+        buttonText: data.buttonText,
+        buttonLink: data.buttonLink,
+        buttonStyle: data.buttonStyle,
+        images: newImages 
+      });
+      return newImages;
+    });
+  };
 
   // Sync with parent data on segment change
   useEffect(() => {
     setEnglishImages(ensureImageIds((data.images || []) as BannerImage[]));
   }, [segmentKey]);
-
-  // Sync englishImages changes to parent with latest data
-  useEffect(() => {
-    onChange({ ...dataRef.current, images: englishImages });
-  }, [englishImages]);
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -240,7 +246,7 @@ export const BannerSegmentEditor = ({
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
       // Functional state update to prevent race conditions
-      setEnglishImages(prev => prev.map(img => {
+      updateEnglishImages(prev => prev.map(img => {
         if (img.id !== imageId) return img;
         
         const metadata: ImageMetadata = {
@@ -269,7 +275,7 @@ export const BannerSegmentEditor = ({
  
   const handleMediaSelect = (imageId: string, url: string, metadata?: any) => {
     // Functional state update
-    setEnglishImages(prev => prev.map(img => {
+    updateEnglishImages(prev => prev.map(img => {
       if (img.id !== imageId) return img;
 
       const imageMetadata: ImageMetadata = metadata 
@@ -295,11 +301,11 @@ export const BannerSegmentEditor = ({
       url: '',
       alt: ''
     };
-    setEnglishImages(prev => [...prev, newImage]);
+    updateEnglishImages(prev => [...prev, newImage]);
   };
 
   const handleDeleteImage = (imageId: string) => {
-    setEnglishImages(prev => prev.filter(img => img.id !== imageId));
+    updateEnglishImages(prev => prev.filter(img => img.id !== imageId));
     setDeleteId(null);
   };
 
@@ -310,7 +316,7 @@ export const BannerSegmentEditor = ({
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
-      setEnglishImages(prev => prev.map(img =>
+      updateEnglishImages(prev => prev.map(img =>
         img.id === imageId ? { ...img, [field]: value } : img
       ));
     }
