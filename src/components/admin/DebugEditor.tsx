@@ -96,7 +96,8 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
           fileName: file.name,
           fileData: fileData,
           bucket: 'page-images',
-          folder: pageSlug,
+          // Use real pageSlug so Media Management folder hierarchy matches
+          pageSlug,
           segmentId: segmentId
         }
       });
@@ -157,7 +158,7 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
           fileName: file.name,
           fileData: fileData,
           bucket: 'page-images',
-          folder: pageSlug,
+          pageSlug,
           segmentId: segmentId
         }
       });
