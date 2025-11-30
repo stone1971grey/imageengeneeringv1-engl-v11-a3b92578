@@ -108,11 +108,7 @@ export const BannerSegmentEditor = ({
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
-    setEnglishImages(prev => {
-      const next = updater(prev);
-      onChange({ ...data, images: next });
-      return next;
-    });
+    setEnglishImages(prev => updater(prev));
   };
 
   const handleSplitScreenToggle = (checked: boolean) => {
