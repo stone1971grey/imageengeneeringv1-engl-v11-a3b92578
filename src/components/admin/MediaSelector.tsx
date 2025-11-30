@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, FolderOpen, Trash2 } from "lucide-react";
 import { DataHubDialog } from "./DataHubDialog";
@@ -19,6 +19,7 @@ export const MediaSelector = ({
   currentImageUrl
 }: MediaSelectorProps) => {
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
+  const inputId = useId();
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,16 +57,17 @@ export const MediaSelector = ({
             accept={acceptedFileTypes}
             onChange={handleFileInput}
             className="hidden"
-            id={`file-upload-${label}`}
+            id={inputId}
           />
-          <label htmlFor={`file-upload-${label}`}>
+          <label htmlFor={inputId}>
             <Button
               type="button"
               style={{ backgroundColor: '#60a5fa', color: 'white' }}
               className="w-full hover:opacity-90 transition-opacity"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById(`file-upload-${label}`)?.click();
+                const input = document.getElementById(inputId) as HTMLInputElement | null;
+                input?.click();
               }}
             >
               <Upload className="h-4 w-4 mr-2" />
