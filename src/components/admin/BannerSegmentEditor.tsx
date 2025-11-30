@@ -182,6 +182,11 @@ export const BannerSegmentEditor = ({
 
   // ID-based image upload handler (matching DebugEditor pattern)
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, imageId: string) => {
+    console.log('=== BANNER UPLOAD DEBUG ===');
+    console.log('Received imageId:', imageId);
+    console.log('Current englishImages IDs:', englishImages.map(img => ({ id: img.id.slice(0, 20), url: img.url.slice(0, 30) })));
+    console.log('Slot number for this ID:', englishImages.findIndex(img => img.id === imageId) + 1);
+    
     const file = e.target.files?.[0];
     if (!file) return;
     
@@ -196,6 +201,7 @@ export const BannerSegmentEditor = ({
     }
 
     setUploadingId(imageId);
+    console.log('Setting uploadingId to:', imageId.slice(0, 20));
     toast.info('🚀 Starting upload...');
 
     try {
