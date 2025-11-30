@@ -87,20 +87,16 @@ export const BannerSegmentEditor = ({
     }));
   };
 
-  const [englishImages, setEnglishImages] = useState<BannerImage[]>(() => ensureImageIds(data.images || []));
-  
-  // Initialize images on mount AND when switching to a different segment
+  // Single source of truth: always derive images from props (data.images)
+  const englishImages = ensureImageIds(data.images || []);
+
+  // If legacy data had missing IDs, update parent once when data.images changes
   useEffect(() => {
-    const imagesWithIds = ensureImageIds(data.images || []);
     const hadMissingIds = (data.images || []).some(img => !img.id);
-
-    // If legacy data had missing IDs, update parent once
     if (hadMissingIds) {
-      onChange({ ...data, images: imagesWithIds });
+      onChange({ ...data, images: englishImages });
     }
-
-    setEnglishImages(imagesWithIds);
-  }, [segmentKey]); // Only re-sync when switching to a different segment - NOT during editing
+  }, [data.images]);
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -108,7 +104,8 @@ export const BannerSegmentEditor = ({
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
-    setEnglishImages(prev => updater(prev));
+    const next = updater(englishImages);
+    onChange({ ...data, images: next });
   };
 
   const handleSplitScreenToggle = (checked: boolean) => {
@@ -367,7 +364,7 @@ export const BannerSegmentEditor = ({
   const handleSaveEnglish = async () => {
     setIsSaving(true);
     try {
-      // Build current data with local englishImages state
+      // Build current data with images derived from props (single source of truth)
       const dataToSave = { ...data, images: englishImages };
       
       // Load current page_segments for English
@@ -452,8 +449,9 @@ export const BannerSegmentEditor = ({
         const segments = JSON.parse(pageContentData.content_value || "[]");
         let segmentFound = false;
 
-        // Always sync images from English local state for target save
-        const mergedImages: BannerImage[] = englishImages.map((enImg, idx) => {
+        // Always sync images from English props for target save
+        const englishImagesLocal: BannerImage[] = ensureImageIds(data.images || []);
+        const mergedImages: BannerImage[] = englishImagesLocal.map((enImg, idx) => {
           const targetImg = targetData.images[idx];
           return {
             ...enImg,
