@@ -92,27 +92,10 @@ export const BannerSegmentEditor = ({
           }
     );
 
-  // Simple state management like DebugEditor
+  // Simple state management EXACTLY like DebugEditor
   const [englishImages, setEnglishImages] = useState<BannerImage[]>(() =>
     ensureImageIds((data.images || []) as BannerImage[])
   );
-
-  // Wrapper function that updates both local state and parent immediately
-  const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
-    setEnglishImages(prev => {
-      const newImages = updater(prev);
-      // Immediately sync to parent with fresh images
-      onChange({ 
-        title: data.title,
-        subtext: data.subtext,
-        buttonText: data.buttonText,
-        buttonLink: data.buttonLink,
-        buttonStyle: data.buttonStyle,
-        images: newImages 
-      });
-      return newImages;
-    });
-  };
 
   // Sync with parent data on segment change
   useEffect(() => {
@@ -245,8 +228,8 @@ export const BannerSegmentEditor = ({
 
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
-      // Functional state update to prevent race conditions
-      updateEnglishImages(prev => prev.map(img => {
+      // ID-based update EXACTLY like DebugEditor - compute FIRST, then update BOTH
+      const updatedImages = englishImages.map(img => {
         if (img.id !== imageId) return img;
         
         const metadata: ImageMetadata = {
@@ -259,8 +242,10 @@ export const BannerSegmentEditor = ({
           url: result.url,
           metadata,
         };
-      }));
+      });
       
+      setEnglishImages(updatedImages);
+      onChange({ ...data, images: updatedImages });
       toast.success('✅ Upload successful! Click "Save Changes" to store.');
 
       e.target.value = '';
@@ -274,8 +259,8 @@ export const BannerSegmentEditor = ({
   };
  
   const handleMediaSelect = (imageId: string, url: string, metadata?: any) => {
-    // Functional state update
-    updateEnglishImages(prev => prev.map(img => {
+    // ID-based update EXACTLY like DebugEditor
+    const updatedImages = englishImages.map(img => {
       if (img.id !== imageId) return img;
 
       const imageMetadata: ImageMetadata = metadata 
@@ -290,8 +275,10 @@ export const BannerSegmentEditor = ({
         url,
         metadata: imageMetadata,
       };
-    }));
+    });
     
+    setEnglishImages(updatedImages);
+    onChange({ ...data, images: updatedImages });
     toast.success('Image selected! Click "Save Changes" to store.');
   };
 
@@ -301,11 +288,15 @@ export const BannerSegmentEditor = ({
       url: '',
       alt: ''
     };
-    updateEnglishImages(prev => [...prev, newImage]);
+    const updatedImages = [...englishImages, newImage];
+    setEnglishImages(updatedImages);
+    onChange({ ...data, images: updatedImages });
   };
 
   const handleDeleteImage = (imageId: string) => {
-    updateEnglishImages(prev => prev.filter(img => img.id !== imageId));
+    const updatedImages = englishImages.filter(img => img.id !== imageId);
+    setEnglishImages(updatedImages);
+    onChange({ ...data, images: updatedImages });
     setDeleteId(null);
   };
 
@@ -316,9 +307,11 @@ export const BannerSegmentEditor = ({
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
-      updateEnglishImages(prev => prev.map(img =>
+      const updatedImages = englishImages.map(img =>
         img.id === imageId ? { ...img, [field]: value } : img
-      ));
+      );
+      setEnglishImages(updatedImages);
+      onChange({ ...data, images: updatedImages });
     }
   };
 
