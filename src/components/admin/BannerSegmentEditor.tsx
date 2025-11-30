@@ -234,28 +234,31 @@ export const BannerSegmentEditor = ({
 
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
-      // ID-based update EXACTLY like DebugEditor - compute FIRST, then update BOTH
-      const updatedImages = englishImages.map(img => {
-        if (img.id !== imageId) return img;
-        
-        const metadata: ImageMetadata = {
-          ...metadataWithoutAlt,
-          altText: img.alt || ''
-        };
+      // Use functional updater to avoid stale englishImages
+      setEnglishImages(prev => {
+        const updated = prev.map(img => {
+          if (img.id !== imageId) return img;
+          
+          const metadata: ImageMetadata = {
+            ...metadataWithoutAlt,
+            altText: img.alt || ''
+          };
 
-        return {
-          ...img,
-          url: result.url,
-          metadata,
-        };
+          return {
+            ...img,
+            url: result.url,
+            metadata,
+          };
+        });
+
+        onChange({ ...data, images: updated });
+        
+        // Feedback for the slot that triggered upload, based on updated list
+        const slotNumber = updated.findIndex(img => img.id === imageId) + 1;
+        toast.success(`✅ Slot ${slotNumber} upload successful! Click "Save Changes" to store.`);
+
+        return updated;
       });
-      
-      setEnglishImages(updatedImages);
-      onChange({ ...data, images: updatedImages });
-      
-      // Find slot number for feedback
-      const slotNumber = englishImages.findIndex(img => img.id === imageId) + 1;
-      toast.success(`✅ Slot ${slotNumber} upload successful! Click "Save Changes" to store.`);
 
       e.target.value = '';
       
@@ -268,30 +271,32 @@ export const BannerSegmentEditor = ({
   };
  
   const handleMediaSelect = (imageId: string, url: string, metadata?: any) => {
-    // ID-based update EXACTLY like DebugEditor
-    const updatedImages = englishImages.map(img => {
-      if (img.id !== imageId) return img;
+    // Functional update based on latest state
+    setEnglishImages(prev => {
+      const updated = prev.map(img => {
+        if (img.id !== imageId) return img;
 
-      const imageMetadata: ImageMetadata = metadata 
-        ? { ...metadata, altText: img.alt || '' } 
-        : { 
-            ...(img.metadata as ImageMetadata | undefined),
-            altText: img.alt || ''
-          } as ImageMetadata;
+        const imageMetadata: ImageMetadata = metadata 
+          ? { ...metadata, altText: img.alt || '' } 
+          : { 
+              ...(img.metadata as ImageMetadata | undefined),
+              altText: img.alt || ''
+            } as ImageMetadata;
 
-      return {
-        ...img,
-        url,
-        metadata: imageMetadata,
-      };
+        return {
+          ...img,
+          url,
+          metadata: imageMetadata,
+        };
+      });
+
+      onChange({ ...data, images: updated });
+      
+      const slotNumber = updated.findIndex(img => img.id === imageId) + 1;
+      toast.success(`✅ Slot ${slotNumber} image selected! Click "Save Changes" to store.`);
+
+      return updated;
     });
-    
-    setEnglishImages(updatedImages);
-    onChange({ ...data, images: updatedImages });
-    
-    // Find slot number for feedback
-    const slotNumber = englishImages.findIndex(img => img.id === imageId) + 1;
-    toast.success(`✅ Slot ${slotNumber} image selected! Click "Save Changes" to store.`);
   };
 
   const handleAddImage = () => {
