@@ -698,6 +698,26 @@ export const BannerSegmentEditor = ({
                   )}
                 </div>
 
+                {/* Debug Info */}
+                {!isTarget && (
+                  <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs font-mono space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-blue-700">Slot:</span>
+                      <span className="text-blue-900">{index + 1}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-blue-700">ID:</span>
+                      <span className="text-blue-900 break-all">{image.id.slice(0, 20)}...</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-blue-700">URL:</span>
+                      <span className="text-blue-900 break-all truncate">
+                        {image.url ? image.url.slice(0, 50) + '...' : '(empty)'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 {!isTarget && (
                   <MediaSelector
                     onFileSelect={(file) => {
