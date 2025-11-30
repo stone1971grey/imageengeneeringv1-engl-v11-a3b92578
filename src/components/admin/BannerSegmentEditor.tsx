@@ -228,8 +228,8 @@ export const BannerSegmentEditor = ({
 
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
-      // ID-based update to prevent race conditions
-      const updatedImages = englishImages.map(img => {
+      // Functional state update to prevent race conditions
+      setEnglishImages(prev => prev.map(img => {
         if (img.id !== imageId) return img;
         
         const metadata: ImageMetadata = {
@@ -242,10 +242,21 @@ export const BannerSegmentEditor = ({
           url: result.url,
           metadata,
         };
+      }));
+      
+      // Also update parent
+      onChange({ 
+        ...data, 
+        images: englishImages.map(img => {
+          if (img.id !== imageId) return img;
+          const metadata: ImageMetadata = {
+            ...metadataWithoutAlt,
+            altText: img.alt || ''
+          };
+          return { ...img, url: result.url, metadata };
+        })
       });
       
-      setEnglishImages(updatedImages);
-      onChange({ ...data, images: updatedImages });
       toast.success('✅ Upload successful! Click "Save Changes" to store.');
 
       e.target.value = '';
@@ -259,8 +270,8 @@ export const BannerSegmentEditor = ({
   };
  
   const handleMediaSelect = (imageId: string, url: string, metadata?: any) => {
-    // ID-based update
-    const updatedImages = englishImages.map(img => {
+    // Functional state update
+    setEnglishImages(prev => prev.map(img => {
       if (img.id !== imageId) return img;
 
       const imageMetadata: ImageMetadata = metadata 
@@ -275,10 +286,20 @@ export const BannerSegmentEditor = ({
         url,
         metadata: imageMetadata,
       };
+    }));
+    
+    // Also update parent
+    onChange({ 
+      ...data, 
+      images: englishImages.map(img => {
+        if (img.id !== imageId) return img;
+        const imageMetadata: ImageMetadata = metadata 
+          ? { ...metadata, altText: img.alt || '' } 
+          : { ...(img.metadata as ImageMetadata | undefined), altText: img.alt || '' } as ImageMetadata;
+        return { ...img, url, metadata: imageMetadata };
+      })
     });
     
-    setEnglishImages(updatedImages);
-    onChange({ ...data, images: updatedImages });
     toast.success('Image selected! Click "Save Changes" to store.');
   };
 
