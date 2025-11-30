@@ -633,7 +633,6 @@ const DynamicCMSPage = () => {
         );
 
       case "banner":
-        console.log('[DynamicCMSPage] Rendering banner segment:', segment);
         return (
           <section
             key={segmentId}
