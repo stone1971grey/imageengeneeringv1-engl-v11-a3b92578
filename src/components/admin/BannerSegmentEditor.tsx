@@ -316,13 +316,13 @@ export const BannerSegmentEditor = ({
         buttonText: data.buttonText || ''
       };
 
-      // Add all image alt texts
-      data.images.forEach((img, index) => {
+      // Add all image alt texts from local englishImages state
+      englishImages.forEach((img, index) => {
         textsToTranslate[`image_${index}_alt`] = img.alt || '';
       });
 
       console.log('Translating Banner Segment:', textsToTranslate);
-      console.log('English images structure:', data.images);
+      console.log('English images structure:', englishImages);
 
       const { data: translationResult, error } = await supabase.functions.invoke('translate-content', {
         body: {
@@ -339,7 +339,7 @@ export const BannerSegmentEditor = ({
         const translated = translationResult.translatedTexts;
         
         // Update translated images with new alt texts, keep all other properties (id, url, metadata)
-        const translatedImages = data.images.map((img, index) => ({
+        const translatedImages = englishImages.map((img, index) => ({
           id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           url: img.url,
           alt: translated[`image_${index}_alt`] || img.alt,
@@ -371,6 +371,9 @@ export const BannerSegmentEditor = ({
   const handleSaveEnglish = async () => {
     setIsSaving(true);
     try {
+      // Build current data with local englishImages state
+      const dataToSave = { ...data, images: englishImages };
+      
       // Load current page_segments for English
       const { data: pageContentData, error: fetchError } = await supabase
         .from("page_content")
@@ -388,7 +391,7 @@ export const BannerSegmentEditor = ({
       // Update the banner segment in the array
       const updatedSegments = segments.map((seg: any) => {
         if (seg.type === "banner" && String(seg.id) === String(segmentId)) {
-          return { ...seg, data };
+          return { ...seg, data: dataToSave };
         }
         return seg;
       });
@@ -406,8 +409,8 @@ export const BannerSegmentEditor = ({
 
       if (updateError) throw updateError;
       
-      // Update segment mappings for all banner images
-      const imageUrls = data.images.map(img => img.url).filter(Boolean);
+      // Update segment mappings for all banner images from local state
+      const imageUrls = englishImages.map(img => img.url).filter(Boolean);
       if (imageUrls.length > 0) {
         await updateMultipleSegmentMappings(imageUrls, parseInt(segmentId));
       }
@@ -453,8 +456,7 @@ export const BannerSegmentEditor = ({
         const segments = JSON.parse(pageContentData.content_value || "[]");
         let segmentFound = false;
 
-        // Always sync images from English for target save
-        const englishImages = ensureImageIds(data.images || []);
+        // Always sync images from English local state for target save
         const mergedImages: BannerImage[] = englishImages.map((enImg, idx) => {
           const targetImg = targetData.images[idx];
           return {
