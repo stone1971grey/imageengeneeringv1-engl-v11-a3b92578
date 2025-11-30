@@ -243,11 +243,17 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
       return;
     }
 
+    toast.info('🔄 Starting Media Management sync...');
+
     // Sync with file_segment_mappings for Media Management
     try {
+      let syncedCount = 0;
+
       // Handle legacy single image
       if (imageUrl) {
-        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false);
+        toast.info(`📷 Syncing legacy image to segment ${segmentId}...`);
+        const success = await updateSegmentMapping(imageUrl, segmentId, 'page-images', false);
+        if (success) syncedCount++;
       }
 
       // Handle new multi-image array
@@ -256,16 +262,24 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
           .filter(img => img.url && img.url.trim() !== '')
           .map(img => img.url);
         
+        toast.info(`📸 Found ${validImageUrls.length} multi-images to sync...`);
+        
         if (validImageUrls.length > 0) {
-          await updateMultipleSegmentMappings(validImageUrls, segmentId, 'page-images', false);
+          validImageUrls.forEach((url, idx) => {
+            toast.info(`🔗 Image ${idx + 1}: ${url.substring(0, 60)}...`);
+          });
+          
+          const count = await updateMultipleSegmentMappings(validImageUrls, segmentId, 'page-images', true);
+          syncedCount += count;
         }
       }
-    } catch (error) {
-      console.error('Error syncing with Media Management:', error);
+
+      toast.success(`✅ Successfully synced ${syncedCount} image(s) to Media Management!`);
+    } catch (error: any) {
+      toast.error(`❌ Sync error: ${error.message || 'Unknown error'}`);
     }
 
     onSave();
-    toast.success('Debug segment saved and synced with Media Management!');
   };
 
 
