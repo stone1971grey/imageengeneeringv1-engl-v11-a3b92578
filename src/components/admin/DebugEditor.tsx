@@ -302,8 +302,16 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
           </p>
           
           {imageUrl && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border relative">
               <p className="text-xs text-gray-600 mb-2 font-semibold">Preview:</p>
+              <Button
+                size="sm"
+                variant="destructive"
+                className="absolute top-2 right-2"
+                onClick={() => handleImageUrlChange('')}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
               <img
                 src={imageUrl}
                 alt="Preview"
