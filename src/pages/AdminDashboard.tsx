@@ -243,6 +243,8 @@ const AdminDashboard = () => {
   const [isCreatingCMS, setIsCreatingCMS] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
   const [editorLanguage, setEditorLanguage] = useState<'en' | 'de' | 'ja' | 'ko' | 'zh'>('en');
+  const [pageInfo, setPageInfo] = useState<{ pageId: number; pageTitle: string; pageSlug: string } | null>(null);
+
 
   // Autosave for Hero section - only saves to localStorage
   useAdminAutosave({
@@ -449,12 +451,15 @@ const AdminDashboard = () => {
         twitterCard: 'summary_large_image'
       });
       
-      // First, load segment registry to get all segment IDs
-      loadSegmentRegistry().then(() => {
-        // Then calculate global max segment ID across all pages
-        calculateGlobalMaxSegmentId().then(() => {
-          // Finally load content for current page
-          loadContent();
+      // First, load page info
+      loadPageInfo().then(() => {
+        // Then load segment registry to get all segment IDs
+        loadSegmentRegistry().then(() => {
+          // Then calculate global max segment ID across all pages
+          calculateGlobalMaxSegmentId().then(() => {
+            // Finally load content for current page
+            loadContent();
+          });
         });
       });
     }
@@ -586,6 +591,38 @@ const AdminDashboard = () => {
     
     setResolvedPageSlug(slug);
     return slug;
+  };
+
+  // Load page info (Page ID, Title, Slug) from page_registry
+  const loadPageInfo = async () => {
+    try {
+      const querySlug = await resolvePageSlug(selectedPage);
+      
+      const { data, error } = await supabase
+        .from("page_registry")
+        .select("page_id, page_title, page_slug")
+        .eq("page_slug", querySlug)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('[loadPageInfo] Error loading page info:', error);
+        setPageInfo(null);
+        return;
+      }
+      
+      if (data) {
+        setPageInfo({
+          pageId: data.page_id,
+          pageTitle: data.page_title,
+          pageSlug: data.page_slug
+        });
+      } else {
+        setPageInfo(null);
+      }
+    } catch (error) {
+      console.error('[loadPageInfo] Unexpected error:', error);
+      setPageInfo(null);
+    }
   };
 
   // Load segment registry to get all segment IDs
@@ -3064,6 +3101,19 @@ const AdminDashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
               </Button>
+
+              {/* Page Info Display */}
+              {pageInfo && (
+                <div className="bg-white border border-gray-300 rounded px-4 py-2 flex flex-col gap-0.5">
+                  <div className="text-xs text-gray-500">Current Page</div>
+                  <div className="font-semibold text-sm text-gray-900">{pageInfo.pageTitle}</div>
+                  <div className="text-xs text-gray-600 flex items-center gap-2">
+                    <span>ID: {pageInfo.pageId}</span>
+                    <span>•</span>
+                    <span className="font-mono">{pageInfo.pageSlug}</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
