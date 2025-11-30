@@ -53,6 +53,7 @@ import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { BannerSegmentEditor } from '@/components/admin/BannerSegmentEditor';
+import { BannerPEditor } from '@/components/admin/BannerPEditor';
 import { FullHeroEditor } from '@/components/admin/FullHeroEditor';
 import { ProductHeroEditor } from '@/components/admin/ProductHeroEditor';
 import { SplitScreenSegmentEditor } from '@/components/admin/SplitScreenSegmentEditor';
@@ -2375,6 +2376,15 @@ const AdminDashboard = () => {
           buttonLink: '',
           buttonStyle: 'standard'
         };
+      case 'banner-p':
+        return {
+          title: 'New Banner-P Section',
+          subtext: '',
+          images: [],
+          buttonText: '',
+          buttonLink: '',
+          buttonStyle: 'standard'
+        };
       case 'image-text':
         return {
           title: 'New Image & Text Section',
@@ -2543,6 +2553,17 @@ const AdminDashboard = () => {
         };
       
       case 'banner':
+        return {
+          images: data.images || [],
+          buttonLink: data.buttonLink || '',
+          buttonStyle: data.buttonStyle || 'standard',
+          // Text fields empty
+          title: '',
+          subtext: '',
+          buttonText: ''
+        };
+      
+      case 'banner-p':
         return {
           images: data.images || [],
           buttonLink: data.buttonLink || '',
@@ -3448,6 +3469,25 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
+                      {/* Banner-P (Prototype) */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-pink-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('banner-p')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <span className="text-3xl font-bold text-white">P</span>
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Banner-P (Prototype)</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              NEW: Rebuilt banner with stable multi-image upload
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
                       {/* Feature Overview */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
@@ -4226,6 +4266,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
                       if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
                       if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
+                      if (segment.type === 'banner-p') label = `Banner-P ${displayNumber}`;
                       if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
                       if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
                       if (segment.type === 'table') label = `Table - L ${displayNumber}`;
@@ -5858,6 +5899,7 @@ const AdminDashboard = () => {
               if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
               if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
               if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
+              if (segment.type === 'banner-p') label = `Banner-P ${displayNumber}`;
               if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
               if (segment.type === 'full-hero') label = `Full Hero - A ${displayNumber}`;
               if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
@@ -7015,6 +7057,28 @@ const AdminDashboard = () => {
                     
                     return (
                       <BannerSegmentEditor
+                        data={segment.data}
+                        onChange={(newData) => {
+                          const newSegments = [...pageSegments];
+                          newSegments[index].data = newData;
+                          setPageSegments(newSegments);
+                        }}
+                        onSave={() => handleSaveSegments()}
+                        pageSlug={resolvedPageSlug || selectedPage}
+                        segmentKey={`segment_${segment.id}`}
+                        language={editorLanguage}
+                      />
+                    );
+                  })()}
+
+                  {segment.type === 'banner-p' && (() => {
+                    // Initialize data if missing
+                    if (!segment.data) {
+                      segment.data = getDefaultSegmentData('banner-p');
+                    }
+                    
+                    return (
+                      <BannerPEditor
                         data={segment.data}
                         onChange={(newData) => {
                           const newSegments = [...pageSegments];

@@ -641,130 +641,84 @@ const DynamicCMSPage = () => {
             data-segment-id={segmentDbId?.toString()}
             className="py-20 bg-white"
           >
+...
+          </section>
+        );
+
+      case "banner-p":
+        return (
+          <section
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            data-segment-key={segment.segment_key || segment.id}
+            data-segment-id={segmentDbId?.toString()}
+            className="py-16 bg-gradient-to-br from-purple-50 to-pink-50 border-t-4 border-purple-500"
+          >
             <div className="container mx-auto px-6">
-              {segment.data?.title && (
-                <div className="text-center mb-16">
-                  <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <div className="max-w-4xl mx-auto text-center">
+                {segment.data?.title && (
+                  <h2 className="text-4xl font-bold text-purple-900 mb-4">
                     {segment.data.title}
                   </h2>
-                  {segment.data?.subtext && (
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                      {segment.data.subtext}
-                    </p>
-                  )}
-                </div>
-              )}
-              {(() => {
-                const imageCount = (segment.data?.images || []).length;
-                const images = segment.data?.images || [];
-                
-                // Bei 5+ Bildern: erste 4 oben, Rest unten mittig
-                if (imageCount >= 5) {
-                  const topImages = images.slice(0, 4);
-                  const bottomImages = images.slice(4);
-                  
-                  return (
-                    <div className="space-y-8 mb-12">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {topImages.map((banner: any, idx: number) => (
-                          <div
-                            key={idx}
-                            className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                          >
-                            <img
-                              src={banner.url}
-                              alt={banner.alt}
-                              className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex justify-center gap-8">
-                        {bottomImages.map((banner: any, idx: number) => (
-                          <div
-                            key={idx + 4}
-                            className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group w-1/4"
-                          >
-                            <img
-                              src={banner.url}
-                              alt={banner.alt}
-                              className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                }
-                
-                // Layout basierend auf Bildanzahl
-                const gridClass = 
-                  imageCount === 1 ? 'grid-cols-1 max-w-xs mx-auto' :
-                  imageCount === 2 ? 'grid-cols-2 max-w-2xl mx-auto' :
-                  imageCount === 3 ? 'grid-cols-1 md:grid-cols-3' :
-                  'grid-cols-2 md:grid-cols-4';
-                
-                return (
-                  <div className={`grid gap-8 mb-12 ${gridClass}`}>
-                    {images.map((banner: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="flex items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
-                      >
-                        <img
-                          src={banner.url}
-                          alt={banner.alt}
-                          className="max-h-28 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300"
-                        />
-                      </div>
-                    ))}
+                )}
+
+                {segment.data?.subtext && (
+                  <p className="text-lg text-purple-700 mb-8">
+                    {segment.data.subtext}
+                  </p>
+                )}
+
+                {segment.data?.images && segment.data.images.length > 0 && (
+                  <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
+                    {segment.data.images.map((image: any) => 
+                      image.url ? (
+                        <div key={image.id} className="flex items-center justify-center">
+                          <img
+                            src={image.url}
+                            alt={image.alt || 'Banner image'}
+                            className="max-h-24 w-auto object-contain"
+                          />
+                        </div>
+                      ) : null
+                    )}
                   </div>
-                );
-              })()}
-              {segment.data?.buttonText && segment.data?.buttonLink && (
-                <div className="text-center">
-                  {(() => {
-                    let buttonLink = (segment.data.buttonLink || '').trim();
-                    let isExternal = false;
-                    
-                    // Check if it's an external link
-                    if (buttonLink.startsWith('www.')) {
-                      buttonLink = 'https://' + buttonLink;
-                      isExternal = true;
-                    } else if (buttonLink.startsWith('http://') || buttonLink.startsWith('https://')) {
-                      isExternal = true;
-                    }
-                    
-                    const buttonClasses = `inline-flex items-center px-8 py-4 rounded-lg font-bold text-lg transition-all duration-200 ${
-                      segment.data.buttonStyle === "technical"
-                        ? "bg-gray-800 text-white hover:bg-gray-900"
-                        : "bg-[#f9dc24] text-gray-900 hover:bg-yellow-400"
-                    }`;
-                    
-                    if (isExternal) {
-                      return (
-                        <a
-                          href={buttonLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={buttonClasses}
-                        >
-                          {segment.data.buttonText}
-                        </a>
-                      );
-                    }
-                    
+                )}
+
+                {segment.data?.buttonText && segment.data?.buttonLink && (() => {
+                  const buttonClasses = 
+                    segment.data.buttonStyle === 'technical'
+                      ? 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-gray-800 text-white hover:bg-gray-900'
+                      : segment.data.buttonStyle === 'outline-white'
+                      ? 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-white text-black border border-gray-300 hover:bg-black hover:text-white'
+                      : 'inline-block px-8 py-3 rounded-lg font-semibold transition-all bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90';
+
+                  const buttonLink = segment.data.buttonLink || '#';
+                  const isExternal = buttonLink.startsWith('http://') || buttonLink.startsWith('https://');
+
+                  if (isExternal) {
                     return (
-                      <Link to={buttonLink} className={buttonClasses}>
+                      <a
+                        href={buttonLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={buttonClasses}
+                      >
                         {segment.data.buttonText}
-                      </Link>
+                      </a>
                     );
-                  })()}
-                </div>
-              )}
+                  }
+
+                  return (
+                    <Link to={buttonLink} className={buttonClasses}>
+                      {segment.data.buttonText}
+                    </Link>
+                  );
+                })()}
+              </div>
             </div>
           </section>
         );
+
 
       case "image-text":
       case "solutions":
