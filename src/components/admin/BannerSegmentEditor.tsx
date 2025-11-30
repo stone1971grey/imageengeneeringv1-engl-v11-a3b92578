@@ -92,19 +92,16 @@ export const BannerSegmentEditor = ({
           }
     );
 
-  const [idsInitialized, setIdsInitialized] = useState(false);
+  // Lokaler, stabiler State für englische Banner-Bilder
+  const [englishImages, setEnglishImages] = useState<BannerImage[]>(() =>
+    ensureImageIds((data.images || []) as BannerImage[])
+  );
 
-  // Single source of truth: images from props, with IDs persisted once
-  const englishImages: BannerImage[] = (data.images || []) as BannerImage[];
-
+  // Bei Segment-Wechsel (oder hartem Reload) einmalig mit Backend-Daten synchronisieren
   useEffect(() => {
-    const imgs = data.images || [];
-    if (!idsInitialized && imgs.some((img) => !img.id)) {
-      const withIds = ensureImageIds(imgs as BannerImage[]);
-      setIdsInitialized(true);
-      onChange({ ...data, images: withIds });
-    }
-  }, [data, idsInitialized, onChange]);
+    setEnglishImages(ensureImageIds((data.images || []) as BannerImage[]));
+  }, [segmentKey]);
+
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -112,10 +109,12 @@ export const BannerSegmentEditor = ({
   const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   const updateEnglishImages = (updater: (prev: BannerImage[]) => BannerImage[]) => {
-    // Always use fresh data.images to avoid closure issues
-    const currentImages = (data.images || []) as BannerImage[];
-    const next = updater(currentImages);
-    onChange({ ...data, images: next });
+    setEnglishImages(prev => {
+      const next = updater(prev);
+      // Lokalen State immer wieder nach außen spiegeln
+      onChange({ ...data, images: next });
+      return next;
+    });
   };
 
   const handleSplitScreenToggle = (checked: boolean) => {
