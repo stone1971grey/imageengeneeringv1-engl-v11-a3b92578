@@ -133,12 +133,12 @@ export const BannerSegmentEditor = ({
       
       if (targetSegment?.data) {
         console.log('[BannerSegmentEditor] Loaded target language data:', targetSegment.data);
-        const englishImages = ensureImageIds(data.images || []);
+        const englishImagesCurrent = ensureImageIds(englishImages || []);
         const targetImages = ensureImageIds(targetSegment.data.images || []);
         
         // Merge: English defines which images exist (url/metadata),
         // target keeps its alt texts where possible
-        const mergedImages: BannerImage[] = englishImages.map((enImg, idx) => {
+        const mergedImages: BannerImage[] = englishImagesCurrent.map((enImg, idx) => {
           const targetImg = targetImages[idx];
           return {
             ...enImg,
@@ -155,14 +155,13 @@ export const BannerSegmentEditor = ({
     }
  
     // If no target language version exists, copy structure from English but with empty text fields
-    console.log('[BannerSegmentEditor] No target language data found, creating empty structure from English');
-    const englishImages = ensureImageIds(data.images || []);
+    const englishImagesCurrent = ensureImageIds(englishImages || []);
     setTargetData({
       ...data,
       title: '',
       subtext: '',
       buttonText: '',
-      images: englishImages.map(img => ({ 
+      images: englishImagesCurrent.map(img => ({ 
         ...img, 
         alt: '' 
       }))
@@ -380,7 +379,7 @@ export const BannerSegmentEditor = ({
   const handleSaveEnglish = async () => {
     setIsSaving(true);
     try {
-      // Build current data with images derived from props (single source of truth)
+      // Build current data with images derived from local state
       const dataToSave = { ...data, images: englishImages };
       
       // Load current page_segments for English
@@ -465,9 +464,8 @@ export const BannerSegmentEditor = ({
         const segments = JSON.parse(pageContentData.content_value || "[]");
         let segmentFound = false;
 
-        // Always sync images from English props for target save (index-based)
-        const englishImagesLocal: BannerImage[] = data.images || [];
-        const mergedImages: BannerImage[] = englishImagesLocal.map((enImg, idx) => {
+        // Always sync images from local englishImages state for target save (index-based)
+        const mergedImages: BannerImage[] = englishImages.map((enImg, idx) => {
           const targetImg = targetData.images[idx];
           return {
             ...enImg,
