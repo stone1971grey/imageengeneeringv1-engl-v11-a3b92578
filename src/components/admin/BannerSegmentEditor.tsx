@@ -89,7 +89,7 @@ export const BannerSegmentEditor = ({
 
   const [englishImages, setEnglishImages] = useState<BannerImage[]>(() => ensureImageIds(data.images || []));
   
-  // Keep a local, stable copy of English images and ensure all have IDs
+  // Initialize images on mount AND when switching to a different segment
   useEffect(() => {
     const imagesWithIds = ensureImageIds(data.images || []);
     const hadMissingIds = (data.images || []).some(img => !img.id);
@@ -100,7 +100,7 @@ export const BannerSegmentEditor = ({
     }
 
     setEnglishImages(imagesWithIds);
-  }, [data.images]);
+  }, [segmentKey]); // Only re-sync when switching to a different segment - NOT during editing
 
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
