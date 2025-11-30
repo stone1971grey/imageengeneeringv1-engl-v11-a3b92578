@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -97,14 +97,20 @@ export const BannerSegmentEditor = ({
     ensureImageIds((data.images || []) as BannerImage[])
   );
 
+  // Track latest data props with ref to avoid stale closure
+  const dataRef = useRef(data);
+  useEffect(() => {
+    dataRef.current = data;
+  });
+
   // Sync with parent data on segment change
   useEffect(() => {
     setEnglishImages(ensureImageIds((data.images || []) as BannerImage[]));
   }, [segmentKey]);
 
-  // Sync englishImages changes to parent
+  // Sync englishImages changes to parent with latest data
   useEffect(() => {
-    onChange({ ...data, images: englishImages });
+    onChange({ ...dataRef.current, images: englishImages });
   }, [englishImages]);
 
   const [isTranslating, setIsTranslating] = useState(false);
