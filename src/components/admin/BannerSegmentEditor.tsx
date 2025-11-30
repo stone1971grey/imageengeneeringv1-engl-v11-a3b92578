@@ -229,26 +229,20 @@ export const BannerSegmentEditor = ({
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
       // Functional state update to prevent race conditions
-      setEnglishImages(prev => {
-        const updated = prev.map(img => {
-          if (img.id !== imageId) return img;
-          
-          const metadata: ImageMetadata = {
-            ...metadataWithoutAlt,
-            altText: img.alt || ''
-          };
-
-          return {
-            ...img,
-            url: result.url,
-            metadata,
-          };
-        });
+      setEnglishImages(prev => prev.map(img => {
+        if (img.id !== imageId) return img;
         
-        // Update parent immediately with new state
-        onChange({ ...data, images: updated });
-        return updated;
-      });
+        const metadata: ImageMetadata = {
+          ...metadataWithoutAlt,
+          altText: img.alt || ''
+        };
+
+        return {
+          ...img,
+          url: result.url,
+          metadata,
+        };
+      }));
       
       toast.success('✅ Upload successful! Click "Save Changes" to store.');
 
@@ -264,28 +258,22 @@ export const BannerSegmentEditor = ({
  
   const handleMediaSelect = (imageId: string, url: string, metadata?: any) => {
     // Functional state update
-    setEnglishImages(prev => {
-      const updated = prev.map(img => {
-        if (img.id !== imageId) return img;
+    setEnglishImages(prev => prev.map(img => {
+      if (img.id !== imageId) return img;
 
-        const imageMetadata: ImageMetadata = metadata 
-          ? { ...metadata, altText: img.alt || '' } 
-          : { 
-              ...(img.metadata as ImageMetadata | undefined),
-              altText: img.alt || ''
-            } as ImageMetadata;
+      const imageMetadata: ImageMetadata = metadata 
+        ? { ...metadata, altText: img.alt || '' } 
+        : { 
+            ...(img.metadata as ImageMetadata | undefined),
+            altText: img.alt || ''
+          } as ImageMetadata;
 
-        return {
-          ...img,
-          url,
-          metadata: imageMetadata,
-        };
-      });
-      
-      // Update parent immediately with new state
-      onChange({ ...data, images: updated });
-      return updated;
-    });
+      return {
+        ...img,
+        url,
+        metadata: imageMetadata,
+      };
+    }));
     
     toast.success('Image selected! Click "Save Changes" to store.');
   };
@@ -296,19 +284,11 @@ export const BannerSegmentEditor = ({
       url: '',
       alt: ''
     };
-    setEnglishImages(prev => {
-      const updated = [...prev, newImage];
-      onChange({ ...data, images: updated });
-      return updated;
-    });
+    setEnglishImages(prev => [...prev, newImage]);
   };
 
   const handleDeleteImage = (imageId: string) => {
-    setEnglishImages(prev => {
-      const updated = prev.filter(img => img.id !== imageId);
-      onChange({ ...data, images: updated });
-      return updated;
-    });
+    setEnglishImages(prev => prev.filter(img => img.id !== imageId));
     setDeleteId(null);
   };
 
@@ -319,13 +299,9 @@ export const BannerSegmentEditor = ({
       updatedImages[index] = { ...updatedImages[index], [field]: value };
       setTargetData({ ...targetData, images: updatedImages });
     } else {
-      setEnglishImages(prev => {
-        const updated = prev.map(img =>
-          img.id === imageId ? { ...img, [field]: value } : img
-        );
-        onChange({ ...data, images: updated });
-        return updated;
-      });
+      setEnglishImages(prev => prev.map(img =>
+        img.id === imageId ? { ...img, [field]: value } : img
+      ));
     }
   };
 
