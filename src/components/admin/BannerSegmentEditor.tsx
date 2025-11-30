@@ -26,7 +26,7 @@ import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
 
 interface BannerImage {
-  id: string; // Unique stable ID for React keys
+  id?: string; // Optional ID, we primarily work index-based in the editor now
   url: string;
   alt: string;
   metadata?: ImageMetadata;
@@ -80,22 +80,14 @@ export const BannerSegmentEditor = ({
     images: []
   });
   
-  const ensureImageIds = (images: BannerImage[]): BannerImage[] => {
-    return images.map(img => ({
-      ...img,
-      id: img.id || `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    }));
-  };
+  const ensureImageIds = (images: BannerImage[]): BannerImage[] => images;
 
   // Single source of truth: always derive images from props (data.images)
-  const englishImages = ensureImageIds(data.images || []);
+  const englishImages = data.images || [];
 
-  // If legacy data had missing IDs, update parent once when data.images changes
+  // Legacy hook retained for possible future use (no-op for now)
   useEffect(() => {
-    const hadMissingIds = (data.images || []).some(img => !img.id);
-    if (hadMissingIds) {
-      onChange({ ...data, images: englishImages });
-    }
+    // no-op: we no longer mutate data.images here to avoid overwriting edits
   }, [data.images]);
 
   const [isTranslating, setIsTranslating] = useState(false);
@@ -182,14 +174,10 @@ export const BannerSegmentEditor = ({
     // loadTargetLanguageData is now called by useEffect
   };
 
-  const handleImageUpload = async (imageId: string, file: File) => {
-    if (!imageId) {
-      toast.error("Image ID missing - cannot upload");
-      return;
-    }
-
+  const handleImageUpload = async (index: number, file: File) => {
     try {
-      console.log('[BannerSegmentEditor] handleImageUpload start', { imageId, imagesBefore: englishImages });
+      setUploadingIndex(index);
+      console.log('[BannerSegmentEditor] handleImageUpload start', { index, imagesBefore: englishImages });
 
       // Convert to base64
       const reader = new FileReader();
@@ -218,25 +206,23 @@ export const BannerSegmentEditor = ({
 
       const metadataWithoutAlt = await extractImageMetadata(file, result.url);
 
-      // Find the current image object to preserve its existing alt text
-      const currentImage = englishImages.find(img => img.id === imageId);
+      updateEnglishImages(prev => {
+        const currentImage = prev[index];
+        const metadata: ImageMetadata = {
+          ...metadataWithoutAlt,
+          altText: currentImage?.alt || ''
+        };
 
-      const metadata: ImageMetadata = {
-        ...metadataWithoutAlt,
-        altText: currentImage?.alt || ''
-      };
+        const updated = [...prev];
+        updated[index] = {
+          ...(currentImage || { url: '', alt: '' }),
+          url: result.url,
+          metadata,
+        };
+        console.log('[BannerSegmentEditor] handleImageUpload updatedImages', { index, updated });
+        return updated;
+      });
 
-      // Find and update the image by ID (not by index) to avoid race conditions
-      const updatedImages = englishImages.map(img =>
-        img.id === imageId
-          ? { ...img, url: result.url, metadata }
-          : img
-      );
-      
-      console.log('[BannerSegmentEditor] handleImageUpload updatedImages', { imageId, updatedImages });
-
-      updateEnglishImages(() => updatedImages);
-      
       toast.success("Image uploaded successfully!");
     } catch (error: any) {
       toast.error("Error uploading image: " + error.message);
@@ -245,36 +231,30 @@ export const BannerSegmentEditor = ({
     }
   };
  
-  const handleMediaSelect = async (imageId: string, url: string, metadata?: any) => {
-    if (!imageId) {
-      toast.error("Image ID missing - cannot select");
-      return;
-    }
-    
-    // Find the current image object to preserve its existing alt text when metadata is missing
-    const currentImage = englishImages.find(img => img.id === imageId);
+  const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
+    updateEnglishImages(prev => {
+      const currentImage = prev[index];
 
-    const imageMetadata: ImageMetadata = metadata 
-      ? { ...metadata, altText: currentImage?.alt || '' } 
-      : { 
-          ...(currentImage?.metadata as ImageMetadata | undefined),
-          altText: currentImage?.alt || ''
-        } as ImageMetadata;
-    
-    // Find and update the image by ID (not by index) to avoid race conditions
-    const updatedImages = englishImages.map(img => 
-      img.id === imageId
-        ? { ...img, url: url, metadata: imageMetadata }
-        : img
-    );
-    
-    updateEnglishImages(() => updatedImages);
+      const imageMetadata: ImageMetadata = metadata 
+        ? { ...metadata, altText: currentImage?.alt || '' } 
+        : { 
+            ...(currentImage?.metadata as ImageMetadata | undefined),
+            altText: currentImage?.alt || ''
+          } as ImageMetadata;
+
+      const updated = [...prev];
+      updated[index] = {
+        ...(currentImage || { url: '', alt: '' }),
+        url,
+        metadata: imageMetadata,
+      };
+      return updated;
+    });
     toast.success("Image selected successfully!");
   };
 
   const handleAddImage = () => {
     const newImage: BannerImage = {
-      id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       url: '',
       alt: ''
     };
@@ -449,8 +429,8 @@ export const BannerSegmentEditor = ({
         const segments = JSON.parse(pageContentData.content_value || "[]");
         let segmentFound = false;
 
-        // Always sync images from English props for target save
-        const englishImagesLocal: BannerImage[] = ensureImageIds(data.images || []);
+        // Always sync images from English props for target save (index-based)
+        const englishImagesLocal: BannerImage[] = data.images || [];
         const mergedImages: BannerImage[] = englishImagesLocal.map((enImg, idx) => {
           const targetImg = targetData.images[idx];
           return {
@@ -679,7 +659,7 @@ export const BannerSegmentEditor = ({
 
           <div className="space-y-4">
             {(isTarget ? currentData.images : englishImages).map((image, index) => (
-              <div key={image.id || index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
+              <div key={index} className="p-4 border rounded-lg bg-muted/30 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-sm">Image {index + 1}</span>
                   {!isTarget && (
@@ -696,8 +676,8 @@ export const BannerSegmentEditor = ({
 
                 {!isTarget && (
                   <MediaSelector
-                    onFileSelect={(file) => handleImageUpload(image.id, file)}
-                    onMediaSelect={(url, metadata) => handleMediaSelect(image.id, url, metadata)}
+                    onFileSelect={(file) => handleImageUpload(index, file)}
+                    onMediaSelect={(url, metadata) => handleMediaSelect(index, url, metadata)}
                     acceptedFileTypes="image/*"
                     label="Image File"
                     currentImageUrl={image.url}
