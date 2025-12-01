@@ -17,7 +17,7 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     // Parse request body for dynamic image URL (optional)
-    let imageUrl = "https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images/media/logo_ci/1764577403945-Logo-test-iQ-IE_V7.png";
+    let imageUrl = "https://github.com/stone1971grey/imageengeneeringv1-engl-v11/blob/main/Logo-test-iQ-IE_V7.png?raw=true";
     let imageType = "image/png";
 
     if (req.method === "POST") {
