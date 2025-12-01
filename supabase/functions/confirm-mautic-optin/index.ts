@@ -368,16 +368,29 @@ const handler = async (req: Request): Promise<Response> => {
     const currentStatus = contact.fields?.all?.marketing_optin;
     console.log("Current marketing_optin status:", currentStatus);
 
-    // Get event info from contact for campaign assignment and tag
+    // Get event info from contact for campaign assignment
     const eventTitle = contact.fields?.all?.event_title;
     console.log("Contact event_title:", eventTitle);
 
-    // Build event tag if event exists (format: evt:event_slug)
+    // Read existing evt:* tag from contact instead of generating new one
+    // This prevents duplicate tags with different slug formats (underscores vs hyphens)
     let eventTag: string | undefined;
-    if (eventTitle) {
+    if (contact.tags && Array.isArray(contact.tags)) {
+      const existingEventTag = contact.tags.find((t: any) => {
+        const tagName = t.tag || t;
+        return typeof tagName === 'string' && tagName.startsWith('evt:') && tagName !== 'evt';
+      });
+      if (existingEventTag) {
+        eventTag = existingEventTag.tag || existingEventTag;
+        console.log("Using existing event tag from contact:", eventTag);
+      }
+    }
+    
+    // Only if no existing evt:* tag found, generate one from event title (fallback)
+    if (!eventTag && eventTitle) {
       const eventSlug = eventTitleToSlug(eventTitle);
       eventTag = `evt:${eventSlug}`;
-      console.log("Will add event tag:", eventTag);
+      console.log("Generated new event tag (fallback):", eventTag);
     }
 
     // Update marketing_optin to yes (with event tag if applicable)
