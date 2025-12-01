@@ -4629,425 +4629,52 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="applications_title" className="text-white">Section Title</Label>
-                <Input
-                  id="applications_title"
-                  value={content.applications_title || ""}
-                  onChange={(e) => setContent({ ...content, applications_title: e.target.value })}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label htmlFor="applications_description" className="text-white">Section Description</Label>
-                <Textarea
-                  id="applications_description"
-                  value={content.applications_description || ""}
-                  onChange={(e) => setContent({ ...content, applications_description: e.target.value })}
-                  rows={3}
-                  className="border-2 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label htmlFor="tiles_columns" className="text-white">Number of Columns</Label>
-                <Select value={tilesColumns} onValueChange={setTilesColumns}>
-                  <SelectTrigger className="border-2 border-gray-600 text-black h-12">
-                    <SelectValue placeholder="Select columns" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="2">2 Columns</SelectItem>
-                    <SelectItem value="3">3 Columns</SelectItem>
-                    <SelectItem value="4">4 Columns</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Application Items */}
-              <div className="space-y-4 mt-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">Application Items</h3>
-                  <Button
-                    onClick={handleAddTile}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add New Tile
-                  </Button>
+            <CardContent>
+              {isSplitScreenEnabled && editorLanguage !== 'en' ? (
+                <div className="grid grid-cols-2 gap-6">
+                  {/* English Reference Panel (Left) */}
+                  <div className="border-r border-gray-600 pr-6">
+                    <div className="mb-4 p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🇺🇸</span>
+                        <span className="text-blue-300 font-semibold">English (Reference)</span>
+                      </div>
+                    </div>
+                    <TilesSegmentEditor
+                      key={`tiles-en-${selectedPage}`}
+                      pageSlug={selectedPage}
+                      segmentId={segmentRegistry['tiles']?.toString() || '2'}
+                      language="en"
+                      onSave={() => loadContent()}
+                    />
+                  </div>
+                  
+                  {/* Target Language Panel (Right) */}
+                  <div className="pl-6">
+                    <TilesSegmentEditor
+                      key={`tiles-${editorLanguage}-${selectedPage}`}
+                      pageSlug={selectedPage}
+                      segmentId={segmentRegistry['tiles']?.toString() || '2'}
+                      language={editorLanguage}
+                      onSave={() => loadContent()}
+                    />
+                  </div>
                 </div>
-                {applications.map((app, index) => (
-                  <Card key={index} className={`border-2 ${index % 2 === 0 ? 'bg-gray-600 border-gray-500' : 'bg-gray-800 border-gray-700'}`}>
-                    <CardContent className="pt-6 space-y-3">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className={`px-4 py-2 ${index % 2 === 0 ? 'bg-[#f9dc24]' : 'bg-orange-400'} text-black text-base font-bold rounded-md shadow-lg`}>
-                          Tile {index + 1}
-                        </div>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="flex items-center gap-2"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              Delete
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This will permanently delete "Tile {index + 1}". This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeleteTile(index)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                      {/* Image Upload */}
-                      <div>
-                        <Label htmlFor={`app_image_${index}`} className="text-white">Tile Image (Optional)</Label>
-                        <p className="text-sm text-white mb-2">
-                          {app.imageUrl ? "Current image - click 'Replace' to upload a new one" : "Upload an image for this tile (appears above the title)"}
-                        </p>
-                        {app.imageUrl && (
-                          <div className="mb-3">
-                            <img 
-                              src={app.imageUrl} 
-                              alt={`Tile ${index + 1}`} 
-                              className="max-w-xs h-auto object-contain rounded-lg border-2 border-gray-600"
-                            />
-                          </div>
-                        )}
-                        
-                        {app.imageUrl ? (
-                           <Button
-                              type="button"
-                              onClick={() => document.getElementById(`app_image_${index}`)?.click()}
-                              disabled={false}
-                              className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                            >
-                              Replace Image
-                           </Button>
-                         ) : null}
-                        
-                        <Input
-                          id={`app_image_${index}`}
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleTileImageUpload(e, index)}
-                          disabled={uploading}
-                          className={`border-2 border-gray-600 ${app.imageUrl ? "hidden" : ""}`}
-                        />
-                        
-                        {/* Image Metadata Display */}
-                        {app.metadata && (
-                          <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
-                            <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                              <div>
-                                <span className="text-gray-600">Original Name:</span>
-                                <p className="text-black font-medium">{app.metadata.originalFileName}</p>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Dimensions:</span>
-                                <p className="text-black font-medium">{app.metadata.width} × {app.metadata.height} px</p>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">File Size:</span>
-                                <p className="text-black font-medium">{formatFileSize(app.metadata.fileSizeKB)}</p>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Format:</span>
-                                <p className="text-black font-medium uppercase">{app.metadata.format}</p>
-                              </div>
-                              <div className="col-span-2">
-                                <span className="text-gray-600">Upload Date:</span>
-                                <p className="text-black font-medium">{formatUploadDate(app.metadata.uploadDate)}</p>
-                              </div>
-                            </div>
-                            
-                            <div className="mt-4">
-                              <Label htmlFor={`app_image_alt_${index}`} className="text-black text-base">Alt Text (SEO)</Label>
-                              <Input
-                                id={`app_image_alt_${index}`}
-                                type="text"
-                                value={app.metadata.altText || ''}
-                                onChange={(e) => {
-                                  const newApps = [...applications];
-                                  if (newApps[index].metadata) {
-                                    newApps[index].metadata.altText = e.target.value;
-                                    setApplications(newApps);
-                                  }
-                                }}
-                                placeholder="Describe this image for accessibility and SEO"
-                                className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
-                              />
-                              <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Icon Selection */}
-                      <div>
-                        <Label htmlFor={`app_icon_${index}`} className="text-white">Icon (Optional)</Label>
-                        <Select
-                          value={app.icon || "none"}
-                          onValueChange={(value) => {
-                            const newApps = [...applications];
-                            newApps[index].icon = value === "none" ? "" : value;
-                            setApplications(newApps);
-                          }}
-                        >
-                          <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                            <SelectValue placeholder="Select an icon" className="text-black">
-                              {(() => {
-                                const iconMap: Record<string, any> = {
-                                  'FileText': FileText,
-                                  'Download': Download,
-                                  'BarChart3': BarChart3,
-                                  'Zap': Zap,
-                                  'Shield': Shield,
-                                  'Eye': Eye,
-                                  'Car': Car,
-                                  'Smartphone': Smartphone,
-                                  'Heart': Heart,
-                                  'CheckCircle': CheckCircle,
-                                  'Lightbulb': Lightbulb,
-                                  'Monitor': Monitor
-                                };
-                                const IconComponent = iconMap[app.icon || ''];
-                                return IconComponent ? (
-                                  <div className="flex items-center gap-2">
-                                    <IconComponent className="h-4 w-4" />
-                                    <span>{app.icon}</span>
-                                  </div>
-                                ) : (
-                                  <span>{app.icon || 'Select an icon'}</span>
-                                );
-                              })()}
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent className="bg-white">
-                            <SelectItem value="none" className="text-black">
-                              <span>No Icon</span>
-                            </SelectItem>
-                            <SelectItem value="FileText" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <FileText className="h-4 w-4" />
-                                <span>Document (FileText)</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Download" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Download className="h-4 w-4" />
-                                <span>Download</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="BarChart3" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <BarChart3 className="h-4 w-4" />
-                                <span>Bar Chart</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Zap" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Zap className="h-4 w-4" />
-                                <span>Lightning (Zap)</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Shield" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Shield className="h-4 w-4" />
-                                <span>Shield</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Eye" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Eye className="h-4 w-4" />
-                                <span>Eye</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Car" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Car className="h-4 w-4" />
-                                <span>Car</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Smartphone" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Smartphone className="h-4 w-4" />
-                                <span>Smartphone</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Heart" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Heart className="h-4 w-4" />
-                                <span>Heart</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="CheckCircle" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <CheckCircle className="h-4 w-4" />
-                                <span>Check Circle</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Lightbulb" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Lightbulb className="h-4 w-4" />
-                                <span>Lightbulb</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="Monitor" className="text-black">
-                              <div className="flex items-center gap-2">
-                                <Monitor className="h-4 w-4" />
-                                <span>Monitor</span>
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <p className="text-sm text-white mt-1">
-                          Icon appears in a yellow circle above the title
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor={`app_title_${index}`} className="text-white">Application {index + 1} Title</Label>
-                        <Input
-                          id={`app_title_${index}`}
-                          value={app.title}
-                          onChange={(e) => {
-                            const newApps = [...applications];
-                            newApps[index].title = e.target.value;
-                            setApplications(newApps);
-                          }}
-                          className="border-2 border-gray-600"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor={`app_desc_${index}`} className="text-white">Application {index + 1} Description</Label>
-                        <Textarea
-                          id={`app_desc_${index}`}
-                          value={app.description}
-                          onChange={(e) => {
-                            const newApps = [...applications];
-                            newApps[index].description = e.target.value;
-                            setApplications(newApps);
-                          }}
-                          rows={3}
-                          className="border-2 border-gray-600"
-                        />
-                      </div>
-                      
-                      {/* Button Settings */}
-                      <div className="pt-3 border-t border-gray-600">
-                        <div className="flex items-center justify-between mb-4">
-                          <h4 className="text-sm font-semibold text-white">Button Settings</h4>
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="checkbox"
-                              id={`app_show_button_${index}`}
-                              checked={app.showButton !== false}
-                              onChange={(e) => {
-                                const newApps = [...applications];
-                                newApps[index].showButton = e.target.checked;
-                                setApplications(newApps);
-                              }}
-                              className="h-5 w-5 rounded border-gray-600"
-                            />
-                            <Label htmlFor={`app_show_button_${index}`} className="text-white cursor-pointer">
-                              Show Button
-                            </Label>
-                          </div>
-                        </div>
-                        
-                        {app.showButton !== false && (
-                          <div className="space-y-3">
-                            <div>
-                              <Label htmlFor={`app_cta_link_${index}`} className="text-white">Button Link</Label>
-                              <Input
-                                id={`app_cta_link_${index}`}
-                                value={app.ctaLink || ""}
-                                onChange={(e) => {
-                                  const newApps = [...applications];
-                                  newApps[index].ctaLink = e.target.value;
-                                  setApplications(newApps);
-                                }}
-                                placeholder="/page-url or https://example.com"
-                                className="border-2 border-gray-600"
-                              />
-                              <p className="text-sm text-white mt-1">
-                                Use '/path' for internal pages or 'https://...' for external URLs
-                              </p>
-                            </div>
-                            
-                            <div>
-                              <Label htmlFor={`app_cta_text_${index}`} className="text-white">Button Text</Label>
-                              <Input
-                                id={`app_cta_text_${index}`}
-                                value={app.ctaText || ""}
-                                onChange={(e) => {
-                                  const newApps = [...applications];
-                                  newApps[index].ctaText = e.target.value;
-                                  setApplications(newApps);
-                                }}
-                                placeholder="Learn More"
-                                className="border-2 border-gray-600"
-                              />
-                              <p className="text-sm text-white mt-1">
-                                Text displayed on the button (default: "Learn More")
-                              </p>
-                            </div>
-                            
-                            <div>
-                              <Label htmlFor={`app_cta_style_${index}`} className="text-white">Button Style</Label>
-                              <Select
-                                value={app.ctaStyle || "standard"}
-                                onValueChange={(value) => {
-                                  const newApps = [...applications];
-                                  newApps[index].ctaStyle = value;
-                                  setApplications(newApps);
-                                }}
-                              >
-                                <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                                  <SelectValue placeholder="Select button style" className="text-black" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white">
-                                  <SelectItem value="standard" className="text-black">Standard (Yellow with Black Text)</SelectItem>
-                                  <SelectItem value="technical" className="text-black">Technical (Dark Gray with White Text)</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              ) : (
+                <TilesSegmentEditor
+                  key={`tiles-${editorLanguage}-${selectedPage}`}
+                  pageSlug={selectedPage}
+                  segmentId={segmentRegistry['tiles']?.toString() || '2'}
+                  language={editorLanguage}
+                  onSave={() => loadContent()}
+                />
+              )}
 
-              <div className="flex flex-col gap-3 pt-4 border-t">
-                <Button
-                  onClick={handleSaveApplications}
-                  disabled={saving}
-                  className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                >
-                  {saving ? "Saving..." : "Save Changes"}
-                </Button>
-
+              <div className="mt-6 pt-4 border-t border-gray-600">
                 <Button
                   onClick={() => setCopyTilesDialogOpen(true)}
                   variant="outline"
-                  className="flex items-center gap-2 self-start"
+                  className="flex items-center gap-2"
                 >
                   <Copy className="h-4 w-4" />
                   Copy to Page...
