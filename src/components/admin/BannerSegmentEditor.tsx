@@ -256,7 +256,6 @@ export const BannerSegmentEditor = ({
       e.target.value = '';
       
     } catch (error: any) {
-      console.error('[Upload] Error:', error);
       toast.error('Upload failed: ' + (error.message || 'Unknown error'));
     } finally {
       setUploadingId(null);
@@ -374,7 +373,6 @@ export const BannerSegmentEditor = ({
         toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name}`);
       }
     } catch (error) {
-      console.error('Translation error:', error);
       toast.error('Translation failed');
     } finally {
       setIsTranslating(false);
@@ -431,7 +429,6 @@ export const BannerSegmentEditor = ({
       toast.success('Saved English version');
       if (onSave) onSave();
     } catch (error) {
-      console.error('Save error:', error);
       toast.error('Save failed');
     } finally {
       setIsSaving(false);
@@ -584,7 +581,7 @@ export const BannerSegmentEditor = ({
           try {
             clonedOrder = JSON.parse(englishTab.content_value || "[]");
           } catch (e) {
-            console.error('Error parsing EN tab_order while cloning for target language', e);
+            // Silent fail on parse error
           }
           if (!clonedOrder.includes(segmentIdStr)) {
             clonedOrder.push(segmentIdStr);
@@ -604,7 +601,7 @@ export const BannerSegmentEditor = ({
         try {
           currentOrder = JSON.parse(tabOrderRow.content_value || "[]");
         } catch (e) {
-          console.error('Error parsing tab_order for target language', e);
+          // Silent fail on parse error
         }
         if (!currentOrder.includes(segmentIdStr)) {
           currentOrder.push(segmentIdStr);
@@ -623,7 +620,6 @@ export const BannerSegmentEditor = ({
 
       toast.success(`Saved ${LANGUAGES.find(l => l.code === targetLanguage)?.name} version`);
     } catch (error) {
-      console.error('Save error:', error);
       toast.error('Save failed');
     } finally {
       setIsSaving(false);
