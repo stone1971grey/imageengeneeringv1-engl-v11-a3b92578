@@ -2097,7 +2097,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (error) {
@@ -2162,7 +2162,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user?.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (dbError) throw dbError;
@@ -6741,7 +6741,7 @@ const AdminDashboard = () => {
                                     updated_at: new Date().toISOString(),
                                     updated_by: user?.id
                                   }, {
-                                    onConflict: 'page_slug,section_key'
+                                    onConflict: 'page_slug,section_key,language'
                                   });
 
                                 if (error) throw error;

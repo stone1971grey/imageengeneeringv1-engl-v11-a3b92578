@@ -94,82 +94,91 @@ export const CopySegmentDialog = ({
 
       if (contentError) throw contentError;
 
-      // Add segment to page_segments array
-      const { data: pageSegmentsData } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', targetPage)
-        .eq('section_key', 'page_segments')
-        .maybeSingle();
+      // CRITICAL: Copy segment to ALL language versions, not just one
+      const languages = ['en', 'de', 'ja', 'ko', 'zh'];
+      
+      for (const lang of languages) {
+        // Add segment to page_segments array for this language
+        const { data: pageSegmentsData } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', targetPage)
+          .eq('section_key', 'page_segments')
+          .eq('language', lang)
+          .maybeSingle();
 
-      let pageSegments: any[] = [];
-      if (pageSegmentsData?.content_value) {
-        try {
-          pageSegments = JSON.parse(pageSegmentsData.content_value);
-        } catch (e) {
-          console.error('Error parsing page_segments:', e);
+        let pageSegments: any[] = [];
+        if (pageSegmentsData?.content_value) {
+          try {
+            pageSegments = JSON.parse(pageSegmentsData.content_value);
+          } catch (e) {
+            console.error('Error parsing page_segments:', e);
+          }
         }
-      }
 
-      // Add new segment to page_segments
-      const newSegment = {
-        id: newSegmentId.toString(),
-        type: segmentType,
-        data: segmentData
-      };
+        // Add new segment to page_segments
+        const newSegment = {
+          id: newSegmentId.toString(),
+          type: segmentType,
+          data: segmentData
+        };
 
-      if (position === 'start') {
-        pageSegments.unshift(newSegment);
-      } else {
-        pageSegments.push(newSegment);
-      }
-
-      const { error: segmentsError } = await supabase
-        .from('page_content')
-        .upsert({
-          page_slug: targetPage,
-          section_key: 'page_segments',
-          content_type: 'json',
-          content_value: JSON.stringify(pageSegments)
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      if (segmentsError) throw segmentsError;
-
-      // Update tab_order of target page
-      const { data: tabOrderData } = await supabase
-        .from('page_content')
-        .select('content_value')
-        .eq('page_slug', targetPage)
-        .eq('section_key', 'tab_order')
-        .maybeSingle();
-
-      let currentTabOrder: string[] = [];
-      if (tabOrderData?.content_value) {
-        try {
-          currentTabOrder = JSON.parse(tabOrderData.content_value);
-        } catch (e) {
-          currentTabOrder = [];
+        if (position === 'start') {
+          pageSegments.unshift(newSegment);
+        } else {
+          pageSegments.push(newSegment);
         }
+
+        const { error: segmentsError } = await supabase
+          .from('page_content')
+          .upsert({
+            page_slug: targetPage,
+            section_key: 'page_segments',
+            content_type: 'json',
+            content_value: JSON.stringify(pageSegments),
+            language: lang
+          }, {
+            onConflict: 'page_slug,section_key,language'
+          });
+
+        if (segmentsError) throw segmentsError;
+
+        // Update tab_order of target page for this language
+        const { data: tabOrderData } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', targetPage)
+          .eq('section_key', 'tab_order')
+          .eq('language', lang)
+          .maybeSingle();
+
+        let currentTabOrder: string[] = [];
+        if (tabOrderData?.content_value) {
+          try {
+            currentTabOrder = JSON.parse(tabOrderData.content_value);
+          } catch (e) {
+            currentTabOrder = [];
+          }
+        }
+
+        const newTabOrder = position === 'start' 
+          ? [newSegmentId.toString(), ...currentTabOrder]
+          : [...currentTabOrder, newSegmentId.toString()];
+
+        const { error: tabOrderError } = await supabase
+          .from('page_content')
+          .upsert({
+            page_slug: targetPage,
+            section_key: 'tab_order',
+            content_type: 'json',
+            content_value: JSON.stringify(newTabOrder),
+            language: lang
+          }, {
+            onConflict: 'page_slug,section_key,language'
+          });
+
+        if (tabOrderError) throw tabOrderError;
       }
-
-      const newTabOrder = position === 'start' 
-        ? [newSegmentId.toString(), ...currentTabOrder]
-        : [...currentTabOrder, newSegmentId.toString()];
-
-      const { error: tabOrderError } = await supabase
-        .from('page_content')
-        .upsert({
-          page_slug: targetPage,
-          section_key: 'tab_order',
-          content_type: 'json',
-          content_value: JSON.stringify(newTabOrder)
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      if (tabOrderError) throw tabOrderError;
 
       // Success!
       const targetPageTitle = pages.find(p => p.page_slug === targetPage)?.page_title || targetPage;
