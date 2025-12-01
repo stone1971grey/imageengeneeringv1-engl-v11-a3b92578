@@ -333,19 +333,25 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
   const autoSaveAfterUpload = async (updatedData: ProductHeroGalleryData) => {
     try {
+      // CRITICAL: Always include language filter to prevent cross-language contamination
       const { data: pageContentData, error: fetchError } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
-        .single();
+        .eq("language", language)
+        .maybeSingle();
 
-      if (fetchError || !pageContentData) {
+      if (fetchError) {
         console.error("Error loading page_segments:", fetchError);
         return;
       }
 
-      const segments = JSON.parse(pageContentData.content_value);
+      let segments = [];
+      if (pageContentData?.content_value) {
+        segments = JSON.parse(pageContentData.content_value);
+      }
+
       const updatedSegments = segments.map((seg: any) => {
         if (seg.type === "product-hero-gallery" && String(seg.id) === String(segmentId)) {
           return { ...seg, data: updatedData };
@@ -353,19 +359,25 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         return seg;
       });
 
+      // Use upsert with proper language constraint
       const { error: updateError } = await supabase
         .from("page_content")
-        .update({
+        .upsert({
+          page_slug: pageSlug,
+          section_key: "page_segments",
+          content_type: "json",
           content_value: JSON.stringify(updatedSegments),
+          language: language,
+          updated_at: new Date().toISOString(),
           updated_by: (await supabase.auth.getUser()).data.user?.id,
-        })
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments");
+        }, {
+          onConflict: 'page_slug,section_key,language'
+        });
 
       if (updateError) {
         console.error("Auto-save error:", updateError);
       } else {
-        console.log("✅ Image auto-saved to database");
+        console.log(`✅ Image auto-saved to database for language: ${language}`);
         onSave?.();
       }
     } catch (e) {
