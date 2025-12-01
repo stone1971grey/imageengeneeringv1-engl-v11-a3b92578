@@ -303,6 +303,12 @@ const Events = () => {
     setIsSubmitting(true);
 
     try {
+      // Construct absolute URL for event image
+      const imageUrl = selectedEvent.imageUrl || selectedEvent.image;
+      const absoluteImageUrl = imageUrl.startsWith('http') 
+        ? imageUrl 
+        : `${window.location.origin}${imageUrl}`;
+      
       // Call the edge function to save to database and send to Mautic
       const response = await fetch('https://afrcagkprhtvvucukubf.supabase.co/functions/v1/register-event', {
         method: 'POST',
@@ -320,7 +326,7 @@ const Events = () => {
           eventSlug: selectedEvent.slug,
           eventDate: selectedEvent.date,
           eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
-          eventImage: selectedEvent.imageUrl || selectedEvent.image,
+          eventImage: absoluteImageUrl,
         }),
       });
 
@@ -355,7 +361,7 @@ const Events = () => {
         eventDate: selectedEvent.date,
         eventTime: selectedEvent.time,
         eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
-        eventImageUrl: selectedEvent.imageUrl || selectedEvent.image // Use public URL
+        eventImageUrl: absoluteImageUrl
       };
       localStorage.setItem('lastEventRegistration', JSON.stringify(eventData));
       
