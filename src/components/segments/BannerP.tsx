@@ -58,11 +58,11 @@ export const BannerP = ({
             <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
               {images.map((image) => 
                 image.url ? (
-                  <div key={image.id} className="flex items-center justify-center">
+                  <div key={image.id} className="bg-gray-200 rounded-lg p-6 w-48 h-32 flex items-center justify-center">
                     <img
                       src={image.url}
                       alt={image.alt || 'Banner image'}
-                      className="max-h-24 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+                      className="max-h-20 max-w-full object-contain grayscale hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
                 ) : null
