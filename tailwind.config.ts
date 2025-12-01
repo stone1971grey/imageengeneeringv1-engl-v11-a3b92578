@@ -162,18 +162,18 @@ export default {
 						height: '0'
 					}
 				},
-			'slide-in-up': {
-				"0%": { transform: "translateY(0)", opacity: "1" },
-				"100%": { transform: "translateY(0)", opacity: "1" }
-			},
+				'slide-in-up': {
+					"0%": { transform: "translateY(20px)", opacity: "0" },
+					"100%": { transform: "translateY(0)", opacity: "1" }
+				},
 				'hover-lift': {
 					"0%": { transform: "translateY(0px)" },
 					"100%": { transform: "translateY(-8px)" }
 				},
-			'fade-in': {
-				"0%": { opacity: "1", transform: "scale(1)" },
-				"100%": { opacity: "1", transform: "scale(1)" }
-			},
+				'fade-in': {
+					"0%": { opacity: "0", transform: "scale(1.05)" },
+					"100%": { opacity: "1", transform: "scale(1)" }
+				},
 				'ken-burns': {
 					"0%": { transform: "scale(1) translate(0, 0)" },
 					"20%": { transform: "scale(1.25) translate(-3%, -2%)" },
