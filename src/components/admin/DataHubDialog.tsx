@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square } from "lucide-react";
+import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square, RefreshCw } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -89,6 +89,7 @@ export function DataHubDialog({
   } | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [batchDeleting, setBatchDeleting] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   // Debounced localStorage write
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
@@ -103,7 +104,8 @@ export function DataHubDialog({
   }, []);
 
   // Load folders from database with hierarchical structure
-  const loadFolders = async () => {
+  const loadFolders = useCallback(async () => {
+    setIsRefreshing(true);
     try {
       const { data, error } = await supabase
         .from("media_folders")
@@ -222,8 +224,10 @@ export function DataHubDialog({
     } catch (error) {
       console.error("Error loading folders:", error);
       toast.error("Failed to load folders");
+    } finally {
+      setIsRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -519,9 +523,14 @@ export function DataHubDialog({
     return /\.(mp4|webm)$/i.test(fileName);
   }, []);
 
-  const renderFolder = (folder: MediaFolder, level: number = 0) => {
+  // Memoize file filtering to avoid recalculating on every render
+  const getFilteredFiles = useCallback((files: StorageFile[] = []) => {
+    return files.filter(file => file.name.includes('.'));
+  }, []);
+
+  const renderFolder = useCallback((folder: MediaFolder, level: number = 0) => {
     const isOpen = openFolders.includes(folder.id);
-    const folderFiles = folder.files || [];
+    const folderFiles = getFilteredFiles(folder.files);
     const isRootFolder = folder.parent_id === null;
 
     return (
@@ -890,7 +899,7 @@ export function DataHubDialog({
         </div>
       </Collapsible>
     );
-  };
+  }, [openFolders, getFilteredFiles, getFileUrl, isImage, isVideo, toggleFolder, selectionMode, onSelect, selectedFiles, uploading, selectedFolder, creatingFolderFor, newFolderName, editingFolder, deletingFolder, batchDeleting]);
 
   return (
     <>
@@ -914,18 +923,37 @@ export function DataHubDialog({
         )}
         <DialogContent className="max-w-6xl max-h-[90vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-700">
           <DialogHeader className="border-b border-gray-700 pb-4">
-            <DialogTitle className="text-3xl font-bold text-white flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-[#e6cc1f] flex items-center justify-center">
-                <Database className="h-5 w-5 text-gray-900" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-[#e6cc1f] flex items-center justify-center">
+                  <Database className="h-5 w-5 text-gray-900" />
+                </div>
+                <div>
+                  <DialogTitle className="text-3xl font-bold text-white">
+                    {selectionMode ? 'Select Media' : 'Media Management'}
+                  </DialogTitle>
+                  <DialogDescription className="text-gray-400 text-base mt-1">
+                    {selectionMode 
+                      ? 'Click on an image to select it for your segment'
+                      : 'Manage your hierarchical folder structure and upload assets'
+                    }
+                  </DialogDescription>
+                </div>
               </div>
-              {selectionMode ? 'Select Media' : 'Media Management'}
-            </DialogTitle>
-            <DialogDescription className="text-gray-400 text-base">
-              {selectionMode 
-                ? 'Click on an image to select it for your segment'
-                : 'Manage your hierarchical folder structure and upload assets'
-              }
-            </DialogDescription>
+              
+              {/* Refresh Button */}
+              <Button
+                onClick={loadFolders}
+                disabled={isRefreshing}
+                size="sm"
+                variant="outline"
+                className="bg-gray-800/50 border-gray-600 hover:bg-gray-700 text-white"
+                title="Refresh media library"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+              </Button>
+            </div>
           </DialogHeader>
 
           <div className="space-y-3 overflow-y-auto max-h-[calc(90vh-140px)] pr-2">
