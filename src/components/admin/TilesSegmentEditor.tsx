@@ -5,11 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Trash2, Plus } from "lucide-react";
-import { GeminiIcon } from "@/components/GeminiIcon";
 import { 
   FileText, Download, BarChart3, Zap, Shield, Eye, Car, 
   Smartphone, Heart, CheckCircle, Lightbulb, Monitor 
@@ -34,76 +33,34 @@ interface TilesSegmentEditorProps {
   onSave?: () => void;
 }
 
-const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'de', name: 'German', flag: '🇩🇪' },
-  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
-  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
-];
-
 export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: TilesSegmentEditorProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [columns, setColumns] = useState("3");
   const [tiles, setTiles] = useState<TileItem[]>([]);
-  const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   useEffect(() => {
     loadContent();
   }, [pageSlug, segmentId, language]);
 
-  const loadContent = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("page_content")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("language", language);
+  // Listen for translate event from SplitScreenSegmentEditor
+  useEffect(() => {
+    if (language === 'en') return; // Don't translate English
 
-      if (error) throw error;
+    const handleTranslate = () => {
+      handleAutoTranslate();
+    };
 
-      if (data && data.length > 0) {
-        data.forEach((item) => {
-          if (item.section_key === 'applications_title') {
-            setTitle(item.content_value || '');
-          } else if (item.section_key === 'applications_description') {
-            setDescription(item.content_value || '');
-          } else if (item.section_key === 'tiles_columns') {
-            setColumns(item.content_value || '3');
-          } else if (item.section_key === 'applications') {
-            setTiles(JSON.parse(item.content_value) || []);
-          }
-        });
-      }
+    window.addEventListener('tiles-translate', handleTranslate);
+    return () => window.removeEventListener('tiles-translate', handleTranslate);
+  }, [language, pageSlug, segmentId]);
 
-      // Fallback: Load English if non-EN language has no content
-      if (language !== 'en' && (!title && !description && tiles.length === 0)) {
-        const { data: enData } = await supabase
-          .from("page_content")
-          .select("*")
-          .eq("page_slug", pageSlug)
-          .eq("language", "en");
-
-        if (enData && enData.length > 0) {
-          enData.forEach((item) => {
-            if (item.section_key === 'applications_title') setTitle(item.content_value || '');
-            if (item.section_key === 'applications_description') setDescription(item.content_value || '');
-            if (item.section_key === 'tiles_columns') setColumns(item.content_value || '3');
-            if (item.section_key === 'applications') setTiles(JSON.parse(item.content_value) || []);
-          });
-        }
-      }
-    } catch (error: any) {
-      console.error('Error loading tiles content:', error);
-      toast.error('Failed to load content');
-    }
-  };
-
-  const handleTranslate = async () => {
+  const handleAutoTranslate = async () => {
     if (language === 'en') return;
-
+    
     setIsTranslating(true);
     try {
       // Load English reference
@@ -111,30 +68,34 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
         .from("page_content")
         .select("*")
         .eq("page_slug", pageSlug)
-        .eq("language", "en");
+        .eq("section_key", "page_segments")
+        .eq("language", "en")
+        .single();
 
-      if (!enData || enData.length === 0) {
+      if (!enData?.content_value) {
         toast.error("No English reference content found");
         return;
       }
 
-      let enTitle = '';
-      let enDescription = '';
-      let enTiles: TileItem[] = [];
+      const enSegments = JSON.parse(enData.content_value);
+      const enTilesSegment = enSegments.find((seg: any) => seg.id === segmentId);
+      
+      if (!enTilesSegment?.data) {
+        toast.error("No English tiles data found");
+        return;
+      }
 
-      enData.forEach((item) => {
-        if (item.section_key === 'applications_title') enTitle = item.content_value;
-        if (item.section_key === 'applications_description') enDescription = item.content_value;
-        if (item.section_key === 'applications') enTiles = JSON.parse(item.content_value) || [];
-      });
+      const enTitle = enTilesSegment.data.title || '';
+      const enDescription = enTilesSegment.data.description || '';
+      const enTiles = enTilesSegment.data.items || [];
 
       // Prepare texts to translate
       const textsToTranslate: Record<string, string> = {
-        "0": enTitle,
-        "1": enDescription
+        "title": enTitle,
+        "description": enDescription
       };
 
-      enTiles.forEach((tile, index) => {
+      enTiles.forEach((tile: TileItem, index: number) => {
         textsToTranslate[`tile_title_${index}`] = tile.title || '';
         textsToTranslate[`tile_desc_${index}`] = tile.description || '';
         if (tile.ctaText) {
@@ -153,10 +114,10 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
 
       if (translateData?.translatedTexts) {
         const translated = translateData.translatedTexts;
-        setTitle(translated["0"] || enTitle);
-        setDescription(translated["1"] || enDescription);
+        setTitle(translated["title"] || enTitle);
+        setDescription(translated["description"] || enDescription);
 
-        const translatedTiles = enTiles.map((tile, index) => ({
+        const translatedTiles = enTiles.map((tile: TileItem, index: number) => ({
           ...tile,
           title: translated[`tile_title_${index}`] || tile.title,
           description: translated[`tile_desc_${index}`] || tile.description,
@@ -164,6 +125,7 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
         }));
 
         setTiles(translatedTiles);
+        setColumns(enTilesSegment.data.columns || '3');
         toast.success("Content translated successfully!");
       }
     } catch (error: any) {
@@ -174,57 +136,121 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
     }
   };
 
+  const loadContent = async () => {
+    setIsLoading(true);
+    try {
+      // Load from page_segments (dynamic segment storage)
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+
+      if (data?.content_value) {
+        const segments = JSON.parse(data.content_value);
+        const tilesSegment = segments.find((seg: any) => seg.id === segmentId);
+        
+        if (tilesSegment?.data) {
+          setTitle(tilesSegment.data.title || '');
+          setDescription(tilesSegment.data.description || '');
+          setColumns(tilesSegment.data.columns || '3');
+          setTiles(tilesSegment.data.items || []);
+        }
+      }
+
+      // Fallback to English if no content found for non-EN language
+      if (language !== 'en') {
+        const hasContent = title || description || tiles.length > 0;
+        if (!hasContent) {
+          const { data: enData } = await supabase
+            .from("page_content")
+            .select("*")
+            .eq("page_slug", pageSlug)
+            .eq("section_key", "page_segments")
+            .eq("language", "en")
+            .single();
+
+          if (enData?.content_value) {
+            const enSegments = JSON.parse(enData.content_value);
+            const enTilesSegment = enSegments.find((seg: any) => seg.id === segmentId);
+            
+            if (enTilesSegment?.data) {
+              setTitle(enTilesSegment.data.title || '');
+              setDescription(enTilesSegment.data.description || '');
+              setColumns(enTilesSegment.data.columns || '3');
+              setTiles(enTilesSegment.data.items || []);
+            }
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error('Error loading tiles content:', error);
+      toast.error('Failed to load content');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       const user = (await supabase.auth.getUser()).data.user;
       if (!user) throw new Error("User not authenticated");
 
-      // Save title
-      await supabase.from("page_content").upsert({
-        page_slug: pageSlug,
-        section_key: 'applications_title',
-        content_type: 'text',
-        content_value: title,
-        language,
-        updated_at: new Date().toISOString(),
-        updated_by: user.id
-      }, { onConflict: 'page_slug,section_key,language' });
+      // Load existing page_segments for this language
+      const { data: existingData } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .single();
 
-      // Save description
-      await supabase.from("page_content").upsert({
-        page_slug: pageSlug,
-        section_key: 'applications_description',
-        content_type: 'text',
-        content_value: description,
-        language,
-        updated_at: new Date().toISOString(),
-        updated_by: user.id
-      }, { onConflict: 'page_slug,section_key,language' });
+      let segments = [];
+      if (existingData?.content_value) {
+        segments = JSON.parse(existingData.content_value);
+      }
 
-      // Save columns
-      await supabase.from("page_content").upsert({
-        page_slug: pageSlug,
-        section_key: 'tiles_columns',
-        content_type: 'text',
-        content_value: columns,
-        language,
-        updated_at: new Date().toISOString(),
-        updated_by: user.id
-      }, { onConflict: 'page_slug,section_key,language' });
+      // Find and update the tiles segment
+      const segmentIndex = segments.findIndex((seg: any) => seg.id === segmentId);
+      const updatedSegmentData = {
+        title,
+        description,
+        columns,
+        items: tiles
+      };
 
-      // Save tiles
-      await supabase.from("page_content").upsert({
-        page_slug: pageSlug,
-        section_key: 'applications',
-        content_type: 'json',
-        content_value: JSON.stringify(tiles),
-        language,
-        updated_at: new Date().toISOString(),
-        updated_by: user.id
-      }, { onConflict: 'page_slug,section_key,language' });
+      if (segmentIndex >= 0) {
+        segments[segmentIndex].data = updatedSegmentData;
+      } else {
+        // Create new segment entry if it doesn't exist
+        segments.push({
+          id: segmentId,
+          type: 'tiles',
+          data: updatedSegmentData
+        });
+      }
 
-      toast.success(`Tiles saved for ${LANGUAGES.find(l => l.code === language)?.name}!`);
+      // Save back to database
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: pageSlug,
+          section_key: "page_segments",
+          content_type: "json",
+          content_value: JSON.stringify(segments),
+          language,
+          updated_at: new Date().toISOString(),
+          updated_by: user.id
+        }, { onConflict: 'page_slug,section_key,language' });
+
+      if (error) throw error;
+
+      toast.success(`Tiles saved for ${language.toUpperCase()}!`);
       onSave?.();
     } catch (error: any) {
       console.error('Save error:', error);
@@ -235,7 +261,13 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
   };
 
   const handleAddTile = () => {
-    setTiles([...tiles, { title: '', description: '', showButton: true, ctaStyle: 'standard' }]);
+    setTiles([...tiles, { 
+      title: 'New Tile', 
+      description: 'Description here...', 
+      showButton: true, 
+      ctaStyle: 'standard',
+      ctaText: 'Learn More'
+    }]);
   };
 
   const handleDeleteTile = (index: number) => {
@@ -263,37 +295,12 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
     'Monitor': Monitor
   };
 
+  if (isLoading) {
+    return <div className="text-white p-4">Loading...</div>;
+  }
+
   return (
     <div className="space-y-6">
-      {/* Multilingual Rainbow Header */}
-      {language !== 'en' && (
-        <div className="p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">{LANGUAGES.find(l => l.code === language)?.flag}</span>
-              <div>
-                <div className="text-white font-semibold text-sm">Multi-Language Editor</div>
-                <div className="text-blue-300 text-xs">Editing Tiles in {LANGUAGES.find(l => l.code === language)?.name}</div>
-              </div>
-            </div>
-            <Button
-              onClick={handleTranslate}
-              disabled={isTranslating}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-            >
-              {isTranslating ? (
-                "Translating..."
-              ) : (
-                <>
-                  <GeminiIcon className="mr-2 h-4 w-4" />
-                  Translate Automatically
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
-
       {/* Section Settings */}
       <Card className="bg-gray-700 border-gray-600">
         <CardContent className="pt-6 space-y-4">
@@ -324,7 +331,7 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
               <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="2">2 Columns</SelectItem>
                 <SelectItem value="3">3 Columns</SelectItem>
                 <SelectItem value="4">4 Columns</SelectItem>
@@ -337,7 +344,7 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
       {/* Tiles */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-white">Tiles</h3>
+          <h3 className="text-lg font-semibold text-white">Tiles ({tiles.length})</h3>
           <Button onClick={handleAddTile} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
             <Plus className="h-4 w-4 mr-2" />
             Add Tile
@@ -475,7 +482,7 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
                         <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
                           <SelectItem value="standard">Standard (Yellow)</SelectItem>
                           <SelectItem value="technical">Technical (Dark Gray)</SelectItem>
                         </SelectContent>
