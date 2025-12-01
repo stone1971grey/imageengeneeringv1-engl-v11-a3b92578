@@ -3,7 +3,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ActionHero from "@/components/ActionHero";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, MapPin, CheckCircle2, Mail } from "lucide-react";
 
 const EventDetailRegistrationConfirmation = () => {
   const location = useLocation();
@@ -66,7 +66,7 @@ const EventDetailRegistrationConfirmation = () => {
               <h3 className="text-xl font-semibold text-foreground mb-4">Event Details</h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
+                  <Calendar className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-muted-foreground">Event Date</p>
                     <p className="font-medium text-foreground">{formatDate(eventDate)}</p>
@@ -74,7 +74,7 @@ const EventDetailRegistrationConfirmation = () => {
                 </div>
                 {eventTime && (
                   <div className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
+                    <Clock className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-sm text-muted-foreground">Time</p>
                       <p className="font-medium text-foreground">{eventTime}</p>
@@ -83,7 +83,7 @@ const EventDetailRegistrationConfirmation = () => {
                 )}
                 {eventLocation && (
                   <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
+                    <MapPin className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-sm text-muted-foreground">Location</p>
                       <p className="font-medium text-foreground">{eventLocation}</p>
@@ -94,9 +94,15 @@ const EventDetailRegistrationConfirmation = () => {
             </div>
 
             <div className="bg-[#f9dc24]/10 border border-[#f9dc24]/20 rounded-lg p-6 mb-8">
-              <p className="text-sm text-foreground leading-relaxed">
-                <span className="font-semibold">Important Note:</span> You will receive a reminder email 2 days before the event with all relevant details and directions to the venue.
-              </p>
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-foreground mb-2">Confirmation Email Sent</p>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    You will receive a confirmation email shortly with all event details. We will also send you a reminder email 2 days before the event with directions to the venue.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="text-center">
