@@ -31,7 +31,15 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
 
   // Load alt text when dialog opens
   const loadAltText = async () => {
-    if (!asset?.filePath) return;
+    if (!asset?.filePath) {
+      console.log('[AssetEditDialog] No filePath for loading alt text');
+      return;
+    }
+    
+    console.log('[AssetEditDialog] Loading alt text for:', {
+      filePath: asset.filePath,
+      bucket_id: asset.bucket_id
+    });
     
     setIsLoading(true);
     try {
@@ -42,11 +50,15 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         .eq('bucket_id', asset.bucket_id)
         .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error('[AssetEditDialog] Error loading alt text:', error);
+        throw error;
+      }
       
+      console.log('[AssetEditDialog] Loaded alt text:', data?.alt_text);
       setAltText(data?.alt_text || '');
     } catch (error: any) {
-      console.error('Error loading alt text:', error);
+      console.error('[AssetEditDialog] Load failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -62,18 +74,29 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
   const handleSave = async () => {
     if (!asset?.filePath) {
       console.error('[AssetEditDialog] No filePath provided');
+      toast.error('No file path provided');
       return;
     }
+    
+    console.log('[AssetEditDialog] === SAVE START ===');
+    console.log('[AssetEditDialog] Saving alt text for:', {
+      filePath: asset.filePath,
+      bucket_id: asset.bucket_id,
+      alt_text: altText,
+      segmentIds: asset.segmentIds
+    });
     
     setIsSaving(true);
     try {
       // 1) Check if a mapping already exists for this file
       const { data: existing, error: fetchError } = await supabase
         .from('file_segment_mappings')
-        .select('id, segment_ids')
+        .select('id, segment_ids, alt_text')
         .eq('file_path', asset.filePath)
         .eq('bucket_id', asset.bucket_id)
         .maybeSingle();
+
+      console.log('[AssetEditDialog] Existing mapping:', existing);
 
       if (fetchError) {
         console.error('[AssetEditDialog] Error loading existing mapping:', fetchError);
@@ -85,9 +108,12 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         ? existing.segment_ids
         : (asset.segmentIds || []);
 
+      console.log('[AssetEditDialog] Will use segment_ids:', segmentIds);
+
       let error;
       if (existing?.id) {
         // 2) Update existing row
+        console.log('[AssetEditDialog] Updating existing row with id:', existing.id);
         ({ error } = await supabase
           .from('file_segment_mappings')
           .update({
@@ -98,6 +124,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
           .eq('id', existing.id));
       } else {
         // 3) Insert new row
+        console.log('[AssetEditDialog] Inserting new row');
         ({ error } = await supabase
           .from('file_segment_mappings')
           .insert({
@@ -114,6 +141,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         throw error;
       }
       
+      console.log('[AssetEditDialog] === SAVE SUCCESS ===');
       toast.success('✅ Alt text saved successfully');
       onSave();
       onClose();
