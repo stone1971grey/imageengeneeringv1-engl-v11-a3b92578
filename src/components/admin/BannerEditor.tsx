@@ -97,6 +97,7 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
         .select("*")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
+        .eq("language", "en")
         .single();
 
       if (fetchError || !pageContentData) {
@@ -119,7 +120,8 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
           updated_by: (await supabase.auth.getUser()).data.user?.id,
         })
         .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments");
+        .eq("section_key", "page_segments")
+        .eq("language", "en");
 
       if (updateError) {
         console.error("Auto-save error:", updateError);
