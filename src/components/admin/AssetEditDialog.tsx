@@ -32,18 +32,19 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
   // Load alt text when dialog opens
   const loadAltText = async () => {
     if (!asset?.filePath) return;
-    
+
+    const bucketId = asset.bucket_id || "page-images";
     setIsLoading(true);
     try {
       const { data, error } = await supabase
         .from('file_segment_mappings')
         .select('alt_text')
         .eq('file_path', asset.filePath)
-        .eq('bucket_id', asset.bucket_id)
+        .eq('bucket_id', bucketId)
         .maybeSingle();
-      
+
       if (error) throw error;
-      
+
       setAltText(data?.alt_text || '');
     } catch (error: any) {
       console.error('Error loading alt text:', error);
@@ -61,10 +62,13 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
 
   const handleSave = async () => {
     if (!asset?.filePath) {
-      console.error('[AssetEditDialog] No filePath provided');
+      console.error('[AssetEditDialog] No filePath provided', asset);
+      toast.error('Cannot save alt text: missing image file path. Please reload the Media Management view and try again.');
       return;
     }
-    
+
+    const bucketId = asset.bucket_id || 'page-images';
+
     setIsSaving(true);
     try {
       // 1) Check if a mapping already exists for this file
@@ -72,7 +76,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         .from('file_segment_mappings')
         .select('id, segment_ids')
         .eq('file_path', asset.filePath)
-        .eq('bucket_id', asset.bucket_id)
+        .eq('bucket_id', bucketId)
         .maybeSingle();
 
       if (fetchError) {
@@ -102,7 +106,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
           .from('file_segment_mappings')
           .insert({
             file_path: asset.filePath,
-            bucket_id: asset.bucket_id,
+            bucket_id: bucketId,
             segment_ids: segmentIds,
             alt_text: altText,
             updated_at: new Date().toISOString()
