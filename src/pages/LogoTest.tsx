@@ -11,7 +11,7 @@ import Footer from "@/components/Footer";
 const LogoTest = () => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(
-    "https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images/media/logo_ci/1764577403945-Logo-test-iQ-IE_V7.png"
+    "https://github.com/stone1971grey/imageengeneeringv1-engl-v11/blob/main/Logo-test-iQ-IE_V7.png?raw=true"
   );
   const [base64Result, setBase64Result] = useState<string>("");
   const [dataUri, setDataUri] = useState<string>("");
