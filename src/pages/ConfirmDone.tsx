@@ -54,20 +54,44 @@ const ConfirmDone = () => {
 
     confirmOptIn();
     
-    // Add Mautic tracking script
+    // Add Mautic tracking script with proper initialization
     const script = document.createElement('script');
     script.innerHTML = `
       (function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
         w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},a=d.createElement(t),
-        m=d.getElementsByTagName(t)[0];a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
+        m=d.getElementsByTagName(t)[0];a.async=1;a.src=u;
+        a.onload=function(){
+          console.log('Mautic script loaded');
+          ${email ? `
+          // First identify the contact by email
+          mt('send', 'email', '${email}');
+          console.log('Mautic: email sent for ${email}');
+          
+          // Wait a moment for email to be processed, then send pageview
+          setTimeout(function(){
+            mt('send', 'pageview', {
+              'page_title': 'OptIn Confirmation Page',
+              'page_url': window.location.href
+            });
+            console.log('Mautic: pageview sent');
+            
+            // Send explicit DOI confirmation event
+            mt('send', 'event', 'DOI', 'confirmed');
+            console.log('Mautic: DOI confirmed event sent');
+          }, 500);
+          ` : `
+          mt('send', 'pageview');
+          `}
+        };
+        m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://m2.sptools.de/mtc.js','mt');
-      ${email ? `mt('send', 'email', '${email}');` : ''}
-      mt('send', 'pageview');
     `;
     document.head.appendChild(script);
 
     return () => {
-      document.head.removeChild(script);
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
     };
   }, []);
 
