@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,7 @@ interface ImageTextEditorProps {
   onSave?: () => void;
 }
 
-export const ImageTextEditor = ({ pageSlug, segmentId, language, onSave }: ImageTextEditorProps) => {
+const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: ImageTextEditorProps) => {
   const [title, setTitle] = useState("");
   const [subtext, setSubtext] = useState("");
   const [layout, setLayout] = useState("2-col");
@@ -677,3 +677,6 @@ export const ImageTextEditor = ({ pageSlug, segmentId, language, onSave }: Image
     </div>
   );
 };
+
+// Memoized export to prevent unnecessary re-renders
+export const ImageTextEditor = memo(ImageTextEditorComponent);
