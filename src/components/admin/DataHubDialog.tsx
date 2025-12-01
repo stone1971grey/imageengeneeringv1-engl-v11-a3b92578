@@ -85,6 +85,7 @@ export function DataHubDialog({
     bucket_id: string;
     segmentIds?: string[];
     filePath: string;
+    id: string;
   } | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
   const [batchDeleting, setBatchDeleting] = useState(false);
@@ -755,7 +756,7 @@ export function DataHubDialog({
                           </div>
                         )}
                         
-                        {isImg && (
+                         {isImg && (
                           <div className="aspect-video bg-gray-900 overflow-hidden relative">
                              <img
                               src={fileUrl}
@@ -774,15 +775,6 @@ export function DataHubDialog({
                                 }
                               }}
                              />
-                             {/* Image ID Badge - light blue, repositioned to avoid checkbox */}
-                             <div className={`absolute ${!selectionMode ? 'top-9' : 'top-2'} left-2`}>
-                               <div 
-                                 className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-blue-400/30 shadow-lg"
-                                 title={`Image ID: ${file.id}`}
-                               >
-                                 <span className="text-[10px] font-semibold text-blue-400">ID: {file.id.slice(0, 8)}</span>
-                               </div>
-                             </div>
                              {/* Segment Badges - support multiple segments on top-right */}
                              {segmentIds.length > 0 && (
                                <div className="absolute top-2 right-2 flex items-center gap-1">
@@ -868,7 +860,8 @@ export function DataHubDialog({
                                        metadata: file.metadata,
                                        bucket_id: file.bucket_id,
                                        segmentIds: segmentIds,
-                                       filePath: `${folder.storage_path}/${file.name}`
+                                       filePath: `${folder.storage_path}/${file.name}`,
+                                       id: file.id
                                      });
                                    }}
                                    title="Edit asset info and alt text"
