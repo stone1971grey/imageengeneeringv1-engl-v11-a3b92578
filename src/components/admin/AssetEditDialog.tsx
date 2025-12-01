@@ -120,7 +120,12 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
   });
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      // Only close when user explicitly wants to close (ESC, X, click outside)
+      if (!open) {
+        onClose();
+      }
+    }}>
       <DialogContent className="max-w-2xl bg-gray-900 border-gray-700 text-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white flex items-center gap-2">
