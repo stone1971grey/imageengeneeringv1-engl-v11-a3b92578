@@ -54,6 +54,7 @@ import FullHeroMigration from "./pages/FullHeroMigration";
 import SegmentDebugView from "./pages/SegmentDebugView";
 import NotFound from "./pages/NotFound";
 import { MauticTracker } from "./components/MauticTracker";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient();
 
@@ -208,8 +209,8 @@ const App = () => (
             <Route path="/:lang/logo-download" element={<LogoDownload />} />
             <Route path="/:lang/logo-test" element={<LogoTest />} />
             <Route path="/:lang/auth" element={<Auth />} />
-            <Route path="/:lang/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/:lang/admin-dashboard/news" element={<AdminNews />} />
+            <Route path="/:lang/admin-dashboard" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
+            <Route path="/:lang/admin-dashboard/news" element={<ErrorBoundary><AdminNews /></ErrorBoundary>} />
             <Route path="/:lang/full-hero-migration" element={<FullHeroMigration />} />
             <Route path="/:lang/segment-debug" element={<SegmentDebugView />} />
             
