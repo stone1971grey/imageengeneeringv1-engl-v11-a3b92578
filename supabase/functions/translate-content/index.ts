@@ -105,40 +105,28 @@ serve(async (req) => {
     // Helper for escaping regex special chars
     const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    // Replace non-translatable terms with placeholders before sending to AI
-    const placeholderPrefix = '__GLOSSARY_TERM_';
-    let placeholderIndex = 0;
-    const placeholderMap: Record<string, string> = {};
+    // CRITICAL: Non-translatable terms must remain in original language
+    // Instead of using placeholders, we add them to system prompt with strict rules
+    const protectedTerms = [...nonTranslatable];
+    
+    console.log('Protected terms (will NOT be translated):', protectedTerms);
 
-    const maskText = (text: string): string => {
-      if (!text || nonTranslatable.length === 0) return text;
-
-      let result = text;
-      for (const term of nonTranslatable) {
-        if (!term) continue;
-        const placeholder = `${placeholderPrefix}${placeholderIndex++}__`;
-        const regex = new RegExp(escapeRegExp(term), 'g');
-        if (regex.test(result)) {
-          result = result.replace(regex, placeholder);
-          placeholderMap[placeholder] = term;
-        }
-      }
-      return result;
-    };
-
-    const maskedTexts: Record<string, string> = {};
+    // Pass texts directly - no masking needed
+    const textsToTranslate: Record<string, string> = {};
     for (const key of Object.keys(texts || {})) {
       const value = (texts as any)[key];
-      maskedTexts[key] = typeof value === 'string' ? maskText(value) : '';
+      textsToTranslate[key] = typeof value === 'string' ? value : '';
     }
 
-    // Create translation prompt
+    // Create translation prompt with enhanced glossary rules
     const systemPrompt = `You are a professional translator. Translate the provided English texts to ${targetLangName}.
 Maintain the tone, style, and formatting of the original text.
 Return ONLY a JSON object with the same keys as the input, containing the translated texts.
-Do not add any explanations or additional text.${glossaryInstructions}`;
+Do not add any explanations or additional text.${glossaryInstructions}
 
-    const userPrompt = `Translate these texts to ${targetLangName} (placeholders like ${placeholderPrefix}*_ must be kept EXACTLY as they are):\n\n${JSON.stringify(maskedTexts, null, 2)}`;
+CRITICAL: Terms marked as "DO NOT TRANSLATE" must appear EXACTLY as in the source text (same spelling, same case). Never translate, modify, or replace them.`;
+
+    const userPrompt = `Translate these texts to ${targetLangName}:\n\n${JSON.stringify(textsToTranslate, null, 2)}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -181,7 +169,7 @@ Do not add any explanations or additional text.${glossaryInstructions}`;
     
     console.log('AI response:', translatedContent);
 
-    // Parse the JSON response and restore placeholders
+    // Parse the JSON response
     let translatedTexts: Record<string, string>;
     try {
       const cleanedContent = translatedContent.replace(/```json\n?|\n?```/g, '').trim();
@@ -191,20 +179,9 @@ Do not add any explanations or additional text.${glossaryInstructions}`;
       throw new Error('Failed to parse translation response');
     }
 
-    const restoredTexts: Record<string, string> = {};
-    for (const key of Object.keys(translatedTexts || {})) {
-      let value = translatedTexts[key];
-      if (typeof value === 'string') {
-        for (const [placeholder, term] of Object.entries(placeholderMap)) {
-          if (value.includes(placeholder)) {
-            value = value.replace(new RegExp(escapeRegExp(placeholder), 'g'), term);
-          }
-        }
-      }
-      restoredTexts[key] = value;
-    }
+    console.log('Successfully translated to', targetLangName);
 
-    return new Response(JSON.stringify({ translatedTexts: restoredTexts }), {
+    return new Response(JSON.stringify({ translatedTexts }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
