@@ -7094,6 +7094,28 @@ const AdminDashboard = () => {
                       segment.data = getDefaultSegmentData('product-hero-gallery');
                     }
                     
+                    // For Styleguide demo pages we keep a simple single-language editor
+                    const isStyleguideDemo = (resolvedPageSlug || selectedPage).startsWith('styleguide/segments/');
+                    
+                    if (isStyleguideDemo) {
+                      return (
+                        <ProductHeroGalleryEditor
+                          key={`phg-${segment.id}-en`}
+                          data={segment.data}
+                          onChange={(newData) => {
+                            const newSegments = [...pageSegments];
+                            newSegments[index].data = newData;
+                            setPageSegments(newSegments);
+                          }}
+                          onSave={() => handleSaveSegments()}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          language="en"
+                        />
+                      );
+                    }
+                    
+                    // Default: full multilingual split-screen editor
                     return (
                       <SplitScreenSegmentEditor
                         segmentTitle="Product Hero Gallery"
