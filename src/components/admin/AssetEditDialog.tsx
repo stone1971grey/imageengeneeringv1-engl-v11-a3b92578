@@ -65,35 +65,55 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
       return;
     }
     
-    console.log('[AssetEditDialog] Starting save with:', {
-      filePath: asset.filePath,
-      bucket_id: asset.bucket_id,
-      segment_ids: asset.segmentIds || [],
-      alt_text: altText
-    });
-    
     setIsSaving(true);
     try {
-      // Update or create the mapping with alt text
-      const { data, error } = await supabase
+      // 1) Check if a mapping already exists for this file
+      const { data: existing, error: fetchError } = await supabase
         .from('file_segment_mappings')
-        .upsert({
-          file_path: asset.filePath,
-          bucket_id: asset.bucket_id,
-          segment_ids: asset.segmentIds || [],
-          alt_text: altText,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'file_path,bucket_id'
-        })
-        .select();
-      
+        .select('id, segment_ids')
+        .eq('file_path', asset.filePath)
+        .eq('bucket_id', asset.bucket_id)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error('[AssetEditDialog] Error loading existing mapping:', fetchError);
+        throw fetchError;
+      }
+
+      // Preserve existing segment_ids if present, otherwise fall back to asset.segmentIds or empty array
+      const segmentIds = existing?.segment_ids?.length
+        ? existing.segment_ids
+        : (asset.segmentIds || []);
+
+      let error;
+      if (existing?.id) {
+        // 2) Update existing row
+        ({ error } = await supabase
+          .from('file_segment_mappings')
+          .update({
+            alt_text: altText,
+            segment_ids: segmentIds,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existing.id));
+      } else {
+        // 3) Insert new row
+        ({ error } = await supabase
+          .from('file_segment_mappings')
+          .insert({
+            file_path: asset.filePath,
+            bucket_id: asset.bucket_id,
+            segment_ids: segmentIds,
+            alt_text: altText,
+            updated_at: new Date().toISOString()
+          }));
+      }
+
       if (error) {
-        console.error('[AssetEditDialog] Database error:', error);
+        console.error('[AssetEditDialog] Database error on save:', error);
         throw error;
       }
       
-      console.log('[AssetEditDialog] Save successful:', data);
       toast.success('✅ Alt text saved successfully');
       onSave();
       onClose();
