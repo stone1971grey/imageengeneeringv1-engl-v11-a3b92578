@@ -789,18 +789,16 @@ const AdminDashboard = () => {
 
           for (const category of allCategories) {
             // Check main category link
-            if (category?.link) {
+            if (category.link) {
               const result = await findParentFromUrl(category.link);
               if (result) return result;
             }
 
             // Check subgroups
-            const subgroups = category?.subgroups || category?.services || [];
+            const subgroups = category.subgroups || category.services || [];
             for (const subgroup of subgroups) {
-              if (subgroup?.link) {  // CRITICAL: Check if link exists before calling
-                const result = await findParentFromUrl(subgroup.link);
-                if (result) return result;
-              }
+              const result = await findParentFromUrl(subgroup.link);
+              if (result) return result;
             }
           }
 
@@ -826,8 +824,9 @@ const AdminDashboard = () => {
         }
 
         const inferredTitle = selectedPageForCMS
-          ? selectedPageForCMS.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-          : 'Untitled Page';
+          .split('-')
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
 
         // Generate hierarchical page_slug based on parent relationship
         let hierarchicalSlug = selectedPageForCMS;
@@ -960,8 +959,8 @@ const AdminDashboard = () => {
       window.dispatchEvent(new Event('refreshPageSelector'));
       
       // Extract last part of slug for navigation (HierarchicalPageSelect works with non-hierarchical slugs)
-      const slugParts = (pageInfo?.page_slug || '').split('/').filter(Boolean);
-      const lastSlugPart = slugParts[slugParts.length - 1] || '';
+      const slugParts = pageInfo.page_slug.split('/').filter(Boolean);
+      const lastSlugPart = slugParts[slugParts.length - 1];
       
       // Navigate using React Router (no full page reload)
       navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
@@ -1029,8 +1028,9 @@ const AdminDashboard = () => {
 
       // Generate page title from child slug
       const pageTitle = childSlug
-        ? childSlug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-        : 'Untitled Page';
+        .split('-')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
 
       // Create page_registry entry
       const { data: newPageData, error: insertError } = await supabase
@@ -1485,7 +1485,7 @@ const AdminDashboard = () => {
     setHeroUploading(true);
  
      try {
-      const fileExt = file?.name?.split('.').pop() || 'jpg';
+       const fileExt = file.name.split('.').pop();
        const fileName = `${selectedPage}-hero-${Date.now()}.${fileExt}`;
        const filePath = `${fileName}`;
  
@@ -1578,7 +1578,7 @@ const AdminDashboard = () => {
     setUploading(true);
 
     try {
-      const fileExt = file?.name?.split('.').pop() || 'jpg';
+      const fileExt = file.name.split('.').pop();
       const fileName = `tile-${tileIndex}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -2011,7 +2011,7 @@ const AdminDashboard = () => {
     setUploading(true);
 
     try {
-      const fileExt = file?.name?.split('.').pop() || 'jpg';
+      const fileExt = file.name.split('.').pop();
       const fileName = `solution-${index}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -2060,7 +2060,7 @@ const AdminDashboard = () => {
 
     setUploading(true);
     try {
-      const fileExt = file?.name?.split('.').pop() || 'jpg';
+      const fileExt = file.name.split('.').pop();
       const fileName = `image-text-hero-${segmentIndex}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -2112,7 +2112,7 @@ const AdminDashboard = () => {
 
     setUploading(true);
     try {
-      const fileExt = file?.name?.split('.').pop() || 'jpg';
+      const fileExt = file.name.split('.').pop();
       const fileName = `image-text-item-${segmentIndex}-${itemIndex}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -2193,7 +2193,7 @@ const AdminDashboard = () => {
     setUploading(true);
 
     try {
-      const fileExt = file?.name?.split('.').pop() || 'jpg';
+      const fileExt = file.name.split('.').pop();
       const fileName = `footer-team-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -2273,7 +2273,7 @@ const AdminDashboard = () => {
     setUploading(true);
 
     try {
-      const fileExt = file?.name?.split('.').pop() || 'jpg';
+      const fileExt = file.name.split('.').pop();
       const fileName = `banner-image-${index}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
@@ -4588,8 +4588,7 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  const safeSlug = targetPageSlug || '';
-                  const lastSlugPart = safeSlug.split('/').filter(Boolean).slice(-1)[0] || safeSlug;
+                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
                   navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
                 }}
               />
@@ -4997,8 +4996,7 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  const safeSlug = targetPageSlug || '';
-                  const lastSlugPart = safeSlug.split('/').filter(Boolean).slice(-1)[0] || safeSlug;
+                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
                   navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
                 }}
               />
@@ -6231,7 +6229,7 @@ const AdminDashboard = () => {
                                     setUploading(true);
 
                                     try {
-                                      const fileExt = file?.name?.split('.').pop() || 'jpg';
+                                      const fileExt = file.name.split('.').pop();
                                       const fileName = `dynamic-tile-${index}-${tileIndex}-${Date.now()}.${fileExt}`;
                                       const filePath = `${fileName}`;
 

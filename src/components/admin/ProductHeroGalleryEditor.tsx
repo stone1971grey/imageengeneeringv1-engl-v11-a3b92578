@@ -285,15 +285,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       };
 
       const updatedImages = [...localData.images];
-      const baseImage: ProductImage = updatedImages[index] || {
-        imageUrl: '',
-        title: '',
-        description: '',
-        metadata: undefined
-      };
-
-      updatedImages[index] = {
-        ...baseImage,
+      updatedImages[index] = { 
+        ...updatedImages[index], 
         imageUrl: result.url,
         metadata: fullMetadata
       };
@@ -317,20 +310,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   };
 
   const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
-    const fullMetadata: ImageMetadata = metadata
-      ? { ...metadata, altText: data.images[index]?.metadata?.altText || '' }
-      : { altText: '' };
+    const fullMetadata: ImageMetadata = metadata ? { ...metadata, altText: data.images[index]?.metadata?.altText || '' } : { altText: '' };
     
     const updatedImages = [...localData.images];
-    const baseImage: ProductImage = updatedImages[index] || {
-      imageUrl: '',
-      title: '',
-      description: '',
-      metadata: undefined
-    };
-
     updatedImages[index] = { 
-      ...baseImage, 
+      ...updatedImages[index], 
       imageUrl: url,
       metadata: fullMetadata
     };
@@ -354,7 +338,6 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         .select("*")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
-        .eq("language", language)
         .single();
 
       if (fetchError || !pageContentData) {
@@ -377,8 +360,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           updated_by: (await supabase.auth.getUser()).data.user?.id,
         })
         .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", language);
+        .eq("section_key", "page_segments");
 
       if (updateError) {
         console.error("Auto-save error:", updateError);
