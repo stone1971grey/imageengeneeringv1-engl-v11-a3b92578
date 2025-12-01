@@ -285,8 +285,15 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       };
 
       const updatedImages = [...localData.images];
-      updatedImages[index] = { 
-        ...updatedImages[index], 
+      const baseImage: ProductImage = updatedImages[index] || {
+        imageUrl: '',
+        title: '',
+        description: '',
+        metadata: undefined
+      };
+
+      updatedImages[index] = {
+        ...baseImage,
         imageUrl: result.url,
         metadata: fullMetadata
       };
@@ -310,11 +317,20 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
   };
 
   const handleMediaSelect = async (index: number, url: string, metadata?: any) => {
-    const fullMetadata: ImageMetadata = metadata ? { ...metadata, altText: data.images[index]?.metadata?.altText || '' } : { altText: '' };
+    const fullMetadata: ImageMetadata = metadata
+      ? { ...metadata, altText: data.images[index]?.metadata?.altText || '' }
+      : { altText: '' };
     
     const updatedImages = [...localData.images];
+    const baseImage: ProductImage = updatedImages[index] || {
+      imageUrl: '',
+      title: '',
+      description: '',
+      metadata: undefined
+    };
+
     updatedImages[index] = { 
-      ...updatedImages[index], 
+      ...baseImage, 
       imageUrl: url,
       metadata: fullMetadata
     };
