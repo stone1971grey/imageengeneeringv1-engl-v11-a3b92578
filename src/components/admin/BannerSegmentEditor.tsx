@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { extractImageMetadata, ImageMetadata } from '@/types/imageMetadata';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
+import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 
 interface BannerImage {
   id: string; // Stable unique ID for reliable image updates
@@ -97,9 +98,29 @@ export const BannerSegmentEditor = ({
     ensureImageIds((data.images || []) as BannerImage[])
   );
 
-  // Sync with parent data on segment change
+  // Sync with parent data on segment change and load alt text
   useEffect(() => {
-    setImages(ensureImageIds((data.images || []) as BannerImage[]));
+    const loadImagesWithAltText = async () => {
+      const ensuredImages = ensureImageIds((data.images || []) as BannerImage[]);
+      
+      // Load alt text from file_segment_mappings for each image
+      const imagesWithAltText = await Promise.all(
+        ensuredImages.map(async (img) => {
+          if (img.url) {
+            const altText = await loadAltTextFromMapping(img.url, 'page-images');
+            return {
+              ...img,
+              alt: altText || img.alt || ''
+            };
+          }
+          return img;
+        })
+      );
+      
+      setImages(imagesWithAltText);
+    };
+    
+    loadImagesWithAltText();
   }, [segmentKey, data.images]);
 
   const [isTranslating, setIsTranslating] = useState(false);
@@ -135,10 +156,24 @@ export const BannerSegmentEditor = ({
         const englishImagesCurrent = ensureImageIds(images || []);
         const targetImages = ensureImageIds(targetSegment.data.images || []);
         
+        // Load alt text from file_segment_mappings for target language images
+        const targetImagesWithAltText = await Promise.all(
+          targetImages.map(async (img) => {
+            if (img.url) {
+              const altText = await loadAltTextFromMapping(img.url, 'page-images');
+              return {
+                ...img,
+                alt: altText || img.alt || ''
+              };
+            }
+            return img;
+          })
+        );
+        
         // Merge: English defines which images exist (url/metadata),
         // target keeps its alt texts where possible
         const mergedImages: BannerImage[] = englishImagesCurrent.map((enImg, idx) => {
-          const targetImg = targetImages[idx];
+          const targetImg = targetImagesWithAltText[idx];
           return {
             ...enImg,
             alt: targetImg?.alt || ''
@@ -420,10 +455,11 @@ export const BannerSegmentEditor = ({
 
       if (updateError) throw updateError;
       
-        // Update segment mappings for all banner images from local state
+        // Update segment mappings for all banner images from local state with alt text
         const imageUrls = images.map(img => img.url).filter(Boolean);
+        const altTexts = images.map(img => img.alt || '');
       if (imageUrls.length > 0) {
-        await updateMultipleSegmentMappings(imageUrls, parseInt(segmentId));
+        await updateMultipleSegmentMappings(imageUrls, parseInt(segmentId), 'page-images', true, altTexts);
       }
       
       toast.success('Saved English version');

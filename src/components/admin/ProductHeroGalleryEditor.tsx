@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { updateMultipleSegmentMappings } from '@/utils/updateSegmentMapping';
+import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 
 interface ProductImage {
   imageUrl: string;
@@ -146,7 +147,29 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         if (gallerySegment?.data) {
           console.log('[PHG Editor] Applying data from DB for segment', segmentId);
           // Update ONLY local state - do NOT call onChange to avoid parent state contamination
-          setLocalData(gallerySegment.data);
+          const loadedData = gallerySegment.data;
+          
+          // Load alt text from file_segment_mappings for each image
+          if (loadedData.images && loadedData.images.length > 0) {
+            const imagesWithAltText = await Promise.all(
+              loadedData.images.map(async (img: ProductImage) => {
+                if (img.imageUrl) {
+                  const altText = await loadAltTextFromMapping(img.imageUrl, 'page-images');
+                  return {
+                    ...img,
+                    metadata: {
+                      ...img.metadata,
+                      altText: altText || img.metadata?.altText || ''
+                    }
+                  };
+                }
+                return img;
+              })
+            );
+            loadedData.images = imagesWithAltText;
+          }
+          
+          setLocalData(loadedData);
         } else {
           // FALLBACK: If no data in current language, try loading from EN reference
           if (language !== 'en') {
@@ -184,7 +207,29 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
               if (enGallerySegment?.data) {
                 console.log(`✅ Fallback: Loading layout from EN reference for segment ${segmentId}`);
                 // Update ONLY local state - do NOT call onChange
-                setLocalData(enGallerySegment.data);
+                const fallbackData = enGallerySegment.data;
+                
+                // Load alt text from file_segment_mappings for each image
+                if (fallbackData.images && fallbackData.images.length > 0) {
+                  const imagesWithAltText = await Promise.all(
+                    fallbackData.images.map(async (img: ProductImage) => {
+                      if (img.imageUrl) {
+                        const altText = await loadAltTextFromMapping(img.imageUrl, 'page-images');
+                        return {
+                          ...img,
+                          metadata: {
+                            ...img.metadata,
+                            altText: altText || img.metadata?.altText || ''
+                          }
+                        };
+                      }
+                      return img;
+                    })
+                  );
+                  fallbackData.images = imagesWithAltText;
+                }
+                
+                setLocalData(fallbackData);
               }
             }
           }
@@ -494,10 +539,11 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
 
       if (error) throw error;
 
-      // Update segment mappings for all gallery images
+      // Update segment mappings for all gallery images with alt text
       const imageUrls = localData.images.map(img => img.imageUrl).filter(Boolean);
+      const altTexts = localData.images.map(img => img.metadata?.altText || '');
       if (imageUrls.length > 0) {
-        await updateMultipleSegmentMappings(imageUrls, segmentId);
+        await updateMultipleSegmentMappings(imageUrls, segmentId, 'page-images', true, altTexts);
       }
 
       // Also update tab_order if needed
