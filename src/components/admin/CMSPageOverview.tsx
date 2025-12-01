@@ -304,7 +304,8 @@ export const CMSPageOverview = () => {
   
   const getEditUrl = (slug: string) => {
     // Extract last part of slug for admin-dashboard navigation
-    const lastPart = slug.split('/').filter(Boolean).slice(-1)[0] || slug;
+    const safeSlug = slug || '';
+    const lastPart = safeSlug.split('/').filter(Boolean).slice(-1)[0] || safeSlug;
     return `/${language}/admin-dashboard?page=${lastPart}`;
   };
 
@@ -640,7 +641,7 @@ export const CMSPageOverview = () => {
   };
 
   const getIndentLevel = (page: CMSPage): number => {
-    const slugParts = page.page_slug.split('/');
+    const slugParts = (page.page_slug || '').split('/');
     return Math.max(0, slugParts.length - 1);
   };
 
