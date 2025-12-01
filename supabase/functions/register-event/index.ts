@@ -23,66 +23,6 @@ interface EventRegistrationRequest {
   automotiveInterests?: string[];
 }
 
-// Find email by name in Mautic
-async function findMauticEmailByName(emailName: string, baseUrl: string, basicAuth: string) {
-  console.log("Searching for Mautic email:", emailName);
-  
-  const response = await fetch(
-    `${baseUrl}/api/emails?search=${encodeURIComponent(emailName)}`,
-    {
-      headers: {
-        "Authorization": `Basic ${basicAuth}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    console.error("Failed to fetch Mautic emails");
-    return null;
-  }
-
-  const data = await response.json();
-  
-  if (data.total > 0 && data.emails) {
-    for (const id of Object.keys(data.emails)) {
-      const email = data.emails[id];
-      // Match by name containing the search term
-      if (email.name && email.name.toLowerCase().includes(emailName.toLowerCase())) {
-        console.log("Found Mautic email:", email.name, "ID:", id);
-        return { id, name: email.name };
-      }
-    }
-  }
-  
-  return null;
-}
-
-// Send email directly to contact
-async function sendMauticEmailToContact(emailId: string, contactId: string, baseUrl: string, basicAuth: string) {
-  console.log(`Sending Mautic email ${emailId} to contact ${contactId}`);
-  
-  const response = await fetch(
-    `${baseUrl}/api/emails/${emailId}/contact/${contactId}/send`,
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Basic ${basicAuth}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Failed to send Mautic email:", errorText);
-    return false;
-  }
-
-  console.log("✅ Mautic email sent successfully");
-  return true;
-}
-
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -197,7 +137,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Variable to track if contact exists in Mautic
     let isExistingMauticContact = false;
-    let optinEmailSent = false;
 
     // Send to Mautic
     const mauticBaseUrl = Deno.env.get("MAUTIC_BASE_URL");
@@ -328,15 +267,6 @@ const handler = async (req: Request): Promise<Response> => {
             },
             body: JSON.stringify(createData),
           });
-
-          // Get the newly created contact ID for email sending
-          if (mauticResponse.ok) {
-            const responseData = await mauticResponse.json();
-            if (responseData.contact && responseData.contact.id) {
-              mauticContactId = responseData.contact.id.toString();
-              console.log("New Mautic contact created with ID:", mauticContactId);
-            }
-          }
         }
 
         if (!mauticResponse.ok) {
@@ -345,29 +275,6 @@ const handler = async (req: Request): Promise<Response> => {
         } else {
           const responseData = await mauticResponse.json();
           console.log("Successfully sent to Mautic:", responseData);
-
-          // For new contacts, send the OptIn email directly
-          if (!isExistingMauticContact && mauticContactId) {
-            console.log("Sending OptIn email to new contact...");
-            
-            // Try to find and send the optin email
-            const optinEmailNames = ["optin-mail", "optin", "OptIn", "opt-in", "Opt-In Email"];
-            for (const emailName of optinEmailNames) {
-              const foundEmail = await findMauticEmailByName(emailName, mauticBaseUrl, basicAuth);
-              if (foundEmail) {
-                const sent = await sendMauticEmailToContact(foundEmail.id, mauticContactId, mauticBaseUrl, basicAuth);
-                if (sent) {
-                  optinEmailSent = true;
-                  console.log(`✅ OptIn email "${foundEmail.name}" sent to contact ${mauticContactId}`);
-                  break;
-                }
-              }
-            }
-
-            if (!optinEmailSent) {
-              console.log("⚠️ Could not find or send OptIn email - relying on Mautic Campaign");
-            }
-          }
         }
       } catch (mauticError) {
         console.error("Error sending to Mautic:", mauticError);
@@ -380,8 +287,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({ 
         success: true,
-        isExistingContact: isExistingMauticContact,
-        optinEmailSent
+        isExistingContact: isExistingMauticContact 
       }),
       {
         status: 200,
