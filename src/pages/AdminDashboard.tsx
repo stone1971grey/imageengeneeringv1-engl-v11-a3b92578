@@ -574,7 +574,7 @@ const AdminDashboard = () => {
             updated_at: new Date().toISOString(),
             updated_by: user.id
           }, {
-            onConflict: 'page_slug,section_key'
+            onConflict: 'page_slug,section_key,language'
           });
       }
     }
@@ -1337,7 +1337,7 @@ const AdminDashboard = () => {
                 updated_at: new Date().toISOString(),
                 updated_by: user.id
               }, {
-                onConflict: 'page_slug,section_key'
+                onConflict: 'page_slug,section_key,language'
               })
               .then(({ error }) => {
                 if (error) {
@@ -1382,7 +1382,7 @@ const AdminDashboard = () => {
                 updated_at: new Date().toISOString(),
                 updated_by: user.id
               }, {
-                onConflict: 'page_slug,section_key'
+                onConflict: 'page_slug,section_key,language'
               });
           }
           
@@ -1456,7 +1456,7 @@ const AdminDashboard = () => {
              updated_at: new Date().toISOString(),
              updated_by: user.id
            }, {
-             onConflict: 'page_slug,section_key'
+             onConflict: 'page_slug,section_key,language'
            })
           .then(({ error }) => {
             if (!error) {
@@ -1711,11 +1711,11 @@ const AdminDashboard = () => {
             content_value: JSON.stringify(segmentsWithPositions),
             updated_at: new Date().toISOString(),
             updated_by: user.id
-          }, {
-            onConflict: 'page_slug,section_key'
-          });
+            }, {
+              onConflict: 'page_slug,section_key,language'
+            });
 
-        if (error) throw error;
+          if (error) throw error;
         
         console.log('[AUTO-SAVE] Tiles segment auto-saved successfully');
       } catch (error: any) {
@@ -1742,13 +1742,13 @@ const AdminDashboard = () => {
               updated_at: new Date().toISOString(),
               updated_by: user.id
             }, {
-              onConflict: 'page_slug,section_key'
+              onConflict: 'page_slug,section_key,language'
             });
         }
       }
 
       // Update applications items
-      await supabase
+      const { error: appsError } = await supabase
         .from("page_content")
         .upsert({
           page_slug: resolvedPageSlug || selectedPage,
@@ -1758,175 +1758,10 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      // Save tiles columns setting
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "tiles_columns",
-          content_type: "text",
-          content_value: tilesColumns,
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      console.log("✅ Tile image auto-saved to database");
-    } catch (error: any) {
-      console.error("Auto-save error:", error);
-    }
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Logged out successfully");
-    navigate("/auth");
-  };
-
-  const handleDeleteStaticSegment = async (segmentType: 'hero' | 'tiles' | 'banner' | 'solutions') => {
-    if (!user) return;
-    
-    setSaving(true);
-    try {
-      let sectionKeys: string[] = [];
-      
-      switch (segmentType) {
-        case 'hero':
-          sectionKeys = ['hero_title', 'hero_subtitle', 'hero_description', 'hero_cta', 'hero_image_url', 'hero_image_position', 'hero_layout', 'hero_top_padding', 'hero_cta_link', 'hero_cta_style'];
-          break;
-        case 'tiles':
-          sectionKeys = ['applications_title', 'applications_description', 'applications_items'];
-          break;
-        case 'banner':
-          sectionKeys = ['banner_title', 'banner_subtext', 'banner_images', 'banner_button_text', 'banner_button_link', 'banner_button_style'];
-          break;
-        case 'solutions':
-          sectionKeys = ['solutions_title', 'solutions_subtext', 'solutions_layout', 'solutions_items'];
-          break;
-      }
-
-      // CRITICAL: Mark segment as deleted in registry instead of removing it
-      // This ensures the segment_id is NEVER reused, even after deletion
-      const { error: registryError } = await supabase
-        .from("segment_registry")
-        .update({ deleted: true })
-        .eq("segment_key", segmentType)
-        .eq("page_slug", selectedPage);
-
-      if (registryError) {
-        console.error("Error marking segment as deleted in registry:", registryError);
-        throw registryError;
-      }
-
-      const { error } = await supabase
-        .from("page_content")
-        .delete()
-        .eq("page_slug", selectedPage)
-        .in("section_key", sectionKeys);
-
-      if (error) throw error;
-
-      // Remove from tab order
-      const updatedTabOrder = tabOrder.filter(id => id !== segmentType);
-      
-      // Save updated tab order
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "tab_order",
-          content_type: "json",
-          content_value: JSON.stringify(updatedTabOrder),
-          updated_at: new Date().toISOString(),
-          updated_by: user.id
-        }, {
-          onConflict: 'page_slug,section_key'
-        });
-
-      setTabOrder(updatedTabOrder);
-      toast.success("Segment deleted successfully! (ID will never be reused)");
-      
-      // Reload content
-      await loadContent();
-      
-      // Switch to first available tab
-      setActiveTab("hero");
-    } catch (error: any) {
-      toast.error("Error deleting segment: " + error.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = tabOrder.indexOf(active.id as string);
-    const newIndex = tabOrder.indexOf(over.id as string);
-
-    const newOrder = arrayMove(tabOrder, oldIndex, newIndex);
-    setTabOrder(newOrder);
-
-    // Save new order to database
-    try {
-      await supabase
-        .from("page_content")
-        .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
-          section_key: "tab_order",
-          content_type: "json",
-          content_value: JSON.stringify(newOrder),
-          language: editorLanguage,
-          updated_at: new Date().toISOString(),
-          updated_by: user?.id
-        }, {
           onConflict: 'page_slug,section_key,language'
         });
-    } catch (error: any) {
-      toast.error("Error saving tab order: " + error.message);
-    }
-  };
 
-  const handleSaveHero = async () => {
-    if (!user) return;
-    
-    setSaving(true);
-
-    try {
-      // Update hero fields using upsert to handle both new and existing entries
-      const heroFields = ['hero_title', 'hero_subtitle', 'hero_description', 'hero_cta'];
-      
-      for (const key of heroFields) {
-        if (content[key] !== undefined) {
-          const { error } = await supabase
-            .from("page_content")
-            .upsert({
-              page_slug: resolvedPageSlug || selectedPage,
-              section_key: key,
-              content_type: "text",
-              content_value: content[key],
-              updated_at: new Date().toISOString(),
-              updated_by: user.id
-            }, {
-              onConflict: 'page_slug,section_key'
-            });
-
-          if (error) throw error;
-        }
-      }
+      if (appsError) throw appsError;
 
       // Update hero image position
       await supabase
@@ -1939,7 +1774,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       // Update hero layout
@@ -1953,7 +1788,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       // Update hero top padding
@@ -1981,7 +1816,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       // Update hero CTA style
@@ -1995,7 +1830,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       // Update hero image metadata if exists
@@ -2010,7 +1845,7 @@ const AdminDashboard = () => {
             updated_at: new Date().toISOString(),
             updated_by: user.id
           }, {
-            onConflict: 'page_slug,section_key'
+            onConflict: 'page_slug,section_key,language'
           });
       }
 
@@ -3055,7 +2890,7 @@ const AdminDashboard = () => {
               updated_at: new Date().toISOString(),
               updated_by: user.id
             }, {
-              onConflict: 'page_slug,section_key'
+              onConflict: 'page_slug,section_key,language'
             });
 
           if (error) throw error;
@@ -3073,7 +2908,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (appsError) throw appsError;
@@ -3089,7 +2924,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       if (columnsError) throw columnsError;
@@ -3134,7 +2969,7 @@ const AdminDashboard = () => {
             updated_at: new Date().toISOString(),
             updated_by: user.id
           }, {
-            onConflict: 'page_slug,section_key'
+            onConflict: 'page_slug,section_key,language'
           });
       }
 
@@ -5376,10 +5211,10 @@ const AdminDashboard = () => {
                         ];
 
                         const { error } = await supabase
-                          .from("page_content")
-                          .upsert(updates, {
-                            onConflict: 'page_slug,section_key'
-                          });
+                        .from("page_content")
+                        .upsert(updates, {
+                          onConflict: 'page_slug,section_key,language'
+                        });
 
                         if (error) throw error;
 
@@ -5695,10 +5530,10 @@ const AdminDashboard = () => {
                         ];
 
                         const { error } = await supabase
-                          .from("page_content")
-                          .upsert(updates, {
-                            onConflict: 'page_slug,section_key'
-                          });
+                        .from("page_content")
+                        .upsert(updates, {
+                          onConflict: 'page_slug,section_key,language'
+                        });
 
                         if (error) throw error;
 
@@ -6524,10 +6359,10 @@ const AdminDashboard = () => {
             updated_at: new Date().toISOString(),
             updated_by: user?.id
           }, {
-            onConflict: 'page_slug,section_key'
+            onConflict: 'page_slug,section_key,language'
           });
 
-                              if (error) throw error;
+        if (error) throw error;
                               
                               // Update local state with new positions
                               setPageSegments(segmentsWithPositions);
