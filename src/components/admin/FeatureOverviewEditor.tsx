@@ -187,18 +187,22 @@ const FeatureOverviewEditor = ({ data, onChange, onSave, currentPageSlug, segmen
         </CardContent>
       </Card>
 
-      <div className="flex justify-between items-center pt-4 border-t">
+      <div className="flex flex-col gap-3 pt-4 border-t">
+        <Button
+          onClick={handleSave}
+          disabled={loading}
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+        >
+          {loading ? 'Saving...' : 'Save Changes'}
+        </Button>
+
         <Button
           onClick={() => setCopyDialogOpen(true)}
           variant="outline"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 self-start"
         >
           <Copy className="h-4 w-4" />
           Copy to Page...
-        </Button>
-        
-        <Button onClick={handleSave} disabled={loading} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
-          {loading ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
 
