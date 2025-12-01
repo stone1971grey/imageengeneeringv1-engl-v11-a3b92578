@@ -8,7 +8,23 @@ import { Calendar, Clock, MapPin, CheckCircle2 } from "lucide-react";
 const EventRegistrationSuccess = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { eventTitle, eventDate, eventTime, eventLocation, eventImageUrl } = location.state || {};
+  
+  // Get event data from location.state or fallback to localStorage
+  const getEventData = () => {
+    if (location.state) return location.state;
+    
+    const stored = localStorage.getItem('lastEventRegistration');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.error('Failed to parse stored event data', e);
+      }
+    }
+    return {};
+  };
+  
+  const { eventTitle, eventDate, eventTime, eventLocation, eventImageUrl } = getEventData();
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
