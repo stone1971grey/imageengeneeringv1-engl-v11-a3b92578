@@ -154,18 +154,23 @@ export async function updateSegmentMapping(
 /**
  * Updates segment mappings for multiple images (e.g., in a gallery).
  * Processes each image URL and adds the segmentId to its mapping.
+ * Optionally saves alt text for each image.
  * Shows a single summary toast instead of individual toasts.
  */
 export async function updateMultipleSegmentMappings(
   imageUrls: string[],
   segmentId: number,
   bucketId: string = 'page-images',
-  showToast: boolean = true
+  showToast: boolean = true,
+  altTexts?: string[]
 ): Promise<number> {
   if (!imageUrls || imageUrls.length === 0) return 0;
   
   const results = await Promise.all(
-    imageUrls.map(url => updateSegmentMapping(url, segmentId, bucketId, false))
+    imageUrls.map((url, index) => {
+      const altText = altTexts?.[index];
+      return updateSegmentMapping(url, segmentId, bucketId, false, altText);
+    })
   );
   
   const successCount = results.filter(Boolean).length;
