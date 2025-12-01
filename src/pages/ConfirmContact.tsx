@@ -5,6 +5,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import contactHero from "@/assets/confirm-contact-hero.jpg";
+import { getMauticEmail } from "@/lib/mauticTracking";
 
 declare global {
   interface Window {
@@ -16,6 +17,8 @@ const ConfirmContact = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const email = getMauticEmail();
+    
     // Add Mautic tracking script
     const script = document.createElement('script');
     script.innerHTML = `
@@ -23,6 +26,7 @@ const ConfirmContact = () => {
         w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)},a=d.createElement(t),
         m=d.getElementsByTagName(t)[0];a.async=1;a.src=u;m.parentNode.insertBefore(a,m)
       })(window,document,'script','https://m2.sptools.de/mtc.js','mt');
+      ${email ? `mt('send', 'email', '${email}');` : ''}
       mt('send', 'pageview');
     `;
     document.head.appendChild(script);
