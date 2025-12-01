@@ -349,15 +349,19 @@ const Events = () => {
       // Store email for Mautic tracking
       storeMauticEmail(data.email);
       
+      // Store event data in localStorage as backup
+      const eventData = {
+        eventTitle: selectedEvent.title,
+        eventDate: selectedEvent.date,
+        eventTime: selectedEvent.time,
+        eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
+        eventImageUrl: selectedEvent.imageUrl || selectedEvent.image // Use public URL
+      };
+      localStorage.setItem('lastEventRegistration', JSON.stringify(eventData));
+      
       // Navigate to the appropriate confirmation page
       navigate(targetPage, {
-        state: {
-          eventTitle: selectedEvent.title,
-          eventDate: selectedEvent.date,
-          eventTime: selectedEvent.time,
-          eventLocation: `${selectedEvent.location.city}, ${selectedEvent.location.country}`,
-          eventImageUrl: selectedEvent.image
-        }
+        state: eventData
       });
     } catch (error) {
       console.error("Error:", error);
