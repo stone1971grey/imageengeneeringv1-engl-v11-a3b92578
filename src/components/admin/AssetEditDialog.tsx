@@ -117,8 +117,8 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
       } catch (cbError) {
         console.error('[AssetEditDialog] onSave callback failed:', cbError);
       }
+      // NOTE: We deliberately do NOT call onClose() here so the dialog stays open after saving
 
-      onClose();
     } catch (error: any) {
       console.error('[AssetEditDialog] Save failed:', error);
       toast.error(error?.message || 'Failed to save alt text. Please try again.');
