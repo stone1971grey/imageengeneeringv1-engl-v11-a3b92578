@@ -161,10 +161,10 @@ class AdminDashboardErrorBoundary extends Component<{ children: ReactNode }, { h
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center px-6">
+        <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center px-6">
           <div className="max-w-xl text-center space-y-4">
             <h1 className="text-2xl font-semibold">Editor error on this page</h1>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-gray-600">
               The CMS editor crashed while loading this page configuration.
               You can switch to another page in the CMS-UP selector and continue working.
             </p>
