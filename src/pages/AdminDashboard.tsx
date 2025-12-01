@@ -7176,6 +7176,7 @@ const AdminDashboard = () => {
         onOpenChange={setIsCreateCMSDialogOpen}
         onSuccess={(slug, languages) => createNewCMSPageWithSlug(slug, languages)}
       />
+      </div>
     </AdminDashboardErrorBoundary>
   );
 };
