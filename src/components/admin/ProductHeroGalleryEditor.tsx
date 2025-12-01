@@ -338,6 +338,7 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         .select("*")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
+        .eq("language", language)
         .single();
 
       if (fetchError || !pageContentData) {
@@ -360,7 +361,8 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           updated_by: (await supabase.auth.getUser()).data.user?.id,
         })
         .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments");
+        .eq("section_key", "page_segments")
+        .eq("language", language);
 
       if (updateError) {
         console.error("Auto-save error:", updateError);
