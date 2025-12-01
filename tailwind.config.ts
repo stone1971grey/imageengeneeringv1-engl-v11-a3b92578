@@ -162,10 +162,10 @@ export default {
 						height: '0'
 					}
 				},
-				'slide-in-up': {
-					"0%": { transform: "translateY(20px)", opacity: "0" },
-					"100%": { transform: "translateY(0)", opacity: "1" }
-				},
+			'slide-in-up': {
+				"0%": { transform: "translateY(0)", opacity: "1" },
+				"100%": { transform: "translateY(0)", opacity: "1" }
+			},
 				'hover-lift': {
 					"0%": { transform: "translateY(0px)" },
 					"100%": { transform: "translateY(-8px)" }

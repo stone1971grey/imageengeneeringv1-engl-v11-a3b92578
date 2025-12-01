@@ -201,6 +201,12 @@ video::-ms-media-controls {
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Prevent invisible elements from animation-fill-mode: backwards/both */
+  [class*="animate-"] {
+    animation-fill-mode: forwards !important;
+    opacity: 1 !important;
+  }
 }
 
 @layer utilities {
