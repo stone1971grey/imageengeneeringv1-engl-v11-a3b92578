@@ -55,11 +55,11 @@ async function findContact(email: string, baseUrl: string, authString: string) {
 }
 
 async function updateMarketingOptin(contactId: string, baseUrl: string, authString: string, eventTag?: string) {
-  console.log("Updating marketing_optin to 'confirmed' for contact:", contactId);
+  console.log("Updating marketing_optin to 'yes' for contact:", contactId);
   
   // Build update payload
   const updatePayload: Record<string, any> = {
-    marketing_optin: "confirmed",
+    marketing_optin: "yes",
     optin_confirmed: new Date().toISOString(),
   };
   
@@ -88,7 +88,7 @@ async function updateMarketingOptin(contactId: string, baseUrl: string, authStri
   }
 
   const updateData = await updateResponse.json();
-  console.log("✅ marketing_optin updated successfully to 'confirmed'");
+  console.log("✅ marketing_optin updated successfully to 'yes'");
   if (eventTag) {
     console.log("✅ Event tag added:", eventTag);
   }
@@ -380,7 +380,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.log("Will add event tag:", eventTag);
     }
 
-    // Update marketing_optin to confirmed (with event tag if applicable)
+    // Update marketing_optin to yes (with event tag if applicable)
     const result = await updateMarketingOptin(contactId, baseUrl, authString, eventTag);
 
     // 1. Add +5 engagement points for opt-in confirmation
