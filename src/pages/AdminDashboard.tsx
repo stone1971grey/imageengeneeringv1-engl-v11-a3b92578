@@ -48,6 +48,7 @@ import FeatureOverviewEditor from '@/components/admin/FeatureOverviewEditor';
 import TableEditor from '@/components/admin/TableEditor';
 import FAQEditor from '@/components/admin/FAQEditor';
 import { VideoSegmentEditor } from '@/components/admin/VideoSegmentEditor';
+import { TilesSegmentEditor } from '@/components/admin/TilesSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
@@ -315,6 +316,28 @@ const AdminDashboard = () => {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
   const [editorLanguage, setEditorLanguage] = useState<'en' | 'de' | 'ja' | 'ko' | 'zh'>('en');
   const [pageInfo, setPageInfo] = useState<{ pageId: number; pageTitle: string; pageSlug: string } | null>(null);
+
+  // Multilingual Rainbow - Split Screen State
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => 
+    localStorage.getItem('tiles-split-screen') === 'true'
+  );
+
+  // Multilingual Rainbow - Target Language States for Tiles
+  const [targetTilesTitle, setTargetTilesTitle] = useState<string>('');
+  const [targetTilesDescription, setTargetTilesDescription] = useState<string>('');
+  const [targetTilesColumns, setTargetTilesColumns] = useState<string>('3');
+  const [targetApplications, setTargetApplications] = useState<any[]>([]);
+  const [isTranslatingTiles, setIsTranslatingTiles] = useState(false);
+
+  // Multilingual Rainbow - Languages Definition
+  const LANGUAGES = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'de', name: 'German', flag: '🇩🇪' },
+    { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+    { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+    { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+  ];
+
 
 
   // Autosave for Hero section - only saves to localStorage
@@ -4537,7 +4560,34 @@ const AdminDashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-white">Tiles Template</CardTitle>
+                  <div className="flex items-center gap-4 mb-3">
+                    <CardTitle className="text-white">Tiles Template</CardTitle>
+                    <div className="flex items-center gap-2">
+                      {LANGUAGES.map((lang) => (
+                        <Button
+                          key={lang.code}
+                          onClick={() => setEditorLanguage(lang.code as 'en' | 'de' | 'ja' | 'ko' | 'zh')}
+                          variant={editorLanguage === lang.code ? "default" : "outline"}
+                          size="sm"
+                          className={editorLanguage === lang.code ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" : ""}
+                        >
+                          {lang.flag} {lang.name}
+                        </Button>
+                      ))}
+                    </div>
+                    <Label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={isSplitScreenEnabled}
+                        onChange={(e) => {
+                          setIsSplitScreenEnabled(e.target.checked);
+                          localStorage.setItem('tiles-split-screen', String(e.target.checked));
+                        }}
+                        className="h-4 w-4"
+                      />
+                      <span className="text-white text-sm">Split Screen</span>
+                    </Label>
+                  </div>
                   <CardDescription className="text-gray-300">Edit the tiles section content</CardDescription>
                   <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                     ID: {segmentRegistry['tiles'] || 2}
