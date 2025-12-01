@@ -700,6 +700,21 @@ export const CMSPageOverview = () => {
         <TableCell className="font-mono text-[#f9dc24] font-bold">
           {page.page_id}
         </TableCell>
+        <TableCell>
+          <Link
+            to={getEditUrl(page.page_slug)}
+            onClick={() => setIsOpen(false)}
+          >
+            <Button
+              size="sm"
+              variant="outline"
+              className="bg-gray-700 border-gray-600 text-white hover:bg-[#f9dc24] hover:text-black hover:border-[#f9dc24] flex items-center gap-1"
+            >
+              <Edit className="h-3 w-3" />
+              Edit
+            </Button>
+          </Link>
+        </TableCell>
         <TableCell 
           className="text-white font-medium"
           style={{ paddingLeft: `${indentLevel * 24 + 16}px` }}
@@ -751,19 +766,6 @@ export const CMSPageOverview = () => {
         </TableCell>
         <TableCell>
           <div className="flex items-center justify-center gap-2">
-            <Link
-              to={getEditUrl(page.page_slug)}
-              onClick={() => setIsOpen(false)}
-            >
-              <Button
-                size="sm"
-                variant="outline"
-                className="bg-gray-700 border-gray-600 text-white hover:bg-[#f9dc24] hover:text-black hover:border-[#f9dc24] flex items-center gap-1"
-              >
-                <Edit className="h-3 w-3" />
-                Edit Page
-              </Button>
-            </Link>
             <a
               href={getPageUrl(page.page_id)}
               target="_blank"
@@ -878,14 +880,15 @@ export const CMSPageOverview = () => {
                 <TableRow className="border-gray-700 hover:bg-gray-800">
                   <TableHead className="text-gray-300 font-bold w-12"></TableHead>
                   <TableHead className="text-gray-300 font-bold">Page ID</TableHead>
-                <TableHead className="text-gray-300 font-bold">Title</TableHead>
-                <TableHead className="text-gray-300 font-bold">Slug</TableHead>
-                <TableHead className="text-gray-300 font-bold">Category</TableHead>
-                <TableHead className="text-gray-300 font-bold">Parent</TableHead>
-                <TableHead className="text-gray-300 font-bold text-center">Segments</TableHead>
-                <TableHead className="text-gray-300 font-bold text-center">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
+                  <TableHead className="text-gray-300 font-bold">Edit</TableHead>
+                  <TableHead className="text-gray-300 font-bold">Title</TableHead>
+                  <TableHead className="text-gray-300 font-bold">Slug</TableHead>
+                  <TableHead className="text-gray-300 font-bold">Category</TableHead>
+                  <TableHead className="text-gray-300 font-bold">Parent</TableHead>
+                  <TableHead className="text-gray-300 font-bold text-center">Segments</TableHead>
+                  <TableHead className="text-gray-300 font-bold text-center">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
