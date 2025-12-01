@@ -5,28 +5,52 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+interface ImageRequest {
+  imageUrl?: string;
+  imageType?: string;
+}
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log("Fetching logo from Supabase Storage...");
+    // Parse request body for dynamic image URL (optional)
+    let imageUrl = "https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images/media/logo_ci/1764577403945-Logo-test-iQ-IE_V7.png";
+    let imageType = "image/png";
+
+    if (req.method === "POST") {
+      try {
+        const body: ImageRequest = await req.json();
+        if (body.imageUrl) {
+          imageUrl = body.imageUrl;
+          console.log("Using custom image URL:", imageUrl);
+        }
+        if (body.imageType) {
+          imageType = body.imageType;
+        }
+      } catch {
+        console.log("No body provided, using default logo");
+      }
+    }
+
+    console.log("Fetching image from:", imageUrl);
     
-    // Fetch the logo from Supabase Storage
-    const logoUrl = "https://afrcagkprhtvvucukubf.supabase.co/storage/v1/object/public/page-images/media/logo_ci/1764577403945-Logo-test-iQ-IE_V7.png";
-    
-    const response = await fetch(logoUrl);
+    const response = await fetch(imageUrl);
     
     if (!response.ok) {
-      console.error("Failed to fetch logo:", response.status, response.statusText);
+      console.error("Failed to fetch image:", response.status, response.statusText);
       return new Response(
-        JSON.stringify({ error: "Failed to fetch logo", status: response.status }),
+        JSON.stringify({ 
+          error: "Failed to fetch image", 
+          status: response.status,
+          url: imageUrl 
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Get the image as array buffer
     const imageBuffer = await response.arrayBuffer();
     
     // Convert to base64
@@ -37,18 +61,21 @@ const handler = async (req: Request): Promise<Response> => {
       )
     );
     
-    // Create data URI
-    const dataUri = `data:image/png;base64,${base64}`;
+    // Create data URI with correct MIME type
+    const dataUri = `data:${imageType};base64,${base64}`;
     
-    console.log("Successfully converted logo to base64");
+    console.log("Successfully converted image to base64");
     console.log("Base64 length:", base64.length);
+    console.log("Image type:", imageType);
     
     return new Response(
       JSON.stringify({ 
         success: true, 
         dataUri,
         base64,
-        length: base64.length
+        imageType,
+        length: base64.length,
+        sourceUrl: imageUrl
       }),
       {
         status: 200,
