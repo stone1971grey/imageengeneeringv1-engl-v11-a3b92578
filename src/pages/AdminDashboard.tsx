@@ -250,6 +250,12 @@ const AdminDashboard = () => {
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   const [footerCtaTitle, setFooterCtaTitle] = useState<string>("");
   const [footerCtaDescription, setFooterCtaDescription] = useState<string>("");
   const [footerContactHeadline, setFooterContactHeadline] = useState<string>("");
@@ -258,6 +264,32 @@ const AdminDashboard = () => {
   const [footerTeamImageUrl, setFooterTeamImageUrl] = useState<string>("");
   const [footerTeamImageMetadata, setFooterTeamImageMetadata] = useState<ImageMetadata | null>(null);
   const [footerTeamQuote, setFooterTeamQuote] = useState<string>("");
+  
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setTabOrder((items) => {
+      const oldIndex = items.indexOf(String(active.id));
+      const newIndex = items.indexOf(String(over.id));
+      if (oldIndex === -1 || newIndex === -1) return items;
+      return arrayMove(items, oldIndex, newIndex);
+    });
+  };
+
+  const handleDeleteStaticSegment = async (key: keyof typeof STATIC_SEGMENT_IDS) => {
+    toast.error(`Static segment "${key}" cannot be deleted via UI yet.`);
+  };
+
+  const handleSaveHero = async () => {
+    // Reuse existing hero save logic via autoSaveTileImageUpload side-effects
+    await autoSaveTileImageUpload(applications);
+  };
   const [footerTeamName, setFooterTeamName] = useState<string>("");
   const [footerTeamTitle, setFooterTeamTitle] = useState<string>("");
   const [footerButtonText, setFooterButtonText] = useState<string>("");
@@ -1802,7 +1834,7 @@ const AdminDashboard = () => {
           updated_at: new Date().toISOString(),
           updated_by: user.id
         }, {
-          onConflict: 'page_slug,section_key'
+          onConflict: 'page_slug,section_key,language'
         });
 
       // Update hero CTA link
