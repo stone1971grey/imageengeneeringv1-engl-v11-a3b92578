@@ -323,7 +323,19 @@ export const IndustriesSegmentEditor = ({
                         onValueChange={(value) => handleItemUpdate(index, 'icon', value)}
                       >
                         <SelectTrigger className="mt-1">
-                          <SelectValue />
+                          <SelectValue>
+                            {(() => {
+                              const Icon = availableIcons[item.icon as IconName];
+                              return Icon ? (
+                                <div className="flex items-center gap-2">
+                                  <Icon className="h-4 w-4" />
+                                  <span>{item.icon}</span>
+                                </div>
+                              ) : (
+                                <span>{item.icon}</span>
+                              );
+                            })()}
+                          </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
                           {Object.keys(availableIcons).map((iconName) => {
