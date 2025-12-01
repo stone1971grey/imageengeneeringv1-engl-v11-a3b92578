@@ -3,7 +3,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ActionHero from "@/components/ActionHero";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, MapPin, CheckCircle2, Mail } from "lucide-react";
 
 const EventRegistrationSuccess = () => {
   const location = useLocation();
@@ -94,9 +94,15 @@ const EventRegistrationSuccess = () => {
             </div>
 
             <div className="bg-[#f9dc24]/10 border border-[#f9dc24]/20 rounded-lg p-6 mb-8">
-              <p className="text-sm text-foreground leading-relaxed">
-                <span className="font-semibold">Important Note:</span> You will receive a reminder email 2 days before the event with all relevant details and directions to the venue.
-              </p>
+              <div className="flex items-start gap-3">
+                <Mail className="w-5 h-5 text-[#f9dc24] mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-foreground mb-2">Important: Confirm Your Email</p>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    To complete your event registration, please check your email inbox and confirm your subscription by clicking the confirmation link. You will receive all event details and a reminder 2 days before the event after confirmation.
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="text-center">
