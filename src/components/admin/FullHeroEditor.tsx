@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +23,7 @@ interface FullHeroEditorProps {
   language?: string; // For split-screen mode
 }
 
-export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }: FullHeroEditorProps) => {
+const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' }: FullHeroEditorProps) => {
   const [titleLine1, setTitleLine1] = useState("");
   const [titleLine2, setTitleLine2] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -928,3 +928,5 @@ export const FullHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }:
     </Card>
   );
 };
+
+export const FullHeroEditor = memo(FullHeroEditorComponent);

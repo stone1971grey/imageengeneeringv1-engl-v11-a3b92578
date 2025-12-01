@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,7 +27,7 @@ interface DebugEditorProps {
   segmentId: number;
 }
 
-const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEditorProps) => {
+const DebugEditorComponent = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEditorProps) => {
   const [imageUrl, setImageUrl] = useState(data.imageUrl || '');
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState<DebugImage[]>(data.images || []);
@@ -446,4 +446,5 @@ const DebugEditor = ({ data, onChange, onSave, pageSlug, segmentId }: DebugEdito
   );
 };
 
+const DebugEditor = memo(DebugEditorComponent);
 export default DebugEditor;

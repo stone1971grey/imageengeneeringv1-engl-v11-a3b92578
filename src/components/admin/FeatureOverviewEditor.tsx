@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -218,4 +218,4 @@ const FeatureOverviewEditor = ({ data, onChange, onSave, currentPageSlug, segmen
   );
 };
 
-export default FeatureOverviewEditor;
+export default memo(FeatureOverviewEditor);

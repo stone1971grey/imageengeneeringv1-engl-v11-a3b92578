@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ const LANGUAGES = [
   { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
 ];
 
-export const SplitScreenSegmentEditor = ({ 
+const SplitScreenSegmentEditorComponent = ({ 
   children, 
   segmentTitle,
   segmentType 
@@ -169,3 +169,5 @@ export const SplitScreenSegmentEditor = ({
     </div>
   );
 };
+
+export const SplitScreenSegmentEditor = memo(SplitScreenSegmentEditorComponent);

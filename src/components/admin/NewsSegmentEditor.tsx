@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,7 @@ interface NewsSegmentEditorProps {
   currentPageSlug: string;
 }
 
-const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: NewsSegmentEditorProps) => {
+const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: NewsSegmentEditorProps) => {
   const [sectionTitle, setSectionTitle] = useState("Latest News");
   const [sectionDescription, setSectionDescription] = useState(
     "Stay updated with the latest developments in image quality testing and measurement technology"
@@ -267,4 +267,5 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: N
   );
 };
 
+const NewsSegmentEditor = memo(NewsSegmentEditorComponent);
 export default NewsSegmentEditor;
