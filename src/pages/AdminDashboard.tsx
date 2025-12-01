@@ -4588,7 +4588,8 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
+                  const safeSlug = targetPageSlug || '';
+                  const lastSlugPart = safeSlug.split('/').filter(Boolean).slice(-1)[0] || safeSlug;
                   navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
                 }}
               />
@@ -4996,7 +4997,8 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
+                  const safeSlug = targetPageSlug || '';
+                  const lastSlugPart = safeSlug.split('/').filter(Boolean).slice(-1)[0] || safeSlug;
                   navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
                 }}
               />

@@ -500,7 +500,7 @@ export const CMSPageOverview = () => {
           // Make moved page a child of target page
           newParentSlug = targetPage.page_slug;
           newParentId = targetPage.page_id;
-          const pageBaseName = movedPage.page_slug.split('/').pop()!;
+          const pageBaseName = (movedPage.page_slug || '').split('/').pop() || movedPage.page_slug;
           newPageSlug = `${targetPage.page_slug}/${pageBaseName}`;
           
           toast.success(`"${movedPage.page_title}" als Kind unter "${targetPage.page_title}" verschoben`);
@@ -508,7 +508,7 @@ export const CMSPageOverview = () => {
           // Make moved page a sibling of target page
           newParentSlug = targetPage.parent_slug;
           newParentId = targetPage.parent_id;
-          const pageBaseName = movedPage.page_slug.split('/').pop()!;
+          const pageBaseName = (movedPage.page_slug || '').split('/').pop() || movedPage.page_slug;
           
           if (newParentSlug) {
             newPageSlug = `${newParentSlug}/${pageBaseName}`;
@@ -574,7 +574,7 @@ export const CMSPageOverview = () => {
             if (!directChildren || directChildren.length === 0) return;
 
             for (const child of directChildren) {
-              const childBaseName = child.page_slug.split('/').pop()!;
+              const childBaseName = (child.page_slug || '').split('/').pop() || child.page_slug;
               const newChildSlug = `${parentNewSlug}/${childBaseName}`;
               
               // Update page_registry for child
