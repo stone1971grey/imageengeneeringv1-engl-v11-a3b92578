@@ -174,6 +174,59 @@ function eventTitleToSlug(title: string): string {
     .replace(/-+/g, '_');
 }
 
+// Find event-specific segment by event title
+async function findEventSegment(eventTitle: string, baseUrl: string, authString: string) {
+  const eventSlug = eventTitleToSlug(eventTitle);
+  console.log("Searching for event segment with title:", eventTitle, "slug:", eventSlug);
+  
+  // Try different segment naming patterns
+  const searchPatterns = [
+    `evt:${eventSlug}`,           // e.g., "evt:automotive_testing_2025"
+    `Event: ${eventTitle}`,       // e.g., "Event: Automotive Testing 2025"
+    eventTitle,                   // Direct match
+    eventSlug,                    // Slug match
+  ];
+  
+  const response = await fetch(
+    `${baseUrl}/api/segments`,
+    {
+      headers: {
+        "Authorization": `Basic ${authString}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error("Failed to fetch segments for event search");
+    return null;
+  }
+
+  const data = await response.json();
+  
+  if (data.total > 0 && data.lists) {
+    for (const id of Object.keys(data.lists)) {
+      const segment = data.lists[id];
+      const segmentNameLower = segment.name?.toLowerCase() || '';
+      const segmentAlias = segment.alias?.toLowerCase() || '';
+      
+      // Check if segment matches any of our patterns
+      for (const pattern of searchPatterns) {
+        const patternLower = pattern.toLowerCase();
+        if (segmentNameLower.includes(patternLower) || 
+            segmentAlias.includes(patternLower) ||
+            segmentNameLower.includes(eventSlug)) {
+          console.log("Found event segment:", segment.name, "ID:", id);
+          return { id, name: segment.name };
+        }
+      }
+    }
+  }
+  
+  console.log("No event-specific segment found for:", eventTitle);
+  return null;
+}
+
 // Find campaign by name - with optional event-specific matching
 async function findCampaignByName(campaignName: string, baseUrl: string, authString: string, eventTitle?: string) {
   console.log("Searching for campaign:", campaignName, eventTitle ? `(event: ${eventTitle})` : '');
@@ -417,6 +470,20 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
+    // 6. Add contact to event-specific segment (if event_title exists)
+    let eventSegmentAdded = false;
+    let eventSegmentName = null;
+    if (eventTitle) {
+      const eventSegment = await findEventSegment(eventTitle, baseUrl, authString);
+      if (eventSegment) {
+        eventSegmentAdded = await addContactToSegment(contactId, eventSegment.id, baseUrl, authString);
+        eventSegmentName = eventSegment.name;
+        console.log("✅ Contact added to event segment:", eventSegmentName);
+      } else {
+        console.log("No event-specific segment found for:", eventTitle);
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -429,6 +496,8 @@ const handler = async (req: Request): Promise<Response> => {
         optinCampaignRemoved,
         eventCampaignAdded,
         eventCampaignName,
+        eventSegmentAdded,
+        eventSegmentName,
         message: "Marketing opt-in confirmed successfully"
       }),
       {
