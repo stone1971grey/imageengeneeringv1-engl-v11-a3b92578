@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { X, Save, FileText, Calendar, Weight, Image as ImageIcon } from "lucide-react";
+import { X, Save, FileText, Calendar, Weight, Image as ImageIcon, Database } from "lucide-react";
 
 interface AssetEditDialogProps {
   isOpen: boolean;
@@ -19,6 +19,7 @@ interface AssetEditDialogProps {
     bucket_id: string;
     segmentIds?: string[];
     filePath: string;
+    id: string;
   } | null;
   onSave: () => void;
 }
@@ -158,6 +159,16 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
                 <div className="text-xs text-gray-400">Filename</div>
                 <div className="text-sm font-medium truncate max-w-[200px]" title={fileName}>
                   {fileName}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 col-span-2">
+              <Database className="h-4 w-4 text-blue-400" />
+              <div>
+                <div className="text-xs text-gray-400">Image ID</div>
+                <div className="text-sm font-mono font-medium text-blue-400" title={asset.id}>
+                  {asset.id}
                 </div>
               </div>
             </div>
