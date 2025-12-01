@@ -452,17 +452,47 @@ const AdminDashboard = () => {
         twitterCard: 'summary_large_image'
       });
       
-      // First, load page info
-      loadPageInfo().then(() => {
-        // Then load segment registry to get all segment IDs
-        loadSegmentRegistry().then(() => {
+      // Comprehensive error handler for page loading
+      const loadPageWithErrorHandling = async () => {
+        try {
+          console.log(`[AdminDashboard] Starting page load for: ${selectedPage}`);
+          
+          // First, load page info
+          await loadPageInfo();
+          console.log(`[AdminDashboard] Page info loaded successfully`);
+          
+          // Then load segment registry to get all segment IDs
+          await loadSegmentRegistry();
+          console.log(`[AdminDashboard] Segment registry loaded successfully`);
+          
           // Then calculate global max segment ID across all pages
-          calculateGlobalMaxSegmentId().then(() => {
-            // Finally load content for current page
-            loadContent();
+          await calculateGlobalMaxSegmentId();
+          console.log(`[AdminDashboard] Global max segment ID calculated`);
+          
+          // Finally load content for current page
+          await loadContent();
+          console.log(`[AdminDashboard] Content loaded successfully for: ${selectedPage}`);
+          
+        } catch (error: any) {
+          console.error(`[AdminDashboard] Critical error loading page "${selectedPage}":`, error);
+          
+          // Show user-friendly error message
+          toast.error(
+            `Failed to load page: ${selectedPage}. ${error?.message || 'Unknown error'}. Please try selecting a different page or refresh the browser.`,
+            { duration: 8000 }
+          );
+          
+          // Log additional debug info
+          console.error('[AdminDashboard] Error details:', {
+            selectedPage,
+            editorLanguage,
+            errorMessage: error?.message,
+            errorStack: error?.stack
           });
-        });
-      });
+        }
+      };
+      
+      loadPageWithErrorHandling();
     }
   }, [user, selectedPage, isAdmin, isEditor, editorLanguage]);
 
