@@ -83,6 +83,63 @@ async function updateMarketingOptin(contactId: string, baseUrl: string, authStri
   return updateData;
 }
 
+async function findSegmentByName(segmentName: string, baseUrl: string, authString: string) {
+  console.log("Searching for segment:", segmentName);
+  
+  const response = await fetch(
+    `${baseUrl}/api/segments?search=${encodeURIComponent(segmentName)}`,
+    {
+      headers: {
+        "Authorization": `Basic ${authString}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error("Failed to fetch segments");
+    return null;
+  }
+
+  const data = await response.json();
+  
+  if (data.total > 0 && data.lists) {
+    for (const id of Object.keys(data.lists)) {
+      const segment = data.lists[id];
+      if (segment.name === segmentName || segment.alias === segmentName.toLowerCase().replace(/\s+/g, '')) {
+        console.log("Found segment:", segment.name, "ID:", id);
+        return id;
+      }
+    }
+  }
+  
+  return null;
+}
+
+async function addContactToSegment(contactId: string, segmentId: string, baseUrl: string, authString: string) {
+  console.log("Adding contact", contactId, "to segment", segmentId);
+  
+  const response = await fetch(
+    `${baseUrl}/api/segments/${segmentId}/contact/${contactId}/add`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${authString}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Failed to add contact to segment:", errorText);
+    return false;
+  }
+
+  console.log("✅ Contact added to segment successfully");
+  return true;
+}
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -137,12 +194,31 @@ const handler = async (req: Request): Promise<Response> => {
     // Update marketing_optin to confirmed
     const result = await updateMarketingOptin(contactId, baseUrl, authString);
 
+    // Try to add contact to "Marketing Allowed" segment
+    let segmentAdded = false;
+    const marketingAllowedSegmentId = await findSegmentByName("Marketing Allowed", baseUrl, authString);
+    if (marketingAllowedSegmentId) {
+      segmentAdded = await addContactToSegment(contactId, marketingAllowedSegmentId, baseUrl, authString);
+    } else {
+      console.log("Marketing Allowed segment not found - trying alternative names");
+      // Try alternative segment names
+      const alternativeNames = ["Marketing_Allowed", "marketing_allowed", "MarketingAllowed"];
+      for (const name of alternativeNames) {
+        const altSegmentId = await findSegmentByName(name, baseUrl, authString);
+        if (altSegmentId) {
+          segmentAdded = await addContactToSegment(contactId, altSegmentId, baseUrl, authString);
+          break;
+        }
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         contactId,
         previousStatus: currentStatus,
         newStatus: "confirmed",
+        segmentAdded,
         message: "Marketing opt-in confirmed successfully"
       }),
       {
