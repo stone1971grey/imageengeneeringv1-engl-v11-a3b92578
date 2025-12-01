@@ -151,6 +151,9 @@ const handler = async (req: Request): Promise<Response> => {
           // Update existing contact - update all fields including contact data
           console.log("Updating existing Mautic contact - updating all fields including name/company");
           
+          // Get company logo from environment
+          const companyLogoUrl = Deno.env.get("COMPANY_LOGO_URL");
+          
           const updateData: any = {
             firstname: firstName,
             lastname: lastName,
@@ -162,6 +165,7 @@ const handler = async (req: Request): Promise<Response> => {
             dl_type: dlTypeFormatted,
             dl_title: title,
             dl_url: dlUrl,
+            company_logo: companyLogoUrl, // Add company logo for mailings
             tags: [downloadTag], // Mautic will ADD these tags, not replace
           };
 
@@ -183,6 +187,9 @@ const handler = async (req: Request): Promise<Response> => {
           // Create new contact with all data
           console.log("Creating new Mautic contact with marketing_optin: pending");
           
+          // Get company logo from environment
+          const companyLogoUrl = Deno.env.get("COMPANY_LOGO_URL");
+          
           const createData: any = {
             firstname: firstName,
             lastname: lastName,
@@ -196,6 +203,7 @@ const handler = async (req: Request): Promise<Response> => {
             dl_type: dlTypeFormatted,
             dl_title: title,
             dl_url: dlUrl,
+            company_logo: companyLogoUrl, // Add company logo for mailings
             tags: [downloadTag]
           };
 

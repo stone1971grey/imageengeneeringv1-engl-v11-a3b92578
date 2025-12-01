@@ -201,6 +201,9 @@ const handler = async (req: Request): Promise<Response> => {
           const allTags = [...new Set([...existingTags, "evt", newEventTag])];
           console.log("Combined tags:", allTags);
           
+          // Get company logo from environment
+          const companyLogoUrl = Deno.env.get("COMPANY_LOGO_URL");
+          
           const updateData: any = {
             firstname: data.firstName,
             lastname: data.lastName,
@@ -210,6 +213,7 @@ const handler = async (req: Request): Promise<Response> => {
             event_date: data.eventDate,
             event_location: data.eventLocation,
             evt_image_url: fullImageUrl,
+            company_logo: companyLogoUrl, // Add company logo for mailings
             tags: allTags, // Use combined tags array
           };
 
@@ -233,6 +237,9 @@ const handler = async (req: Request): Promise<Response> => {
           // Create new contact with all data
           console.log("Creating new Mautic contact");
           
+          // Get company logo from environment
+          const companyLogoUrl = Deno.env.get("COMPANY_LOGO_URL");
+          
           const createData: any = {
             firstname: data.firstName,
             lastname: data.lastName,
@@ -243,6 +250,7 @@ const handler = async (req: Request): Promise<Response> => {
             event_date: data.eventDate,
             event_location: data.eventLocation,
             evt_image_url: fullImageUrl,
+            company_logo: companyLogoUrl, // Add company logo for mailings
             phone: data.phone,
             industry: data.industry,
             current_test_systems: data.currentTestSystems,
