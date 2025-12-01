@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag } from "lucide-react";
+import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -86,6 +86,8 @@ export function DataHubDialog({
     segmentIds?: string[];
     filePath: string;
   } | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [batchDeleting, setBatchDeleting] = useState(false);
   
   // Debounced localStorage write
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
@@ -420,6 +422,86 @@ export function DataHubDialog({
     }
   };
 
+  const toggleFileSelection = (folder: MediaFolder, fileName: string) => {
+    const fileKey = `${folder.storage_path}/${fileName}`;
+    setSelectedFiles(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(fileKey)) {
+        newSet.delete(fileKey);
+      } else {
+        newSet.add(fileKey);
+      }
+      return newSet;
+    });
+  };
+
+  const selectAllFilesInFolder = (folder: MediaFolder) => {
+    if (!folder.files || folder.files.length === 0) return;
+    
+    const folderFileKeys = folder.files.map(f => `${folder.storage_path}/${f.name}`);
+    const allSelected = folderFileKeys.every(key => selectedFiles.has(key));
+    
+    setSelectedFiles(prev => {
+      const newSet = new Set(prev);
+      if (allSelected) {
+        // Deselect all in this folder
+        folderFileKeys.forEach(key => newSet.delete(key));
+      } else {
+        // Select all in this folder
+        folderFileKeys.forEach(key => newSet.add(key));
+      }
+      return newSet;
+    });
+  };
+
+  const handleBatchDelete = async () => {
+    if (selectedFiles.size === 0) {
+      toast.error("No files selected");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete ${selectedFiles.size} file(s)? This action cannot be undone.`)) {
+      return;
+    }
+
+    setBatchDeleting(true);
+    try {
+      const filePaths = Array.from(selectedFiles);
+      
+      // Delete from Storage
+      const { error: storageError } = await supabase.storage
+        .from("page-images")
+        .remove(filePaths);
+
+      if (storageError) throw storageError;
+
+      // Remove from file_segment_mappings table
+      for (const filePath of filePaths) {
+        await supabase
+          .from("file_segment_mappings")
+          .delete()
+          .eq("file_path", filePath)
+          .eq("bucket_id", "page-images");
+      }
+
+      // Trigger cleanup
+      try {
+        await supabase.functions.invoke('cleanup-orphaned-images', { body: {} });
+      } catch (cleanupError) {
+        console.error('[Batch Delete] Cleanup error:', cleanupError);
+      }
+
+      toast.success(`${selectedFiles.size} file(s) deleted successfully`);
+      setSelectedFiles(new Set());
+      await loadFolders();
+    } catch (error: any) {
+      console.error("Batch delete error:", error);
+      toast.error(`Batch delete failed: ${error.message}`);
+    } finally {
+      setBatchDeleting(false);
+    }
+  };
+
   const getFileUrl = useCallback((folder: MediaFolder, fileName: string) => {
     // fileName kann jetzt segment-xxx/actual-file.png enthalten
     const { data } = supabase.storage
@@ -579,6 +661,47 @@ export function DataHubDialog({
 
           <CollapsibleContent>
             <div className="p-4 bg-gray-900/30">
+              {/* Batch Operations Toolbar (only in non-selection mode) */}
+              {!selectionMode && folderFiles.length > 0 && (
+                <div className="mb-4 p-3 bg-gray-800/50 border border-gray-700 rounded-lg flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => selectAllFilesInFolder(folder)}
+                      className="bg-blue-900/30 border-blue-700 text-blue-300 hover:bg-blue-900/50"
+                    >
+                      {folder.files?.every(f => selectedFiles.has(`${folder.storage_path}/${f.name}`)) ? (
+                        <CheckSquare className="h-4 w-4 mr-2" />
+                      ) : (
+                        <Square className="h-4 w-4 mr-2" />
+                      )}
+                      {folder.files?.every(f => selectedFiles.has(`${folder.storage_path}/${f.name}`))
+                        ? 'Deselect All'
+                        : 'Select All'
+                      }
+                    </Button>
+                    {selectedFiles.size > 0 && (
+                      <span className="text-sm text-gray-400">
+                        {selectedFiles.size} file(s) selected
+                      </span>
+                    )}
+                  </div>
+                  {selectedFiles.size > 0 && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={handleBatchDelete}
+                      disabled={batchDeleting}
+                      className="bg-red-900/50 hover:bg-red-900 border-red-800"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {batchDeleting ? 'Deleting...' : `Delete ${selectedFiles.size} Selected`}
+                    </Button>
+                  )}
+                </div>
+              )}
+
               {/* Render subfolders */}
               {folder.children && folder.children.length > 0 && (
                 <div className="mb-4">
@@ -615,6 +738,23 @@ export function DataHubDialog({
                         key={file.id}
                         className="group relative border border-gray-700 rounded-lg overflow-hidden hover:border-[#f9dc24] transition-all duration-300 bg-gray-800/50 hover:bg-gray-800"
                       >
+                        {/* Checkbox for batch selection - only in non-selection mode */}
+                        {!selectionMode && (
+                          <div 
+                            className="absolute top-2 left-2 z-20 cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFileSelection(folder, file.name);
+                            }}
+                          >
+                            {selectedFiles.has(`${folder.storage_path}/${file.name}`) ? (
+                              <CheckSquare className="h-5 w-5 text-[#f9dc24] bg-gray-900/90 backdrop-blur-sm rounded border border-[#f9dc24]/30 p-0.5" />
+                            ) : (
+                              <Square className="h-5 w-5 text-gray-400 bg-gray-900/70 backdrop-blur-sm rounded border border-gray-600/30 p-0.5 hover:text-[#f9dc24] hover:border-[#f9dc24]/30" />
+                            )}
+                          </div>
+                        )}
+                        
                         {isImg && (
                           <div className="aspect-video bg-gray-900 overflow-hidden relative">
                              <img
@@ -634,8 +774,8 @@ export function DataHubDialog({
                                 }
                               }}
                              />
-                             {/* Image ID Badge - light blue on top-left */}
-                             <div className="absolute top-2 left-2">
+                             {/* Image ID Badge - light blue, repositioned to avoid checkbox */}
+                             <div className={`absolute ${!selectionMode ? 'top-9' : 'top-2'} left-2`}>
                                <div 
                                  className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-blue-400/30 shadow-lg"
                                  title={`Image ID: ${file.id}`}
