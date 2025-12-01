@@ -485,8 +485,9 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
           cta2Text: translated["4"] || sourceData.cta2Text
         };
         setLocalData(updatedData);
-        onChange(updatedData);
-        toast.success("Content translated successfully!");
+        // DO NOT call onChange here - it would contaminate the English editor's display
+        // The user must click Save to persist the translation
+        toast.success("Content translated successfully! Click 'Save' to persist changes.");
       }
     } catch (error: any) {
       console.error('Translation error:', error);
