@@ -673,7 +673,7 @@ export const BannerSegmentEditor = ({
             )}
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {(isTarget ? currentData.images : images).map((image, index) => {
               const isUploading = uploadingId === image.id;
               const hasImage = !!image.url;
@@ -681,34 +681,40 @@ export const BannerSegmentEditor = ({
               return (
               <div 
                 key={image.id} 
-                className={`p-4 border rounded-lg space-y-3 transition-all duration-300 ${
-                  isUploading 
-                    ? 'bg-blue-50 border-blue-300 animate-pulse' 
-                    : hasImage && !isTarget
-                    ? 'bg-green-50 border-green-300'
-                    : 'bg-muted/30'
-                }`}
+                className="p-3 border rounded-lg bg-background space-y-2"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">Image {index + 1}</span>
-                    {isUploading && (
-                      <span className="text-xs px-2 py-1 bg-blue-500 text-white rounded-full animate-pulse">
-                        Uploading...
-                      </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {hasImage && (
+                      <div className="w-12 h-12 rounded border overflow-hidden flex-shrink-0">
+                        <img
+                          src={image.url}
+                          alt={image.alt || `Banner image ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     )}
-                    {hasImage && !isUploading && !isTarget && (
-                      <span className="text-xs px-2 py-1 bg-green-500 text-white rounded-full">
-                        ✓ Ready
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">Image {index + 1}</span>
+                      {isUploading && (
+                        <span className="text-xs px-2 py-0.5 bg-blue-500 text-white rounded-full animate-pulse">
+                          Uploading...
+                        </span>
+                      )}
+                      {hasImage && !isUploading && !isTarget && (
+                        <span className="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full">
+                          ✓
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {!isTarget && (
                     <Button
                       type="button"
-                      variant="destructive"
+                      variant="ghost"
                       size="sm"
                       onClick={() => setDeleteId(image.id)}
+                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -733,17 +739,6 @@ export const BannerSegmentEditor = ({
                   />
                 )}
 
-                {image.url && (
-                  <div className="mt-4 p-4 bg-background rounded relative">
-                    <img
-                      src={image.url}
-                      alt={image.alt || `Banner image ${index + 1}`}
-                      className="max-h-32 max-w-full object-contain mx-auto"
-                    />
-                  </div>
-                )}
-
-                {/* Alt Text */}
                 <div>
                   <Label className="text-xs">Alt Text</Label>
                   <Input
