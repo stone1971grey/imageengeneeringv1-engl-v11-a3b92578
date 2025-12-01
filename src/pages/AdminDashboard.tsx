@@ -4483,23 +4483,22 @@ const AdminDashboard = () => {
                 </select>
               </div>
 
-              <div className="flex justify-between items-center pt-4 border-t">
-                <Button
-                  onClick={() => setCopyHeroDialogOpen(true)}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  <Copy className="h-4 w-4" />
-                  Copy to Page...
-                </Button>
-                
+              <div className="flex flex-col gap-3 pt-4 border-t">
                 <Button
                   onClick={handleSaveHero}
                   disabled={saving}
-                  className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                  className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                 >
-                  <Save className="h-4 w-4" />
                   {saving ? "Saving..." : "Save Changes"}
+                </Button>
+
+                <Button
+                  onClick={() => setCopyHeroDialogOpen(true)}
+                  variant="outline"
+                  className="flex items-center gap-2 self-start"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy to Page...
                 </Button>
               </div>
 
@@ -5348,9 +5347,8 @@ const AdminDashboard = () => {
                       }
                     }}
                     disabled={saving}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                   >
-                    <Save className="h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
                 </div>
@@ -5667,9 +5665,8 @@ const AdminDashboard = () => {
                       }
                     }}
                     disabled={saving}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                    className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                   >
-                    <Save className="h-4 w-4" />
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
                 </div>
