@@ -81,7 +81,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
 
       if (fetchError) {
         console.error('[AssetEditDialog] Error loading existing mapping:', fetchError);
-        throw fetchError;
+        // We continue anyway and let the upsert handle it safely instead of failing hard here
       }
 
       // Preserve existing segment_ids if present, otherwise fall back to asset.segmentIds or empty array
@@ -89,41 +89,39 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         ? existing.segment_ids
         : (asset.segmentIds || []);
 
-      let error;
-      if (existing?.id) {
-        // 2) Update existing row
-        ({ error } = await supabase
-          .from('file_segment_mappings')
-          .update({
-            alt_text: altText,
-            segment_ids: segmentIds,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existing.id));
-      } else {
-        // 3) Insert new row
-        ({ error } = await supabase
-          .from('file_segment_mappings')
-          .insert({
+      // 2) Upsert row based on unique (file_path, bucket_id) to avoid duplicate key errors
+      const { error: upsertError } = await supabase
+        .from('file_segment_mappings')
+        .upsert(
+          {
+            id: existing?.id,
             file_path: asset.filePath,
             bucket_id: bucketId,
             segment_ids: segmentIds,
             alt_text: altText,
-            updated_at: new Date().toISOString()
-          }));
-      }
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'file_path,bucket_id' }
+        );
 
-      if (error) {
-        console.error('[AssetEditDialog] Database error on save:', error);
-        throw error;
+      if (upsertError) {
+        console.error('[AssetEditDialog] Database error on save:', upsertError);
+        throw upsertError;
       }
       
       toast.success('✅ Alt text saved successfully');
-      onSave();
+
+      // Wrap callbacks in try/catch so a failure in loadFolders doesn't close the dialog silently
+      try {
+        onSave();
+      } catch (cbError) {
+        console.error('[AssetEditDialog] onSave callback failed:', cbError);
+      }
+
       onClose();
     } catch (error: any) {
       console.error('[AssetEditDialog] Save failed:', error);
-      toast.error(`Failed to save: ${error.message}`);
+      toast.error(error?.message || 'Failed to save alt text. Please try again.');
     } finally {
       setIsSaving(false);
     }
