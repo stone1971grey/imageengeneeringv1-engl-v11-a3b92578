@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -59,7 +59,7 @@ const LANGUAGES = [
   { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
 ];
 
-export const BannerSegmentEditor = ({ 
+const BannerSegmentEditorComponent = ({ 
   data, 
   onChange, 
   onSave, 
@@ -971,7 +971,9 @@ export const BannerSegmentEditor = ({
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+    </AlertDialog>
     </div>
   );
 };
+
+export const BannerSegmentEditor = memo(BannerSegmentEditorComponent);

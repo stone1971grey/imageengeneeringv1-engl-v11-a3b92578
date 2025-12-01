@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -36,7 +36,7 @@ interface MetaNavigationEditorProps {
   availableSegments: AvailableSegment[];
 }
 
-const MetaNavigationEditor = ({ data, onChange, onSave, availableSegments }: MetaNavigationEditorProps) => {
+const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegments }: MetaNavigationEditorProps) => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   const handleLinkChange = (index: number, field: keyof MetaNavigationLink, value: string) => {
@@ -144,4 +144,5 @@ const MetaNavigationEditor = ({ data, onChange, onSave, availableSegments }: Met
   );
 };
 
+const MetaNavigationEditor = memo(MetaNavigationEditorComponent);
 export default MetaNavigationEditor;

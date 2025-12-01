@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +33,7 @@ interface TilesSegmentEditorProps {
   onSave?: () => void;
 }
 
-export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: TilesSegmentEditorProps) => {
+const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: TilesSegmentEditorProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [columns, setColumns] = useState("3");
@@ -507,3 +507,5 @@ export const TilesSegmentEditor = ({ pageSlug, segmentId, language, onSave }: Ti
     </div>
   );
 };
+
+export const TilesSegmentEditor = memo(TilesSegmentEditorComponent);

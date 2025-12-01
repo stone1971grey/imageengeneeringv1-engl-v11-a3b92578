@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +19,7 @@ interface ProductHeroEditorProps {
   language?: string;
 }
 
-export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en' }: ProductHeroEditorProps) => {
+const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' }: ProductHeroEditorProps) => {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
@@ -741,3 +741,5 @@ export const ProductHeroEditor = ({ pageSlug, segmentId, onSave, language = 'en'
     </div>
   );
 };
+
+export const ProductHeroEditor = memo(ProductHeroEditorComponent);

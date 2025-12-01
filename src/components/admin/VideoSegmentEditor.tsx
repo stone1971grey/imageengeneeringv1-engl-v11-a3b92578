@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ interface VideoSegmentEditorProps {
   segmentId: string;
 }
 
-export const VideoSegmentEditor = ({ data, onChange, onSave, currentPageSlug, segmentId }: VideoSegmentEditorProps) => {
+const VideoSegmentEditorComponent = ({ data, onChange, onSave, currentPageSlug, segmentId }: VideoSegmentEditorProps) => {
   const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   const handleChange = (field: string, value: string) => {
@@ -133,3 +133,5 @@ export const VideoSegmentEditor = ({ data, onChange, onSave, currentPageSlug, se
     </div>
   );
 };
+
+export const VideoSegmentEditor = memo(VideoSegmentEditorComponent);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,7 +18,7 @@ interface IntroEditorProps {
   onSave?: () => void;
 }
 
-const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProps) => {
+const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProps) => {
   const { toast: hookToast } = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -360,4 +360,5 @@ const IntroEditor = ({ pageSlug, segmentKey, language, onSave }: IntroEditorProp
   );
 };
 
+const IntroEditor = memo(IntroEditorComponent);
 export default IntroEditor;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,7 +35,7 @@ const LANGUAGES = [
   { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
 ];
 
-export const IndustriesSegmentEditor = ({ 
+const IndustriesSegmentEditorComponent = ({ 
   data, 
   onChange, 
   onSave, 
@@ -527,3 +527,5 @@ export const IndustriesSegmentEditor = ({
     </div>
   );
 };
+
+export const IndustriesSegmentEditor = memo(IndustriesSegmentEditorComponent);

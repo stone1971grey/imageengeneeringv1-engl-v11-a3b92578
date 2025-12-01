@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Plus, Trash2, Save, Copy } from "lucide-react";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { CopySegmentDialog } from "./CopySegmentDialog";
 
 interface SpecificationRow {
@@ -203,4 +203,4 @@ const SpecificationEditor = ({
   );
 };
 
-export default SpecificationEditor;
+export default memo(SpecificationEditor);
