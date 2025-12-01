@@ -258,6 +258,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
               variant="outline"
               onClick={onClose}
               className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
+              type="button"
             >
               <X className="h-4 w-4 mr-2" />
               Cancel
