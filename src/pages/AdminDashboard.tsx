@@ -960,8 +960,8 @@ const AdminDashboard = () => {
       window.dispatchEvent(new Event('refreshPageSelector'));
       
       // Extract last part of slug for navigation (HierarchicalPageSelect works with non-hierarchical slugs)
-      const slugParts = pageInfo.page_slug.split('/').filter(Boolean);
-      const lastSlugPart = slugParts[slugParts.length - 1];
+      const slugParts = (pageInfo?.page_slug || '').split('/').filter(Boolean);
+      const lastSlugPart = slugParts[slugParts.length - 1] || '';
       
       // Navigate using React Router (no full page reload)
       navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
