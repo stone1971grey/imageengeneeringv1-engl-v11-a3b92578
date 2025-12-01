@@ -54,8 +54,20 @@ async function findContact(email: string, baseUrl: string, authString: string) {
   return null;
 }
 
-async function updateMarketingOptin(contactId: string, baseUrl: string, authString: string) {
+async function updateMarketingOptin(contactId: string, baseUrl: string, authString: string, eventTag?: string) {
   console.log("Updating marketing_optin to 'confirmed' for contact:", contactId);
+  
+  // Build update payload
+  const updatePayload: Record<string, any> = {
+    marketing_optin: "confirmed",
+    optin_confirmed: new Date().toISOString(),
+  };
+  
+  // Add event tag if provided
+  if (eventTag) {
+    updatePayload.tags = [eventTag];
+    console.log("Adding event tag:", eventTag);
+  }
   
   const updateResponse = await fetch(
     `${baseUrl}/api/contacts/${contactId}/edit`,
@@ -65,10 +77,7 @@ async function updateMarketingOptin(contactId: string, baseUrl: string, authStri
         "Authorization": `Basic ${authString}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        marketing_optin: "confirmed",
-        optin_confirmed: new Date().toISOString(),
-      }),
+      body: JSON.stringify(updatePayload),
     }
   );
 
@@ -80,6 +89,9 @@ async function updateMarketingOptin(contactId: string, baseUrl: string, authStri
 
   const updateData = await updateResponse.json();
   console.log("✅ marketing_optin updated successfully to 'confirmed'");
+  if (eventTag) {
+    console.log("✅ Event tag added:", eventTag);
+  }
   return updateData;
 }
 
@@ -356,12 +368,20 @@ const handler = async (req: Request): Promise<Response> => {
     const currentStatus = contact.fields?.all?.marketing_optin;
     console.log("Current marketing_optin status:", currentStatus);
 
-    // Get event info from contact for campaign assignment
+    // Get event info from contact for campaign assignment and tag
     const eventTitle = contact.fields?.all?.event_title;
     console.log("Contact event_title:", eventTitle);
 
-    // Update marketing_optin to confirmed
-    const result = await updateMarketingOptin(contactId, baseUrl, authString);
+    // Build event tag if event exists (format: evt:event_slug)
+    let eventTag: string | undefined;
+    if (eventTitle) {
+      const eventSlug = eventTitleToSlug(eventTitle);
+      eventTag = `evt:${eventSlug}`;
+      console.log("Will add event tag:", eventTag);
+    }
+
+    // Update marketing_optin to confirmed (with event tag if applicable)
+    const result = await updateMarketingOptin(contactId, baseUrl, authString, eventTag);
 
     // 1. Add +5 engagement points for opt-in confirmation
     let pointsAdded = false;
@@ -429,6 +449,7 @@ const handler = async (req: Request): Promise<Response> => {
         optinCampaignRemoved,
         eventCampaignAdded,
         eventCampaignName,
+        eventTagAdded: eventTag || null,
         message: "Marketing opt-in confirmed successfully"
       }),
       {
