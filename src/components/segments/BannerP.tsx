@@ -36,19 +36,19 @@ export const BannerP = ({
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-purple-50 to-pink-50 border-t-4 border-purple-500">
+    <section className="py-16 bg-gray-100">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center">
           {/* Title */}
           {title && (
-            <h2 className="text-4xl font-bold text-purple-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
               {title}
             </h2>
           )}
 
           {/* Subtext */}
           {subtext && (
-            <p className="text-lg text-purple-700 mb-8">
+            <p className="text-lg text-gray-700 mb-8">
               {subtext}
             </p>
           )}
@@ -62,7 +62,7 @@ export const BannerP = ({
                     <img
                       src={image.url}
                       alt={image.alt || 'Banner image'}
-                      className="max-h-24 w-auto object-contain"
+                      className="max-h-24 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
                     />
                   </div>
                 ) : null
