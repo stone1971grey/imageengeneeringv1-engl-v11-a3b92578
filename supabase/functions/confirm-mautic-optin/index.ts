@@ -165,9 +165,18 @@ async function addPointsToContact(contactId: string, points: number, baseUrl: st
   return true;
 }
 
-// Find campaign by name
-async function findCampaignByName(campaignName: string, baseUrl: string, authString: string) {
-  console.log("Searching for campaign:", campaignName);
+// Convert event title to slug format
+function eventTitleToSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/-+/g, '_');
+}
+
+// Find campaign by name - with optional event-specific matching
+async function findCampaignByName(campaignName: string, baseUrl: string, authString: string, eventTitle?: string) {
+  console.log("Searching for campaign:", campaignName, eventTitle ? `(event: ${eventTitle})` : '');
   
   const response = await fetch(
     `${baseUrl}/api/campaigns?search=${encodeURIComponent(campaignName)}`,
@@ -187,14 +196,35 @@ async function findCampaignByName(campaignName: string, baseUrl: string, authStr
   const data = await response.json();
   
   if (data.total > 0 && data.campaigns) {
+    // If we have an event title, look for event-specific campaign first
+    if (eventTitle) {
+      const eventSlug = eventTitleToSlug(eventTitle);
+      console.log("Looking for event-specific campaign with slug:", eventSlug);
+      
+      for (const id of Object.keys(data.campaigns)) {
+        const campaign = data.campaigns[id];
+        const campaignNameLower = campaign.name?.toLowerCase() || '';
+        // Match campaign that contains both "Event Confirmation" and the event slug
+        if (campaignNameLower.includes(campaignName.toLowerCase()) && 
+            campaignNameLower.includes(eventSlug)) {
+          console.log("Found event-specific campaign:", campaign.name, "ID:", id);
+          return { id, name: campaign.name };
+        }
+      }
+      console.log("No event-specific campaign found for:", eventSlug);
+    }
+    
+    // Fallback: Look for exact match or generic campaign
     for (const id of Object.keys(data.campaigns)) {
       const campaign = data.campaigns[id];
-      // Match by name containing the search term
-      if (campaign.name && campaign.name.toLowerCase().includes(campaignName.toLowerCase())) {
-        console.log("Found campaign:", campaign.name, "ID:", id);
+      // Prefer exact match
+      if (campaign.name?.toLowerCase() === campaignName.toLowerCase()) {
+        console.log("Found exact match campaign:", campaign.name, "ID:", id);
         return { id, name: campaign.name };
       }
     }
+    
+    console.log("No matching campaign found for:", campaignName);
   }
   
   return null;
@@ -373,14 +403,17 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // 5. Add contact to "Event Confirmation" campaign (if event_title exists)
+    // Pass eventTitle to find event-specific campaign
     let eventCampaignAdded = false;
     let eventCampaignName = null;
     if (eventTitle) {
-      // Try to find the specific Event Confirmation campaign
-      const eventConfirmationCampaign = await findCampaignByName("Event Confirmation", baseUrl, authString);
+      // Try to find the event-specific Event Confirmation campaign
+      const eventConfirmationCampaign = await findCampaignByName("Event Confirmation", baseUrl, authString, eventTitle);
       if (eventConfirmationCampaign) {
         eventCampaignAdded = await addContactToCampaign(contactId, eventConfirmationCampaign.id, baseUrl, authString);
         eventCampaignName = eventConfirmationCampaign.name;
+      } else {
+        console.log("No Event Confirmation campaign found for event:", eventTitle);
       }
     }
 
