@@ -8,8 +8,10 @@ import { Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GeminiIcon } from "@/components/GeminiIcon";
 
+type LanguageCode = 'en' | 'de' | 'ja' | 'ko' | 'zh';
+
 interface SplitScreenSegmentEditorProps {
-  children: (language: string) => React.ReactNode;
+  children: (language: LanguageCode) => React.ReactNode;
   segmentTitle: string;
   segmentType: string;
 }
@@ -27,7 +29,7 @@ export const SplitScreenSegmentEditor = ({
   segmentTitle,
   segmentType 
 }: SplitScreenSegmentEditorProps) => {
-  const [targetLanguage, setTargetLanguage] = useState('de');
+  const [targetLanguage, setTargetLanguage] = useState<LanguageCode>('de');
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
     const saved = localStorage.getItem('cms-split-screen-mode');
     return saved !== null ? saved === 'true' : true;
@@ -77,7 +79,7 @@ export const SplitScreenSegmentEditor = ({
           {isSplitScreenEnabled && (
             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
               <label className="text-white font-medium text-sm">Target Language:</label>
-              <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+              <Select value={targetLanguage} onValueChange={(value) => setTargetLanguage(value as LanguageCode)}>
                 <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
                   <SelectValue />
                 </SelectTrigger>
