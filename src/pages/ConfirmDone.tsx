@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ActionHero from "@/components/ActionHero";
 import Navigation from "@/components/Navigation";
@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import confirmDoneHero from "@/assets/confirm-done-hero.jpg";
 import { getMauticEmail } from "@/lib/mauticTracking";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 declare global {
   interface Window {
@@ -15,9 +17,42 @@ declare global {
 
 const ConfirmDone = () => {
   const navigate = useNavigate();
+  const [optinConfirmed, setOptinConfirmed] = useState(false);
 
   useEffect(() => {
     const email = getMauticEmail();
+    
+    // Confirm marketing opt-in in Mautic via Edge Function
+    const confirmOptIn = async () => {
+      if (!email) {
+        console.log("No email found in localStorage for opt-in confirmation");
+        return;
+      }
+
+      try {
+        console.log("Confirming marketing opt-in for:", email);
+        const { data, error } = await supabase.functions.invoke('confirm-mautic-optin', {
+          body: { email },
+        });
+
+        if (error) {
+          console.error("Failed to confirm opt-in:", error);
+          return;
+        }
+
+        if (data?.success) {
+          console.log("✅ Marketing opt-in confirmed:", data);
+          setOptinConfirmed(true);
+          toast.success("Email confirmation successful!");
+        } else {
+          console.error("Opt-in confirmation failed:", data?.error);
+        }
+      } catch (err) {
+        console.error("Error confirming opt-in:", err);
+      }
+    };
+
+    confirmOptIn();
     
     // Add Mautic tracking script
     const script = document.createElement('script');
