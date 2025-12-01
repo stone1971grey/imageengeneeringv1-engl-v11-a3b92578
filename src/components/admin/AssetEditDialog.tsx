@@ -60,12 +60,22 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
   }, [isOpen, asset]);
 
   const handleSave = async () => {
-    if (!asset?.filePath) return;
+    if (!asset?.filePath) {
+      console.error('[AssetEditDialog] No filePath provided');
+      return;
+    }
+    
+    console.log('[AssetEditDialog] Starting save with:', {
+      filePath: asset.filePath,
+      bucket_id: asset.bucket_id,
+      segment_ids: asset.segmentIds || [],
+      alt_text: altText
+    });
     
     setIsSaving(true);
     try {
       // Update or create the mapping with alt text
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('file_segment_mappings')
         .upsert({
           file_path: asset.filePath,
@@ -75,15 +85,20 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
           updated_at: new Date().toISOString()
         }, {
           onConflict: 'file_path,bucket_id'
-        });
+        })
+        .select();
       
-      if (error) throw error;
+      if (error) {
+        console.error('[AssetEditDialog] Database error:', error);
+        throw error;
+      }
       
+      console.log('[AssetEditDialog] Save successful:', data);
       toast.success('✅ Alt text saved successfully');
       onSave();
       onClose();
     } catch (error: any) {
-      console.error('Error saving alt text:', error);
+      console.error('[AssetEditDialog] Save failed:', error);
       toast.error(`Failed to save: ${error.message}`);
     } finally {
       setIsSaving(false);
