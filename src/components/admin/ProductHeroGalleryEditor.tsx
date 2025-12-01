@@ -866,25 +866,46 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Dimensions:</span>
-                        <p className="text-gray-800">{image.metadata.width} × {image.metadata.height} px</p>
+                        <p className="text-gray-800">
+                          {typeof image.metadata.width === 'number' && typeof image.metadata.height === 'number'
+                            ? `${image.metadata.width} × ${image.metadata.height} px`
+                            : '—'}
+                        </p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">File Size:</span>
-                        <p className="text-gray-800">{formatFileSize(image.metadata.fileSizeKB)}</p>
+                        <p className="text-gray-800">
+                          {typeof image.metadata.fileSizeKB === 'number'
+                            ? formatFileSize(image.metadata.fileSizeKB)
+                            : '—'}
+                        </p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Format:</span>
-                        <p className="text-gray-800">{image.metadata.format}</p>
+                        <p className="text-gray-800">{image.metadata.format || '—'}</p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Uploaded:</span>
-                        <p className="text-gray-800">{formatUploadDate(image.metadata.uploadDate)}</p>
+                        <p className="text-gray-800">
+                          {image.metadata.uploadDate
+                            ? formatUploadDate(image.metadata.uploadDate)
+                            : '—'}
+                        </p>
                       </div>
                       <div>
                         <span className="font-medium text-gray-600">Storage URL:</span>
-                        <p className="text-gray-800 text-xs truncate" title={image.metadata.url}>
-                          {image.metadata.url.split('/').pop()}
-                        </p>
+                        {(() => {
+                          const storageUrl = image.metadata.url || image.imageUrl;
+                          if (!storageUrl) {
+                            return <p className="text-gray-800 text-xs">—</p>;
+                          }
+                          const fileName = storageUrl.split('/').pop() || storageUrl;
+                          return (
+                            <p className="text-gray-800 text-xs truncate" title={storageUrl}>
+                              {fileName}
+                            </p>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
