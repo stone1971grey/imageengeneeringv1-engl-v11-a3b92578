@@ -238,7 +238,22 @@ const DynamicCMSPage = () => {
 
       setFullHeroOverrides(fullHeroOverridesLocal);
 
-      // Intro- und Industries-Segmente mit ggf. vorhandenen Overrides anreichern
+      // Für Nicht-Englisch-Sprachen: Bild- und Layout-Fallback von EN für Banner-Segmente
+      let englishSegmentsForFallback: any[] = [];
+      if (urlLanguage !== 'en') {
+        const { data: enRows, error: enError } = await supabase
+          .from("page_content")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("language", 'en');
+
+        if (!enError && enRows) {
+          const parsedEn = parseContentRows(enRows || []);
+          englishSegmentsForFallback = parsedEn.segments || [];
+        }
+      }
+
+      // Intro-/Industries-Segmente mit Overrides anreichern + Banner-Fallback anwenden
       const enhancedSegments = Array.isArray(loadedSegments)
         ? loadedSegments.map((seg: any) => {
             const type = String(seg.type || '').toLowerCase();
@@ -267,6 +282,34 @@ const DynamicCMSPage = () => {
                     ...override,
                   },
                 };
+              }
+            }
+
+            // Banner / Banner-P: Bilder & Layout aus EN übernehmen, wenn in Zielsprache leer
+            if ((type === 'banner' || type === 'banner-p') && urlLanguage !== 'en') {
+              const enMatch = englishSegmentsForFallback.find((enSeg: any) => {
+                const enKey = enSeg.id ?? enSeg.segment_key;
+                return (
+                  String(enSeg.type || '').toLowerCase() === type &&
+                  String(enKey) === String(key)
+                );
+              });
+
+              if (enMatch?.data) {
+                const hasImages = Array.isArray(seg.data?.images) && seg.data.images.length > 0;
+                const enHasImages = Array.isArray(enMatch.data.images) && enMatch.data.images.length > 0;
+
+                if (!hasImages && enHasImages) {
+                  return {
+                    ...seg,
+                    data: {
+                      // Layout & Bilder aus EN, Texte aus Zielsprache
+                      ...enMatch.data,
+                      ...seg.data,
+                      images: enMatch.data.images,
+                    },
+                  };
+                }
               }
             }
 
