@@ -6350,22 +6350,110 @@ const AdminDashboard = () => {
                                   }}
                                 >
                                   <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
-                                    <SelectValue placeholder="Select an icon" className="text-black" />
+                                    <SelectValue placeholder="Select an icon" className="text-black">
+                                      {(() => {
+                                        const iconMap: Record<string, any> = {
+                                          'FileText': FileText,
+                                          'Download': Download,
+                                          'BarChart3': BarChart3,
+                                          'Zap': Zap,
+                                          'Shield': Shield,
+                                          'Eye': Eye,
+                                          'Car': Car,
+                                          'Smartphone': Smartphone,
+                                          'Heart': Heart,
+                                          'CheckCircle': CheckCircle,
+                                          'Lightbulb': Lightbulb,
+                                          'Monitor': Monitor
+                                        };
+                                        const IconComponent = iconMap[tile.icon || ''];
+                                        return IconComponent ? (
+                                          <div className="flex items-center gap-2">
+                                            <IconComponent className="h-4 w-4" />
+                                            <span>{tile.icon}</span>
+                                          </div>
+                                        ) : (
+                                          <span>{tile.icon || 'Select an icon'}</span>
+                                        );
+                                      })()}
+                                    </SelectValue>
                                   </SelectTrigger>
                                   <SelectContent className="bg-white">
-                                    <SelectItem value="none" className="text-black">No Icon</SelectItem>
-                                    <SelectItem value="FileText" className="text-black">Document (FileText)</SelectItem>
-                                    <SelectItem value="Download" className="text-black">Download</SelectItem>
-                                    <SelectItem value="BarChart3" className="text-black">Bar Chart</SelectItem>
-                                    <SelectItem value="Zap" className="text-black">Lightning (Zap)</SelectItem>
-                                    <SelectItem value="Shield" className="text-black">Shield</SelectItem>
-                                    <SelectItem value="Eye" className="text-black">Eye</SelectItem>
-                                    <SelectItem value="Car" className="text-black">Car</SelectItem>
-                                    <SelectItem value="Smartphone" className="text-black">Smartphone</SelectItem>
-                                    <SelectItem value="Heart" className="text-black">Heart</SelectItem>
-                                    <SelectItem value="CheckCircle" className="text-black">Check Circle</SelectItem>
-                                    <SelectItem value="Lightbulb" className="text-black">Lightbulb</SelectItem>
-                                    <SelectItem value="Monitor" className="text-black">Monitor</SelectItem>
+                                    <SelectItem value="none" className="text-black">
+                                      <span>No Icon</span>
+                                    </SelectItem>
+                                    <SelectItem value="FileText" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <FileText className="h-4 w-4" />
+                                        <span>Document (FileText)</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Download" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Download className="h-4 w-4" />
+                                        <span>Download</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="BarChart3" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <BarChart3 className="h-4 w-4" />
+                                        <span>Bar Chart</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Zap" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Zap className="h-4 w-4" />
+                                        <span>Lightning (Zap)</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Shield" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Shield className="h-4 w-4" />
+                                        <span>Shield</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Eye" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Eye className="h-4 w-4" />
+                                        <span>Eye</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Car" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Car className="h-4 w-4" />
+                                        <span>Car</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Smartphone" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Smartphone className="h-4 w-4" />
+                                        <span>Smartphone</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Heart" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Heart className="h-4 w-4" />
+                                        <span>Heart</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="CheckCircle" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <CheckCircle className="h-4 w-4" />
+                                        <span>Check Circle</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Lightbulb" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Lightbulb className="h-4 w-4" />
+                                        <span>Lightbulb</span>
+                                      </div>
+                                    </SelectItem>
+                                    <SelectItem value="Monitor" className="text-black">
+                                      <div className="flex items-center gap-2">
+                                        <Monitor className="h-4 w-4" />
+                                        <span>Monitor</span>
+                                      </div>
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                                 <p className="text-sm text-white mt-1">
@@ -6457,7 +6545,7 @@ const AdminDashboard = () => {
                         ))}
                       </div>
 
-                      <div className="flex justify-end pt-4 border-t border-gray-600">
+                      <div className="flex flex-col gap-3 pt-4 border-t border-gray-600">
                         <Button
                           onClick={async () => {
                             setSaving(true);
@@ -6494,9 +6582,8 @@ const AdminDashboard = () => {
                             }
                           }}
                           disabled={saving}
-                          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+                          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                         >
-                          <Save className="h-4 w-4" />
                           {saving ? "Saving..." : "Save Changes"}
                         </Button>
                       </div>
