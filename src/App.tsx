@@ -45,6 +45,7 @@ import Styleguide from "./pages/Styleguide";
 import IconsStyleguide from "./pages/IconsStyleguide";
 import ComprehensiveStyleguide from "./pages/ComprehensiveStyleguide";
 import ImageDownload from "./pages/ImageDownload";
+import LogoDownload from "./pages/LogoDownload";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNews from "./pages/AdminNews";
@@ -132,6 +133,7 @@ const App = () => (
             <Route path="/icons-styleguide" element={<Navigate to="/en/icons-styleguide" replace />} />
             <Route path="/comprehensive-styleguide" element={<Navigate to="/en/comprehensive-styleguide" replace />} />
             <Route path="/image-download" element={<Navigate to="/en/image-download" replace />} />
+            <Route path="/logo-download" element={<Navigate to="/en/logo-download" replace />} />
             <Route path="/auth" element={<Navigate to="/en/auth" replace />} />
             <Route path="/admin-dashboard" element={<Navigate to="/en/admin-dashboard" replace />} />
             <Route path="/full-hero-migration" element={<Navigate to="/en/full-hero-migration" replace />} />
@@ -202,6 +204,7 @@ const App = () => (
             <Route path="/:lang/icons-styleguide" element={<IconsStyleguide />} />
             <Route path="/:lang/comprehensive-styleguide" element={<ComprehensiveStyleguide />} />
             <Route path="/:lang/image-download" element={<ImageDownload />} />
+            <Route path="/:lang/logo-download" element={<LogoDownload />} />
             <Route path="/:lang/auth" element={<Auth />} />
             <Route path="/:lang/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/:lang/admin-dashboard/news" element={<AdminNews />} />
