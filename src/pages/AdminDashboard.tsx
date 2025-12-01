@@ -5788,16 +5788,14 @@ const AdminDashboard = () => {
                             </div>
                           )}
                           
-                          {segment.data.heroImageUrl ? (
-                            <Button
-                              type="button"
-                              onClick={() => document.getElementById(`image_text_hero_${index}`)?.click()}
-                              disabled={uploading}
-                              className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                            >
-                              {uploading ? "Uploading..." : "Replace Image"}
-                            </Button>
-                          ) : null}
+                          <Button
+                            type="button"
+                            onClick={() => document.getElementById(`image_text_hero_${index}`)?.click()}
+                            disabled={uploading}
+                            className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                          >
+                            {uploading ? "Uploading..." : (segment.data.heroImageUrl ? "Replace Image" : "Upload Image")}
+                          </Button>
                           
                           <Input
                             id={`image_text_hero_${index}`}
@@ -5805,7 +5803,7 @@ const AdminDashboard = () => {
                             accept="image/*"
                             onChange={(e) => handleImageTextHeroImageUpload(index, e)}
                             disabled={uploading}
-                            className={`border-2 border-gray-600 ${segment.data.heroImageUrl ? "hidden" : ""}`}
+                            className="hidden"
                           />
                           
                           {/* Image Metadata Display */}
@@ -5992,16 +5990,14 @@ const AdminDashboard = () => {
                                     </div>
                                   )}
                                   
-                                  {item.imageUrl ? (
-                                    <Button
-                                      type="button"
-                                      onClick={() => document.getElementById(`image_text_item_${index}_${itemIndex}`)?.click()}
-                                      disabled={uploading}
-                                      className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
-                                    >
-                                      {uploading ? "Uploading..." : "Replace Image"}
-                                    </Button>
-                                  ) : null}
+                                  <Button
+                                    type="button"
+                                    onClick={() => document.getElementById(`image_text_item_${index}_${itemIndex}`)?.click()}
+                                    disabled={uploading}
+                                    className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                                  >
+                                    {uploading ? "Uploading..." : (item.imageUrl ? "Replace Image" : "Upload Image")}
+                                  </Button>
                                   
                                   <Input
                                     id={`image_text_item_${index}_${itemIndex}`}
@@ -6009,7 +6005,7 @@ const AdminDashboard = () => {
                                     accept="image/*"
                                     onChange={(e) => handleImageTextItemImageUpload(index, itemIndex, e)}
                                     disabled={uploading}
-                                    className={`border-2 border-gray-600 ${item.imageUrl ? "hidden" : ""}`}
+                                    className="hidden"
                                   />
                                   
                                   {/* Image Metadata Display */}
