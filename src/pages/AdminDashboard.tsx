@@ -272,16 +272,55 @@ const AdminDashboard = () => {
     navigate('/auth');
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    setTabOrder((items) => {
-      const oldIndex = items.indexOf(String(active.id));
-      const newIndex = items.indexOf(String(over.id));
-      if (oldIndex === -1 || newIndex === -1) return items;
-      return arrayMove(items, oldIndex, newIndex);
-    });
+    // Calculate new order
+    const oldIndex = tabOrder.indexOf(String(active.id));
+    const newIndex = tabOrder.indexOf(String(over.id));
+    if (oldIndex === -1 || newIndex === -1) return;
+    
+    const newOrder = arrayMove(tabOrder, oldIndex, newIndex);
+    
+    // Update local state immediately for responsive UI
+    setTabOrder(newOrder);
+    
+    // Save to database
+    try {
+      const currentUser = (await supabase.auth.getUser()).data.user;
+      if (!currentUser) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: resolvedPageSlug || selectedPage,
+          section_key: "tab_order",
+          content_type: "json",
+          content_value: JSON.stringify(newOrder),
+          language: editorLanguage,
+          updated_at: new Date().toISOString(),
+          updated_by: currentUser.id
+        }, { onConflict: 'page_slug,section_key,language' });
+
+      if (error) {
+        console.error("Error saving tab order:", error);
+        toast.error("Failed to save segment order");
+        // Revert to old order on error
+        setTabOrder(tabOrder);
+      } else {
+        console.log("✅ Tab order saved successfully:", newOrder);
+        toast.success("Segment order saved");
+      }
+    } catch (error) {
+      console.error("Error saving tab order:", error);
+      toast.error("Failed to save segment order");
+      // Revert to old order on error
+      setTabOrder(tabOrder);
+    }
   };
 
   const handleDeleteStaticSegment = async (key: keyof typeof STATIC_SEGMENT_IDS) => {
