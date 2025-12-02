@@ -5780,26 +5780,22 @@ const AdminDashboard = () => {
                     </SplitScreenSegmentEditor>
                   )}
 
-                  {segment.type === 'feature-overview' && (() => {
-                    // Initialize data if missing
-                    if (!segment.data) {
-                      segment.data = getDefaultSegmentData('feature-overview');
-                    }
-                    
-                    return (
-                      <FeatureOverviewEditor
-                        data={segment.data}
-                        onChange={(newData) => {
-                          const newSegments = [...pageSegments];
-                          newSegments[index].data = newData;
-                          setPageSegments(newSegments);
-                        }}
-                        onSave={() => handleSaveSegments()}
-                        currentPageSlug={selectedPage}
-                        segmentId={segment.id}
-                      />
-                    );
-                  })()}
+                  {segment.type === 'feature-overview' && (
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Feature Overview"
+                      segmentType="feature-overview"
+                    >
+                      {(language) => (
+                        <FeatureOverviewEditor
+                          key={`feature-overview-${segment.id}-${language}`}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          language={language}
+                          onSave={() => loadContent()}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
+                  )}
 
                   {segment.type === 'table' && (() => {
                     // Initialize data if missing
