@@ -3,9 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Trash2, Save, Copy } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useState, memo } from "react";
-import { CopySegmentDialog } from "./CopySegmentDialog";
 
 interface SpecificationRow {
   specification: string;
@@ -37,7 +36,6 @@ const SpecificationEditor = ({
       ? initialRows
       : [{ specification: "Specification Name", value: "Value" }]
   );
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   const handleTitleChange = (newTitle: string) => {
     setTitle(newTitle);
@@ -82,7 +80,7 @@ const SpecificationEditor = ({
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="e.g. Detailed Specifications"
-            className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+            className="mt-2 bg-gray-700 border-2 border-gray-600 focus:border-[#f9dc24] text-xl text-white placeholder:text-gray-400 h-12"
           />
         </div>
 
@@ -147,7 +145,7 @@ const SpecificationEditor = ({
                     value={row.specification}
                     onChange={(e) => handleRowChange(index, 'specification', e.target.value)}
                     placeholder="e.g. Light Source"
-                    className="mt-1 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-lg text-black placeholder:text-gray-400"
+                    className="mt-1 bg-gray-600 border-2 border-gray-500 focus:border-[#f9dc24] text-lg text-white placeholder:text-gray-400"
                   />
                 </div>
 
@@ -161,7 +159,7 @@ const SpecificationEditor = ({
                     value={row.value}
                     onChange={(e) => handleRowChange(index, 'value', e.target.value)}
                     placeholder="e.g. 36 temperature-controlled LEDs"
-                    className="mt-1 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-lg text-black placeholder:text-gray-400"
+                    className="mt-1 bg-gray-600 border-2 border-gray-500 focus:border-[#f9dc24] text-lg text-white placeholder:text-gray-400"
                   />
                 </div>
               </CardContent>
@@ -169,35 +167,16 @@ const SpecificationEditor = ({
           ))}
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-between items-center pt-4 border-t border-gray-700">
-          <Button
-            onClick={() => setCopyDialogOpen(true)}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <Copy className="h-4 w-4" />
-            Copy to Page...
-          </Button>
-          
+        {/* Save Button - Full Width */}
+        <div className="pt-4 border-t border-gray-700">
           <Button
             onClick={onSave}
             disabled={saving}
-            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+            className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 h-12 text-lg font-semibold"
           >
-            <Save className="h-4 w-4" />
             {saving ? "Saving..." : "Save Changes"}
           </Button>
         </div>
-
-        <CopySegmentDialog
-          open={copyDialogOpen}
-          onOpenChange={setCopyDialogOpen}
-          currentPageSlug={currentPageSlug}
-          segmentId={segmentId}
-          segmentType="specification"
-          segmentData={{ title, rows }}
-        />
       </CardContent>
     </Card>
   );
