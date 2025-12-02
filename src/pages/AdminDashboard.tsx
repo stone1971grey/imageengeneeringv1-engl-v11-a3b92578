@@ -5847,6 +5847,7 @@ const AdminDashboard = () => {
                     
                     return (
                       <VideoSegmentEditor
+                        key={`video-${segment.id}-${editorLanguage}`}
                         data={segment.data}
                         onChange={(newData) => {
                           const updatedSegments = pageSegments.map(s =>
@@ -5857,6 +5858,7 @@ const AdminDashboard = () => {
                         onSave={() => handleSaveSegments()}
                         currentPageSlug={resolvedPageSlug || selectedPage}
                         segmentId={segment.id}
+                        language={editorLanguage}
                       />
                     );
                   })()}

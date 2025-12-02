@@ -1,8 +1,11 @@
-import { memo } from "react";
+import { useState, useEffect, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { GeminiIcon } from "@/components/GeminiIcon";
+import { toast } from "sonner";
 
 interface VideoSegmentEditorProps {
   data: {
@@ -14,14 +17,135 @@ interface VideoSegmentEditorProps {
   onSave: () => void;
   currentPageSlug: string;
   segmentId: string;
+  language: string;
 }
 
-const VideoSegmentEditorComponent = ({ data, onChange, onSave }: VideoSegmentEditorProps) => {
+const VideoSegmentEditorComponent = ({ 
+  data, 
+  onChange, 
+  onSave, 
+  currentPageSlug, 
+  segmentId,
+  language 
+}: VideoSegmentEditorProps) => {
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [localData, setLocalData] = useState(data);
+
+  useEffect(() => {
+    loadContent();
+  }, [currentPageSlug, segmentId, language]);
+
+  const loadContent = async () => {
+    try {
+      // Load from page_segments for current language
+      const { data: segmentsRow, error } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', currentPageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+
+      if (!error && segmentsRow?.content_value) {
+        const segments = JSON.parse(segmentsRow.content_value);
+        if (Array.isArray(segments)) {
+          const videoSegment = segments.find((seg: any) => 
+            String(seg.id || seg.segment_key || '') === String(segmentId)
+          );
+          if (videoSegment?.data) {
+            setLocalData(videoSegment.data);
+            onChange(videoSegment.data);
+            return;
+          }
+        }
+      }
+
+      // Fallback: use prop data
+      setLocalData(data);
+    } catch (error) {
+      console.error('Error loading video content:', error);
+    }
+  };
+
   const handleChange = (field: string, value: string) => {
-    onChange({
-      ...data,
+    const newData = {
+      ...localData,
       [field]: value
-    });
+    };
+    setLocalData(newData);
+    onChange(newData);
+  };
+
+  const handleTranslate = async () => {
+    if (language === 'en') {
+      toast.error('Translation not needed - English is the source language');
+      return;
+    }
+
+    setIsTranslating(true);
+
+    try {
+      // Load English version
+      const { data: enSegmentsRow, error: enError } = await supabase
+        .from('page_content')
+        .select('content_value')
+        .eq('page_slug', currentPageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', 'en')
+        .maybeSingle();
+
+      if (enError) throw enError;
+
+      if (!enSegmentsRow?.content_value) {
+        toast.error('No English version found to translate from');
+        return;
+      }
+
+      const enSegments = JSON.parse(enSegmentsRow.content_value);
+      const enVideoSegment = Array.isArray(enSegments) 
+        ? enSegments.find((seg: any) => String(seg.id || seg.segment_key || '') === String(segmentId))
+        : null;
+
+      if (!enVideoSegment?.data) {
+        toast.error('English video segment not found');
+        return;
+      }
+
+      const enData = enVideoSegment.data;
+
+      // Collect text fields to translate (not videoUrl)
+      const textsToTranslate = {
+        title: enData.title || '',
+        caption: enData.caption || ''
+      };
+
+      // Translate
+      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
+        body: {
+          texts: textsToTranslate,
+          targetLanguage: language,
+        },
+      });
+
+      if (translateError) throw translateError;
+
+      if (translateData?.translatedTexts) {
+        const newData = {
+          ...localData,
+          title: translateData.translatedTexts.title || enData.title || '',
+          caption: translateData.translatedTexts.caption || enData.caption || '',
+          videoUrl: enData.videoUrl || localData.videoUrl || '' // Keep videoUrl from English
+        };
+        setLocalData(newData);
+        onChange(newData);
+        toast.success('Content translated successfully');
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to translate content');
+    } finally {
+      setIsTranslating(false);
+    }
   };
 
   // Convert YouTube URL to embed format
@@ -41,11 +165,17 @@ const VideoSegmentEditorComponent = ({ data, onChange, onSave }: VideoSegmentEdi
 
   return (
     <div className="space-y-6">
+      {isTranslating && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+          ⏳ Translating content...
+        </div>
+      )}
+
       <div>
         <Label htmlFor="video-title">Section Title</Label>
         <Input
           id="video-title"
-          value={data.title || ''}
+          value={localData.title || ''}
           onChange={(e) => handleChange('title', e.target.value)}
           placeholder="e.g., Arcturus in Action"
           className="mt-2"
@@ -56,7 +186,7 @@ const VideoSegmentEditorComponent = ({ data, onChange, onSave }: VideoSegmentEdi
         <Label htmlFor="video-url">YouTube Video URL</Label>
         <Input
           id="video-url"
-          value={data.videoUrl || ''}
+          value={localData.videoUrl || ''}
           onChange={(e) => handleChange('videoUrl', e.target.value)}
           placeholder="e.g., https://www.youtube.com/watch?v=DIqRMU7gGNw"
           className="mt-2"
@@ -70,7 +200,7 @@ const VideoSegmentEditorComponent = ({ data, onChange, onSave }: VideoSegmentEdi
         <Label htmlFor="video-caption">Video Caption (Optional)</Label>
         <Textarea
           id="video-caption"
-          value={data.caption || ''}
+          value={localData.caption || ''}
           onChange={(e) => handleChange('caption', e.target.value)}
           placeholder="e.g., See how Arcturus delivers maximum illuminance..."
           className="mt-2"
@@ -79,13 +209,13 @@ const VideoSegmentEditorComponent = ({ data, onChange, onSave }: VideoSegmentEdi
       </div>
 
       {/* Preview */}
-      {data.videoUrl && (
+      {localData.videoUrl && (
         <div className="border-t pt-6">
           <Label className="mb-4 block">Preview</Label>
           <div className="w-full max-w-2xl mx-auto">
             <div className="relative aspect-video rounded-lg overflow-hidden shadow-lg bg-gray-100">
               <iframe
-                src={getEmbedUrl(data.videoUrl)}
+                src={getEmbedUrl(localData.videoUrl)}
                 title="Video Preview"
                 className="w-full h-full"
                 frameBorder="0"
@@ -98,13 +228,24 @@ const VideoSegmentEditorComponent = ({ data, onChange, onSave }: VideoSegmentEdi
       )}
 
       {/* Save Button */}
-      <div className="pt-6 border-t">
+      <div className="pt-6 border-t space-y-3">
         <Button
           onClick={onSave}
           className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
         >
           Save Changes
         </Button>
+
+        {language !== 'en' && (
+          <Button 
+            onClick={handleTranslate}
+            disabled={isTranslating}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          >
+            <GeminiIcon className="h-4 w-4 mr-2" />
+            {isTranslating ? "Translating..." : "Translate Automatically"}
+          </Button>
+        )}
       </div>
     </div>
   );
