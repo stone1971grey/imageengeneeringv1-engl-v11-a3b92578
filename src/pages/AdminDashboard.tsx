@@ -5836,26 +5836,22 @@ const AdminDashboard = () => {
                     </SplitScreenSegmentEditor>
                   )}
 
-                  {segment.type === 'table' && (() => {
-                    // Initialize data if missing
-                    if (!segment.data) {
-                      segment.data = getDefaultSegmentData('table');
-                    }
-                    
-                    return (
-                      <TableEditor
-                        data={segment.data}
-                        onChange={(newData) => {
-                          const newSegments = [...pageSegments];
-                          newSegments[index].data = newData;
-                          setPageSegments(newSegments);
-                        }}
-                        onSave={() => handleSaveSegments()}
-                        currentPageSlug={selectedPage}
-                        segmentId={segment.id}
-                      />
-                    );
-                  })()}
+                  {segment.type === 'table' && (
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Table"
+                      segmentType="table"
+                    >
+                      {(language) => (
+                        <TableEditor
+                          key={`table-${segment.id}-${language}`}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          language={language}
+                          onSave={() => loadContent()}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
+                  )}
 
                   {segment.type === 'faq' && (() => {
                     // Initialize data if missing
