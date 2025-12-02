@@ -6,9 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Trash2, Plus, Copy } from 'lucide-react';
+import { Trash2, Plus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { CopySegmentDialog } from './CopySegmentDialog';
 
 interface FeatureItem {
   title: string;
@@ -25,7 +24,6 @@ interface FeatureOverviewEditorProps {
 
 const FeatureOverviewEditor = ({ data, onChange, onSave, currentPageSlug, segmentId }: FeatureOverviewEditorProps) => {
   const [loading, setLoading] = useState(false);
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   const title = data?.title || '';
   const subtext = data?.subtext || '';
@@ -195,25 +193,7 @@ const FeatureOverviewEditor = ({ data, onChange, onSave, currentPageSlug, segmen
         >
           {loading ? 'Saving...' : 'Save Changes'}
         </Button>
-
-        <Button
-          onClick={() => setCopyDialogOpen(true)}
-          variant="outline"
-          className="flex items-center gap-2 self-start"
-        >
-          <Copy className="h-4 w-4" />
-          Copy to Page...
-        </Button>
       </div>
-
-      <CopySegmentDialog
-        open={copyDialogOpen}
-        onOpenChange={setCopyDialogOpen}
-        currentPageSlug={currentPageSlug}
-        segmentId={segmentId}
-        segmentType="feature-overview"
-        segmentData={data}
-      />
     </div>
   );
 };
