@@ -5857,7 +5857,6 @@ const AdminDashboard = () => {
                         onSave={() => handleSaveSegments()}
                         currentPageSlug={resolvedPageSlug || selectedPage}
                         segmentId={segment.id}
-                        editorLanguage={editorLanguage}
                       />
                     );
                   })()}
