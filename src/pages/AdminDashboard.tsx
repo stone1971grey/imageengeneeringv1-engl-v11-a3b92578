@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -764,7 +764,93 @@ const AdminDashboard = () => {
     navigate("/");
   };
 
-  
+  const handleFlyoutImageSelect = async (url: string) => {
+    setFlyoutImageUrl(url || null);
+
+    // If no custom description is set yet, try to load alt text from mapping as a starting point
+    if (url && !flyoutDescription) {
+      try {
+        const altText = await loadAltTextFromMapping(url);
+        if (altText) {
+          setFlyoutDescription(altText);
+        }
+      } catch (error) {
+        console.error('[handleFlyoutImageSelect] Failed to load alt text for flyout image:', error);
+      }
+    }
+  };
+
+  const handleSaveFlyoutInfo = async () => {
+    if (!pageInfo) {
+      toast.error('No page selected');
+      return;
+    }
+
+    // Safety net: only allow for second-level pages
+    if (!pageInfo.parentSlug || !['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact'].includes(pageInfo.parentSlug)) {
+      toast.error('Flyout content is only available for second-level navigation pages.');
+      return;
+    }
+
+    setIsSavingFlyout(true);
+
+    try {
+      const { error } = await supabase
+        .from('page_registry')
+        .update({
+          flyout_image_url: flyoutImageUrl,
+          flyout_description: flyoutDescription || null,
+        })
+        .eq('page_id', pageInfo.pageId);
+
+      if (error) {
+        console.error('[handleSaveFlyoutInfo] Error updating flyout content:', error);
+        toast.error('Failed to save flyout content');
+        return;
+      }
+
+      setPageInfo(prev => prev ? { ...prev, flyoutImageUrl, flyoutDescription } : prev);
+      toast.success('Flyout content saved');
+      setIsFlyoutDialogOpen(false);
+    } catch (error) {
+      console.error('[handleSaveFlyoutInfo] Unexpected error:', error);
+      toast.error('Failed to save flyout content');
+    } finally {
+      setIsSavingFlyout(false);
+    }
+  };
+
+  const handleClearFlyoutInfo = async () => {
+    if (!pageInfo) return;
+
+    setIsSavingFlyout(true);
+
+    try {
+      const { error } = await supabase
+        .from('page_registry')
+        .update({
+          flyout_image_url: null,
+          flyout_description: null,
+        })
+        .eq('page_id', pageInfo.pageId);
+
+      if (error) {
+        console.error('[handleClearFlyoutInfo] Error clearing flyout content:', error);
+        toast.error('Failed to clear flyout content');
+        return;
+      }
+
+      setFlyoutImageUrl(null);
+      setFlyoutDescription('');
+      setPageInfo(prev => prev ? { ...prev, flyoutImageUrl: null, flyoutDescription: null } : prev);
+      toast.success('Flyout content removed');
+    } catch (error) {
+      console.error('[handleClearFlyoutInfo] Unexpected error:', error);
+      toast.error('Failed to clear flyout content');
+    } finally {
+      setIsSavingFlyout(false);
+    }
+  };
   // Helper function to resolve non-hierarchical slug to full hierarchical slug
   const resolvePageSlug = async (slug: string): Promise<string> => {
     if (!slug) return slug;
@@ -3269,10 +3355,21 @@ const AdminDashboard = () => {
                     {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
                       <>
                         <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!isSecondLevelPage) {
+                              toast.error('Flyout content is only available for second-level navigation pages.');
+                              return;
+                            }
+                            setIsFlyoutDialogOpen(true);
+                          }}
+                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
+                          title="Click to edit flyout image and description for this navigation item"
+                        >
                           <SelectedDesignIcon className="h-4 w-4" />
                           <span>{selectedDesignIconOption.label}</span>
-                        </span>
+                        </button>
                       </>
                     )}
                   </>
@@ -3785,9 +3882,141 @@ const AdminDashboard = () => {
                             Remove
                           </Button>
                         )}
-                        <Button size="sm" onClick={handleSaveDesignElement}>
+                        <Button size="sm" onClick={handleSaveDesignElement} disabled={!pendingDesignIcon}>
                           <Save className="h-3 w-3 mr-1" />
                           Save
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              {/* Flyout Content Dialog (triggered by clicking the design element badge) */}
+              <Dialog open={isFlyoutDialogOpen} onOpenChange={setIsFlyoutDialogOpen}>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Flyout teaser for this navigation item</DialogTitle>
+                    <DialogDescription>
+                      Configure the image and description that appear in the lower flyout area for this second-level navigation item.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  {!isSecondLevelPage && (
+                    <p className="text-xs text-red-600 mb-3">
+                      Flyout content is only available for second-level navigation pages (direct children of main sections).
+                    </p>
+                  )}
+
+                  <div className="space-y-4 mt-2">
+                    <div>
+                      <p className="text-xs text-gray-600 mb-1">
+                        Current page: <span className="font-semibold">{pageInfo?.pageTitle}</span> ({pageInfo?.pageSlug})
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        This teaser is used in the main navigation flyout below the list of items.
+                      </p>
+                    </div>
+
+                    {/* Image selection via Media Management */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Flyout image</label>
+
+                      {flyoutImageUrl ? (
+                        <div className="relative w-full h-40 rounded-lg overflow-hidden border border-border bg-black mb-2">
+                          <img
+                            src={flyoutImageUrl}
+                            alt={flyoutDescription || 'Flyout teaser image'}
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setFlyoutImageUrl(null)}
+                            className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors z-10 text-xs"
+                            title="Remove flyout image"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-500 mb-1">No image selected yet.</p>
+                      )}
+
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="flex-1 flex items-center justify-center gap-2"
+                          onClick={() => setIsFlyoutMediaDialogOpen(true)}
+                          disabled={!isSecondLevelPage}
+                        >
+                          <FolderOpen className="h-4 w-4" />
+                          <span>Select from Media Management</span>
+                        </Button>
+                      </div>
+
+                      {isFlyoutMediaDialogOpen && (
+                        <DataHubDialog
+                          isOpen={isFlyoutMediaDialogOpen}
+                          onClose={() => setIsFlyoutMediaDialogOpen(false)}
+                          selectionMode={true}
+                          onSelect={(url) => {
+                            handleFlyoutImageSelect(url);
+                            setIsFlyoutMediaDialogOpen(false);
+                          }}
+                        />
+                      )}
+
+                      <p className="text-[11px] text-gray-500 mt-1">
+                        When you select an image, the system will try to use its alt text as an initial description.
+                      </p>
+                    </div>
+
+                    {/* Description text */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Flyout description</label>
+                      <Textarea
+                        value={flyoutDescription}
+                        onChange={(e) => setFlyoutDescription(e.target.value)}
+                        rows={3}
+                        placeholder="Short description that appears under the title in the flyout (e.g. 'Camera systems in vehicles, driver assistance and autonomous driving')."
+                      />
+                      <p className="text-[11px] text-gray-500">
+                        By default we suggest the image alt text. You can override it here at any time.
+                      </p>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t mt-2">
+                      <div className="text-xs text-gray-500">
+                        {flyoutImageUrl ? 'Flyout image selected' : 'No flyout image selected yet'}
+                      </div>
+                      <div className="flex gap-2">
+                        {flyoutImageUrl || flyoutDescription ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleClearFlyoutInfo}
+                            disabled={isSavingFlyout}
+                          >
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Clear
+                          </Button>
+                        ) : null}
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={handleSaveFlyoutInfo}
+                          disabled={isSavingFlyout || !isSecondLevelPage}
+                        >
+                          {isSavingFlyout ? (
+                            'Saving...'
+                          ) : (
+                            <>
+                              <Save className="h-3 w-3 mr-1" />
+                              Save
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
