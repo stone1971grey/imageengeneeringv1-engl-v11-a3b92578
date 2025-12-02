@@ -150,40 +150,47 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
       if (error && error.code !== 'PGRST116') throw error;
 
+      let loadedContent = false;
+
       if (data?.content_value) {
         const segments = JSON.parse(data.content_value);
         const tilesSegment = segments.find((seg: any) => seg.id === segmentId);
         
         if (tilesSegment?.data) {
-          setTitle(tilesSegment.data.title || '');
-          setDescription(tilesSegment.data.description || '');
-          setColumns(tilesSegment.data.columns || '3');
-          setTiles(tilesSegment.data.items || []);
+          // Check if we have actual content BEFORE setting state
+          const hasTitle = tilesSegment.data.title && tilesSegment.data.title.trim() !== '';
+          const hasDesc = tilesSegment.data.description && tilesSegment.data.description.trim() !== '';
+          const hasItems = tilesSegment.data.items && tilesSegment.data.items.length > 0;
+          
+          if (hasTitle || hasDesc || hasItems) {
+            setTitle(tilesSegment.data.title || '');
+            setDescription(tilesSegment.data.description || '');
+            setColumns(tilesSegment.data.columns || '3');
+            setTiles(tilesSegment.data.items || []);
+            loadedContent = true;
+          }
         }
       }
 
-      // Fallback to English if no content found for non-EN language
-      if (language !== 'en') {
-        const hasContent = title || description || tiles.length > 0;
-        if (!hasContent) {
-          const { data: enData } = await supabase
-            .from("page_content")
-            .select("*")
-            .eq("page_slug", pageSlug)
-            .eq("section_key", "page_segments")
-            .eq("language", "en")
-            .single();
+      // Fallback to English ONLY if no content was found for target language
+      if (!loadedContent && language !== 'en') {
+        const { data: enData } = await supabase
+          .from("page_content")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .eq("language", "en")
+          .single();
 
-          if (enData?.content_value) {
-            const enSegments = JSON.parse(enData.content_value);
-            const enTilesSegment = enSegments.find((seg: any) => seg.id === segmentId);
-            
-            if (enTilesSegment?.data) {
-              setTitle(enTilesSegment.data.title || '');
-              setDescription(enTilesSegment.data.description || '');
-              setColumns(enTilesSegment.data.columns || '3');
-              setTiles(enTilesSegment.data.items || []);
-            }
+        if (enData?.content_value) {
+          const enSegments = JSON.parse(enData.content_value);
+          const enTilesSegment = enSegments.find((seg: any) => seg.id === segmentId);
+          
+          if (enTilesSegment?.data) {
+            setTitle(enTilesSegment.data.title || '');
+            setDescription(enTilesSegment.data.description || '');
+            setColumns(enTilesSegment.data.columns || '3');
+            setTiles(enTilesSegment.data.items || []);
           }
         }
       }

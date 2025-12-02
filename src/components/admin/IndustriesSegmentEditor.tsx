@@ -48,7 +48,8 @@ const IndustriesSegmentEditorComponent = ({
     const saved = localStorage.getItem('cms-split-screen-mode');
     return saved !== null ? saved === 'true' : true;
   });
-  const [targetData, setTargetData] = useState<any>(data);
+  // CRITICAL: Initialize empty, NOT from English data prop - prevents state contamination
+  const [targetData, setTargetData] = useState<any>({});
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -66,7 +67,7 @@ const IndustriesSegmentEditorComponent = ({
     loadTargetLanguageData(targetLanguage);
   }, [targetLanguage]);
 
-  // Load target language data
+  // Load target language data - CRITICAL: Only set state if actual data exists
   const loadTargetLanguageData = async (lang: string) => {
     const { data: content, error } = await supabase
       .from('page_content')
@@ -76,12 +77,30 @@ const IndustriesSegmentEditorComponent = ({
       .eq('language', lang)
       .maybeSingle();
 
-    if (!error && content) {
-      const parsedData = JSON.parse(content.content_value);
-      setTargetData(parsedData);
-    } else {
-      setTargetData(data);
+    if (!error && content?.content_value) {
+      try {
+        const parsedData = JSON.parse(content.content_value);
+        // Check if we have actual translated content (not empty)
+        const hasContent = parsedData.title || parsedData.subtitle || (parsedData.items && parsedData.items.length > 0);
+        if (hasContent) {
+          setTargetData(parsedData);
+          return;
+        }
+      } catch (e) {
+        console.error('Error parsing target language data:', e);
+      }
     }
+    // Fallback: Show empty state to indicate translation is needed (NOT English data)
+    setTargetData({
+      title: '',
+      subtitle: '',
+      columns: data.columns || 4,
+      items: data.items?.map(item => ({
+        ...item,
+        title: '',
+        description: ''
+      })) || []
+    });
   };
 
   const handleTargetLanguageChange = async (lang: string) => {
