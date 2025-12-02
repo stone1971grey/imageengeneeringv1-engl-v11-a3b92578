@@ -802,8 +802,57 @@ export function DataHubDialog({
                           </div>
                         )}
                         {isVid && (
-                          <div className="aspect-video bg-gray-900 flex items-center justify-center">
-                            <File className="h-10 w-10 text-gray-600" />
+                          <div 
+                            className={`aspect-video bg-gray-900 overflow-hidden relative ${selectionMode ? 'cursor-pointer' : ''}`}
+                            onClick={() => {
+                              if (selectionMode && onSelect) {
+                                onSelect(fileUrl, {
+                                  name: file.name,
+                                  folder: folder.storage_path,
+                                  created_at: file.created_at,
+                                  isVideo: true
+                                });
+                              }
+                            }}
+                          >
+                            {/* Video thumbnail generated from first frame */}
+                            <video
+                              src={fileUrl}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                              muted
+                              preload="metadata"
+                              onLoadedData={(e) => {
+                                const video = e.currentTarget;
+                                video.currentTime = 0.1; // Seek to first frame
+                              }}
+                            />
+                            {/* Play icon overlay */}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
+                              <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                                <svg className="w-6 h-6 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M8 5v14l11-7z"/>
+                                </svg>
+                              </div>
+                            </div>
+                            {/* Video badge */}
+                            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded font-medium">
+                              VIDEO
+                            </div>
+                            {/* Segment Badges for videos */}
+                            {segmentIds.length > 0 && (
+                              <div className="absolute top-2 right-2 flex items-center gap-1">
+                                {segmentIds.map((id: string, idx: number) => (
+                                  <div 
+                                    key={idx}
+                                    className="flex items-center gap-1 bg-gray-900/90 backdrop-blur-sm px-2 py-1 rounded-md border border-[#f9dc24]/30 shadow-lg"
+                                    title={`Assigned to Segment ${id}`}
+                                  >
+                                    <Tag className="h-3 w-3 text-[#f9dc24]" />
+                                    <span className="text-[10px] font-semibold text-[#f9dc24]">#{id}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
                         {!isImg && !isVid && (

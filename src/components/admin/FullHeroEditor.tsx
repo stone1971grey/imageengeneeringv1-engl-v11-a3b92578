@@ -263,6 +263,7 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
       if (!result?.success) throw new Error(result?.error || 'Upload failed');
 
       setVideoUrl(result.url);
+      setBackgroundType('video'); // Auto-switch to video mode
       await autoSaveAfterVideoUpload(result.url);
       toast.success('✅ Video uploaded and saved successfully!', { duration: 3000 });
       
@@ -276,6 +277,7 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
 
   const handleVideoMediaSelect = async (url: string) => {
     setVideoUrl(url);
+    setBackgroundType('video'); // Auto-switch to video mode
     await autoSaveAfterVideoUpload(url);
     toast.success('✅ Video selected and saved successfully!', { duration: 3000 });
   };
@@ -291,7 +293,7 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
       button2Text,
       button2Link,
       button2Color,
-      backgroundType,
+      backgroundType: 'video', // Always set to video when saving video
       imageUrl,
       imageAlt,
       imageMetadata,
