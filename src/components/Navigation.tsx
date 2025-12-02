@@ -449,84 +449,84 @@ const Navigation = () => {
                        
                        <Link to={`/${language}/your-solution/automotive`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/automotive') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                       }`}
-                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
-                          {(() => {
-                            const key = pageDesignIcons['automotive'];
-                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Car;
-                            return <IconComp className="h-5 w-5" />;
-                          })()}
-                          <span>{t.nav.automotive}</span>
+                        }`}
+                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
+                           {(() => {
+                             const key = pageDesignIcons['automotive'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                           })()}
+                           <span>{t.nav.automotive}</span>
                        </Link>
                         
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
-                         {(() => {
-                           const key = pageDesignIcons['security-surveillance'];
-                           const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Shield;
-                           return <IconComp className="h-5 w-5" />;
-                         })()}
-                         <span>{t.nav.securitySurveillance}</span>
+                          {(() => {
+                            const key = pageDesignIcons['security-surveillance'];
+                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                          })()}
+                          <span>{t.nav.securitySurveillance}</span>
                        </div>
                         
                        <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                          isActive('/your-solution/mobile-phone') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                       }`}
-                         onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
-                         {(() => {
-                           const key = pageDesignIcons['mobile-phone'];
-                           const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Smartphone;
-                           return <IconComp className="h-5 w-5" />;
-                         })()}
-                         <span>{t.nav.mobilePhone}</span>
+                        }`}
+                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
+                          {(() => {
+                            const key = pageDesignIcons['mobile-phone'];
+                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                          })()}
+                          <span>{t.nav.mobilePhone}</span>
                        </Link>
                         
                          <Link to={getLink("web-camera", "/your-solution/web-camera")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/web-camera') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                        }`}
-                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
-                          {(() => {
-                            const key = pageDesignIcons['web-camera'];
-                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Camera;
-                            return <IconComp className="h-5 w-5" />;
-                          })()}
-                          <span>{t.nav.webCamera}</span>
+                         }`}
+                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
+                           {(() => {
+                             const key = pageDesignIcons['web-camera'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                           })()}
+                           <span>{t.nav.webCamera}</span>
                         </Link>
                         
                         <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/machine-vision') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                        }`}
-                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
-                          {(() => {
-                            const key = pageDesignIcons['machine-vision'];
-                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Cog;
-                            return <IconComp className="h-5 w-5" />;
-                          })()}
-                          <span>{t.nav.machineVision}</span>
+                         }`}
+                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
+                           {(() => {
+                             const key = pageDesignIcons['machine-vision'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                           })()}
+                           <span>{t.nav.machineVision}</span>
                         </Link>
                         
                         <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/medical-endoscopy') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                        }`}
-                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
-                          {(() => {
-                            const key = pageDesignIcons['medical-endoscopy'];
-                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Stethoscope;
-                            return <IconComp className="h-5 w-5" />;
-                          })()}
-                          <span>{t.nav.medicalEndoscopy}</span>
+                         }`}
+                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
+                           {(() => {
+                             const key = pageDesignIcons['medical-endoscopy'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                           })()}
+                           <span>{t.nav.medicalEndoscopy}</span>
                         </Link>
                         
                         <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/scanners-archiving') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                        }`}
-                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
-                          {(() => {
-                            const key = pageDesignIcons['scanners-archiving'];
-                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || ScanLine;
-                            return <IconComp className="h-5 w-5" />;
-                          })()}
-                          <span>{t.nav.scannersArchiving}</span>
+                         }`}
+                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
+                           {(() => {
+                             const key = pageDesignIcons['scanners-archiving'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                           })()}
+                           <span>{t.nav.scannersArchiving}</span>
                         </Link>
                         
                         <Link to={getLink("photography", "/your-solution/photography")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
@@ -535,8 +535,8 @@ const Navigation = () => {
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Photo & Video")}>
                           {(() => {
                             const key = pageDesignIcons['photography'];
-                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Camera;
-                            return <IconComp className="h-5 w-5" />;
+                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
                           <span>{t.nav.photoVideo}</span>
                         </Link>
