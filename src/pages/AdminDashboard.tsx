@@ -5839,29 +5839,36 @@ const AdminDashboard = () => {
                     );
                   })()}
 
-                  {segment.type === 'video' && (() => {
-                    // Initialize with default data if needed
-                    if (!segment.data) {
-                      segment.data = getDefaultSegmentData('video');
-                    }
-                    
-                    return (
-                      <VideoSegmentEditor
-                        key={`video-${segment.id}-${editorLanguage}`}
-                        data={segment.data}
-                        onChange={(newData) => {
-                          const updatedSegments = pageSegments.map(s =>
-                            s.id === segment.id ? { ...s, data: newData } : s
-                          );
-                          setPageSegments(updatedSegments);
-                        }}
-                        onSave={() => handleSaveSegments()}
-                        currentPageSlug={resolvedPageSlug || selectedPage}
-                        segmentId={segment.id}
-                        language={editorLanguage}
-                      />
-                    );
-                  })()}
+                  {segment.type === 'video' && (
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Video"
+                      segmentType="video"
+                    >
+                      {(language) => {
+                        // Initialize with default data if needed
+                        if (!segment.data) {
+                          segment.data = getDefaultSegmentData('video');
+                        }
+                        
+                        return (
+                          <VideoSegmentEditor
+                            key={`video-${segment.id}-${language}`}
+                            data={segment.data}
+                            onChange={(newData) => {
+                              const updatedSegments = pageSegments.map(s =>
+                                s.id === segment.id ? { ...s, data: newData } : s
+                              );
+                              setPageSegments(updatedSegments);
+                            }}
+                            onSave={() => handleSaveSegments()}
+                            currentPageSlug={resolvedPageSlug || selectedPage}
+                            segmentId={segment.id}
+                            language={language}
+                          />
+                        );
+                      }}
+                    </SplitScreenSegmentEditor>
+                  )}
 
                   {segment.type === 'news' && (
                     <NewsSegmentEditor

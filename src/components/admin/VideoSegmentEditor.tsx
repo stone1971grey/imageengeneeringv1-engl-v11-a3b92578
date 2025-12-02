@@ -29,11 +29,27 @@ const VideoSegmentEditorComponent = ({
   language 
 }: VideoSegmentEditorProps) => {
   const [isTranslating, setIsTranslating] = useState(false);
-  const [localData, setLocalData] = useState(data);
+  const [localData, setLocalData] = useState({
+    title: '',
+    videoUrl: '',
+    caption: ''
+  });
 
   useEffect(() => {
     loadContent();
   }, [currentPageSlug, segmentId, language]);
+
+  // Listen for translate event from SplitScreenSegmentEditor
+  useEffect(() => {
+    if (language === 'en') return; // Don't translate English
+
+    const handleTranslateEvent = () => {
+      handleTranslate();
+    };
+
+    window.addEventListener('video-translate', handleTranslateEvent);
+    return () => window.removeEventListener('video-translate', handleTranslateEvent);
+  }, [language, currentPageSlug, segmentId]);
 
   const loadContent = async () => {
     try {
@@ -53,15 +69,52 @@ const VideoSegmentEditorComponent = ({
             String(seg.id || seg.segment_key || '') === String(segmentId)
           );
           if (videoSegment?.data) {
-            setLocalData(videoSegment.data);
-            onChange(videoSegment.data);
+            const loadedData = {
+              title: videoSegment.data.title || '',
+              videoUrl: videoSegment.data.videoUrl || '',
+              caption: videoSegment.data.caption || ''
+            };
+            setLocalData(loadedData);
             return;
           }
         }
       }
 
+      // Fallback to English if no content for target language
+      if (language !== 'en') {
+        const { data: enSegmentsRow } = await supabase
+          .from('page_content')
+          .select('content_value')
+          .eq('page_slug', currentPageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', 'en')
+          .maybeSingle();
+
+        if (enSegmentsRow?.content_value) {
+          const enSegments = JSON.parse(enSegmentsRow.content_value);
+          if (Array.isArray(enSegments)) {
+            const enVideoSegment = enSegments.find((seg: any) => 
+              String(seg.id || seg.segment_key || '') === String(segmentId)
+            );
+            if (enVideoSegment?.data) {
+              const loadedData = {
+                title: enVideoSegment.data.title || '',
+                videoUrl: enVideoSegment.data.videoUrl || '',
+                caption: enVideoSegment.data.caption || ''
+              };
+              setLocalData(loadedData);
+              return;
+            }
+          }
+        }
+      }
+
       // Fallback: use prop data
-      setLocalData(data);
+      setLocalData({
+        title: data.title || '',
+        videoUrl: data.videoUrl || '',
+        caption: data.caption || ''
+      });
     } catch (error) {
       console.error('Error loading video content:', error);
     }
@@ -228,24 +281,13 @@ const VideoSegmentEditorComponent = ({
       )}
 
       {/* Save Button */}
-      <div className="pt-6 border-t space-y-3">
+      <div className="pt-6 border-t">
         <Button
           onClick={onSave}
           className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
         >
           Save Changes
         </Button>
-
-        {language !== 'en' && (
-          <Button 
-            onClick={handleTranslate}
-            disabled={isTranslating}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-          >
-            <GeminiIcon className="h-4 w-4 mr-2" />
-            {isTranslating ? "Translating..." : "Translate Automatically"}
-          </Button>
-        )}
       </div>
     </div>
   );
