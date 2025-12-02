@@ -5989,28 +5989,22 @@ const AdminDashboard = () => {
                     />
                   )}
 
-                  {segment.type === 'specification' && (() => {
-                    // Initialize data if missing
-                    if (!segment.data) {
-                      segment.data = getDefaultSegmentData('specification');
-                    }
-                    
-                    return (
-                      <SpecificationEditor
-                        segmentId={segment.id}
-                        title={segment.data.title || 'Detailed Specifications'}
-                        rows={segment.data.rows || []}
-                        onUpdate={(newData) => {
-                          const newSegments = [...pageSegments];
-                          newSegments[index].data = newData;
-                          setPageSegments(newSegments);
-                        }}
-                        onSave={() => handleSaveSegments()}
-                        saving={saving}
-                        currentPageSlug={selectedPage}
-                      />
-                    );
-                  })()}
+                  {segment.type === 'specification' && (
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Specification"
+                      segmentType="specification"
+                    >
+                      {(language) => (
+                        <SpecificationEditor
+                          key={`specification-${segment.id}-${language}`}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          language={language}
+                          onSave={() => loadContent()}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
+                  )}
 
                   {segment.type === 'product-hero-gallery' && (() => {
                     // Initialize data if missing
