@@ -173,6 +173,7 @@ const App = () => (
             
             {/* Styleguide Routes - Order matters: most specific first */}
             <Route path="/:lang/styleguide" element={<DynamicCMSPage />} />
+            <Route path="/:lang/styleguide/:category/:subcategory/:subpage" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide/:category/:subcategory" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide/:slug" element={<DynamicCMSPage />} />
             
