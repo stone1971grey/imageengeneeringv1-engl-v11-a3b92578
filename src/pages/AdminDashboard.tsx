@@ -2674,12 +2674,23 @@ const AdminDashboard = () => {
       data: defaultData
     };
 
-    // Add new segment to end of tab order
-    // Meta-navigation and full-hero are fixed position and NOT added to tabOrder
+    // Add new segment to tab order
+    // Meta-navigation is at start, full-hero after meta-nav, other segments at end
     let updatedTabOrder: string[];
-    if (templateType === 'meta-navigation' || templateType === 'full-hero') {
-      // Fixed position segments don't go in tabOrder
-      updatedTabOrder = tabOrder;
+    if (templateType === 'meta-navigation') {
+      // Meta-navigation always goes at the very start
+      updatedTabOrder = [String(segmentId), ...tabOrder];
+    } else if (templateType === 'full-hero') {
+      // Full-hero goes at start (after meta-nav if present)
+      const metaNavIndex = tabOrder.findIndex(id => {
+        const seg = pageSegments.find(s => String(s.id) === id);
+        return seg?.type === 'meta-navigation';
+      });
+      if (metaNavIndex >= 0) {
+        updatedTabOrder = [...tabOrder.slice(0, metaNavIndex + 1), String(segmentId), ...tabOrder.slice(metaNavIndex + 1)];
+      } else {
+        updatedTabOrder = [String(segmentId), ...tabOrder];
+      }
     } else {
       // Add all other segments to end
       updatedTabOrder = [...tabOrder, String(segmentId)];
