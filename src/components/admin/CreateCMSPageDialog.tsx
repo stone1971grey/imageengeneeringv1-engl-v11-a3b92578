@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 
 interface CreateCMSPageDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: (slug: string, languages: string[]) => void;
+  onSuccess: (slug: string, languages: string[], iconKey: string | null) => void;
 }
 
 interface LanguageOption {
@@ -27,9 +28,31 @@ const LANGUAGES: LanguageOption[] = [
   { code: 'zh', label: '中文' },
 ];
 
+type CMSNavIconKey =
+  | 'automotive'
+  | 'security'
+  | 'mobile'
+  | 'webcamera'
+  | 'machine-vision'
+  | 'medical'
+  | 'scanners'
+  | 'photo-video';
+
+const ICON_OPTIONS: { key: CMSNavIconKey; label: string }[] = [
+  { key: 'automotive', label: 'Automotive' },
+  { key: 'security', label: 'Security & Surveillance' },
+  { key: 'mobile', label: 'Mobile Phone' },
+  { key: 'webcamera', label: 'Web Camera' },
+  { key: 'machine-vision', label: 'Machine Vision' },
+  { key: 'medical', label: 'Medical & Endoscopy' },
+  { key: 'scanners', label: 'Scanners & Archiving' },
+  { key: 'photo-video', label: 'Photo & Video' },
+];
+
 export function CreateCMSPageDialog({ open, onOpenChange, onSuccess }: CreateCMSPageDialogProps) {
   const [slug, setSlug] = useState("");
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
+  const [selectedIcon, setSelectedIcon] = useState<CMSNavIconKey | "">("");
   const [validationError, setValidationError] = useState<string | null>(null);
   const [validationSuccess, setValidationSuccess] = useState<string | null>(null);
   const [isValidating, setIsValidating] = useState(false);
@@ -118,13 +141,13 @@ export function CreateCMSPageDialog({ open, onOpenChange, onSuccess }: CreateCMS
     setIsCreating(true);
 
     try {
-      // Call the creation function with slug and selected languages
-      // The parent function (createNewCMSPage) will create entries for all selected languages
-      onSuccess(slug, selectedLanguages);
+      // Call the creation function with slug, selected languages and optional icon
+      onSuccess(slug, selectedLanguages, selectedIcon || null);
       
       // Reset form
       setSlug("");
       setSelectedLanguages(['en', 'de', 'ja', 'ko', 'zh']);
+      setSelectedIcon("");
       setValidationError(null);
       setValidationSuccess(null);
       
@@ -168,6 +191,30 @@ export function CreateCMSPageDialog({ open, onOpenChange, onSuccess }: CreateCMS
             </div>
             <p className="text-sm text-muted-foreground">
               Use slashes (/) to define hierarchy. Example: parent/child
+            </p>
+          </div>
+
+          {/* Icon Selection */}
+          <div className="space-y-2">
+            <Label htmlFor="nav-icon">Navigation Icon (optional)</Label>
+            <Select
+              value={selectedIcon}
+              onValueChange={(value) => setSelectedIcon(value as CMSNavIconKey)}
+            >
+              <SelectTrigger id="nav-icon">
+                <SelectValue placeholder="No icon selected" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No icon</SelectItem>
+                {ICON_OPTIONS.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">
+              This icon will be used as a prefix in the navigation if configured for this page.
             </p>
           </div>
 

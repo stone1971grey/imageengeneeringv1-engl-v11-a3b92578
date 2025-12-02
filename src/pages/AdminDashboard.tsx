@@ -1137,7 +1137,7 @@ const AdminDashboard = () => {
   };
 
   // New simplified slug-based CMS page creation
-  const createNewCMSPageWithSlug = async (slug: string, languages: string[]) => {
+  const createNewCMSPageWithSlug = async (slug: string, languages: string[], iconKey?: string | null) => {
     if (!slug || !user) {
       toast.error("Please provide a valid slug");
       return;
@@ -6095,7 +6095,7 @@ const AdminDashboard = () => {
       <CreateCMSPageDialog
         open={isCreateCMSDialogOpen}
         onOpenChange={setIsCreateCMSDialogOpen}
-        onSuccess={(slug, languages) => createNewCMSPageWithSlug(slug, languages)}
+        onSuccess={(slug, languages, iconKey) => createNewCMSPageWithSlug(slug, languages, iconKey)}
       />
       </div>
     </AdminDashboardErrorBoundary>
