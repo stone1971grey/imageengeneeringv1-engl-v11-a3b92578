@@ -1036,50 +1036,30 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
 
                 {videoUrl && (
                   <div className="space-y-2">
-                    <Label>Video Preview (First Frame)</Label>
+                    <Label>Video Preview</Label>
                     <div className="relative w-full aspect-video rounded-md bg-black overflow-hidden">
-                      {videoThumbnail ? (
-                        <img 
-                          src={videoThumbnail} 
-                          alt="Video thumbnail" 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                          <span>Generating preview...</span>
-                        </div>
-                      )}
+                      {/* Direct video preview - more reliable than canvas extraction */}
                       <video
                         src={videoUrl}
-                        className="hidden"
-                        crossOrigin="anonymous"
+                        className="w-full h-full object-cover"
+                        muted
+                        preload="metadata"
                         onLoadedData={(e) => {
                           const video = e.currentTarget;
-                          video.currentTime = 0;
-                        }}
-                        onSeeked={(e) => {
-                          const video = e.currentTarget;
-                          try {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = video.videoWidth || 640;
-                            canvas.height = video.videoHeight || 360;
-                            const ctx = canvas.getContext('2d');
-                            if (ctx) {
-                              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                              const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
-                              setVideoThumbnail(thumbnail);
-                            }
-                          } catch (err) {
-                            console.error('Error generating video thumbnail:', err);
-                          }
-                        }}
-                        onError={() => {
-                          // Fallback: show video URL info
-                          setVideoThumbnail(null);
+                          video.currentTime = 0.1; // Show first frame
                         }}
                       />
-                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                        Video
+                      {/* Play icon overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center shadow-lg">
+                          <svg className="w-8 h-8 text-gray-900 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                          </svg>
+                        </div>
+                      </div>
+                      {/* Video badge */}
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-medium">
+                        VIDEO
                       </div>
                     </div>
                   </div>
