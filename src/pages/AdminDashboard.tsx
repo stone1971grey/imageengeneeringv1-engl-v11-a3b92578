@@ -70,6 +70,7 @@ import { CreateCMSPageDialog } from '@/components/admin/CreateCMSPageDialog';
 import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 import { GlossaryManager } from '@/components/admin/GlossaryManager';
 import { DataHubDialog } from '@/components/admin/DataHubDialog';
+import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -355,9 +356,22 @@ const AdminDashboard = () => {
   const [isCreatingCMS, setIsCreatingCMS] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
   const [editorLanguage, setEditorLanguage] = useState<'en' | 'de' | 'ja' | 'ko' | 'zh'>('en');
-  const [pageInfo, setPageInfo] = useState<{ pageId: number; pageTitle: string; pageSlug: string; parentSlug?: string | null; designIcon?: string | null } | null>(null);
+  const [pageInfo, setPageInfo] = useState<{
+    pageId: number;
+    pageTitle: string;
+    pageSlug: string;
+    parentSlug?: string | null;
+    designIcon?: string | null;
+    flyoutImageUrl?: string | null;
+    flyoutDescription?: string | null;
+  } | null>(null);
   const [isDesignElementDialogOpen, setIsDesignElementDialogOpen] = useState(false);
   const [pendingDesignIcon, setPendingDesignIcon] = useState<string | null>(null);
+  const [isFlyoutDialogOpen, setIsFlyoutDialogOpen] = useState(false);
+  const [flyoutImageUrl, setFlyoutImageUrl] = useState<string | null>(null);
+  const [flyoutDescription, setFlyoutDescription] = useState<string>('');
+  const [isSavingFlyout, setIsSavingFlyout] = useState(false);
+  const [isFlyoutMediaDialogOpen, setIsFlyoutMediaDialogOpen] = useState(false);
 
   // Multilingual Rainbow - Split Screen State
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => 
@@ -779,7 +793,7 @@ const AdminDashboard = () => {
       
       const { data, error } = await supabase
         .from("page_registry")
-        .select("page_id, page_title, page_slug, parent_slug, design_icon")
+        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description")
         .eq("page_slug", querySlug)
         .maybeSingle();
       
@@ -796,6 +810,8 @@ const AdminDashboard = () => {
           pageSlug: data.page_slug,
           parentSlug: (data as any).parent_slug ?? null,
           designIcon: (data as any).design_icon ?? null,
+          flyoutImageUrl: (data as any).flyout_image_url ?? null,
+          flyoutDescription: (data as any).flyout_description ?? null,
         });
       } else {
         setPageInfo(null);
@@ -805,6 +821,17 @@ const AdminDashboard = () => {
       setPageInfo(null);
     }
   };
+
+  // Sync flyout editor state when pageInfo changes
+  useEffect(() => {
+    if (pageInfo) {
+      setFlyoutImageUrl(pageInfo.flyoutImageUrl ?? null);
+      setFlyoutDescription(pageInfo.flyoutDescription ?? '');
+    } else {
+      setFlyoutImageUrl(null);
+      setFlyoutDescription('');
+    }
+  }, [pageInfo]);
 
   const handleSaveDesignElement = async () => {
     if (!pageInfo || !pendingDesignIcon) {
@@ -836,7 +863,6 @@ const AdminDashboard = () => {
       console.error("[handleSaveDesignElement] Unexpected error:", error);
       toast.error("Failed to save design element");
     }
-  };
   };
 
   const handleRemoveDesignElement = async () => {
