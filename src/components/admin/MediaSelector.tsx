@@ -11,6 +11,14 @@ interface MediaSelectorProps {
   currentImageUrl?: string;
 }
 
+// Helper to detect if URL is a video
+const isVideoUrl = (url: string): boolean => {
+  if (!url) return false;
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv'];
+  const lowerUrl = url.toLowerCase();
+  return videoExtensions.some(ext => lowerUrl.includes(ext));
+};
+
 export const MediaSelector = ({
   onFileSelect,
   onMediaSelect,
@@ -28,22 +36,52 @@ export const MediaSelector = ({
     }
   };
 
+  // Determine if current media is a video
+  const isVideo = acceptedFileTypes?.includes('video') || isVideoUrl(currentImageUrl || '');
+
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">{label}</label>
       
       {currentImageUrl && (
-        <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border">
-          <img 
-            src={currentImageUrl} 
-            alt="Current image" 
-            className="w-full h-full object-cover"
-          />
+        <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border bg-black">
+          {isVideo ? (
+            <>
+              <video 
+                src={currentImageUrl} 
+                className="w-full h-full object-cover"
+                muted
+                preload="metadata"
+                onLoadedData={(e) => {
+                  const video = e.currentTarget;
+                  video.currentTime = 0.1; // Show first frame
+                }}
+              />
+              {/* Play icon overlay */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center shadow-lg">
+                  <svg className="w-6 h-6 text-gray-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </div>
+              {/* Video badge */}
+              <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded font-medium">
+                VIDEO
+              </div>
+            </>
+          ) : (
+            <img 
+              src={currentImageUrl} 
+              alt="Current image" 
+              className="w-full h-full object-cover"
+            />
+          )}
           <button
             type="button"
             onClick={() => onMediaSelect('', undefined)}
             className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded transition-colors z-10"
-            title="Delete Image"
+            title={isVideo ? "Delete Video" : "Delete Image"}
           >
             <Trash2 className="h-4 w-4" />
           </button>
