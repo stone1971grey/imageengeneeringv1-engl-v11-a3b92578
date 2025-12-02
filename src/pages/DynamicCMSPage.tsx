@@ -1,23 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import MetaNavigation from "@/components/segments/MetaNavigation";
-import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
-import FeatureOverview from "@/components/segments/FeatureOverview";
-import Table from "@/components/segments/Table";
-import FAQ from "@/components/segments/FAQ";
-import { Video } from "@/components/segments/Video";
-import Specification from "@/components/segments/Specification";
-import FullHero from "@/components/segments/FullHero";
-import Intro from "@/components/segments/Intro";
-import IndustriesSegment from "@/components/segments/IndustriesSegment";
-import NewsSegment from "@/components/segments/NewsSegment";
-import Debug from "@/components/segments/Debug";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+
+// Lazy load segment components for better performance
+const MetaNavigation = lazy(() => import("@/components/segments/MetaNavigation"));
+const ProductHeroGallery = lazy(() => import("@/components/segments/ProductHeroGallery"));
+const FeatureOverview = lazy(() => import("@/components/segments/FeatureOverview"));
+const Table = lazy(() => import("@/components/segments/Table"));
+const FAQ = lazy(() => import("@/components/segments/FAQ"));
+const Video = lazy(() => import("@/components/segments/Video").then(m => ({ default: m.Video })));
+const Specification = lazy(() => import("@/components/segments/Specification"));
+const FullHero = lazy(() => import("@/components/segments/FullHero"));
+const Intro = lazy(() => import("@/components/segments/Intro"));
+const IndustriesSegment = lazy(() => import("@/components/segments/IndustriesSegment"));
+const NewsSegment = lazy(() => import("@/components/segments/NewsSegment"));
+const Debug = lazy(() => import("@/components/segments/Debug"));
+
+// Segment loading fallback
+const SegmentLoader = () => (
+  <div className="w-full h-32 flex items-center justify-center">
+    <div className="animate-pulse bg-gray-200 rounded w-full h-full" />
+  </div>
+);
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -336,10 +345,14 @@ const DynamicCMSPage = () => {
     setLoading(false);
   };
 
-  // Check if page has Meta Navigation segment
-  const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
+  // Memoize hasMetaNavigation check
+  const hasMetaNavigation = useMemo(() => 
+    pageSegments.some(seg => seg.type === "meta-navigation"), 
+    [pageSegments]
+  );
 
-  const renderSegment = (segmentId: string) => {
+  // Memoize renderSegment function
+  const renderSegment = useCallback((segmentId: string) => {
     const segment = pageSegments.find((s) =>
       String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
     );
@@ -892,7 +905,7 @@ const DynamicCMSPage = () => {
       default:
         return null;
     }
-  };
+  }, [pageSegments, segmentIdMap, fullHeroOverrides, iconMap]);
 
   if (loading) {
     return (
@@ -924,14 +937,19 @@ const DynamicCMSPage = () => {
     );
   }
 
-  // Extract Meta Navigation segment (must render before all other segments)
-  const metaNavSegment = pageSegments.find(seg => seg.type === 'meta-navigation');
-  
-  // Check if page is essentially empty (only footer or no content segments)
-  const contentSegments = pageSegments.filter(seg => 
-    seg.type !== 'footer' && seg.type !== 'meta-navigation'
+  // Memoize Meta Navigation segment extraction
+  const metaNavSegment = useMemo(() => 
+    pageSegments.find(seg => seg.type === 'meta-navigation'),
+    [pageSegments]
   );
-  const isEmpty = contentSegments.length === 0;
+  
+  // Memoize isEmpty check
+  const isEmpty = useMemo(() => {
+    const contentSegments = pageSegments.filter(seg => 
+      seg.type !== 'footer' && seg.type !== 'meta-navigation'
+    );
+    return contentSegments.length === 0;
+  }, [pageSegments]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -1051,26 +1069,30 @@ const DynamicCMSPage = () => {
       
       {/* Meta Navigation - Always rendered directly under Navigation (mandatory position) */}
       {metaNavSegment && (
-        <MetaNavigation
-          key={`meta-nav-${metaNavSegment.segment_id}`}
-          data={{
-            // Support legacy and new data structures
-            links: metaNavSegment.data?.navigationItems || metaNavSegment.data?.links || metaNavSegment.navigationItems || []
-          }}
-          segmentIdMap={segmentIdMap}
-        />
+        <Suspense fallback={<SegmentLoader />}>
+          <MetaNavigation
+            key={`meta-nav-${metaNavSegment.segment_id}`}
+            data={{
+              // Support legacy and new data structures
+              links: metaNavSegment.data?.navigationItems || metaNavSegment.data?.links || metaNavSegment.navigationItems || []
+            }}
+            segmentIdMap={segmentIdMap}
+          />
+        </Suspense>
       )}
       
       {/* Render all other segments in tab order (excluding meta-navigation) */}
-      {tabOrder
-        .filter(segmentId => {
-          const segment = pageSegments.find(
-            s => String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
-          );
-          return segment?.type !== 'meta-navigation';
-        })
-        .map((segmentId) => renderSegment(segmentId))
-      }
+      <Suspense fallback={<SegmentLoader />}>
+        {tabOrder
+          .filter(segmentId => {
+            const segment = pageSegments.find(
+              s => String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
+            );
+            return segment?.type !== 'meta-navigation';
+          })
+          .map((segmentId) => renderSegment(segmentId))
+        }
+      </Suspense>
       <Footer />
     </div>
   );
