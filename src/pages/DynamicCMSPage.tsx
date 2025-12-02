@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
@@ -91,28 +91,34 @@ const DynamicCMSPage = () => {
     const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
     const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
-    // Check if page exists in page_registry
-    // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
-    // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
-    // generischen "Page Created Successfully" Screen statt einer 404.
-    const { data: pageExists } = await supabase
-      .from("page_registry")
-      .select("page_slug")
-      .eq("page_slug", pageSlug)
-      .maybeSingle();
+    // PERFORMANCE: Run all initial queries in parallel
+    const [pageExistsResult, contentResult, segmentResult] = await Promise.all([
+      supabase
+        .from("page_registry")
+        .select("page_slug")
+        .eq("page_slug", pageSlug)
+        .maybeSingle(),
+      supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("language", urlLanguage),
+      supabase
+        .from("segment_registry")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("deleted", false)
+    ]);
 
-    if (!pageExists) {
+    // Check if page exists in page_registry
+    if (!pageExistsResult.data) {
       console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
       setLoading(false);
       return;
     }
 
-    // Try to load content in requested language first
-    let { data, error } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", pageSlug)
-      .eq("language", urlLanguage);
+    let data = contentResult.data;
+    let error = contentResult.error;
 
     // Fallback to English if no content found in requested language
     if (!data || data.length === 0) {
@@ -127,15 +133,10 @@ const DynamicCMSPage = () => {
       error = fallback.error;
     }
 
-    const { data: segmentData } = await supabase
-      .from("segment_registry")
-      .select("*")
-      .eq("page_slug", pageSlug)
-      .eq("deleted", false);
-
-    if (segmentData) {
+    // Process segment registry data
+    if (segmentResult.data) {
       const idMap: Record<string, number> = {};
-      segmentData.forEach((seg: any) => {
+      segmentResult.data.forEach((seg: any) => {
         idMap[seg.segment_key] = seg.segment_id;
       });
       setSegmentIdMap(idMap);
@@ -336,8 +337,11 @@ const DynamicCMSPage = () => {
     setLoading(false);
   };
 
-  // Check if page has Meta Navigation segment
-  const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
+  // Check if page has Meta Navigation segment (memoized for performance)
+  const hasMetaNavigation = useMemo(() => 
+    pageSegments.some(seg => seg.type === "meta-navigation"), 
+    [pageSegments]
+  );
 
   const renderSegment = (segmentId: string) => {
     const segment = pageSegments.find((s) =>
@@ -924,14 +928,19 @@ const DynamicCMSPage = () => {
     );
   }
 
-  // Extract Meta Navigation segment (must render before all other segments)
-  const metaNavSegment = pageSegments.find(seg => seg.type === 'meta-navigation');
-  
-  // Check if page is essentially empty (only footer or no content segments)
-  const contentSegments = pageSegments.filter(seg => 
-    seg.type !== 'footer' && seg.type !== 'meta-navigation'
+  // Extract Meta Navigation segment (memoized for performance)
+  const metaNavSegment = useMemo(() => 
+    pageSegments.find(seg => seg.type === 'meta-navigation'),
+    [pageSegments]
   );
-  const isEmpty = contentSegments.length === 0;
+  
+  // Check if page is essentially empty (memoized for performance)
+  const { contentSegments, isEmpty } = useMemo(() => {
+    const content = pageSegments.filter(seg => 
+      seg.type !== 'footer' && seg.type !== 'meta-navigation'
+    );
+    return { contentSegments: content, isEmpty: content.length === 0 };
+  }, [pageSegments]);
 
   return (
     <div className="min-h-screen bg-gray-50">
