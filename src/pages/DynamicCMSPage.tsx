@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
@@ -18,7 +18,6 @@ import NewsSegment from "@/components/segments/NewsSegment";
 import Debug from "@/components/segments/Debug";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -47,11 +46,6 @@ const DynamicCMSPage = () => {
   
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
-
-  // Debug: Component mounted
-  useEffect(() => {
-    toast.info(`DynamicCMSPage mounted: ${location.pathname}`, { duration: 3000 });
-  }, []);
 
   // Extract page_slug from full URL pathname (hierarchical)
   // Examples with language prefix:
@@ -86,57 +80,43 @@ const DynamicCMSPage = () => {
   }, [pageSlug, currentUrlLanguage]);
 
   const loadContent = async () => {
-    try {
-      if (!pageSlug) {
-        setPageNotFound(true);
-        setLoading(false);
-        return;
-      }
+    if (!pageSlug) {
+      setPageNotFound(true);
+      setLoading(false);
+      return;
+    }
 
-      // Extract language from URL
-      const pathParts = location.pathname.replace(/^\/+/, "").split('/');
-      const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
-      const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
+    // Extract language from URL
+    const pathParts = location.pathname.replace(/^\/+/, "").split('/');
+    const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+    const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
-      // PERFORMANCE: Run all initial queries in parallel
-      const [pageExistsResult, contentResult, segmentResult] = await Promise.all([
-        supabase
-          .from("page_registry")
-          .select("page_slug")
-          .eq("page_slug", pageSlug)
-          .maybeSingle(),
-        supabase
-          .from("page_content")
-          .select("*")
-          .eq("page_slug", pageSlug)
-          .eq("language", urlLanguage),
-        supabase
-          .from("segment_registry")
-          .select("*")
-          .eq("page_slug", pageSlug)
-          .eq("deleted", false)
-      ]);
+    // Check if page exists in page_registry
+    // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
+    // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
+    // generischen "Page Created Successfully" Screen statt einer 404.
+    const { data: pageExists } = await supabase
+      .from("page_registry")
+      .select("page_slug")
+      .eq("page_slug", pageSlug)
+      .maybeSingle();
 
-      // Check if page exists in page_registry
-      if (!pageExistsResult.data) {
-        console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
-        setLoading(false);
-        return;
-      }
+    if (!pageExists) {
+      console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
+      setLoading(false);
+      return;
+    }
 
-      let data = contentResult.data;
-      let error = contentResult.error;
-
-    // Debug: Show what slug and language we're looking for
-    toast.info(`Loading: ${pageSlug} (${urlLanguage})`, { 
-      description: `Found ${data?.length || 0} content rows`,
-      duration: 3000 
-    });
+    // Try to load content in requested language first
+    let { data, error } = await supabase
+      .from("page_content")
+      .select("*")
+      .eq("page_slug", pageSlug)
+      .eq("language", urlLanguage);
 
     // Fallback to English if no content found in requested language
     if (!data || data.length === 0) {
       console.log(`[DynamicCMSPage] No content found for ${pageSlug} in ${urlLanguage}, falling back to English`);
-      toast.warning(`No ${urlLanguage} content, falling back to EN`, { duration: 2000 });
       const fallback = await supabase
         .from("page_content")
         .select("*")
@@ -145,13 +125,17 @@ const DynamicCMSPage = () => {
       
       data = fallback.data;
       error = fallback.error;
-      toast.info(`Fallback result: ${data?.length || 0} rows`, { duration: 2000 });
     }
 
-    // Process segment registry data
-    if (segmentResult.data) {
+    const { data: segmentData } = await supabase
+      .from("segment_registry")
+      .select("*")
+      .eq("page_slug", pageSlug)
+      .eq("deleted", false);
+
+    if (segmentData) {
       const idMap: Record<string, number> = {};
-      segmentResult.data.forEach((seg: any) => {
+      segmentData.forEach((seg: any) => {
         idMap[seg.segment_key] = seg.segment_id;
       });
       setSegmentIdMap(idMap);
@@ -227,12 +211,6 @@ const DynamicCMSPage = () => {
 
       // Zuerst versuchen, die Inhalte der gewünschten Sprache zu verwenden
       let { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap } = parseContentRows(data);
-
-      // Debug: Show parsed segments count
-      toast.info(`Parsed ${segments?.length || 0} segments from ${data?.length || 0} rows`, { 
-        description: `Tab order: ${tabs?.length || 0} items`,
-        duration: 4000 
-      });
 
       // Wenn für die gewünschte Sprache keine gültigen Segmente gefunden wurden,
       // auf Englisch zurückfallen (wichtig für Fälle mit kaputtem JSON in der Zielsprache)
@@ -342,12 +320,6 @@ const DynamicCMSPage = () => {
       setPageSegments(enhancedSegments);
       setTabOrder(loadedTabOrder);
 
-      // Debug toast to help troubleshoot black screen issues
-      toast.info(`Loaded ${enhancedSegments.length} segments for ${pageSlug}`, {
-        description: `Tab order: ${loadedTabOrder.length} items`,
-        duration: 3000,
-      });
-
       console.log('[DynamicCMSPage] Loaded content', {
         pageSlug,
         urlLanguage,
@@ -361,18 +333,11 @@ const DynamicCMSPage = () => {
       // tab_order is now authoritative - only segments explicitly in tab_order will be rendered
     }
 
-    } catch (err) {
-      console.error('[DynamicCMSPage] Error loading content:', err);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   };
 
-  // Check if page has Meta Navigation segment (memoized for performance)
-  const hasMetaNavigation = useMemo(() => 
-    pageSegments.some(seg => seg.type === "meta-navigation"), 
-    [pageSegments]
-  );
+  // Check if page has Meta Navigation segment
+  const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
 
   const renderSegment = (segmentId: string) => {
     const segment = pageSegments.find((s) =>
@@ -959,31 +924,14 @@ const DynamicCMSPage = () => {
     );
   }
 
-  // Extract Meta Navigation segment (memoized for performance)
-  const metaNavSegment = useMemo(() => 
-    pageSegments.find(seg => seg.type === 'meta-navigation'),
-    [pageSegments]
-  );
+  // Extract Meta Navigation segment (must render before all other segments)
+  const metaNavSegment = pageSegments.find(seg => seg.type === 'meta-navigation');
   
-  // Check if page is essentially empty (memoized for performance)
-  const { contentSegments, isEmpty } = useMemo(() => {
-    const content = pageSegments.filter(seg => 
-      seg.type !== 'footer' && seg.type !== 'meta-navigation'
-    );
-    return { contentSegments: content, isEmpty: content.length === 0 };
-  }, [pageSegments]);
-
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading page...</p>
-        </div>
-      </div>
-    );
-  }
+  // Check if page is essentially empty (only footer or no content segments)
+  const contentSegments = pageSegments.filter(seg => 
+    seg.type !== 'footer' && seg.type !== 'meta-navigation'
+  );
+  const isEmpty = contentSegments.length === 0;
 
   return (
     <div className="min-h-screen bg-gray-50">

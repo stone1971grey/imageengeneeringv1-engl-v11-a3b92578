@@ -5812,6 +5812,8 @@ const AdminDashboard = () => {
                           setPageSegments(newSegments);
                         }}
                         onSave={() => handleSaveSegments()}
+                        currentPageSlug={selectedPage}
+                        segmentId={segment.id}
                       />
                     );
                   })()}
