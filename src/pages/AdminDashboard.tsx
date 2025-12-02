@@ -3708,8 +3708,8 @@ const AdminDashboard = () => {
                             onClick={() => setPendingDesignIcon(option.key)}
                             className={`flex flex-col items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors ${
                               isActive
-                                ? 'border-yellow-400 bg-yellow-50 text-gray-900'
-                                : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50'
+                                ? 'border-primary bg-primary/10 text-primary-foreground'
+                                : 'border-border bg-card text-foreground hover:border-primary hover:bg-muted'
                             }`}
                           >
                             <IconComp className="h-5 w-5 mb-1" />
