@@ -45,6 +45,7 @@ const PAGE_DESIGN_ICON_MAP: Record<string, any> = {
   monitor: Monitor,
   zap: Zap,
   file: FileText,
+  target: CustomTargetIcon,
 };
 
 const Navigation = () => {
