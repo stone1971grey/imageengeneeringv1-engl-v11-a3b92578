@@ -46,11 +46,17 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
   const [isUploading, setIsUploading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isH1Segment, setIsH1Segment] = useState(false);
+  const [videoThumbnail, setVideoThumbnail] = useState<string | null>(null);
 
   useEffect(() => {
     loadContent();
     checkIfH1Segment();
   }, [pageSlug, segmentId, language]); // Add language dependency
+
+  // Reset video thumbnail when URL changes
+  useEffect(() => {
+    setVideoThumbnail(null);
+  }, [videoUrl]);
 
   // Sync imageUrl state when content is loaded from backend
   useEffect(() => {
@@ -1028,14 +1034,52 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
 
                 {videoUrl && (
                   <div className="space-y-2">
-                    <Label>Video Preview</Label>
-                    <video
-                      src={videoUrl}
-                      controls
-                      className="w-full max-h-48 rounded-md bg-black"
-                    >
-                      Your browser does not support the video tag.
-                    </video>
+                    <Label>Video Preview (First Frame)</Label>
+                    <div className="relative w-full aspect-video rounded-md bg-black overflow-hidden">
+                      {videoThumbnail ? (
+                        <img 
+                          src={videoThumbnail} 
+                          alt="Video thumbnail" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          <span>Generating preview...</span>
+                        </div>
+                      )}
+                      <video
+                        src={videoUrl}
+                        className="hidden"
+                        crossOrigin="anonymous"
+                        onLoadedData={(e) => {
+                          const video = e.currentTarget;
+                          video.currentTime = 0;
+                        }}
+                        onSeeked={(e) => {
+                          const video = e.currentTarget;
+                          try {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = video.videoWidth || 640;
+                            canvas.height = video.videoHeight || 360;
+                            const ctx = canvas.getContext('2d');
+                            if (ctx) {
+                              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                              const thumbnail = canvas.toDataURL('image/jpeg', 0.8);
+                              setVideoThumbnail(thumbnail);
+                            }
+                          } catch (err) {
+                            console.error('Error generating video thumbnail:', err);
+                          }
+                        }}
+                        onError={() => {
+                          // Fallback: show video URL info
+                          setVideoThumbnail(null);
+                        }}
+                      />
+                      <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        Video
+                      </div>
+                    </div>
                   </div>
                 )}
               </>
