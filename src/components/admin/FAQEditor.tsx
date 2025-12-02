@@ -5,9 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Trash2, Plus, Copy } from 'lucide-react';
+import { Trash2, Plus } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { CopySegmentDialog } from './CopySegmentDialog';
 
 interface FAQItem {
   question: string;
@@ -24,7 +23,6 @@ interface FAQEditorProps {
 
 const FAQEditor = ({ data, onChange, onSave, currentPageSlug, segmentId }: FAQEditorProps) => {
   const [loading, setLoading] = useState(false);
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   const title = data?.title || '';
   const subtext = data?.subtext || '';
@@ -156,29 +154,16 @@ const FAQEditor = ({ data, onChange, onSave, currentPageSlug, segmentId }: FAQEd
         </CardContent>
       </Card>
 
-      <div className="flex justify-between items-center pt-4 border-t">
-        <Button
-          onClick={() => setCopyDialogOpen(true)}
-          variant="outline"
-          className="flex items-center gap-2"
+      {/* Save Button - Full Width */}
+      <div className="pt-4 border-t">
+        <Button 
+          onClick={handleSave} 
+          disabled={loading} 
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 h-12 text-lg font-semibold"
         >
-          <Copy className="h-4 w-4" />
-          Copy to Page...
-        </Button>
-        
-        <Button onClick={handleSave} disabled={loading} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
           {loading ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
-
-      <CopySegmentDialog
-        open={copyDialogOpen}
-        onOpenChange={setCopyDialogOpen}
-        currentPageSlug={currentPageSlug}
-        segmentId={segmentId}
-        segmentType="faq"
-        segmentData={data}
-      />
     </div>
   );
 };
