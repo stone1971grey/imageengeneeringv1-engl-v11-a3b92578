@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -355,7 +355,9 @@ const AdminDashboard = () => {
   const [isCreatingCMS, setIsCreatingCMS] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
   const [editorLanguage, setEditorLanguage] = useState<'en' | 'de' | 'ja' | 'ko' | 'zh'>('en');
-  const [pageInfo, setPageInfo] = useState<{ pageId: number; pageTitle: string; pageSlug: string } | null>(null);
+  const [pageInfo, setPageInfo] = useState<{ pageId: number; pageTitle: string; pageSlug: string; designIcon?: string | null } | null>(null);
+  const [isDesignElementDialogOpen, setIsDesignElementDialogOpen] = useState(false);
+  const [pendingDesignIcon, setPendingDesignIcon] = useState<string | null>(null);
 
   // Multilingual Rainbow - Split Screen State
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => 
@@ -378,6 +380,18 @@ const AdminDashboard = () => {
     { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
   ];
 
+  const DESIGN_ICON_OPTIONS = [
+    { key: 'car', label: 'Automotive', Icon: Car },
+    { key: 'shield', label: 'Security', Icon: Shield },
+    { key: 'smartphone', label: 'Mobile', Icon: Smartphone },
+    { key: 'camera', label: 'Camera', Icon: Camera },
+    { key: 'cog', label: 'Machine Vision', Icon: Cog },
+    { key: 'stethoscope', label: 'Medical', Icon: Stethoscope },
+    { key: 'scanline', label: 'Scanners', Icon: ScanLine },
+    { key: 'monitor', label: 'Display / Monitor', Icon: Monitor },
+    { key: 'zap', label: 'Technology', Icon: Zap },
+    { key: 'file', label: 'Generic Page', Icon: FileText },
+  ];
 
 
   // Autosave for Hero section - only saves to localStorage
@@ -764,7 +778,7 @@ const AdminDashboard = () => {
       
       const { data, error } = await supabase
         .from("page_registry")
-        .select("page_id, page_title, page_slug")
+        .select("page_id, page_title, page_slug, design_icon")
         .eq("page_slug", querySlug)
         .maybeSingle();
       
@@ -778,7 +792,8 @@ const AdminDashboard = () => {
         setPageInfo({
           pageId: data.page_id,
           pageTitle: data.page_title,
-          pageSlug: data.page_slug
+          pageSlug: data.page_slug,
+          designIcon: (data as any).design_icon ?? null,
         });
       } else {
         setPageInfo(null);
@@ -786,6 +801,58 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('[loadPageInfo] Unexpected error:', error);
       setPageInfo(null);
+    }
+  };
+
+  const handleSaveDesignElement = async () => {
+    if (!pageInfo || !pendingDesignIcon) {
+      toast.error("Please select a design element");
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("page_registry")
+        .update({ design_icon: pendingDesignIcon })
+        .eq("page_id", pageInfo.pageId);
+
+      if (error) {
+        console.error("[handleSaveDesignElement] Error updating design_icon:", error);
+        toast.error("Failed to save design element");
+        return;
+      }
+
+      setPageInfo(prev => prev ? { ...prev, designIcon: pendingDesignIcon } : prev);
+      toast.success("Design element saved");
+      setIsDesignElementDialogOpen(false);
+    } catch (error) {
+      console.error("[handleSaveDesignElement] Unexpected error:", error);
+      toast.error("Failed to save design element");
+    }
+  };
+
+  const handleRemoveDesignElement = async () => {
+    if (!pageInfo) return;
+
+    try {
+      const { error } = await supabase
+        .from("page_registry")
+        .update({ design_icon: null })
+        .eq("page_id", pageInfo.pageId);
+
+      if (error) {
+        console.error("[handleRemoveDesignElement] Error clearing design_icon:", error);
+        toast.error("Failed to remove design element");
+        return;
+      }
+
+      setPageInfo(prev => prev ? { ...prev, designIcon: null } : prev);
+      setPendingDesignIcon(null);
+      toast.success("Design element removed");
+      setIsDesignElementDialogOpen(false);
+    } catch (error) {
+      console.error("[handleRemoveDesignElement] Unexpected error:", error);
+      toast.error("Failed to remove design element");
     }
   };
 
@@ -3174,7 +3241,7 @@ const AdminDashboard = () => {
           
           {/* Rechte Seite: Action Buttons - erhöht positioniert */}
           <div className="flex flex-col items-end gap-3 -mt-1">
-            {/* Erste Reihe: Add New Segment, Preview, Logout */}
+            {/* Erste Reihe: Add New Segment, Design Element, Preview, Logout */}
             <div className="flex items-center gap-3">
               <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
                 <DialogTrigger asChild>
@@ -3609,6 +3676,71 @@ const AdminDashboard = () => {
                 </Tabs>
               </DialogContent>
               </Dialog>
+
+              {/* Design Element Button */}
+              <Dialog open={isDesignElementDialogOpen} onOpenChange={setIsDesignElementDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    disabled={!selectedPage || !pageInfo}
+                  >
+                    <Layers className="h-4 w-4" />
+                    Add new design element
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle>Select design element</DialogTitle>
+                    <DialogDescription>
+                      Choose an icon that will appear in the segment bar and navigation for this page.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {DESIGN_ICON_OPTIONS.map((option) => {
+                        const IconComp = option.Icon;
+                        const isActive = (pendingDesignIcon ?? pageInfo?.designIcon) === option.key;
+                        return (
+                          <button
+                            key={option.key}
+                            type="button"
+                            onClick={() => setPendingDesignIcon(option.key)}
+                            className={`flex flex-col items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors ${
+                              isActive
+                                ? 'border-yellow-400 bg-yellow-50 text-gray-900'
+                                : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50'
+                            }`}
+                          >
+                            <IconComp className="h-5 w-5 mb-1" />
+                            <span>{option.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-between items-center pt-2 border-t mt-2">
+                      <div className="text-xs text-gray-500">
+                        {pageInfo?.designIcon
+                          ? `Current: ${pageInfo.designIcon}`
+                          : 'No design element selected yet'}
+                      </div>
+                      <div className="flex gap-2">
+                        {pageInfo?.designIcon && (
+                          <Button variant="outline" size="sm" onClick={handleRemoveDesignElement}>
+                            <Trash2 className="h-3 w-3 mr-1" />
+                            Remove
+                          </Button>
+                        )}
+                        <Button size="sm" onClick={handleSaveDesignElement}>
+                          <Save className="h-3 w-3 mr-1" />
+                          Save
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
               <Button
                 variant="default"
                 onClick={async () => {

@@ -34,6 +34,19 @@ import iqLedIllumination from "@/assets/iq-led-illumination.png";
 import technology2025 from "@/assets/technology-2025.png";
 import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
 
+const PAGE_DESIGN_ICON_MAP: Record<string, any> = {
+  car: Car,
+  shield: Shield,
+  smartphone: Smartphone,
+  camera: Camera,
+  cog: Cog,
+  stethoscope: Stethoscope,
+  scanline: ScanLine,
+  monitor: Monitor,
+  zap: Zap,
+  file: FileText,
+};
+
 const Navigation = () => {
   const { t } = useTranslation();
   const navData = useNavigationData();
@@ -49,6 +62,7 @@ const Navigation = () => {
   const [allowedPages, setAllowedPages] = useState<string[]>([]);
   const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string; children?: Array<{ slug: string; title: string }> }>>([]);
   const [hoveredStyleguide, setHoveredStyleguide] = useState<string | null>(null);
+  const [pageDesignIcons, setPageDesignIcons] = useState<Record<string, string>>({});
 
   // Check if current path is within styleguide section (with language prefix support)
   const isStyleguidePath = location.pathname.includes('/styleguide');
@@ -98,6 +112,31 @@ const Navigation = () => {
     // Load styleguide pages immediately on mount for flyout menu
     loadStyleguidePages();
   }, []); // Empty dependency array - load once on mount
+
+  // Load design icons for pages (used in navigation)
+  useEffect(() => {
+    const loadDesignIcons = async () => {
+      const { data, error } = await supabase
+        .from('page_registry')
+        .select('page_slug, design_icon')
+        .not('design_icon', 'is', null);
+
+      if (error) {
+        console.error('Error loading design icons:', error);
+        return;
+      }
+
+      const mapping: Record<string, string> = {};
+      (data || []).forEach((row: any) => {
+        if (row.design_icon) {
+          mapping[row.page_slug] = row.design_icon;
+        }
+      });
+      setPageDesignIcons(mapping);
+    };
+
+    loadDesignIcons();
+  }, []);
 
   // Check authentication status
   useEffect(() => {
@@ -412,29 +451,45 @@ const Navigation = () => {
                           isActive('/your-solution/automotive') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
-                          <Car className="h-5 w-5" />
+                          {(() => {
+                            const key = pageDesignIcons['automotive'];
+                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Car;
+                            return <IconComp className="h-5 w-5" />;
+                          })()}
                           <span>{t.nav.automotive}</span>
                        </Link>
-                       
+                        
                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
-                         <Shield className="h-5 w-5" />
+                         {(() => {
+                           const key = pageDesignIcons['security-surveillance'];
+                           const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Shield;
+                           return <IconComp className="h-5 w-5" />;
+                         })()}
                          <span>{t.nav.securitySurveillance}</span>
                        </div>
-                       
+                        
                        <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                          isActive('/your-solution/mobile-phone') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
-                         <Smartphone className="h-5 w-5" />
+                         {(() => {
+                           const key = pageDesignIcons['mobile-phone'];
+                           const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Smartphone;
+                           return <IconComp className="h-5 w-5" />;
+                         })()}
                          <span>{t.nav.mobilePhone}</span>
                        </Link>
-                       
+                        
                          <Link to={getLink("web-camera", "/your-solution/web-camera")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/web-camera') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
-                          <Camera className="h-5 w-5" />
+                          {(() => {
+                            const key = pageDesignIcons['web-camera'];
+                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Camera;
+                            return <IconComp className="h-5 w-5" />;
+                          })()}
                           <span>{t.nav.webCamera}</span>
                         </Link>
                         
@@ -442,7 +497,11 @@ const Navigation = () => {
                           isActive('/your-solution/machine-vision') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
-                          <Cog className="h-5 w-5" />
+                          {(() => {
+                            const key = pageDesignIcons['machine-vision'];
+                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Cog;
+                            return <IconComp className="h-5 w-5" />;
+                          })()}
                           <span>{t.nav.machineVision}</span>
                         </Link>
                         
@@ -450,7 +509,11 @@ const Navigation = () => {
                           isActive('/your-solution/medical-endoscopy') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
-                          <Stethoscope className="h-5 w-5" />
+                          {(() => {
+                            const key = pageDesignIcons['medical-endoscopy'];
+                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Stethoscope;
+                            return <IconComp className="h-5 w-5" />;
+                          })()}
                           <span>{t.nav.medicalEndoscopy}</span>
                         </Link>
                         
@@ -458,7 +521,11 @@ const Navigation = () => {
                           isActive('/your-solution/scanners-archiving') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
-                          <ScanLine className="h-5 w-5" />
+                          {(() => {
+                            const key = pageDesignIcons['scanners-archiving'];
+                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || ScanLine;
+                            return <IconComp className="h-5 w-5" />;
+                          })()}
                           <span>{t.nav.scannersArchiving}</span>
                         </Link>
                         
@@ -466,7 +533,11 @@ const Navigation = () => {
                           isActive('/your-solution/photography') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Photo & Video")}>
-                          <Camera className="h-5 w-5" />
+                          {(() => {
+                            const key = pageDesignIcons['photography'];
+                            const IconComp = (key && PAGE_DESIGN_ICON_MAP[key]) || Camera;
+                            return <IconComp className="h-5 w-5" />;
+                          })()}
                           <span>{t.nav.photoVideo}</span>
                         </Link>
                     </div>
