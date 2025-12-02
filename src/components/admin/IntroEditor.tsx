@@ -306,6 +306,12 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
 
   return (
     <div className="space-y-4 p-4 bg-background border rounded-lg">
+      {isTranslating && (
+        <div className="bg-purple-900/50 border border-purple-500 rounded-lg p-4 text-center text-white">
+          Translating content...
+        </div>
+      )}
+
       <h3 className="text-lg font-semibold">Edit Intro Segment</h3>
       
       {isH1Segment && (

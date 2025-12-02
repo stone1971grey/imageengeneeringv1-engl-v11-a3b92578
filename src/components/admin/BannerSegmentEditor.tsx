@@ -850,6 +850,12 @@ const BannerSegmentEditorComponent = ({
 
   return (
     <div className="space-y-4">
+      {isTranslating && (
+        <div className="bg-purple-900/50 border border-purple-500 rounded-lg p-4 text-center text-white">
+          Translating content...
+        </div>
+      )}
+
       {/* Language Selector Card */}
       <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
         <CardHeader className="pb-4">

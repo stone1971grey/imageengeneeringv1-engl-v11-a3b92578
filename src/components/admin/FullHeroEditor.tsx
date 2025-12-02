@@ -640,6 +640,12 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {isTranslating && (
+          <div className="bg-purple-900/50 border border-purple-500 rounded-lg p-4 text-center text-white">
+            Translating content...
+          </div>
+        )}
+
         {isH1Segment && (
           <Alert className="border-primary/50 bg-primary/5">
             <Heading1 className="h-4 w-4" />

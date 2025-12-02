@@ -459,6 +459,12 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
 
   return (
     <div className="space-y-6">
+      {isTranslating && (
+        <div className="bg-purple-900/50 border border-purple-500 rounded-lg p-4 text-center text-white">
+          Translating content...
+        </div>
+      )}
+
       {language !== 'en' && (
         <div className="p-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 rounded-lg">
           <div className="flex items-center gap-3 mb-2">
