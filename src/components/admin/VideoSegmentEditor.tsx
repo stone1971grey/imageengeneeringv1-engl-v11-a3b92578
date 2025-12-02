@@ -1,10 +1,8 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, Copy } from "lucide-react";
-import { CopySegmentDialog } from "./CopySegmentDialog";
 
 interface VideoSegmentEditorProps {
   data: {
@@ -18,9 +16,7 @@ interface VideoSegmentEditorProps {
   segmentId: string;
 }
 
-const VideoSegmentEditorComponent = ({ data, onChange, onSave, currentPageSlug, segmentId }: VideoSegmentEditorProps) => {
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
-
+const VideoSegmentEditorComponent = ({ data, onChange, onSave }: VideoSegmentEditorProps) => {
   const handleChange = (field: string, value: string) => {
     onChange({
       ...data,
@@ -101,35 +97,15 @@ const VideoSegmentEditorComponent = ({ data, onChange, onSave, currentPageSlug, 
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="flex justify-between items-center pt-6 border-t">
-        <Button
-          onClick={() => setCopyDialogOpen(true)}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <Copy className="h-4 w-4" />
-          Copy to Page...
-        </Button>
-        
+      {/* Save Button */}
+      <div className="pt-6 border-t">
         <Button
           onClick={onSave}
-          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
         >
-          <Save className="h-4 w-4" />
           Save Changes
         </Button>
       </div>
-
-      {/* Copy Segment Dialog */}
-      <CopySegmentDialog
-        open={copyDialogOpen}
-        onOpenChange={setCopyDialogOpen}
-        currentPageSlug={currentPageSlug}
-        segmentId={segmentId}
-        segmentType="video"
-        segmentData={data}
-      />
     </div>
   );
 };
