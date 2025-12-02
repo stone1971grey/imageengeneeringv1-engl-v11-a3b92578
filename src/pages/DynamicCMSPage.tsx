@@ -18,6 +18,7 @@ import NewsSegment from "@/components/segments/NewsSegment";
 import Debug from "@/components/segments/Debug";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -112,6 +113,7 @@ const DynamicCMSPage = () => {
 
     // Check if page exists in page_registry
     if (!pageExistsResult.data) {
+      toast.error(`Page not in registry: ${pageSlug}`, { duration: 5000 });
       console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
       setLoading(false);
       return;
@@ -119,6 +121,9 @@ const DynamicCMSPage = () => {
 
     let data = contentResult.data;
     let error = contentResult.error;
+
+    // Debug: Show what slug we're looking for
+    toast.info(`Loading page: ${pageSlug}`, { duration: 2000 });
 
     // Fallback to English if no content found in requested language
     if (!data || data.length === 0) {
@@ -320,6 +325,12 @@ const DynamicCMSPage = () => {
 
       setPageSegments(enhancedSegments);
       setTabOrder(loadedTabOrder);
+
+      // Debug toast to help troubleshoot black screen issues
+      toast.info(`Loaded ${enhancedSegments.length} segments for ${pageSlug}`, {
+        description: `Tab order: ${loadedTabOrder.length} items`,
+        duration: 3000,
+      });
 
       console.log('[DynamicCMSPage] Loaded content', {
         pageSlug,
