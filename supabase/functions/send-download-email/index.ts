@@ -60,9 +60,15 @@ const handler = async (req: Request): Promise<Response> => {
       ? "Conference paper" 
       : "Video";
     
-    // Construct download URL - use app URL with language prefix
+    // Construct download URL - ensure /en/ language prefix is present
     const baseUrl = 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
-    const dlUrl = downloadUrl || `${baseUrl}/en/whitepaper/ieee-p2020`;
+    let dlUrl = downloadUrl || `${baseUrl}/en/whitepaper/ieee-p2020`;
+    
+    // Ensure /en/ prefix is present in the URL
+    if (dlUrl.startsWith(baseUrl) && !dlUrl.includes('/en/')) {
+      const pathPart = dlUrl.replace(baseUrl, '');
+      dlUrl = `${baseUrl}/en${pathPart}`;
+    }
     
     console.log("downloadUrl received:", downloadUrl);
     console.log("dlUrl being sent to Mautic:", dlUrl);
