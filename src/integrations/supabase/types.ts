@@ -458,6 +458,8 @@ export type Database = {
         Row: {
           created_at: string | null
           design_icon: string | null
+          flyout_description: string | null
+          flyout_image_url: string | null
           id: number
           page_id: number
           page_slug: string
@@ -469,6 +471,8 @@ export type Database = {
         Insert: {
           created_at?: string | null
           design_icon?: string | null
+          flyout_description?: string | null
+          flyout_image_url?: string | null
           id?: number
           page_id: number
           page_slug: string
@@ -480,6 +484,8 @@ export type Database = {
         Update: {
           created_at?: string | null
           design_icon?: string | null
+          flyout_description?: string | null
+          flyout_image_url?: string | null
           id?: number
           page_id?: number
           page_slug?: string
