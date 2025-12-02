@@ -214,6 +214,135 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
     toast.success('✅ Image selected and saved successfully!', { duration: 3000 });
   };
 
+  const handleVideoUpload = async (file: File) => {
+    // Validate video file
+    if (!file.type.startsWith('video/')) {
+      toast.error('Please select a video file');
+      return;
+    }
+    
+    if (file.size > 100 * 1024 * 1024) { // 100MB limit for videos
+      toast.error('File size must be less than 100MB');
+      return;
+    }
+
+    setIsUploading(true);
+    toast.info('🚀 Starting video upload...', { duration: 2000 });
+
+    try {
+      const reader = new FileReader();
+      const fileData = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      const { data: result, error } = await supabase.functions.invoke('upload-image', {
+        body: {
+          fileName: file.name,
+          fileData: fileData,
+          bucket: 'page-images',
+          folder: pageSlug,
+          segmentId: segmentId,
+          pageSlug: pageSlug
+        }
+      });
+
+      if (error) throw error;
+      if (!result?.success) throw new Error(result?.error || 'Upload failed');
+
+      setVideoUrl(result.url);
+      await autoSaveAfterVideoUpload(result.url);
+      toast.success('✅ Video uploaded and saved successfully!', { duration: 3000 });
+      
+    } catch (error: any) {
+      console.error('[FullHero Video Upload] Error:', error);
+      toast.error('Upload failed: ' + (error.message || 'Unknown error'));
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleVideoMediaSelect = async (url: string) => {
+    setVideoUrl(url);
+    await autoSaveAfterVideoUpload(url);
+    toast.success('✅ Video selected and saved successfully!', { duration: 3000 });
+  };
+
+  const autoSaveAfterVideoUpload = async (uploadedVideoUrl: string) => {
+    const content = {
+      titleLine1,
+      titleLine2,
+      subtitle,
+      button1Text,
+      button1Link,
+      button1Color,
+      button2Text,
+      button2Link,
+      button2Color,
+      backgroundType,
+      imageUrl,
+      imageAlt,
+      imageMetadata,
+      videoUrl: uploadedVideoUrl,
+      imagePosition,
+      layoutRatio,
+      topSpacing,
+      kenBurnsEffect,
+      overlayOpacity,
+      useH1: isH1Segment,
+    };
+
+    try {
+      if (!pageSlug) return;
+      const { data: pageContentData, error: fetchError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language)
+        .single();
+
+      if (fetchError || !pageContentData) {
+        console.error("Error loading page_segments:", fetchError);
+        return;
+      }
+
+      const segments = JSON.parse(pageContentData.content_value);
+      const updatedSegments = segments.map((seg: any) => {
+        if (seg.type === "full-hero" && String(seg.id) === String(segmentId)) {
+          return { ...seg, data: content };
+        }
+        return seg;
+      });
+
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({
+          content_value: JSON.stringify(updatedSegments),
+          updated_by: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .eq("page_slug", pageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", language);
+
+      if (updateError) {
+        console.error("Auto-save error:", updateError);
+      } else {
+        console.log(`✅ Video URL auto-saved to database (${language})`);
+        await syncToOtherLanguages(updatedSegments, pageContentData.content_type);
+        onSave?.();
+      }
+    } catch (e) {
+      console.error("Auto-save failed:", e);
+    }
+  };
+
   const syncToOtherLanguages = async (updatedSegments: any[], contentType?: string | null) => {
     // Only sync when editing the master language (English)
     if (language !== 'en') return;
@@ -875,18 +1004,41 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
                 </div>
               </>
             ) : (
-              <div className="space-y-2">
-                <Label htmlFor="videoUrl" className="text-destructive">
-                  Video URL <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="videoUrl"
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="https://example.com/video.mp4"
-                  className={!videoUrl?.trim() ? 'border-destructive' : ''}
+              <>
+                <MediaSelector
+                  onFileSelect={handleVideoUpload}
+                  onMediaSelect={handleVideoMediaSelect}
+                  acceptedFileTypes="video/*"
+                  label="Background Video *"
+                  currentImageUrl={videoUrl}
                 />
-              </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="videoUrl">
+                    Or enter Video URL manually
+                  </Label>
+                  <Input
+                    id="videoUrl"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    placeholder="https://example.com/video.mp4"
+                    className={!videoUrl?.trim() ? 'border-destructive' : ''}
+                  />
+                </div>
+
+                {videoUrl && (
+                  <div className="space-y-2">
+                    <Label>Video Preview</Label>
+                    <video
+                      src={videoUrl}
+                      controls
+                      className="w-full max-h-48 rounded-md bg-black"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                )}
+              </>
             )}
 
             <div className="space-y-2">
