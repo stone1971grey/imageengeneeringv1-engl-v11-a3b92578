@@ -502,6 +502,28 @@ export const CMSPageOverview = () => {
           const pageBaseName = movedPage.page_slug.split('/').pop()!;
           newPageSlug = `${targetPage.page_slug}/${pageBaseName}`;
           
+          // SAFETY CHECK: Prevent slug from getting too deep (max 6 levels)
+          const slugDepth = newPageSlug.split('/').length;
+          if (slugDepth > 6) {
+            toast.error("Maximale Verschachtelungstiefe erreicht (6 Ebenen)");
+            setDropMode(null);
+            setHoveredId(null);
+            lastDropModeRef.current = null;
+            return;
+          }
+          
+          // SAFETY CHECK: Prevent duplicate slug segments (infinite nesting bug)
+          const slugParts = newPageSlug.split('/');
+          const lastPart = slugParts[slugParts.length - 1];
+          const duplicateCount = slugParts.filter(p => p === lastPart).length;
+          if (duplicateCount > 1) {
+            toast.error("Ungültige Verschachtelung erkannt - Seite ist bereits unter diesem Pfad");
+            setDropMode(null);
+            setHoveredId(null);
+            lastDropModeRef.current = null;
+            return;
+          }
+          
           toast.success(`"${movedPage.page_title}" als Kind unter "${targetPage.page_title}" verschoben`);
         } else {
           // Make moved page a sibling of target page
@@ -522,6 +544,9 @@ export const CMSPageOverview = () => {
         
         // Skip if nothing actually changes
         if (oldSlug === newPageSlug && movedPage.parent_slug === newParentSlug) {
+          setDropMode(null);
+          setHoveredId(null);
+          lastDropModeRef.current = null;
           return;
         }
         
