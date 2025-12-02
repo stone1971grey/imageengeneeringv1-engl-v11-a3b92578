@@ -223,6 +223,12 @@ const DynamicCMSPage = () => {
       // Zuerst versuchen, die Inhalte der gewünschten Sprache zu verwenden
       let { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap } = parseContentRows(data);
 
+      // Debug: Show parsed segments count
+      toast.info(`Parsed ${segments?.length || 0} segments from ${data?.length || 0} rows`, { 
+        description: `Tab order: ${tabs?.length || 0} items`,
+        duration: 4000 
+      });
+
       // Wenn für die gewünschte Sprache keine gültigen Segmente gefunden wurden,
       // auf Englisch zurückfallen (wichtig für Fälle mit kaputtem JSON in der Zielsprache)
       if ((!segments || segments.length === 0) && urlLanguage !== 'en') {
