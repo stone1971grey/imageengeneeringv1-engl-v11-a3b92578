@@ -5853,26 +5853,22 @@ const AdminDashboard = () => {
                     </SplitScreenSegmentEditor>
                   )}
 
-                  {segment.type === 'faq' && (() => {
-                    // Initialize data if missing
-                    if (!segment.data) {
-                      segment.data = getDefaultSegmentData('faq');
-                    }
-                    
-                    return (
-                      <FAQEditor
-                        data={segment.data}
-                        onChange={(newData) => {
-                          const newSegments = [...pageSegments];
-                          newSegments[index].data = newData;
-                          setPageSegments(newSegments);
-                        }}
-                        onSave={() => handleSaveSegments()}
-                        currentPageSlug={selectedPage}
-                        segmentId={segment.id}
-                      />
-                    );
-                  })()}
+                  {segment.type === 'faq' && (
+                    <SplitScreenSegmentEditor
+                      segmentTitle="FAQ"
+                      segmentType="faq"
+                    >
+                      {(language) => (
+                        <FAQEditor
+                          key={`faq-${segment.id}-${language}`}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          language={language}
+                          onSave={() => loadContent()}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
+                  )}
 
                   {segment.type === 'video' && (
                     <SplitScreenSegmentEditor
