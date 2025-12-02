@@ -302,8 +302,8 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
   return (
     <div className="space-y-6">
       {isTranslating && (
-        <div className="bg-purple-900/50 border border-purple-500 rounded-lg p-4 text-center text-white">
-          Translating content...
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+          ⏳ Translating content...
         </div>
       )}
 
