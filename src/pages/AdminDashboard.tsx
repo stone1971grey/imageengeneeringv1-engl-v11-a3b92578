@@ -355,7 +355,7 @@ const AdminDashboard = () => {
   const [isCreatingCMS, setIsCreatingCMS] = useState(false);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(['en', 'de', 'ja', 'ko', 'zh']);
   const [editorLanguage, setEditorLanguage] = useState<'en' | 'de' | 'ja' | 'ko' | 'zh'>('en');
-  const [pageInfo, setPageInfo] = useState<{ pageId: number; pageTitle: string; pageSlug: string; designIcon?: string | null } | null>(null);
+  const [pageInfo, setPageInfo] = useState<{ pageId: number; pageTitle: string; pageSlug: string; parentSlug?: string | null; designIcon?: string | null } | null>(null);
   const [isDesignElementDialogOpen, setIsDesignElementDialogOpen] = useState(false);
   const [pendingDesignIcon, setPendingDesignIcon] = useState<string | null>(null);
 
@@ -779,7 +779,7 @@ const AdminDashboard = () => {
       
       const { data, error } = await supabase
         .from("page_registry")
-        .select("page_id, page_title, page_slug, design_icon")
+        .select("page_id, page_title, page_slug, parent_slug, design_icon")
         .eq("page_slug", querySlug)
         .maybeSingle();
       
@@ -794,6 +794,7 @@ const AdminDashboard = () => {
           pageId: data.page_id,
           pageTitle: data.page_title,
           pageSlug: data.page_slug,
+          parentSlug: (data as any).parent_slug ?? null,
           designIcon: (data as any).design_icon ?? null,
         });
       } else {
@@ -808,6 +809,11 @@ const AdminDashboard = () => {
   const handleSaveDesignElement = async () => {
     if (!pageInfo || !pendingDesignIcon) {
       toast.error("Please select a design element");
+      return;
+    }
+
+    if (!pageInfo.parentSlug || !['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact'].includes(pageInfo.parentSlug)) {
+      toast.error("Design elements are only allowed for second-level navigation pages.");
       return;
     }
 
@@ -830,6 +836,7 @@ const AdminDashboard = () => {
       console.error("[handleSaveDesignElement] Unexpected error:", error);
       toast.error("Failed to save design element");
     }
+  };
   };
 
   const handleRemoveDesignElement = async () => {
@@ -3174,6 +3181,8 @@ const AdminDashboard = () => {
     ? DESIGN_ICON_OPTIONS.find((opt) => opt.key === pageInfo.designIcon)
     : undefined;
   const SelectedDesignIcon = selectedDesignIconOption?.Icon;
+  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact'];
+  const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
 
   return (
     <AdminDashboardErrorBoundary>
@@ -3231,7 +3240,7 @@ const AdminDashboard = () => {
                     <span className="text-base text-gray-700 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
                       {pageInfo.pageSlug}
                     </span>
-                    {selectedDesignIconOption && SelectedDesignIcon && (
+                    {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
                       <>
                         <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
                         <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
@@ -3698,7 +3707,8 @@ const AdminDashboard = () => {
                   <Button
                     variant="outline"
                     className="flex items-center gap-2"
-                    disabled={!selectedPage || !pageInfo}
+                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
+                    title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
                   >
                     <Layers className="h-4 w-4" />
                     Add new design element
@@ -3712,6 +3722,9 @@ const AdminDashboard = () => {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 mt-4">
+                    <p className="text-xs text-gray-500">
+                      Design elements can only be selected for second-level navigation pages (direct children of main sections like "Your Solution" or "Products").
+                    </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {DESIGN_ICON_OPTIONS.map((option) => {
                         const IconComp = option.Icon;
