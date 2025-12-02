@@ -405,84 +405,84 @@ const Navigation = () => {
                      onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
                   <div className="flex gap-4 p-4">
                     {/* Left Column: Industries */}
-                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
-                       <h4 className="font-semibold mb-2 text-base text-black">{t.nav.industries}</h4>
+                    <div className="space-y-3 flex-1 pr-4 border-r border-border">
+                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.industries}</h4>
                        
-                       <Link to={`/${language}/your-solution/automotive`} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                       <Link to={`/${language}/your-solution/automotive`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/automotive') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
-                          <Car className="h-4 w-4" />
+                          <Car className="h-5 w-5" />
                           <span>{t.nav.automotive}</span>
                        </Link>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
-                         <Shield className="h-4 w-4" />
+                         <Shield className="h-5 w-5" />
                          <span>{t.nav.securitySurveillance}</span>
                        </div>
                        
-                       <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                       <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                          isActive('/your-solution/mobile-phone') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
-                         <Smartphone className="h-4 w-4" />
+                         <Smartphone className="h-5 w-5" />
                          <span>{t.nav.mobilePhone}</span>
                        </Link>
                        
-                         <Link to={getLink("web-camera", "/your-solution/web-camera")} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                         <Link to={getLink("web-camera", "/your-solution/web-camera")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/web-camera') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
-                          <Camera className="h-4 w-4" />
+                          <Camera className="h-5 w-5" />
                           <span>{t.nav.webCamera}</span>
                         </Link>
                         
-                        <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                        <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/machine-vision') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
-                          <Cog className="h-4 w-4" />
+                          <Cog className="h-5 w-5" />
                           <span>{t.nav.machineVision}</span>
                         </Link>
                         
-                        <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                        <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/medical-endoscopy') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
-                          <Stethoscope className="h-4 w-4" />
+                          <Stethoscope className="h-5 w-5" />
                           <span>{t.nav.medicalEndoscopy}</span>
                         </Link>
                         
-                        <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                        <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/scanners-archiving') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
-                          <ScanLine className="h-4 w-4" />
+                          <ScanLine className="h-5 w-5" />
                           <span>{t.nav.scannersArchiving}</span>
                         </Link>
                         
-                        <Link to={getLink("photography", "/your-solution/photography")} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                        <Link to={getLink("photography", "/your-solution/photography")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/your-solution/photography') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Photo & Video")}>
-                          <Camera className="h-4 w-4" />
+                          <Camera className="h-5 w-5" />
                           <span>{t.nav.photoVideo}</span>
                         </Link>
                     </div>
                     
                      {/* Right Column: Applications */}
-                     <div className="space-y-1 flex-1">
-                       <h4 className="font-semibold mb-2 text-base text-black">
+                     <div className="space-y-3 flex-1">
+                       <h4 className="font-semibold mb-2 text-lg text-black">
                          {hoveredIndustry ? `${(t.nav as any)[hoveredIndustry] || hoveredIndustry} - ${t.nav.applications}` : t.nav.applications}
                        </h4>
                        
                        {/* Conditional Rendering of Applications */}
                        {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
-                         <div className="space-y-1">
+                         <div className="space-y-3">
                              {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
-                              <div key={index} className="flex items-center gap-2 text-base transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1.5 px-2 rounded-md">
-                                <ChevronRight className="h-3 w-3" />
+                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1 px-2 rounded-md">
+                                <ChevronRight className="h-4 w-4" />
                                  {application.link === "#" ? (
                                    <span>{application.name}</span>
                                  ) : (
@@ -537,54 +537,54 @@ const Navigation = () => {
                      onMouseLeave={() => !isAdminDashboard && setHoveredProduct(null)}>
                   <div className="flex gap-4 p-4">
                     {/* Left Column: Product Groups */}
-                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
-                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.products}</h4>
+                    <div className="space-y-3 flex-1 pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.products}</h4>
                        
-                       <Link to={`/${language}/products/charts`} className={`flex items-center gap-2 text-base text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
+                       <Link to={`/${language}/products/charts`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                           isActive('/products/charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Test Charts")}>
-                          <CustomTargetIcon className="h-4 w-4" />
+                          <CustomTargetIcon className="h-5 w-5" />
                           <span>{t.nav.testCharts}</span>
                        </Link>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Illumination Devices")}>
-                         <CustomTargetIcon className="h-4 w-4" />
+                         <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.illuminationDevices}</span>
                        </div>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Measurement Devices")}>
-                         <CustomTargetIcon className="h-4 w-4" />
+                         <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.measurementDevices}</span>
                        </div>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Software & APIs")}>
-                         <CustomTargetIcon className="h-4 w-4" />
+                         <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.softwareApis}</span>
                        </div>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Product Accessories")}>
-                         <CustomTargetIcon className="h-4 w-4" />
+                         <CustomTargetIcon className="h-5 w-5" />
                          <span>{t.nav.productAccessories}</span>
                        </div>
                     </div>
                     
                      {/* Right Column: Subgroups */}
-                     <div className="space-y-1 flex-1">
-                       <h4 className="font-semibold mb-2 text-base text-black">
+                     <div className="space-y-3 flex-1">
+                       <h4 className="font-semibold mb-2 text-lg text-black">
                          {hoveredProduct ? `${(t.nav as any)[hoveredProduct] || hoveredProduct} - ${t.nav.subgroups}` : t.nav.subgroups}
                        </h4>
                        
                        {/* Conditional Rendering of Subgroups */}
                         {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
-                          <div className="space-y-1">
+                          <div className="space-y-3">
                             {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
-                              <div key={index} className="flex items-center gap-2 text-base transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1.5 px-2 rounded-md">
-                                <ChevronRight className="h-3 w-3" />
+                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1 px-2 rounded-md">
+                                <ChevronRight className="h-4 w-4" />
                                 {subgroup.link === "#" ? (
                                   <span>{subgroup.name}</span>
                                 ) : (
@@ -641,60 +641,60 @@ const Navigation = () => {
                      onMouseLeave={() => !isAdminDashboard && setHoveredTestService(null)}>
                   <div className="flex gap-4 p-4">
                     {/* Left Column: Service Categories */}
-                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
-                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.testServices}</h4>
+                    <div className="space-y-3 flex-1 pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.testServices}</h4>
                       
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Overview")}>
-                         <FlaskConical className="h-4 w-4" />
+                         <FlaskConical className="h-5 w-5" />
                          <span>{t.nav.overview}</span>
                        </div>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Automotive")}>
-                         <Car className="h-4 w-4" />
+                         <Car className="h-5 w-5" />
                          <span>{t.nav.automotive}</span>
                        </div>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("VCX")}>
-                         <Smartphone className="h-4 w-4" />
+                         <Smartphone className="h-5 w-5" />
                          <span>VCX</span>
                        </div>
                        
-                        <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                           onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Image Quality")}>
-                          <Camera className="h-4 w-4" />
+                          <Camera className="h-5 w-5" />
                           <span>{t.nav.infoHub}</span>
                         </div>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Standardized")}>
-                         <CheckCircle className="h-4 w-4" />
+                         <CheckCircle className="h-5 w-5" />
                          <span>{t.nav.standardized}</span>
                        </div>
                        
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Specialized/Custom")}>
-                         <Settings className="h-4 w-4" />
+                         <Settings className="h-5 w-5" />
                          <span>{t.nav.specializedCustom}</span>
                        </div>
                     </div>
                     
                      {/* Right Column: Services */}
-                     <div className="space-y-1 flex-1">
-                       <h4 className="font-semibold mb-2 text-base text-black">
+                     <div className="space-y-3 flex-1">
+                       <h4 className="font-semibold mb-2 text-lg text-black">
                          {hoveredTestService ? `${(t.nav as any)[hoveredTestService] || hoveredTestService} - ${t.nav.services}` : t.nav.services}
                        </h4>
                        
                        {/* Conditional Rendering of Services */}
                        {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
-                         <div className="space-y-1">
+                         <div className="space-y-3">
                            {testServicesData[hoveredTestService as keyof typeof testServicesData].services.map((service, index) => (
-                             <div key={index} className={`flex items-center gap-2 text-base transition-colors cursor-pointer text-black py-1.5 px-2 rounded-md ${
+                             <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black py-1 px-2 rounded-md ${
                                (service as any).active ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                              }`}>
-                               <ChevronRight className="h-3 w-3" />
+                               <ChevronRight className="h-4 w-4" />
                                 {service.link === "#" ? (
                                   <span>{service.name}</span>
                                 ) : (
@@ -749,22 +749,22 @@ const Navigation = () => {
               <SimpleDropdown trigger={t.nav.resources} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[280px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-4 p-4">
-                     <div className="space-y-1 flex-1">
-                       <h4 className="font-semibold mb-2 text-base text-black">{t.nav.resources}</h4>
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                         <CustomTargetIcon className="h-4 w-4" />
+                     <div className="space-y-3 flex-1">
+                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.resources}</h4>
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         <CustomTargetIcon className="h-5 w-5" />
                          <a href="#">{t.nav.webinars}</a>
                        </div>
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                         <CustomTargetIcon className="h-4 w-4" />
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         <CustomTargetIcon className="h-5 w-5" />
                          <a href="#">{t.nav.onSiteTraining}</a>
                        </div>
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                         <CustomTargetIcon className="h-4 w-4" />
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         <CustomTargetIcon className="h-5 w-5" />
                          <Link to="/inside-lab">{t.nav.visitTestLab}</Link>
                        </div>
-                       <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                         <CustomTargetIcon className="h-4 w-4" />
+                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         <CustomTargetIcon className="h-5 w-5" />
                          <a href="#">{t.nav.eventSchedule}</a>
                        </div>
                      </div>
@@ -784,38 +784,38 @@ const Navigation = () => {
               <SimpleDropdown trigger={t.nav.about} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-4 p-4">
-                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
-                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.resources}</h4>
-                      <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                        <CustomTargetIcon className="h-4 w-4" />
+                    <div className="space-y-3 flex-1 pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.resources}</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">{t.nav.imageQualityFactors}</a>
                       </div>
-                      <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                        <CustomTargetIcon className="h-4 w-4" />
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">{t.nav.blog}</a>
                       </div>
-                      <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                        <CustomTargetIcon className="h-4 w-4" />
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">{t.nav.internationalStandards}</a>
                       </div>
-                      <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                        <CustomTargetIcon className="h-4 w-4" />
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">{t.nav.ieTechnology}</a>
                       </div>
                     </div>
 
-                    <div className="space-y-1 flex-1">
-                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.publications}</h4>
-                      <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                        <CustomTargetIcon className="h-4 w-4" />
+                    <div className="space-y-3 flex-1">
+                      <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.publications}</h4>
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">{t.nav.conferencePapers}</a>
                       </div>
-                      <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                        <CustomTargetIcon className="h-4 w-4" />
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
                         <Link to="/whitepaper">{t.nav.whitePapersTheses}</Link>
                       </div>
-                      <div className="flex items-center gap-2 text-base text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
-                        <CustomTargetIcon className="h-4 w-4" />
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
                         <a href="#">{t.nav.videoArchive}</a>
                       </div>
                     </div>
@@ -835,70 +835,70 @@ const Navigation = () => {
             <SimpleDropdown trigger={t.nav.company} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                    <div className="flex gap-4 p-4">
-                       <div className="space-y-1 flex-1 pr-4 border-r border-border">
-                         <h4 className="font-semibold mb-2 text-base text-black">{t.nav.aboutIE}</h4>
-                         <Link to="/news" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                       <div className="space-y-3 flex-1 pr-4 border-r border-border">
+                         <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.aboutIE}</h4>
+                         <Link to="/news" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/news') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.news}</span>
                          </Link>
-                         <Link to="/about" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/about" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/about') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.aboutUs}</span>
                          </Link>
-                         <Link to="/team" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/team" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/team') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.team}</span>
                          </Link>
-                         <Link to="/nynomic-group" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/nynomic-group" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/nynomic-group') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.nynomicGroup}</span>
                          </Link>
-                         <Link to="/visit-us" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/visit-us" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/visit-us') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.visitUs}</span>
                          </Link>
-                         <Link to="/careers" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/careers" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/careers') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.careers}</span>
                          </Link>
                        </div>
                        
-                       <div className="space-y-1 flex-1">
-                         <h4 className="font-semibold mb-2 text-base text-black">Business & Partnerships</h4>
-                         <Link to="/resellers-subsidiaries" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                       <div className="space-y-3 flex-1">
+                         <h4 className="font-semibold mb-2 text-lg text-black">Business & Partnerships</h4>
+                         <Link to="/resellers-subsidiaries" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/resellers-subsidiaries') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>Resellers & Subsidiaries</span>
                          </Link>
-                         <Link to="/strategic-partnerships" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/strategic-partnerships" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/strategic-partnerships') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>Strategic Partnerships</span>
                          </Link>
-                         <Link to="/group-memberships" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/group-memberships" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/group-memberships') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>Group Memberships</span>
                          </Link>
-                         <Link to="/iso-9001" className={`flex items-center gap-2 text-base text-black transition-colors py-1.5 px-2 rounded-md ${
+                         <Link to="/iso-9001" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/iso-9001') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-4 w-4" />
+                           <CustomTargetIcon className="h-5 w-5" />
                            <span>ISO 9001</span>
                          </Link>
                         </div>
