@@ -122,12 +122,16 @@ const DynamicCMSPage = () => {
     let data = contentResult.data;
     let error = contentResult.error;
 
-    // Debug: Show what slug we're looking for
-    toast.info(`Loading page: ${pageSlug}`, { duration: 2000 });
+    // Debug: Show what slug and language we're looking for
+    toast.info(`Loading: ${pageSlug} (${urlLanguage})`, { 
+      description: `Found ${data?.length || 0} content rows`,
+      duration: 3000 
+    });
 
     // Fallback to English if no content found in requested language
     if (!data || data.length === 0) {
       console.log(`[DynamicCMSPage] No content found for ${pageSlug} in ${urlLanguage}, falling back to English`);
+      toast.warning(`No ${urlLanguage} content, falling back to EN`, { duration: 2000 });
       const fallback = await supabase
         .from("page_content")
         .select("*")
@@ -136,6 +140,7 @@ const DynamicCMSPage = () => {
       
       data = fallback.data;
       error = fallback.error;
+      toast.info(`Fallback result: ${data?.length || 0} rows`, { duration: 2000 });
     }
 
     // Process segment registry data
