@@ -48,6 +48,11 @@ const DynamicCMSPage = () => {
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
 
+  // Debug: Component mounted
+  useEffect(() => {
+    toast.info(`DynamicCMSPage mounted: ${location.pathname}`, { duration: 3000 });
+  }, []);
+
   // Extract page_slug from full URL pathname (hierarchical)
   // Examples with language prefix:
   // /en/your-solution/photography -> your-solution/photography
@@ -81,46 +86,46 @@ const DynamicCMSPage = () => {
   }, [pageSlug, currentUrlLanguage]);
 
   const loadContent = async () => {
-    if (!pageSlug) {
-      setPageNotFound(true);
-      setLoading(false);
-      return;
-    }
+    try {
+      if (!pageSlug) {
+        setPageNotFound(true);
+        setLoading(false);
+        return;
+      }
 
-    // Extract language from URL
-    const pathParts = location.pathname.replace(/^\/+/, "").split('/');
-    const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
-    const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
+      // Extract language from URL
+      const pathParts = location.pathname.replace(/^\/+/, "").split('/');
+      const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
+      const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
-    // PERFORMANCE: Run all initial queries in parallel
-    const [pageExistsResult, contentResult, segmentResult] = await Promise.all([
-      supabase
-        .from("page_registry")
-        .select("page_slug")
-        .eq("page_slug", pageSlug)
-        .maybeSingle(),
-      supabase
-        .from("page_content")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("language", urlLanguage),
-      supabase
-        .from("segment_registry")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("deleted", false)
-    ]);
+      // PERFORMANCE: Run all initial queries in parallel
+      const [pageExistsResult, contentResult, segmentResult] = await Promise.all([
+        supabase
+          .from("page_registry")
+          .select("page_slug")
+          .eq("page_slug", pageSlug)
+          .maybeSingle(),
+        supabase
+          .from("page_content")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("language", urlLanguage),
+        supabase
+          .from("segment_registry")
+          .select("*")
+          .eq("page_slug", pageSlug)
+          .eq("deleted", false)
+      ]);
 
-    // Check if page exists in page_registry
-    if (!pageExistsResult.data) {
-      toast.error(`Page not in registry: ${pageSlug}`, { duration: 5000 });
-      console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
-      setLoading(false);
-      return;
-    }
+      // Check if page exists in page_registry
+      if (!pageExistsResult.data) {
+        console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
+        setLoading(false);
+        return;
+      }
 
-    let data = contentResult.data;
-    let error = contentResult.error;
+      let data = contentResult.data;
+      let error = contentResult.error;
 
     // Debug: Show what slug and language we're looking for
     toast.info(`Loading: ${pageSlug} (${urlLanguage})`, { 
@@ -356,7 +361,11 @@ const DynamicCMSPage = () => {
       // tab_order is now authoritative - only segments explicitly in tab_order will be rendered
     }
 
-    setLoading(false);
+    } catch (err) {
+      console.error('[DynamicCMSPage] Error loading content:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Check if page has Meta Navigation segment (memoized for performance)
@@ -963,6 +972,18 @@ const DynamicCMSPage = () => {
     );
     return { contentSegments: content, isEmpty: content.length === 0 };
   }, [pageSegments]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f9dc24] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading page...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
