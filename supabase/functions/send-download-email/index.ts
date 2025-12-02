@@ -60,9 +60,9 @@ const handler = async (req: Request): Promise<Response> => {
       ? "Conference paper" 
       : "Video";
     
-    // Construct download URL - use app URL, not Supabase URL
+    // Construct download URL - use app URL with language prefix
     const baseUrl = 'https://preview--imageengeneeringv1-engl-v11.lovable.app';
-    const dlUrl = downloadUrl || `${baseUrl}/whitepaper_download?id=${itemId || 'download'}`;
+    const dlUrl = downloadUrl || `${baseUrl}/en/whitepaper/ieee-p2020`;
     
     console.log("downloadUrl received:", downloadUrl);
     console.log("dlUrl being sent to Mautic:", dlUrl);
