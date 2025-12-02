@@ -323,7 +323,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
               id="tiles-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border-2 border-gray-600 bg-white text-black"
+              className="border-2 border-gray-600 bg-gray-800 text-white"
             />
           </div>
 
@@ -334,17 +334,17 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="border-2 border-gray-600 bg-white text-black"
+              className="border-2 border-gray-600 bg-gray-800 text-white"
             />
           </div>
 
           <div>
             <Label htmlFor="tiles-columns" className="text-white">Number of Columns</Label>
             <Select value={columns} onValueChange={setColumns}>
-              <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+              <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-gray-800 text-white">
                 <SelectItem value="2">2 Columns</SelectItem>
                 <SelectItem value="3">3 Columns</SelectItem>
                 <SelectItem value="4">4 Columns</SelectItem>
@@ -401,7 +401,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                   value={tile.icon || "none"}
                   onValueChange={(value) => handleTileChange(index, 'icon', value === 'none' ? '' : value)}
                 >
-                  <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                  <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
                     <SelectValue>
                       {(() => {
                         const IconComponent = iconMap[tile.icon || ''];
@@ -416,7 +416,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                       })()}
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-gray-800 text-white">
                     <SelectItem value="none">No Icon</SelectItem>
                     {Object.keys(iconMap).map((iconName) => {
                       const IconComponent = iconMap[iconName];
@@ -438,7 +438,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                 <Input
                   value={tile.title}
                   onChange={(e) => handleTileChange(index, 'title', e.target.value)}
-                  className="border-2 border-gray-600 bg-white text-black"
+                  className="border-2 border-gray-600 bg-gray-800 text-white"
                 />
               </div>
 
@@ -448,7 +448,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                   value={tile.description}
                   onChange={(e) => handleTileChange(index, 'description', e.target.value)}
                   rows={3}
-                  className="border-2 border-gray-600 bg-white text-black"
+                  className="border-2 border-gray-600 bg-gray-800 text-white"
                 />
               </div>
 
@@ -472,7 +472,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                         value={tile.ctaText || ''}
                         onChange={(e) => handleTileChange(index, 'ctaText', e.target.value)}
                         placeholder="Learn More"
-                        className="border-2 border-gray-600 bg-white text-black"
+                        className="border-2 border-gray-600 bg-gray-800 text-white placeholder:text-gray-400"
                       />
                     </div>
 
@@ -482,7 +482,7 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                         value={tile.ctaLink || ''}
                         onChange={(e) => handleTileChange(index, 'ctaLink', e.target.value)}
                         placeholder="/page or https://..."
-                        className="border-2 border-gray-600 bg-white text-black"
+                        className="border-2 border-gray-600 bg-gray-800 text-white placeholder:text-gray-400"
                       />
                     </div>
 
@@ -492,10 +492,10 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
                         value={tile.ctaStyle || 'standard'}
                         onValueChange={(value) => handleTileChange(index, 'ctaStyle', value)}
                       >
-                        <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+                        <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-white">
+                        <SelectContent className="bg-gray-800 text-white">
                           <SelectItem value="standard">Standard (Yellow)</SelectItem>
                           <SelectItem value="technical">Technical (Dark Gray)</SelectItem>
                         </SelectContent>

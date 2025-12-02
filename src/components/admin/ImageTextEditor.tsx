@@ -444,39 +444,39 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
             />
             
             {heroImageMetadata && (
-              <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
-                <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+              <div className="mt-4 p-4 bg-gray-800 rounded-lg border-2 border-gray-600 space-y-2">
+                <h4 className="font-semibold text-white text-lg mb-3">Image Information</h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <span className="text-gray-600">Original Name:</span>
-                    <p className="text-black font-medium">{heroImageMetadata.originalFileName}</p>
+                    <span className="text-gray-400">Original Name:</span>
+                    <p className="text-white font-medium">{heroImageMetadata.originalFileName}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Dimensions:</span>
-                    <p className="text-black font-medium">{heroImageMetadata.width} × {heroImageMetadata.height} px</p>
+                    <span className="text-gray-400">Dimensions:</span>
+                    <p className="text-white font-medium">{heroImageMetadata.width} × {heroImageMetadata.height} px</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">File Size:</span>
-                    <p className="text-black font-medium">{formatFileSize(heroImageMetadata.fileSizeKB)}</p>
+                    <span className="text-gray-400">File Size:</span>
+                    <p className="text-white font-medium">{formatFileSize(heroImageMetadata.fileSizeKB)}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Format:</span>
-                    <p className="text-black font-medium uppercase">{heroImageMetadata.format}</p>
+                    <span className="text-gray-400">Format:</span>
+                    <p className="text-white font-medium uppercase">{heroImageMetadata.format}</p>
                   </div>
                   <div className="col-span-2">
-                    <span className="text-gray-600">Upload Date:</span>
-                    <p className="text-black font-medium">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
+                    <span className="text-gray-400">Upload Date:</span>
+                    <p className="text-white font-medium">{formatUploadDate(heroImageMetadata.uploadDate)}</p>
                   </div>
                 </div>
                 
                 <div className="mt-4">
-                  <Label className="text-black text-base">Alt Text (SEO)</Label>
+                  <Label className="text-white text-base">Alt Text (SEO)</Label>
                   <Input
                     type="text"
                     value={heroImageMetadata.altText || ''}
                     onChange={(e) => setHeroImageMetadata({ ...heroImageMetadata, altText: e.target.value })}
                     placeholder="Describe this image for accessibility and SEO"
-                    className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black"
+                    className="mt-2 bg-gray-700 border-2 border-gray-600 focus:border-[#f9dc24] text-white placeholder:text-gray-400"
                   />
                 </div>
               </div>
@@ -494,7 +494,7 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
               id={`imagetext-title-${language}`}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border-2 border-gray-600 bg-white text-black"
+              className="border-2 border-gray-600 bg-gray-800 text-white"
             />
           </div>
 
@@ -505,17 +505,17 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
               value={subtext}
               onChange={(e) => setSubtext(e.target.value)}
               rows={2}
-              className="border-2 border-gray-600 bg-white text-black"
+              className="border-2 border-gray-600 bg-gray-800 text-white"
             />
           </div>
 
           <div>
             <Label htmlFor={`imagetext-layout-${language}`} className="text-white">Layout</Label>
             <Select value={layout} onValueChange={setLayout}>
-              <SelectTrigger className="border-2 border-gray-600 bg-white text-black">
+              <SelectTrigger className="border-2 border-gray-600 bg-gray-800 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-gray-800 text-white">
                 <SelectItem value="1-col">1 Column (Full Width)</SelectItem>
                 <SelectItem value="2-col">2 Columns</SelectItem>
                 <SelectItem value="3-col">3 Columns</SelectItem>
@@ -570,7 +570,7 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
                 <Input
                   value={item.title || ''}
                   onChange={(e) => handleItemChange(index, 'title', e.target.value)}
-                  className="border-2 border-gray-600 bg-white text-black"
+                  className="border-2 border-gray-600 bg-gray-800 text-white"
                 />
               </div>
 
@@ -580,7 +580,7 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
                   value={item.description || ''}
                   onChange={(e) => handleItemChange(index, 'description', e.target.value)}
                   rows={4}
-                  className="border-2 border-gray-600 bg-white text-black"
+                  className="border-2 border-gray-600 bg-gray-800 text-white"
                 />
               </div>
 
@@ -618,29 +618,29 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
                 />
                 
                 {item.metadata && (
-                  <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
-                    <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+                  <div className="mt-4 p-4 bg-gray-800 rounded-lg border-2 border-gray-600 space-y-2">
+                    <h4 className="font-semibold text-white text-lg mb-3">Image Information</h4>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <span className="text-gray-600">Original Name:</span>
-                        <p className="text-black font-medium">{item.metadata.originalFileName}</p>
+                        <span className="text-gray-400">Original Name:</span>
+                        <p className="text-white font-medium">{item.metadata.originalFileName}</p>
                       </div>
                       <div>
-                        <span className="text-gray-600">Dimensions:</span>
-                        <p className="text-black font-medium">{item.metadata.width} × {item.metadata.height} px</p>
+                        <span className="text-gray-400">Dimensions:</span>
+                        <p className="text-white font-medium">{item.metadata.width} × {item.metadata.height} px</p>
                       </div>
                       <div>
-                        <span className="text-gray-600">File Size:</span>
-                        <p className="text-black font-medium">{formatFileSize(item.metadata.fileSizeKB)}</p>
+                        <span className="text-gray-400">File Size:</span>
+                        <p className="text-white font-medium">{formatFileSize(item.metadata.fileSizeKB)}</p>
                       </div>
                       <div>
-                        <span className="text-gray-600">Format:</span>
-                        <p className="text-black font-medium uppercase">{item.metadata.format}</p>
+                        <span className="text-gray-400">Format:</span>
+                        <p className="text-white font-medium uppercase">{item.metadata.format}</p>
                       </div>
                     </div>
                     
                     <div className="mt-4">
-                      <Label className="text-black text-base">Alt Text (SEO)</Label>
+                      <Label className="text-white text-base">Alt Text (SEO)</Label>
                       <Input
                         type="text"
                         value={item.metadata.altText || ''}
@@ -653,7 +653,7 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
                           setItems(newItems);
                         }}
                         placeholder="Describe this image for accessibility and SEO"
-                        className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-black"
+                        className="mt-2 bg-gray-700 border-2 border-gray-600 focus:border-[#f9dc24] text-white placeholder:text-gray-400"
                       />
                     </div>
                   </div>
