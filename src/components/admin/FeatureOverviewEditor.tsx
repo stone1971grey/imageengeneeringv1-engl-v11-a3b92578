@@ -317,7 +317,7 @@ const FeatureOverviewEditorComponent = ({ pageSlug, segmentId, language, onSave 
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-white">Feature Items</CardTitle>
-            <Button onClick={addItem} size="sm" className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={addItem} size="sm" className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
               <Plus className="w-4 h-4 mr-2" />
               Add Item
             </Button>

@@ -429,7 +429,7 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
               type="button"
               onClick={() => document.getElementById(`image_text_hero_${segmentId}_${language}`)?.click()}
               disabled={uploading}
-              className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+              className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
             >
               {uploading ? "Uploading..." : (heroImageUrl ? "Replace Image" : "Upload Image")}
             </Button>
@@ -603,7 +603,7 @@ const ImageTextEditorComponent = ({ pageSlug, segmentId, language, onSave }: Ima
                   type="button"
                   onClick={() => document.getElementById(`image_text_item_${segmentId}_${index}_${language}`)?.click()}
                   disabled={uploading}
-                  className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 border-2 border-black"
+                  className="mb-2 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
                 >
                   {uploading ? "Uploading..." : (item.imageUrl ? "Replace Image" : "Upload Image")}
                 </Button>
