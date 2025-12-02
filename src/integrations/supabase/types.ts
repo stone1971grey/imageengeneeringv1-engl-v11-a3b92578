@@ -457,6 +457,7 @@ export type Database = {
       page_registry: {
         Row: {
           created_at: string | null
+          design_icon: string | null
           id: number
           page_id: number
           page_slug: string
@@ -467,6 +468,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          design_icon?: string | null
           id?: number
           page_id: number
           page_slug: string
@@ -477,6 +479,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          design_icon?: string | null
           id?: number
           page_id?: number
           page_slug?: string
