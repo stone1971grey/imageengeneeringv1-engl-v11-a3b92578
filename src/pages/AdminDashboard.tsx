@@ -3169,6 +3169,11 @@ const AdminDashboard = () => {
     return null;
   }
 
+  const selectedDesignIconOption = pageInfo
+    ? DESIGN_ICON_OPTIONS.find((opt) => opt.key === pageInfo.designIcon)
+    : undefined;
+  const SelectedDesignIcon = selectedDesignIconOption?.Icon;
+
   return (
     <AdminDashboardErrorBoundary>
       <div className="min-h-screen bg-gray-50">
@@ -4298,150 +4303,158 @@ const AdminDashboard = () => {
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <TabsList className="flex flex-wrap w-full mb-6 h-auto p-2 bg-gray-200">
-              {/* MANDATORY: Meta Navigation - ALWAYS FIRST/LEFTMOST (Nothing before it!) */}
-              {pageSegments
-                .filter(segment => segment.type === 'meta-navigation')
-                .map((segment) => {
-                  const segmentIndex = pageSegments.indexOf(segment);
-                  const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'meta-navigation').length;
-                  const displayNumber = sameTypeBefore + 1;
-                  const segmentId = segmentRegistry[segment.id] || segment.id;
-                  
-                  return (
-                    <TabsTrigger 
-                      key={segment.id}
-                      value={segment.id}
-                      className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                    >
-                      ID {segmentId}: Meta Nav - E {displayNumber}
-                    </TabsTrigger>
-                  );
-                })}
-
-              {/* Full Hero - Fixed Position (After Meta Nav if exists, otherwise first) */}
-              {pageSegments
-                .filter(segment => segment.type === 'full-hero')
-                .map((segment) => {
-                  const segmentIndex = pageSegments.indexOf(segment);
-                  const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'full-hero').length;
-                  const displayNumber = sameTypeBefore + 1;
-                  const segmentId = segmentRegistry[segment.id] || segment.id;
-                  
-                  return (
-                    <TabsTrigger 
-                      key={segment.id}
-                      value={segment.id}
-                      className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                    >
-                      ID {segmentId}: Full Hero - A {displayNumber}
-                    </TabsTrigger>
-                  );
-                })}
-
-              {/* Hero Tab - Fixed Second Position (After Meta Nav) */}
-              {segmentRegistry['hero'] && (
-                <TabsTrigger 
-                  value="hero" 
-                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                >
-                  ID {segmentRegistry['hero']}: Produkt-Hero - F
-                </TabsTrigger>
+            <div className="relative w-full mb-6">
+              {selectedDesignIconOption && SelectedDesignIcon && (
+                <div className="absolute -top-3 left-4 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground shadow-sm border border-border z-10">
+                  <SelectedDesignIcon className="h-3 w-3 text-primary" />
+                  <span>{selectedDesignIconOption.label}</span>
+                </div>
               )}
+              <TabsList className="flex flex-wrap w-full h-auto p-2 bg-gray-200 pl-3">
+                {/* MANDATORY: Meta Navigation - ALWAYS FIRST/LEFTMOST (Nothing before it!) */}
+                {pageSegments
+                  .filter(segment => segment.type === 'meta-navigation')
+                  .map((segment) => {
+                    const segmentIndex = pageSegments.indexOf(segment);
+                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'meta-navigation').length;
+                    const displayNumber = sameTypeBefore + 1;
+                    const segmentId = segmentRegistry[segment.id] || segment.id;
+                    
+                    return (
+                      <TabsTrigger 
+                        key={segment.id}
+                        value={segment.id}
+                        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                      >
+                        ID {segmentId}: Meta Nav - E {displayNumber}
+                      </TabsTrigger>
+                    );
+                  })}
 
-              {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Hero, and Footer */}
-              <SortableContext
-                items={tabOrder.filter(tabId => {
-                  const segment = pageSegments.find(s => s.id === tabId);
-                  // Exclude meta-navigation and full-hero from draggable section
-                  return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero');
-                })}
-                strategy={horizontalListSortingStrategy}
-              >
-                {tabOrder
-                  .filter(tabId => {
+                {/* Full Hero - Fixed Position (After Meta Nav if exists, otherwise first) */}
+                {pageSegments
+                  .filter(segment => segment.type === 'full-hero')
+                  .map((segment) => {
+                    const segmentIndex = pageSegments.indexOf(segment);
+                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'full-hero').length;
+                    const displayNumber = sameTypeBefore + 1;
+                    const segmentId = segmentRegistry[segment.id] || segment.id;
+                    
+                    return (
+                      <TabsTrigger 
+                        key={segment.id}
+                        value={segment.id}
+                        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                      >
+                        ID {segmentId}: Full Hero - A {displayNumber}
+                      </TabsTrigger>
+                    );
+                  })}
+
+                {/* Hero Tab - Fixed Second Position (After Meta Nav) */}
+                {segmentRegistry['hero'] && (
+                  <TabsTrigger 
+                    value="hero" 
+                    className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                  >
+                    ID {segmentRegistry['hero']}: Produkt-Hero - F
+                  </TabsTrigger>
+                )}
+
+                {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Hero, and Footer */}
+                <SortableContext
+                  items={tabOrder.filter(tabId => {
                     const segment = pageSegments.find(s => s.id === tabId);
                     // Exclude meta-navigation and full-hero from draggable section
                     return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero');
-                  })
-                  .map((tabId) => {
-                  // Static tabs - only show if not deleted (in segmentRegistry)
-                  if (tabId === 'tiles' && segmentRegistry['tiles']) {
-                    return (
-                      <SortableTab key="tiles" id="tiles" value="tiles">
-                        ID {segmentRegistry['tiles']}: Tiles - H
-                      </SortableTab>
-                    );
-                  }
-                  if (tabId === 'banner' && segmentRegistry['banner']) {
-                    return (
-                      <SortableTab key="banner" id="banner" value="banner">
-                        ID {segmentRegistry['banner']}: Banner - J
-                      </SortableTab>
-                    );
-                  }
-                  if (tabId === 'solutions' && segmentRegistry['solutions']) {
-                    return (
-                      <SortableTab key="solutions" id="solutions" value="solutions">
-                        ID {segmentRegistry['solutions']}: Image & Text - I
-                      </SortableTab>
-                    );
-                  }
-                  
-                  // Dynamic segment tabs (excluding meta-navigation which is already shown)
-                  const segment = pageSegments.find(s => s.id === tabId);
-                  if (segment) {
-                    const segmentIndex = pageSegments.indexOf(segment);
-                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === segment.type).length;
-                    const displayNumber = sameTypeBefore + 1;
-                    
-                    const segmentId = segmentRegistry[tabId] || tabId;
-                    const reverseRegistry = (window as any).__segmentKeyRegistry || {};
-                    const customKey = reverseRegistry[String(segmentId)];
-                    
-                    let label = '';
-                    // Use custom segment_key if available, otherwise use type-based label
-                    if (customKey && customKey !== String(segmentId)) {
-                      label = customKey;
-                    } else {
-                      if (segment.type === 'hero') label = `Produkt Hero - F ${displayNumber}`;
-                      if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
-                      if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
-                      if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
-                      if (segment.type === 'banner-p') label = `Banner-P ${displayNumber}`;
-                      if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
-                      if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
-                      if (segment.type === 'table') label = `Table - L ${displayNumber}`;
-                      if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
-                      if (segment.type === 'video') label = `Video - M ${displayNumber}`;
-                      if (segment.type === 'specification') label = `Specification - N ${displayNumber}`;
-                      if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
-                      if (segment.type === 'full-hero') label = `Full Hero - A ${displayNumber}`;
-                      if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
-                      if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
-                      if (segment.type === 'debug') label = `Debug ${displayNumber}`;
+                  })}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  {tabOrder
+                    .filter(tabId => {
+                      const segment = pageSegments.find(s => s.id === tabId);
+                      // Exclude meta-navigation and full-hero from draggable section
+                      return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero');
+                    })
+                    .map((tabId) => {
+                    // Static tabs - only show if not deleted (in segmentRegistry)
+                    if (tabId === 'tiles' && segmentRegistry['tiles']) {
+                      return (
+                        <SortableTab key="tiles" id="tiles" value="tiles">
+                          ID {segmentRegistry['tiles']}: Tiles - H
+                        </SortableTab>
+                      );
+                    }
+                    if (tabId === 'banner' && segmentRegistry['banner']) {
+                      return (
+                        <SortableTab key="banner" id="banner" value="banner">
+                          ID {segmentRegistry['banner']}: Banner - J
+                        </SortableTab>
+                      );
+                    }
+                    if (tabId === 'solutions' && segmentRegistry['solutions']) {
+                      return (
+                        <SortableTab key="solutions" id="solutions" value="solutions">
+                          ID {segmentRegistry['solutions']}: Image & Text - I
+                        </SortableTab>
+                      );
                     }
                     
-                    return (
-                      <SortableTab key={tabId} id={tabId} value={tabId}>
-                        ID {segmentId}: {label}
-                      </SortableTab>
-                    );
-                  }
-                  return null;
-                })}
-              </SortableContext>
+                    // Dynamic segment tabs (excluding meta-navigation which is already shown)
+                    const segment = pageSegments.find(s => s.id === tabId);
+                    if (segment) {
+                      const segmentIndex = pageSegments.indexOf(segment);
+                      const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === segment.type).length;
+                      const displayNumber = sameTypeBefore + 1;
+                      
+                      const segmentId = segmentRegistry[tabId] || tabId;
+                      const reverseRegistry = (window as any).__segmentKeyRegistry || {};
+                      const customKey = reverseRegistry[String(segmentId)];
+                      
+                      let label = '';
+                      // Use custom segment_key if available, otherwise use type-based label
+                      if (customKey && customKey !== String(segmentId)) {
+                        label = customKey;
+                      } else {
+                        if (segment.type === 'hero') label = `Produkt Hero - F ${displayNumber}`;
+                        if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
+                        if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
+                        if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
+                        if (segment.type === 'banner-p') label = `Banner-P ${displayNumber}`;
+                        if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
+                        if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
+                        if (segment.type === 'table') label = `Table - L ${displayNumber}`;
+                        if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
+                        if (segment.type === 'video') label = `Video - M ${displayNumber}`;
+                        if (segment.type === 'specification') label = `Specification - N ${displayNumber}`;
+                        if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
+                        if (segment.type === 'full-hero') label = `Full Hero - A ${displayNumber}`;
+                        if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
+                        if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
+                        if (segment.type === 'debug') label = `Debug ${displayNumber}`;
+                      }
+                      
+                      return (
+                        <SortableTab key={tabId} id={tabId} value={tabId}>
+                          ID {segmentId}: {label}
+                        </SortableTab>
+                      );
+                    }
+                    return null;
+                  })}
+                </SortableContext>
 
-              {/* Footer Tab - Fixed Right (only if not deleted) */}
-              {segmentRegistry['footer'] && (
-                <TabsTrigger 
-                  value="footer"
-                  className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                >
-                  ID {segmentRegistry['footer']}: Footer
-                </TabsTrigger>
-              )}
-            </TabsList>
+                {/* Footer Tab - Fixed Right (only if not deleted) */}
+                {segmentRegistry['footer'] && (
+                  <TabsTrigger 
+                    value="footer"
+                    className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                  >
+                    ID {segmentRegistry['footer']}: Footer
+                  </TabsTrigger>
+                )}
+              </TabsList>
+            </div>
           </DndContext>
 
           {/* Hero Section Tab */}
