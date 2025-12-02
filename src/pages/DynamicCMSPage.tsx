@@ -1,11 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { SEOHead } from "@/components/SEOHead";
-import { supabase } from "@/integrations/supabase/client";
 import MetaNavigation from "@/components/segments/MetaNavigation";
 import ProductHeroGallery from "@/components/segments/ProductHeroGallery";
 import FeatureOverview from "@/components/segments/FeatureOverview";
@@ -18,6 +16,8 @@ import Intro from "@/components/segments/Intro";
 import IndustriesSegment from "@/components/segments/IndustriesSegment";
 import NewsSegment from "@/components/segments/NewsSegment";
 import Debug from "@/components/segments/Debug";
+import { SEOHead } from "@/components/SEOHead";
+import { supabase } from "@/integrations/supabase/client";
 
 const iconMap: Record<string, any> = {
   FileText,
@@ -336,14 +336,10 @@ const DynamicCMSPage = () => {
     setLoading(false);
   };
 
-  // Memoize hasMetaNavigation check
-  const hasMetaNavigation = useMemo(() => 
-    pageSegments.some(seg => seg.type === "meta-navigation"), 
-    [pageSegments]
-  );
+  // Check if page has Meta Navigation segment
+  const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
 
-  // Memoize renderSegment function
-  const renderSegment = useCallback((segmentId: string) => {
+  const renderSegment = (segmentId: string) => {
     const segment = pageSegments.find((s) =>
       String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
     );
@@ -896,7 +892,7 @@ const DynamicCMSPage = () => {
       default:
         return null;
     }
-  }, [pageSegments, segmentIdMap, fullHeroOverrides, iconMap]);
+  };
 
   if (loading) {
     return (
@@ -928,19 +924,14 @@ const DynamicCMSPage = () => {
     );
   }
 
-  // Memoize Meta Navigation segment extraction
-  const metaNavSegment = useMemo(() => 
-    pageSegments.find(seg => seg.type === 'meta-navigation'),
-    [pageSegments]
-  );
+  // Extract Meta Navigation segment (must render before all other segments)
+  const metaNavSegment = pageSegments.find(seg => seg.type === 'meta-navigation');
   
-  // Memoize isEmpty check
-  const isEmpty = useMemo(() => {
-    const contentSegments = pageSegments.filter(seg => 
-      seg.type !== 'footer' && seg.type !== 'meta-navigation'
-    );
-    return contentSegments.length === 0;
-  }, [pageSegments]);
+  // Check if page is essentially empty (only footer or no content segments)
+  const contentSegments = pageSegments.filter(seg => 
+    seg.type !== 'footer' && seg.type !== 'meta-navigation'
+  );
+  const isEmpty = contentSegments.length === 0;
 
   return (
     <div className="min-h-screen bg-gray-50">

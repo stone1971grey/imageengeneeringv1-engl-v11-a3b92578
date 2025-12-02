@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Camera, Wrench, Building2, Download, Info, MessageCircle, Smartphone, Car, Tv, Shield, Cog, Stethoscope, ScanLine, FlaskConical, Monitor, Zap, Package, Lightbulb, Puzzle, Cpu, CheckCircle, Microscope, Target, BarChart3, Settings, Search, Users, Building, GraduationCap, FileText, BookOpen, Video, Link2, ScrollText, Phone, MapPin, Calendar, Briefcase, Handshake, Leaf, Recycle, ShieldCheck, ChevronRight } from "lucide-react";
 import { BadgeCheck, Sprout } from "lucide-react";
 import { CustomTargetIcon } from "./CustomTargetIcon";
-import { useState, useEffect, useMemo, useCallback, memo } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logoIE from "@/assets/logo-ie-new-v7.png";
 import UtilityNavigation from "@/components/UtilityNavigation";
@@ -33,13 +33,6 @@ import productBundleIeee from "@/assets/product-bundle-ieee.png";
 import iqLedIllumination from "@/assets/iq-led-illumination.png";
 import technology2025 from "@/assets/technology-2025.png";
 import trainingMobileTesting from "@/assets/training-mobile-testing.jpg";
-
-// Static image list for preloading (defined outside component to avoid recreation)
-const PRELOAD_IMAGES = [
-  industryPhotography, industryMobile, industryAutomotive, industryBroadcast,
-  industrySecurity, industryMachineVision, industryMedical, industryScanning,
-  industryLabTesting, iqAnalyzerIntro, iqLedIllumination, "/images/custom-chart.png", "/images/chart-case.png"
-];
 
 const Navigation = () => {
   const { t } = useTranslation();
@@ -167,8 +160,8 @@ const Navigation = () => {
     checkUserRole();
   }, [user]);
 
-  // URL to page_slug mapping for admin links - memoized
-  const urlToPageSlug = useMemo(() => ({
+  // URL to page_slug mapping for admin links
+  const urlToPageSlug: { [key: string]: string } = {
     '/products/test-charts/le7': 'products/test-charts/le7',
     '/your-solution/photography': 'photography',
     '/your-solution/scanners-archiving': 'scanners-archiving',
@@ -183,10 +176,10 @@ const Navigation = () => {
     '/your-solution/automotive': 'automotive',
     '/your-solution/automotive/in-cabin-testing': 'in-cabin-testing',
     '/your-solution': 'your-solution'
-  }), []);
+  };
 
-  // Helper function to get admin link if user is admin/editor - memoized
-  const getLink = useCallback((pageSlugOrPath: string, defaultPath?: string) => {
+  // Helper function to get admin link if user is admin/editor
+  const getLink = (pageSlugOrPath: string, defaultPath?: string) => {
     const path = defaultPath || pageSlugOrPath;
     
     if (!isAdminOrEditor) {
@@ -211,7 +204,7 @@ const Navigation = () => {
     
     // Always go through English admin dashboard (admin UI ist englisch)
     return `/en/admin-dashboard?page=${pageSlug}`;
-  }, [isAdminOrEditor, language, urlToPageSlug, allowedPages]);
+  };
 
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
@@ -227,16 +220,30 @@ const Navigation = () => {
     };
   }, [isOpen]);
 
-  // Preload all images for faster hover experience - uses static image list
+  // Preload all images for faster hover experience
   useEffect(() => {
-    PRELOAD_IMAGES.forEach(imageSrc => {
-      const img = new Image();
-      img.src = imageSrc;
-    });
+    const preloadImages = () => {
+      // Collect all images from data objects
+      const allImages = [
+        ...Object.values(industryData).map(item => item.image),
+        ...Object.values(productData).map(item => item.image),
+        ...Object.values(solutionData).map(item => item.image),
+        ...Object.values(solutionPackages).map(item => item.image),
+        ...Object.values(targetGroupsData).map(item => item.image)
+      ];
+
+      // Preload each image
+      allImages.forEach(imageSrc => {
+        const img = new Image();
+        img.src = imageSrc;
+      });
+    };
+
+    preloadImages();
   }, []);
 
-  // Memoize data mappings to prevent recreation on every render
-  const industryData = useMemo(() => ({
+  // Industry data mapping with subgroups - now using translated data
+  const industryData = {
     "Automotive": { ...(navData.industries?.["Automotive"] || { description: "", subgroups: [] }), image: industryAutomotive },
     "Security & Surveillance": { ...(navData.industries?.["Security & Surveillance"] || { description: "", subgroups: [] }), image: industrySecurity },
     "Mobile Phone": { ...(navData.industries?.["Mobile Phone"] || { description: "", subgroups: [] }), image: industryMobile },
@@ -245,48 +252,48 @@ const Navigation = () => {
     "Medical & Endoscopy": { ...(navData.industries?.["Medical & Endoscopy"] || { description: "", subgroups: [] }), image: industryMedical },
     "Scanners & Archiving": { ...(navData.industries?.["Scanners & Archiving"] || { description: "", subgroups: [] }), image: industryScanning },
     "Photo & Video": { ...(navData.industries?.["Photo & Video"] || { description: "", subgroups: [] }), image: industryPhotography }
-  }), [navData.industries]);
+  };
   
-  // Memoize product data
-  const productData = useMemo(() => ({
+  // Product data mapping with subgroups - now using translated data
+  const productData = {
     "Test Charts": { ...(navData.products?.["Test Charts"] || { description: "", subgroups: [] }), image: "/images/custom-chart.png" },
     "Illumination Devices": { ...(navData.products?.["Illumination Devices"] || { description: "", subgroups: [] }), image: iqLedIllumination },
     "Measurement Devices": { ...(navData.products?.["Measurement Devices"] || { description: "", subgroups: [] }), image: iqAnalyzerIntro },
     "Software & APIs": { ...(navData.products?.["Software & APIs"] || { description: "", subgroups: [] }), image: iqAnalyzerIntro },
     "Product Accessories": { ...(navData.products?.["Product Accessories"] || { description: "", subgroups: [] }), image: "/images/chart-case.png" }
-  }), [navData.products]);
+  };
   
-  // Memoize solution data
-  const solutionData = useMemo(() => ({
+  // Solution data mapping - now using translated data
+  const solutionData = {
     "Camera Quality Validation": { ...(navData.solutions?.["Camera Quality Validation"] || { description: "", subgroups: [] }), image: industryPhotography },
     "In-Cabin Performance Testing": { ...(navData.solutions?.["In-Cabin Performance Testing"] || { description: "", subgroups: [] }), image: industryAutomotive },
     "Test Environments for Smartphones & Displays": { ...(navData.solutions?.["Test Environments for Smartphones & Displays"] || { description: "", subgroups: [] }), image: industryMobile },
     "Microscopy & Medical Imaging": { ...(navData.solutions?.["Microscopy & Medical Imaging"] || { description: "", subgroups: [] }), image: industryMedical },
     "ISO and IEEE Compliant Test Setups": { ...(navData.solutions?.["ISO and IEEE Compliant Test Setups"] || { description: "", subgroups: [] }), image: industryLabTesting }
-  }), [navData.solutions]);
+  };
 
-  const solutionPackages = useMemo(() => ({
+  const solutionPackages = {
     "Camera Calibration Package": { ...(navData.solutionPackages?.["Camera Calibration Package"] || { description: "", subgroups: [] }), image: "/images/custom-chart.png" },
     "Laboratory Complete Solution": { ...(navData.solutionPackages?.["Laboratory Complete Solution"] || { description: "", subgroups: [] }), image: industryLabTesting },
     "Spectral Measurement & Analysis Set": { ...(navData.solutionPackages?.["Spectral Measurement & Analysis Set"] || { description: "", subgroups: [] }), image: iqAnalyzerIntro }
-  }), [navData.solutionPackages]);
+  };
   
-  // Memoize target groups data
-  const targetGroupsData = useMemo(() => ({
+  // Target groups data mapping - now using translated data
+  const targetGroupsData = {
     "Manufacturers": { ...(navData.targetGroups?.["Manufacturers"] || { description: "", subgroups: [] }), image: industryAutomotive },
     "Suppliers": { ...(navData.targetGroups?.["Suppliers"] || { description: "", subgroups: [] }), image: industryMachineVision },
     "Research Institutions": { ...(navData.targetGroups?.["Research Institutions"] || { description: "", subgroups: [] }), image: industryLabTesting }
-  }), [navData.targetGroups]);
+  };
   
-  // Memoize test services data
-  const testServicesData = useMemo(() => ({
+  // Test Services data mapping - now using translated data
+  const testServicesData = {
     "Overview": { ...(navData.testServices?.["Overview"] || { description: "", services: [] }), image: industryLabTesting },
     "Automotive": { ...(navData.testServices?.["Automotive"] || { description: "", services: [] }), image: industryAutomotive },
     "VCX": { ...(navData.testServices?.["VCX"] || { description: "", services: [] }), image: industryMobile },
     "Image Quality": { ...(navData.testServices?.["Image Quality"] || { description: "", services: [] }), image: industryPhotography },
     "Standardized": { ...(navData.testServices?.["Standardized"] || { description: "", services: [] }), image: industryLabTesting },
     "Specialized/Custom": { ...(navData.testServices?.["Specialized/Custom"] || { description: "", services: [] }), image: industryMedical }
-  }), [navData.testServices]);
+  };
 
   return (
     <nav className="fixed top-[10px] left-[10px] right-[10px] z-40 bg-[#f3f3f5]/95 backdrop-blur-sm shadow-lg border-b border-white/10 rounded-lg">
@@ -1744,4 +1751,4 @@ const Navigation = () => {
   );
 };
 
-export default memo(Navigation);
+export default Navigation;
