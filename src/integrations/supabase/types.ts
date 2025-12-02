@@ -334,6 +334,7 @@ export type Database = {
           category: string
           created_at: string | null
           description: string | null
+          icon_key: string | null
           id: string
           label_key: string
           language: string
@@ -348,6 +349,7 @@ export type Database = {
           category: string
           created_at?: string | null
           description?: string | null
+          icon_key?: string | null
           id?: string
           label_key: string
           language: string
@@ -362,6 +364,7 @@ export type Database = {
           category?: string
           created_at?: string | null
           description?: string | null
+          icon_key?: string | null
           id?: string
           label_key?: string
           language?: string
