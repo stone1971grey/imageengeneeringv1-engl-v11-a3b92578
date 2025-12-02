@@ -3230,6 +3230,15 @@ const AdminDashboard = () => {
                     <span className="text-base text-gray-700 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
                       {pageInfo.pageSlug}
                     </span>
+                    {selectedDesignIconOption && SelectedDesignIcon && (
+                      <>
+                        <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                        <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
+                          <SelectedDesignIcon className="h-4 w-4" />
+                          <span>{selectedDesignIconOption.label}</span>
+                        </span>
+                      </>
+                    )}
                   </>
                 ) : selectedPage && !pageInfo ? (
                   <>
@@ -4302,14 +4311,7 @@ const AdminDashboard = () => {
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
-          >
-            <div className="relative w-full mb-6">
-              {selectedDesignIconOption && SelectedDesignIcon && (
-                <div className="absolute top-1 left-4 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground shadow-sm border border-border z-10">
-                  <SelectedDesignIcon className="h-3 w-3 text-primary" />
-                  <span>{selectedDesignIconOption.label}</span>
-                </div>
-              )}
+            >
               <TabsList className="flex flex-wrap w-full h-auto p-2 bg-gray-200 pl-3">
                 {/* MANDATORY: Meta Navigation - ALWAYS FIRST/LEFTMOST (Nothing before it!) */}
                 {pageSegments
@@ -4454,10 +4456,9 @@ const AdminDashboard = () => {
                   </TabsTrigger>
                 )}
               </TabsList>
-            </div>
-          </DndContext>
+            </DndContext>
 
-          {/* Hero Section Tab */}
+            {/* Hero Section Tab */}
           <TabsContent value="hero">
             <Card className="bg-gray-800 border-gray-700">
             <CardHeader>
