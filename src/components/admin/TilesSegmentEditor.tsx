@@ -301,6 +301,12 @@ const TilesSegmentEditorComponent = ({ pageSlug, segmentId, language, onSave }: 
 
   return (
     <div className="space-y-6">
+      {isTranslating && (
+        <div className="bg-purple-900/50 border border-purple-500 rounded-lg p-4 text-center text-white">
+          Translating content...
+        </div>
+      )}
+
       {/* Section Settings */}
       <Card className="bg-gray-700 border-gray-600">
         <CardContent className="pt-6 space-y-4">
