@@ -403,86 +403,86 @@ const Navigation = () => {
             <SimpleDropdown trigger={t.nav.yourSolution} disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
-                  <div className="flex gap-6 p-6">
+                  <div className="flex gap-4 p-4">
                     {/* Left Column: Industries */}
-                    <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.industries}</h4>
+                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
+                       <h4 className="font-semibold mb-2 text-base text-black">{t.nav.industries}</h4>
                        
-                       <Link to={`/${language}/your-solution/automotive`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                       <Link to={`/${language}/your-solution/automotive`} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                           isActive('/your-solution/automotive') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
-                          <Car className="h-5 w-5" />
+                          <Car className="h-4 w-4" />
                           <span>{t.nav.automotive}</span>
                        </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
-                         <Shield className="h-5 w-5" />
+                         <Shield className="h-4 w-4" />
                          <span>{t.nav.securitySurveillance}</span>
                        </div>
                        
-                       <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                       <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                          isActive('/your-solution/mobile-phone') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
-                         <Smartphone className="h-5 w-5" />
+                         <Smartphone className="h-4 w-4" />
                          <span>{t.nav.mobilePhone}</span>
                        </Link>
                        
-                         <Link to={getLink("web-camera", "/your-solution/web-camera")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                         <Link to={getLink("web-camera", "/your-solution/web-camera")} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                           isActive('/your-solution/web-camera') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
-                          <Camera className="h-5 w-5" />
+                          <Camera className="h-4 w-4" />
                           <span>{t.nav.webCamera}</span>
                         </Link>
                         
-                        <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                        <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                           isActive('/your-solution/machine-vision') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
-                          <Cog className="h-5 w-5" />
+                          <Cog className="h-4 w-4" />
                           <span>{t.nav.machineVision}</span>
                         </Link>
                         
-                        <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                        <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                           isActive('/your-solution/medical-endoscopy') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
-                          <Stethoscope className="h-5 w-5" />
+                          <Stethoscope className="h-4 w-4" />
                           <span>{t.nav.medicalEndoscopy}</span>
                         </Link>
                         
-                        <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                        <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                           isActive('/your-solution/scanners-archiving') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
-                          <ScanLine className="h-5 w-5" />
+                          <ScanLine className="h-4 w-4" />
                           <span>{t.nav.scannersArchiving}</span>
                         </Link>
                         
-                        <Link to={getLink("photography", "/your-solution/photography")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                        <Link to={getLink("photography", "/your-solution/photography")} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                           isActive('/your-solution/photography') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Photo & Video")}>
-                          <Camera className="h-5 w-5" />
+                          <Camera className="h-4 w-4" />
                           <span>{t.nav.photoVideo}</span>
                         </Link>
                     </div>
                     
                      {/* Right Column: Applications */}
-                     <div className="space-y-4 flex-1">
-                       <h4 className="font-semibold mb-3 text-lg text-black">
+                     <div className="space-y-1 flex-1">
+                       <h4 className="font-semibold mb-2 text-base text-black">
                          {hoveredIndustry ? `${(t.nav as any)[hoveredIndustry] || hoveredIndustry} - ${t.nav.applications}` : t.nav.applications}
                        </h4>
                        
                        {/* Conditional Rendering of Applications */}
                        {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
-                         <div className="space-y-3">
+                         <div className="space-y-1">
                              {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
-                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:bg-[#f9dc24] p-2 rounded-md">
-                                <ChevronRight className="h-4 w-4" />
+                              <div key={index} className="flex items-center gap-2 text-sm transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1.5 px-2 rounded-md">
+                                <ChevronRight className="h-3 w-3" />
                                  {application.link === "#" ? (
                                    <span>{application.name}</span>
                                  ) : (
@@ -495,34 +495,34 @@ const Navigation = () => {
                        
                        {/* Default state when no industry is hovered */}
                        {!hoveredIndustry && (
-                         <div className="text-gray-500 text-center py-8">
-                           <Building2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                           <p>{t.nav.hoverForApplications}</p>
+                         <div className="text-gray-500 text-center py-4">
+                           <Building2 className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                           <p className="text-sm">{t.nav.hoverForApplications}</p>
                          </div>
                        )}
                      </div>
                   </div>
 
                   {/* CTA Button */}
-                  <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
+                  <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                      <Search className="h-5 w-5 mr-3" />
-                      <span className="text-lg font-medium">{t.hero.findYourSolution}</span>
+                      <Search className="h-4 w-4 mr-2" />
+                      <span className="text-sm font-medium">{t.hero.findYourSolution}</span>
                     </Button>
                   </div>
                   
                   {/* Image Rollover under Flyout */}
                   {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
-                    <div className="bg-[#f3f3f3] p-4">
-                      <div className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-sm">
+                    <div className="bg-[#f3f3f3] p-3">
+                      <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
                         <img 
                           src={industryData[hoveredIndustry as keyof typeof industryData].image} 
                           alt={hoveredIndustry} 
-                          className="w-[190px] h-[190px] object-cover rounded-lg" 
+                          className="w-[120px] h-[120px] object-cover rounded-lg" 
                         />
                         <div className="text-black">
-                          <h4 className="font-semibold text-xl mb-2">{hoveredIndustry}</h4>
-                          <p className="text-lg text-gray-600 leading-relaxed">
+                          <h4 className="font-semibold text-base mb-1">{hoveredIndustry}</h4>
+                          <p className="text-sm text-gray-600 leading-relaxed">
                             {industryData[hoveredIndustry as keyof typeof industryData].description}
                           </p>
                         </div>
@@ -535,56 +535,56 @@ const Navigation = () => {
             <SimpleDropdown trigger={t.nav.products} disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredProduct(null)}>
-                  <div className="flex gap-6 p-6">
+                  <div className="flex gap-4 p-4">
                     {/* Left Column: Product Groups */}
-                    <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.products}</h4>
+                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.products}</h4>
                        
-                       <Link to={`/${language}/products/charts`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer p-2 rounded-md ${
+                       <Link to={`/${language}/products/charts`} className={`flex items-center gap-2 text-sm text-black transition-colors cursor-pointer py-1.5 px-2 rounded-md ${
                           isActive('/products/charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Test Charts")}>
-                          <CustomTargetIcon className="h-5 w-5" />
+                          <CustomTargetIcon className="h-4 w-4" />
                           <span>{t.nav.testCharts}</span>
                        </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Illumination Devices")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         <CustomTargetIcon className="h-4 w-4" />
                          <span>{t.nav.illuminationDevices}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Measurement Devices")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         <CustomTargetIcon className="h-4 w-4" />
                          <span>{t.nav.measurementDevices}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Software & APIs")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         <CustomTargetIcon className="h-4 w-4" />
                          <span>{t.nav.softwareApis}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Product Accessories")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         <CustomTargetIcon className="h-4 w-4" />
                          <span>{t.nav.productAccessories}</span>
                        </div>
                     </div>
                     
                      {/* Right Column: Subgroups */}
-                     <div className="space-y-4 flex-1">
-                       <h4 className="font-semibold mb-3 text-lg text-black">
+                     <div className="space-y-1 flex-1">
+                       <h4 className="font-semibold mb-2 text-base text-black">
                          {hoveredProduct ? `${(t.nav as any)[hoveredProduct] || hoveredProduct} - ${t.nav.subgroups}` : t.nav.subgroups}
                        </h4>
                        
                        {/* Conditional Rendering of Subgroups */}
                         {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
-                          <div className="space-y-3">
+                          <div className="space-y-1">
                             {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
-                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:bg-[#f9dc24] p-2 rounded-md">
-                                <ChevronRight className="h-4 w-4" />
+                              <div key={index} className="flex items-center gap-2 text-sm transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1.5 px-2 rounded-md">
+                                <ChevronRight className="h-3 w-3" />
                                 {subgroup.link === "#" ? (
                                   <span>{subgroup.name}</span>
                                 ) : (
@@ -597,36 +597,36 @@ const Navigation = () => {
                        
                        {/* Default state when no product is hovered */}
                        {!hoveredProduct && (
-                         <div className="text-gray-500 text-center py-8">
-                           <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                           <p>{t.nav.hoverForSubgroups}</p>
+                         <div className="text-gray-500 text-center py-4">
+                           <Package className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                           <p className="text-sm">{t.nav.hoverForSubgroups}</p>
                          </div>
                        )}
                      </div>
                   </div>
 
                   {/* CTA Button */}
-                  <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
+                  <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     <Link to="/inside-lab">
                       <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800">
-                        <Microscope className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">{t.nav.insideTestingLab}</span>
+                        <Microscope className="h-4 w-4 mr-2" />
+                        <span className="text-sm font-medium">{t.nav.insideTestingLab}</span>
                       </Button>
                     </Link>
                   </div>
                   
                   {/* Image Rollover under Flyout */}
                   {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
-                    <div className="bg-[#f3f3f3] p-4">
-                      <div className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-sm">
+                    <div className="bg-[#f3f3f3] p-3">
+                      <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
                         <img 
                           src={productData[hoveredProduct as keyof typeof productData].image} 
                           alt={hoveredProduct} 
-                          className="w-[190px] h-[190px] object-cover rounded-lg" 
+                          className="w-[120px] h-[120px] object-cover rounded-lg" 
                         />
                         <div className="text-black">
-                          <h4 className="font-semibold text-xl mb-2">{hoveredProduct}</h4>
-                          <p className="text-lg text-gray-600 leading-relaxed">
+                          <h4 className="font-semibold text-base mb-1">{hoveredProduct}</h4>
+                          <p className="text-sm text-gray-600 leading-relaxed">
                             {productData[hoveredProduct as keyof typeof productData].description}
                           </p>
                         </div>
@@ -639,62 +639,62 @@ const Navigation = () => {
               <SimpleDropdown trigger={t.nav.testServices} disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredTestService(null)}>
-                  <div className="flex gap-6 p-6">
+                  <div className="flex gap-4 p-4">
                     {/* Left Column: Service Categories */}
-                    <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.testServices}</h4>
+                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.testServices}</h4>
                       
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Overview")}>
-                         <FlaskConical className="h-5 w-5" />
+                         <FlaskConical className="h-4 w-4" />
                          <span>{t.nav.overview}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Automotive")}>
-                         <Car className="h-5 w-5" />
+                         <Car className="h-4 w-4" />
                          <span>{t.nav.automotive}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("VCX")}>
-                         <Smartphone className="h-5 w-5" />
+                         <Smartphone className="h-4 w-4" />
                          <span>VCX</span>
                        </div>
                        
-                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                        <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                           onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Image Quality")}>
-                          <Camera className="h-5 w-5" />
+                          <Camera className="h-4 w-4" />
                           <span>{t.nav.infoHub}</span>
                         </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Standardized")}>
-                         <CheckCircle className="h-5 w-5" />
+                         <CheckCircle className="h-4 w-4" />
                          <span>{t.nav.standardized}</span>
                        </div>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md"
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Specialized/Custom")}>
-                         <Settings className="h-5 w-5" />
+                         <Settings className="h-4 w-4" />
                          <span>{t.nav.specializedCustom}</span>
                        </div>
                     </div>
                     
                      {/* Right Column: Services */}
-                     <div className="space-y-4 flex-1">
-                       <h4 className="font-semibold mb-3 text-lg text-black">
+                     <div className="space-y-1 flex-1">
+                       <h4 className="font-semibold mb-2 text-base text-black">
                          {hoveredTestService ? `${(t.nav as any)[hoveredTestService] || hoveredTestService} - ${t.nav.services}` : t.nav.services}
                        </h4>
                        
                        {/* Conditional Rendering of Services */}
                        {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
-                         <div className="space-y-3">
+                         <div className="space-y-1">
                            {testServicesData[hoveredTestService as keyof typeof testServicesData].services.map((service, index) => (
-                             <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black p-2 rounded-md ${
+                             <div key={index} className={`flex items-center gap-2 text-sm transition-colors cursor-pointer text-black py-1.5 px-2 rounded-md ${
                                (service as any).active ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                              }`}>
-                               <ChevronRight className="h-4 w-4" />
+                               <ChevronRight className="h-3 w-3" />
                                 {service.link === "#" ? (
                                   <span>{service.name}</span>
                                 ) : (
@@ -707,36 +707,36 @@ const Navigation = () => {
                        
                        {/* Default state when no service category is hovered */}
                        {!hoveredTestService && (
-                         <div className="text-gray-500 text-center py-8">
-                           <FlaskConical className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                           <p>{t.nav.hoverForServices}</p>
+                         <div className="text-gray-500 text-center py-4">
+                           <FlaskConical className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                           <p className="text-sm">{t.nav.hoverForServices}</p>
                          </div>
                        )}
                      </div>
                   </div>
 
                   {/* CTA Button */}
-                  <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
+                  <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     <Link to="/inside-lab">
                       <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                        <FlaskConical className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">{t.nav.visitTestingLab}</span>
+                        <FlaskConical className="h-4 w-4 mr-2" />
+                        <span className="text-sm font-medium">{t.nav.visitTestingLab}</span>
                       </Button>
                     </Link>
                   </div>
                   
                   {/* Image Rollover under Flyout */}
                   {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
-                    <div className="bg-[#f3f3f3] p-4">
-                      <div className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-sm">
+                    <div className="bg-[#f3f3f3] p-3">
+                      <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
                         <img 
                           src={testServicesData[hoveredTestService as keyof typeof testServicesData].image} 
                           alt={hoveredTestService} 
-                          className="w-[190px] h-[190px] object-cover rounded-lg" 
+                          className="w-[120px] h-[120px] object-cover rounded-lg" 
                         />
                         <div className="text-black">
-                          <h4 className="font-semibold text-xl mb-2">{hoveredTestService}</h4>
-                          <p className="text-lg text-gray-600 leading-relaxed">
+                          <h4 className="font-semibold text-base mb-1">{hoveredTestService}</h4>
+                          <p className="text-sm text-gray-600 leading-relaxed">
                             {testServicesData[hoveredTestService as keyof typeof testServicesData].description}
                           </p>
                         </div>
@@ -747,34 +747,34 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger={t.nav.resources} className="right-aligned" disabled={isAdminDashboard}>
-                <div className="flex flex-col gap-2 w-[315px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                   <div className="flex gap-6 p-6">
-                     <div className="space-y-4 flex-1">
-                       <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.resources}</h4>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
+                <div className="flex flex-col gap-2 w-[280px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
+                   <div className="flex gap-4 p-4">
+                     <div className="space-y-1 flex-1">
+                       <h4 className="font-semibold mb-2 text-base text-black">{t.nav.resources}</h4>
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                         <CustomTargetIcon className="h-4 w-4" />
                          <a href="#">{t.nav.webinars}</a>
                        </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                         <CustomTargetIcon className="h-4 w-4" />
                          <a href="#">{t.nav.onSiteTraining}</a>
                        </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                         <CustomTargetIcon className="h-4 w-4" />
                          <Link to="/inside-lab">{t.nav.visitTestLab}</Link>
                        </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
+                       <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                         <CustomTargetIcon className="h-4 w-4" />
                          <a href="#">{t.nav.eventSchedule}</a>
                        </div>
                      </div>
                    </div>
 
-                  <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
-                    <Link to="/events" className="bg-green-100 p-2 rounded-md border-2 border-green-300">
+                  <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
+                    <Link to="/events" className="bg-green-100 p-1.5 rounded-md border-2 border-green-300">
                       <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                        <GraduationCap className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">{t.nav.viewTrainingEvents}</span>
+                        <GraduationCap className="h-4 w-4 mr-2" />
+                        <span className="text-sm font-medium">{t.nav.viewTrainingEvents}</span>
                       </Button>
                     </Link>
                   </div>
@@ -782,50 +782,50 @@ const Navigation = () => {
               </SimpleDropdown>
 
               <SimpleDropdown trigger={t.nav.about} className="right-aligned" disabled={isAdminDashboard}>
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                  <div className="flex gap-6 p-6">
-                    <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.resources}</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
+                  <div className="flex gap-4 p-4">
+                    <div className="space-y-1 flex-1 pr-4 border-r border-border">
+                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.resources}</h4>
+                      <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                        <CustomTargetIcon className="h-4 w-4" />
                         <a href="#">{t.nav.imageQualityFactors}</a>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                      <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                        <CustomTargetIcon className="h-4 w-4" />
                         <a href="#">{t.nav.blog}</a>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                      <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                        <CustomTargetIcon className="h-4 w-4" />
                         <a href="#">{t.nav.internationalStandards}</a>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                      <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                        <CustomTargetIcon className="h-4 w-4" />
                         <a href="#">{t.nav.ieTechnology}</a>
                       </div>
                     </div>
 
-                    <div className="space-y-4 flex-1">
-                      <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.publications}</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                    <div className="space-y-1 flex-1">
+                      <h4 className="font-semibold mb-2 text-base text-black">{t.nav.publications}</h4>
+                      <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                        <CustomTargetIcon className="h-4 w-4" />
                         <a href="#">{t.nav.conferencePapers}</a>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                      <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                        <CustomTargetIcon className="h-4 w-4" />
                         <Link to="/whitepaper">{t.nav.whitePapersTheses}</Link>
                       </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer p-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
+                      <div className="flex items-center gap-2 text-sm text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1.5 px-2 rounded-md">
+                        <CustomTargetIcon className="h-4 w-4" />
                         <a href="#">{t.nav.videoArchive}</a>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-[#f3f3f3] px-6 pt-6 pb-6">
+                  <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     <Link to="/downloads" className="w-full">
                       <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
-                        <Microscope className="h-5 w-5 mr-3" />
-                        <span className="text-lg font-medium">{t.nav.exploreInfoHub}</span>
+                        <Microscope className="h-4 w-4 mr-2" />
+                        <span className="text-sm font-medium">{t.nav.exploreInfoHub}</span>
                       </Button>
                     </Link>
                   </div>
@@ -833,72 +833,72 @@ const Navigation = () => {
             </SimpleDropdown>
 
             <SimpleDropdown trigger={t.nav.company} className="right-aligned" disabled={isAdminDashboard}>
-                <div className="flex flex-col gap-2 w-[600px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
-                   <div className="flex gap-8 p-6">
-                       <div className="space-y-4 flex-1 pr-6 border-r border-border">
-                         <h4 className="font-semibold mb-3 text-lg text-black">{t.nav.aboutIE}</h4>
-                         <Link to="/news" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
+                   <div className="flex gap-4 p-4">
+                       <div className="space-y-1 flex-1 pr-4 border-r border-border">
+                         <h4 className="font-semibold mb-2 text-base text-black">{t.nav.aboutIE}</h4>
+                         <Link to="/news" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/news') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>{t.nav.news}</span>
                          </Link>
-                         <Link to="/about" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/about" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/about') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>{t.nav.aboutUs}</span>
                          </Link>
-                         <Link to="/team" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/team" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/team') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>{t.nav.team}</span>
                          </Link>
-                         <Link to="/nynomic-group" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/nynomic-group" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/nynomic-group') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>{t.nav.nynomicGroup}</span>
                          </Link>
-                         <Link to="/visit-us" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/visit-us" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/visit-us') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>{t.nav.visitUs}</span>
                          </Link>
-                         <Link to="/careers" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/careers" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/careers') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>{t.nav.careers}</span>
                          </Link>
                        </div>
                        
-                       <div className="space-y-4 flex-1">
-                         <h4 className="font-semibold mb-3 text-lg text-black">Business & Partnerships</h4>
-                         <Link to="/resellers-subsidiaries" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                       <div className="space-y-1 flex-1">
+                         <h4 className="font-semibold mb-2 text-base text-black">Business & Partnerships</h4>
+                         <Link to="/resellers-subsidiaries" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/resellers-subsidiaries') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>Resellers & Subsidiaries</span>
                          </Link>
-                         <Link to="/strategic-partnerships" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/strategic-partnerships" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/strategic-partnerships') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>Strategic Partnerships</span>
                          </Link>
-                         <Link to="/group-memberships" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/group-memberships" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/group-memberships') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>Group Memberships</span>
                          </Link>
-                         <Link to="/iso-9001" className={`flex items-center gap-3 text-lg text-black transition-colors p-2 rounded-md ${
+                         <Link to="/iso-9001" className={`flex items-center gap-2 text-sm text-black transition-colors py-1.5 px-2 rounded-md ${
                            isActive('/iso-9001') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                           <CustomTargetIcon className="h-4 w-4" />
                            <span>ISO 9001</span>
                          </Link>
                         </div>
