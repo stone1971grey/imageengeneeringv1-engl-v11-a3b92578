@@ -311,6 +311,7 @@ export const CMSPageOverview = () => {
   // Drag & Drop setup with stable, hysteresis-based hover detection
   const [dropMode, setDropMode] = useState<'sibling' | 'child' | null>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const lastDropModeRef = useRef<'sibling' | 'child' | null>(null);
 
   const sensors = useSensors(
@@ -323,6 +324,17 @@ export const CMSPageOverview = () => {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
+
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragCancel = () => {
+    setIsDragging(false);
+    setDropMode(null);
+    setHoveredId(null);
+    lastDropModeRef.current = null;
+  };
 
   const handleDragMove = (event: any) => {
     const { active, over } = event;
@@ -402,6 +414,7 @@ export const CMSPageOverview = () => {
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
+    setIsDragging(false);
     const { active, over } = event;
 
     if (!over || active.id === over.id) {
@@ -838,8 +851,8 @@ export const CMSPageOverview = () => {
             CMS Hub
           </DialogTitle>
           
-          {/* Fixed Drop Mode Indicator */}
-          {dropMode && (
+          {/* Fixed Drop Mode Indicator - only show during active drag */}
+          {isDragging && dropMode && (
             <div className="absolute top-2 right-2 z-50">
               <Badge 
                 className={`text-sm font-semibold px-3 py-1.5 ${
@@ -897,8 +910,10 @@ export const CMSPageOverview = () => {
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             onDragMove={handleDragMove}
+            onDragCancel={handleDragCancel}
           >
             <Table>
               <TableHeader className="sticky top-0 bg-gray-800 z-10">
