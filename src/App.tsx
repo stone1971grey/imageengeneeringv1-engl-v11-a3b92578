@@ -172,9 +172,10 @@ const App = () => (
             <Route path="/:lang/products/bundles-services/:slug" element={<DynamicCMSPage />} />
             
             {/* Styleguide Routes - Order matters: most specific first */}
-            <Route path="/:lang/styleguide" element={<DynamicCMSPage />} />
+            <Route path="/:lang/styleguide/:a/:b/:c" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide/:category/:subcategory" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/styleguide" element={<DynamicCMSPage />} />
             
             {/* Other pages */}
             <Route path="/:lang/downloads" element={<Downloads />} />
