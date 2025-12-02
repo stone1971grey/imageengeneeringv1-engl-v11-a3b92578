@@ -4305,7 +4305,7 @@ const AdminDashboard = () => {
           >
             <div className="relative w-full mb-6">
               {selectedDesignIconOption && SelectedDesignIcon && (
-                <div className="absolute -top-3 left-4 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground shadow-sm border border-border z-10">
+                <div className="absolute top-1 left-4 inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs text-muted-foreground shadow-sm border border-border z-10">
                   <SelectedDesignIcon className="h-3 w-3 text-primary" />
                   <span>{selectedDesignIconOption.label}</span>
                 </div>
