@@ -13,7 +13,7 @@ interface DebugProps {
 
 const Debug = ({ id, imageUrl, title, images }: DebugProps) => {
   return (
-    <section id={id?.toString()} className="py-16 bg-gray-50">
+    <section id={id?.toString()} className="pt-[150px] pb-16 bg-gray-50">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto">
           {title && (

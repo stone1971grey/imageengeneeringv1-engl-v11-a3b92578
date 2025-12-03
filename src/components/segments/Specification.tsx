@@ -15,7 +15,7 @@ const Specification = ({ id, title = "Detailed Specifications", rows = [] }: Spe
   if (!title && rows.length === 0) return null;
 
   return (
-    <section id={id} className="pb-20 bg-gray-50">
+    <section id={id} className="pt-[150px] pb-20 bg-gray-50">
       <div className="container mx-auto px-6">
         <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100 p-10 hover:shadow-xl transition-shadow duration-300">
           {title && (

@@ -26,7 +26,7 @@ export const Video = ({ id, data }: VideoProps) => {
   if (!data.videoUrl) return null;
 
   return (
-    <section id={id} className="bg-white py-20 scroll-mt-[170px]">
+    <section id={id} className="bg-white pt-[150px] pb-20 scroll-mt-[170px]">
       <div className="container mx-auto px-4">
         {data.title && (
           <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">

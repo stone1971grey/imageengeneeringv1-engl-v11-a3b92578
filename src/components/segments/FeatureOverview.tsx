@@ -51,7 +51,7 @@ const FeatureOverview: React.FC<FeatureOverviewProps> = ({
   }
 
   return (
-    <section id={id} className="bg-gradient-to-br from-gray-50 to-blue-50 py-16">
+    <section id={id} className="bg-gradient-to-br from-gray-50 to-blue-50 pt-[150px] pb-16">
       <div className="container mx-auto px-4">
         {title && (
           <h2 className={`text-3xl font-bold text-gray-800 text-center ${subtext ? 'mb-4' : 'mb-12'}`}>
