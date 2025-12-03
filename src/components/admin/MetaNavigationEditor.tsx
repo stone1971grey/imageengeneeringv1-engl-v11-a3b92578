@@ -271,11 +271,14 @@ const MetaNavigationEditorComponent = ({
 
   return (
     <div className="space-y-6">
+      {isTranslating && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+          ⏳ Translating meta navigation...
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Meta Navigation Settings</h3>
-        {isTranslating && (
-          <span className="text-xs text-muted-foreground">Translating…</span>
-        )}
       </div>
 
       <div className="space-y-4">
