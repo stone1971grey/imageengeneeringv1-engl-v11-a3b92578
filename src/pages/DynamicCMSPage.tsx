@@ -363,12 +363,22 @@ const DynamicCMSPage = () => {
     switch (segment.type) {
       case "hero":
         // Fixed Navigation ist ~80px hoch + 10px top offset = 90px
-        // Dazu kommt der gewünschte Abstand: small(30px), medium(50px), large(70px), xlarge(90px)
-        const topSpacingClass = 
-          segment.data?.hero_top_spacing === 'small' ? 'pt-[120px]' :      // 90px Nav + 30px = 120px
-          segment.data?.hero_top_spacing === 'large' ? 'pt-[160px]' :      // 90px Nav + 70px = 160px
-          segment.data?.hero_top_spacing === 'xlarge' ? 'pt-[180px]' :     // 90px Nav + 90px = 180px
-          'pt-[140px]';                                                     // 90px Nav + 50px = 140px (medium default)
+        // Meta Navigation (falls vorhanden) ist ~60px hoch
+        // Dazu kommt der gewünschte Abstand: small/medium/large/xlarge
+        const heroTopSpacing = segment.data?.hero_top_spacing || 'medium';
+        const topSpacingClass = hasMetaNavigation
+          ? (
+              heroTopSpacing === 'small' ? 'pt-[180px]' :      // 90px Nav + 60px MetaNav + 30px
+              heroTopSpacing === 'large' ? 'pt-[240px]' :      // 90px Nav + 60px MetaNav + 90px
+              heroTopSpacing === 'xlarge' ? 'pt-[270px]' :     // 90px Nav + 60px MetaNav + 120px
+              'pt-[210px]'
+            )                                                   // medium default: 90 + 60 + 60
+          : (
+              heroTopSpacing === 'small' ? 'pt-[120px]' :      // 90px Nav + 30px = 120px
+              heroTopSpacing === 'large' ? 'pt-[160px]' :      // 90px Nav + 70px = 160px
+              heroTopSpacing === 'xlarge' ? 'pt-[180px]' :     // 90px Nav + 90px = 180px
+              'pt-[140px]'
+            );                                                  // 90px Nav + 50px = 140px (medium default)
         
         return (
           <section
