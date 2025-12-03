@@ -223,9 +223,13 @@ const handler = async (req: Request): Promise<Response> => {
             tags: allTags, // Use combined tags array
           };
 
-          // If the contact has no marketing_optin yet, mark as "pending"
-          if (!currentMarketingOptin) {
+          // Always set marketing_optin to "pending" UNLESS it's already "yes"
+          // This ensures empty strings, null, undefined, or any other value gets set to "pending"
+          if (currentMarketingOptin !== "yes") {
             updateData.marketing_optin = "pending";
+            console.log("Setting marketing_optin to 'pending' (current value was not 'yes')");
+          } else {
+            console.log("Preserving marketing_optin = 'yes' for existing opted-in contact");
           }
 
           // Only update these fields if they have values
