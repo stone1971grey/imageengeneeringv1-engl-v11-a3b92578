@@ -6660,7 +6660,7 @@ const AdminDashboard = () => {
                               );
                               setPageSegments(updatedSegments);
                             }}
-                            onSave={() => handleSaveSegments()}
+                            onSave={() => loadContent()}
                             currentPageSlug={resolvedPageSlug || selectedPage}
                             segmentId={segment.id}
                             language={language}

@@ -216,6 +216,88 @@ const VideoSegmentEditorComponent = ({
     return url;
   };
 
+  const handleSave = async () => {
+    try {
+      const { data: userResult } = await supabase.auth.getUser();
+      const user = userResult?.user;
+      if (!user) {
+        toast.error('User not authenticated');
+        return;
+      }
+
+      // Load existing page_segments for this language
+      const { data: existingRow, error: loadError } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', currentPageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .single();
+
+      if (loadError && loadError.code !== 'PGRST116') {
+        console.error('Error loading existing video segments:', loadError);
+        toast.error('Failed to load existing video segments');
+        return;
+      }
+
+      let segments: any[] = [];
+      if (existingRow?.content_value) {
+        segments = JSON.parse(existingRow.content_value);
+      }
+
+      const updatedData = {
+        title: localData.title || '',
+        videoUrl: localData.videoUrl || '',
+        caption: localData.caption || ''
+      };
+
+      const index = segments.findIndex((seg: any) =>
+        String(seg.id || seg.segment_key || '') === String(segmentId)
+      );
+
+      if (index >= 0) {
+        segments[index] = {
+          ...segments[index],
+          type: segments[index].type || 'video',
+          data: updatedData,
+        };
+      } else {
+        segments.push({
+          id: segmentId,
+          type: 'video',
+          data: updatedData,
+        });
+      }
+
+      const { error: saveError } = await supabase
+        .from('page_content')
+        .upsert(
+          {
+            page_slug: currentPageSlug,
+            section_key: 'page_segments',
+            content_type: 'json',
+            content_value: JSON.stringify(segments),
+            language,
+            updated_at: new Date().toISOString(),
+            updated_by: user.id,
+          },
+          { onConflict: 'page_slug,section_key,language' }
+        );
+
+      if (saveError) {
+        console.error('Error saving video segment:', saveError);
+        toast.error('Failed to save video segment');
+        return;
+      }
+
+      toast.success(`Video segment saved for ${language.toUpperCase()}`);
+      onSave();
+    } catch (error) {
+      console.error('Error in video segment save:', error);
+      toast.error('Failed to save video segment');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {isTranslating && (
@@ -283,7 +365,7 @@ const VideoSegmentEditorComponent = ({
       {/* Save Button */}
       <div className="pt-6 border-t">
         <Button
-          onClick={onSave}
+          onClick={handleSave}
           className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
         >
           Save Changes
