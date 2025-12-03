@@ -3465,83 +3465,96 @@ const AdminDashboard = () => {
                 </svg>
               </div>
               
-              {/* Page Info Content – alles in einer Zeile */}
-              <div className="flex items-center justify-between gap-3 min-w-0 flex-1">
-                <div className="flex items-center gap-3 min-w-0 flex-1">
+              {/* Page Info Content – zweizeilig: oben Titel, unten ID/Slug/Badge + Actions */}
+              <div className="flex flex-col gap-1 min-w-0 flex-1">
+                {/* Zeile 1: Seitentitel */}
+                <div className="flex items-center min-w-0">
                   {selectedPage && pageInfo ? (
-                    <>
-                      <span className="font-bold text-base text-gray-900 whitespace-nowrap">
-                        {pageInfo.pageTitle}
-                      </span>
-                      <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
-                        ID {pageInfo.pageId}
-                      </span>
-                      <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                      <span className="text-base text-gray-700 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
-                        {pageInfo.pageSlug}
-                      </span>
-                      {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
-                        <>
-                          <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (!isSecondLevelPage) {
-                                toast.error('Flyout content is only available for second-level navigation pages.');
-                                return;
-                              }
-                              setIsFlyoutDialogOpen(true);
-                            }}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
-                            title="Click to edit flyout image and description for this navigation item"
-                          >
-                            <SelectedDesignIcon className="h-4 w-4" />
-                            <span>{selectedDesignIconOption.label}</span>
-                          </button>
-                        </>
-                      )}
-                    </>
+                    <span className="font-bold text-base text-gray-900 truncate">
+                      {pageInfo.pageTitle}
+                    </span>
                   ) : selectedPage && !pageInfo ? (
-                    <>
-                      <span className="font-bold text-base text-amber-700 whitespace-nowrap">No registry entry</span>
-                      <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                      <span className="text-base text-gray-700 font-mono whitespace-nowrap">{selectedPage}</span>
-                    </>
+                    <span className="font-bold text-base text-amber-700 whitespace-nowrap">No registry entry</span>
                   ) : (
                     <span className="text-base text-gray-500 italic whitespace-nowrap">No page selected</span>
                   )}
                 </div>
 
-                {/* Actions aligned with Medical Endoscopy badge */}
-                <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
-                    title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
-                    onClick={() => {
-                      if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
-                      setIsDesignElementDialogOpen(true);
-                    }}
-                  >
-                    <Layers className="h-4 w-4" />
-                    Add new design element
-                  </Button>
+                {/* Zeile 2: ID / Slug / Design-Badge links, Design/CTA-Buttons rechts */}
+                <div className="flex items-center justify-between gap-3 min-w-0">
+                  {/* Linker Block: ID, Slug, optional Design-Badge */}
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    {selectedPage && pageInfo && (
+                      <>
+                        <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
+                          ID {pageInfo.pageId}
+                        </span>
+                        <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                        <span className="text-base text-gray-700 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
+                          {pageInfo.pageSlug}
+                        </span>
+                        {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
+                          <>
+                            <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (!isSecondLevelPage) {
+                                  toast.error('Flyout content is only available for second-level navigation pages.');
+                                  return;
+                                }
+                                setIsFlyoutDialogOpen(true);
+                              }}
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
+                              title="Click to edit flyout image and description for this navigation item"
+                            >
+                              <SelectedDesignIcon className="h-4 w-4" />
+                              <span>{selectedDesignIconOption.label}</span>
+                            </button>
+                          </>
+                        )}
+                      </>
+                    )}
 
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
-                    title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
-                    onClick={() => {
-                      if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
-                      setIsCtaDialogOpen(true);
-                    }}
-                  >
-                    <Zap className="h-4 w-4" />
-                    Navigation CTA
-                  </Button>
+                    {selectedPage && !pageInfo && (
+                      <>
+                        <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                        <span className="text-base text-gray-700 font-mono whitespace-nowrap">{selectedPage}</span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Rechter Block: in einer Flucht mit ID/Slug/Badge */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
+                      title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
+                      onClick={() => {
+                        if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                        setIsDesignElementDialogOpen(true);
+                      }}
+                    >
+                      <Layers className="h-4 w-4" />
+                      Add new design element
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                      disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
+                      title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
+                      onClick={() => {
+                        if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                        setIsCtaDialogOpen(true);
+                      }}
+                    >
+                      <Zap className="h-4 w-4" />
+                      Navigation CTA
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
