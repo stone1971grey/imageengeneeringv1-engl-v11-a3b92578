@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,14 +14,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface MetaNavigationLink {
   label: string;
   anchor: string;
-}
-
-interface MetaNavigationData {
-  links: MetaNavigationLink[];
 }
 
 interface AvailableSegment {
@@ -30,38 +28,254 @@ interface AvailableSegment {
 }
 
 interface MetaNavigationEditorProps {
-  data: MetaNavigationData;
-  onChange: (data: MetaNavigationData) => void;
-  onSave: () => void;
+  pageSlug: string;
+  segmentId: string | number;
+  language: 'en' | 'de' | 'ja' | 'ko' | 'zh';
   availableSegments: AvailableSegment[];
+  onSave?: () => void;
 }
 
-const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegments }: MetaNavigationEditorProps) => {
+const MetaNavigationEditorComponent = ({
+  pageSlug,
+  segmentId,
+  language,
+  availableSegments,
+  onSave,
+}: MetaNavigationEditorProps) => {
+  const [links, setLinks] = useState<MetaNavigationLink[]>([]);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  // Load content for current language (with EN fallback for initial fill)
+  useEffect(() => {
+    const loadContent = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('page_content')
+          .select('*')
+          .eq('page_slug', pageSlug)
+          .eq('section_key', 'page_segments')
+          .eq('language', language)
+          .maybeSingle();
+
+        if (error && error.code !== 'PGRST116') throw error;
+
+        let loaded = false;
+
+        if (data?.content_value) {
+          const segments = JSON.parse(data.content_value);
+          const metaSeg = segments.find(
+            (seg: any) => seg.type === 'meta-navigation' && String(seg.id) === String(segmentId),
+          );
+
+          if (metaSeg?.data?.links) {
+            setLinks(metaSeg.data.links as MetaNavigationLink[]);
+            loaded = true;
+          }
+        }
+
+        // Fallback: if no content for target language, prefill from English
+        if (!loaded && language !== 'en') {
+          const { data: enData } = await supabase
+            .from('page_content')
+            .select('*')
+            .eq('page_slug', pageSlug)
+            .eq('section_key', 'page_segments')
+            .eq('language', 'en')
+            .maybeSingle();
+
+          if (enData?.content_value) {
+            const enSegments = JSON.parse(enData.content_value);
+            const enMetaSeg = enSegments.find(
+              (seg: any) => seg.type === 'meta-navigation' && String(seg.id) === String(segmentId),
+            );
+
+            if (enMetaSeg?.data?.links) {
+              setLinks(enMetaSeg.data.links as MetaNavigationLink[]);
+              loaded = true;
+            }
+          }
+        }
+
+        if (!loaded) {
+          setLinks([]);
+        }
+      } catch (err) {
+        console.error('[MetaNavigationEditor] loadContent error', err);
+        toast.error('Failed to load Meta Navigation content');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (pageSlug && segmentId) {
+      loadContent();
+    }
+  }, [pageSlug, segmentId, language]);
+
+  // Listen for auto-translate events from SplitScreenSegmentEditor
+  useEffect(() => {
+    if (language === 'en') return;
+
+    const handleTranslate = () => {
+      handleAutoTranslate();
+    };
+
+    window.addEventListener('meta-navigation-translate', handleTranslate);
+    return () => window.removeEventListener('meta-navigation-translate', handleTranslate);
+  }, [language, pageSlug, segmentId, links]);
+
+  const handleAutoTranslate = async () => {
+    if (language === 'en') return;
+
+    setIsTranslating(true);
+    try {
+      const { data: enData } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', 'en')
+        .maybeSingle();
+
+      if (!enData?.content_value) {
+        toast.error('No English reference content found');
+        return;
+      }
+
+      const enSegments = JSON.parse(enData.content_value);
+      const enMetaSeg = enSegments.find(
+        (seg: any) => seg.type === 'meta-navigation' && String(seg.id) === String(segmentId),
+      );
+
+      if (!enMetaSeg?.data?.links) {
+        toast.error('No English Meta Navigation data found');
+        return;
+      }
+
+      const enLinks: MetaNavigationLink[] = enMetaSeg.data.links || [];
+
+      const textsToTranslate: Record<string, string> = {};
+      enLinks.forEach((link, index) => {
+        textsToTranslate[`label_${index}`] = link.label || '';
+      });
+
+      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
+        body: {
+          texts: textsToTranslate,
+          targetLanguage: language,
+        },
+      });
+
+      if (translateError) throw translateError;
+
+      if (translateData?.translatedTexts) {
+        const translated = translateData.translatedTexts as Record<string, string>;
+        const newLinks: MetaNavigationLink[] = enLinks.map((link, index) => ({
+          ...link,
+          label: translated[`label_${index}`] || link.label,
+        }));
+        setLinks(newLinks);
+        toast.success('Meta Navigation translated successfully');
+      }
+    } catch (error: any) {
+      console.error('[MetaNavigationEditor] translation error', error);
+      toast.error(error.message || 'Translation failed');
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const handleLinkChange = (index: number, field: keyof MetaNavigationLink, value: string) => {
-    const updatedLinks = [...data.links];
+    const updatedLinks = [...links];
     updatedLinks[index] = { ...updatedLinks[index], [field]: value };
-    onChange({ ...data, links: updatedLinks });
+    setLinks(updatedLinks);
   };
 
   const handleAddLink = () => {
-    onChange({
-      ...data,
-      links: [...data.links, { label: 'New Link', anchor: 'section' }]
-    });
+    setLinks([...links, { label: 'New Link', anchor: '' }]);
   };
 
   const handleDeleteLink = (index: number) => {
-    const updatedLinks = data.links.filter((_, i) => i !== index);
-    onChange({ ...data, links: updatedLinks });
+    const updatedLinks = links.filter((_, i) => i !== index);
+    setLinks(updatedLinks);
     setDeleteIndex(null);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) throw new Error('User not authenticated');
+
+      const { data: existingData } = await supabase
+        .from('page_content')
+        .select('*')
+        .eq('page_slug', pageSlug)
+        .eq('section_key', 'page_segments')
+        .eq('language', language)
+        .maybeSingle();
+
+      let segments: any[] = [];
+      if (existingData?.content_value) {
+        segments = JSON.parse(existingData.content_value);
+      }
+
+      const segmentIndex = segments.findIndex(
+        (seg: any) => seg.type === 'meta-navigation' && String(seg.id) === String(segmentId),
+      );
+
+      const updatedSegmentData = {
+        links,
+      };
+
+      if (segmentIndex >= 0) {
+        segments[segmentIndex].data = updatedSegmentData;
+      } else {
+        segments.push({
+          id: segmentId,
+          type: 'meta-navigation',
+          data: updatedSegmentData,
+        });
+      }
+
+      const { error } = await supabase
+        .from('page_content')
+        .upsert(
+          {
+            page_slug: pageSlug,
+            section_key: 'page_segments',
+            content_type: 'json',
+            content_value: JSON.stringify(segments),
+            language,
+            updated_at: new Date().toISOString(),
+            updated_by: user.id,
+          },
+          { onConflict: 'page_slug,section_key,language' },
+        );
+
+      if (error) throw error;
+
+      toast.success(`Meta Navigation saved for ${language.toUpperCase()}!`);
+      onSave?.();
+    } catch (error: any) {
+      console.error('[MetaNavigationEditor] save error', error);
+      toast.error(error.message || 'Failed to save Meta Navigation');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Meta Navigation Settings</h3>
+        {isTranslating && (
+          <span className="text-xs text-muted-foreground">Translating…</span>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -73,7 +287,9 @@ const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegmen
           </Button>
         </div>
 
-        {data.links.map((link, index) => (
+        {isLoading && <p className="text-sm text-muted-foreground">Loading Meta Navigation…</p>}
+
+        {!isLoading && links.map((link, index) => (
           <div key={index} className="border rounded-lg p-4 space-y-4">
             <div className="flex justify-between items-center">
               <span className="font-medium">Link {index + 1}</span>
@@ -123,11 +339,12 @@ const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegmen
       </div>
 
       <Button
-        onClick={onSave}
+        onClick={handleSave}
+        disabled={isSaving}
         className="w-full mt-4"
         style={{ backgroundColor: '#f9dc24', color: 'black' }}
       >
-        Save Changes
+        {isSaving ? 'Saving…' : 'Save Changes'}
       </Button>
 
       <AlertDialog open={deleteIndex !== null} onOpenChange={() => setDeleteIndex(null)}>

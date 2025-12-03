@@ -6537,16 +6537,21 @@ const AdminDashboard = () => {
                     availableSegments.sort((a, b) => Number(a.id) - Number(b.id));
                     
                     return (
-                      <MetaNavigationEditor
-                        data={segment.data}
-                        availableSegments={availableSegments}
-                        onChange={(newData) => {
-                          const newSegments = [...pageSegments];
-                          newSegments[index].data = newData;
-                          setPageSegments(newSegments);
-                        }}
-                        onSave={() => handleSaveSegments()}
-                      />
+                      <SplitScreenSegmentEditor
+                        segmentTitle="Meta Navigation"
+                        segmentType="meta-navigation"
+                      >
+                        {(language) => (
+                          <MetaNavigationEditor
+                            key={`meta-${segment.id}-${language}`}
+                            pageSlug={resolvedPageSlug || selectedPage}
+                            segmentId={segment.id}
+                            language={language}
+                            availableSegments={availableSegments}
+                            onSave={() => loadContent()}
+                          />
+                        )}
+                      </SplitScreenSegmentEditor>
                     );
                   })()}
                   {segment.type === 'tiles' && (
