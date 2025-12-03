@@ -3467,49 +3467,82 @@ const AdminDashboard = () => {
               
               {/* Page Info Content – alles in einer Zeile */}
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                {selectedPage && pageInfo ? (
-                  <>
-                    <span className="font-bold text-base text-gray-900 whitespace-nowrap">
-                      {pageInfo.pageTitle}
-                    </span>
-                    <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
-                      ID {pageInfo.pageId}
-                    </span>
-                    <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                    <span className="text-base text-gray-700 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
-                      {pageInfo.pageSlug}
-                    </span>
-                    {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
-                      <>
-                        <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (!isSecondLevelPage) {
-                              toast.error('Flyout content is only available for second-level navigation pages.');
-                              return;
-                            }
-                            setIsFlyoutDialogOpen(true);
-                          }}
-                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
-                          title="Click to edit flyout image and description for this navigation item"
-                        >
-                          <SelectedDesignIcon className="h-4 w-4" />
-                          <span>{selectedDesignIconOption.label}</span>
-                        </button>
-                      </>
-                    )}
-                  </>
-                ) : selectedPage && !pageInfo ? (
-                  <>
-                    <span className="font-bold text-base text-amber-700 whitespace-nowrap">No registry entry</span>
-                    <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                    <span className="text-base text-gray-700 font-mono whitespace-nowrap">{selectedPage}</span>
-                  </>
-                ) : (
-                  <span className="text-base text-gray-500 italic whitespace-nowrap">No page selected</span>
-                )}
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  {selectedPage && pageInfo ? (
+                    <>
+                      <span className="font-bold text-base text-gray-900 whitespace-nowrap">
+                        {pageInfo.pageTitle}
+                      </span>
+                      <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
+                        ID {pageInfo.pageId}
+                      </span>
+                      <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                      <span className="text-base text-gray-700 font-mono whitespace-nowrap overflow-hidden text-ellipsis">
+                        {pageInfo.pageSlug}
+                      </span>
+                      {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
+                        <>
+                          <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!isSecondLevelPage) {
+                                toast.error('Flyout content is only available for second-level navigation pages.');
+                                return;
+                              }
+                              setIsFlyoutDialogOpen(true);
+                            }}
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
+                            title="Click to edit flyout image and description for this navigation item"
+                          >
+                            <SelectedDesignIcon className="h-4 w-4" />
+                            <span>{selectedDesignIconOption.label}</span>
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : selectedPage && !pageInfo ? (
+                    <>
+                      <span className="font-bold text-base text-amber-700 whitespace-nowrap">No registry entry</span>
+                      <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                      <span className="text-base text-gray-700 font-mono whitespace-nowrap">{selectedPage}</span>
+                    </>
+                  ) : (
+                    <span className="text-base text-gray-500 italic whitespace-nowrap">No page selected</span>
+                  )}
+                </div>
+
+                {/* Actions aligned with Medical Endoscopy badge */}
+                <div className="flex items-center gap-2 ml-4">
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
+                    title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
+                    onClick={() => {
+                      if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                      setIsDesignElementDialogOpen(true);
+                    }}
+                  >
+                    <Layers className="h-4 w-4" />
+                    Add new design element
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
+                    title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
+                    onClick={() => {
+                      if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                      setIsCtaDialogOpen(true);
+                    }}
+                  >
+                    <Zap className="h-4 w-4" />
+                    Navigation CTA
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -3952,19 +3985,8 @@ const AdminDashboard = () => {
               </DialogContent>
               </Dialog>
 
-              {/* Design Element Button */}
+              {/* Design Element Dialog */}
               <Dialog open={isDesignElementDialogOpen} onOpenChange={setIsDesignElementDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
-                    title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
-                  >
-                    <Layers className="h-4 w-4" />
-                    Add new design element
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="max-w-xl">
                   <DialogHeader>
                     <DialogTitle>Select design element</DialogTitle>
@@ -4022,17 +4044,6 @@ const AdminDashboard = () => {
 
               {/* Navigation CTA Dialog */}
               <Dialog open={isCtaDialogOpen} onOpenChange={setIsCtaDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="flex items-center gap-2"
-                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
-                    title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
-                  >
-                    <Zap className="h-4 w-4" />
-                    Navigation CTA
-                  </Button>
-                </DialogTrigger>
                 <DialogContent className="max-w-xl">
                   <DialogHeader>
                     <DialogTitle>Navigation CTA for this page</DialogTitle>
@@ -4045,7 +4056,7 @@ const AdminDashboard = () => {
                       <p className="text-xs text-gray-500 mb-2">
                         Only one page can be assigned per CTA group. Saving here will replace any existing CTA for the selected group.
                       </p>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CTA Group</label>
+                      <Label className="block text-sm font-medium text-gray-700 mb-1">CTA Group</Label>
                       <select
                         className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                         value={ctaGroup}
