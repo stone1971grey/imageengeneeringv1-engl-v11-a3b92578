@@ -1018,7 +1018,7 @@ const Styleguide = () => {
                     </div>
 
                     {/* H1 auf hellem Hintergrund */}
-                    <div className="mb-8 p-8 bg-white border border-gray-200 rounded-lg">
+                    <div className="mb-8 p-8 bg-white rounded-lg">
                       <div className="mb-4">
                         <span className="text-sm text-gray-600 font-mono">H1 on light background</span>
                       </div>
@@ -1042,7 +1042,7 @@ const Styleguide = () => {
                   <div className="mb-12">
                     <h4 className="text-xl font-semibold text-gray-900 mb-6">H2 Main Headlines</h4>
                     
-                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="p-6 bg-gray-50 rounded-lg">
                       <h2 style={{ 
                         fontFamily: 'Roboto, sans-serif', 
                         fontWeight: 700, 
@@ -1066,7 +1066,7 @@ const Styleguide = () => {
                   <div className="mb-12">
                     <h4 className="text-xl font-semibold text-gray-900 mb-6">H3 Subheadings</h4>
                     
-                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="p-6 bg-gray-50 rounded-lg">
                       <h3 style={{ 
                         fontFamily: 'Roboto, sans-serif', 
                         fontWeight: 400, 
@@ -1090,7 +1090,7 @@ const Styleguide = () => {
                   <div className="mb-12">
                     <h4 className="text-xl font-semibold text-gray-900 mb-6">Body Text</h4>
                     
-                    <div className="p-6 bg-white border border-gray-200 rounded-lg">
+                    <div className="p-6 bg-white rounded-lg">
                       <p style={{ 
                         fontFamily: 'Roboto, sans-serif', 
                         fontWeight: 400, 
@@ -1156,7 +1156,7 @@ const Styleguide = () => {
                   <div className="mb-12">
                     <h4 className="text-xl font-semibold text-gray-900 mb-6">Button / CTA Text</h4>
                     
-                    <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="p-6 bg-gray-50 rounded-lg">
                        <div className="flex gap-4 flex-wrap">
                          <span 
                            style={{ 
@@ -1214,7 +1214,7 @@ const Styleguide = () => {
                   <div className="mb-12">
                     <h4 className="text-xl font-semibold text-gray-900 mb-6">Footer Text</h4>
                     
-                    <div className="p-6 bg-gray-100 border border-gray-200 rounded-lg">
+                    <div className="p-6 bg-gray-100 rounded-lg">
                       <p style={{ 
                         fontFamily: 'Roboto, sans-serif', 
                         fontWeight: 400, 
@@ -1238,7 +1238,7 @@ const Styleguide = () => {
                   <div className="mb-12">
                     <h4 className="text-xl font-semibold text-gray-900 mb-6">Made by / Credits (Bold)</h4>
                     
-                    <div className="p-6 bg-white border border-gray-200 rounded-lg">
+                    <div className="p-6 bg-white rounded-lg">
                       <p style={{ 
                         fontFamily: 'Roboto, sans-serif', 
                         fontWeight: 700, 
@@ -1399,7 +1399,7 @@ const Styleguide = () => {
                      </div>
 
                     {/* Technical specifications of the Hero example */}
-                    <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                       <h4 className="font-semibold text-gray-900 mb-3">🔧 Used typography elements:</h4>
                       <div className="grid md:grid-cols-2 gap-4 text-sm">
                          <div>
@@ -1460,7 +1460,7 @@ const Styleguide = () => {
                   <h3 className="text-2xl font-semibold text-gray-900 mb-8">🖋 Fonts</h3>
                   
                   <div className="grid gap-6">
-                    <div className="p-6 border border-gray-200 rounded-lg">
+                    <div className="p-6 rounded-lg">
                       <h4 className="text-lg font-semibold text-gray-900 mb-4">Primär: Roboto (Google Fonts)</h4>
                       
                       <div className="grid gap-4">
@@ -1499,7 +1499,7 @@ const Styleguide = () => {
                       </div>
                     </div>
                     
-                    <div className="p-6 border border-gray-200 rounded-lg">
+                    <div className="p-6 rounded-lg">
                       <h4 className="text-lg font-semibold text-gray-900 mb-4">Icons: Lucide React</h4>
                       <p className="text-sm text-gray-600">Icon-System für UI-Elemente und Navigation - moderne SVG-Icons aus der Lucide React Bibliothek</p>
                     </div>
