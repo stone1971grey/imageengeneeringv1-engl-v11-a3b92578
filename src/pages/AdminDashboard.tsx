@@ -3497,6 +3497,21 @@ const AdminDashboard = () => {
                       <span className="text-base text-gray-700 font-mono whitespace-nowrap">
                         {pageInfo.pageSlug}
                       </span>
+                      {pageInfo.ctaGroup && pageInfo.ctaGroup !== 'none' && (
+                        <>
+                          <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-semibold ${
+                              pageInfo.ctaGroup === 'your-solution'
+                                ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
+                                : 'bg-black text-white border-gray-600'
+                            }`}
+                            title="Navigation CTA active for this page"
+                          >
+                            CTA
+                          </span>
+                        </>
+                      )}
                       {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
                         <>
                           <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
