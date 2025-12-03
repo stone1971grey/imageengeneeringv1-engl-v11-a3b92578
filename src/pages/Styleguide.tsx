@@ -68,9 +68,9 @@ const Styleguide = () => {
       {/* Main content wrapper with top margin to clear fixed navigation */}
       <div className="pt-[140px]">
         {/* Quick Navigation */}
-        <nav className="sticky top-[85px] z-30 bg-[#F7F9FB] py-4 border-b border-gray-100">
-          <div className="container mx-auto px-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+        <nav className="sticky top-[85px] z-30 bg-[#F7F9FB] py-4">
+           <div className="container mx-auto px-4">
+             <div className="bg-white rounded-lg shadow-sm p-4">
                <div className="flex flex-wrap gap-6 justify-center text-lg">
                  <a href="#buttons" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
                     onClick={(e) => {
@@ -139,7 +139,7 @@ const Styleguide = () => {
                   
                   <div className="grid gap-8">
                      {/* Decision Variant - Standard Orange */}
-                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg bg-[#f5743a]/5">
+                     <div className="flex items-center gap-6 p-6 rounded-lg bg-[#f5743a]/5">
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Decision</p>
                          <p className="text-sm text-gray-500">Standard Orange - Main CTAs</p>
@@ -153,7 +153,7 @@ const Styleguide = () => {
                      </div>
                     
                      {/* Technical Variant */}
-                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                     <div className="flex items-center gap-6 p-6 rounded-lg">
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Technical</p>
                          <p className="text-sm text-gray-500">Technical actions</p>
@@ -166,7 +166,7 @@ const Styleguide = () => {
                      </div>
                     
                      {/* Yellow Variant - Standard Yellow */}
-                     <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg bg-[#f9dc24]/5">
+                     <div className="flex items-center gap-6 p-6 rounded-lg bg-[#f9dc24]/5">
                        <div className="w-32">
                          <p className="font-medium text-gray-900">Yellow</p>
                          <p className="text-sm text-gray-500">Standard yellow</p>
@@ -187,7 +187,7 @@ const Styleguide = () => {
                   
                   <div className="grid gap-8">
                     {/* Small Size */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-6 p-6 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Small</p>
                         <p className="text-sm text-gray-500">Compact buttons</p>
@@ -196,7 +196,7 @@ const Styleguide = () => {
                     </div>
                     
                     {/* Default Size */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-6 p-6 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Default</p>
                         <p className="text-sm text-gray-500">Standard size</p>
@@ -205,7 +205,7 @@ const Styleguide = () => {
                     </div>
                     
                     {/* Large Size */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-6 p-6 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Large</p>
                         <p className="text-sm text-gray-500">Hero buttons</p>
@@ -214,7 +214,7 @@ const Styleguide = () => {
                     </div>
                     
                     {/* Icon Size */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-6 p-6 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Icon</p>
                         <p className="text-sm text-gray-500">Icon only</p>
@@ -232,7 +232,7 @@ const Styleguide = () => {
                   
                   <div className="grid gap-8">
                     {/* Normal State */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-6 p-6 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Normal</p>
                         <p className="text-sm text-gray-500">Default state</p>
@@ -241,7 +241,7 @@ const Styleguide = () => {
                     </div>
                     
                     {/* Disabled State */}
-                    <div className="flex items-center gap-6 p-6 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-6 p-6 rounded-lg">
                       <div className="w-32">
                         <p className="font-medium text-gray-900">Disabled</p>
                         <p className="text-sm text-gray-500">Inactive state</p>
@@ -340,7 +340,7 @@ const Styleguide = () => {
                   return (
                     <div 
                       key={index}
-                      className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col items-center text-center min-h-[320px]"
+                      className="bg-white rounded-lg p-8 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center min-h-[320px]"
                     >
                       {/* Large Icon at top - 70x70px round */}
                       <div className={`w-[70px] h-[70px] rounded-full ${colors.bg} flex items-center justify-center mb-6`}>
