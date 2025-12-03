@@ -652,10 +652,13 @@ const Navigation = () => {
                       const targetSlug = cta?.slug || 'your-solution';
                       const label = cta?.label || t.hero.findYourSolution;
 
+                      const iconKey = cta?.icon || 'search';
+                      const CtaIcon = iconKey === 'microscope' ? Microscope : iconKey === 'flask' ? FlaskConical : iconKey === 'target' ? Target : Search;
+
                       return (
                         <Link to={getLink(targetSlug, '/your-solution')}>
                           <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                            <Search className="h-4 w-4 mr-2" />
+                            <CtaIcon className="h-4 w-4 mr-2" />
                             <span className="text-sm font-medium">{label}</span>
                           </Button>
                         </Link>
@@ -887,10 +890,13 @@ const Navigation = () => {
                       const targetSlug = cta?.slug || 'inside-lab';
                       const label = cta?.label || t.nav.visitTestingLab;
 
+                      const iconKey = cta?.icon || 'flask';
+                      const CtaIcon = iconKey === 'search' ? Search : iconKey === 'microscope' ? Microscope : iconKey === 'target' ? Target : FlaskConical;
+
                       return (
                         <Link to={getLink(targetSlug, '/inside-lab')}>
                           <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                            <FlaskConical className="h-4 w-4 mr-2" />
+                            <CtaIcon className="h-4 w-4 mr-2" />
                             <span className="text-sm font-medium">{label}</span>
                           </Button>
                         </Link>
@@ -1560,10 +1566,13 @@ const Navigation = () => {
                             const targetSlug = cta?.slug || 'inside-lab';
                             const label = cta?.label || 'Inside the Testing Lab';
 
+                            const iconKey = cta?.icon || 'microscope';
+                            const CtaIcon = iconKey === 'search' ? Search : iconKey === 'flask' ? FlaskConical : iconKey === 'target' ? Target : Microscope;
+
                             return (
                               <Link to={getLink(targetSlug, '/inside-lab')} onClick={() => setIsOpen(false)}>
                                 <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium">
-                                  <Microscope className="h-4 w-4 mr-2" />
+                                  <CtaIcon className="h-4 w-4 mr-2" />
                                   {label}
                                 </Button>
                               </Link>

@@ -378,6 +378,7 @@ const AdminDashboard = () => {
   const [isCtaDialogOpen, setIsCtaDialogOpen] = useState(false);
   const [ctaGroup, setCtaGroup] = useState<string>('none');
   const [ctaLabel, setCtaLabel] = useState<string>('');
+  const [ctaIcon, setCtaIcon] = useState<string>('auto');
   const [isSavingCta, setIsSavingCta] = useState(false);
   // Multilingual Rainbow - Split Screen State
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => 
@@ -929,11 +930,13 @@ const AdminDashboard = () => {
       setFlyoutDescription(pageInfo.flyoutDescription ?? '');
       setCtaGroup(pageInfo.ctaGroup ?? 'none');
       setCtaLabel(pageInfo.ctaLabel ?? '');
+      setCtaIcon(pageInfo.ctaIcon ?? 'auto');
     } else {
       setFlyoutImageUrl(null);
       setFlyoutDescription('');
       setCtaGroup('none');
       setCtaLabel('');
+      setCtaIcon('auto');
     }
   }, [pageInfo]);
 
@@ -1018,7 +1021,20 @@ const AdminDashboard = () => {
       if (ctaGroup === 'none') {
         updates = { cta_group: null, cta_label: null, cta_icon: null };
       } else {
-        const iconKey = ctaGroup === 'your-solution' ? 'search' : ctaGroup === 'products' ? 'microscope' : null;
+        // Determine icon based on explicit selection or automatic default by group
+        let iconKey: string | null;
+        if (ctaIcon === 'auto') {
+          iconKey = ctaGroup === 'your-solution'
+            ? 'search'
+            : ctaGroup === 'products'
+              ? 'microscope'
+              : null;
+        } else if (ctaIcon === 'none') {
+          iconKey = null;
+        } else {
+          iconKey = ctaIcon;
+        }
+
         const finalLabel = ctaLabel && ctaLabel.trim().length > 0 ? ctaLabel.trim() : pageInfo.pageTitle;
 
         updates = {
@@ -4110,6 +4126,23 @@ const AdminDashboard = () => {
                           </option>
                         ))}
                       </select>
+                    </div>
+
+                    <div>
+                      <Label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1">CTA Icon</Label>
+                      <select
+                        className="w-full rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-sm text-[hsl(var(--foreground))]"
+                        value={ctaIcon}
+                        onChange={(e) => setCtaIcon(e.target.value)}
+                      >
+                        <option value="auto">Automatic (recommended)</option>
+                        <option value="search">Search icon (magnifier)</option>
+                        <option value="microscope">Microscope icon</option>
+                        <option value="none">No icon</option>
+                      </select>
+                      <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+                        The selected icon appears left of the CTA label in the navigation flyout.
+                      </p>
                     </div>
 
                     <div>
