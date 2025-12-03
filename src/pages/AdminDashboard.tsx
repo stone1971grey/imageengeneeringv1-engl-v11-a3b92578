@@ -3466,7 +3466,7 @@ const AdminDashboard = () => {
               </div>
               
               {/* Page Info Content – alles in einer Zeile */}
-              <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-3 min-w-0 flex-1">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   {selectedPage && pageInfo ? (
                     <>
@@ -3514,7 +3514,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Actions aligned with Medical Endoscopy badge */}
-                <div className="flex items-center gap-2 ml-4">
+                <div className="flex items-center gap-2 ml-4 flex-shrink-0">
                   <Button
                     variant="outline"
                     className="flex items-center gap-2"
