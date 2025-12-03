@@ -8,12 +8,6 @@ import { GeminiIcon } from "@/components/GeminiIcon";
 import { toast } from "sonner";
 
 interface VideoSegmentEditorProps {
-  data: {
-    title?: string;
-    videoUrl?: string;
-    caption?: string;
-  };
-  onChange: (data: any) => void;
   onSave: () => void;
   currentPageSlug: string;
   segmentId: string;
@@ -21,8 +15,6 @@ interface VideoSegmentEditorProps {
 }
 
 const VideoSegmentEditorComponent = ({ 
-  data, 
-  onChange, 
   onSave, 
   currentPageSlug, 
   segmentId,
@@ -109,11 +101,11 @@ const VideoSegmentEditorComponent = ({
         }
       }
 
-      // Fallback: use prop data
+      // Fallback: use empty data when nothing exists yet
       setLocalData({
-        title: data.title || '',
-        videoUrl: data.videoUrl || '',
-        caption: data.caption || ''
+        title: '',
+        videoUrl: '',
+        caption: ''
       });
     } catch (error) {
       console.error('Error loading video content:', error);
@@ -126,7 +118,6 @@ const VideoSegmentEditorComponent = ({
       [field]: value
     };
     setLocalData(newData);
-    onChange(newData);
   };
 
   const handleTranslate = async () => {
@@ -190,7 +181,6 @@ const VideoSegmentEditorComponent = ({
           videoUrl: enData.videoUrl || localData.videoUrl || '' // Keep videoUrl from English
         };
         setLocalData(newData);
-        onChange(newData);
         toast.success('Content translated successfully');
       }
     } catch (error) {
