@@ -17,9 +17,9 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
     const element = document.getElementById(targetId);
 
     if (element) {
-      const navbarHeight = 85; // Main navigation
-      const metaNavHeight = 85; // Meta navigation
-      const totalOffset = navbarHeight + metaNavHeight;
+      const navbarHeight = 85; // Main navigation (fixed header)
+      const extraOffset = 10;   // Small breathing space below Meta Navigation
+      const totalOffset = navbarHeight + extraOffset;
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - totalOffset;
 
