@@ -277,34 +277,34 @@ const Navigation = () => {
     '/your-solution': 'your-solution'
   };
 
-  // Helper function to get admin link if user is admin/editor
+  // Helper function to get link: in Admin-Dashboard-Modus gehen Links ins Backend,
+  // im normalen Frontend immer auf die öffentliche Seite – unabhängig von der Rolle.
   const getLink = (pageSlugOrPath: string, defaultPath?: string) => {
     const path = defaultPath || pageSlugOrPath;
-    
-    if (!isAdminOrEditor) {
-      // For regular users, add language prefix if not already present
+
+    // Wenn wir NICHT im Admin-Dashboard sind, immer normale FE-Links benutzen
+    if (!isAdminDashboard || !isAdminOrEditor) {
       if (!path.startsWith(`/${language}/`) && !path.startsWith('#')) {
         return `/${language}${path}`;
       }
       return path;
     }
-    
-    // Try to find page_slug from URL mapping
+
+    // Ab hier: Admin-Dashboard + Admin/Editor → Links steuern CMS-Ansicht
+    // Versuche page_slug aus Mapping zu bestimmen
     const pageSlug = urlToPageSlug[path] || pageSlugOrPath;
-    
-    // For editors, check if they have access to this page
+
+    // Für Editor-Rollen Zugriff auf erlaubte Seiten prüfen
     if (allowedPages.length > 0 && !allowedPages.includes(pageSlug)) {
-      // Return with language prefix for non-accessible pages
       if (!path.startsWith(`/${language}/`) && !path.startsWith('#')) {
         return `/${language}${path}`;
       }
       return path;
     }
-    
-    // Always go through English admin dashboard (admin UI ist englisch)
+
+    // Im Admin-Dashboard immer über englische Admin-UI routen
     return `/en/admin-dashboard?page=${pageSlug}`;
   };
-
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
     if (isOpen) {
