@@ -136,7 +136,11 @@ const FullHero = ({
   };
 
   return (
-    <section id={id?.toString()} className={`relative overflow-hidden ${getTopPaddingClass()}`} style={{ minHeight: 'calc(100vh - 220px)' }}>
+    <section
+      id={id?.toString()}
+      className={`relative overflow-hidden border-4 border-dashed border-destructive ${getTopPaddingClass()}`}
+      style={{ minHeight: 'calc(100vh - 220px)' }}
+    >
       {/* Background layer: image or video full-width */}
       {backgroundType === 'image' && imageUrl && (
         <div className="absolute inset-0 z-0 animate-fade-in">
