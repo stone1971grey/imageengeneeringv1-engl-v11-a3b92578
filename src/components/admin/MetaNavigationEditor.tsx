@@ -62,9 +62,6 @@ const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegmen
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Meta Navigation Settings</h3>
-        <Button onClick={onSave} style={{ backgroundColor: '#f9dc24', color: 'black' }}>
-          Save Changes
-        </Button>
       </div>
 
       <div className="space-y-4">
@@ -104,13 +101,17 @@ const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegmen
                   value={link.anchor}
                   onValueChange={(value) => handleLinkChange(index, 'anchor', value)}
                 >
-                  <SelectTrigger className="bg-white text-black border-gray-300">
+                  <SelectTrigger className="bg-gray-900 text-white border border-gray-700 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                     <SelectValue placeholder="Select target segment" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white text-black border-gray-300 z-[100]">
+                  <SelectContent className="bg-gray-900 text-white border border-gray-700 z-50">
                     {availableSegments.map((segment) => (
-                      <SelectItem key={segment.id} value={segment.id} className="text-black">
-                        {segment.title}
+                      <SelectItem
+                        key={segment.id}
+                        value={segment.id}
+                        className="text-white data-[highlighted]:bg-gray-800 data-[highlighted]:text-white cursor-pointer"
+                      >
+                        {segment.id}  {segment.title || 'Untitled segment'}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -120,6 +121,14 @@ const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegmen
           </div>
         ))}
       </div>
+
+      <Button
+        onClick={onSave}
+        className="w-full mt-4"
+        style={{ backgroundColor: '#f9dc24', color: 'black' }}
+      >
+        Save Changes
+      </Button>
 
       <AlertDialog open={deleteIndex !== null} onOpenChange={() => setDeleteIndex(null)}>
         <AlertDialogContent>
@@ -134,7 +143,7 @@ const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegmen
             <AlertDialogAction
               onClick={() => deleteIndex !== null && handleDeleteLink(deleteIndex)}
               className="bg-red-500 hover:bg-red-600"
-            >
+           >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
