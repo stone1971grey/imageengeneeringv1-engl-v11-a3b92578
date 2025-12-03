@@ -687,8 +687,8 @@ const Navigation = () => {
                               className="w-[120px] h-[120px] object-cover rounded-lg"
                             />
                             <div className="text-black">
-                              <h4 className="font-semibold text-base mb-1">{hoveredIndustry}</h4>
-                              <p className="text-sm text-gray-600 leading-relaxed">
+                              <h4 className="font-semibold text-lg mb-1">{hoveredIndustry}</h4>
+                              <p className="text-base text-gray-700 leading-relaxed">
                                 {description}
                               </p>
                             </div>
