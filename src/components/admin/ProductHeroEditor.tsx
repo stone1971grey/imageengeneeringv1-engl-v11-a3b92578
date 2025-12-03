@@ -42,8 +42,9 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
       handleTranslate();
     };
 
-    window.addEventListener('ph-translate', handleExternalTranslate);
-    return () => window.removeEventListener('ph-translate', handleExternalTranslate);
+    // Listen for SplitScreen "hero-translate" events
+    window.addEventListener('hero-translate', handleExternalTranslate);
+    return () => window.removeEventListener('hero-translate', handleExternalTranslate);
   }, [pageSlug, segmentId, language]);
 
   const loadContent = async () => {
