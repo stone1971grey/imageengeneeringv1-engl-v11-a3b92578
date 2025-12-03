@@ -3514,49 +3514,50 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Actions rechts in einer Flucht, ohne über den Badges zu liegen */}
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button
-                    variant="decision"
-                    className="flex items-center gap-2 bg-[hsl(var(--admin-control-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-1))]/90 shadow-soft hover:shadow-lg"
-                    disabled={!selectedPage || !pageInfo}
-                    title={!selectedPage || !pageInfo ? 'Select a CMS-ready page to add new segments' : undefined}
-                    onClick={() => {
-                      if (!selectedPage || !pageInfo) return;
-                      setIsTemplateDialogOpen(true);
-                    }}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add New Segment
-                  </Button>
+                {selectedPage && pageInfo && (
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Button
+                      variant="decision"
+                      className="flex items-center gap-2 bg-[hsl(var(--admin-control-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-1))]/90 shadow-soft hover:shadow-lg"
+                      title={!selectedPage || !pageInfo ? 'Select a CMS-ready page to add new segments' : undefined}
+                      onClick={() => {
+                        if (!selectedPage || !pageInfo) return;
+                        setIsTemplateDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add New Segment
+                    </Button>
 
-                  <Button
-                    variant="decision"
-                    className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
-                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
-                    title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
-                    onClick={() => {
-                      if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
-                      setIsDesignElementDialogOpen(true);
-                    }}
-                  >
-                    <Layers className="h-4 w-4" />
-                    Navigation Design
-                  </Button>
+                    <Button
+                      variant="decision"
+                      className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
+                      disabled={!isSecondLevelPage}
+                      title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
+                      onClick={() => {
+                        if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                        setIsDesignElementDialogOpen(true);
+                      }}
+                    >
+                      <Layers className="h-4 w-4" />
+                      Navigation Design
+                    </Button>
 
-                  <Button
-                    variant="decision"
-                    className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
-                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
-                    title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
-                    onClick={() => {
-                      if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
-                      setIsCtaDialogOpen(true);
-                    }}
-                  >
-                    <Zap className="h-4 w-4" />
-                    Navigation CTA
-                  </Button>
-                </div>
+                    <Button
+                      variant="decision"
+                      className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
+                      disabled={!isSecondLevelPage}
+                      title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
+                      onClick={() => {
+                        if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                        setIsCtaDialogOpen(true);
+                      }}
+                    >
+                      <Zap className="h-4 w-4" />
+                      Navigation CTA
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
