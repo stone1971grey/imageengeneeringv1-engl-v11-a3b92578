@@ -121,6 +121,9 @@ video::-ms-media-controls {
     --academia-button: 45 95% 49%;
     --academia-button-hover: 45 95% 60%;
     --academia-icon-bg: 45 60% 85%;
+
+    /* Events management button - lighter blue than primary */
+    --events-button: 211 77% 42%;
     
     /* Admin dashboard control buttons - yellow cascade */
     --admin-control-1: 48 96% 46%;
