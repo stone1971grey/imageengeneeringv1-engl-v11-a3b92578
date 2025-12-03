@@ -154,7 +154,7 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
   const textContent = (
     <div className="space-y-8">
       <div>
-        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-gray-900 mt-8 md:mt-0">
+        <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light leading-[0.9] tracking-tight mb-6 text-gray-900">
           {data.title}
           <br />
           <span className="font-medium text-gray-900">{data.subtitle}</span>
