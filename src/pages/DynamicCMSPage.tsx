@@ -839,7 +839,7 @@ const DynamicCMSPage = () => {
             id={segmentDbId?.toString()}
             data-segment-key={segment.segment_key || segment.id}
             data-segment-id={segmentDbId?.toString()}
-            className="py-20 bg-gray-50"
+            className="pt-[150px] pb-20 bg-gray-50"
           >
             <div className="container mx-auto px-6">
               {/* Section Title & Subtext FIRST */}
