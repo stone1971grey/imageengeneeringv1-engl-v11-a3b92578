@@ -65,6 +65,7 @@ const Navigation = () => {
   const [hoveredStyleguide, setHoveredStyleguide] = useState<string | null>(null);
   const [pageDesignIcons, setPageDesignIcons] = useState<Record<string, string>>({});
   const [pageFlyoutData, setPageFlyoutData] = useState<Record<string, { imageUrl: string; description: string }>>({});
+  const [pageCtaConfig, setPageCtaConfig] = useState<Record<string, { slug: string; label: string; icon: string | null }>>({});
   // Check if current path is within styleguide section (with language prefix support)
   const isStyleguidePath = location.pathname.includes('/styleguide');
   
@@ -616,12 +617,21 @@ const Navigation = () => {
 
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
-                    <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                      <Search className="h-4 w-4 mr-2" />
-                      <span className="text-sm font-medium">{t.hero.findYourSolution}</span>
-                    </Button>
+                    {(() => {
+                      const cta = pageCtaConfig['your-solution'];
+                      const targetSlug = cta?.slug || 'your-solution';
+                      const label = cta?.label || t.hero.findYourSolution;
+
+                      return (
+                        <Link to={getLink(targetSlug, '/your-solution')}>
+                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
+                            <Search className="h-4 w-4 mr-2" />
+                            <span className="text-sm font-medium">{label}</span>
+                          </Button>
+                        </Link>
+                      );
+                    })()}
                   </div>
-                  
                   {/* Image Rollover under Flyout */}
                   {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
                     (() => {
@@ -842,14 +852,21 @@ const Navigation = () => {
 
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
-                    <Link to="/inside-lab">
-                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                        <FlaskConical className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">{t.nav.visitTestingLab}</span>
-                      </Button>
-                    </Link>
+                    {(() => {
+                      const cta = pageCtaConfig['products'];
+                      const targetSlug = cta?.slug || 'inside-lab';
+                      const label = cta?.label || t.nav.visitTestingLab;
+
+                      return (
+                        <Link to={getLink(targetSlug, '/inside-lab')}>
+                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
+                            <FlaskConical className="h-4 w-4 mr-2" />
+                            <span className="text-sm font-medium">{label}</span>
+                          </Button>
+                        </Link>
+                      );
+                    })()}
                   </div>
-                  
                   {/* Image Rollover under Flyout */}
                   {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
                     <div className="bg-[#f3f3f3] p-3">

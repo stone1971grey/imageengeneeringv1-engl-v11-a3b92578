@@ -457,6 +457,9 @@ export type Database = {
       page_registry: {
         Row: {
           created_at: string | null
+          cta_group: string | null
+          cta_icon: string | null
+          cta_label: string | null
           design_icon: string | null
           flyout_description: string | null
           flyout_image_url: string | null
@@ -470,6 +473,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          cta_group?: string | null
+          cta_icon?: string | null
+          cta_label?: string | null
           design_icon?: string | null
           flyout_description?: string | null
           flyout_image_url?: string | null
@@ -483,6 +489,9 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          cta_group?: string | null
+          cta_icon?: string | null
+          cta_label?: string | null
           design_icon?: string | null
           flyout_description?: string | null
           flyout_image_url?: string | null
