@@ -1429,7 +1429,7 @@ const Navigation = () => {
                           </Accordion>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                          <Link to={getLink("your-solution/find-your-solution", "/your-solution/find-your-solution")} onClick={() => setIsOpen(false)}>>
+                          <Link to={getLink("your-solution/find-your-solution", "/your-solution/find-your-solution")} onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium">
                               <Search className="h-4 w-4 mr-2" />
                                <span className="hidden sm:inline">{t.hero.findYourSolution}</span>
