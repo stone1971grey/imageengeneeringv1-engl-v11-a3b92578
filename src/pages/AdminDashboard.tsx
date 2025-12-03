@@ -4086,21 +4086,21 @@ const AdminDashboard = () => {
 
               {/* Navigation CTA Dialog */}
               <Dialog open={isCtaDialogOpen} onOpenChange={setIsCtaDialogOpen}>
-                <DialogContent className="max-w-xl">
+                <DialogContent className="max-w-xl bg-[hsl(var(--background))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))]">
                   <DialogHeader>
                     <DialogTitle>Navigation CTA for this page</DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-[hsl(var(--muted-foreground))]">
                       Define whether this page should be used as a call-to-action button in the main navigation flyouts.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 mt-4">
                     <div>
-                      <p className="text-xs text-gray-500 mb-2">
+                      <p className="text-xs text-[hsl(var(--muted-foreground))] mb-2">
                         Only one page can be assigned per CTA group. Saving here will replace any existing CTA for the selected group.
                       </p>
-                      <Label className="block text-sm font-medium text-gray-700 mb-1">CTA Group</Label>
+                      <Label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1">CTA Group</Label>
                       <select
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                        className="w-full rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-sm text-[hsl(var(--foreground))]"
                         value={ctaGroup}
                         onChange={(e) => setCtaGroup(e.target.value)}
                       >
@@ -4113,15 +4113,15 @@ const AdminDashboard = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Button label</label>
+                      <label className="block text-sm font-medium text-[hsl(var(--foreground))] mb-1">Button label</label>
                       <Input
                         type="text"
                         value={ctaLabel}
                         onChange={(e) => setCtaLabel(e.target.value)}
                         placeholder={pageInfo?.pageTitle || 'Button label'}
-                        className="bg-white text-black"
+                        className="bg-[hsl(var(--background))] text-[hsl(var(--foreground))] border-[hsl(var(--border))]"
                       />
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
                         If left empty, the page title "{pageInfo?.pageTitle}" will be used.
                       </p>
                     </div>
