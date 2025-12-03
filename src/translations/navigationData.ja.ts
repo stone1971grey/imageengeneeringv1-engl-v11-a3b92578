@@ -53,7 +53,7 @@ export const navigationDataJa = {
     "Medical & Endoscopy": {
       description: "医用画像および診断システムの画質",
       subgroups: [
-        { name: "色較正", link: "#" },
+        { name: "色較正", link: "/your-solution/medical-endoscopy/color-calibration" },
         { name: "低照度テスト", link: "#" },
         { name: "光学歪み", link: "#" },
         { name: "ISPチューニング", link: "#" },

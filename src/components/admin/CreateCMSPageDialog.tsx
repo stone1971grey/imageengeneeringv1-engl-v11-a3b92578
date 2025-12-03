@@ -60,28 +60,53 @@ export function CreateCMSPageDialog({ open, onOpenChange, onSuccess }: CreateCMS
     setValidationSuccess(null);
 
     try {
-      // Parse slug to extract parent
-      const slugParts = slug.split('/');
-      
+      const trimmedSlug = slug.trim().replace(/\s+/g, "");
+      const slugParts = trimmedSlug.split('/').filter(Boolean);
+
+      if (slugParts.length === 0) {
+        setValidationError("Slug is invalid");
+        setIsValidating(false);
+        return false;
+      }
+
+      // 1) Check if a page with this slug already exists
+      const { data: existingPage, error: existingError } = await supabase
+        .from('page_registry')
+        .select('page_id, page_slug, page_title')
+        .eq('page_slug', trimmedSlug)
+        .maybeSingle();
+
+      if (existingError) {
+        console.error("Error checking existing page:", existingError);
+        setValidationError("Database error checking existing page");
+        setIsValidating(false);
+        return false;
+      }
+
+      if (existingPage) {
+        setValidationError(`❌ Page "${trimmedSlug}" already exists as ID ${existingPage.page_id} (\"${existingPage.page_title}\").`);
+        setIsValidating(false);
+        return false;
+      }
+
+      // 2) If it is a top-level slug without parent, we are done
       if (slugParts.length === 1) {
-        // Top-level page (no parent)
-        setValidationSuccess("✓ Top-level page (no parent required)");
+        setValidationSuccess("✓ Top-level page slug is available");
         setIsValidating(false);
         return true;
       }
 
-      // Extract parent slug (everything except last part)
+      // 3) For child pages: extract and validate parent slug (everything except last part)
       const parentSlug = slugParts.slice(0, -1).join('/');
 
-      // Check if parent exists in page_registry
-      const { data: parentPage, error } = await supabase
+      const { data: parentPage, error: parentError } = await supabase
         .from('page_registry')
         .select('page_id, page_slug, page_title')
         .or(`page_slug.eq.${parentSlug},page_slug.ilike.%/${parentSlug}`)
         .maybeSingle();
 
-      if (error) {
-        console.error("Error checking parent:", error);
+      if (parentError) {
+        console.error("Error checking parent:", parentError);
         setValidationError("Database error checking parent page");
         setIsValidating(false);
         return false;
@@ -93,7 +118,7 @@ export function CreateCMSPageDialog({ open, onOpenChange, onSuccess }: CreateCMS
         return false;
       }
 
-      setValidationSuccess(`✓ Parent found: "${parentPage.page_title}" (ID ${parentPage.page_id})`);
+      setValidationSuccess(`✓ Parent found: "${parentPage.page_title}" (ID ${parentPage.page_id}) and slug is available`);
       setIsValidating(false);
       return true;
 

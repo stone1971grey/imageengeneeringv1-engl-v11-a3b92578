@@ -53,7 +53,7 @@ export const navigationDataZh = {
     "Medical & Endoscopy": {
       description: "医学成像和诊断系统中的图像质量",
       subgroups: [
-        { name: "色彩校准", link: "#" },
+        { name: "色彩校准", link: "/your-solution/medical-endoscopy/color-calibration" },
         { name: "低照度测试", link: "#" },
         { name: "光学畸变", link: "#" },
         { name: "ISP调优", link: "#" },
