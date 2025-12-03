@@ -1092,7 +1092,7 @@ const DynamicCMSPage = () => {
           return (
             <div
               key={segmentId}
-              className="relative my-8 mx-4 rounded-xl border-2 border-dashed border-primary/40 bg-background/40"
+              className="relative my-8 mx-4 rounded-xl border-2 border-dashed border-destructive"
             >
               {content}
             </div>
