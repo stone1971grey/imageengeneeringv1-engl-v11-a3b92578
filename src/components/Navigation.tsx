@@ -453,7 +453,7 @@ const Navigation = () => {
                         }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Automotive")}>
                            {(() => {
-                             const key = pageDesignIcons['automotive'];
+                             const key = pageDesignIcons['your-solution/automotive'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
@@ -463,7 +463,7 @@ const Navigation = () => {
                         <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
                           {(() => {
-                            const key = pageDesignIcons['security-surveillance'];
+                            const key = pageDesignIcons['your-solution/security-surveillance'];
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
@@ -475,7 +475,7 @@ const Navigation = () => {
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Mobile Phone")}>
                           {(() => {
-                            const key = pageDesignIcons['mobile-phone'];
+                            const key = pageDesignIcons['your-solution/mobile-phone'];
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
@@ -487,7 +487,7 @@ const Navigation = () => {
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Web Camera")}>
                            {(() => {
-                             const key = pageDesignIcons['web-camera'];
+                             const key = pageDesignIcons['your-solution/web-camera'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
@@ -499,7 +499,7 @@ const Navigation = () => {
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Machine Vision")}>
                            {(() => {
-                             const key = pageDesignIcons['machine-vision'];
+                             const key = pageDesignIcons['your-solution/machine-vision'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
@@ -511,7 +511,7 @@ const Navigation = () => {
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Medical & Endoscopy")}>
                            {(() => {
-                             const key = pageDesignIcons['medical-endoscopy'];
+                             const key = pageDesignIcons['your-solution/medical-endoscopy'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
@@ -523,7 +523,7 @@ const Navigation = () => {
                          }`}
                            onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Scanners & Archiving")}>
                            {(() => {
-                             const key = pageDesignIcons['scanners-archiving'];
+                             const key = pageDesignIcons['your-solution/scanners-archiving'];
                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
                            })()}
@@ -535,7 +535,7 @@ const Navigation = () => {
                         }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Photo & Video")}>
                           {(() => {
-                            const key = pageDesignIcons['photography'];
+                            const key = pageDesignIcons['your-solution/photography'];
                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
@@ -1220,7 +1220,7 @@ const Navigation = () => {
                                   <div className="flex items-center justify-between w-full">
                                       <Link to={getLink("medical-endoscopy", "/your-solution/medical-endoscopy")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
                                         {(() => {
-                                          const key = pageDesignIcons['medical-endoscopy'];
+                                          const key = pageDesignIcons['your-solution/medical-endoscopy'];
                                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : Stethoscope;
                                           return <IconComp className="h-4 w-4" />;
                                         })()}
