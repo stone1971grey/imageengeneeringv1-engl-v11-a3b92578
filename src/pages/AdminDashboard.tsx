@@ -3563,7 +3563,7 @@ const AdminDashboard = () => {
             <div className="mt-4 flex flex-wrap gap-3">
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--admin-utility-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-utility-1))]/90 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2"
                 onClick={() => navigate(`/${language}/admin-dashboard/news`)}
               >
                 <Pencil className="h-4 w-4" />
@@ -3571,14 +3571,14 @@ const AdminDashboard = () => {
               </Button>
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--admin-utility-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-utility-2))]/90 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2"
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
               >
                 SEO Settings
               </Button>
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--admin-utility-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-utility-3))]/90 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2"
                 onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
               >
                 Translation Glossary
