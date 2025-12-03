@@ -3392,6 +3392,56 @@ const AdminDashboard = () => {
               {/* Media Management Button - in Gelb */}
               <DataHubDialog />
               
+              {/* Preview Frontend Button */}
+              <Button
+                variant="default"
+                onClick={async () => {
+                  if (!selectedPage) {
+                    toast.error('Please select a page first');
+                    return;
+                  }
+
+                  // selectedPage enthält meist nur den letzten Slug-Teil (z.B. "iec-62676-5-testing"),
+                  // deshalb suchen wir in page_registry nach einem passenden Eintrag.
+                  const { data: pageData } = await supabase
+                    .from('page_registry')
+                    .select('page_id, page_slug, parent_slug, parent_id')
+                    .or(`page_slug.eq.${selectedPage},page_slug.ilike.%/${selectedPage}`)
+                    .order('page_id', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                  // Standard: nutze aktuelle Sprache als Präfix
+                  let previewUrl = `/${language}/`;
+                  
+                  if (pageData?.page_id) {
+                    // WICHTIG: Immer über PageIdRouter gehen, damit hierarchische URLs korrekt
+                    // aufgelöst werden und keine 404 mehr entstehen.
+                    previewUrl = `/${language}/${pageData.page_id}`;
+                  } else {
+                    // Fallback für sehr alte/statische Seiten ohne page_registry Eintrag
+                    const urlMap: Record<string, string> = {
+                      'photography': `/${language}/your-solution/photography`,
+                      'scanners-archiving': `/${language}/your-solution/scanners-archiving`,
+                      'medical-endoscopy': `/${language}/your-solution/medical-endoscopy`,
+                      'web-camera': `/${language}/your-solution/web-camera`,
+                      'machine-vision': `/${language}/your-solution/machine-vision`,
+                      'mobile-phone': `/${language}/your-solution/mobile-phone`,
+                      'automotive': `/${language}/your-solution/automotive`,
+                      'in-cabin-testing': `/${language}/your-solution/automotive/in-cabin-testing`,
+                    };
+                    // Fallback: gehe von /{lang}/your-solution/{slug} aus, wenn nichts bekannt ist
+                    previewUrl = urlMap[selectedPage] || `/${language}/your-solution/${selectedPage}`;
+                  }
+
+                  window.open(previewUrl, '_blank');
+                }}
+                className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+              >
+                <Eye className="h-4 w-4" />
+                Preview
+              </Button>
+              
               {/* Home Icon - zur Welcome-Seite im Admin Dashboard */}
               <Button
                 onClick={() => navigate(`/${language}/admin-dashboard`)}
@@ -4185,54 +4235,6 @@ const AdminDashboard = () => {
                 </DialogContent>
               </Dialog>
 
-              <Button
-                variant="default"
-                onClick={async () => {
-                  if (!selectedPage) {
-                    toast.error('Please select a page first');
-                    return;
-                  }
-
-                  // selectedPage enthält meist nur den letzten Slug-Teil (z.B. "iec-62676-5-testing"),
-                  // deshalb suchen wir in page_registry nach einem passenden Eintrag.
-                  const { data: pageData } = await supabase
-                    .from('page_registry')
-                    .select('page_id, page_slug, parent_slug, parent_id')
-                    .or(`page_slug.eq.${selectedPage},page_slug.ilike.%/${selectedPage}`)
-                    .order('page_id', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-
-                  // Standard: nutze aktuelle Sprache als Präfix
-                  let previewUrl = `/${language}/`;
-                  
-                  if (pageData?.page_id) {
-                    // WICHTIG: Immer über PageIdRouter gehen, damit hierarchische URLs korrekt
-                    // aufgelöst werden und keine 404 mehr entstehen.
-                    previewUrl = `/${language}/${pageData.page_id}`;
-                  } else {
-                    // Fallback für sehr alte/statische Seiten ohne page_registry Eintrag
-                    const urlMap: Record<string, string> = {
-                      'photography': `/${language}/your-solution/photography`,
-                      'scanners-archiving': `/${language}/your-solution/scanners-archiving`,
-                      'medical-endoscopy': `/${language}/your-solution/medical-endoscopy`,
-                      'web-camera': `/${language}/your-solution/web-camera`,
-                      'machine-vision': `/${language}/your-solution/machine-vision`,
-                      'mobile-phone': `/${language}/your-solution/mobile-phone`,
-                      'automotive': `/${language}/your-solution/automotive`,
-                      'in-cabin-testing': `/${language}/your-solution/automotive/in-cabin-testing`,
-                    };
-                    // Fallback: gehe von /{lang}/your-solution/{slug} aus, wenn nichts bekannt ist
-                    previewUrl = urlMap[selectedPage] || `/${language}/your-solution/${selectedPage}`;
-                  }
-
-                  window.open(previewUrl, '_blank');
-                }}
-                className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
-              >
-                <Eye className="h-4 w-4" />
-                Preview
-              </Button>
               <Button
                 onClick={handleLogout}
                 variant="destructive"
