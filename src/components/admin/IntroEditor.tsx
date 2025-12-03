@@ -32,6 +32,18 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
     checkIfH1Segment();
   }, [pageSlug, segmentKey, language]);
 
+  // Listen for Rainbow SplitScreen translate button (intro-translate)
+  useEffect(() => {
+    if (language === 'en') return;
+
+    const handleExternalTranslate = () => {
+      handleTranslate();
+    };
+
+    window.addEventListener('intro-translate', handleExternalTranslate);
+    return () => window.removeEventListener('intro-translate', handleExternalTranslate);
+  }, [language, pageSlug, segmentKey]);
+
   const checkIfH1Segment = async () => {
     const { data: segments } = await supabase
       .from("segment_registry")
@@ -178,9 +190,10 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
       console.error('Translation error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to translate content');
     } finally {
-      setIsTranslating(false);
+      // Small delay so the visual translation feedback bar is clearly visible
+      setTimeout(() => setIsTranslating(false), 600);
     }
-  };
+   };
 
   const saveContent = async () => {
     try {

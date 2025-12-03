@@ -53,6 +53,19 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
     checkIfH1Segment();
   }, [pageSlug, segmentId, language]); // Add language dependency
 
+  // Listen for Rainbow SplitScreen translate button (full-hero-translate)
+  useEffect(() => {
+    if (language === 'en') return;
+
+    const handleExternalTranslate = () => {
+      handleTranslate();
+    };
+
+    window.addEventListener('full-hero-translate', handleExternalTranslate);
+    return () => window.removeEventListener('full-hero-translate', handleExternalTranslate);
+  }, [language, pageSlug, segmentId]);
+ 
+
   // Reset video thumbnail when URL changes
   useEffect(() => {
     setVideoThumbnail(null);
@@ -663,9 +676,10 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
       console.error('Translation error:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to translate content');
     } finally {
-      setIsTranslating(false);
+      // Small delay so the visual translation feedback bar is clearly visible
+      setTimeout(() => setIsTranslating(false), 600);
     }
-  };
+   };
 
   const handleSave = async () => {
     // VALIDATION: Image-type background requires imageUrl
