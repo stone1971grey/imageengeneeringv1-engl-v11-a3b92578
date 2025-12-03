@@ -207,7 +207,7 @@ const IconsStyleguide = () => {
           {/* Icon Categories */}
           <div className="max-w-7xl mx-auto space-y-16">
             {iconCategories.map((category, categoryIndex) => (
-              <section key={categoryIndex} className="bg-white rounded-xl border border-border p-8 shadow-sm">
+              <section key={categoryIndex} className="bg-white rounded-xl p-8 shadow-sm">
                 <div className="mb-8">
                   <h2 className="text-2xl font-semibold mb-2 flex items-center gap-3">
                     <div className="w-2 h-8 bg-primary rounded-full"></div>
@@ -225,9 +225,9 @@ const IconsStyleguide = () => {
                     return (
                       <div 
                         key={iconIndex}
-                        className="flex items-center gap-4 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group bg-white"
+                        className="flex items-center gap-4 p-4 rounded-lg hover:bg-accent/50 transition-all duration-200 group bg-white"
                       >
-                        <div className={`w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-border group-hover:border-primary/50 group-hover:bg-primary/5 transition-all duration-200`}>
+                        <div className={`w-10 h-10 flex items-center justify-center rounded-lg bg-white group-hover:bg-primary/5 transition-all duration-200`}>
                           <IconComponent 
                             className={`w-5 h-5 ${iconItem.color} group-hover:text-primary transition-colors duration-200`}
                           />
@@ -250,7 +250,7 @@ const IconsStyleguide = () => {
 
           {/* Usage Guidelines */}
           <div className="max-w-4xl mx-auto mt-20">
-            <div className="bg-card rounded-xl border border-border p-8">
+            <div className="bg-card rounded-xl p-8">
               <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3">
                 <div className="w-2 h-8 bg-primary rounded-full"></div>
                 Usage Guidelines

@@ -171,7 +171,7 @@ const ComprehensiveStyleguide = () => {
           </div>
 
           {/* Usage Guidelines */}
-          <Card className="mb-12 border-2 border-gray-200">
+          <Card className="mb-12">
             <CardHeader>
               <CardTitle className="text-2xl text-gray-900">Usage Guidelines</CardTitle>
             </CardHeader>
@@ -217,9 +217,9 @@ const ComprehensiveStyleguide = () => {
                     return (
                       <div
                         key={index}
-                        className="flex flex-col items-center p-4 border rounded-lg hover:shadow-md transition-shadow bg-white"
+                        className="flex flex-col items-center p-4 rounded-lg hover:shadow-md transition-shadow bg-white" 
                       >
-                        <div className="w-16 h-16 flex items-center justify-center mb-3 bg-white rounded-lg border">
+                        <div className="w-16 h-16 flex items-center justify-center mb-3 bg-white rounded-lg">
                           <IconComponent 
                             size={32} 
                             className="text-black" 
@@ -251,7 +251,7 @@ const ComprehensiveStyleguide = () => {
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="text-center">
-                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg border">
+                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg">
                     <Camera size={32} className="text-gray-900" strokeWidth={2} />
                   </div>
                   <h4 className="font-semibold text-gray-900 mb-1">Primary (Black)</h4>
@@ -259,7 +259,7 @@ const ComprehensiveStyleguide = () => {
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">text-black</code>
                 </div>
                 <div className="text-center">
-                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg border">
+                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg">
                     <Camera size={32} className="text-[#74952a]" strokeWidth={2} />
                   </div>
                   <h4 className="font-semibold text-gray-900 mb-1">Brand Green</h4>
@@ -267,7 +267,7 @@ const ComprehensiveStyleguide = () => {
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">text-[#74952a]</code>
                 </div>
                 <div className="text-center">
-                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg border">
+                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg">
                     <Camera size={32} className="text-gray-600" strokeWidth={2} />
                   </div>
                   <h4 className="font-semibold text-gray-900 mb-1">Secondary</h4>
@@ -275,7 +275,7 @@ const ComprehensiveStyleguide = () => {
                   <code className="text-xs bg-gray-100 px-2 py-1 rounded mt-2 inline-block">text-gray-600</code>
                 </div>
                 <div className="text-center">
-                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg border">
+                  <div className="w-16 h-16 flex items-center justify-center mb-3 mx-auto bg-white rounded-lg">
                     <Camera size={32} className="text-gray-400" strokeWidth={2} />
                   </div>
                   <h4 className="font-semibold text-gray-900 mb-1">Disabled</h4>
@@ -302,7 +302,7 @@ const ComprehensiveStyleguide = () => {
                   { size: 48, usage: "Headers, prominent features" }
                 ].map((sizeData) => (
                   <div key={sizeData.size} className="text-center">
-                    <div className="flex items-center justify-center mb-3 bg-white rounded-lg border p-4">
+                    <div className="flex items-center justify-center mb-3 bg-white rounded-lg p-4">
                       <Camera size={sizeData.size} className="text-black" strokeWidth={2} />
                     </div>
                     <h4 className="font-semibold text-gray-900 mb-1">{sizeData.size}px</h4>
