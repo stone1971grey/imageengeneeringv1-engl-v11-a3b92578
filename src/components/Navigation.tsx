@@ -64,7 +64,7 @@ const Navigation = () => {
   const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string; children?: Array<{ slug: string; title: string }> }>>([]);
   const [hoveredStyleguide, setHoveredStyleguide] = useState<string | null>(null);
   const [pageDesignIcons, setPageDesignIcons] = useState<Record<string, string>>({});
-
+  const [pageFlyoutData, setPageFlyoutData] = useState<Record<string, { imageUrl: string; description: string }>>({});
   // Check if current path is within styleguide section (with language prefix support)
   const isStyleguidePath = location.pathname.includes('/styleguide');
   
@@ -139,6 +139,34 @@ const Navigation = () => {
     loadDesignIcons();
   }, []);
 
+  // Load flyout images and descriptions for pages (used for enriched navigation hover)
+  useEffect(() => {
+    const loadFlyoutData = async () => {
+      const { data, error } = await supabase
+        .from('page_registry')
+        .select('page_slug, flyout_image_url, flyout_description')
+        .not('flyout_image_url', 'is', null);
+
+      if (error) {
+        console.error('Error loading flyout data:', error);
+        return;
+      }
+
+      const mapping: Record<string, { imageUrl: string; description: string }> = {};
+      (data || []).forEach((row: any) => {
+        if (row.flyout_image_url) {
+          mapping[row.page_slug] = {
+            imageUrl: row.flyout_image_url,
+            description: row.flyout_description || '',
+          };
+        }
+      });
+
+      setPageFlyoutData(mapping);
+    };
+
+    loadFlyoutData();
+  }, []);
   // Check authentication status
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -282,6 +310,18 @@ const Navigation = () => {
     preloadImages();
   }, []);
 
+  // Industry slug mapping (used to connect hover state with page-level design elements)
+  const industrySlugMap: Record<string, string> = {
+    "Automotive": "your-solution/automotive",
+    "Security & Surveillance": "your-solution/security-surveillance",
+    "Mobile Phone": "your-solution/mobile-phone",
+    "Web Camera": "your-solution/web-camera",
+    "Machine Vision": "your-solution/machine-vision",
+    "Medical & Endoscopy": "your-solution/medical-endoscopy",
+    "Scanners & Archiving": "your-solution/scanners-archiving",
+    "Photo & Video": "your-solution/photography",
+  };
+
   // Industry data mapping with subgroups - now using translated data
   const industryData = {
     "Automotive": { ...(navData.industries?.["Automotive"] || { description: "", subgroups: [] }), image: industryAutomotive },
@@ -291,9 +331,8 @@ const Navigation = () => {
     "Machine Vision": { ...(navData.industries?.["Machine Vision"] || { description: "", subgroups: [] }), image: industryMachineVision },
     "Medical & Endoscopy": { ...(navData.industries?.["Medical & Endoscopy"] || { description: "", subgroups: [] }), image: industryMedical },
     "Scanners & Archiving": { ...(navData.industries?.["Scanners & Archiving"] || { description: "", subgroups: [] }), image: industryScanning },
-    "Photo & Video": { ...(navData.industries?.["Photo & Video"] || { description: "", subgroups: [] }), image: industryPhotography }
+    "Photo & Video": { ...(navData.industries?.["Photo & Video"] || { description: "", subgroups: [] }), image: industryPhotography },
   };
-  
   // Product data mapping with subgroups - now using translated data
   const productData = {
     "Test Charts": { ...(navData.products?.["Test Charts"] || { description: "", subgroups: [] }), image: "/images/custom-chart.png" },
@@ -585,21 +624,35 @@ const Navigation = () => {
                   
                   {/* Image Rollover under Flyout */}
                   {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
-                    <div className="bg-[#f3f3f3] p-3">
-                      <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
-                        <img 
-                          src={industryData[hoveredIndustry as keyof typeof industryData].image} 
-                          alt={hoveredIndustry} 
-                          className="w-[120px] h-[120px] object-cover rounded-lg" 
-                        />
-                        <div className="text-black">
-                          <h4 className="font-semibold text-base mb-1">{hoveredIndustry}</h4>
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            {industryData[hoveredIndustry as keyof typeof industryData].description}
-                          </p>
+                    (() => {
+                      const industryKey = hoveredIndustry as keyof typeof industryData;
+                      const baseData = industryData[industryKey];
+                      if (!baseData) return null;
+
+                      const pageSlug = industrySlugMap[hoveredIndustry] || "";
+                      const flyout = pageSlug ? pageFlyoutData[pageSlug] : undefined;
+
+                      const imageSrc = flyout?.imageUrl || baseData.image;
+                      const description = flyout?.description || baseData.description;
+
+                      return (
+                        <div className="bg-[#f3f3f3] p-3">
+                          <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
+                            <img
+                              src={imageSrc}
+                              alt={hoveredIndustry}
+                              className="w-[120px] h-[120px] object-cover rounded-lg"
+                            />
+                            <div className="text-black">
+                              <h4 className="font-semibold text-base mb-1">{hoveredIndustry}</h4>
+                              <p className="text-sm text-gray-600 leading-relaxed">
+                                {description}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+                      );
+                    })()
                   )}
                 </div>
             </SimpleDropdown>
