@@ -6653,13 +6653,6 @@ const AdminDashboard = () => {
                         return (
                           <VideoSegmentEditor
                             key={`video-${segment.id}-${language}`}
-                            data={segment.data}
-                            onChange={(newData) => {
-                              const updatedSegments = pageSegments.map(s =>
-                                s.id === segment.id ? { ...s, data: newData } : s
-                              );
-                              setPageSegments(updatedSegments);
-                            }}
                             onSave={() => loadContent()}
                             currentPageSlug={resolvedPageSlug || selectedPage}
                             segmentId={segment.id}
