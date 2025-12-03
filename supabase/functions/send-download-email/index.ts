@@ -157,6 +157,24 @@ const handler = async (req: Request): Promise<Response> => {
           // Update existing contact - update all fields including contact data
           console.log("Updating existing Mautic contact - updating all fields including name/company");
           
+          // Load existing contact to check current marketing_optin value
+          let currentMarketingOptin: string | null = null;
+          const contactResponse = await fetch(`${mauticBaseUrl}/api/contacts/${mauticContactId}`, {
+            method: "GET",
+            headers: {
+              "Authorization": `Basic ${basicAuth}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (contactResponse.ok) {
+            const contactData = await contactResponse.json();
+            currentMarketingOptin = contactData.contact?.fields?.all?.marketing_optin ?? null;
+            console.log("Existing marketing_optin for download contact:", currentMarketingOptin);
+          } else {
+            console.error("Failed to load existing contact for marketing_optin check", await contactResponse.text());
+          }
+          
           // Get company logo from environment
           const companyLogoUrl = Deno.env.get("COMPANY_LOGO_URL");
           
@@ -175,12 +193,16 @@ const handler = async (req: Request): Promise<Response> => {
             tags: [downloadTag], // Mautic will ADD these tags, not replace
           };
 
+          // If the contact has no marketing_optin yet, mark as "pending"
+          if (!currentMarketingOptin) {
+            updateData.marketing_optin = "pending";
+          }
+
           // Only add category and title tags if provided
           if (categoryTag) updateData.category_tag = categoryTag;
           if (titleTag) updateData.title_tag = titleTag;
 
-          // CRITICAL: Do NOT send marketing_optin for existing contacts to preserve their status
-
+          // We intentionally do NOT overwrite existing marketing_optin = "yes" values
           mauticResponse = await fetch(`${mauticBaseUrl}/api/contacts/${mauticContactId}/edit`, {
             method: "PATCH",
             headers: {
