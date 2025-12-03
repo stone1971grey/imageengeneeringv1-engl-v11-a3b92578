@@ -29,6 +29,7 @@ interface PageStatus {
   subcategory?: string;
   isMainCategory?: boolean;
   pageId?: number;
+  hasCta?: boolean;
 }
 
 export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPageSelectProps) => {
@@ -36,6 +37,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const [cmsPages, setCmsPages] = useState<Set<string>>(new Set());
   const [pageStatuses, setPageStatuses] = useState<PageStatus[]>([]);
   const [pageIdMap, setPageIdMap] = useState<Map<string, number>>(new Map());
+  const [ctaPageIds, setCtaPageIds] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredStatuses, setFilteredStatuses] = useState<PageStatus[]>([]);
   const [refreshKey, setRefreshKey] = useState<number>(0);
@@ -152,14 +154,21 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
   const loadPageIds = async () => {
     const { data } = await supabase
       .from('page_registry')
-      .select('page_slug, page_id, page_title');
+      .select('page_slug, page_id, page_title, cta_group');
 
     if (data) {
       // Map by slug, normalized title, AND partial slug matches
       const mapping = new Map<string, number>();
+      const ctaIds = new Set<number>();
+
       data.forEach(item => {
         // Direct slug mapping
         mapping.set(item.page_slug, item.page_id);
+
+        // Track pages that have a navigation CTA configured
+        if (item.cta_group && item.cta_group !== 'none') {
+          ctaIds.add(item.page_id);
+        }
         
         // Normalized title mapping (fallback)
         const normalizedTitle = item.page_title.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -192,6 +201,7 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         }
       });
       setPageIdMap(mapping);
+      setCtaPageIds(ctaIds);
     }
   };
 
@@ -239,10 +249,12 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     ];
 
     staticPages.forEach(page => {
+      const pageId = pageIdMap.get(page.slug);
       statuses.push({
         ...page,
         isCMS: isPageInCMS(page.slug, page.url),
-        pageId: pageIdMap.get(page.slug),
+        pageId,
+        hasCta: pageId !== undefined && ctaPageIds.has(pageId),
       });
     });
 
@@ -443,6 +455,9 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
     const pageId = status.pageId ?? getPageIdForStatus(status);
     if (pageId !== undefined) {
       label += ` [${pageId}]`;
+      if (ctaPageIds.has(pageId)) {
+        label += " • CTA";
+      }
     }
     if (status.isCMS) {
       label += " ✓";
