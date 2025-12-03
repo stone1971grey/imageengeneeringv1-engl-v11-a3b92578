@@ -111,7 +111,7 @@ const MetaNavigationEditorComponent = ({ data, onChange, onSave, availableSegmen
                         value={segment.id}
                         className="text-white data-[highlighted]:bg-gray-800 data-[highlighted]:text-white cursor-pointer"
                       >
-                        {segment.id}  {segment.title || 'Untitled segment'}
+                        {segment.id} - {segment.title || 'Untitled segment'}
                       </SelectItem>
                     ))}
                   </SelectContent>
