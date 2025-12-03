@@ -3559,6 +3559,31 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </div>
+
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button
+                variant="decision"
+                className="flex items-center gap-2"
+                onClick={() => navigate(`/${language}/admin-dashboard/news`)}
+              >
+                <Pencil className="h-4 w-4" />
+                Manage News
+              </Button>
+              <Button
+                variant="decision"
+                className="flex items-center gap-2"
+                onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
+              >
+                SEO Settings
+              </Button>
+              <Button
+                variant="decision"
+                className="flex items-center gap-2"
+                onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
+              >
+                Translation Glossary
+              </Button>
+            </div>
           </div>
           
           {/* Rechte Seite: Action Buttons - erhöht positioniert */}
@@ -4262,28 +4287,6 @@ const AdminDashboard = () => {
               </Button>
             </div>
             
-            {/* Zweite Reihe: Manage News, SEO Settings, Glossary */}
-            <div className="flex items-center gap-3">
-              <Button
-                onClick={() => navigate(`/${language}/admin-dashboard/news`)}
-                className="!bg-indigo-600 !text-white hover:!bg-indigo-700 flex items-center gap-2 border-0"
-              >
-                <Pencil className="h-4 w-4" />
-                Manage News
-              </Button>
-              <Button
-                onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
-                className="!bg-teal-600 !text-white hover:!bg-teal-700 border-0"
-              >
-                SEO Settings
-              </Button>
-              <Button
-                onClick={() => setIsGlossaryOpen(!isGlossaryOpen)}
-                className="!bg-purple-600 !text-white hover:!bg-purple-700 border-0"
-              >
-                Translation Glossary
-              </Button>
-            </div>
           </div>
         </div>
 
