@@ -168,6 +168,36 @@ const Navigation = () => {
 
     loadFlyoutData();
   }, []);
+
+  // Load CTA configuration for navigation buttons (per group like "your-solution" or "products")
+  useEffect(() => {
+    const loadCtaConfig = async () => {
+      const { data, error } = await supabase
+        .from('page_registry')
+        .select('page_slug, cta_group, cta_label, cta_icon')
+        .not('cta_group', 'is', null);
+
+      if (error) {
+        console.error('Error loading CTA config:', error);
+        return;
+      }
+
+      const mapping: Record<string, { slug: string; label: string; icon: string | null }> = {};
+      (data || []).forEach((row: any) => {
+        if (row.cta_group) {
+          mapping[row.cta_group] = {
+            slug: row.page_slug,
+            label: row.cta_label || '',
+            icon: row.cta_icon || null,
+          };
+        }
+      });
+
+      setPageCtaConfig(mapping);
+    };
+
+    loadCtaConfig();
+  }, []);
   // Check authentication status
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -1525,12 +1555,20 @@ const Navigation = () => {
                           </Accordion>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                          <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium">
-                              <Microscope className="h-4 w-4 mr-2" />
-                              Inside the Testing Lab
-                            </Button>
-                          </Link>
+                          {(() => {
+                            const cta = pageCtaConfig['products'];
+                            const targetSlug = cta?.slug || 'inside-lab';
+                            const label = cta?.label || 'Inside the Testing Lab';
+
+                            return (
+                              <Link to={getLink(targetSlug, '/inside-lab')} onClick={() => setIsOpen(false)}>
+                                <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium">
+                                  <Microscope className="h-4 w-4 mr-2" />
+                                  {label}
+                                </Button>
+                              </Link>
+                            );
+                          })()}
                         </div>
                       </AccordionContent>
                     </AccordionItem>

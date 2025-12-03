@@ -364,6 +364,9 @@ const AdminDashboard = () => {
     designIcon?: string | null;
     flyoutImageUrl?: string | null;
     flyoutDescription?: string | null;
+    ctaGroup?: string | null;
+    ctaLabel?: string | null;
+    ctaIcon?: string | null;
   } | null>(null);
   const [isDesignElementDialogOpen, setIsDesignElementDialogOpen] = useState(false);
   const [pendingDesignIcon, setPendingDesignIcon] = useState<string | null>(null);
@@ -372,7 +375,10 @@ const AdminDashboard = () => {
   const [flyoutDescription, setFlyoutDescription] = useState<string>('');
   const [isSavingFlyout, setIsSavingFlyout] = useState(false);
   const [isFlyoutMediaDialogOpen, setIsFlyoutMediaDialogOpen] = useState(false);
-
+  const [isCtaDialogOpen, setIsCtaDialogOpen] = useState(false);
+  const [ctaGroup, setCtaGroup] = useState<string>('none');
+  const [ctaLabel, setCtaLabel] = useState<string>('');
+  const [isSavingCta, setIsSavingCta] = useState(false);
   // Multilingual Rainbow - Split Screen State
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => 
     localStorage.getItem('tiles-split-screen') === 'true'
@@ -408,6 +414,11 @@ const AdminDashboard = () => {
     { key: 'file', label: 'Generic Page', Icon: FileText },
   ];
 
+  const CTA_GROUP_OPTIONS = [
+    { key: 'none', label: 'No CTA (disabled)' },
+    { key: 'your-solution', label: 'Your Solution flyout' },
+    { key: 'products', label: 'Products & Test Services flyout' },
+  ];
 
   // Autosave for Hero section - only saves to localStorage
   useAdminAutosave({
@@ -879,7 +890,7 @@ const AdminDashboard = () => {
       
       const { data, error } = await supabase
         .from("page_registry")
-        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description")
+        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon")
         .eq("page_slug", querySlug)
         .maybeSingle();
       
@@ -898,6 +909,9 @@ const AdminDashboard = () => {
           designIcon: (data as any).design_icon ?? null,
           flyoutImageUrl: (data as any).flyout_image_url ?? null,
           flyoutDescription: (data as any).flyout_description ?? null,
+          ctaGroup: (data as any).cta_group ?? null,
+          ctaLabel: (data as any).cta_label ?? null,
+          ctaIcon: (data as any).cta_icon ?? null,
         });
       } else {
         setPageInfo(null);
@@ -908,14 +922,18 @@ const AdminDashboard = () => {
     }
   };
 
-  // Sync flyout editor state when pageInfo changes
+  // Sync flyout & CTA editor state when pageInfo changes
   useEffect(() => {
     if (pageInfo) {
       setFlyoutImageUrl(pageInfo.flyoutImageUrl ?? null);
       setFlyoutDescription(pageInfo.flyoutDescription ?? '');
+      setCtaGroup(pageInfo.ctaGroup ?? 'none');
+      setCtaLabel(pageInfo.ctaLabel ?? '');
     } else {
       setFlyoutImageUrl(null);
       setFlyoutDescription('');
+      setCtaGroup('none');
+      setCtaLabel('');
     }
   }, [pageInfo]);
 
@@ -976,7 +994,67 @@ const AdminDashboard = () => {
     }
   };
 
-  // Load segment registry to get all segment IDs
+  const handleSaveCtaConfig = async () => {
+    if (!pageInfo) return;
+
+    try {
+      setIsSavingCta(true);
+
+      // If a group (your-solution/products) is selected, first clear that group from other pages
+      if (ctaGroup !== 'none') {
+        const { error: clearError } = await supabase
+          .from('page_registry')
+          .update({ cta_group: null, cta_label: null, cta_icon: null })
+          .eq('cta_group', ctaGroup)
+          .neq('page_id', pageInfo.pageId);
+
+        if (clearError) {
+          console.warn('[handleSaveCtaConfig] Warning clearing existing CTA group:', clearError);
+        }
+      }
+
+      let updates: any = {};
+
+      if (ctaGroup === 'none') {
+        updates = { cta_group: null, cta_label: null, cta_icon: null };
+      } else {
+        const iconKey = ctaGroup === 'your-solution' ? 'search' : ctaGroup === 'products' ? 'microscope' : null;
+        const finalLabel = ctaLabel && ctaLabel.trim().length > 0 ? ctaLabel.trim() : pageInfo.pageTitle;
+
+        updates = {
+          cta_group: ctaGroup,
+          cta_label: finalLabel,
+          cta_icon: iconKey,
+        };
+      }
+
+      const { error } = await supabase
+        .from('page_registry')
+        .update(updates)
+        .eq('page_id', pageInfo.pageId);
+
+      if (error) {
+        console.error('[handleSaveCtaConfig] Error updating CTA config:', error);
+        toast.error('Failed to save navigation CTA');
+        return;
+      }
+
+      setPageInfo(prev => prev ? {
+        ...prev,
+        ctaGroup: ctaGroup === 'none' ? null : ctaGroup,
+        ctaLabel: ctaGroup === 'none' ? null : (updates.cta_label as string),
+        ctaIcon: ctaGroup === 'none' ? null : (updates.cta_icon as string | null),
+      } : prev);
+
+      toast.success('Navigation CTA saved');
+      setIsCtaDialogOpen(false);
+    } catch (error) {
+      console.error('[handleSaveCtaConfig] Unexpected error:', error);
+      toast.error('Failed to save navigation CTA');
+    } finally {
+      setIsSavingCta(false);
+    }
+  };
   // IMPORTANT: Only load non-deleted segments (deleted=false or deleted IS NULL)
   // to prevent showing deleted segments, but keep their IDs in registry forever
   const loadSegmentRegistry = async () => {
@@ -3887,6 +3965,89 @@ const AdminDashboard = () => {
                           Save
                         </Button>
                       </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              {/* Navigation CTA Dialog */}
+              <Dialog open={isCtaDialogOpen} onOpenChange={setIsCtaDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
+                    title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
+                  >
+                    <Zap className="h-4 w-4" />
+                    Navigation CTA
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle>Navigation CTA for this page</DialogTitle>
+                    <DialogDescription>
+                      Define whether this page should be used as a call-to-action button in the main navigation flyouts.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 mt-4">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-2">
+                        Only one page can be assigned per CTA group. Saving here will replace any existing CTA for the selected group.
+                      </p>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">CTA Group</label>
+                      <select
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                        value={ctaGroup}
+                        onChange={(e) => setCtaGroup(e.target.value)}
+                      >
+                        {CTA_GROUP_OPTIONS.map((opt) => (
+                          <option key={opt.key} value={opt.key}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Button label</label>
+                      <Input
+                        type="text"
+                        value={ctaLabel}
+                        onChange={(e) => setCtaLabel(e.target.value)}
+                        placeholder={pageInfo?.pageTitle || 'Button label'}
+                        className="bg-white text-black"
+                      />
+                      <p className="mt-1 text-xs text-gray-500">
+                        If left empty, the page title "{pageInfo?.pageTitle}" will be used.
+                      </p>
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2 border-t mt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setCtaGroup('none');
+                          setCtaLabel('');
+                        }}
+                      >
+                        Clear CTA
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        onClick={handleSaveCtaConfig}
+                        disabled={isSavingCta}
+                      >
+                        {isSavingCta ? 'Saving...' : (
+                          <>
+                            <Save className="h-3 w-3 mr-1" />
+                            Save CTA
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </div>
                 </DialogContent>
