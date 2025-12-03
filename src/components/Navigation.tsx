@@ -1562,12 +1562,12 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           {(() => {
-                            const cta = pageCtaConfig['products'];
-                            const targetSlug = cta?.slug || 'inside-lab';
-                            const label = cta?.label || 'Inside the Testing Lab';
+                             const cta = pageCtaConfig['products'];
+                             const targetSlug = cta?.slug || 'inside-lab';
+                             const label = cta?.label || t.nav.visitTestingLab;
 
-                            const iconKey = cta?.icon || 'microscope';
-                            const CtaIcon = iconKey === 'search' ? Search : iconKey === 'flask' ? FlaskConical : iconKey === 'target' ? Target : Microscope;
+                             const iconKey = cta?.icon || 'microscope';
+                             const CtaIcon = iconKey === 'search' ? Search : iconKey === 'flask' ? FlaskConical : iconKey === 'target' ? Target : Microscope;
 
                             return (
                               <Link to={getLink(targetSlug, '/inside-lab')} onClick={() => setIsOpen(false)}>
