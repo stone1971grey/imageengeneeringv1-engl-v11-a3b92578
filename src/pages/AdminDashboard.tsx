@@ -3516,8 +3516,8 @@ const AdminDashboard = () => {
                 {/* Actions rechts in einer Flucht, ohne über den Badges zu liegen */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <Button
-                    variant="outline"
-                    className="flex items-center gap-2 bg-blue-600 text-white border-blue-700 hover:bg-blue-700 hover:border-blue-800"
+                    variant="decision"
+                    className="flex items-center gap-2"
                     disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
                     title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
                     onClick={() => {
@@ -3530,8 +3530,8 @@ const AdminDashboard = () => {
                   </Button>
 
                   <Button
-                    variant="outline"
-                    className="flex items-center gap-2 bg-blue-500 text-white border-blue-600 hover:bg-blue-600 hover:border-blue-700"
+                    variant="decision"
+                    className="flex items-center gap-2"
                     disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
                     title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
                     onClick={() => {
@@ -3554,7 +3554,8 @@ const AdminDashboard = () => {
               <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
                 <DialogTrigger asChild>
                   <Button
-                    className="bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
+                    variant="decision"
+                    className="flex items-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
                     Add New Segment
