@@ -53,7 +53,7 @@ export const navigationDataDe = {
     "Medical & Endoscopy": {
       description: "Bildqualität in medizinischer Bildgebung und Diagnosesystemen",
       subgroups: [
-        { name: "Farbkalibrierung", link: "#" },
+        { name: "Farbkalibrierung", link: "/your-solution/medical-endoscopy/color-calibration" },
         { name: "Schwachlichttests", link: "#" },
         { name: "Optische Verzerrung", link: "#" },
         { name: "ISP-Tuning", link: "#" },

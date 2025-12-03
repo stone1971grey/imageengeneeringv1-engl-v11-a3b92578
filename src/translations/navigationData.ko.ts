@@ -53,7 +53,7 @@ export const navigationDataKo = {
     "Medical & Endoscopy": {
       description: "의료 영상 및 진단 시스템의 이미지 품질",
       subgroups: [
-        { name: "색상 보정", link: "#" },
+        { name: "색상 보정", link: "/your-solution/medical-endoscopy/color-calibration" },
         { name: "저조도 테스트", link: "#" },
         { name: "광학 왜곡", link: "#" },
         { name: "ISP 튜닝", link: "#" },

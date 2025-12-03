@@ -53,7 +53,7 @@ export const navigationDataEn = {
     "Medical & Endoscopy": {
       description: "Image quality in medical imaging and diagnostic systems",
       subgroups: [
-        { name: "Color Calibration", link: "#" },
+        { name: "Color Calibration", link: "/your-solution/medical-endoscopy/color-calibration" },
         { name: "Low-Light Testing", link: "#" },
         { name: "Optical Distortion", link: "#" },
         { name: "ISP Tuning", link: "#" },
