@@ -6457,21 +6457,13 @@ const AdminDashboard = () => {
                   {segment.type === 'meta-navigation' && (() => {
                     // Build available segments list with their titles
                     // IMPORTANT: Use numeric segment_id from segmentRegistry, not string keys
-                    const availableSegments = [];
-                    
-                    // Hero segment
-                    if (segmentRegistry['hero']) {
-                      availableSegments.push({
-                        id: segmentRegistry['hero'].toString(),
-                        title: content.hero_title || 'Produkt Hero'
-                      });
-                    }
+                    const availableSegments: { id: string; title: string }[] = [];
                     
                     // Tiles segment
                     if (segmentRegistry['tiles']) {
                       availableSegments.push({
                         id: segmentRegistry['tiles'].toString(),
-                        title: content.applications_title || 'Tiles Section'
+                        title: content.applications_title || 'Tiles Section',
                       });
                     }
                     
@@ -6479,7 +6471,7 @@ const AdminDashboard = () => {
                     if (segmentRegistry['banner']) {
                       availableSegments.push({
                         id: segmentRegistry['banner'].toString(),
-                        title: bannerTitle || 'Banner Section'
+                        title: bannerTitle || 'Banner Section',
                       });
                     }
                     
@@ -6487,27 +6479,39 @@ const AdminDashboard = () => {
                     if (segmentRegistry['solutions']) {
                       availableSegments.push({
                         id: segmentRegistry['solutions'].toString(),
-                        title: solutionsTitle || 'Image & Text Section'
+                        title: solutionsTitle || 'Image & Text Section',
                       });
                     }
                     
                     // Dynamic segments - ONLY include if they exist in segmentRegistry (not deleted)
                     pageSegments.forEach((seg) => {
-                      if (seg.type !== 'meta-navigation' && seg.data?.title && segmentRegistry[seg.id]) {
-                        availableSegments.push({
-                          id: segmentRegistry[seg.id].toString(),
-                          title: seg.data.title
-                        });
-                      }
+                      // Meta Navigation selbst und der erste Hero werden NICHT als Ziel angeboten
+                      if (seg.type === 'meta-navigation' || seg.type === 'hero') return;
+                      
+                      const numericId = segmentRegistry[seg.id];
+                      if (!numericId) return;
+                      
+                      const fallbackTitle = seg.data?.title ||
+                        (typeof seg.type === 'string'
+                          ? seg.type.charAt(0).toUpperCase() + seg.type.slice(1)
+                          : 'Segment');
+                      
+                      availableSegments.push({
+                        id: numericId.toString(),
+                        title: fallbackTitle,
+                      });
                     });
                     
                     // Footer segment
                     if (segmentRegistry['footer']) {
                       availableSegments.push({
                         id: segmentRegistry['footer'].toString(),
-                        title: 'Footer'
+                        title: 'Footer',
                       });
                     }
+                    
+                    // Immer numerisch nach Segment-ID sortieren (z.B. 337 vor 338)
+                    availableSegments.sort((a, b) => Number(a.id) - Number(b.id));
                     
                     return (
                       <MetaNavigationEditor
