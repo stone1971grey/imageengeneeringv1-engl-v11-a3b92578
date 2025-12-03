@@ -3517,7 +3517,7 @@ const AdminDashboard = () => {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+                    className="flex items-center gap-2 bg-blue-600 text-white border-blue-700 hover:bg-blue-700 hover:border-blue-800"
                     disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
                     title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
                     onClick={() => {
@@ -3531,7 +3531,7 @@ const AdminDashboard = () => {
 
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2 bg-blue-100 text-blue-800 border-blue-300 hover:bg-blue-200"
+                    className="flex items-center gap-2 bg-blue-500 text-white border-blue-600 hover:bg-blue-600 hover:border-blue-700"
                     disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
                     title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
                     onClick={() => {
