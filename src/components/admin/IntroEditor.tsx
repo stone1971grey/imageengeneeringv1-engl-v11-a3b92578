@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Heading1 } from "lucide-react";
-import { GeminiIcon } from "@/components/GeminiIcon";
+
 import { toast } from "sonner";
 
 interface IntroEditorProps {
@@ -365,16 +365,6 @@ const IntroEditorComponent = ({ pageSlug, segmentKey, language, onSave }: IntroE
         {isSaving ? "Saving..." : "Save Changes"}
       </Button>
 
-      {language !== 'en' && (
-        <Button 
-          onClick={handleTranslate}
-          disabled={isTranslating}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-        >
-          <GeminiIcon className="h-4 w-4 mr-2" />
-          {isTranslating ? "Translating..." : "Translate Automatically"}
-        </Button>
-      )}
     </div>
   );
 };
