@@ -295,30 +295,19 @@ export const CMSPageOverview = () => {
   const getCtaBadge = (page: CMSPage) => {
     if (!page.cta_group || page.cta_group === 'none') return null;
 
-    // Determine icon based on stored cta_icon with sensible fallback per group
-    let IconComponent = Search;
-    if (page.cta_icon === 'microscope') {
-      IconComponent = Microscope;
-    } else if (page.cta_icon === 'search' || !page.cta_icon) {
-      IconComponent = Search;
-    }
-
     // Color scheme: yellow for "Your Solution" CTA, black for "Products" CTA
     const isYourSolution = page.cta_group === 'your-solution';
     const badgeClasses = isYourSolution
       ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
       : 'bg-black text-white border-gray-600';
 
-    const label = isYourSolution ? 'CTA Your Solution' : 'CTA Products';
-
     return (
       <Badge
         variant="outline"
-        className={`flex items-center gap-1 px-2 py-0.5 text-xs ${badgeClasses}`}
-        title={label}
+        className={`px-2 py-0.5 text-xs font-semibold tracking-wide ${badgeClasses}`}
+        title="Navigation CTA active for this page"
       >
-        <IconComponent className="h-3 w-3" />
-        <span>{label}</span>
+        CTA
       </Badge>
     );
   };
