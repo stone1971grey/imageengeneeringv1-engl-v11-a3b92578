@@ -123,6 +123,11 @@ video::-ms-media-controls {
     --admin-control-1: 48 96% 46%;
     --admin-control-2: 48 96% 54%;
     --admin-control-3: 48 96% 62%;
+
+    /* Admin utility buttons - colorful trio for secondary tools */
+    --admin-utility-1: 280 86% 60%; /* violet */
+    --admin-utility-2: 190 90% 45%; /* teal */
+    --admin-utility-3: 340 82% 58%; /* magenta */
     
     /* Hotspot color */
     --hotspot-primary: 205 45% 44%;
