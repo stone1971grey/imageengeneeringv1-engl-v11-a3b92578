@@ -242,6 +242,7 @@ const DynamicCMSPage = () => {
       setFullHeroOverrides(fullHeroOverridesLocal);
 
       // Für Nicht-Englisch-Sprachen: Bild- und Layout-Fallback von EN für Banner-Segmente
+      // und Verwendung der EN-Tab-Reihenfolge als Master für alle Sprachen
       let englishSegmentsForFallback: any[] = [];
       if (urlLanguage !== 'en') {
         const { data: enRows, error: enError } = await supabase
@@ -253,6 +254,12 @@ const DynamicCMSPage = () => {
         if (!enError && enRows) {
           const parsedEn = parseContentRows(enRows || []);
           englishSegmentsForFallback = parsedEn.segments || [];
+
+          // Wichtig: Tab-Reihenfolge immer von EN übernehmen,
+          // damit neue Segmente (z.B. Full Hero) in allen Sprachen sichtbar sind.
+          if (parsedEn.tabs && parsedEn.tabs.length > 0) {
+            loadedTabOrder = parsedEn.tabs;
+          }
         }
       }
 

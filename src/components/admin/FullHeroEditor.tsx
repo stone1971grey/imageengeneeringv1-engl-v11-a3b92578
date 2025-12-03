@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { X, Heading1 } from "lucide-react";
-import { GeminiIcon } from "@/components/GeminiIcon";
+
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
@@ -1104,16 +1104,6 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
         )}
 
         <div className="flex gap-2">
-          {language !== 'en' && (
-            <Button 
-              onClick={handleTranslate}
-              disabled={isTranslating}
-              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-            >
-              <GeminiIcon className="h-4 w-4 mr-2" />
-              {isTranslating ? "Translating..." : "Translate Automatically"}
-            </Button>
-          )}
           <Button 
             onClick={handleSave} 
             className="flex-1"
