@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical } from "lucide-react";
+import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical, Microscope } from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -290,6 +290,37 @@ export const CMSPageOverview = () => {
       return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Products</Badge>;
     }
     return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Other</Badge>;
+  };
+
+  const getCtaBadge = (page: CMSPage) => {
+    if (!page.cta_group || page.cta_group === 'none') return null;
+
+    // Determine icon based on stored cta_icon with sensible fallback per group
+    let IconComponent = Search;
+    if (page.cta_icon === 'microscope') {
+      IconComponent = Microscope;
+    } else if (page.cta_icon === 'search' || !page.cta_icon) {
+      IconComponent = Search;
+    }
+
+    // Color scheme: yellow for "Your Solution" CTA, black for "Products" CTA
+    const isYourSolution = page.cta_group === 'your-solution';
+    const badgeClasses = isYourSolution
+      ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
+      : 'bg-black text-white border-gray-600';
+
+    const label = isYourSolution ? 'CTA Your Solution' : 'CTA Products';
+
+    return (
+      <Badge
+        variant="outline"
+        className={`flex items-center gap-1 px-2 py-0.5 text-xs ${badgeClasses}`}
+        title={label}
+      >
+        <IconComponent className="h-3 w-3" />
+        <span>{label}</span>
+      </Badge>
+    );
   };
 
   const getLanguageLabel = (langCode: string) => {
@@ -693,6 +724,7 @@ export const CMSPageOverview = () => {
     page: CMSPage;
     indentLevel: number;
     getCategoryBadge: (slug: string) => JSX.Element;
+    getCtaBadge: (page: CMSPage) => JSX.Element | null;
     getLanguageLabel: (langCode: string) => string;
     getEditUrl: (slug: string) => string;
     getPageUrl: (pageId: number) => string;
@@ -769,6 +801,7 @@ export const CMSPageOverview = () => {
         <TableCell className="font-mono text-sm text-gray-400">
           <div className="flex items-center gap-2">
             <span>{page.page_slug}</span>
+            {getCtaBadge(page)}
             <EditSlugDialog
               pageId={page.page_id}
               currentSlug={page.page_slug}
@@ -959,6 +992,7 @@ export const CMSPageOverview = () => {
                       page={page}
                       indentLevel={getIndentLevel(page)}
                       getCategoryBadge={getCategoryBadge}
+                      getCtaBadge={getCtaBadge}
                       getLanguageLabel={getLanguageLabel}
                       getEditUrl={getEditUrl}
                       getPageUrl={getPageUrl}
