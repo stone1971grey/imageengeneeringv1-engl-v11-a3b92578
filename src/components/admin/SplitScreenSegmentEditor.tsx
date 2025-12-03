@@ -127,7 +127,7 @@ const SplitScreenSegmentEditorComponent = ({
                   <p className="text-green-200 text-xs">Master language - all translations reference this</p>
                 </div>
               </div>
-              <div className="border-2 border-green-600/30 rounded-lg p-1 bg-green-950/20">
+              <div className="rounded-lg">
                 {children('en')}
               </div>
             </div>
@@ -145,7 +145,7 @@ const SplitScreenSegmentEditorComponent = ({
                   <p className="text-purple-200 text-xs">Edit translation for this language</p>
                 </div>
               </div>
-              <div className="border-2 border-purple-600/30 rounded-lg p-1 bg-purple-950/20">
+              <div className="rounded-lg">
                 {children(targetLanguage)}
               </div>
             </div>
@@ -160,7 +160,7 @@ const SplitScreenSegmentEditorComponent = ({
                 <p className="text-green-200 text-xs">Editing in single-language mode</p>
               </div>
             </div>
-            <div className="border-2 border-green-600/30 rounded-lg p-1 bg-green-950/20">
+            <div className="rounded-lg">
               {children('en')}
             </div>
           </div>
