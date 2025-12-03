@@ -342,13 +342,11 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
         setCtaText(translated["3"] || sourceCtaText);
         toast.success("Content translated successfully!");
       }
-    } catch (error: any) {
-      console.error('Translation error:', error);
-      toast.error(error.message || "Translation failed");
     } finally {
-      setIsTranslating(false);
+      // Small delay so the visual translation feedback bar is clearly visible
+      setTimeout(() => setIsTranslating(false), 600);
     }
-  };
+   };
 
   const handleSave = async () => {
     setIsSaving(true);
