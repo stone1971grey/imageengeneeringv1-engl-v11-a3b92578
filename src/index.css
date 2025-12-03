@@ -111,6 +111,9 @@ video::-ms-media-controls {
     --automotive-tests-bg: 77 30% 90%;
     --training-button: 45 95% 49%;
     --training-bg: 45 60% 85%;
+
+    /* SEO button color (true orange between yellow and red) */
+    --seo-button: 34 96% 52%;
     
     /* Button variants */
     --decision-button: 77 56% 37%;

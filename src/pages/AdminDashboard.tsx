@@ -3571,7 +3571,7 @@ const AdminDashboard = () => {
               </Button>
               <Button
                 variant="decision"
-                className="flex items-center gap-2 bg-[hsl(var(--orange))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--orange))]/90 shadow-soft hover:shadow-lg"
+                className="flex items-center gap-2 bg-[hsl(var(--seo-button))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--seo-button))]/90 shadow-soft hover:shadow-lg"
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
               >
                 <Eye className="h-4 w-4" />
