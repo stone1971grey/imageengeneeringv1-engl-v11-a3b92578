@@ -55,6 +55,9 @@ interface CMSPage {
   created_at: string;
   segment_count: number;
   segment_languages: string[];
+  cta_group?: string | null;
+  cta_label?: string | null;
+  cta_icon?: string | null;
 }
 
 export const CMSPageOverview = () => {
@@ -111,7 +114,7 @@ export const CMSPageOverview = () => {
       // Load all pages from page_registry, sorted by position
       const { data: pagesData, error: pagesError } = await supabase
         .from("page_registry")
-        .select("*")
+        .select("page_id, page_slug, page_title, parent_slug, parent_id, position, created_at, cta_group, cta_label, cta_icon")
         .order("position", { ascending: true });
 
       if (pagesError) throw pagesError;
@@ -151,7 +154,7 @@ export const CMSPageOverview = () => {
       }, {} as Record<string, Set<string>>);
 
       // Merge data
-      const enrichedPages: CMSPage[] = (pagesData || []).map((page) => ({
+      const enrichedPages: CMSPage[] = (pagesData || []).map((page: any) => ({
         page_id: page.page_id,
         page_slug: page.page_slug,
         page_title: page.page_title,
@@ -165,6 +168,9 @@ export const CMSPageOverview = () => {
         segment_languages: pageLanguages[page.page_slug]
           ? Array.from(pageLanguages[page.page_slug]).sort()
           : [],
+        cta_group: page.cta_group,
+        cta_label: page.cta_label,
+        cta_icon: page.cta_icon,
       }));
 
       setPages(enrichedPages);
