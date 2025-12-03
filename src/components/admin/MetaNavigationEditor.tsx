@@ -185,7 +185,8 @@ const MetaNavigationEditorComponent = ({
       console.error('[MetaNavigationEditor] translation error', error);
       toast.error(error.message || 'Translation failed');
     } finally {
-      setIsTranslating(false);
+      // Small delay so the visual feedback is actually noticeable
+      setTimeout(() => setIsTranslating(false), 600);
     }
   };
 
