@@ -178,7 +178,7 @@ const handler = async (req: Request): Promise<Response> => {
           // Update existing contact - update all fields including name changes
           console.log("Updating existing Mautic contact - updating all fields");
           
-          // First, fetch existing contact to get current tags
+          // First, fetch existing contact to get current tags and marketing_optin
           const contactResponse = await fetch(`${mauticBaseUrl}/api/contacts/${mauticContactId}`, {
             method: "GET",
             headers: {
@@ -188,12 +188,18 @@ const handler = async (req: Request): Promise<Response> => {
           });
 
           let existingTags: string[] = [];
+          let currentMarketingOptin: string | null = null;
+
           if (contactResponse.ok) {
             const contactData = await contactResponse.json();
             if (contactData.contact && contactData.contact.tags) {
               existingTags = contactData.contact.tags.map((tag: any) => tag.tag || tag);
             }
+            currentMarketingOptin = contactData.contact?.fields?.all?.marketing_optin ?? null;
             console.log("Existing tags:", existingTags);
+            console.log("Current marketing_optin:", currentMarketingOptin);
+          } else {
+            console.error("Failed to load existing contact for tag/opt-in check", await contactResponse.text());
           }
 
           // Add new event tags to existing tags (avoid duplicates)
@@ -216,6 +222,11 @@ const handler = async (req: Request): Promise<Response> => {
             company_logo: companyLogoUrl, // Add company logo for mailings
             tags: allTags, // Use combined tags array
           };
+
+          // If the contact has no marketing_optin yet, mark as "pending"
+          if (!currentMarketingOptin) {
+            updateData.marketing_optin = "pending";
+          }
 
           // Only update these fields if they have values
           if (data.phone) updateData.phone = data.phone;
