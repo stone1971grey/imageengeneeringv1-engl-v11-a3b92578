@@ -72,6 +72,9 @@ const DynamicCMSPage = () => {
   const pathParts = location.pathname.replace(/^\/+/, "").split('/');
   const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
   const currentUrlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
+  
+  // Styleguide-Segmentseiten: spezielle Umrandung für alle Segmente anzeigen
+  const isSegmentStyleguidePage = pageSlug.startsWith('styleguide/segments') || pageSlug.startsWith('styleguide/segmants');
 
   useEffect(() => {
     if (pageSlug) {
@@ -1071,7 +1074,7 @@ const DynamicCMSPage = () => {
         />
       )}
       
-      {/* Render all other segments in tab order (excluding meta-navigation) */}
+      {/* Render all andere Segmente in Tab-Reihenfolge (ohne Meta Navigation) */}
       {tabOrder
         .filter(segmentId => {
           const segment = pageSegments.find(
@@ -1079,7 +1082,22 @@ const DynamicCMSPage = () => {
           );
           return segment?.type !== 'meta-navigation';
         })
-        .map((segmentId) => renderSegment(segmentId))
+        .map((segmentId) => {
+          const content = renderSegment(segmentId);
+
+          if (!isSegmentStyleguidePage || !content) {
+            return content;
+          }
+
+          return (
+            <div
+              key={segmentId}
+              className="relative my-8 mx-4 rounded-xl border-2 border-dashed border-primary/40 bg-background/40"
+            >
+              {content}
+            </div>
+          );
+        })
       }
       <Footer />
     </div>
