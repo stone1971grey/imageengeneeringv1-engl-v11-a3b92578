@@ -4207,8 +4207,28 @@ const AdminDashboard = () => {
 
                   <div className="space-y-4 mt-2">
                     <div>
-                      <p className="text-xs text-gray-600 mb-1">
-                        Current page: <span className="font-semibold">{pageInfo?.pageTitle}</span> ({pageInfo?.pageSlug})
+                      <p className="text-xs text-gray-600 mb-1 flex items-center gap-2">
+                        <span>
+                          Current page: <span className="font-semibold">{pageInfo?.pageTitle}</span> ({pageInfo?.pageSlug})
+                        </span>
+                        {pageInfo?.ctaGroup && pageInfo.ctaGroup !== 'none' && (
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold ${
+                              pageInfo.ctaGroup === 'your-solution'
+                                ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
+                                : 'bg-black text-white border-gray-600'
+                            }`}
+                          >
+                            {pageInfo.ctaIcon === 'microscope' ? (
+                              <span className="inline-flex items-center">🔬</span>
+                            ) : (
+                              <span className="inline-flex items-center">🔍</span>
+                            )}
+                            <span>
+                              {pageInfo.ctaGroup === 'your-solution' ? 'Navigation CTA: Your Solution' : 'Navigation CTA: Products'}
+                            </span>
+                          </span>
+                        )}
                       </p>
                       <p className="text-xs text-gray-500">
                         This teaser is used in the main navigation flyout below the list of items.
