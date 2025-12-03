@@ -87,8 +87,9 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
       handleTranslate();
     };
 
-    window.addEventListener('phg-translate', handleExternalTranslate);
-    return () => window.removeEventListener('phg-translate', handleExternalTranslate);
+    // Listen for SplitScreen "product-hero-gallery-translate" events
+    window.addEventListener('product-hero-gallery-translate', handleExternalTranslate);
+    return () => window.removeEventListener('product-hero-gallery-translate', handleExternalTranslate);
   }, [pageSlug, segmentId, language]);
 
 
@@ -500,14 +501,15 @@ const ProductHeroGalleryEditor = ({ data, onChange, onSave, pageSlug, segmentId,
         // DO NOT call onChange here - it would contaminate the English editor's display
         // The user must click Save to persist the translation
         toast.success("Content translated successfully! Click 'Save' to persist changes.");
-      }
-    } catch (error: any) {
-      console.error('Translation error:', error);
-      toast.error(error.message || "Translation failed");
-    } finally {
-      setIsTranslating(false);
-    }
-  };
+       }
+     } catch (error: any) {
+       console.error('Translation error:', error);
+       toast.error(error.message || "Translation failed");
+     } finally {
+       // Small delay so the visual translation feedback bar is clearly visible
+       setTimeout(() => setIsTranslating(false), 600);
+     }
+   };
 
   const handleSaveChanges = async () => {
     setIsSaving(true);
