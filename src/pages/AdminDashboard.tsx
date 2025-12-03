@@ -6459,50 +6459,73 @@ const AdminDashboard = () => {
                     // IMPORTANT: Use numeric segment_id from segmentRegistry, not string keys
                     const availableSegments: { id: string; title: string }[] = [];
                     
-                    // Tiles segment
+                    // Helper: build label exactly like in the segment tab bar
+                    const buildSegmentLabel = (segType: string, displayNumber: number): string => {
+                      if (segType === 'hero') return `Produkt Hero - F ${displayNumber}`;
+                      if (segType === 'product-hero-gallery') return `Product Gallery - G ${displayNumber}`;
+                      if (segType === 'tiles') return `Tiles - H ${displayNumber}`;
+                      if (segType === 'banner') return `Banner - J ${displayNumber}`;
+                      if (segType === 'banner-p') return `Banner-P ${displayNumber}`;
+                      if (segType === 'image-text') return `Image & Text - I ${displayNumber}`;
+                      if (segType === 'feature-overview') return `Features - K ${displayNumber}`;
+                      if (segType === 'table') return `Table - L ${displayNumber}`;
+                      if (segType === 'faq') return `FAQ - O ${displayNumber}`;
+                      if (segType === 'video') return `Video - M ${displayNumber}`;
+                      if (segType === 'specification') return `Specification - N ${displayNumber}`;
+                      if (segType === 'news') return `Latest News - D ${displayNumber}`;
+                      if (segType === 'full-hero') return `Full Hero - A ${displayNumber}`;
+                      if (segType === 'intro') return `Intro - B ${displayNumber}`;
+                      if (segType === 'industries') return `Industries - C ${displayNumber}`;
+                      if (segType === 'debug') return `Debug ${displayNumber}`;
+                      return segType;
+                    };
+
+                    // Tiles segment (static tab)
                     if (segmentRegistry['tiles']) {
                       availableSegments.push({
                         id: segmentRegistry['tiles'].toString(),
-                        title: content.applications_title || 'Tiles Section',
+                        title: 'Tiles - H',
                       });
                     }
                     
-                    // Banner segment
+                    // Banner segment (static tab)
                     if (segmentRegistry['banner']) {
                       availableSegments.push({
                         id: segmentRegistry['banner'].toString(),
-                        title: bannerTitle || 'Banner Section',
+                        title: 'Banner - J',
                       });
                     }
                     
-                    // Solutions/Image & Text segment
+                    // Solutions/Image & Text segment (static tab)
                     if (segmentRegistry['solutions']) {
                       availableSegments.push({
                         id: segmentRegistry['solutions'].toString(),
-                        title: solutionsTitle || 'Image & Text Section',
+                        title: 'Image & Text - I',
                       });
                     }
                     
                     // Dynamic segments - ONLY include if they exist in segmentRegistry (not deleted)
                     pageSegments.forEach((seg) => {
-                      // Meta Navigation selbst und der erste Hero werden NICHT als Ziel angeboten
-                      if (seg.type === 'meta-navigation' || seg.type === 'hero') return;
+                      // Meta Navigation selbst NICHT als Ziel anbieten
+                      if (seg.type === 'meta-navigation') return;
                       
                       const numericId = segmentRegistry[seg.id];
                       if (!numericId) return;
                       
-                      const fallbackTitle = seg.data?.title ||
-                        (typeof seg.type === 'string'
-                          ? seg.type.charAt(0).toUpperCase() + seg.type.slice(1)
-                          : 'Segment');
+                      const segmentIndex = pageSegments.indexOf(seg);
+                      const sameTypeBefore = pageSegments
+                        .slice(0, segmentIndex)
+                        .filter((s) => s.type === seg.type).length;
+                      const displayNumber = sameTypeBefore + 1;
+                      const label = buildSegmentLabel(seg.type as string, displayNumber);
                       
                       availableSegments.push({
                         id: numericId.toString(),
-                        title: fallbackTitle,
+                        title: label,
                       });
                     });
                     
-                    // Footer segment
+                    // Footer segment (static tab)
                     if (segmentRegistry['footer']) {
                       availableSegments.push({
                         id: segmentRegistry['footer'].toString(),
