@@ -1190,7 +1190,11 @@ const Navigation = () => {
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                      <Car className="h-4 w-4" />
+                                      {(() => {
+                                        const key = pageDesignIcons['your-solution/automotive'];
+                                        const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                        return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                      })()}
                                       <span>{t.nav.automotive}</span>
                                     </Link>
                                  </div>
@@ -1217,7 +1221,11 @@ const Navigation = () => {
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                      <Shield className="h-4 w-4" />
+                                      {(() => {
+                                        const key = pageDesignIcons['your-solution/security-surveillance'];
+                                        const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                        return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                      })()}
                                       <span>{t.nav.securitySurveillance}</span>
                                     </div>
                                  </div>
@@ -1244,7 +1252,11 @@ const Navigation = () => {
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                     <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                      <Smartphone className="h-4 w-4" />
+                                       {(() => {
+                                         const key = pageDesignIcons['your-solution/mobile-phone'];
+                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                       })()}
                                       <span>{t.nav.mobilePhone}</span>
                                     </Link>
                                  </div>
@@ -1271,7 +1283,11 @@ const Navigation = () => {
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                       <Link to={getLink("web-camera", "/your-solution/web-camera")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                        <Camera className="h-4 w-4" />
+                                         {(() => {
+                                           const key = pageDesignIcons['your-solution/web-camera'];
+                                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                           return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                         })()}
                                         <span>{t.nav.webCamera}</span>
                                       </Link>
                                    </div>
@@ -1298,7 +1314,11 @@ const Navigation = () => {
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                       <Link to={getLink("machine-vision", "/your-solution/machine-vision")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                        <Cog className="h-4 w-4" />
+                                         {(() => {
+                                           const key = pageDesignIcons['your-solution/machine-vision'];
+                                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                           return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                         })()}
                                         <span>{t.nav.machineVision}</span>
                                       </Link>
                                    </div>
@@ -1356,7 +1376,11 @@ const Navigation = () => {
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                   <div className="flex items-center justify-between w-full">
                                      <Link to={getLink("scanners-archiving", "/your-solution/scanners-archiving")} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                       <ScanLine className="h-4 w-4" />
+                                        {(() => {
+                                          const key = pageDesignIcons['your-solution/scanners-archiving'];
+                                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                          return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                        })()}
                                        <span>{t.nav.scannersArchiving}</span>
                                      </Link>
                                   </div>
