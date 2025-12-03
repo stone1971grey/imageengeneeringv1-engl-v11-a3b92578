@@ -205,6 +205,20 @@ const AdminDashboard = () => {
     banner: 3,
     solutions: 4
   };
+
+  // Mapping from parent page slugs to navigation "industry" categories
+  // This is used to automatically create navigation_links entries for new CMS pages
+  // so that they immediately appear in the Your Solution flyout.
+  const INDUSTRY_PARENT_CATEGORY_BY_SLUG: Record<string, string> = {
+    'your-solution/automotive': 'Automotive',
+    'your-solution/security-surveillance': 'Security & Surveillance',
+    'your-solution/mobile-phone': 'Mobile Phone',
+    'your-solution/web-camera': 'Web Camera',
+    'your-solution/machine-vision': 'Machine Vision',
+    'your-solution/medical-endoscopy': 'Medical & Endoscopy',
+    'your-solution/scanners-archiving': 'Scanners & Archiving',
+    'your-solution/photography': 'Photo & Video',
+  };
   
   // Get selected page from URL parameter (normalize to last slug segment)
   const searchParams = new URLSearchParams(location.search);
@@ -1541,6 +1555,41 @@ const AdminDashboard = () => {
       if (contentError) throw contentError;
 
       toast.success("✅ Page content initialized!");
+
+      // Automatically create navigation_links entries so the new page
+      // appears in the Your Solution flyout (industries column)
+      const industryParentCategory = parent_slug_value
+        ? INDUSTRY_PARENT_CATEGORY_BY_SLUG[parent_slug_value]
+        : undefined;
+
+      if (industryParentCategory) {
+        try {
+          const navigationRows = languages.map((lang) => ({
+            category: 'industries',
+            language: lang,
+            active: true,
+            position: 0,
+            slug: `/${slug}`,
+            label_key: `industries.${industryParentCategory}.${pageTitle}`,
+            parent_category: industryParentCategory,
+            parent_label: pageTitle,
+            description: '',
+            icon_key: null,
+          }));
+
+          const { error: navError } = await supabase
+            .from('navigation_links')
+            .insert(navigationRows as any);
+
+          if (navError) {
+            console.error('[createNewCMSPageWithSlug] Error creating navigation_links:', navError);
+          } else {
+            toast.success('✅ Navigation entry created – page is now visible in Your Solution flyout');
+          }
+        } catch (navErr) {
+          console.error('[createNewCMSPageWithSlug] Unexpected navigation_links error:', navErr);
+        }
+      }
 
       // Grant editor access if needed
       if (isEditor && !isAdmin) {
