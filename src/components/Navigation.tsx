@@ -658,8 +658,8 @@ const Navigation = () => {
                       return (
                         <Link to={getLink(targetSlug, `/${targetSlug}`)}>
                           <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                            <CtaIcon className="h-4 w-4 mr-2" />
-                            <span className="text-sm font-medium">{label}</span>
+                            <CtaIcon className="h-5 w-5 mr-2" />
+                            <span className="text-lg font-medium">{label}</span>
                           </Button>
                         </Link>
                       );
@@ -896,8 +896,8 @@ const Navigation = () => {
                       return (
                         <Link to={getLink(targetSlug, '/inside-lab')}>
                           <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                            <CtaIcon className="h-4 w-4 mr-2" />
-                            <span className="text-sm font-medium">{label}</span>
+                            <CtaIcon className="h-5 w-5 mr-2" />
+                            <span className="text-lg font-medium">{label}</span>
                           </Button>
                         </Link>
                       );
@@ -1430,8 +1430,8 @@ const Navigation = () => {
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to={getLink("your-solution/find-your-solution", "/your-solution/find-your-solution")} onClick={() => setIsOpen(false)}>
-                            <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium">
-                              <Search className="h-4 w-4 mr-2" />
+                            <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium text-lg">
+                              <Search className="h-5 w-5 mr-2" />
                                <span className="hidden sm:inline">{t.hero.findYourSolution}</span>
                                <span className="sm:hidden">Your Perfect Solution</span>
                             </Button>
@@ -1595,8 +1595,8 @@ const Navigation = () => {
 
                             return (
                               <Link to={getLink(targetSlug, '/inside-lab')} onClick={() => setIsOpen(false)}>
-                                <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium">
-                                  <CtaIcon className="h-4 w-4 mr-2" />
+                                <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium text-lg">
+                                  <CtaIcon className="h-5 w-5 mr-2" />
                                   {label}
                                 </Button>
                               </Link>
