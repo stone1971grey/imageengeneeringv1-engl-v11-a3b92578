@@ -11,23 +11,34 @@ interface MetaNavigationProps {
 }
 
 const MetaNavigation = ({ data }: MetaNavigationProps) => {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, anchor: string, label: string) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
     e.preventDefault();
-    const targetId = anchor; // Wir vertrauen direkt auf den gespeicherten Wert aus dem Backend
-    const element = document.getElementById(targetId);
 
-    if (element) {
-      const navbarHeight = 85; // Main navigation (fixed header)
-      const extraOffset = 10;   // Small breathing space below Meta Navigation
-      const totalOffset = navbarHeight + extraOffset;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - totalOffset;
+    const targetElement = document.getElementById(anchor);
+    if (!targetElement) return;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+    // Dynamisch die Höhen der fixierten Navigationsleisten ermitteln
+    const fixedNavs = document.querySelectorAll('nav.fixed');
+    let mainNavHeight = 0;
+    let metaNavHeight = 0;
+
+    if (fixedNavs.length > 0) {
+      mainNavHeight = (fixedNavs[0] as HTMLElement).getBoundingClientRect().height || 0;
     }
+    if (fixedNavs.length > 1) {
+      metaNavHeight = (fixedNavs[1] as HTMLElement).getBoundingClientRect().height || 0;
+    }
+
+    const extraOffset = 8; // kleiner Luftabstand unterhalb der Meta Navigation
+    const totalOffset = mainNavHeight + metaNavHeight + extraOffset;
+
+    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - totalOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -40,7 +51,7 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
                 key={index}
                 href={`#${link.anchor}`}
                 className="text-gray-700 hover:text-gray-900 font-medium transition-colors scroll-smooth"
-                onClick={(e) => handleClick(e, link.anchor, link.label)}
+                onClick={(e) => handleClick(e, link.anchor)}
               >
                 {link.label}
               </a>
