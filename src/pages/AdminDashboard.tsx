@@ -3517,7 +3517,21 @@ const AdminDashboard = () => {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <Button
                     variant="decision"
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-[hsl(var(--admin-control-1))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-1))]/90 shadow-soft hover:shadow-lg"
+                    disabled={!selectedPage || !pageInfo}
+                    title={!selectedPage || !pageInfo ? 'Select a CMS-ready page to add new segments' : undefined}
+                    onClick={() => {
+                      if (!selectedPage || !pageInfo) return;
+                      setIsTemplateDialogOpen(true);
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add New Segment
+                  </Button>
+
+                  <Button
+                    variant="decision"
+                    className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
                     disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
                     title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
                     onClick={() => {
@@ -3531,7 +3545,7 @@ const AdminDashboard = () => {
 
                   <Button
                     variant="decision"
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
                     disabled={!selectedPage || !pageInfo || !isSecondLevelPage}
                     title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
                     onClick={() => {
@@ -3552,16 +3566,7 @@ const AdminDashboard = () => {
             {/* Erste Reihe: Add New Segment, Design Element, Preview, Logout */}
             <div className="flex items-center gap-3">
               <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="decision"
-                    className="flex items-center gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add New Segment
-                  </Button>
-                </DialogTrigger>
-              <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
+                <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-6">
                   <DialogTitle className="text-3xl font-bold text-white">Choose a Segment</DialogTitle>
                   <DialogDescription className="text-base text-white/80 mt-2">

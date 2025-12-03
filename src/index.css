@@ -119,6 +119,11 @@ video::-ms-media-controls {
     --academia-button-hover: 45 95% 60%;
     --academia-icon-bg: 45 60% 85%;
     
+    /* Admin dashboard control buttons - yellow cascade */
+    --admin-control-1: 48 96% 46%;
+    --admin-control-2: 48 96% 54%;
+    --admin-control-3: 48 96% 62%;
+    
     /* Hotspot color */
     --hotspot-primary: 205 45% 44%;
     
