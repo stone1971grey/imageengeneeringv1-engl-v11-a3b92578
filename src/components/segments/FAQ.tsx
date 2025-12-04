@@ -36,7 +36,7 @@ const FAQ: React.FC<FAQProps> = ({
   };
 
   return (
-    <section id={id} className="pt-[150px] pb-16 bg-background">
+    <section id={id} className="pt-[50px] pb-16 bg-background">
       {items.length > 0 && (
         <script 
           type="application/ld+json"
