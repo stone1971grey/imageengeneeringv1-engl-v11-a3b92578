@@ -55,11 +55,10 @@ async function findContact(email: string, baseUrl: string, authString: string) {
 }
 
 async function updateMarketingOptin(contactId: string, baseUrl: string, authString: string, eventTag?: string) {
-  console.log("Updating marketing_optin to 'yes' for contact:", contactId);
+  console.log("Updating optin_confirmed timestamp for contact:", contactId);
   
-  // Build update payload
+  // Build update payload (do NOT change marketing_optin here)
   const updatePayload: Record<string, any> = {
-    marketing_optin: "yes",
     optin_confirmed: new Date().toISOString(),
   };
   
@@ -84,11 +83,11 @@ async function updateMarketingOptin(contactId: string, baseUrl: string, authStri
   if (!updateResponse.ok) {
     const errorText = await updateResponse.text();
     console.error("Failed to update contact:", errorText);
-    throw new Error(`Failed to update marketing_optin: ${errorText}`);
+    throw new Error(`Failed to update optin_confirmed: ${errorText}`);
   }
 
   const updateData = await updateResponse.json();
-  console.log("✅ marketing_optin updated successfully to 'yes'");
+  console.log("✅ optin_confirmed timestamp updated successfully");
   if (eventTag) {
     console.log("✅ Event tag added:", eventTag);
   }
