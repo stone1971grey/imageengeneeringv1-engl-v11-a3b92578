@@ -1091,19 +1091,7 @@ const DynamicCMSPage = () => {
         })
         .map((segmentId) => {
           const content = renderSegment(segmentId);
-
-          if (!isSegmentStyleguidePage || !content) {
-            return content;
-          }
-
-          return (
-            <div
-              key={segmentId}
-              className="relative my-8 mx-4 rounded-xl"
-            >
-              {content}
-            </div>
-          );
+          return content || null;
         })
       }
       <Footer />
