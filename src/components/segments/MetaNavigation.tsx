@@ -1,4 +1,5 @@
 import React from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MetaNavigationProps {
   data: {
@@ -11,6 +12,8 @@ interface MetaNavigationProps {
 }
 
 const MetaNavigation = ({ data }: MetaNavigationProps) => {
+  const isMobile = useIsMobile();
+
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, anchor: string) => {
     e.preventDefault();
 
@@ -18,7 +21,7 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
     if (!targetElement) return;
 
     // Dynamisch die Höhen der fixierten Navigationsleisten ermitteln
-    const fixedNavs = document.querySelectorAll('nav.fixed');
+    const fixedNavs = document.querySelectorAll("nav.fixed");
     let mainNavHeight = 0;
     let metaNavHeight = 0;
 
@@ -29,8 +32,15 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
       metaNavHeight = (fixedNavs[1] as HTMLElement).getBoundingClientRect().height || 0;
     }
 
-    const extraOffset = 8; // kleiner Luftabstand unterhalb der Meta Navigation
-    const totalOffset = mainNavHeight + metaNavHeight + extraOffset;
+    const extraOffsetBase = 8; // kleiner Luftabstand unterhalb der Meta Navigation
+    const extraOffset = isMobile ? 4 : extraOffsetBase;
+
+    let totalOffset = mainNavHeight + metaNavHeight + extraOffset;
+
+    // Auf Mobile die Sektionen etwas höher ziehen, damit Überschriften / Bilder weiter oben im Viewport stehen
+    if (isMobile) {
+      totalOffset = mainNavHeight + metaNavHeight * 0.5 + extraOffset;
+    }
 
     const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
     const offsetPosition = elementPosition - totalOffset;
