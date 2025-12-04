@@ -184,13 +184,13 @@ const FullHero = ({
       <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
         <div className="max-w-4xl w-full">
           {useH1 ? (
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6">
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight mb-6">
               {titleLine1}
               <br />
               <span className="font-medium">{titleLine2}</span>
             </h1>
           ) : (
-            <h2 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[0.9] tracking-tight mb-6">
+            <h2 className="text-5xl lg:text-6xl xl:text-7xl font-light text-white leading-[1.05] tracking-tight mb-6">
               {titleLine1}
               <br />
               <span className="font-medium">{titleLine2}</span>
