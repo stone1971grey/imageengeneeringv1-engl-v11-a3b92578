@@ -47,7 +47,9 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
     const paddingTop = parseFloat(computedStyle.paddingTop || "0") || 0;
     const contentStartPosition = elementPosition + paddingTop;
 
-    const finalPosition = contentStartPosition - totalOffset;
+    // Leichter Feintuning-Offset, damit Überschrift/Bild ~20px näher an die Navbar rücken
+    const fineTuneOffset = 20;
+    const finalPosition = contentStartPosition - totalOffset - fineTuneOffset;
 
     window.scrollTo({
       top: finalPosition,
