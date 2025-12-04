@@ -10,7 +10,7 @@ const Table = ({ id, title, subtext, headers, rows }: TableProps) => {
   const columnCount = headers.length;
 
   return (
-    <section id={id} className="pt-[150px] pb-20 bg-[#F7F9FB] scroll-mt-[200px]">
+    <section id={id} className="pt-[60px] pb-20 bg-[#F7F9FB] scroll-mt-[200px]">
       <div className="container mx-auto px-6">
         {title && (
           <div className="text-center mb-16">
