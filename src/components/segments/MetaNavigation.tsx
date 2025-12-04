@@ -33,13 +33,14 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
     }
 
     const extraOffsetBase = 8; // kleiner Luftabstand unterhalb der Meta Navigation
-    const extraOffset = isMobile ? 4 : extraOffsetBase;
+    const extraOffsetMobile = 12;
+    const extraOffset = isMobile ? extraOffsetMobile : extraOffsetBase;
 
     let totalOffset = mainNavHeight + metaNavHeight + extraOffset;
 
-    // Auf Mobile die Sektionen etwas höher ziehen, damit Überschriften / Bilder weiter oben im Viewport stehen
+    // Auf Mobile die Sektionen deutlich höher ziehen: nur Haupt-Navigation + kleiner Abstand berücksichtigen
     if (isMobile) {
-      totalOffset = mainNavHeight + metaNavHeight * 0.5 + extraOffset;
+      totalOffset = mainNavHeight + extraOffset;
     }
 
     const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
