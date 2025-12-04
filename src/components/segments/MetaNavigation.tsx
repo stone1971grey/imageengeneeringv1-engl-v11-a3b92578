@@ -32,12 +32,12 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
       metaNavHeight = (fixedNavs[1] as HTMLElement).getBoundingClientRect().height || 0;
     }
 
-    const extraOffsetBase = 8; // kleiner Luftabstand unterhalb der Hauptnavigation
-    const extraOffsetMobile = 12;
+    const extraOffsetBase = 8; // kleiner Luftabstand unterhalb der Meta Navigation
+    const extraOffsetMobile = 8;
     const extraOffset = isMobile ? extraOffsetMobile : extraOffsetBase;
 
-    // Nur die Hauptnavigation berücksichtigen, Meta Navigation wird bereits über Segment-Padding kompensiert
-    const totalOffset = mainNavHeight + extraOffset;
+    // Hauptnavigation + tatsächliche Höhe der (auch mehrzeiligen) Meta Navigation berücksichtigen
+    const totalOffset = mainNavHeight + metaNavHeight + extraOffset;
 
     // Ersten sinnvollen Inhalt im Segment suchen (Überschrift bevorzugt)
     let contentElement: HTMLElement | null = targetElement as HTMLElement;
