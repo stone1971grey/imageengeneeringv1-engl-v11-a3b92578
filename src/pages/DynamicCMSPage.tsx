@@ -624,7 +624,7 @@ const DynamicCMSPage = () => {
             id={segmentDbId?.toString()}
             data-segment-key={segment.segment_key || segment.id}
             data-segment-id={segmentDbId?.toString()}
-            className="pt-[150px] pb-20 bg-gray-50"
+            className="pt-[60px] pb-20 bg-gray-50"
           >
             <div className="container mx-auto px-6">
               {segment.data?.title && (
