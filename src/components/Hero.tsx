@@ -21,10 +21,10 @@ const Hero = () => {
       </div>
       
       {/* Navigation Spacer */}
-      <div className="h-16"></div>
+      <div className="h-4"></div>
       
       {/* Hero Content */}
-      <div className="container mx-auto px-6 py-16 lg:py-24 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
+      <div className="container mx-auto px-6 py-8 lg:py-16 relative z-10 flex items-center" style={{ minHeight: 'calc(100vh - 260px)' }}>
         <div className="flex items-center justify-start min-h-full">
           
           {/* Left-aligned Content */}
