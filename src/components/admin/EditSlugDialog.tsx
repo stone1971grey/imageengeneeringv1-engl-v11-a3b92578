@@ -65,7 +65,7 @@ export const EditSlugDialog = ({ pageId, currentSlug, pageTitle, onSlugUpdated }
       return;
     }
 
-    if (newSlug === currentSlug) {
+    if (newSlug === currentSlug && newTitle.trim() === pageTitle) {
       toast.info("No changes made");
       setIsOpen(false);
       return;
