@@ -32,23 +32,15 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
       metaNavHeight = (fixedNavs[1] as HTMLElement).getBoundingClientRect().height || 0;
     }
 
-    const extraOffsetBase = 8; // kleiner Luftabstand unterhalb der Meta Navigation
+    const extraOffsetBase = 8; // kleiner Luftabstand unterhalb der Hauptnavigation
     const extraOffsetMobile = 12;
     const extraOffset = isMobile ? extraOffsetMobile : extraOffsetBase;
 
-    let totalOffset = mainNavHeight + metaNavHeight + extraOffset;
-
-    // Auf Mobile die Sektionen deutlich höher ziehen: nur Haupt-Navigation + kleiner Abstand berücksichtigen
-    if (isMobile) {
-      totalOffset = mainNavHeight + extraOffset;
-    }
+    // Nur die Hauptnavigation berücksichtigen, Meta Navigation wird bereits über Segment-Padding kompensiert
+    const totalOffset = mainNavHeight + extraOffset;
 
     const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-    const offsetPosition = elementPosition - totalOffset;
-
-    // Zusätzlicher Feintuning-Offset: Sektionen weiter nach oben ziehen
-    const fineTuneOffset = isMobile ? 80 : 40;
-    const finalPosition = offsetPosition - fineTuneOffset;
+    const finalPosition = elementPosition - totalOffset;
 
     window.scrollTo({
       top: finalPosition,
