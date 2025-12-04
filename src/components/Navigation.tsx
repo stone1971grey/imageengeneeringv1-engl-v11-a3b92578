@@ -1164,7 +1164,65 @@ const Navigation = () => {
                 
                 {/* Navigation content */}
                 <nav className="px-6 py-4">
-                  <Accordion type="single" collapsible className="space-y-0">
+                  {isStyleguidePath && (
+                    <Accordion type="single" collapsible className="space-y-0 mb-4">
+                      {/* Styleguide mobile navigation */}
+                      <AccordionItem value="styleguide-root" className="border-none">
+                        <AccordionTrigger className="px-4 py-4 text-lg font-medium text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
+                          {t.nav.styleguide}
+                        </AccordionTrigger>
+                        <AccordionContent className="px-0 pb-4">
+                          <div className="space-y-2">
+                            <Link
+                              to={`/${language}/styleguide`}
+                              className="block px-4 py-2 text-gray-700 hover:text-gray-900"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              Styleguide
+                            </Link>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      {styleguidePages.map((page) => (
+                        <AccordionItem key={page.slug} value={page.slug} className="border-none">
+                          <AccordionTrigger className="px-4 py-3 text-base font-medium text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2 data-[state=open]:bg-[#4d4c4c] data-[state=open]:text-white">
+                            {page.title}
+                          </AccordionTrigger>
+                          <AccordionContent className="px-0 pb-3">
+                            <div className="space-y-1">
+                              <Link
+                                to={`/${language}/${page.slug}`}
+                                className="block px-4 py-2 text-gray-700 hover:text-gray-900"
+                                onClick={() => setIsOpen(false)}
+                              >
+                                {page.title}
+                              </Link>
+                              {page.children && page.children.length > 0 && (
+                                <div className="mt-1 ml-4 space-y-1">
+                                  {page.children.map((child) => (
+                                    <Link
+                                      key={child.slug}
+                                      to={`/${language}/${child.slug}`}
+                                      className="block px-4 py-1 text-sm text-gray-600 hover:text-gray-800"
+                                      onClick={() => setIsOpen(false)}
+                                    >
+                                      {child.title}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  )}
+                  <Accordion
+                    type="single"
+                    collapsible
+                    className={isStyleguidePath ? "space-y-0 hidden" : "space-y-0"}
+                  >
                     
                     {/* Your Solution */}
                     <AccordionItem value="solutions" className="border-none">
