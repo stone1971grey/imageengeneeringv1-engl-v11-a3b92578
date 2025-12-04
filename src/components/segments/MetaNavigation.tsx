@@ -46,8 +46,12 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
     const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
     const offsetPosition = elementPosition - totalOffset;
 
+    // Zusätzlicher Feintuning-Offset: Sektionen weiter nach oben ziehen
+    const fineTuneOffset = isMobile ? 80 : 40;
+    const finalPosition = offsetPosition - fineTuneOffset;
+
     window.scrollTo({
-      top: offsetPosition,
+      top: finalPosition,
       behavior: "smooth",
     });
   };
