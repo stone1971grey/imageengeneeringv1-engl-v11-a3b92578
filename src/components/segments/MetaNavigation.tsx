@@ -39,17 +39,15 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
     // Nur die Hauptnavigation berücksichtigen, Meta Navigation wird bereits über Segment-Padding kompensiert
     const totalOffset = mainNavHeight + extraOffset;
 
-    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+    // Ersten sinnvollen Inhalt im Segment suchen (Überschrift bevorzugt)
+    let contentElement: HTMLElement | null = targetElement as HTMLElement;
+    const heading = targetElement.querySelector("h1, h2, h3, h4, h5, h6") as HTMLElement | null;
+    if (heading) {
+      contentElement = heading;
+    }
 
-    // Padding-Top des Segments berücksichtigen, damit nicht an den Segmentrand,
-    // sondern an den Beginn des Inhalts (Überschrift/Bild) gesprungen wird
-    const computedStyle = window.getComputedStyle(targetElement as HTMLElement);
-    const paddingTop = parseFloat(computedStyle.paddingTop || "0") || 0;
-    const contentStartPosition = elementPosition + paddingTop;
-
-    // Leichter Feintuning-Offset, damit Überschrift/Bild ~20px näher an die Navbar rücken
-    const fineTuneOffset = 20;
-    const finalPosition = contentStartPosition - totalOffset - fineTuneOffset;
+    const elementPosition = contentElement.getBoundingClientRect().top + window.pageYOffset;
+    const finalPosition = elementPosition - totalOffset;
 
     window.scrollTo({
       top: finalPosition,
