@@ -239,7 +239,7 @@ const ProductHeroGallery = ({ id, hasMetaNavigation = false, data }: ProductHero
   return (
     <section
       id={id}
-      className={`min-h-[60vh] bg-scandi-white font-roboto relative overflow-hidden border-4 border-dashed border-destructive ${getTopPaddingClass()} pb-4`}
+      className={`min-h-[60vh] bg-scandi-white font-roboto relative overflow-hidden ${getTopPaddingClass()} pb-4`}
     >
       {/* Animated background light effects */}
       <div className="absolute inset-0 pointer-events-none">
