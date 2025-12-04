@@ -18,7 +18,7 @@ const AnnouncementBanner = ({
   return (
     <div className="w-full bg-downloads-bg border-b border-downloads-border">
       <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between py-3 gap-4">
+        <div className="flex items-center justify-between py-1 gap-4">
           <div className="flex items-center gap-3">
             <IconComponent 
               size={16} 
