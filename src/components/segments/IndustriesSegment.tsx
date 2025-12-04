@@ -81,7 +81,7 @@ const IndustriesSegment = ({
   }
 
   return (
-    <section className="pt-[150px] pb-20 bg-slate-50">
+    <section className="pt-[50px] pb-20 bg-slate-50">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-20">
