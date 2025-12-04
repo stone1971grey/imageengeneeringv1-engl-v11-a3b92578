@@ -138,7 +138,7 @@ const FullHero = ({
   return (
     <section
       id={id?.toString()}
-      className={`relative overflow-hidden border-4 border-dashed border-destructive ${getTopPaddingClass()}`}
+      className={`relative overflow-hidden ${getTopPaddingClass()}`}
       style={{ minHeight: 'calc(100vh - 220px)' }}
     >
       {/* Background layer: image or video full-width */}
