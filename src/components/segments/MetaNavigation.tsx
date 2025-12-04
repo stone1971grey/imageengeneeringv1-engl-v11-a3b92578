@@ -40,7 +40,14 @@ const MetaNavigation = ({ data }: MetaNavigationProps) => {
     const totalOffset = mainNavHeight + extraOffset;
 
     const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-    const finalPosition = elementPosition - totalOffset;
+
+    // Padding-Top des Segments berücksichtigen, damit nicht an den Segmentrand,
+    // sondern an den Beginn des Inhalts (Überschrift/Bild) gesprungen wird
+    const computedStyle = window.getComputedStyle(targetElement as HTMLElement);
+    const paddingTop = parseFloat(computedStyle.paddingTop || "0") || 0;
+    const contentStartPosition = elementPosition + paddingTop;
+
+    const finalPosition = contentStartPosition - totalOffset;
 
     window.scrollTo({
       top: finalPosition,
