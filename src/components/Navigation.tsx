@@ -66,9 +66,16 @@ const Navigation = () => {
   const [pageDesignIcons, setPageDesignIcons] = useState<Record<string, string>>({});
   const [pageFlyoutData, setPageFlyoutData] = useState<Record<string, { imageUrl: string; description: string }>>({});
   const [pageCtaConfig, setPageCtaConfig] = useState<Record<string, { slug: string; label: string; icon: string | null }>>({});
+
+  const defaultStyleguidePage = styleguidePages[0] || null;
+  const activeStyleguideSlug = hoveredStyleguide || defaultStyleguidePage?.slug || null;
+  const activeStyleguidePage = activeStyleguideSlug
+    ? styleguidePages.find((p) => p.slug === activeStyleguideSlug) || defaultStyleguidePage
+    : defaultStyleguidePage;
+  const activeStyleguideChildren = activeStyleguidePage?.children || [];
+  
   // Check if current path is within styleguide section (with language prefix support)
   const isStyleguidePath = location.pathname.includes('/styleguide');
-  
   // Check if current path is admin dashboard
   const isAdminDashboard = location.pathname.includes('/admin-dashboard');
 
@@ -431,53 +438,11 @@ const Navigation = () => {
                 <div className="w-[640px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredStyleguide(null)}>
                   <div className="flex p-6 gap-6">
-                     {/* Left Column: Main Styleguide Pages - Fixed 50% width */}
-                    <div className="space-y-4 w-[240px] flex-shrink-0 pr-4 border-r border-border">
-                      <div className="space-y-3">
-                        {styleguidePages.length > 0 ? (
-                          styleguidePages.map((page) => {
-                            // Use page title directly from database/slug - no custom translations
-                            const translatedTitle = page.title;
-                            
-                            return (
-                              <div key={page.slug}>
-                                {page.children ? (
-                                  <div 
-                                    className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer whitespace-nowrap rounded px-2 py-1"
-                                    onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
-                                  >
-                                    <FileText className="h-5 w-5 flex-shrink-0" />
-                                    <span>{translatedTitle}</span>
-                                    <ChevronRight className="h-4 w-4 ml-auto flex-shrink-0" />
-                                  </div>
-                                ) : (
-                                  <Link 
-                                    to={`/${language}/${page.slug}`}
-                                    className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
-                                      isActive(`/${page.slug}`) ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                                    }`}
-                                    onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(null)}
-                                  >
-                                    <FileText className="h-5 w-5 flex-shrink-0" />
-                                    <span>{translatedTitle}</span>
-                                  </Link>
-                                )}
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <p className="text-gray-500 text-center py-4">No styleguide pages yet</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Right Column: Sub-pages - Fixed 50% width */}
-                    <div className="space-y-4 flex-1 min-w-0 pl-4">
-                      {/* Conditional Rendering of Subpages */}
-                      {hoveredStyleguide && styleguidePages.find(p => p.slug === hoveredStyleguide)?.children && (
+                    {/* Left Column: Sub-pages (expanded to the left) */}
+                    <div className="space-y-4 flex-1 min-w-0 pr-4">
+                      {activeStyleguideChildren && activeStyleguideChildren.length > 0 ? (
                         <div className="space-y-3">
-                          {styleguidePages.find(p => p.slug === hoveredStyleguide)?.children?.map((subpage) => {
-                            // Use subpage title directly from database/slug - no custom translations
+                          {activeStyleguideChildren.map((subpage) => {
                             const translatedSubTitle = subpage.title;
                             
                             return (
@@ -494,15 +459,41 @@ const Navigation = () => {
                             );
                           })}
                         </div>
-                      )}
-                      
-                      {/* Default state when no page is hovered or no children */}
-                      {(!hoveredStyleguide || !styleguidePages.find(p => p.slug === hoveredStyleguide)?.children) && (
+                      ) : (
                         <div className="text-gray-500 text-center py-8">
                           <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                          <p>Hover over a page to see subpages</p>
+                          <p>Keine Styleguide-Unterseiten verfügbar</p>
                         </div>
                       )}
+                    </div>
+
+                    {/* Right Column: Main Styleguide Pages (e.g., "Segmente") */}
+                    <div className="space-y-4 w-[240px] flex-shrink-0 pl-4 border-l border-border">
+                      <div className="space-y-3">
+                        {styleguidePages.length > 0 ? (
+                          styleguidePages.map((page) => {
+                            const translatedTitle = page.title;
+                            const isActiveParent = activeStyleguidePage?.slug === page.slug;
+                            
+                            return (
+                              <div key={page.slug}>
+                                <Link 
+                                  to={`/${language}/${page.slug}`}
+                                  className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
+                                    isActiveParent ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                                  }`}
+                                  onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
+                                >
+                                  <FileText className="h-5 w-5 flex-shrink-0" />
+                                  <span>{translatedTitle}</span>
+                                </Link>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <p className="text-gray-500 text-center py-4">No styleguide pages yet</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
