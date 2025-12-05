@@ -43,6 +43,7 @@ const DynamicCMSPage = () => {
   const [seoData, setSeoData] = useState<any>({});
   const [pageNotFound, setPageNotFound] = useState(false);
   const [fullHeroOverrides, setFullHeroOverrides] = useState<Record<string, any>>({});
+  const [childPages, setChildPages] = useState<any[]>([]);
   
   // Debug mode aktivieren mit ?debug=true in der URL
   const isDebugMode = new URLSearchParams(location.search).get('debug') === 'true';
@@ -958,9 +959,6 @@ const DynamicCMSPage = () => {
   
   // Special handling for Hub pages (e.g., styleguide, styleguide/segments)
   const isHubPage = pageSlug === 'styleguide' || pageSlug === 'styleguide/segments';
-  
-  // State for child pages (for hub pages)
-  const [childPages, setChildPages] = useState<any[]>([]);
   
   useEffect(() => {
     if (isHubPage && isEmpty) {
