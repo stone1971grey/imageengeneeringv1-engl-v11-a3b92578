@@ -80,23 +80,12 @@ const NewsDetail = () => {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
       <Navigation />
 
-      {/* Back Button */}
-      <div className="container mx-auto px-6 pt-32 pb-8">
-        <Link to={`/${language}/news`} className="inline-block group">
-          <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 transition-all duration-300">
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-            Back to News
-          </Button>
-        </Link>
-      </div>
-
       {/* Article Header Card */}
-      <section className="container mx-auto px-6 pb-12">
+      <section className="container mx-auto px-6 pt-24 pb-12">
         <Card className="bg-white border border-gray-200 shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden group">
           <CardContent className="p-0">
             {/* Featured Image */}
             <div className="aspect-[21/9] overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10"></div>
               <img
                 src={article.image_url}
                 alt={article.title}
