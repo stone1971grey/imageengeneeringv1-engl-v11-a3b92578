@@ -955,6 +955,30 @@ const DynamicCMSPage = () => {
     seg.type !== 'footer' && seg.type !== 'meta-navigation'
   );
   const isEmpty = contentSegments.length === 0;
+  
+  // Special handling for Hub pages (e.g., styleguide, styleguide/segments)
+  const isHubPage = pageSlug === 'styleguide' || pageSlug === 'styleguide/segments';
+  
+  // State for child pages (for hub pages)
+  const [childPages, setChildPages] = useState<any[]>([]);
+  
+  useEffect(() => {
+    if (isHubPage && isEmpty) {
+      // Load child pages for hub display
+      const loadChildPages = async () => {
+        const { data } = await supabase
+          .from("page_registry")
+          .select("*")
+          .eq("parent_slug", pageSlug)
+          .order("position", { ascending: true });
+        
+        if (data) {
+          setChildPages(data);
+        }
+      };
+      loadChildPages();
+    }
+  }, [isHubPage, isEmpty, pageSlug]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -970,8 +994,49 @@ const DynamicCMSPage = () => {
       />
       <Navigation />
       
-      {/* Empty Page Indicator */}
-      {isEmpty && (
+      {/* Hub Page Display (e.g., Styleguide) */}
+      {isHubPage && isEmpty && (
+        <div className="pt-32 pb-16 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <h1 className="text-5xl font-bold text-gray-900 mb-4">
+              {pageSlug === 'styleguide' ? 'Styleguide' : 'Segments'}
+            </h1>
+            <p className="text-xl text-gray-600 mb-12">
+              {pageSlug === 'styleguide' 
+                ? 'Design system documentation and component reference'
+                : 'Segment templates and examples'}
+            </p>
+            
+            {childPages.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {childPages.map((child) => (
+                  <Link
+                    key={child.page_id}
+                    to={`/${currentUrlLanguage}/${child.page_slug}`}
+                    className="block bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-[#f9dc24] transition-all duration-200"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-[#f9dc24] rounded-lg flex items-center justify-center">
+                        <span className="text-xl">📄</span>
+                      </div>
+                      <span className="text-sm text-gray-500">ID {child.page_id}</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{child.page_title}</h3>
+                    <p className="text-gray-500 text-sm">/{child.page_slug}</p>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+                <p className="text-gray-500">No sub-pages found</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Empty Page Indicator (non-hub pages) */}
+      {!isHubPage && isEmpty && (
         <div className="flex items-center justify-center min-h-[60vh] px-4">
           <div className="text-center max-w-2xl">
             <div className="mb-6">
