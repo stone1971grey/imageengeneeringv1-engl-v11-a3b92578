@@ -48,16 +48,18 @@ const renderBlocks = (blocks: ContentBlock[]) => {
           </blockquote>
         );
       case "image":
+        const imgSrc = block.imageUrl || block.content;
+        const imgAlt = block.imageAlt || (block as any).alt || "";
         return (
           <figure key={block.id} className="my-8">
             <img
-              src={block.imageUrl}
-              alt={block.imageAlt || ""}
+              src={imgSrc}
+              alt={imgAlt}
               className="w-full rounded-lg shadow-md"
             />
-            {block.imageCaption && (
+            {(block.imageCaption || imgAlt) && (
               <figcaption className="text-sm text-gray-500 text-center mt-3 italic">
-                {block.imageCaption}
+                {block.imageCaption || imgAlt}
               </figcaption>
             )}
           </figure>
