@@ -152,7 +152,7 @@ Automotive camera systems must be tested following IEEE-P2020 standard. Arcturus
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
-      <div aria-hidden="true" className="block h-[100px]" />
+      <div aria-hidden="true" className="block h-[150px]" />
       <div className="pb-8">
         <div className="container mx-auto px-6">
           <div className="text-center mb-8">
