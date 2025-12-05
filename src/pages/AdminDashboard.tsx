@@ -6138,7 +6138,9 @@ const AdminDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <CardTitle className="text-white">Footer Section</CardTitle>
-                    <CardDescription className="text-gray-300">Edit footer content for the {selectedPage} page</CardDescription>
+                    <CardDescription className="text-gray-300">
+                      Edit footer content for the {selectedPage} page
+                    </CardDescription>
                     <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                       ID: {segmentRegistry['footer'] || 7}
                     </div>
@@ -6146,214 +6148,18 @@ const AdminDashboard = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Vision CTA Section */}
-                <div className="border-b border-gray-700 pb-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">1. Vision CTA Section</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="footer_cta_title" className="text-white">CTA Title</Label>
-                      <Input
-                        id="footer_cta_title"
-                        value={footerCtaTitle}
-                        onChange={(e) => setFooterCtaTitle(e.target.value)}
-                        placeholder="e.g., Charts that help you win"
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="footer_cta_description" className="text-white">CTA Description</Label>
-                      <Textarea
-                        id="footer_cta_description"
-                        value={footerCtaDescription}
-                        onChange={(e) => setFooterCtaDescription(e.target.value)}
-                        rows={3}
-                        placeholder="Describe your vision..."
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact Section */}
-                <div className="border-b border-gray-700 pb-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">2. Contact Section</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="footer_contact_headline" className="text-white">Contact Headline (Line 1)</Label>
-                      <Input
-                        id="footer_contact_headline"
-                        value={footerContactHeadline}
-                        onChange={(e) => setFooterContactHeadline(e.target.value)}
-                        placeholder="e.g., Need help choosing"
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="footer_contact_subline" className="text-white">Contact Headline (Line 2)</Label>
-                      <Input
-                        id="footer_contact_subline"
-                        value={footerContactSubline}
-                        onChange={(e) => setFooterContactSubline(e.target.value)}
-                        placeholder="e.g., the right test chart?"
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="footer_contact_description" className="text-white">Contact Description</Label>
-                      <Textarea
-                        id="footer_contact_description"
-                        value={footerContactDescription}
-                        onChange={(e) => setFooterContactDescription(e.target.value)}
-                        rows={3}
-                        placeholder="Contact description..."
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="footer_button_text" className="text-white">Button Text</Label>
-                      <Input
-                        id="footer_button_text"
-                        value={footerButtonText}
-                        onChange={(e) => setFooterButtonText(e.target.value)}
-                        placeholder="e.g., Get in Touch"
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Team Quote Section */}
-                <div className="pb-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">3. Team Quote Section</h3>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-white">Team Member Photo</Label>
-                      <div className="flex gap-2 items-start">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFooterTeamImageUpload}
-                          disabled={uploading}
-                          className="border-2 border-gray-600"
-                        />
-                      </div>
-                      {footerTeamImageUrl && (
-                        <div className="mt-2 relative inline-block">
-                          <img 
-                            src={footerTeamImageUrl} 
-                            alt="Team member" 
-                            className="w-32 h-32 object-cover rounded border"
-                          />
-                          <button
-                            onClick={() => setFooterTeamImageUrl('')}
-                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      )}
-                      
-                      {/* Image Metadata Display */}
-                      {footerTeamImageMetadata && (
-                        <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
-                          <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
-                          <div className="grid grid-cols-2 gap-3 text-sm">
-                            <div>
-                              <span className="text-gray-600">Original Name:</span>
-                              <p className="text-black font-medium">{footerTeamImageMetadata.originalFileName}</p>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Dimensions:</span>
-                              <p className="text-black font-medium">{footerTeamImageMetadata.width} × {footerTeamImageMetadata.height} px</p>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">File Size:</span>
-                              <p className="text-black font-medium">{formatFileSize(footerTeamImageMetadata.fileSizeKB)}</p>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Format:</span>
-                              <p className="text-black font-medium uppercase">{footerTeamImageMetadata.format}</p>
-                            </div>
-                            <div className="col-span-2">
-                              <span className="text-gray-600">Upload Date:</span>
-                              <p className="text-black font-medium">{formatUploadDate(footerTeamImageMetadata.uploadDate)}</p>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-4">
-                            <Label htmlFor="footer_image_alt" className="text-black text-base">Alt Text (SEO)</Label>
-                            <Input
-                              id="footer_image_alt"
-                              type="text"
-                              value={footerTeamImageMetadata.altText || ''}
-                              onChange={(e) => {
-                                if (footerTeamImageMetadata) {
-                                  const updatedMetadata = { ...footerTeamImageMetadata, altText: e.target.value };
-                                  setFooterTeamImageMetadata(updatedMetadata);
-                                }
-                              }}
-                              placeholder="Describe this image for accessibility and SEO"
-                              className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
-                            />
-                            <p className="text-white text-sm mt-1">Provide a descriptive alt text for screen readers and search engines</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="footer_team_quote" className="text-white">Team Quote</Label>
-                      <Textarea
-                        id="footer_team_quote"
-                        value={footerTeamQuote}
-                        onChange={(e) => setFooterTeamQuote(e.target.value)}
-                        rows={3}
-                        placeholder="Team member's quote..."
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="footer_team_name" className="text-white">Team Member Name</Label>
-                      <Input
-                        id="footer_team_name"
-                        value={footerTeamName}
-                        onChange={(e) => setFooterTeamName(e.target.value)}
-                        placeholder="e.g., Laura Neumann"
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="footer_team_title" className="text-white">Team Member Title</Label>
-                      <Input
-                        id="footer_team_title"
-                        value={footerTeamTitle}
-                        onChange={(e) => setFooterTeamTitle(e.target.value)}
-                        placeholder="e.g., Head of Optical Systems"
-                        className="border-2 border-gray-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-4 border-t border-gray-600">
-                  <Button
-                    onClick={handleSaveFooter}
-                    disabled={saving}
-                    className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2"
-                  >
-                    <Save className="h-4 w-4" />
-                    {saving ? "Saving..." : "Save Footer"}
-                  </Button>
-                </div>
+                <SplitScreenSegmentEditor
+                  segmentTitle="Footer"
+                  segmentType="footer"
+                >
+                  {(language) => (
+                    <FooterEditor
+                      key={`${resolvedPageSlug || selectedPage}-footer-${language}`}
+                      pageSlug={resolvedPageSlug || selectedPage}
+                      language={language}
+                    />
+                  )}
+                </SplitScreenSegmentEditor>
               </CardContent>
             </Card>
           </TabsContent>
