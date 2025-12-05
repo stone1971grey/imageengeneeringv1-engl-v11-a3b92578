@@ -1110,6 +1110,11 @@ const AdminDashboard = () => {
       data?.forEach((item: any) => {
         registry[item.segment_key] = item.segment_id;
         reverseRegistry[String(item.segment_id)] = item.segment_key;
+        
+        // Also register footer-* keys under 'footer' for backward compatibility
+        if (item.segment_key.startsWith('footer-') && item.segment_type === 'footer') {
+          registry['footer'] = item.segment_id;
+        }
       });
 
       setSegmentRegistry(registry);
