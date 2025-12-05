@@ -128,23 +128,16 @@ const NewsDetail = () => {
               <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-8"></div>
 
               {/* Article Content */}
-              <article className="prose prose-lg prose-gray max-w-none 
-                [&>*]:text-gray-700
-                prose-headings:font-bold prose-headings:text-gray-900
-                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-4
-                prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-gray-800
-                prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-6
-                prose-img:rounded-lg prose-img:shadow-lg prose-img:border prose-img:border-gray-200 prose-img:my-8
-                prose-a:text-[#0f407b] prose-a:underline hover:prose-a:text-[#0d3468] prose-a:transition-all
-                prose-strong:text-gray-900 prose-strong:font-semibold
-                prose-ul:text-gray-700 prose-ol:text-gray-700
-                prose-li:mb-2 prose-li:text-gray-700
-                prose-hr:border-gray-200 prose-hr:my-8
-                prose-code:text-[#0f407b] prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded
-                prose-blockquote:text-gray-600 prose-blockquote:border-l-[#0f407b]
-                [&_p]:text-gray-700 [&_li]:text-gray-700 [&_span]:text-gray-700"
-                dangerouslySetInnerHTML={{ __html: article.content }}
-              />
+              <div 
+                className="prose prose-lg max-w-none"
+                style={{ color: '#374151' }}
+              >
+                <div 
+                  className="[&_h1]:text-gray-900 [&_h2]:text-gray-900 [&_h3]:text-gray-800 [&_h4]:text-gray-800 [&_p]:text-gray-700 [&_li]:text-gray-700 [&_span]:text-gray-700 [&_a]:text-[#0f407b] [&_strong]:text-gray-900 [&_blockquote]:text-gray-600"
+                  style={{ color: '#374151' }}
+                  dangerouslySetInnerHTML={{ __html: article.content }}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
