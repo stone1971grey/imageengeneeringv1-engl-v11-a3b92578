@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import RichTextEditor from "./RichTextEditor";
+import NewsBlockEditor, { ContentBlock, blocksToHtml, htmlToBlocks } from "./NewsBlockEditor";
 
 interface NewsArticle {
   id: string;
@@ -54,6 +54,9 @@ const getCategoryInfo = (category: string | null) => {
 const NewsEditor = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(null);
+  const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([
+    { id: "initial", type: "paragraph", content: "" }
+  ]);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -65,6 +68,14 @@ const NewsEditor = () => {
     category: "",
     published: true,
   });
+
+  // Sync blocks to formData.content as JSON
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      content: JSON.stringify(contentBlocks)
+    }));
+  }, [contentBlocks]);
 
   const queryClient = useQueryClient();
 
@@ -142,6 +153,7 @@ const NewsEditor = () => {
       category: "",
       published: true,
     });
+    setContentBlocks([{ id: "initial", type: "paragraph", content: "" }]);
     setEditingArticle(null);
   };
 
@@ -158,6 +170,8 @@ const NewsEditor = () => {
       category: article.category || "",
       published: article.published,
     });
+    // Parse content blocks from JSON or convert from HTML
+    setContentBlocks(htmlToBlocks(article.content));
     setIsDialogOpen(true);
   };
 
@@ -311,12 +325,15 @@ const NewsEditor = () => {
                 
                 <TabsContent value="content" className="space-y-4 mt-4">
                   <div>
-                    <Label>Article Content (Rich Text)</Label>
-                    <RichTextEditor
-                      content={formData.content}
-                      onChange={(content) =>
-                        setFormData({ ...formData, content })
-                      }
+                    <Label className="text-base font-semibold text-gray-700 mb-3 block">
+                      Article Content (Block Editor)
+                    </Label>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Add and arrange content blocks: text paragraphs, headings, images, quotes, and lists.
+                    </p>
+                    <NewsBlockEditor
+                      blocks={contentBlocks}
+                      onChange={setContentBlocks}
                     />
                   </div>
                 </TabsContent>
