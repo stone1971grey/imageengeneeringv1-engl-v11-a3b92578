@@ -471,25 +471,38 @@ const Navigation = () => {
                     <div className="space-y-4 w-[240px] flex-shrink-0 pl-4 border-l border-border">
                       <div className="space-y-3">
                         {styleguidePages.length > 0 ? (
-                          styleguidePages.map((page) => {
-                            const translatedTitle = page.title;
-                            const isActiveParent = activeStyleguidePage?.slug === page.slug;
-                            
-                            return (
-                              <div key={page.slug}>
-                                <Link 
-                                  to={`/${language}/${page.slug}`}
-                                  className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
-                                    isActiveParent ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                                  }`}
-                                  onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
-                                >
-                                  <FileText className="h-5 w-5 flex-shrink-0" />
-                                  <span>{translatedTitle}</span>
-                                </Link>
-                              </div>
-                            );
-                          })
+                          <>
+                            {styleguidePages.map((page) => {
+                              const translatedTitle = page.title;
+                              const isActiveParent = activeStyleguidePage?.slug === page.slug;
+                              
+                              return (
+                                <div key={page.slug}>
+                                  <Link 
+                                    to={`/${language}/${page.slug}`}
+                                    className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
+                                      isActiveParent ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                                    }`}
+                                    onMouseEnter={() => !isAdminDashboard && setHoveredStyleguide(page.slug)}
+                                  >
+                                    <FileText className="h-5 w-5 flex-shrink-0" />
+                                    <span>{translatedTitle}</span>
+                                  </Link>
+                                </div>
+                              );
+                            })}
+                            <div>
+                              <Link
+                                to={getLink('/backlog')}
+                                className={`flex items-center gap-3 text-lg text-black transition-colors whitespace-nowrap rounded px-2 py-1 ${
+                                  isActive('/backlog') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                                }`}
+                              >
+                                <FileText className="h-5 w-5 flex-shrink-0" />
+                                <span>Backlog</span>
+                              </Link>
+                            </div>
+                          </>
                         ) : (
                           <p className="text-gray-500 text-center py-4">No styleguide pages yet</p>
                         )}
