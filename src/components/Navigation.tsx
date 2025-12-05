@@ -904,9 +904,9 @@ const Navigation = () => {
 
                       return (
                         <Link to={getLink(targetSlug, '/inside-lab')}>
-                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black py-5 h-auto" style={{ fontSize: '1.5rem' }}>
-                            <CtaIcon style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }} className="mr-3" />
-                            <span className="font-semibold" style={{ fontSize: '1.5rem' }}>{label}</span>
+                          <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800 rounded-lg py-6 h-auto" style={{ fontSize: '1.25rem' }}>
+                            <CtaIcon style={{ width: '28px', height: '28px', minWidth: '28px', minHeight: '28px' }} className="mr-3" />
+                            <span className="font-medium" style={{ fontSize: '1.25rem' }}>{label}</span>
                           </Button>
                         </Link>
                       );
