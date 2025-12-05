@@ -143,7 +143,7 @@ const App = () => (
             <Route path="/products/test-charts" element={<Navigate to="/en/products/test-charts" replace />} />
             
             {/* Language-prefixed routes - all actual pages */}
-            <Route path="/:lang" element={<Index />} />
+            <Route path="/:lang" element={<DynamicCMSPage />} />
             <Route path="/:lang/inside-lab" element={<InsideLab />} />
             <Route path="/:lang/your-solution" element={<YourSolution />} />
             <Route path="/:lang/products" element={<Products />} />
