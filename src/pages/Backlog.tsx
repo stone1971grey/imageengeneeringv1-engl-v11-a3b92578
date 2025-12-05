@@ -2,6 +2,8 @@ import Navigation from "@/components/Navigation";
 import EngineersSlider from "@/components/EngineersSlider";
 import Footer from "@/components/Footer";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 
 const Backlog = () => {
   const backlogItems = [
@@ -9,6 +11,7 @@ const Backlog = () => {
       id: "in-cabin",
       title: "In-Cabin Testing (Automotive)",
       originalUrl: "/en/your-solution/automotive/in-cabin-testing",
+      backlogUrl: "/en/backlog/in-cabin-testing",
       snapshot: `
 ## Hero Section
 - **Titel:** In-Cabin Performance Testing
@@ -51,6 +54,7 @@ European Union's General Safety Regulation (GSR) mandates all new cars from 2024
       id: "automotive",
       title: "Automotive Overview",
       originalUrl: "/en/your-solution/automotive",
+      backlogUrl: "/en/backlog/automotive",
       snapshot: `
 ## Hero Section
 - **Titel:** Automotive Image Quality
@@ -85,6 +89,7 @@ IEEE P2020, ISO Standards, EMVA 1288
       id: "le7",
       title: "LE7 – Test Chart Product Page",
       originalUrl: "/en/products/test-charts/le7",
+      backlogUrl: "/en/products/test-charts/le7", // CMS page - use original
       snapshot: `
 ## CMS-Seite (Page ID 17)
 
@@ -107,6 +112,7 @@ IEEE P2020, ISO Standards, EMVA 1288
       id: "arcturus",
       title: "Arcturus LED – Illumination Device",
       originalUrl: "/en/products/illumination-devices/arcturus-led",
+      backlogUrl: "/en/products/illumination-devices/arcturus-led", // CMS page - use original
       snapshot: `
 ## Hero
 - **Titel:** ARCTURUS LED
@@ -179,7 +185,16 @@ Automotive camera systems must be tested following IEEE-P2020 standard. Arcturus
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pb-6">
-                  <div className="bg-muted/30 rounded-lg p-6 mt-2">
+                  <div className="mb-4">
+                    <Link 
+                      to={item.backlogUrl} 
+                      className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      View Page
+                    </Link>
+                  </div>
+                  <div className="bg-muted/30 rounded-lg p-6">
                     <pre className="whitespace-pre-wrap font-sans text-sm text-foreground leading-relaxed">
                       {item.snapshot.trim()}
                     </pre>
