@@ -666,8 +666,8 @@ const Navigation = () => {
 
                       return (
                         <Link to={getLink(targetSlug, `/${targetSlug}`)}>
-                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black text-xl [&_svg]:!size-6">
-                            <CtaIcon className="mr-2" />
+                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black text-xl">
+                            <CtaIcon className="!h-6 !w-6 mr-2" />
                             <span className="font-medium">{label}</span>
                           </Button>
                         </Link>
@@ -904,8 +904,8 @@ const Navigation = () => {
 
                       return (
                         <Link to={getLink(targetSlug, '/inside-lab')}>
-                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black text-xl [&_svg]:!size-6">
-                            <CtaIcon className="mr-2" />
+                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black text-xl">
+                            <CtaIcon className="!h-6 !w-6 mr-2" />
                             <span className="font-medium">{label}</span>
                           </Button>
                         </Link>
