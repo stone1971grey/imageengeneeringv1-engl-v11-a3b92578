@@ -77,8 +77,29 @@ const DynamicCMSPage = () => {
   const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
   const currentUrlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
   
+  // Special handling for Hub pages (e.g., styleguide, styleguide/segments)
+  const isHubPage = pageSlug === 'styleguide' || pageSlug === 'styleguide/segments';
+  
   // Styleguide-Segmentseiten: spezielle Umrandung für alle Segmente anzeigen
   const isSegmentStyleguidePage = pageSlug.startsWith('styleguide/segments') || pageSlug.startsWith('styleguide/segmants');
+
+  // Load child pages for hub pages
+  useEffect(() => {
+    if (isHubPage) {
+      const loadChildPages = async () => {
+        const { data } = await supabase
+          .from("page_registry")
+          .select("*")
+          .eq("parent_slug", pageSlug)
+          .order("position", { ascending: true });
+        
+        if (data) {
+          setChildPages(data);
+        }
+      };
+      loadChildPages();
+    }
+  }, [isHubPage, pageSlug]);
 
   useEffect(() => {
     if (pageSlug) {
@@ -956,27 +977,6 @@ const DynamicCMSPage = () => {
     seg.type !== 'footer' && seg.type !== 'meta-navigation'
   );
   const isEmpty = contentSegments.length === 0;
-  
-  // Special handling for Hub pages (e.g., styleguide, styleguide/segments)
-  const isHubPage = pageSlug === 'styleguide' || pageSlug === 'styleguide/segments';
-  
-  useEffect(() => {
-    if (isHubPage && isEmpty) {
-      // Load child pages for hub display
-      const loadChildPages = async () => {
-        const { data } = await supabase
-          .from("page_registry")
-          .select("*")
-          .eq("parent_slug", pageSlug)
-          .order("position", { ascending: true });
-        
-        if (data) {
-          setChildPages(data);
-        }
-      };
-      loadChildPages();
-    }
-  }, [isHubPage, isEmpty, pageSlug]);
 
   return (
     <div className="min-h-screen bg-gray-50">
