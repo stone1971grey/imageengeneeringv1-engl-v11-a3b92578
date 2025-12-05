@@ -442,7 +442,7 @@ const NewsEditor = () => {
                     variant="outline"
                     size="default"
                     className="flex-1 text-sm font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                    onClick={() => window.open(`/news/${article.slug}`, '_blank')}
+                    onClick={() => window.open(`/en/news/${article.slug}`, '_blank')}
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     Preview
