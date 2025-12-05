@@ -1,4 +1,3 @@
-import Navigation from "@/components/Navigation";
 import EngineersSlider from "@/components/EngineersSlider";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
@@ -29,26 +28,20 @@ const Backlog = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
-      <div aria-hidden="true" className="block h-[320px]" />
-      <div className="pb-16">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-center mb-8">Backlog</h1>
-            <p className="text-xl text-center text-muted-foreground mb-16">
+      <div className="py-12">
+        <div className="container mx-auto px-6 max-w-3xl">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl font-bold mb-4">Backlog</h1>
+            <p className="text-muted-foreground">
               Overview of key pages currently in focus for design and implementation work.
             </p>
           </div>
-        </div>
-      </div>
 
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-6">
           <div className="space-y-4">
             {backlogItems.map((item) => (
               <div
                 key={item.path}
-                className="p-4 border border-border rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+                className="p-4 border border-border rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-card"
               >
                 <div>
                   <p className="font-semibold text-foreground">{item.title}</p>
@@ -65,10 +58,7 @@ const Backlog = () => {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Engineers Slider Segment - "Speak with Our Engineers" */}
-      <EngineersSlider />
+      </div>
 
       <Footer />
     </div>
