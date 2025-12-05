@@ -4950,16 +4950,16 @@ const AdminDashboard = () => {
                 <SortableContext
                   items={tabOrder.filter(tabId => {
                     const segment = pageSegments.find(s => s.id === tabId);
-                    // Exclude meta-navigation and full-hero from draggable section
-                    return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero');
+                    // Exclude meta-navigation, full-hero, and footer from draggable section
+                    return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'footer');
                   })}
                   strategy={horizontalListSortingStrategy}
                 >
                   {tabOrder
                     .filter(tabId => {
                       const segment = pageSegments.find(s => s.id === tabId);
-                      // Exclude meta-navigation and full-hero from draggable section
-                      return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero');
+                      // Exclude meta-navigation, full-hero, and footer from draggable section
+                      return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'footer');
                     })
                     .map((tabId) => {
                     // Static tabs - only show if not deleted (in segmentRegistry)
