@@ -150,52 +150,53 @@ Automotive camera systems must be tested following IEEE-P2020 standard. Arcturus
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Navigation />
-      <div aria-hidden="true" className="block h-[320px]" />
-      <div className="pb-16">
+      <div aria-hidden="true" className="block h-[100px]" />
+      <div className="pb-8">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-center mb-8">Backlog</h1>
-            <p className="text-xl text-center text-muted-foreground mb-4">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-black mb-4">Backlog</h1>
+            <p className="text-lg text-gray-600 mb-2">
               Snapshots of pages currently in focus for design and implementation work.
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-500">
               Click on each item to view the content snapshot.
             </p>
           </div>
         </div>
       </div>
 
-      <section className="py-10 bg-background">
+      <section className="py-6 bg-white">
         <div className="container mx-auto px-6">
           <Accordion type="single" collapsible className="space-y-4">
             {backlogItems.map((item) => (
               <AccordionItem
                 key={item.id}
                 value={item.id}
-                className="border border-border rounded-lg px-4"
+                className="border border-gray-300 rounded-lg px-4 bg-white"
               >
                 <AccordionTrigger className="hover:no-underline py-4">
-                  <div className="text-left">
-                    <p className="font-semibold text-foreground">{item.title}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
+                  <div className="text-left flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="font-semibold text-black">{item.title}</p>
+                      <Link 
+                        to={item.backlogUrl} 
+                        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm mr-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        View Page
+                      </Link>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
                       Original: {item.originalUrl}
                     </p>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pb-6">
-                  <div className="mb-4">
-                    <Link 
-                      to={item.backlogUrl} 
-                      className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      View Page
-                    </Link>
-                  </div>
-                  <div className="bg-muted/30 rounded-lg p-6">
-                    <pre className="whitespace-pre-wrap font-sans text-sm text-foreground leading-relaxed">
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <pre className="whitespace-pre-wrap font-sans text-sm text-black leading-relaxed">
                       {item.snapshot.trim()}
                     </pre>
                   </div>
