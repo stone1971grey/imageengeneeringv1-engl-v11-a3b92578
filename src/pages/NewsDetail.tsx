@@ -5,11 +5,13 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const NewsDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { language } = useLanguage();
 
   const { data: article, isLoading } = useQuery({
     queryKey: ["news-article", slug],
@@ -19,7 +21,7 @@ const NewsDetail = () => {
         .select("*")
         .eq("slug", slug)
         .eq("published", true)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -61,7 +63,7 @@ const NewsDetail = () => {
         <div className="container mx-auto px-6 py-32">
           <p className="text-center text-white mb-4">Article not found</p>
           <div className="text-center mt-4">
-            <Link to="/news">
+            <Link to={`/${language}/news`}>
               <Button variant="outline" className="bg-white/5 text-white border-white/10 hover:bg-white/10">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to News
@@ -80,7 +82,7 @@ const NewsDetail = () => {
 
       {/* Back Button */}
       <div className="container mx-auto px-6 pt-32 pb-8">
-        <Link to="/news" className="inline-block group">
+        <Link to={`/${language}/news`} className="inline-block group">
           <Button variant="outline" className="bg-white/5 backdrop-blur-sm text-white border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-300">
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
             Back to News
@@ -193,7 +195,7 @@ const NewsDetail = () => {
                       <p className="text-gray-400 mb-4 line-clamp-2 text-sm">
                         {item.teaser}
                       </p>
-                      <Link to={`/news/${item.slug}`}>
+                      <Link to={`/${language}/news/${item.slug}`}>
                         <Button variant="outline" className="w-full bg-white/5 text-white border-white/10 hover:bg-primary/20 hover:border-primary/40 hover:text-primary transition-all duration-300">
                           Read more
                         </Button>

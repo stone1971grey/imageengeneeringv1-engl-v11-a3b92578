@@ -4,12 +4,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import industriesHero from "@/assets/industries-hero.jpg";
 
 const News = () => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const { data: newsItems, isLoading } = useQuery({
     queryKey: ["news-articles-all"],
@@ -95,7 +97,7 @@ const News = () => {
                       <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed flex-1">
                         {item.teaser}
                       </p>
-                      <Link to={`/news/${item.slug}`} className="w-full block mt-auto">
+                      <Link to={`/${language}/news/${item.slug}`} className="w-full block mt-auto">
                         <Button 
                           className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-colors duration-300"
                         >
