@@ -4,13 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, Rocket, Cpu, FileCheck, Lightbulb, Handshake, Calendar, FlaskConical, Newspaper } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -37,14 +37,19 @@ interface NewsArticle {
 }
 
 const NEWS_CATEGORIES = [
-  { value: "Product Launch", label: "Product Launch" },
-  { value: "Technology", label: "Technology" },
-  { value: "Standards", label: "Standards" },
-  { value: "Innovation", label: "Innovation" },
-  { value: "Partnership", label: "Partnership" },
-  { value: "Event", label: "Event" },
-  { value: "Research", label: "Research" },
+  { value: "Product Launch", label: "Product Launch", color: "bg-emerald-500", icon: Rocket },
+  { value: "Technology", label: "Technology", color: "bg-blue-500", icon: Cpu },
+  { value: "Standards", label: "Standards", color: "bg-purple-500", icon: FileCheck },
+  { value: "Innovation", label: "Innovation", color: "bg-amber-500", icon: Lightbulb },
+  { value: "Partnership", label: "Partnership", color: "bg-pink-500", icon: Handshake },
+  { value: "Event", label: "Event", color: "bg-cyan-500", icon: Calendar },
+  { value: "Research", label: "Research", color: "bg-indigo-500", icon: FlaskConical },
 ] as const;
+
+const getCategoryInfo = (category: string | null) => {
+  const cat = NEWS_CATEGORIES.find(c => c.value === category);
+  return cat || { value: "Uncategorized", label: "Uncategorized", color: "bg-gray-400", icon: Newspaper };
+};
 
 const NewsEditor = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -171,11 +176,20 @@ const NewsEditor = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">News Articles</h2>
+      {/* Header */}
+      <div className="flex justify-between items-center bg-gradient-to-r from-[#0f407b] to-[#1a5ba8] rounded-xl p-6 text-white">
+        <div>
+          <h2 className="text-2xl font-bold flex items-center gap-3">
+            <Newspaper className="w-7 h-7" />
+            News Management
+          </h2>
+          <p className="text-blue-100 text-sm mt-1">
+            {articles?.length || 0} articles • {articles?.filter(a => a.published).length || 0} published
+          </p>
+        </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button onClick={resetForm} className="bg-white text-[#0f407b] hover:bg-blue-50 font-semibold shadow-md">
               <Plus className="w-4 h-4 mr-2" />
               Add Article
             </Button>
@@ -328,60 +342,151 @@ const NewsEditor = () => {
         </Dialog>
       </div>
 
-      <div className="grid gap-4">
-        {articles?.map((article) => (
-          <Card key={article.id}>
-            <CardHeader>
-              <CardTitle className="flex justify-between items-start">
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="text-lg">{article.title}</h3>
-                    {!article.published && (
-                      <Badge variant="secondary">Draft</Badge>
-                    )}
-                    {article.category && (
-                      <Badge variant="outline">{article.category}</Badge>
-                    )}
+      {/* Category Filter Pills */}
+      <div className="flex flex-wrap gap-2 pb-4 border-b">
+        {NEWS_CATEGORIES.map((cat) => {
+          const IconComponent = cat.icon;
+          const count = articles?.filter(a => a.category === cat.value).length || 0;
+          return (
+            <div
+              key={cat.value}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-white ${cat.color} opacity-80 hover:opacity-100 transition-opacity cursor-default`}
+            >
+              <IconComponent className="w-3.5 h-3.5" />
+              {cat.label}
+              <span className="ml-1 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px]">{count}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Articles Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {articles?.map((article) => {
+          const categoryInfo = getCategoryInfo(article.category);
+          const CategoryIcon = categoryInfo.icon;
+          
+          return (
+            <Card 
+              key={article.id} 
+              className="group overflow-hidden hover:shadow-lg transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50"
+            >
+              {/* Image Section */}
+              <div className="relative aspect-video overflow-hidden bg-gray-100">
+                {article.image_url ? (
+                  <img
+                    src={article.image_url}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300">
+                    <Newspaper className="w-12 h-12 text-gray-400" />
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {article.date} • {article.slug}
-                  </p>
+                )}
+                
+                {/* Category Badge Overlay */}
+                <div className={`absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-white ${categoryInfo.color} shadow-md`}>
+                  <CategoryIcon className="w-3.5 h-3.5" />
+                  {categoryInfo.label}
                 </div>
-                <div className="flex gap-2">
+                
+                {/* Status Badge */}
+                {!article.published && (
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500 text-white shadow-md">
+                    Draft
+                  </div>
+                )}
+                {article.published && (
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500 text-white shadow-md">
+                    Live
+                  </div>
+                )}
+              </div>
+              
+              <CardContent className="p-5">
+                {/* Date */}
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {new Date(article.date).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
+                  {article.author && (
+                    <>
+                      <span className="text-gray-300">•</span>
+                      <span>{article.author}</span>
+                    </>
+                  )}
+                </div>
+                
+                {/* Title */}
+                <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-[#0f407b] transition-colors">
+                  {article.title}
+                </h3>
+                
+                {/* Teaser */}
+                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                  {article.teaser}
+                </p>
+                
+                {/* Slug */}
+                <div className="text-xs text-gray-400 font-mono mb-4 truncate">
+                  /news/{article.slug}
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-3 border-t">
                   <Button
                     variant="outline"
                     size="sm"
+                    className="flex-1 text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
                     onClick={() => window.open(`/news/${article.slug}`, '_blank')}
                   >
-                    <Eye className="w-4 h-4" />
+                    <Eye className="w-3.5 h-3.5 mr-1.5" />
+                    Preview
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
+                    className="flex-1 text-xs hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
                     onClick={() => handleEdit(article)}
                   >
-                    <Pencil className="w-4 h-4" />
+                    <Pencil className="w-3.5 h-3.5 mr-1.5" />
+                    Edit
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
+                    className="text-xs hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                     onClick={() => {
                       if (confirm("Are you sure you want to delete this article?")) {
                         deleteMutation.mutate(article.id);
                       }
                     }}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{article.teaser}</p>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
+      
+      {/* Empty State */}
+      {articles?.length === 0 && (
+        <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+          <Newspaper className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-600 mb-2">No articles yet</h3>
+          <p className="text-sm text-gray-400 mb-4">Create your first news article to get started</p>
+          <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Article
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
