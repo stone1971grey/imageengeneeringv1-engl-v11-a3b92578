@@ -59,11 +59,14 @@ const DynamicCMSPage = () => {
     const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
     if (validLanguages.includes(parts[0])) {
       // Remove language prefix and rejoin
-      return parts.slice(1).join('/');
+      const slug = parts.slice(1).join('/');
+      // If empty (homepage), return 'index'
+      return slug || 'index';
     }
     
-    // No language prefix, return as is
-    return parts.join('/');
+    // No language prefix, return as is (or 'index' if empty)
+    const slug = parts.join('/');
+    return slug || 'index';
   };
 
   const pageSlug = extractPageSlug(location.pathname);
