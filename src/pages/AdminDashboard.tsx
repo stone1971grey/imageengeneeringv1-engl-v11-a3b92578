@@ -2552,6 +2552,7 @@ const AdminDashboard = () => {
           section_key: "footer_team_image_url",
           content_type: "image_url",
           content_value: publicUrl,
+          language: editorLanguage,
           updated_at: new Date().toISOString(),
           updated_by: user?.id
         }, {
@@ -3402,6 +3403,7 @@ const AdminDashboard = () => {
             section_key: key,
             content_type: "text",
             content_value: value,
+            language: editorLanguage,
             updated_at: new Date().toISOString(),
             updated_by: user.id
           }, {

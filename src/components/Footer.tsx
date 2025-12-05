@@ -13,16 +13,25 @@ import trainingInstructor from "@/assets/training-instructor.jpg";
 
 const Footer = () => {
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [footerContent, setFooterContent] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   
-  const isChartsPage = location.pathname === '/products/charts' || location.pathname.startsWith('/products/charts/');
-  const isSolutionBundlePage = location.pathname.startsWith('/solution/');
-  const isAutomotivePage = location.pathname === '/automotive';
-  const isArcturusPage = location.pathname === '/product/arcturus';
-  const isEventsPage = location.pathname === '/events';
-  const isPhotographyPage = location.pathname === '/photography';
+  const getNormalizedPath = (pathname: string) => {
+    const parts = pathname.split('/').filter(Boolean);
+    const langCodes = ['en', 'de', 'zh', 'ja', 'ko'];
+    if (parts.length > 0 && langCodes.includes(parts[0])) {
+      return '/' + parts.slice(1).join('/');
+    }
+    return pathname;
+  };
+  
+  const normalizedPath = getNormalizedPath(location.pathname);
+  const isChartsPage = normalizedPath === '/products/charts' || normalizedPath.startsWith('/products/charts/');
+  const isSolutionBundlePage = normalizedPath.startsWith('/solution/');
+  const isAutomotivePage = normalizedPath === '/automotive';
+  const isArcturusPage = normalizedPath === '/product/arcturus';
+  const isEventsPage = normalizedPath === '/events';
   
   const getPageType = () => {
     if (isChartsPage) return 'charts';
@@ -40,17 +49,24 @@ const Footer = () => {
   }, [location.pathname]);
 
   const loadFooterContent = async () => {
-    // Only load custom footer content for photography page
-    if (!isPhotographyPage) {
-      setLoading(false);
-      return;
-    }
+    try {
+      const extractPageSlug = (pathname: string): string => {
+        const parts = pathname.replace(/^\/+/g, "").split("/");
+        const langCodes = ['en', 'de', 'zh', 'ja', 'ko'];
+        if (parts.length > 0 && langCodes.includes(parts[0])) {
+          return parts.slice(1).join("/");
+        }
+        return parts.join("/");
+      };
 
-    const { data, error } = await supabase
-      .from("page_content")
-      .select("*")
-      .eq("page_slug", "photography")
-      .in("section_key", [
+      const pageSlug = extractPageSlug(location.pathname);
+
+      if (!pageSlug) {
+        setLoading(false);
+        return;
+      }
+
+      const sectionKeys = [
         "footer_cta_title",
         "footer_cta_description",
         "footer_contact_headline",
@@ -60,30 +76,77 @@ const Footer = () => {
         "footer_team_quote",
         "footer_team_name",
         "footer_team_title",
-        "footer_button_text"
-      ]);
+        "footer_button_text",
+      ];
 
-    if (!error && data) {
-      const contentMap: Record<string, string> = {};
-      data.forEach((item: any) => {
-        contentMap[item.section_key] = item.content_value;
-      });
-      setFooterContent(contentMap);
+      let rows: any[] = [];
+
+      // 1) Try language-specific content first
+      const { data: langData, error: langError } = await supabase
+        .from("page_content")
+        .select("*")
+        .eq("page_slug", pageSlug)
+        .eq("language", language)
+        .in("section_key", sectionKeys);
+
+      if (!langError && langData && langData.length > 0) {
+        rows = langData;
+      } else {
+        // 2) Fallback to English content for non-English languages
+        if (language !== "en") {
+          const { data: enData } = await supabase
+            .from("page_content")
+            .select("*")
+            .eq("page_slug", pageSlug)
+            .eq("language", "en")
+            .in("section_key", sectionKeys);
+
+          if (enData && enData.length > 0) {
+            rows = enData;
+          }
+        }
+
+        // 3) Legacy fallback: rows without explicit language (treated as English)
+        if (rows.length === 0) {
+          const { data: legacyData } = await supabase
+            .from("page_content")
+            .select("*")
+            .eq("page_slug", pageSlug)
+            .is("language", null as any)
+            .in("section_key", sectionKeys);
+
+          if (legacyData && legacyData.length > 0) {
+            rows = legacyData;
+          }
+        }
+      }
+
+      if (rows.length > 0) {
+        const contentMap: Record<string, string> = {};
+        rows.forEach((item: any) => {
+          contentMap[item.section_key] = item.content_value;
+        });
+        setFooterContent(contentMap);
+      } else {
+        setFooterContent({});
+      }
+    } catch (error) {
+      console.error("[Footer] Error loading footer content:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
-
   return (
     <footer id="footer" className="bg-[#4B4A4A] border-t border-[#4B4A4A]">
       {/* Vision CTA Section */}
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          {isPhotographyPage && footerContent.footer_cta_title 
+          {footerContent.footer_cta_title 
             ? footerContent.footer_cta_title 
             : t.footer.cta[pageType]}
         </h2>
         <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
-          {isPhotographyPage && footerContent.footer_cta_description 
+          {footerContent.footer_cta_description 
             ? footerContent.footer_cta_description 
             : t.footer.ctaDesc[pageType]}
         </p>
@@ -97,17 +160,17 @@ const Footer = () => {
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold">
-                {isPhotographyPage && footerContent.footer_contact_headline 
+                {footerContent.footer_contact_headline 
                   ? footerContent.footer_contact_headline 
                   : t.footer.contactHeadline[pageType]}
               </h2>
               <p className="text-lg md:text-xl font-semibold mb-4 mt-2">
-                {isPhotographyPage && footerContent.footer_contact_subline 
+                {footerContent.footer_contact_subline 
                   ? footerContent.footer_contact_subline 
                   : t.footer.contactSubline[pageType]}
               </p>
               <p className="text-white leading-relaxed">
-                {isPhotographyPage && footerContent.footer_contact_description 
+                {footerContent.footer_contact_description 
                   ? footerContent.footer_contact_description 
                   : t.footer.contactDesc[pageType]}
               </p>
@@ -136,7 +199,7 @@ const Footer = () => {
             </div>
 
             <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
-              {isPhotographyPage && footerContent.footer_button_text 
+              {footerContent.footer_button_text 
                 ? footerContent.footer_button_text 
                 : t.footer.button[pageType]}
             </Button>
@@ -148,7 +211,7 @@ const Footer = () => {
               <div className="flex-shrink-0 mx-auto md:mx-0">
                  <img 
                    src={
-                     isPhotographyPage && footerContent.footer_team_image_url 
+                     footerContent.footer_team_image_url 
                        ? footerContent.footer_team_image_url
                        : isChartsPage ? teamMarkus 
                        : isSolutionBundlePage ? teamStefan 
@@ -158,7 +221,7 @@ const Footer = () => {
                        : teamLaura
                    }
                     alt={
-                      isPhotographyPage && footerContent.footer_team_name
+                      footerContent.footer_team_name
                         ? footerContent.footer_team_name
                         : isChartsPage 
                           ? "Markus Weber, Technical Chart Specialist" 
@@ -177,18 +240,18 @@ const Footer = () => {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <blockquote className="text-lg text-white leading-relaxed mb-4">
-                  "{isPhotographyPage && footerContent.footer_team_quote 
+                  "{footerContent.footer_team_quote 
                     ? footerContent.footer_team_quote 
                     : t.footer.teamQuote[pageType]}"
                 </blockquote>
                 <cite className="text-white not-italic">
                   <div className="font-semibold text-white">
-                    {isPhotographyPage && footerContent.footer_team_name 
+                    {footerContent.footer_team_name 
                       ? footerContent.footer_team_name 
                       : t.footer.teamName[pageType]}
                   </div>
                   <div className="text-sm">
-                    {isPhotographyPage && footerContent.footer_team_title 
+                    {footerContent.footer_team_title 
                       ? footerContent.footer_team_title 
                       : t.footer.teamTitle[pageType]}
                   </div>
