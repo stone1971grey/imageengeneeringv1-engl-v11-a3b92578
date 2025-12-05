@@ -144,6 +144,8 @@ const App = () => (
             
             {/* Language-prefixed routes - all actual pages */}
             <Route path="/:lang" element={<DynamicCMSPage />} />
+            {/* Redirect /en/index to /en (homepage) */}
+            <Route path="/:lang/index" element={<Navigate to="../" replace />} />
             <Route path="/:lang/inside-lab" element={<InsideLab />} />
             <Route path="/:lang/your-solution" element={<YourSolution />} />
             <Route path="/:lang/products" element={<Products />} />
