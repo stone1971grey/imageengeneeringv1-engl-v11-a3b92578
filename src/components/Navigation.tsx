@@ -76,8 +76,13 @@ const Navigation = () => {
   
   // Check if current path is within styleguide section (with language prefix support)
   const isStyleguidePath = location.pathname.includes('/styleguide');
+  // Check if current path is within backlog section
+  const isBacklogPath = location.pathname.includes('/backlog');
   // Check if current path is admin dashboard
   const isAdminDashboard = location.pathname.includes('/admin-dashboard');
+  
+  // Combined check for styleguide-like navigation (styleguide OR backlog)
+  const isStyleguideOrBacklog = isStyleguidePath || isBacklogPath;
 
   // Helper function to check if a link is active
   const isActive = (path: string) => {
@@ -432,7 +437,7 @@ const Navigation = () => {
           {/* Main Navigation - aligned with search - Hide in Admin Dashboard */}
           {!isAdminDashboard && (
             <div className="hidden 2xl:flex items-center gap-6">
-              {isStyleguidePath ? (
+              {isStyleguideOrBacklog ? (
                 /* Styleguide-specific Navigation with Flyout */
                 <SimpleDropdown trigger={t.nav.styleguide} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="w-[640px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
@@ -1177,7 +1182,7 @@ const Navigation = () => {
                 
                 {/* Navigation content */}
                 <nav className="px-6 py-4">
-                  {isStyleguidePath && (
+                  {isStyleguideOrBacklog && (
                     <Accordion type="single" collapsible className="space-y-0 mb-4">
                       {/* Styleguide mobile navigation */}
                       <AccordionItem value="styleguide-root" className="border-none">
@@ -1192,6 +1197,13 @@ const Navigation = () => {
                               onClick={() => setIsOpen(false)}
                             >
                               Styleguide
+                            </Link>
+                            <Link
+                              to={`/${language}/backlog`}
+                              className="block px-4 py-2 text-gray-700 hover:text-gray-900"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              Backlog
                             </Link>
                           </div>
                         </AccordionContent>
@@ -1234,7 +1246,7 @@ const Navigation = () => {
                   <Accordion
                     type="single"
                     collapsible
-                    className={isStyleguidePath ? "space-y-0 hidden" : "space-y-0"}
+                    className={isStyleguideOrBacklog ? "space-y-0 hidden" : "space-y-0"}
                   >
                     
                     {/* Your Solution */}
