@@ -1,3 +1,6 @@
+import Navigation from "@/components/Navigation";
+import EngineersSlider from "@/components/EngineersSlider";
+import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
 
 const Backlog = () => {
@@ -25,36 +28,49 @@ const Backlog = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background px-6 pt-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-2">Backlog</h1>
-          <p className="text-sm text-muted-foreground">
-            Pages in focus for design and implementation.
-          </p>
-        </div>
-
-        <div className="space-y-3">
-          {backlogItems.map((item) => (
-            <div
-              key={item.path}
-              className="p-4 border border-border rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-card"
-            >
-              <div>
-                <p className="font-semibold text-foreground">{item.title}</p>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-              </div>
-              <Link
-                to={item.path}
-                className="inline-flex items-center text-primary hover:text-primary/80 text-sm font-medium"
-              >
-                Open page
-                <span className="ml-1">→</span>
-              </Link>
-            </div>
-          ))}
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <div aria-hidden="true" className="block h-[320px]" />
+      <div className="pb-16">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-center mb-8">Backlog</h1>
+            <p className="text-xl text-center text-muted-foreground mb-16">
+              Overview of key pages currently in focus for design and implementation work.
+            </p>
+          </div>
         </div>
       </div>
+
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-6">
+          <div className="space-y-4">
+            {backlogItems.map((item) => (
+              <div
+                key={item.path}
+                className="p-4 border border-border rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+              >
+                <div>
+                  <p className="font-semibold text-foreground">{item.title}</p>
+                  <p className="text-sm text-muted-foreground">{item.description}</p>
+                </div>
+                <Link
+                  to={item.path}
+                  className="inline-flex items-center text-primary hover:text-primary/80 text-sm font-medium"
+                >
+                  Open page
+                  <span className="ml-1">→</span>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Engineers Slider Segment - "Speak with Our Engineers" */}
+      <EngineersSlider />
+
+      <Footer />
     </div>
   );
 };
