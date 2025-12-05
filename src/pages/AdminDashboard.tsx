@@ -71,6 +71,7 @@ import { CMSPageOverview } from '@/components/admin/CMSPageOverview';
 import { GlossaryManager } from '@/components/admin/GlossaryManager';
 import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
+import { FooterEditor } from '@/components/admin/FooterEditor';
 
 // Type definitions for CMS content structures
 interface TileItem {
