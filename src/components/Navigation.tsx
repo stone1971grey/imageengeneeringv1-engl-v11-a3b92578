@@ -1669,8 +1669,8 @@ const Navigation = () => {
 
                             return (
                               <Link to={getLink(targetSlug, '/inside-lab')} onClick={() => setIsOpen(false)}>
-                                <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium text-lg">
-                                  <CtaIcon className="h-5 w-5 mr-2" />
+                                <Button className="w-full bg-black text-white hover:bg-gray-800 rounded-lg font-medium text-xl">
+                                  <CtaIcon className="h-6 w-6 mr-2" />
                                   {label}
                                 </Button>
                               </Link>
@@ -1822,7 +1822,7 @@ const Navigation = () => {
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
                           <Link to="/inside-lab" onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium text-xl">
-                              <FlaskConical className="h-5 w-5 mr-2" />
+                              <FlaskConical className="h-6 w-6 mr-2" />
                               Visit Our Testing Lab
                             </Button>
                           </Link>
