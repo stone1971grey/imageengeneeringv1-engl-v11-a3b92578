@@ -343,18 +343,18 @@ const NewsEditor = () => {
       </div>
 
       {/* Category Filter Pills */}
-      <div className="flex flex-wrap gap-2 pb-4 border-b">
+      <div className="flex flex-wrap gap-3 pb-5 border-b">
         {NEWS_CATEGORIES.map((cat) => {
           const IconComponent = cat.icon;
           const count = articles?.filter(a => a.category === cat.value).length || 0;
           return (
             <div
               key={cat.value}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-white ${cat.color} opacity-80 hover:opacity-100 transition-opacity cursor-default`}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white ${cat.color} opacity-85 hover:opacity-100 transition-opacity cursor-default shadow-sm`}
             >
-              <IconComponent className="w-3.5 h-3.5" />
+              <IconComponent className="w-4 h-4" />
               {cat.label}
-              <span className="ml-1 bg-white/20 px-1.5 py-0.5 rounded-full text-[10px]">{count}</span>
+              <span className="ml-1 bg-white/25 px-2 py-0.5 rounded-full text-xs font-bold">{count}</span>
             </div>
           );
         })}
@@ -386,28 +386,28 @@ const NewsEditor = () => {
                 )}
                 
                 {/* Category Badge Overlay */}
-                <div className={`absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-white ${categoryInfo.color} shadow-md`}>
-                  <CategoryIcon className="w-3.5 h-3.5" />
+                <div className={`absolute top-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold text-white ${categoryInfo.color} shadow-md`}>
+                  <CategoryIcon className="w-4 h-4" />
                   {categoryInfo.label}
                 </div>
                 
                 {/* Status Badge */}
                 {!article.published && (
-                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500 text-white shadow-md">
+                  <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-yellow-500 text-white shadow-md">
                     Draft
                   </div>
                 )}
                 {article.published && (
-                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500 text-white shadow-md">
+                  <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-green-500 text-white shadow-md">
                     Live
                   </div>
                 )}
               </div>
               
-              <CardContent className="p-5">
+              <CardContent className="p-6">
                 {/* Date */}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                  <Calendar className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                  <Calendar className="w-4 h-4" />
                   {new Date(article.date).toLocaleDateString('en-US', { 
                     year: 'numeric', 
                     month: 'short', 
@@ -422,51 +422,51 @@ const NewsEditor = () => {
                 </div>
                 
                 {/* Title */}
-                <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-[#0f407b] transition-colors">
+                <h3 className="font-bold text-lg text-gray-900 line-clamp-2 mb-3 group-hover:text-[#0f407b] transition-colors">
                   {article.title}
                 </h3>
                 
                 {/* Teaser */}
-                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                <p className="text-base text-muted-foreground line-clamp-2 mb-4">
                   {article.teaser}
                 </p>
                 
                 {/* Slug */}
-                <div className="text-xs text-gray-400 font-mono mb-4 truncate">
+                <div className="text-sm text-gray-400 font-mono mb-4 truncate">
                   /news/{article.slug}
                 </div>
                 
                 {/* Action Buttons */}
-                <div className="flex gap-2 pt-3 border-t">
+                <div className="flex gap-2 pt-4 border-t">
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    size="default"
+                    className="flex-1 text-sm font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
                     onClick={() => window.open(`/news/${article.slug}`, '_blank')}
                   >
-                    <Eye className="w-3.5 h-3.5 mr-1.5" />
+                    <Eye className="w-4 h-4 mr-2" />
                     Preview
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="flex-1 text-xs hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                    size="default"
+                    className="flex-1 text-sm font-medium hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
                     onClick={() => handleEdit(article)}
                   >
-                    <Pencil className="w-3.5 h-3.5 mr-1.5" />
+                    <Pencil className="w-4 h-4 mr-2" />
                     Edit
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="text-xs hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                    size="default"
+                    className="text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                     onClick={() => {
                       if (confirm("Are you sure you want to delete this article?")) {
                         deleteMutation.mutate(article.id);
                       }
                     }}
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </CardContent>
