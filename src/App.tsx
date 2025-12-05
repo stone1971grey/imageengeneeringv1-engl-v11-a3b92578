@@ -150,10 +150,7 @@ const App = () => (
             <Route path="/:lang/your-solution" element={<YourSolution />} />
             <Route path="/:lang/products" element={<Products />} />
             
-            {/* Hierarchical Your Solution Routes */}
-            <Route path="/:lang/your-solution/automotive" element={<Automotive />} />
-            <Route path="/:lang/your-solution/automotive/in-cabin-testing" element={<InCabinTesting />} />
-            <Route path="/:lang/your-solution/scanners-archiving/multispectral-illumination" element={<MultispectralIllumination />} />
+            {/* Hierarchical Your Solution Routes - now handled by DynamicCMSPage catch-all */}
             
             {/* Universal catch-all routes for DynamicCMSPage */}
             <Route path="/:lang/your-solution/:slug" element={<DynamicCMSPage />} />
