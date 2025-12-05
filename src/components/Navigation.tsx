@@ -1193,13 +1193,6 @@ const Navigation = () => {
                             >
                               Styleguide
                             </Link>
-                            <Link
-                              to={`/${language}/backlog`}
-                              className="block px-4 py-2 text-gray-700 hover:text-gray-900"
-                              onClick={() => setIsOpen(false)}
-                            >
-                              Backlog
-                            </Link>
                           </div>
                         </AccordionContent>
                       </AccordionItem>
