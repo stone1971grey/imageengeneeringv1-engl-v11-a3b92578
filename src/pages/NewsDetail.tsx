@@ -5,9 +5,10 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Calendar, User } from "lucide-react";
+import { ArrowLeft, Calendar, User, X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useState } from "react";
 
 interface ContentBlock {
   id: string;
@@ -19,46 +20,137 @@ interface ContentBlock {
   listItems?: string[];
 }
 
+interface LightboxProps {
+  images: { src: string; alt: string }[];
+  currentIndex: number;
+  onClose: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+}
+
+const Lightbox = ({ images, currentIndex, onClose, onNext, onPrev }: LightboxProps) => {
+  if (currentIndex < 0) return null;
+  
+  return (
+    <div 
+      className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+      onClick={onClose}
+    >
+      {/* Close button */}
+      <button 
+        onClick={onClose}
+        className="absolute top-4 right-4 text-white/80 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+      >
+        <X className="w-6 h-6" />
+      </button>
+      
+      {/* Previous button */}
+      {images.length > 1 && (
+        <button 
+          onClick={(e) => { e.stopPropagation(); onPrev(); }}
+          className="absolute left-4 text-white/80 hover:text-white p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+        >
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+      )}
+      
+      {/* Image */}
+      <div className="max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+        <img 
+          src={images[currentIndex]?.src} 
+          alt={images[currentIndex]?.alt || ""} 
+          className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+        />
+        {images[currentIndex]?.alt && (
+          <p className="text-white/80 text-center mt-4 text-sm">
+            {images[currentIndex].alt}
+          </p>
+        )}
+        {images.length > 1 && (
+          <p className="text-white/60 text-center mt-2 text-xs">
+            {currentIndex + 1} / {images.length}
+          </p>
+        )}
+      </div>
+      
+      {/* Next button */}
+      {images.length > 1 && (
+        <button 
+          onClick={(e) => { e.stopPropagation(); onNext(); }}
+          className="absolute right-4 text-white/80 hover:text-white p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+        >
+          <ChevronRight className="w-8 h-8" />
+        </button>
+      )}
+    </div>
+  );
+};
+
 // Render blocks content
-const renderBlocks = (blocks: ContentBlock[]) => {
+const renderBlocks = (
+  blocks: ContentBlock[], 
+  onImageClick: (index: number) => void,
+  imageIndexMap: Map<string, number>
+) => {
+  let floatSide: 'left' | 'right' = 'right';
+  
   return blocks.map((block) => {
     switch (block.type) {
       case "paragraph":
         return (
-          <p key={block.id} className="text-gray-700 text-lg leading-relaxed mb-6">
+          <p key={block.id} className="text-gray-700 text-lg leading-relaxed mb-6 clear-none">
             {block.content}
           </p>
         );
       case "heading2":
         return (
-          <h2 key={block.id} className="text-2xl font-bold text-gray-900 mt-10 mb-4">
+          <h2 key={block.id} className="text-2xl font-bold text-gray-900 mt-10 mb-4 clear-both">
             {block.content}
           </h2>
         );
       case "heading3":
         return (
-          <h3 key={block.id} className="text-xl font-semibold text-gray-800 mt-8 mb-3">
+          <h3 key={block.id} className="text-xl font-semibold text-gray-800 mt-8 mb-3 clear-both">
             {block.content}
           </h3>
         );
       case "quote":
         return (
-          <blockquote key={block.id} className="border-l-4 border-[#0f407b] pl-6 my-8 italic text-gray-600 text-lg">
+          <blockquote key={block.id} className="border-l-4 border-[#0f407b] pl-6 my-8 italic text-gray-600 text-lg clear-both">
             {block.content}
           </blockquote>
         );
       case "image":
         const imgSrc = block.imageUrl || block.content;
         const imgAlt = block.imageAlt || (block as any).alt || "";
+        const imageIndex = imageIndexMap.get(block.id) ?? 0;
+        
+        // Alternate float direction
+        const currentFloat = floatSide;
+        floatSide = floatSide === 'right' ? 'left' : 'right';
+        
         return (
-          <figure key={block.id} className="my-8">
-            <img
-              src={imgSrc}
-              alt={imgAlt}
-              className="w-full rounded-lg shadow-md"
-            />
+          <figure 
+            key={block.id} 
+            className={`w-1/2 my-4 cursor-pointer group ${
+              currentFloat === 'right' 
+                ? 'float-right ml-6 mb-4' 
+                : 'float-left mr-6 mb-4'
+            }`}
+            onClick={() => onImageClick(imageIndex)}
+          >
+            <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+              <img
+                src={imgSrc}
+                alt={imgAlt}
+                className="w-full rounded-lg group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
             {(block.imageCaption || imgAlt) && (
-              <figcaption className="text-sm text-gray-500 text-center mt-3 italic">
+              <figcaption className="text-sm text-gray-500 text-center mt-2 italic">
                 {block.imageCaption || imgAlt}
               </figcaption>
             )}
@@ -66,7 +158,7 @@ const renderBlocks = (blocks: ContentBlock[]) => {
         );
       case "list":
         return (
-          <ul key={block.id} className="list-disc list-inside space-y-2 my-6 text-gray-700">
+          <ul key={block.id} className="list-disc list-inside space-y-2 my-6 text-gray-700 clear-both">
             {block.listItems?.map((item, idx) => (
               <li key={idx} className="text-lg">{item}</li>
             ))}
@@ -99,6 +191,7 @@ const parseContent = (content: string): { isBlocks: boolean; blocks?: ContentBlo
 const NewsDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const [lightboxIndex, setLightboxIndex] = useState(-1);
 
   const { data: article, isLoading } = useQuery({
     queryKey: ["news-article", slug],
@@ -130,6 +223,42 @@ const NewsDetail = () => {
       return data;
     },
   });
+
+  // Extract images from blocks for lightbox
+  const getImagesFromContent = (content: string): { src: string; alt: string }[] => {
+    try {
+      if (content?.trim().startsWith("[")) {
+        const blocks = JSON.parse(content) as ContentBlock[];
+        return blocks
+          .filter(b => b.type === "image")
+          .map(b => ({
+            src: b.imageUrl || b.content,
+            alt: b.imageAlt || (b as any).alt || ""
+          }));
+      }
+    } catch { }
+    return [];
+  };
+
+  // Create image index map for block IDs
+  const getImageIndexMap = (content: string): Map<string, number> => {
+    const map = new Map<string, number>();
+    try {
+      if (content?.trim().startsWith("[")) {
+        const blocks = JSON.parse(content) as ContentBlock[];
+        let imgIndex = 0;
+        blocks.forEach(b => {
+          if (b.type === "image") {
+            map.set(b.id, imgIndex++);
+          }
+        });
+      }
+    } catch { }
+    return map;
+  };
+
+  const images = article ? getImagesFromContent(article.content) : [];
+  const imageIndexMap = article ? getImageIndexMap(article.content) : new Map();
 
   if (isLoading) {
     return (
@@ -219,8 +348,13 @@ const NewsDetail = () => {
                 const parsed = parseContent(article.content);
                 if (parsed.isBlocks && parsed.blocks) {
                   return (
-                    <div className="prose prose-lg max-w-none">
-                      {renderBlocks(parsed.blocks)}
+                    <div className="prose prose-lg max-w-none overflow-hidden">
+                      {renderBlocks(
+                        parsed.blocks, 
+                        (index) => setLightboxIndex(index),
+                        imageIndexMap
+                      )}
+                      <div className="clear-both" />
                     </div>
                   );
                 }
@@ -295,6 +429,15 @@ const NewsDetail = () => {
           </div>
         </section>
       )}
+
+      {/* Lightbox */}
+      <Lightbox
+        images={images}
+        currentIndex={lightboxIndex}
+        onClose={() => setLightboxIndex(-1)}
+        onNext={() => setLightboxIndex((prev) => (prev + 1) % images.length)}
+        onPrev={() => setLightboxIndex((prev) => (prev - 1 + images.length) % images.length)}
+      />
 
       <Footer />
     </div>
