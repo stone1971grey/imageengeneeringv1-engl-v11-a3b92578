@@ -107,6 +107,13 @@ const Styleguide = () => {
                     }}>
                    Typography
                  </a>
+                 <a href="#backlog" className="text-[#f5743a] hover:text-[#f5743a]/80 font-medium transition-colors scroll-smooth"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('backlog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}>
+                   Backlog
+                 </a>
                </div>
             </div>
           </div>
@@ -1503,6 +1510,72 @@ const Styleguide = () => {
                       <h4 className="text-lg font-semibold text-gray-900 mb-4">Icons: Lucide React</h4>
                       <p className="text-sm text-gray-600">Icon-System für UI-Elemente und Navigation - moderne SVG-Icons aus der Lucide React Bibliothek</p>
                     </div>
+                  </div>
+                </div>
+              
+              </section>
+              
+              {/* Backlog Section */}
+              <section id="backlog" className="mb-16 scroll-mt-[320px]">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Backlog</h2>
+                <p className="text-lg text-gray-600 mb-6">
+                  Overview of key pages currently in focus for design and implementation work.
+                </p>
+                <div className="space-y-4">
+                  <div className="p-4 border border-gray-200 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-gray-900">In-Cabin Testing (Automotive)</p>
+                      <p className="text-sm text-gray-600">Detail page for in-cabin testing solution.</p>
+                    </div>
+                    <Link
+                      to="/en/your-solution/automotive/in-cabin-testing"
+                      className="inline-flex items-center text-[#f5743a] hover:text-[#f5743a]/80 text-sm font-medium"
+                    >
+                      Open page
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-gray-900">Automotive overview</p>
+                      <p className="text-sm text-gray-600">Main automotive solution overview page.</p>
+                    </div>
+                    <Link
+                      to="/en/your-solution/automotive"
+                      className="inline-flex items-center text-[#f5743a] hover:text-[#f5743a]/80 text-sm font-medium"
+                    >
+                      Open page
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-gray-900">LE7 – Test chart product page</p>
+                      <p className="text-sm text-gray-600">Product page for LE7 test chart in test charts category.</p>
+                    </div>
+                    <Link
+                      to="/en/products/test-charts/le7"
+                      className="inline-flex items-center text-[#f5743a] hover:text-[#f5743a]/80 text-sm font-medium"
+                    >
+                      Open page
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </div>
+
+                  <div className="p-4 border border-gray-200 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-gray-900">Arcturus LED – Illumination device</p>
+                      <p className="text-sm text-gray-600">Product page for Arcturus LED illumination device.</p>
+                    </div>
+                    <Link
+                      to="/en/products/illumination-devices/arcturus-led"
+                      className="inline-flex items-center text-[#f5743a] hover:text-[#f5743a]/80 text-sm font-medium"
+                    >
+                      Open page
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </Link>
                   </div>
                 </div>
               </section>
