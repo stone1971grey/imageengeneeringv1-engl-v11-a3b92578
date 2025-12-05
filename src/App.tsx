@@ -181,6 +181,7 @@ const App = () => (
             <Route path="/:lang/downloads" element={<Downloads />} />
             <Route path="/:lang/hidden-segments" element={<HiddenSegments />} />
             <Route path="/:lang/backlog" element={<Backlog />} />
+            <Route path="/:lang/backlog/:slug" element={<DynamicCMSPage />} />
             <Route path="/:lang/products/charts" element={<Charts />} />
             <Route path="/:lang/products/charts/:slug" element={<ChartDetail />} />
             <Route path="/:lang/cart" element={<Cart />} />

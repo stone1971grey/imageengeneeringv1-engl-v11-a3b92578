@@ -7,23 +7,23 @@ const Backlog = () => {
   const backlogItems = [
     {
       title: "In-Cabin Testing (Automotive)",
-      description: "Detail page for in-cabin testing solution.",
-      path: "/en/your-solution/automotive/in-cabin-testing",
+      description: "Backlog copy of in-cabin testing solution page.",
+      path: "/en/backlog/in-cabin-testing",
     },
     {
       title: "Automotive overview",
-      description: "Main automotive solution overview page.",
-      path: "/en/your-solution/automotive",
+      description: "Backlog copy of main automotive solution overview page.",
+      path: "/en/backlog/automotive",
     },
     {
       title: "LE7 – Test chart product page",
-      description: "Product page for LE7 test chart in test charts category.",
-      path: "/en/products/test-charts/le7",
+      description: "Backlog copy of LE7 test chart product page.",
+      path: "/en/backlog/le7",
     },
     {
       title: "Arcturus LED – Illumination device",
-      description: "Product page for Arcturus LED illumination device.",
-      path: "/en/products/illumination-devices/arcturus-led",
+      description: "Backlog copy of Arcturus LED illumination device page.",
+      path: "/en/backlog/arcturus-led",
     },
   ];
 
