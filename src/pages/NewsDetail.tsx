@@ -94,6 +94,10 @@ const renderBlocks = (
 ) => {
   let floatSide: 'left' | 'right' = 'right';
   
+  // Find all image blocks to identify the last one
+  const imageBlocks = blocks.filter(b => b.type === "image");
+  const lastImageId = imageBlocks.length > 0 ? imageBlocks[imageBlocks.length - 1].id : null;
+  
   return blocks.map((block) => {
     switch (block.type) {
       case "paragraph":
@@ -124,15 +128,43 @@ const renderBlocks = (
         const imgSrc = block.imageUrl || block.content;
         const imgAlt = block.imageAlt || (block as any).alt || "";
         const imageIndex = imageIndexMap.get(block.id) ?? 0;
+        const isLastImage = block.id === lastImageId;
         
-        // Alternate float direction
+        // Last image: full width, no float
+        if (isLastImage) {
+          return (
+            <figure 
+              key={block.id} 
+              className="w-full my-8 cursor-pointer group clear-both"
+              onClick={() => onImageClick(imageIndex)}
+            >
+              <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
+                <img
+                  src={imgSrc}
+                  alt={imgAlt}
+                  className="w-full rounded-lg group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                  <ZoomIn className="w-10 h-10 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+              </div>
+              {(block.imageCaption || imgAlt) && (
+                <figcaption className="text-sm text-gray-500 text-center mt-3 italic">
+                  {block.imageCaption || imgAlt}
+                </figcaption>
+              )}
+            </figure>
+          );
+        }
+        
+        // Regular images: 1/3 width with float
         const currentFloat = floatSide;
         floatSide = floatSide === 'right' ? 'left' : 'right';
         
         return (
           <figure 
             key={block.id} 
-            className={`w-1/2 my-4 cursor-pointer group ${
+            className={`w-1/3 my-4 cursor-pointer group ${
               currentFloat === 'right' 
                 ? 'float-right ml-6 mb-4' 
                 : 'float-left mr-6 mb-4'
@@ -146,7 +178,7 @@ const renderBlocks = (
                 className="w-full rounded-lg group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>
             {(block.imageCaption || imgAlt) && (
