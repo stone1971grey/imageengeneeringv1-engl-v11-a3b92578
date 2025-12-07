@@ -316,42 +316,6 @@ const NewsEditor = () => {
                           onMediaSelect={(url) => setFormData({ ...formData, image_url: url })}
                           label="Select from Media"
                         />
-                        
-                        {/* URL Input fallback */}
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 relative">
-                            <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                            <Input
-                              placeholder="Or paste image URL..."
-                              className="pl-10 bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                  const input = e.target as HTMLInputElement;
-                                  if (input.value) {
-                                    setFormData({ ...formData, image_url: input.value });
-                                    input.value = "";
-                                  }
-                                }
-                              }}
-                            />
-                          </div>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            className="border-gray-600 bg-[#2a2a2a] text-gray-300 hover:bg-[#3a3a3a]"
-                            onClick={(e) => {
-                              const input = (e.target as HTMLElement).closest('.flex')?.querySelector('input') as HTMLInputElement;
-                              if (input?.value) {
-                                setFormData({ ...formData, image_url: input.value });
-                                input.value = "";
-                              }
-                            }}
-                          >
-                            <ImageIcon className="h-4 w-4" />
-                          </Button>
-                        </div>
                       </div>
                     )}
                   </div>
