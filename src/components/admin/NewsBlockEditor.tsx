@@ -151,15 +151,15 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
     return (
       <Card
         key={block.id}
-        className="p-4 bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+        className="p-4 bg-[#2a2a2a] border border-gray-600 shadow-sm hover:shadow-md transition-shadow"
       >
         {/* Block Header */}
-        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-100">
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-600">
           <div className="flex items-center gap-1 text-gray-400">
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 w-7 p-0 hover:bg-gray-100"
+              className="h-7 w-7 p-0 hover:bg-[#3a3a3a] text-gray-400"
               onClick={() => moveBlock(index, "up")}
               disabled={index === 0}
             >
@@ -168,7 +168,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 w-7 p-0 hover:bg-gray-100"
+              className="h-7 w-7 p-0 hover:bg-[#3a3a3a] text-gray-400"
               onClick={() => moveBlock(index, "down")}
               disabled={index === blocks.length - 1}
             >
@@ -176,20 +176,20 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-md">
-            <BlockIcon className="h-4 w-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#3a3a3a] rounded-md">
+            <BlockIcon className="h-4 w-4 text-gray-300" />
+            <span className="text-sm font-medium text-gray-300">
               {BLOCK_TYPES.find((t) => t.type === block.type)?.label}
             </span>
           </div>
 
-          <span className="text-xs text-gray-400 font-mono">#{index + 1}</span>
+          <span className="text-xs text-gray-500 font-mono">#{index + 1}</span>
 
           <div className="ml-auto">
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 w-8 p-0 text-red-500 hover:bg-red-50 hover:text-red-600"
+              className="h-8 w-8 p-0 text-red-400 hover:bg-red-900/30 hover:text-red-300"
               onClick={() => deleteBlock(block.id)}
             >
               <Trash2 className="h-4 w-4" />
@@ -205,7 +205,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
               value={block.content}
               onChange={(e) => updateBlock(block.id, { content: e.target.value })}
               placeholder="Enter your paragraph text here..."
-              className="min-h-[120px] text-gray-900 bg-gray-50 border-gray-200 focus:bg-white resize-y"
+              className="min-h-[120px] text-white bg-[#3a3a3a] border-gray-600 focus:bg-[#444] placeholder:text-gray-500 resize-y"
             />
           )}
 
@@ -215,7 +215,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
               value={block.content}
               onChange={(e) => updateBlock(block.id, { content: e.target.value })}
               placeholder={block.type === "heading2" ? "Section Heading..." : "Subheading..."}
-              className={`text-gray-900 bg-gray-50 border-gray-200 focus:bg-white ${
+              className={`text-white bg-[#3a3a3a] border-gray-600 focus:bg-[#444] placeholder:text-gray-500 ${
                 block.type === "heading2" ? "text-xl font-bold" : "text-lg font-semibold"
               }`}
             />
@@ -224,12 +224,12 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
           {/* Quote */}
           {block.type === "quote" && (
             <div className="relative">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#0f407b] rounded-full" />
+              <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#f9dc24] rounded-full" />
               <Textarea
                 value={block.content}
                 onChange={(e) => updateBlock(block.id, { content: e.target.value })}
                 placeholder="Enter quote or highlighted text..."
-                className="min-h-[80px] pl-6 text-gray-900 bg-gray-50 border-gray-200 focus:bg-white italic resize-y"
+                className="min-h-[80px] pl-6 text-white bg-[#3a3a3a] border-gray-600 focus:bg-[#444] placeholder:text-gray-500 italic resize-y"
               />
             </div>
           )}
@@ -243,7 +243,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                     <img
                       src={block.imageUrl}
                       alt={block.imageAlt || ""}
-                      className="w-full max-h-[400px] object-contain rounded-lg border border-gray-200 bg-gray-100"
+                      className="w-full max-h-[400px] object-contain rounded-lg border border-gray-600 bg-[#3a3a3a]"
                     />
                     <Button
                       variant="destructive"
@@ -258,7 +258,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                   
                   {/* Image Width Selection */}
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-700">Display Width:</span>
+                    <span className="text-sm font-medium text-gray-300">Display Width:</span>
                     <div className="flex gap-2">
                       {[
                         { value: "small", label: "1/3", desc: "Small (33%)" },
@@ -272,8 +272,8 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                           onClick={() => updateBlock(block.id, { imageWidth: option.value as ContentBlock["imageWidth"] })}
                           className={`px-3 py-1.5 text-sm rounded-md border transition-all ${
                             (block.imageWidth || "small") === option.value
-                              ? "bg-[#0f407b] text-white border-[#0f407b]"
-                              : "bg-white text-gray-700 border-gray-300 hover:border-[#0f407b] hover:bg-blue-50"
+                              ? "bg-[#f9dc24] text-black border-[#f9dc24]"
+                              : "bg-[#3a3a3a] text-gray-300 border-gray-600 hover:border-[#f9dc24] hover:bg-[#444]"
                           }`}
                           title={option.desc}
                         >
@@ -287,87 +287,24 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                     value={block.imageAlt || ""}
                     onChange={(e) => updateBlock(block.id, { imageAlt: e.target.value })}
                     placeholder="Alt text (for accessibility)"
-                    className="text-gray-900 bg-gray-50 border-gray-200"
+                    className="text-white bg-[#3a3a3a] border-gray-600 placeholder:text-gray-500"
                   />
                   <Input
                     value={block.imageCaption || ""}
                     onChange={(e) => updateBlock(block.id, { imageCaption: e.target.value })}
                     placeholder="Caption (optional)"
-                    className="text-gray-900 bg-gray-50 border-gray-200 text-sm italic"
+                    className="text-white bg-[#3a3a3a] border-gray-600 placeholder:text-gray-500 text-sm italic"
                   />
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">
-                  <div className="flex gap-2">
-                    {/* Upload from Computer */}
-                    <label className="flex-1">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleImageUpload(block.id, file);
-                        }}
-                        disabled={uploadingBlockId === block.id}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full h-24 border-dashed border-2 hover:border-[#0f407b] hover:bg-blue-50"
-                        disabled={uploadingBlockId === block.id}
-                        asChild
-                      >
-                        <span className="flex flex-col items-center gap-2 cursor-pointer">
-                          <Upload className="h-6 w-6 text-gray-500" />
-                          <span className="text-sm text-gray-600">
-                            {uploadingBlockId === block.id ? "Uploading..." : "Upload from Computer"}
-                          </span>
-                        </span>
-                      </Button>
-                    </label>
-
-                    {/* Media Selector */}
-                    <div className="flex-1">
-                      <MediaSelector
-                        currentImageUrl={block.imageUrl || ""}
-                        onFileSelect={(file) => handleImageUpload(block.id, file)}
-                        onMediaSelect={(url) => updateBlock(block.id, { imageUrl: url })}
-                        label="Select from Media"
-                      />
-                    </div>
-                  </div>
-
-                  {/* URL Input */}
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Or paste image URL..."
-                      className="text-gray-900 bg-gray-50 border-gray-200"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          const input = e.target as HTMLInputElement;
-                          if (input.value) {
-                            updateBlock(block.id, { imageUrl: input.value });
-                            input.value = "";
-                          }
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={(e) => {
-                        const input = (e.target as HTMLElement).previousSibling as HTMLInputElement;
-                        if (input?.value) {
-                          updateBlock(block.id, { imageUrl: input.value });
-                          input.value = "";
-                        }
-                      }}
-                    >
-                      <Link2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {/* Media Selector - Full Width */}
+                  <MediaSelector
+                    currentImageUrl={block.imageUrl || ""}
+                    onFileSelect={(file) => handleImageUpload(block.id, file)}
+                    onMediaSelect={(url) => updateBlock(block.id, { imageUrl: url })}
+                    label="Select from Media"
+                  />
                 </div>
               )}
             </div>
@@ -378,17 +315,17 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
             <div className="space-y-2">
               {block.listItems?.map((item, itemIndex) => (
                 <div key={itemIndex} className="flex items-center gap-2">
-                  <span className="text-gray-400 font-bold">•</span>
+                  <span className="text-[#f9dc24] font-bold">•</span>
                   <Input
                     value={item}
                     onChange={(e) => handleListItemChange(block.id, itemIndex, e.target.value)}
                     placeholder={`List item ${itemIndex + 1}...`}
-                    className="flex-1 text-gray-900 bg-gray-50 border-gray-200 focus:bg-white"
+                    className="flex-1 text-white bg-[#3a3a3a] border-gray-600 focus:bg-[#444] placeholder:text-gray-500"
                   />
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 p-0 text-gray-400 hover:text-red-500"
+                    className="h-8 w-8 p-0 text-gray-400 hover:text-red-400 hover:bg-red-900/30"
                     onClick={() => removeListItem(block.id, itemIndex)}
                     disabled={(block.listItems?.length || 0) <= 1}
                   >
@@ -400,7 +337,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="mt-2"
+                className="mt-2 border-gray-600 bg-[#3a3a3a] text-gray-300 hover:bg-[#444] hover:text-white"
                 onClick={() => addListItem(block.id)}
               >
                 <Plus className="h-4 w-4 mr-1" />
@@ -411,21 +348,21 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
         </div>
 
         {/* Add Block Button */}
-        <div className="mt-4 pt-3 border-t border-gray-100">
+        <div className="mt-4 pt-3 border-t border-gray-600">
           <Select onValueChange={(type) => addBlock(type as ContentBlock["type"], index)}>
-            <SelectTrigger className="w-full bg-gray-50 border-dashed border-gray-300 text-gray-500 hover:bg-gray-100 hover:border-gray-400">
+            <SelectTrigger className="w-full bg-[#3a3a3a] border-dashed border-gray-600 text-gray-400 hover:bg-[#444] hover:border-gray-500">
               <div className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 <span>Add block below...</span>
               </div>
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-[#2a2a2a] border-gray-600">
               {BLOCK_TYPES.map((blockType) => {
                 const Icon = blockType.icon;
                 return (
-                  <SelectItem key={blockType.type} value={blockType.type}>
+                  <SelectItem key={blockType.type} value={blockType.type} className="text-gray-300 focus:bg-[#3a3a3a] focus:text-white">
                     <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-gray-600" />
+                      <Icon className="h-4 w-4 text-gray-400" />
                       <span>{blockType.label}</span>
                     </div>
                   </SelectItem>
@@ -442,9 +379,9 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
     <div className="space-y-4">
       {/* Header with initial Add Block */}
       {blocks.length === 0 && (
-        <Card className="p-8 border-dashed border-2 border-gray-300 bg-gray-50">
+        <Card className="p-8 border-dashed border-2 border-gray-600 bg-[#2a2a2a]">
           <div className="text-center space-y-4">
-            <p className="text-gray-500">No content blocks yet. Add your first block:</p>
+            <p className="text-gray-400">No content blocks yet. Add your first block:</p>
             <div className="flex flex-wrap justify-center gap-2">
               {BLOCK_TYPES.map((blockType) => {
                 const Icon = blockType.icon;
@@ -454,7 +391,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                     type="button"
                     variant="outline"
                     onClick={() => addBlock(blockType.type as ContentBlock["type"])}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 border-gray-600 bg-[#3a3a3a] text-gray-300 hover:bg-[#444] hover:text-white"
                   >
                     <Icon className="h-4 w-4" />
                     {blockType.label}
@@ -473,19 +410,19 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
       {blocks.length > 0 && (
         <div className="flex justify-center pt-4">
           <Select onValueChange={(type) => addBlock(type as ContentBlock["type"])}>
-            <SelectTrigger className="w-64 bg-white border-dashed border-gray-300 text-gray-500 hover:bg-gray-50 hover:border-[#0f407b]">
+            <SelectTrigger className="w-64 bg-[#2a2a2a] border-dashed border-gray-600 text-gray-400 hover:bg-[#3a3a3a] hover:border-[#f9dc24]">
               <div className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 <span>Add new block at end</span>
               </div>
             </SelectTrigger>
-            <SelectContent className="bg-white">
+            <SelectContent className="bg-[#2a2a2a] border-gray-600">
               {BLOCK_TYPES.map((blockType) => {
                 const Icon = blockType.icon;
                 return (
-                  <SelectItem key={blockType.type} value={blockType.type}>
+                  <SelectItem key={blockType.type} value={blockType.type} className="text-gray-300 focus:bg-[#3a3a3a] focus:text-white">
                     <div className="flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-gray-600" />
+                      <Icon className="h-4 w-4 text-gray-400" />
                       <span>{blockType.label}</span>
                     </div>
                   </SelectItem>
