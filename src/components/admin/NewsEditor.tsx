@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, Rocket, Cpu, FileCheck, Lightbulb, Handshake, Calendar, FlaskConical, Newspaper } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, Rocket, Cpu, FileCheck, Lightbulb, Handshake, Calendar, FlaskConical, Newspaper, Upload, ImageIcon, Link2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NewsBlockEditor, { ContentBlock, blocksToHtml, htmlToBlocks } from "./NewsBlockEditor";
+import { MediaSelector } from "./MediaSelector";
 
 interface NewsArticle {
   id: string;
@@ -256,16 +257,149 @@ const NewsEditor = () => {
                       rows={3}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="image_url">Featured Image URL</Label>
-                    <Input
-                      id="image_url"
-                      value={formData.image_url}
-                      onChange={(e) =>
-                        setFormData({ ...formData, image_url: e.target.value })
-                      }
-                      required
-                    />
+                  {/* Featured Image Upload Section */}
+                  <div className="space-y-3">
+                    <Label className="text-base font-semibold">Featured Image (Titelbild)</Label>
+                    
+                    {formData.image_url ? (
+                      <div className="space-y-3">
+                        <div className="relative group rounded-lg overflow-hidden border border-gray-200">
+                          <img
+                            src={formData.image_url}
+                            alt="Featured image preview"
+                            className="w-full max-h-[300px] object-contain bg-gray-100"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => setFormData({ ...formData, image_url: "" })}
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Remove
+                          </Button>
+                        </div>
+                        <p className="text-sm text-gray-500 truncate">{formData.image_url}</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex gap-3">
+                          {/* Upload from Computer */}
+                          <label className="flex-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                
+                                try {
+                                  const fileExt = file.name.split(".").pop();
+                                  const fileName = `featured-${Date.now()}.${fileExt}`;
+                                  const filePath = `news/${fileName}`;
+                                  
+                                  const { error: uploadError } = await supabase.storage
+                                    .from("page-images")
+                                    .upload(filePath, file);
+                                  
+                                  if (uploadError) throw uploadError;
+                                  
+                                  const { data: { publicUrl } } = supabase.storage
+                                    .from("page-images")
+                                    .getPublicUrl(filePath);
+                                  
+                                  setFormData({ ...formData, image_url: publicUrl });
+                                  toast.success("Image uploaded successfully");
+                                } catch (error) {
+                                  console.error("Upload error:", error);
+                                  toast.error("Failed to upload image");
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="w-full h-28 border-dashed border-2 hover:border-[#0f407b] hover:bg-blue-50 flex flex-col gap-2"
+                              asChild
+                            >
+                              <span className="cursor-pointer">
+                                <Upload className="h-6 w-6 text-gray-500" />
+                                <span className="text-sm text-gray-600">Upload from Computer</span>
+                              </span>
+                            </Button>
+                          </label>
+                          
+                          {/* Media Selector */}
+                          <div className="flex-1">
+                            <MediaSelector
+                              currentImageUrl=""
+                              onFileSelect={async (file) => {
+                                try {
+                                  const fileExt = file.name.split(".").pop();
+                                  const fileName = `featured-${Date.now()}.${fileExt}`;
+                                  const filePath = `news/${fileName}`;
+                                  
+                                  const { error: uploadError } = await supabase.storage
+                                    .from("page-images")
+                                    .upload(filePath, file);
+                                  
+                                  if (uploadError) throw uploadError;
+                                  
+                                  const { data: { publicUrl } } = supabase.storage
+                                    .from("page-images")
+                                    .getPublicUrl(filePath);
+                                  
+                                  setFormData({ ...formData, image_url: publicUrl });
+                                  toast.success("Image uploaded successfully");
+                                } catch (error) {
+                                  console.error("Upload error:", error);
+                                  toast.error("Failed to upload image");
+                                }
+                              }}
+                              onMediaSelect={(url) => setFormData({ ...formData, image_url: url })}
+                              label="Select from Media"
+                            />
+                          </div>
+                        </div>
+                        
+                        {/* URL Input fallback */}
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 relative">
+                            <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              placeholder="Or paste image URL..."
+                              className="pl-10"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  const input = e.target as HTMLInputElement;
+                                  if (input.value) {
+                                    setFormData({ ...formData, image_url: input.value });
+                                    input.value = "";
+                                  }
+                                }
+                              }}
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => {
+                              const input = (e.target as HTMLElement).closest('.flex')?.querySelector('input') as HTMLInputElement;
+                              if (input?.value) {
+                                setFormData({ ...formData, image_url: input.value });
+                                input.value = "";
+                              }
+                            }}
+                          >
+                            <ImageIcon className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
