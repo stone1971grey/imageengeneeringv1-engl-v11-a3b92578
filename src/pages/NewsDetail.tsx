@@ -17,6 +17,7 @@ interface ContentBlock {
   imageUrl?: string;
   imageAlt?: string;
   imageCaption?: string;
+  imageWidth?: "full" | "large" | "medium" | "small";
   listItems?: string[];
 }
 
@@ -129,9 +130,18 @@ const renderBlocks = (
         const imgAlt = block.imageAlt || (block as any).alt || "";
         const imageIndex = imageIndexMap.get(block.id) ?? 0;
         const isLastImage = block.id === lastImageId;
+        const imageWidth = (block as any).imageWidth || "small";
         
-        // Last image: full width, no float
-        if (isLastImage) {
+        // Width classes based on imageWidth setting
+        const widthClasses: Record<string, string> = {
+          small: "w-1/3",
+          medium: "w-1/2",
+          large: "w-2/3",
+          full: "w-full max-w-2xl mx-auto"
+        };
+        
+        // Full width or explicitly set to full: centered, no float
+        if (isLastImage || imageWidth === "full") {
           return (
             <figure 
               key={block.id} 
@@ -157,14 +167,14 @@ const renderBlocks = (
           );
         }
         
-        // Regular images: 1/3 width with float
+        // Images with width setting: float with configured width
         const currentFloat = floatSide;
         floatSide = floatSide === 'right' ? 'left' : 'right';
         
         return (
           <figure 
             key={block.id} 
-            className={`w-1/3 my-4 cursor-pointer group ${
+            className={`${widthClasses[imageWidth]} my-4 cursor-pointer group ${
               currentFloat === 'right' 
                 ? 'float-right ml-6 mb-4' 
                 : 'float-left mr-6 mb-4'

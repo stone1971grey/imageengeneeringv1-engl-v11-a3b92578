@@ -36,6 +36,7 @@ export interface ContentBlock {
   imageUrl?: string;
   imageAlt?: string;
   imageCaption?: string;
+  imageWidth?: "full" | "large" | "medium" | "small"; // Image width option
   listItems?: string[];
 }
 
@@ -248,12 +249,40 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                       variant="destructive"
                       size="sm"
                       className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => updateBlock(block.id, { imageUrl: "", imageAlt: "", imageCaption: "" })}
+                      onClick={() => updateBlock(block.id, { imageUrl: "", imageAlt: "", imageCaption: "", imageWidth: undefined })}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
                       Remove
                     </Button>
                   </div>
+                  
+                  {/* Image Width Selection */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-gray-700">Display Width:</span>
+                    <div className="flex gap-2">
+                      {[
+                        { value: "small", label: "1/3", desc: "Small (33%)" },
+                        { value: "medium", label: "1/2", desc: "Medium (50%)" },
+                        { value: "large", label: "2/3", desc: "Large (66%)" },
+                        { value: "full", label: "Full", desc: "Full Width" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => updateBlock(block.id, { imageWidth: option.value as ContentBlock["imageWidth"] })}
+                          className={`px-3 py-1.5 text-sm rounded-md border transition-all ${
+                            (block.imageWidth || "small") === option.value
+                              ? "bg-[#0f407b] text-white border-[#0f407b]"
+                              : "bg-white text-gray-700 border-gray-300 hover:border-[#0f407b] hover:bg-blue-50"
+                          }`}
+                          title={option.desc}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
                   <Input
                     value={block.imageAlt || ""}
                     onChange={(e) => updateBlock(block.id, { imageAlt: e.target.value })}
