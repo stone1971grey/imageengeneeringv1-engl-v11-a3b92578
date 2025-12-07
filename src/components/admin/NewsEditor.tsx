@@ -217,9 +217,9 @@ const NewsEditor = () => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-[#2a2a2a]">
-                  <TabsTrigger value="basic" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300">Basic Info</TabsTrigger>
-                  <TabsTrigger value="content" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300">Content Editor</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-[#2a2a2a] p-1 h-auto">
+                  <TabsTrigger value="basic" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">Basic Info</TabsTrigger>
+                  <TabsTrigger value="content" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">Content Editor</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="basic" className="space-y-4 mt-4">
@@ -287,85 +287,35 @@ const NewsEditor = () => {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        <div className="flex gap-3">
-                          {/* Upload from Computer */}
-                          <label className="flex-1">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (!file) return;
-                                
-                                try {
-                                  const fileExt = file.name.split(".").pop();
-                                  const fileName = `featured-${Date.now()}.${fileExt}`;
-                                  const filePath = `news/${fileName}`;
-                                  
-                                  const { error: uploadError } = await supabase.storage
-                                    .from("page-images")
-                                    .upload(filePath, file);
-                                  
-                                  if (uploadError) throw uploadError;
-                                  
-                                  const { data: { publicUrl } } = supabase.storage
-                                    .from("page-images")
-                                    .getPublicUrl(filePath);
-                                  
-                                  setFormData({ ...formData, image_url: publicUrl });
-                                  toast.success("Image uploaded successfully");
-                                } catch (error) {
-                                  console.error("Upload error:", error);
-                                  toast.error("Failed to upload image");
-                                }
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              className="w-full h-28 border-dashed border-2 border-gray-600 hover:border-[#f9dc24] hover:bg-[#2a2a2a] flex flex-col gap-2 bg-[#2a2a2a]"
-                              asChild
-                            >
-                              <span className="cursor-pointer">
-                                <Upload className="h-6 w-6 text-gray-400" />
-                                <span className="text-sm text-gray-400">Upload from Computer</span>
-                              </span>
-                            </Button>
-                          </label>
-                          
-                          {/* Media Selector */}
-                          <div className="flex-1">
-                            <MediaSelector
-                              currentImageUrl=""
-                              onFileSelect={async (file) => {
-                                try {
-                                  const fileExt = file.name.split(".").pop();
-                                  const fileName = `featured-${Date.now()}.${fileExt}`;
-                                  const filePath = `news/${fileName}`;
-                                  
-                                  const { error: uploadError } = await supabase.storage
-                                    .from("page-images")
-                                    .upload(filePath, file);
-                                  
-                                  if (uploadError) throw uploadError;
-                                  
-                                  const { data: { publicUrl } } = supabase.storage
-                                    .from("page-images")
-                                    .getPublicUrl(filePath);
-                                  
-                                  setFormData({ ...formData, image_url: publicUrl });
-                                  toast.success("Image uploaded successfully");
-                                } catch (error) {
-                                  console.error("Upload error:", error);
-                                  toast.error("Failed to upload image");
-                                }
-                              }}
-                              onMediaSelect={(url) => setFormData({ ...formData, image_url: url })}
-                              label="Select from Media"
-                            />
-                          </div>
-                        </div>
+                        {/* Media Selector - Full Width */}
+                        <MediaSelector
+                          currentImageUrl=""
+                          onFileSelect={async (file) => {
+                            try {
+                              const fileExt = file.name.split(".").pop();
+                              const fileName = `featured-${Date.now()}.${fileExt}`;
+                              const filePath = `news/${fileName}`;
+                              
+                              const { error: uploadError } = await supabase.storage
+                                .from("page-images")
+                                .upload(filePath, file);
+                              
+                              if (uploadError) throw uploadError;
+                              
+                              const { data: { publicUrl } } = supabase.storage
+                                .from("page-images")
+                                .getPublicUrl(filePath);
+                              
+                              setFormData({ ...formData, image_url: publicUrl });
+                              toast.success("Image uploaded successfully");
+                            } catch (error) {
+                              console.error("Upload error:", error);
+                              toast.error("Failed to upload image");
+                            }
+                          }}
+                          onMediaSelect={(url) => setFormData({ ...formData, image_url: url })}
+                          label="Select from Media"
+                        />
                         
                         {/* URL Input fallback */}
                         <div className="flex items-center gap-2">
