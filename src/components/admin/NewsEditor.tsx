@@ -551,7 +551,7 @@ const NewsEditor = () => {
               
               <CardContent className="p-6">
                 {/* Date */}
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                <div className="flex items-center gap-2 text-sm text-gray-900 mb-3">
                   <Calendar className="w-4 h-4" />
                   {new Date(article.date).toLocaleDateString('en-US', { 
                     year: 'numeric', 
@@ -560,7 +560,7 @@ const NewsEditor = () => {
                   })}
                   {article.author && (
                     <>
-                      <span className="text-gray-300">•</span>
+                      <span className="text-gray-500">•</span>
                       <span>{article.author}</span>
                     </>
                   )}
@@ -572,12 +572,12 @@ const NewsEditor = () => {
                 </h3>
                 
                 {/* Teaser */}
-                <p className="text-base text-muted-foreground line-clamp-2 mb-4">
+                <p className="text-base text-gray-900 line-clamp-2 mb-4">
                   {article.teaser}
                 </p>
                 
                 {/* Slug */}
-                <div className="text-sm text-gray-400 font-mono mb-2 truncate">
+                <div className="text-sm text-gray-900 font-mono mb-2 truncate">
                   /news/{article.slug}
                 </div>
                 
