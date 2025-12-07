@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
@@ -7,10 +7,14 @@ import Navigation from "@/components/Navigation";
 import NewsEditor from "@/components/admin/NewsEditor";
 import { ArrowLeft } from "lucide-react";
 
+// Key for persisting selected CMS page across admin views
+const ADMIN_SELECTED_PAGE_KEY = "admin_selected_page";
+
 const AdminNews = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     checkAdminAccess();
@@ -46,6 +50,16 @@ const AdminNews = () => {
     }
   };
 
+  const handleBackToDashboard = () => {
+    // Restore previously selected page from sessionStorage
+    const savedPage = sessionStorage.getItem(ADMIN_SELECTED_PAGE_KEY);
+    if (savedPage) {
+      navigate(`/en/admin-dashboard?page=${encodeURIComponent(savedPage)}`);
+    } else {
+      navigate("/en/admin-dashboard");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -69,7 +83,7 @@ const AdminNews = () => {
             <p className="text-gray-600 mt-2">Create and manage news articles</p>
           </div>
           <Button
-            onClick={() => navigate("/en/admin-dashboard")}
+            onClick={handleBackToDashboard}
             variant="outline"
             className="flex items-center gap-2"
           >

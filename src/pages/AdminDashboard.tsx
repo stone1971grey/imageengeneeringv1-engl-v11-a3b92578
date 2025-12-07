@@ -551,6 +551,14 @@ const AdminDashboard = () => {
     }
   }, [user]);
 
+  // Persist selected page to sessionStorage for navigation between admin views
+  const ADMIN_SELECTED_PAGE_KEY = "admin_selected_page";
+  useEffect(() => {
+    if (selectedPage) {
+      sessionStorage.setItem(ADMIN_SELECTED_PAGE_KEY, selectedPage);
+    }
+  }, [selectedPage]);
+
   // Load available pages once on mount for Copy functionality
   useEffect(() => {
     if (user && (isAdmin || isEditor)) {
