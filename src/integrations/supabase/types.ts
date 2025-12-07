@@ -385,6 +385,7 @@ export type Database = {
           date: string
           id: string
           image_url: string
+          language: string
           published: boolean | null
           slug: string
           teaser: string
@@ -399,6 +400,7 @@ export type Database = {
           date?: string
           id?: string
           image_url: string
+          language?: string
           published?: boolean | null
           slug: string
           teaser: string
@@ -413,6 +415,7 @@ export type Database = {
           date?: string
           id?: string
           image_url?: string
+          language?: string
           published?: boolean | null
           slug?: string
           teaser?: string
