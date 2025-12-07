@@ -209,17 +209,17 @@ const NewsEditor = () => {
               Add Article
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gray-50 border-gray-200">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-gray-900">
                 {editingArticle ? "Edit Article" : "Create New Article"}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="basic">Basic Info</TabsTrigger>
-                  <TabsTrigger value="content">Content Editor</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-gray-200">
+                  <TabsTrigger value="basic" className="data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600">Basic Info</TabsTrigger>
+                  <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600">Content Editor</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="basic" className="space-y-4 mt-4">
