@@ -513,7 +513,7 @@ const NewsEditor = () => {
                   <Button
                     variant="outline"
                     size="default"
-                    className="flex-1 text-sm font-medium hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    className="flex-1 text-sm font-medium bg-green-500 text-white border-green-500"
                     onClick={() => window.open(`/en/news/${article.slug}`, '_blank')}
                   >
                     <Eye className="w-4 h-4 mr-2" />
@@ -522,7 +522,7 @@ const NewsEditor = () => {
                   <Button
                     variant="outline"
                     size="default"
-                    className="flex-1 text-sm font-medium hover:bg-amber-50 hover:text-amber-600 hover:border-amber-200"
+                    className="flex-1 text-sm font-medium bg-[#f9dc24] text-black border-[#f9dc24]"
                     onClick={() => handleEdit(article)}
                   >
                     <Pencil className="w-4 h-4 mr-2" />
@@ -531,7 +531,7 @@ const NewsEditor = () => {
                   <Button
                     variant="outline"
                     size="default"
-                    className="text-sm font-medium hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                    className="text-sm font-medium bg-red-500 text-white border-red-500"
                     onClick={() => {
                       if (confirm("Are you sure you want to delete this article?")) {
                         deleteMutation.mutate(article.id);
