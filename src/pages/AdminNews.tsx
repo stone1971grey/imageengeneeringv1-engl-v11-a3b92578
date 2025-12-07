@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+
 import NewsEditor from "@/components/admin/NewsEditor";
 import { ArrowLeft } from "lucide-react";
 
@@ -81,7 +81,6 @@ const AdminNews = () => {
         <NewsEditor />
       </div>
 
-      <Footer />
     </div>
   );
 };
