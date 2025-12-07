@@ -582,19 +582,19 @@ const NewsEditor = () => {
                 </div>
                 
                 {/* Translation Status */}
-                <div className="flex items-center flex-wrap gap-2 mb-4">
-                  <span className="text-xl">🌐</span>
-                  <span className="text-lg px-3 py-1.5 rounded-md bg-blue-100 text-blue-700 font-semibold">🇬🇧 EN</span>
+                <div className="flex items-center flex-wrap gap-3 mb-4">
+                  <span className="text-2xl">🌐</span>
+                  <span className="text-xl px-4 py-2 rounded-lg bg-blue-100 text-blue-700 font-bold">🇬🇧 EN</span>
                   {getTranslations(article.slug).map(lang => {
                     const flags: Record<string, string> = { de: "🇩🇪 DE", ja: "🇯🇵 JA", ko: "🇰🇷 KO", zh: "🇨🇳 ZH" };
                     return (
-                      <span key={lang} className="text-lg px-3 py-1.5 rounded-md bg-green-100 text-green-700 font-semibold">
+                      <span key={lang} className="text-xl px-4 py-2 rounded-lg bg-green-100 text-green-700 font-bold">
                         {flags[lang]}
                       </span>
                     );
                   })}
                   {getTranslations(article.slug).length < 4 && (
-                    <span className="text-base text-gray-500 ml-2 font-medium">
+                    <span className="text-lg text-gray-600 ml-2 font-semibold">
                       +{4 - getTranslations(article.slug).length} missing
                     </span>
                   )}
