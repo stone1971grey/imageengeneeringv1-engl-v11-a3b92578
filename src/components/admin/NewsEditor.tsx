@@ -531,16 +531,14 @@ const NewsEditor = () => {
                 {/* Action Buttons */}
                 <div className="flex gap-2 pt-4 border-t">
                   <Button
-                    variant="outline"
                     size="default"
-                    className="flex-1 text-sm font-medium bg-green-500 text-white border-green-500"
+                    className="flex-1 text-sm font-medium bg-green-600 text-white border-green-600"
                     onClick={() => window.open(`/en/news/${article.slug}`, '_blank')}
                   >
                     <Eye className="w-4 h-4 mr-2" />
                     Preview
                   </Button>
                   <Button
-                    variant="outline"
                     size="default"
                     className="flex-1 text-sm font-medium bg-[#f9dc24] text-black border-[#f9dc24]"
                     onClick={() => handleEdit(article)}
@@ -549,9 +547,9 @@ const NewsEditor = () => {
                     Edit
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="destructive"
                     size="default"
-                    className="text-sm font-medium bg-red-500 text-white border-red-500"
+                    className="text-sm font-medium"
                     onClick={() => {
                       if (confirm("Are you sure you want to delete this article?")) {
                         deleteMutation.mutate(article.id);
