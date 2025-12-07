@@ -221,7 +221,7 @@ const NewsEditor = () => {
                 <div className="flex gap-3 pb-4 border-b border-gray-700">
                   <Button
                     type="button"
-                    className="bg-green-500 text-white"
+                    className="bg-green-600 hover:bg-green-700 text-white"
                     onClick={() => window.open(`/en/news/${formData.slug}`, '_blank')}
                   >
                     <Eye className="w-4 h-4 mr-2" />
@@ -532,7 +532,7 @@ const NewsEditor = () => {
                 <div className="flex gap-2 pt-4 border-t">
                   <Button
                     size="default"
-                    className="flex-1 text-sm font-medium bg-green-600 text-white border-green-600"
+                    className="flex-1 text-sm font-medium bg-green-600 hover:bg-green-700 text-white border-green-600"
                     onClick={() => window.open(`/en/news/${article.slug}`, '_blank')}
                   >
                     <Eye className="w-4 h-4 mr-2" />
