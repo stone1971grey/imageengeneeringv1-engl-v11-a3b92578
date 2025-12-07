@@ -135,7 +135,7 @@ const renderBlocks = (
           return (
             <figure 
               key={block.id} 
-              className="w-full my-8 cursor-pointer group clear-both"
+              className="max-w-2xl mx-auto my-8 cursor-pointer group clear-both"
               onClick={() => onImageClick(imageIndex)}
             >
               <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
