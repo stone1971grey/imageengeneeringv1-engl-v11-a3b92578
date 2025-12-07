@@ -321,7 +321,7 @@ const NewsTranslationEditor = ({ articleSlug, englishData, onSave }: NewsTransla
         {/* Left: English (Read-only) */}
         <div className="space-y-4">
           <div className="flex items-center gap-2 pb-2 border-b border-gray-700">
-            <Badge className="bg-blue-600 text-white">🇬🇧 English (Original)</Badge>
+            <Badge className="bg-blue-600 text-white">🇺🇸 English (Original)</Badge>
           </div>
           
           <div>
