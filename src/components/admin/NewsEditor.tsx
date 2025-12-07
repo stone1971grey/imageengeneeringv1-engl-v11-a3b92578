@@ -120,12 +120,11 @@ const NewsEditor = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["news-articles"] });
-      toast.success("News article updated successfully");
-      resetForm();
-      setIsDialogOpen(false);
+      toast.success("News article saved successfully");
+      // Don't close dialog - keep it open for further editing
     },
     onError: (error) => {
-      toast.error("Failed to update article: " + error.message);
+      toast.error("Failed to save article: " + error.message);
     },
   });
 
@@ -217,6 +216,26 @@ const NewsEditor = () => {
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Top Action Buttons */}
+              {editingArticle && (
+                <div className="flex gap-3 pb-4 border-b border-gray-700">
+                  <Button
+                    type="button"
+                    className="bg-green-500 text-white"
+                    onClick={() => window.open(`/en/news/${formData.slug}`, '_blank')}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-[#f9dc24] text-black"
+                  >
+                    Save
+                  </Button>
+                </div>
+              )}
+              
               <Tabs defaultValue="basic" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-[#2a2a2a] p-1 h-auto">
                   <TabsTrigger value="basic" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">Basic Info</TabsTrigger>
@@ -407,7 +426,7 @@ const NewsEditor = () => {
                   Cancel
                 </Button>
                 <Button type="submit" className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
-                  {editingArticle ? "Update" : "Create"}
+                  {editingArticle ? "Save" : "Create"}
                 </Button>
               </div>
             </form>
