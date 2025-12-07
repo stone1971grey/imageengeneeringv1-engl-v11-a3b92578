@@ -21,6 +21,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NewsBlockEditor, { ContentBlock, blocksToHtml, htmlToBlocks } from "./NewsBlockEditor";
 import { MediaSelector } from "./MediaSelector";
+import NewsTranslationEditor from "./NewsTranslationEditor";
 
 interface NewsArticle {
   id: string;
@@ -33,6 +34,7 @@ interface NewsArticle {
   author: string | null;
   category: string | null;
   published: boolean;
+  language: string;
   created_at: string;
   updated_at: string;
 }
@@ -81,12 +83,34 @@ const NewsEditor = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: articles, isLoading } = useQuery({
-    queryKey: ["news-articles"],
+  // Fetch all articles to determine translation status
+  const { data: allArticles } = useQuery({
+    queryKey: ["news-articles-all"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("news_articles")
+        .select("slug, language");
+      if (error) throw error;
+      return data as { slug: string; language: string }[];
+    },
+  });
+
+  // Helper to get available translations for an article
+  const getTranslations = (slug: string): string[] => {
+    if (!allArticles) return [];
+    return allArticles
+      .filter(a => a.slug === slug && a.language !== "en")
+      .map(a => a.language);
+  };
+
+  const { data: articles, isLoading } = useQuery({
+    queryKey: ["news-articles"],
+    queryFn: async () => {
+      // Only fetch English articles for the main list (other languages are translations)
+      const { data, error } = await supabase
+        .from("news_articles")
         .select("*")
+        .eq("language", "en")
         .order("date", { ascending: false });
 
       if (error) throw error;
@@ -96,7 +120,8 @@ const NewsEditor = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { error } = await supabase.from("news_articles").insert([data]);
+      // Always create new articles as English (translations are added via Translations tab)
+      const { error } = await supabase.from("news_articles").insert([{ ...data, language: "en" }]);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -237,9 +262,14 @@ const NewsEditor = () => {
               )}
               
               <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-[#2a2a2a] p-1 h-auto">
+                <TabsList className={`grid w-full bg-[#2a2a2a] p-1 h-auto ${editingArticle ? 'grid-cols-3' : 'grid-cols-2'}`}>
                   <TabsTrigger value="basic" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">Basic Info</TabsTrigger>
                   <TabsTrigger value="content" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">Content Editor</TabsTrigger>
+                  {editingArticle && (
+                    <TabsTrigger value="translations" className="text-base font-semibold py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=inactive]:bg-[#3a3a3a] text-gray-300 flex items-center gap-2">
+                      <span>🌐</span> Translations
+                    </TabsTrigger>
+                  )}
                 </TabsList>
                 
                 <TabsContent value="basic" className="space-y-4 mt-4">
@@ -411,6 +441,29 @@ const NewsEditor = () => {
                     />
                   </div>
                 </TabsContent>
+                
+                {/* Translations Tab - Only for existing articles */}
+                {editingArticle && (
+                  <TabsContent value="translations" className="mt-4">
+                    <NewsTranslationEditor
+                      articleSlug={editingArticle.slug}
+                      englishData={{
+                        title: formData.title,
+                        teaser: formData.teaser,
+                        content: formData.content,
+                        image_url: formData.image_url,
+                        date: formData.date,
+                        author: formData.author || null,
+                        category: formData.category || null,
+                        published: formData.published,
+                      }}
+                      onSave={() => {
+                        // Refresh article list after translation save
+                        queryClient.invalidateQueries({ queryKey: ["news-articles"] });
+                      }}
+                    />
+                  </TabsContent>
+                )}
               </Tabs>
               
               <div className="flex justify-end space-x-2 pt-4 border-t border-gray-700">
@@ -524,8 +577,27 @@ const NewsEditor = () => {
                 </p>
                 
                 {/* Slug */}
-                <div className="text-sm text-gray-400 font-mono mb-4 truncate">
+                <div className="text-sm text-gray-400 font-mono mb-2 truncate">
                   /news/{article.slug}
+                </div>
+                
+                {/* Translation Status */}
+                <div className="flex items-center gap-1 mb-4">
+                  <span className="text-xs text-gray-400 mr-1">🌐</span>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">🇬🇧</span>
+                  {getTranslations(article.slug).map(lang => {
+                    const flags: Record<string, string> = { de: "🇩🇪", ja: "🇯🇵", ko: "🇰🇷", zh: "🇨🇳" };
+                    return (
+                      <span key={lang} className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700">
+                        {flags[lang]}
+                      </span>
+                    );
+                  })}
+                  {getTranslations(article.slug).length < 4 && (
+                    <span className="text-xs text-gray-300 ml-1">
+                      +{4 - getTranslations(article.slug).length} missing
+                    </span>
+                  )}
                 </div>
                 
                 {/* Action Buttons */}
