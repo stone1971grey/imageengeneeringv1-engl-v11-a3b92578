@@ -209,22 +209,22 @@ const NewsEditor = () => {
               Add Article
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-gray-50 border-gray-200">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-[#1a1a1a] border-gray-700">
             <DialogHeader>
-              <DialogTitle className="text-gray-900">
+              <DialogTitle className="text-white">
                 {editingArticle ? "Edit Article" : "Create New Article"}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Tabs defaultValue="basic" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-gray-200">
-                  <TabsTrigger value="basic" className="data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600">Basic Info</TabsTrigger>
-                  <TabsTrigger value="content" className="data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600">Content Editor</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-[#2a2a2a]">
+                  <TabsTrigger value="basic" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300">Basic Info</TabsTrigger>
+                  <TabsTrigger value="content" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300">Content Editor</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="basic" className="space-y-4 mt-4">
                   <div>
-                    <Label htmlFor="title">Title</Label>
+                    <Label htmlFor="title" className="text-gray-300">Title</Label>
                     <Input
                       id="title"
                       value={formData.title}
@@ -232,10 +232,11 @@ const NewsEditor = () => {
                         setFormData({ ...formData, title: e.target.value })
                       }
                       required
+                      className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="slug">Slug (URL)</Label>
+                    <Label htmlFor="slug" className="text-gray-300">Slug (URL)</Label>
                     <Input
                       id="slug"
                       value={formData.slug}
@@ -243,10 +244,11 @@ const NewsEditor = () => {
                         setFormData({ ...formData, slug: e.target.value })
                       }
                       required
+                      className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="teaser">Teaser</Label>
+                    <Label htmlFor="teaser" className="text-gray-300">Teaser</Label>
                     <Textarea
                       id="teaser"
                       value={formData.teaser}
@@ -255,19 +257,20 @@ const NewsEditor = () => {
                       }
                       required
                       rows={3}
+                      className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
                     />
                   </div>
                   {/* Featured Image Upload Section */}
                   <div className="space-y-3">
-                    <Label className="text-base font-semibold">Featured Image (Titelbild)</Label>
+                    <Label className="text-base font-semibold text-gray-300">Featured Image (Titelbild)</Label>
                     
                     {formData.image_url ? (
                       <div className="space-y-3">
-                        <div className="relative group rounded-lg overflow-hidden border border-gray-200">
+                        <div className="relative group rounded-lg overflow-hidden border border-gray-600">
                           <img
                             src={formData.image_url}
                             alt="Featured image preview"
-                            className="w-full max-h-[300px] object-contain bg-gray-100"
+                            className="w-full max-h-[300px] object-contain bg-[#2a2a2a]"
                           />
                           <Button
                             type="button"
@@ -280,7 +283,7 @@ const NewsEditor = () => {
                             Remove
                           </Button>
                         </div>
-                        <p className="text-sm text-gray-500 truncate">{formData.image_url}</p>
+                        <p className="text-sm text-gray-400 truncate">{formData.image_url}</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -321,12 +324,12 @@ const NewsEditor = () => {
                             <Button
                               type="button"
                               variant="outline"
-                              className="w-full h-28 border-dashed border-2 hover:border-[#0f407b] hover:bg-blue-50 flex flex-col gap-2"
+                              className="w-full h-28 border-dashed border-2 border-gray-600 hover:border-[#f9dc24] hover:bg-[#2a2a2a] flex flex-col gap-2 bg-[#2a2a2a]"
                               asChild
                             >
                               <span className="cursor-pointer">
-                                <Upload className="h-6 w-6 text-gray-500" />
-                                <span className="text-sm text-gray-600">Upload from Computer</span>
+                                <Upload className="h-6 w-6 text-gray-400" />
+                                <span className="text-sm text-gray-400">Upload from Computer</span>
                               </span>
                             </Button>
                           </label>
@@ -367,10 +370,10 @@ const NewsEditor = () => {
                         {/* URL Input fallback */}
                         <div className="flex items-center gap-2">
                           <div className="flex-1 relative">
-                            <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                             <Input
                               placeholder="Or paste image URL..."
-                              className="pl-10"
+                              className="pl-10 bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
                               onKeyDown={(e) => {
                                 if (e.key === "Enter") {
                                   e.preventDefault();
@@ -387,6 +390,7 @@ const NewsEditor = () => {
                             type="button"
                             variant="outline"
                             size="icon"
+                            className="border-gray-600 bg-[#2a2a2a] text-gray-300 hover:bg-[#3a3a3a]"
                             onClick={(e) => {
                               const input = (e.target as HTMLElement).closest('.flex')?.querySelector('input') as HTMLInputElement;
                               if (input?.value) {
@@ -403,7 +407,7 @@ const NewsEditor = () => {
                   </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="date">Date</Label>
+                  <Label htmlFor="date" className="text-gray-300">Date</Label>
                   <Input
                     id="date"
                     type="date"
@@ -412,33 +416,35 @@ const NewsEditor = () => {
                       setFormData({ ...formData, date: e.target.value })
                     }
                     required
+                    className="bg-[#2a2a2a] border-gray-600 text-white"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="author">Author</Label>
+                  <Label htmlFor="author" className="text-gray-300">Author</Label>
                   <Input
                     id="author"
                     value={formData.author}
                     onChange={(e) =>
                       setFormData({ ...formData, author: e.target.value })
                     }
+                    className="bg-[#2a2a2a] border-gray-600 text-white placeholder:text-gray-500"
                   />
                 </div>
               </div>
               <div>
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category" className="text-gray-300">Category</Label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) =>
                     setFormData({ ...formData, category: value })
                   }
                 >
-                  <SelectTrigger className="bg-background">
+                  <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background z-50">
+                  <SelectContent className="bg-[#2a2a2a] border-gray-600 text-white z-50">
                     {NEWS_CATEGORIES.map((cat) => (
-                      <SelectItem key={cat.value} value={cat.value}>
+                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-[#3a3a3a]">
                         {cat.label}
                       </SelectItem>
                     ))}
@@ -453,16 +459,16 @@ const NewsEditor = () => {
                     setFormData({ ...formData, published: checked })
                   }
                 />
-                <Label htmlFor="published">Published</Label>
+                <Label htmlFor="published" className="text-gray-300">Published</Label>
               </div>
                 </TabsContent>
                 
                 <TabsContent value="content" className="space-y-4 mt-4">
                   <div>
-                    <Label className="text-base font-semibold text-gray-700 mb-3 block">
+                    <Label className="text-base font-semibold text-gray-300 mb-3 block">
                       Article Content (Block Editor)
                     </Label>
-                    <p className="text-sm text-gray-500 mb-4">
+                    <p className="text-sm text-gray-400 mb-4">
                       Add and arrange content blocks: text paragraphs, headings, images, quotes, and lists.
                     </p>
                     <NewsBlockEditor
@@ -473,10 +479,11 @@ const NewsEditor = () => {
                 </TabsContent>
               </Tabs>
               
-              <div className="flex justify-end space-x-2 pt-4 border-t">
+              <div className="flex justify-end space-x-2 pt-4 border-t border-gray-700">
                 <Button
                   type="button"
                   variant="outline"
+                  className="border-gray-600 text-gray-300 hover:bg-[#2a2a2a]"
                   onClick={() => {
                     resetForm();
                     setIsDialogOpen(false);
@@ -484,7 +491,7 @@ const NewsEditor = () => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button type="submit" className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
                   {editingArticle ? "Update" : "Create"}
                 </Button>
               </div>
