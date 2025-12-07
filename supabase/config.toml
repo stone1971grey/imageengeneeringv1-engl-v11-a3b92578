@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.confirm-mautic-optin]
 verify_jwt = false
+
+[functions.upload-news-images]
+verify_jwt = false
