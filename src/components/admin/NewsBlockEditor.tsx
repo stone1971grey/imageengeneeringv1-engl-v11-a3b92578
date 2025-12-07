@@ -37,6 +37,7 @@ export interface ContentBlock {
   imageAlt?: string;
   imageCaption?: string;
   imageWidth?: "full" | "large" | "medium" | "small"; // Image width option
+  imagePosition?: "left" | "right" | "center"; // Image position for text wrapping
   listItems?: string[];
 }
 
@@ -249,7 +250,7 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                       variant="destructive"
                       size="sm"
                       className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => updateBlock(block.id, { imageUrl: "", imageAlt: "", imageCaption: "", imageWidth: undefined })}
+                      onClick={() => updateBlock(block.id, { imageUrl: "", imageAlt: "", imageCaption: "", imageWidth: undefined, imagePosition: undefined })}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
                       Remove
@@ -272,6 +273,32 @@ const NewsBlockEditor = ({ blocks, onChange }: NewsBlockEditorProps) => {
                           onClick={() => updateBlock(block.id, { imageWidth: option.value as ContentBlock["imageWidth"] })}
                           className={`px-3 py-1.5 text-sm rounded-md border transition-all ${
                             (block.imageWidth || "small") === option.value
+                              ? "bg-[#f9dc24] text-black border-[#f9dc24]"
+                              : "bg-[#3a3a3a] text-gray-300 border-gray-600 hover:border-[#f9dc24] hover:bg-[#444]"
+                          }`}
+                          title={option.desc}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Image Position Selection */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-gray-300">Position:</span>
+                    <div className="flex gap-2">
+                      {[
+                        { value: "left", label: "Left", desc: "Float left, text wraps right" },
+                        { value: "center", label: "Center", desc: "Centered, no text wrap" },
+                        { value: "right", label: "Right", desc: "Float right, text wraps left" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => updateBlock(block.id, { imagePosition: option.value as ContentBlock["imagePosition"] })}
+                          className={`px-3 py-1.5 text-sm rounded-md border transition-all ${
+                            (block.imagePosition || "center") === option.value
                               ? "bg-[#f9dc24] text-black border-[#f9dc24]"
                               : "bg-[#3a3a3a] text-gray-300 border-gray-600 hover:border-[#f9dc24] hover:bg-[#444]"
                           }`}
