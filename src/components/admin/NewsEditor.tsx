@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, Rocket, Cpu, FileCheck, Lightbulb, Handshake, Calendar, FlaskConical, Newspaper, Upload, ImageIcon, Link2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, Rocket, Cpu, FileCheck, Lightbulb, Handshake, Calendar, FlaskConical, Newspaper, Upload, ImageIcon, Link2, Building2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,7 @@ interface NewsArticle {
 }
 
 const NEWS_CATEGORIES = [
+  { value: "Company", label: "Company", color: "bg-slate-600", icon: Building2 },
   { value: "Product Launch", label: "Product Launch", color: "bg-emerald-500", icon: Rocket },
   { value: "Technology", label: "Technology", color: "bg-blue-500", icon: Cpu },
   { value: "Standards", label: "Standards", color: "bg-purple-500", icon: FileCheck },
