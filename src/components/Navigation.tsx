@@ -874,42 +874,66 @@ const Navigation = () => {
                        <Link to={getLink('/test-lab/overview')} 
                          className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Overview")}>
-                         <FlaskConical className="h-5 w-5" />
+                         {(() => {
+                           const key = pageDesignIcons['test-lab/overview'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.overview}</span>
                        </Link>
                        
                        <Link to={getLink('/test-lab/automotive')}
                          className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Automotive")}>
-                         <Car className="h-5 w-5" />
+                         {(() => {
+                           const key = pageDesignIcons['test-lab/automotive'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.automotive}</span>
                        </Link>
                        
                        <Link to={getLink('/test-lab/vcx')}
                          className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("VCX")}>
-                         <Smartphone className="h-5 w-5" />
+                         {(() => {
+                           const key = pageDesignIcons['test-lab/vcx'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>VCX</span>
                        </Link>
                        
                         <Link to={getLink('/test-lab/image-quality')}
                           className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                           onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Image Quality")}>
-                          <Camera className="h-5 w-5" />
+                          {(() => {
+                            const key = pageDesignIcons['test-lab/image-quality'];
+                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                          })()}
                           <span>{t.nav.infoHub}</span>
                         </Link>
                        
                        <Link to={getLink('/test-lab/standardized')}
                          className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Standardized")}>
-                         <CheckCircle className="h-5 w-5" />
+                         {(() => {
+                           const key = pageDesignIcons['test-lab/standardized'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.standardized}</span>
                        </Link>
                        
                        <Link to={getLink('/test-lab/specialized')}
                          className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Specialized/Custom")}>
-                         <Settings className="h-5 w-5" />
+                         {(() => {
+                           const key = pageDesignIcons['test-lab/specialized'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.specializedCustom}</span>
                        </Link>
                     </div>
