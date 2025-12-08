@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { en } from "@/translations/en";
@@ -713,9 +713,8 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
         <Button
           onClick={saveContent}
           disabled={isSaving}
-          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 flex items-center gap-2 w-full"
+          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 w-full"
         >
-          <Save className="h-4 w-4" />
           {isSaving ? "Saving..." : "Save Footer"}
         </Button>
       </div>
