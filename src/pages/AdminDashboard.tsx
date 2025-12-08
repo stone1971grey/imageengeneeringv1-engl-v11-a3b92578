@@ -4542,8 +4542,9 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {/* Welcome Screen - Show when no page is selected or page has no segments */}
-        {(!selectedPage || (pageSegments.length === 0 && Object.keys(segmentRegistry).length === 0)) ? (
+        {/* Welcome Screen - Show when no page is selected */}
+        {/* Note: Only show welcome when no page selected. If a page is selected but has no segments, still show tab UI */}
+        {!selectedPage ? (
           <div className="space-y-6">
             {/* Hero Section */}
             <Card className="border-none shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
