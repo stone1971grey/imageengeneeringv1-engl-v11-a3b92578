@@ -87,13 +87,22 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
 
       if (data && data.length > 0) {
         const pageSegments = JSON.parse(data[0].content_value || "[]");
-        const newsSegment = pageSegments.find((seg: any) => seg.id === segmentId);
+        console.log("[NewsSegmentEditor] loadContent - Looking for segmentId:", segmentId, "type:", typeof segmentId);
+        console.log("[NewsSegmentEditor] loadContent - Available segments:", pageSegments.map((s: any) => ({ id: s.id, type: typeof s.id })));
+        
+        // Use String comparison to ensure match works
+        const newsSegment = pageSegments.find((seg: any) => String(seg.id) === String(segmentId));
+        
+        console.log("[NewsSegmentEditor] loadContent - Found segment:", newsSegment);
         
         if (newsSegment?.data) {
           setSectionTitle(newsSegment.data.title || "Latest News");
           setSectionDescription(newsSegment.data.description || "Stay updated with the latest developments in image quality testing and measurement technology");
           setArticleLimit(String(newsSegment.data.articleLimit || 12));
           setSelectedCategories(newsSegment.data.categories || []);
+          console.log("[NewsSegmentEditor] loadContent - Loaded categories:", newsSegment.data.categories);
+        } else {
+          console.log("[NewsSegmentEditor] loadContent - No data in segment, using defaults");
         }
       }
     } catch (error: any) {
