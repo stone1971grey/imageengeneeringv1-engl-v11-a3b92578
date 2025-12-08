@@ -545,7 +545,9 @@ const Navigation = () => {
                            <span>{t.nav.automotive}</span>
                        </Link>
                         
-                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                        <Link to={`/${language}/your-solution/security-surveillance`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/your-solution/security-surveillance') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredIndustry("Security & Surveillance")}>
                           {(() => {
                             const key = pageDesignIcons['your-solution/security-surveillance'];
@@ -553,7 +555,7 @@ const Navigation = () => {
                             return IconComp ? <IconComp className="h-5 w-5" /> : null;
                           })()}
                           <span>{t.nav.securitySurveillance}</span>
-                       </div>
+                       </Link>
                         
                        <Link to={getLink("mobile-phone", "/your-solution/mobile-phone")} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
                          isActive('/your-solution/mobile-phone') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
@@ -725,29 +727,37 @@ const Navigation = () => {
                           <span>{t.nav.testCharts}</span>
                        </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={`/${language}/products/illumination-devices`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/products/illumination-devices') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                       }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Illumination Devices")}>
                          {pageDesignIcons['products/illumination-devices'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.illuminationDevices}</span>
-                       </div>
+                       </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={`/${language}/products/measurement-devices`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/products/measurement-devices') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                       }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Measurement Devices")}>
                          {pageDesignIcons['products/measurement-devices'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.measurementDevices}</span>
-                       </div>
+                       </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={`/${language}/products/software`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/products/software') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                       }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Software & APIs")}>
                          {pageDesignIcons['products/software'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.softwareApis}</span>
-                       </div>
+                       </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={`/${language}/products/bundles-services`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/products/bundles-services') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                       }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Product Accessories")}>
                          {pageDesignIcons['products/accessories'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.productAccessories}</span>
-                       </div>
+                       </Link>
                     </div>
                     
                      {/* Right Column: Subgroups */}
