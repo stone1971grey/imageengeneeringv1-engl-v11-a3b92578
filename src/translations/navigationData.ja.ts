@@ -199,58 +199,57 @@ export const navigationDataJa = {
       description: "テストラボの能力と方法論の包括的な紹介",
       services: [
         { name: "ラボについて", link: "/inside-lab" },
-        { name: "テストコンサルティング", link: "#" }
+        { name: "テストコンサルティング", link: "/test-lab/overview" }
       ]
     },
     "Automotive": {
       description: "自動車カメラシステムとADASアプリケーション用の専門テストサービス",
       services: [
-        { name: "camPAS", link: "#" },
+        { name: "camPAS", link: "/test-lab/automotive/campas" },
         { name: "キャビン内テスト", link: "/your-solution/automotive/in-cabin-testing", active: true },
-        { name: "HDRテスト", link: "#" },
-        { name: "幾何学的キャリブレーション", link: "#" },
-        { name: "ベースライン評価", link: "#" }
+        { name: "HDRテスト", link: "/test-lab/automotive/hdr-testing" },
+        { name: "幾何学的キャリブレーション", link: "/test-lab/automotive/geometric-calibration" },
+        { name: "ベースライン評価", link: "/test-lab/automotive/baseline-evaluations" }
       ]
     },
     "VCX": {
       description: "モバイルデバイスとWebcamアプリケーション用のVCXテストプロトコル",
       services: [
-        { name: "VCX - PhoneCam", link: "#" },
-        { name: "VCX - WebCam", link: "#" },
-        { name: "色特性評価", link: "#" },
-        { name: "ベースライン評価", link: "#" }
+        { name: "VCX - PhoneCam", link: "/test-lab/vcx/phonecam" },
+        { name: "VCX - WebCam", link: "/test-lab/vcx/webcam" },
+        { name: "色特性評価", link: "/test-lab/vcx/color-characterizations" }
       ]
     },
     "Image Quality": {
       description: "包括的な画質分析と測定サービス",
       services: [
-        { name: "解像度・テクスチャロス", link: "#" },
-        { name: "ダイナミックレンジ(OECF)", link: "#" },
-        { name: "レンズ歪み", link: "#" },
-        { name: "画像シェーディング・フレア", link: "#" },
-        { name: "色精度", link: "#" }
+        { name: "解像度・テクスチャロス", link: "/test-lab/image-quality/resolution-texture" },
+        { name: "ダイナミックレンジ(OECF)", link: "/test-lab/image-quality/dynamic-range" },
+        { name: "レンズ歪み", link: "/test-lab/image-quality/lens-distortion" },
+        { name: "画像シェーディング・フレア", link: "/test-lab/image-quality/shading-flare" },
+        { name: "色精度", link: "/test-lab/image-quality/color-accuracy" }
       ]
     },
     "Standardized": {
       description: "国際標準とプロトコルに基づくテストサービス",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
-        { name: "VCX (モバイル/Webcam)", link: "#" },
-        { name: "IEC 62676-5 (セキュリティ)", link: "#" },
-        { name: "EMVA 1288 (マシンビジョン)", link: "#" },
-        { name: "ISO 12233 (SFR)", link: "#" }
+        { name: "IEEE-P2020 (ADAS)", link: "/test-lab/standardized/ieee-p2020" },
+        { name: "VCX (モバイル/Webcam)", link: "/test-lab/standardized/vcx-mobile" },
+        { name: "IEC 62676-5 (セキュリティ)", link: "/test-lab/standardized/iec-62676-5" },
+        { name: "EMVA 1288 (マシンビジョン)", link: "/test-lab/standardized/emva-1288" },
+        { name: "ISO 12233 (SFR)", link: "/test-lab/standardized/iso-12233" }
       ]
     },
     "Specialized/Custom": {
       description: "カスタムテストソリューションと専門測定サービス",
       services: [
-        { name: "ベースライン評価", link: "#" },
-        { name: "概念実証", link: "#" },
-        { name: "輝度キャリブレーション", link: "#" },
-        { name: "サンプル間偏差", link: "#" },
-        { name: "開発検証テスト", link: "#" },
-        { name: "温度制御", link: "#" },
-        { name: "水中テスト", link: "#" }
+        { name: "ベースライン評価", link: "/test-lab/specialized/baseline-evaluations" },
+        { name: "概念実証", link: "/test-lab/specialized/proof-of-concepts" },
+        { name: "輝度キャリブレーション", link: "/test-lab/specialized/luminance-calibrations" },
+        { name: "サンプル間偏差", link: "/test-lab/specialized/sample-deviations" },
+        { name: "開発検証テスト", link: "/test-lab/specialized/development-validation" },
+        { name: "温度制御", link: "/test-lab/specialized/temperature-controlled" },
+        { name: "水中テスト", link: "/test-lab/specialized/underwater" }
       ]
     }
   }

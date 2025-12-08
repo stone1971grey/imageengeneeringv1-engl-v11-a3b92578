@@ -199,58 +199,57 @@ export const navigationDataZh = {
       description: "全面介绍我们的测试实验室能力和方法",
       services: [
         { name: "了解实验室", link: "/inside-lab" },
-        { name: "测试咨询", link: "#" }
+        { name: "测试咨询", link: "/test-lab/overview" }
       ]
     },
     "Automotive": {
       description: "汽车摄像系统和ADAS应用的专业测试服务",
       services: [
-        { name: "camPAS", link: "#" },
+        { name: "camPAS", link: "/test-lab/automotive/campas" },
         { name: "车内测试", link: "/your-solution/automotive/in-cabin-testing", active: true },
-        { name: "HDR测试", link: "#" },
-        { name: "几何校准", link: "#" },
-        { name: "基准评估", link: "#" }
+        { name: "HDR测试", link: "/test-lab/automotive/hdr-testing" },
+        { name: "几何校准", link: "/test-lab/automotive/geometric-calibration" },
+        { name: "基准评估", link: "/test-lab/automotive/baseline-evaluations" }
       ]
     },
     "VCX": {
       description: "移动设备和网络摄像头应用的VCX测试协议",
       services: [
-        { name: "VCX - 手机摄像头", link: "#" },
-        { name: "VCX - 网络摄像头", link: "#" },
-        { name: "色彩特性化", link: "#" },
-        { name: "基准评估", link: "#" }
+        { name: "VCX - 手机摄像头", link: "/test-lab/vcx/phonecam" },
+        { name: "VCX - 网络摄像头", link: "/test-lab/vcx/webcam" },
+        { name: "色彩特性化", link: "/test-lab/vcx/color-characterizations" }
       ]
     },
     "Image Quality": {
       description: "全面的图像质量分析和测量服务",
       services: [
-        { name: "分辨率与纹理损失", link: "#" },
-        { name: "动态范围(OECF)", link: "#" },
-        { name: "镜头畸变", link: "#" },
-        { name: "图像阴影与眩光", link: "#" },
-        { name: "色彩准确性", link: "#" }
+        { name: "分辨率与纹理损失", link: "/test-lab/image-quality/resolution-texture" },
+        { name: "动态范围(OECF)", link: "/test-lab/image-quality/dynamic-range" },
+        { name: "镜头畸变", link: "/test-lab/image-quality/lens-distortion" },
+        { name: "图像阴影与眩光", link: "/test-lab/image-quality/shading-flare" },
+        { name: "色彩准确性", link: "/test-lab/image-quality/color-accuracy" }
       ]
     },
     "Standardized": {
       description: "根据国际标准和协议的测试服务",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
-        { name: "VCX (移动/网络摄像头)", link: "#" },
-        { name: "IEC 62676-5 (安防)", link: "#" },
-        { name: "EMVA 1288 (机器视觉)", link: "#" },
-        { name: "ISO 12233 (SFR)", link: "#" }
+        { name: "IEEE-P2020 (ADAS)", link: "/test-lab/standardized/ieee-p2020" },
+        { name: "VCX (移动/网络摄像头)", link: "/test-lab/standardized/vcx-mobile" },
+        { name: "IEC 62676-5 (安防)", link: "/test-lab/standardized/iec-62676-5" },
+        { name: "EMVA 1288 (机器视觉)", link: "/test-lab/standardized/emva-1288" },
+        { name: "ISO 12233 (SFR)", link: "/test-lab/standardized/iso-12233" }
       ]
     },
     "Specialized/Custom": {
       description: "定制测试解决方案和专业测量服务",
       services: [
-        { name: "基准评估", link: "#" },
-        { name: "概念验证", link: "#" },
-        { name: "亮度校准", link: "#" },
-        { name: "样本间偏差", link: "#" },
-        { name: "开发验证测试", link: "#" },
-        { name: "温控", link: "#" },
-        { name: "水下测试", link: "#" }
+        { name: "基准评估", link: "/test-lab/specialized/baseline-evaluations" },
+        { name: "概念验证", link: "/test-lab/specialized/proof-of-concepts" },
+        { name: "亮度校准", link: "/test-lab/specialized/luminance-calibrations" },
+        { name: "样本间偏差", link: "/test-lab/specialized/sample-deviations" },
+        { name: "开发验证测试", link: "/test-lab/specialized/development-validation" },
+        { name: "温控", link: "/test-lab/specialized/temperature-controlled" },
+        { name: "水下测试", link: "/test-lab/specialized/underwater" }
       ]
     }
   }

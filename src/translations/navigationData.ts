@@ -199,58 +199,57 @@ export const navigationDataEn = {
       description: "Comprehensive introduction to our testing laboratory capabilities and methodologies",
       services: [
         { name: "Learn about the Lab", link: "/inside-lab" },
-        { name: "Testing Consultation", link: "#" }
+        { name: "Testing Consultation", link: "/test-lab/overview" }
       ]
     },
     "Automotive": {
       description: "Specialized testing services for automotive camera systems and ADAS applications",
       services: [
-        { name: "camPAS", link: "#" },
+        { name: "camPAS", link: "/test-lab/automotive/campas" },
         { name: "In-Cabin Testing", link: "/your-solution/automotive/in-cabin-testing", active: true },
-        { name: "HDR Testing", link: "#" },
-        { name: "Geometric Calibration", link: "#" },
-        { name: "Baseline Evaluations", link: "#" }
+        { name: "HDR Testing", link: "/test-lab/automotive/hdr-testing" },
+        { name: "Geometric Calibration", link: "/test-lab/automotive/geometric-calibration" },
+        { name: "Baseline Evaluations", link: "/test-lab/automotive/baseline-evaluations" }
       ]
     },
     "VCX": {
       description: "VCX testing protocols for mobile devices and webcam applications",
       services: [
-        { name: "VCX - PhoneCam", link: "#" },
-        { name: "VCX - WebCam", link: "#" },
-        { name: "Color Characterizations", link: "#" },
-        { name: "Baseline Evaluations", link: "#" }
+        { name: "VCX - PhoneCam", link: "/test-lab/vcx/phonecam" },
+        { name: "VCX - WebCam", link: "/test-lab/vcx/webcam" },
+        { name: "Color Characterizations", link: "/test-lab/vcx/color-characterizations" }
       ]
     },
     "Image Quality": {
       description: "Comprehensive image quality analysis and measurement services",
       services: [
-        { name: "Resolution & Texture Loss", link: "#" },
-        { name: "Dynamic Range (OECF)", link: "#" },
-        { name: "Lens Distortion", link: "#" },
-        { name: "Image Shading & Flare", link: "#" },
-        { name: "Color Accuracy", link: "#" }
+        { name: "Resolution & Texture Loss", link: "/test-lab/image-quality/resolution-texture" },
+        { name: "Dynamic Range (OECF)", link: "/test-lab/image-quality/dynamic-range" },
+        { name: "Lens Distortion", link: "/test-lab/image-quality/lens-distortion" },
+        { name: "Image Shading & Flare", link: "/test-lab/image-quality/shading-flare" },
+        { name: "Color Accuracy", link: "/test-lab/image-quality/color-accuracy" }
       ]
     },
     "Standardized": {
       description: "Testing services according to international standards and protocols",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
-        { name: "VCX (Mobile/Webcam)", link: "#" },
-        { name: "IEC 62676-5 (Security)", link: "#" },
-        { name: "EMVA 1288 (Machine Vision)", link: "#" },
-        { name: "ISO 12233 (SFR)", link: "#" }
+        { name: "IEEE-P2020 (ADAS)", link: "/test-lab/standardized/ieee-p2020" },
+        { name: "VCX (Mobile/Webcam)", link: "/test-lab/standardized/vcx-mobile" },
+        { name: "IEC 62676-5 (Security)", link: "/test-lab/standardized/iec-62676-5" },
+        { name: "EMVA 1288 (Machine Vision)", link: "/test-lab/standardized/emva-1288" },
+        { name: "ISO 12233 (SFR)", link: "/test-lab/standardized/iso-12233" }
       ]
     },
     "Specialized/Custom": {
       description: "Custom testing solutions and specialized measurement services",
       services: [
-        { name: "Baseline Evaluations", link: "#" },
-        { name: "Proof of Concepts", link: "#" },
-        { name: "Luminance Calibrations", link: "#" },
-        { name: "Sample-to-Sample Deviations", link: "#" },
-        { name: "Development Validation Tests", link: "#" },
-        { name: "Temperature-Controlled", link: "#" },
-        { name: "Underwater Tests", link: "#" }
+        { name: "Baseline Evaluations", link: "/test-lab/specialized/baseline-evaluations" },
+        { name: "Proof of Concepts", link: "/test-lab/specialized/proof-of-concepts" },
+        { name: "Luminance Calibrations", link: "/test-lab/specialized/luminance-calibrations" },
+        { name: "Sample-to-Sample Deviations", link: "/test-lab/specialized/sample-deviations" },
+        { name: "Development Validation Tests", link: "/test-lab/specialized/development-validation" },
+        { name: "Temperature-Controlled", link: "/test-lab/specialized/temperature-controlled" },
+        { name: "Underwater Tests", link: "/test-lab/specialized/underwater" }
       ]
     }
   }
