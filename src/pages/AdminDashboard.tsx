@@ -1002,6 +1002,10 @@ const AdminDashboard = () => {
   }, [pageInfo]);
 
   const handleSaveDesignElement = async () => {
+    console.log('[handleSaveDesignElement] pageInfo:', pageInfo);
+    console.log('[handleSaveDesignElement] pendingDesignIcon:', pendingDesignIcon);
+    console.log('[handleSaveDesignElement] parentSlug:', pageInfo?.parentSlug);
+    
     if (!pageInfo || !pendingDesignIcon) {
       toast.error("Please select a design element");
       return;
@@ -1011,7 +1015,11 @@ const AdminDashboard = () => {
     const isSecondLevel = SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug || '');
     const isThirdLevelUnderTestLabSave = pageInfo.parentSlug?.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
     
+    console.log('[handleSaveDesignElement] isSecondLevel:', isSecondLevel);
+    console.log('[handleSaveDesignElement] isThirdLevelUnderTestLabSave:', isThirdLevelUnderTestLabSave);
+    
     if (!pageInfo.parentSlug || (!isSecondLevel && !isThirdLevelUnderTestLabSave)) {
+      console.log('[handleSaveDesignElement] BLOCKED - parentSlug validation failed');
       toast.error("Design elements are only allowed for second and third-level navigation pages under Test Lab.");
       return;
     }
