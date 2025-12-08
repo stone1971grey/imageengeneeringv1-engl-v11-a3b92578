@@ -350,7 +350,7 @@ const NewsDetail = () => {
               {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-3 mb-6">
                 {article.category && (
-                  <Badge className="bg-[#0f407b] text-white hover:bg-[#0d3468] text-sm px-3 py-1.5 font-medium">
+                  <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1.5 font-medium">
                     {article.category}
                   </Badge>
                 )}
@@ -452,7 +452,7 @@ const NewsDetail = () => {
                           {item.teaser}
                         </p>
                         <Link to={`/${language}/news/${item.slug}`}>
-                          <Button className="w-full bg-[#0f407b] text-white hover:bg-[#0d3468] transition-all duration-300">
+                          <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-all duration-300">
                             Read more
                           </Button>
                         </Link>
