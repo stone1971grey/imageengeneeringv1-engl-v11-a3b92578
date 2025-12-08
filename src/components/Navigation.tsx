@@ -712,11 +712,11 @@ const Navigation = () => {
                         <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
                           <img
                             src={flyout.imageUrl}
-                            alt={hoveredIndustry}
+                            alt={(t.nav as any)[hoveredIndustry] || hoveredIndustry}
                             className="w-[180px] h-[180px] object-cover rounded-lg"
                           />
                           <div className="text-black">
-                            <h4 className="font-semibold text-lg mb-1">{hoveredIndustry}</h4>
+                            <h4 className="font-semibold text-lg mb-1">{(t.nav as any)[hoveredIndustry] || hoveredIndustry}</h4>
                             <p className="text-base text-gray-700 leading-relaxed">
                               {flyout.descriptions[language] || flyout.descriptions['en'] || ''}
                             </p>
@@ -858,11 +858,11 @@ const Navigation = () => {
                         <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
                           <img 
                             src={flyout.imageUrl} 
-                            alt={hoveredProduct} 
+                            alt={(t.nav as any)[hoveredProduct] || hoveredProduct} 
                             className="w-[180px] h-[180px] object-cover rounded-lg" 
                           />
                           <div className="text-black">
-                            <h4 className="font-semibold text-base mb-1">{hoveredProduct}</h4>
+                            <h4 className="font-semibold text-base mb-1">{(t.nav as any)[hoveredProduct] || hoveredProduct}</h4>
                             <p className="text-sm text-gray-600 leading-relaxed">
                               {flyout.descriptions[language] || flyout.descriptions['en'] || ''}
                             </p>
@@ -1014,11 +1014,11 @@ const Navigation = () => {
                         <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
                           <img
                             src={flyout.imageUrl}
-                            alt={hoveredTestService}
+                            alt={(t.nav as any)[hoveredTestService] || hoveredTestService}
                             className="w-[180px] h-[180px] object-cover rounded-lg"
                           />
                           <div className="text-black">
-                            <h4 className="font-semibold text-lg mb-1">{hoveredTestService}</h4>
+                            <h4 className="font-semibold text-lg mb-1">{(t.nav as any)[hoveredTestService] || hoveredTestService}</h4>
                             <p className="text-base text-gray-700 leading-relaxed">
                               {flyout.descriptions[language] || flyout.descriptions['en'] || ''}
                             </p>
