@@ -851,41 +851,47 @@ const Navigation = () => {
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.testServices}</h4>
                       
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={getLink('/test-lab/overview')} 
+                         className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Overview")}>
                          <FlaskConical className="h-5 w-5" />
                          <span>{t.nav.overview}</span>
-                       </div>
+                       </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={getLink('/test-lab/automotive')}
+                         className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Automotive")}>
                          <Car className="h-5 w-5" />
                          <span>{t.nav.automotive}</span>
-                       </div>
+                       </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={getLink('/test-lab/vcx')}
+                         className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("VCX")}>
                          <Smartphone className="h-5 w-5" />
                          <span>VCX</span>
-                       </div>
+                       </Link>
                        
-                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                        <Link to={getLink('/test-lab/image-quality')}
+                          className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                           onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Image Quality")}>
                           <Camera className="h-5 w-5" />
                           <span>{t.nav.infoHub}</span>
-                        </div>
+                        </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={getLink('/test-lab/standardized')}
+                         className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Standardized")}>
                          <CheckCircle className="h-5 w-5" />
                          <span>{t.nav.standardized}</span>
-                       </div>
+                       </Link>
                        
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
+                       <Link to={getLink('/test-lab/specialized')}
+                         className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredTestService("Specialized/Custom")}>
                          <Settings className="h-5 w-5" />
                          <span>{t.nav.specializedCustom}</span>
-                       </div>
+                       </Link>
                     </div>
                     
                      {/* Right Column: Services */}
