@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -390,8 +390,10 @@ const AdminDashboard = () => {
   const [pendingDesignIcon, setPendingDesignIcon] = useState<string | null>(null);
   const [isFlyoutDialogOpen, setIsFlyoutDialogOpen] = useState(false);
   const [flyoutImageUrl, setFlyoutImageUrl] = useState<string | null>(null);
-  const [flyoutDescription, setFlyoutDescription] = useState<string>('');
+  const [flyoutDescriptionTranslations, setFlyoutDescriptionTranslations] = useState<Record<string, string>>({});
+  const [flyoutDescriptionLanguage, setFlyoutDescriptionLanguage] = useState<string>('en');
   const [isSavingFlyout, setIsSavingFlyout] = useState(false);
+  const [isTranslatingFlyout, setIsTranslatingFlyout] = useState(false);
   const [isFlyoutMediaDialogOpen, setIsFlyoutMediaDialogOpen] = useState(false);
   const [isCtaDialogOpen, setIsCtaDialogOpen] = useState(false);
   const [ctaGroup, setCtaGroup] = useState<string>('none');
@@ -809,11 +811,12 @@ const AdminDashboard = () => {
     setFlyoutImageUrl(url || null);
 
     // If no custom description is set yet, try to load alt text from mapping as a starting point
-    if (url && !flyoutDescription) {
+    const currentEnglishDesc = flyoutDescriptionTranslations['en'] || '';
+    if (url && !currentEnglishDesc) {
       try {
-        const altText = await loadAltTextFromMapping(url);
+        const altText = await loadAltTextFromMapping(url, 'page-images', 'en');
         if (altText) {
-          setFlyoutDescription(altText);
+          setFlyoutDescriptionTranslations(prev => ({ ...prev, en: altText }));
         }
       } catch (error) {
         console.error('[handleFlyoutImageSelect] Failed to load alt text for flyout image:', error);
@@ -843,11 +846,13 @@ const AdminDashboard = () => {
     setIsSavingFlyout(true);
 
     try {
+      const englishDesc = flyoutDescriptionTranslations['en'] || '';
       const { error } = await supabase
         .from('page_registry')
         .update({
           flyout_image_url: flyoutImageUrl,
-          flyout_description: flyoutDescription || null,
+          flyout_description: englishDesc || null,
+          flyout_description_translations: flyoutDescriptionTranslations,
         })
         .eq('page_id', pageInfo.pageId);
 
@@ -857,7 +862,7 @@ const AdminDashboard = () => {
         return;
       }
 
-      setPageInfo(prev => prev ? { ...prev, flyoutImageUrl, flyoutDescription } : prev);
+      setPageInfo(prev => prev ? { ...prev, flyoutImageUrl, flyoutDescription: englishDesc } : prev);
       toast.success('Flyout content saved');
       setIsFlyoutDialogOpen(false);
     } catch (error) {
@@ -879,6 +884,7 @@ const AdminDashboard = () => {
         .update({
           flyout_image_url: null,
           flyout_description: null,
+          flyout_description_translations: {},
         })
         .eq('page_id', pageInfo.pageId);
 
@@ -889,7 +895,7 @@ const AdminDashboard = () => {
       }
 
       setFlyoutImageUrl(null);
-      setFlyoutDescription('');
+      setFlyoutDescriptionTranslations({});
       setPageInfo(prev => prev ? { ...prev, flyoutImageUrl: null, flyoutDescription: null } : prev);
       toast.success('Flyout content removed');
     } catch (error) {
@@ -996,19 +1002,39 @@ const AdminDashboard = () => {
 
   // Sync flyout & CTA editor state when pageInfo changes
   useEffect(() => {
-    if (pageInfo) {
-      setFlyoutImageUrl(pageInfo.flyoutImageUrl ?? null);
-      setFlyoutDescription(pageInfo.flyoutDescription ?? '');
-      setCtaGroup(pageInfo.ctaGroup ?? 'none');
-      setCtaLabel(pageInfo.ctaLabel ?? '');
-      setCtaIcon(pageInfo.ctaIcon ?? 'auto');
-    } else {
-      setFlyoutImageUrl(null);
-      setFlyoutDescription('');
-      setCtaGroup('none');
-      setCtaLabel('');
-      setCtaIcon('auto');
-    }
+    const loadFlyoutTranslations = async () => {
+      if (pageInfo) {
+        setFlyoutImageUrl(pageInfo.flyoutImageUrl ?? null);
+        setCtaGroup(pageInfo.ctaGroup ?? 'none');
+        setCtaLabel(pageInfo.ctaLabel ?? '');
+        setCtaIcon(pageInfo.ctaIcon ?? 'auto');
+        
+        // Load flyout description translations from database
+        if (pageInfo.pageSlug) {
+          const { data } = await supabase
+            .from('page_registry')
+            .select('flyout_description_translations')
+            .eq('page_slug', pageInfo.pageSlug)
+            .maybeSingle();
+          
+          if (data?.flyout_description_translations && typeof data.flyout_description_translations === 'object') {
+            setFlyoutDescriptionTranslations(data.flyout_description_translations as Record<string, string>);
+          } else if (pageInfo.flyoutDescription) {
+            setFlyoutDescriptionTranslations({ en: pageInfo.flyoutDescription });
+          } else {
+            setFlyoutDescriptionTranslations({});
+          }
+        }
+      } else {
+        setFlyoutImageUrl(null);
+        setFlyoutDescriptionTranslations({});
+        setCtaGroup('none');
+        setCtaLabel('');
+        setCtaIcon('auto');
+      }
+    };
+    
+    loadFlyoutTranslations();
   }, [pageInfo]);
 
   const handleSaveDesignElement = async () => {
@@ -4436,7 +4462,7 @@ const AdminDashboard = () => {
                         <div className="relative w-full h-40 rounded-lg overflow-hidden border border-border bg-black mb-2">
                           <img
                             src={flyoutImageUrl}
-                            alt={flyoutDescription || 'Flyout teaser image'}
+                            alt={flyoutDescriptionTranslations['en'] || 'Flyout teaser image'}
                             className="w-full h-full object-cover"
                           />
                           <button
@@ -4482,17 +4508,133 @@ const AdminDashboard = () => {
                       </p>
                     </div>
 
-                    {/* Description text */}
+                    {/* Description text with language selector */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Flyout description</label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium">Flyout description</label>
+                        <div className="flex items-center gap-2">
+                          <Select value={flyoutDescriptionLanguage} onValueChange={setFlyoutDescriptionLanguage}>
+                            <SelectTrigger className="w-[120px] h-8 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="en">🇺🇸 English</SelectItem>
+                              <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
+                              <SelectItem value="ja">🇯🇵 日本語</SelectItem>
+                              <SelectItem value="ko">🇰🇷 한국어</SelectItem>
+                              <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
                       <Textarea
-                        value={flyoutDescription}
-                        onChange={(e) => setFlyoutDescription(e.target.value)}
+                        value={flyoutDescriptionTranslations[flyoutDescriptionLanguage] || ''}
+                        onChange={(e) => setFlyoutDescriptionTranslations(prev => ({
+                          ...prev,
+                          [flyoutDescriptionLanguage]: e.target.value
+                        }))}
                         rows={3}
-                        placeholder="Short description that appears under the title in the flyout (e.g. 'Camera systems in vehicles, driver assistance and autonomous driving')."
+                        placeholder={flyoutDescriptionLanguage === 'en' 
+                          ? "Short description that appears under the title in the flyout..." 
+                          : `Translation for ${flyoutDescriptionLanguage.toUpperCase()}...`
+                        }
                       />
+                      
+                      {/* Auto-translate buttons */}
+                      <div className="flex gap-2">
+                        {flyoutDescriptionLanguage !== 'en' && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className="text-xs border-purple-500 text-purple-600 hover:bg-purple-50"
+                            disabled={isTranslatingFlyout || !flyoutDescriptionTranslations['en']}
+                            onClick={async () => {
+                              const englishText = flyoutDescriptionTranslations['en'];
+                              if (!englishText) {
+                                toast.error('Please enter English description first');
+                                return;
+                              }
+                              setIsTranslatingFlyout(true);
+                              try {
+                                const { data, error } = await supabase.functions.invoke('translate-content', {
+                                  body: {
+                                    texts: { description: englishText },
+                                    targetLanguage: flyoutDescriptionLanguage
+                                  }
+                                });
+                                if (error) throw error;
+                                if (data?.translatedTexts?.description) {
+                                  setFlyoutDescriptionTranslations(prev => ({
+                                    ...prev,
+                                    [flyoutDescriptionLanguage]: data.translatedTexts.description
+                                  }));
+                                  toast.success('Translation complete');
+                                }
+                              } catch (err) {
+                                console.error('Translation error:', err);
+                                toast.error('Translation failed');
+                              } finally {
+                                setIsTranslatingFlyout(false);
+                              }
+                            }}
+                          >
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            {isTranslatingFlyout ? 'Translating...' : 'Auto-Translate'}
+                          </Button>
+                        )}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="text-xs border-purple-500 text-purple-600 hover:bg-purple-50"
+                          disabled={isTranslatingFlyout || !flyoutDescriptionTranslations['en']}
+                          onClick={async () => {
+                            const englishText = flyoutDescriptionTranslations['en'];
+                            if (!englishText) {
+                              toast.error('Please enter English description first');
+                              return;
+                            }
+                            setIsTranslatingFlyout(true);
+                            const targetLangs = ['de', 'ja', 'ko', 'zh'];
+                            try {
+                              const results = await Promise.all(
+                                targetLangs.map(async (lang) => {
+                                  const { data, error } = await supabase.functions.invoke('translate-content', {
+                                    body: {
+                                      texts: { description: englishText },
+                                      targetLanguage: lang
+                                    }
+                                  });
+                                  if (error) throw error;
+                                  return { lang, text: data?.translatedTexts?.description || '' };
+                                })
+                              );
+                              const newTranslations = { ...flyoutDescriptionTranslations };
+                              results.forEach(({ lang, text }) => {
+                                if (text) newTranslations[lang] = text;
+                              });
+                              setFlyoutDescriptionTranslations(newTranslations);
+                              toast.success('All translations complete');
+                            } catch (err) {
+                              console.error('Translation error:', err);
+                              toast.error('Some translations failed');
+                            } finally {
+                              setIsTranslatingFlyout(false);
+                            }
+                          }}
+                        >
+                          <Languages className="h-3 w-3 mr-1" />
+                          {isTranslatingFlyout ? 'Translating...' : 'Translate All'}
+                        </Button>
+                      </div>
+                      
+                      {isTranslatingFlyout && (
+                        <div className="h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded animate-pulse" />
+                      )}
+                      
                       <p className="text-[11px] text-gray-500">
-                        By default we suggest the image alt text. You can override it here at any time.
+                        Enter English first, then translate to other languages.
                       </p>
                     </div>
 
@@ -4501,7 +4643,7 @@ const AdminDashboard = () => {
                         {flyoutImageUrl ? 'Flyout image selected' : 'No flyout image selected yet'}
                       </div>
                       <div className="flex gap-2">
-                        {flyoutImageUrl || flyoutDescription ? (
+                        {flyoutImageUrl || Object.keys(flyoutDescriptionTranslations).some(k => flyoutDescriptionTranslations[k]) ? (
                           <Button
                             type="button"
                             variant="outline"
