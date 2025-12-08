@@ -3849,11 +3849,21 @@ const AdminDashboard = () => {
             </div>
           </div>
           
-          {/* Rechte Seite: Action Buttons - erhöht positioniert */}
-          <div className="flex flex-col items-end gap-3 -mt-1">
-            {/* Erste Reihe: Add New Segment, Design Element, Preview, Logout */}
-            <div className="flex items-center gap-3">
-              <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
+          {/* Rechte Seite: Logout Button */}
+          <div className="flex-shrink-0">
+            <Button
+              onClick={handleLogout}
+              variant="destructive"
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </div>
+        </div>
+
+        {/* Segment Template Dialog */}
+        <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
                 <DialogContent className="max-w-6xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-6">
                   <DialogTitle className="text-3xl font-bold text-white">Choose a Segment</DialogTitle>
@@ -4692,19 +4702,6 @@ const AdminDashboard = () => {
                   </div>
                 </DialogContent>
               </Dialog>
-
-              <Button
-                onClick={handleLogout}
-                variant="destructive"
-                className="flex items-center gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </Button>
-            </div>
-            
-          </div>
-        </div>
 
         {/* SEO Editor - Conditional Rendering */}
         {isSEOEditorOpen && selectedPage && (
