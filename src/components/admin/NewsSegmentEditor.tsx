@@ -293,9 +293,12 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
       const langName = LANGUAGES.find(l => l.code === targetLanguage)?.name || targetLanguage;
       
       // Build texts object with keys for proper response mapping
-      const textsToTranslate: Record<string, string> = {};
-      if (config.title) textsToTranslate.title = config.title;
-      if (config.description) textsToTranslate.description = config.description;
+      const textsToTranslate: Record<string, string> = {
+        title: config.title || '',
+        description: config.description || ''
+      };
+      
+      console.log("[NewsSegmentEditor] Sending translation request:", textsToTranslate);
       
       const { data, error } = await supabase.functions.invoke('translate-content', {
         body: {
@@ -305,22 +308,35 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("[NewsSegmentEditor] Translation error:", error);
+        throw error;
+      }
 
       console.log("[NewsSegmentEditor] Translation response:", data);
 
       if (data?.translations) {
-        // Handle both object and array response formats
         const translations = data.translations;
+        console.log("[NewsSegmentEditor] Parsed translations:", translations);
+        
+        // Handle response - check for title/description keys first, then numeric keys
+        const newTitle = translations.title ?? translations["title"] ?? translations["0"] ?? '';
+        const newDescription = translations.description ?? translations["description"] ?? translations["1"] ?? '';
+        
+        console.log("[NewsSegmentEditor] Setting newTitle:", newTitle, "newDescription:", newDescription);
+        
         setTargetConfig(prev => ({
           ...prev,
-          title: translations.title || translations["0"] || prev.title,
-          description: translations.description || translations["1"] || prev.description,
+          title: newTitle || prev.title,
+          description: newDescription || prev.description,
         }));
         toast.success(`Translated to ${langName}`);
+      } else {
+        console.error("[NewsSegmentEditor] No translations in response:", data);
+        toast.error("Translation response empty");
       }
     } catch (error: any) {
-      console.error("Translation error:", error);
+      console.error("[NewsSegmentEditor] Translation error:", error);
       toast.error("Translation failed: " + error.message);
     } finally {
       setIsTranslating(false);
@@ -427,7 +443,12 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
         {/* Translating Feedback Bar */}
         {isTarget && isTranslating && (
-          <div className="h-2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-full animate-pulse shadow-lg shadow-purple-500/50" />
+          <div className="py-3 px-4 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-lg animate-pulse shadow-lg shadow-purple-500/50 flex items-center justify-center gap-2">
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <span className="text-white font-medium ml-2">Translating...</span>
+          </div>
         )}
 
         {/* Content Fields */}
