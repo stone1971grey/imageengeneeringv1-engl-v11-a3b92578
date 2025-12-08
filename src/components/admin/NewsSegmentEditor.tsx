@@ -82,7 +82,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
           .eq("page_slug", pageSlug)
           .eq("section_key", "page_segments")
           .eq("language", "en")
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
@@ -136,7 +136,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
         .eq("language", "en")
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
