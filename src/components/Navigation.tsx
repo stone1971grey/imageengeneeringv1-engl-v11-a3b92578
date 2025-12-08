@@ -663,9 +663,9 @@ const Navigation = () => {
 
                       return (
                         <Link to={getLink(targetSlug, `/${targetSlug}`)}>
-                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black text-xl">
-                            <CtaIcon className="h-6 w-6 mr-2" />
-                            <span className="font-medium">{label}</span>
+                          <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800 py-3">
+                            <CtaIcon className="h-5 w-5 mr-2" />
+                            <span className="text-base font-medium">{label}</span>
                           </Button>
                         </Link>
                       );
@@ -892,7 +892,7 @@ const Navigation = () => {
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     <Link to={getLink('inside-lab', '/inside-lab')}>
-                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
+                      <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800 py-3">
                         <FlaskConical className="h-5 w-5 mr-2" />
                         <span className="text-base font-medium">Visit our Testing Lab</span>
                       </Button>
