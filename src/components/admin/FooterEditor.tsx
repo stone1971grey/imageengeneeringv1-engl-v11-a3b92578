@@ -586,6 +586,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
               label=""
               acceptedFileTypes="image/*"
               currentImageUrl={teamImageUrl}
+              previewSize="small"
               onFileSelect={async (file) => {
                 if (!file.type.startsWith("image/")) {
                   toast.error("Please upload an image file");
