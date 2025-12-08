@@ -97,13 +97,16 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
 
     if (map.footer_team_image_url) {
       setTeamImageUrl(map.footer_team_image_url);
+      console.log("[FooterEditor] Image URL found:", map.footer_team_image_url);
       
       // Load metadata including alt text, or create empty metadata if image exists
       if (map.footer_team_image_metadata) {
         try {
           const parsed = JSON.parse(map.footer_team_image_metadata);
+          console.log("[FooterEditor] Parsed metadata:", parsed);
           setTeamImageMetadata(parsed);
         } catch (e) {
+          console.log("[FooterEditor] Failed to parse metadata, creating default");
           // Create default metadata for existing image
           setTeamImageMetadata({
             originalFileName: map.footer_team_image_url.split('/').pop() || 'image',
@@ -117,6 +120,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
           });
         }
       } else {
+        console.log("[FooterEditor] No metadata found, creating default for existing image");
         // Create default metadata for existing image without metadata
         setTeamImageMetadata({
           originalFileName: map.footer_team_image_url.split('/').pop() || 'image',
@@ -130,6 +134,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
         });
       }
     } else {
+      console.log("[FooterEditor] No image URL found");
       setTeamImageUrl("");
       setTeamImageMetadata(null);
     }
