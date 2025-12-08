@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { en } from "@/translations/en";
 import { type ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from "@/types/imageMetadata";
 import { MediaSelector } from "@/components/admin/MediaSelector";
+import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 export type FooterEditorLanguage = "en" | "de" | "ja" | "ko" | "zh";
 
 interface FooterEditorProps {
@@ -84,7 +85,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, pageSlug]);
 
-  const applyFields = (map: FooterContentMap) => {
+  const applyFields = async (map: FooterContentMap) => {
     setFooterCtaTitle(map.footer_cta_title ?? "");
     setFooterCtaDescription(map.footer_cta_description ?? "");
     setFooterContactHeadline(map.footer_contact_headline ?? "");
@@ -99,15 +100,22 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
       setTeamImageUrl(map.footer_team_image_url);
       console.log("[FooterEditor] Image URL found:", map.footer_team_image_url);
       
+      // Load alt text from Media Management first
+      const mediaAltText = await loadAltTextFromMapping(map.footer_team_image_url, 'page-images', language);
+      console.log("[FooterEditor] Alt text from Media Management:", mediaAltText);
+      
       // Load metadata including alt text, or create empty metadata if image exists
       if (map.footer_team_image_metadata) {
         try {
           const parsed = JSON.parse(map.footer_team_image_metadata);
           console.log("[FooterEditor] Parsed metadata:", parsed);
-          setTeamImageMetadata(parsed);
+          // Prefer Media Management alt text over stored metadata
+          setTeamImageMetadata({
+            ...parsed,
+            altText: mediaAltText || parsed.altText || ""
+          });
         } catch (e) {
           console.log("[FooterEditor] Failed to parse metadata, creating default");
-          // Create default metadata for existing image
           setTeamImageMetadata({
             originalFileName: map.footer_team_image_url.split('/').pop() || 'image',
             width: 0,
@@ -116,12 +124,11 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
             format: map.footer_team_image_url.split('.').pop() || 'unknown',
             uploadDate: new Date().toISOString(),
             url: map.footer_team_image_url,
-            altText: ""
+            altText: mediaAltText || ""
           });
         }
       } else {
         console.log("[FooterEditor] No metadata found, creating default for existing image");
-        // Create default metadata for existing image without metadata
         setTeamImageMetadata({
           originalFileName: map.footer_team_image_url.split('/').pop() || 'image',
           width: 0,
@@ -130,7 +137,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
           format: map.footer_team_image_url.split('.').pop() || 'unknown',
           uploadDate: new Date().toISOString(),
           url: map.footer_team_image_url,
-          altText: ""
+          altText: mediaAltText || ""
         });
       }
     } else {
@@ -660,39 +667,39 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
             />
 
             {teamImageMetadata && (
-              <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">
-                <h4 className="font-semibold text-black text-lg mb-3">Image Information</h4>
+              <div className="mt-4 p-4 bg-gray-900 rounded-lg border-2 border-gray-700 space-y-2">
+                <h4 className="font-semibold text-white text-lg mb-3">Image Information</h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <span className="text-gray-600">Original Name:</span>
-                    <p className="text-black font-medium">{teamImageMetadata.originalFileName}</p>
+                    <span className="text-gray-400">Original Name:</span>
+                    <p className="text-white font-medium">{teamImageMetadata.originalFileName}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Dimensions:</span>
-                    <p className="text-black font-medium">
+                    <span className="text-gray-400">Dimensions:</span>
+                    <p className="text-white font-medium">
                       {teamImageMetadata.width} × {teamImageMetadata.height} px
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-600">File Size:</span>
-                    <p className="text-black font-medium">
+                    <span className="text-gray-400">File Size:</span>
+                    <p className="text-white font-medium">
                       {formatFileSize(teamImageMetadata.fileSizeKB)}
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-600">Format:</span>
-                    <p className="text-black font-medium uppercase">{teamImageMetadata.format}</p>
+                    <span className="text-gray-400">Format:</span>
+                    <p className="text-white font-medium uppercase">{teamImageMetadata.format}</p>
                   </div>
                   <div className="col-span-2">
-                    <span className="text-gray-600">Upload Date:</span>
-                    <p className="text-black font-medium">
+                    <span className="text-gray-400">Upload Date:</span>
+                    <p className="text-white font-medium">
                       {formatUploadDate(teamImageMetadata.uploadDate)}
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-4">
-                  <Label htmlFor="footer_image_alt" className="text-black text-base">
+                  <Label htmlFor="footer_image_alt" className="text-white text-base">
                     Alt Text (SEO)
                   </Label>
                   <Input
@@ -707,9 +714,9 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                       setTeamImageMetadata(updatedMetadata);
                     }}
                     placeholder="Describe this image for accessibility and SEO"
-                    className="mt-2 bg-white border-2 border-gray-300 focus:border-[#f9dc24] text-xl text-black placeholder:text-gray-400 h-12"
+                    className="mt-2 bg-gray-800 border-2 border-gray-600 focus:border-[#f9dc24] text-lg text-white placeholder:text-gray-500 h-12"
                   />
-                  <p className="text-white text-sm mt-1">
+                  <p className="text-gray-400 text-sm mt-1">
                     Provide a descriptive alt text for screen readers and search engines
                   </p>
                 </div>
