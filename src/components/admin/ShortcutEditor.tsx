@@ -308,8 +308,13 @@ export const ShortcutEditor = ({
   );
 };
 
-// Badge component for showing shortcut status in tables
-export const ShortcutBadge = ({ targetSlug }: { targetSlug: string | null }) => {
+// Badge component for showing shortcut status in tables with target Page ID
+interface ShortcutBadgeProps {
+  targetSlug: string | null;
+  targetPageId?: number | null;
+}
+
+export const ShortcutBadge = ({ targetSlug, targetPageId }: ShortcutBadgeProps) => {
   if (!targetSlug) return null;
 
   return (
@@ -318,7 +323,7 @@ export const ShortcutBadge = ({ targetSlug }: { targetSlug: string | null }) => 
       title={`Shortcut → ${targetSlug}`}
     >
       <Link2 className="h-3 w-3 mr-1" />
-      Shortcut
+      Shortcut → ID {targetPageId || "?"}
     </Badge>
   );
 };
