@@ -462,23 +462,23 @@ const NewsTranslationEditor = ({ articleSlug, englishData, onSave }: NewsTransla
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-between pt-4 border-t border-gray-700">
-        {/* Preview Button - solid green with white text */}
+      {/* Action Buttons - Rainbow Template Style */}
+      <div className="flex justify-between items-center pt-6 border-t border-gray-700">
+        {/* Preview Button - fully green with white text */}
         <Button
           type="button"
           onClick={() => window.open(`/${selectedLanguage}/news/${articleSlug}`, '_blank')}
-          className="bg-green-600 hover:bg-green-700 text-white"
+          className="bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-2.5"
         >
           <Eye className="w-4 h-4 mr-2" />
           Preview {LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version
         </Button>
         
-        {/* Save Button */}
+        {/* Save Button - fully green with white text */}
         <Button
           onClick={handleSave}
           disabled={isSaving || !targetTitle || !targetTeaser}
-          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 px-8"
+          className="bg-green-600 hover:bg-green-500 text-white font-semibold px-6 py-2.5 disabled:opacity-50"
         >
           {isSaving ? "Saving..." : `Save ${LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version`}
         </Button>
