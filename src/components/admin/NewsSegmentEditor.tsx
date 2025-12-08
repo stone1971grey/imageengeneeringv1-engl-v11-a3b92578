@@ -292,9 +292,14 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     try {
       const langName = LANGUAGES.find(l => l.code === targetLanguage)?.name || targetLanguage;
       
+      // Build texts object with keys for proper response mapping
+      const textsToTranslate: Record<string, string> = {};
+      if (config.title) textsToTranslate.title = config.title;
+      if (config.description) textsToTranslate.description = config.description;
+      
       const { data, error } = await supabase.functions.invoke('translate-content', {
         body: {
-          texts: [config.title, config.description].filter(Boolean),
+          texts: textsToTranslate,
           targetLanguage: targetLanguage.split('-')[0],
           sourceLanguage: 'en'
         }
@@ -302,12 +307,15 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
       if (error) throw error;
 
+      console.log("[NewsSegmentEditor] Translation response:", data);
+
       if (data?.translations) {
-        let idx = 0;
+        // Handle both object and array response formats
+        const translations = data.translations;
         setTargetConfig(prev => ({
           ...prev,
-          title: config.title ? data.translations[idx++] : prev.title,
-          description: config.description ? data.translations[idx++] : prev.description,
+          title: translations.title || translations["0"] || prev.title,
+          description: translations.description || translations["1"] || prev.description,
         }));
         toast.success(`Translated to ${langName}`);
       }
@@ -419,7 +427,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
         {/* Translating Feedback Bar */}
         {isTarget && isTranslating && (
-          <div className="h-1 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded animate-pulse" />
+          <div className="h-2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-full animate-pulse shadow-lg shadow-purple-500/50" />
         )}
 
         {/* Content Fields */}
