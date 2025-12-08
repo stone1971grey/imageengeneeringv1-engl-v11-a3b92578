@@ -32,11 +32,17 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Only load content ONCE on initial mount, not on every re-render
   useEffect(() => {
-    loadContent();
-    loadAvailableCategories();
-  }, [pageSlug, segmentId]);
+    if (!isInitialized) {
+      console.log("[NewsSegmentEditor] Initial load for pageSlug:", pageSlug, "segmentId:", segmentId);
+      loadContent();
+      loadAvailableCategories();
+      setIsInitialized(true);
+    }
+  }, [pageSlug, segmentId, isInitialized]);
 
   const loadAvailableCategories = async () => {
     try {
