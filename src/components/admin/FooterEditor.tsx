@@ -3,12 +3,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Save, X } from "lucide-react";
+import { Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { en } from "@/translations/en";
 import { type ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from "@/types/imageMetadata";
-
+import { MediaSelector } from "@/components/admin/MediaSelector";
 export type FooterEditorLanguage = "en" | "de" | "ja" | "ko" | "zh";
 
 interface FooterEditorProps {
@@ -569,34 +569,45 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
         <div className="space-y-4">
           <div>
             <Label className="text-white">Team Member Photo</Label>
-            <div className="flex gap-2 items-start">
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={isUploadingImage}
-                className="border-2 border-gray-600"
-              />
-            </div>
-            {teamImageUrl && (
-              <div className="mt-2 relative inline-block">
-                <img
-                  src={teamImageUrl}
-                  alt="Team member"
-                  className="w-32 h-32 object-cover rounded border"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTeamImageUrl("");
-                    setTeamImageMetadata(null);
-                  }}
-                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            )}
+            <MediaSelector
+              label=""
+              acceptedFileTypes="image/*"
+              currentImageUrl={teamImageUrl}
+              onFileSelect={async (file) => {
+                if (!file.type.startsWith("image/")) {
+                  toast.error("Please upload an image file");
+                  return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                  toast.error("Image size must be less than 5MB");
+                  return;
+                }
+                setIsUploadingImage(true);
+                try {
+                  const fileExt = file.name.split(".").pop();
+                  const fileName = `footer-team-${Date.now()}.${fileExt}`;
+                  const { error: uploadError } = await supabase.storage
+                    .from("page-images")
+                    .upload(fileName, file, { cacheControl: "3600", upsert: false });
+                  if (uploadError) throw uploadError;
+                  const { data: { publicUrl } } = supabase.storage.from("page-images").getPublicUrl(fileName);
+                  const metadata = await extractImageMetadata(file, publicUrl);
+                  setTeamImageUrl(publicUrl);
+                  setTeamImageMetadata({ ...metadata, altText: "" });
+                  toast.success("Team image uploaded successfully!");
+                } catch (error: any) {
+                  console.error("[FooterEditor] Error uploading image", error);
+                  toast.error(error.message || "Error uploading team image");
+                } finally {
+                  setIsUploadingImage(false);
+                }
+              }}
+              onMediaSelect={(url) => {
+                setTeamImageUrl(url);
+                setTeamImageMetadata(null);
+                toast.success("Image selected from Media");
+              }}
+            />
 
             {teamImageMetadata && (
               <div className="mt-4 p-4 bg-white rounded-lg border-2 border-gray-300 space-y-2">

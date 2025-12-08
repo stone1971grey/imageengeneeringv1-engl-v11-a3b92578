@@ -100,8 +100,7 @@ export const MediaSelector = ({
           <label htmlFor={inputId}>
             <Button
               type="button"
-              style={{ backgroundColor: '#60a5fa', color: 'white' }}
-              className="w-full hover:opacity-90 transition-opacity"
+              className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-opacity"
               onClick={(e) => {
                 e.preventDefault();
                 const input = document.getElementById(inputId) as HTMLInputElement | null;
