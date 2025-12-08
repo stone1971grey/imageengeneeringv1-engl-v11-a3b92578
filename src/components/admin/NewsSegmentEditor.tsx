@@ -318,5 +318,5 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   );
 };
 
-const NewsSegmentEditor = memo(NewsSegmentEditorComponent);
-export default NewsSegmentEditor;
+// Remove memo wrapper to ensure state updates properly
+export default NewsSegmentEditorComponent;
