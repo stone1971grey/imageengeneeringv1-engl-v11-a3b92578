@@ -13,8 +13,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Languages } from "lucide-react";
+import { GeminiIcon } from "@/components/GeminiIcon";
 
 interface NewsSegmentEditorProps {
   pageSlug: string;
@@ -37,6 +40,13 @@ const ALL_CATEGORIES = [
   "Industry News"
 ];
 
+const LANGUAGES = [
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
+];
+
 interface NewsConfig {
   title: string;
   description: string;
@@ -54,6 +64,21 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
   const [availableCategories, setAvailableCategories] = useState<string[]>([...ALL_CATEGORIES]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Multilingual Rainbow Template states
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
+    const saved = localStorage.getItem('cms-split-screen-mode');
+    return saved !== null ? saved === 'true' : true;
+  });
+  const [targetLanguage, setTargetLanguage] = useState('de');
+  const [targetConfig, setTargetConfig] = useState<NewsConfig>({
+    title: '',
+    description: '',
+    articleLimit: 12,
+    categories: [...ALL_CATEGORIES],
+  });
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [isSavingTarget, setIsSavingTarget] = useState(false);
 
   // Unique section key for this news segment's config
   const configSectionKey = `news-config-${segmentId}`;
@@ -63,6 +88,18 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     loadConfig();
     loadAvailableCategories();
   }, [pageSlug, segmentId]);
+
+  // Load target language content when language changes
+  useEffect(() => {
+    if (isSplitScreenEnabled) {
+      loadTargetConfig();
+    }
+  }, [targetLanguage, isSplitScreenEnabled, pageSlug, segmentId]);
+
+  // Save split screen preference
+  useEffect(() => {
+    localStorage.setItem('cms-split-screen-mode', String(isSplitScreenEnabled));
+  }, [isSplitScreenEnabled]);
 
   const loadAvailableCategories = async () => {
     try {
@@ -84,7 +121,6 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
   const loadConfig = async () => {
     setIsLoading(true);
     try {
-      // Try to load dedicated config row
       const { data, error } = await supabase
         .from("page_content")
         .select("content_value")
@@ -96,7 +132,6 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
       if (error) throw error;
 
       if (data?.content_value) {
-        // Parse dedicated config
         const savedConfig = JSON.parse(data.content_value) as NewsConfig;
         setConfig({
           title: savedConfig.title || "Latest News",
@@ -107,7 +142,6 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
             : [...ALL_CATEGORIES],
         });
       } else {
-        // No dedicated config exists yet - try to migrate from page_segments
         await migrateFromPageSegments();
       }
     } catch (error) {
@@ -115,6 +149,40 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
       toast.error("Failed to load configuration");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadTargetConfig = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", configSectionKey)
+        .eq("language", targetLanguage.split('-')[0])
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data?.content_value) {
+        const savedConfig = JSON.parse(data.content_value) as NewsConfig;
+        setTargetConfig({
+          title: savedConfig.title || '',
+          description: savedConfig.description || '',
+          articleLimit: savedConfig.articleLimit || config.articleLimit,
+          categories: savedConfig.categories || config.categories,
+        });
+      } else {
+        // No translation yet - empty state
+        setTargetConfig({
+          title: '',
+          description: '',
+          articleLimit: config.articleLimit,
+          categories: config.categories,
+        });
+      }
+    } catch (error) {
+      console.error("Error loading target config:", error);
     }
   };
 
@@ -154,7 +222,6 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     try {
       const configJson = JSON.stringify(config);
       
-      // Upsert dedicated config row
       const { error } = await supabase
         .from("page_content")
         .upsert({
@@ -169,13 +236,86 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
       if (error) throw error;
 
-      toast.success("News segment saved successfully");
+      toast.success("English content saved successfully");
       onUpdate?.();
     } catch (error: any) {
       console.error("Error saving config:", error);
       toast.error("Failed to save: " + error.message);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSaveTarget = async () => {
+    setIsSavingTarget(true);
+    
+    try {
+      const configJson = JSON.stringify({
+        ...targetConfig,
+        articleLimit: config.articleLimit,
+        categories: config.categories,
+      });
+      
+      const { error } = await supabase
+        .from("page_content")
+        .upsert({
+          page_slug: pageSlug,
+          section_key: configSectionKey,
+          language: targetLanguage.split('-')[0],
+          content_type: "json",
+          content_value: configJson,
+        }, {
+          onConflict: "page_slug,section_key,language"
+        });
+
+      if (error) throw error;
+
+      const langName = LANGUAGES.find(l => l.code === targetLanguage)?.name || targetLanguage;
+      toast.success(`${langName} content saved successfully`);
+      onUpdate?.();
+    } catch (error: any) {
+      console.error("Error saving target config:", error);
+      toast.error("Failed to save: " + error.message);
+    } finally {
+      setIsSavingTarget(false);
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (!config.title && !config.description) {
+      toast.error("No English content to translate");
+      return;
+    }
+
+    setIsTranslating(true);
+
+    try {
+      const langName = LANGUAGES.find(l => l.code === targetLanguage)?.name || targetLanguage;
+      
+      const { data, error } = await supabase.functions.invoke('translate-content', {
+        body: {
+          texts: [config.title, config.description].filter(Boolean),
+          targetLanguage: targetLanguage.split('-')[0],
+          sourceLanguage: 'en'
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.translations) {
+        let idx = 0;
+        setTargetConfig(prev => ({
+          ...prev,
+          title: config.title ? data.translations[idx++] : prev.title,
+          description: config.description ? data.translations[idx++] : prev.description,
+        }));
+        toast.success(`Translated to ${langName}`);
+      }
+    } catch (error: any) {
+      console.error("Translation error:", error);
+      toast.error("Translation failed: " + error.message);
+    } finally {
+      setIsTranslating(false);
     }
   };
 
@@ -205,125 +345,232 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     );
   }
 
-  return (
-    <CardContent className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="section-title" className="text-white">Section Title (H2)</Label>
-          <Input
-            id="section-title"
-            value={config.title}
-            onChange={(e) => setConfig(prev => ({ ...prev, title: e.target.value }))}
-            placeholder="Latest News"
-            className="border-2 border-gray-600"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="section-description" className="text-white">Section Description</Label>
-          <Textarea
-            id="section-description"
-            value={config.description}
-            onChange={(e) => setConfig(prev => ({ ...prev, description: e.target.value }))}
-            placeholder="Stay updated with the latest developments..."
-            rows={3}
-            className="border-2 border-gray-600"
-          />
-        </div>
+  // Shared header with Split-Screen toggle
+  const renderHeader = () => (
+    <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-600">
+      <div className="flex items-center gap-3">
+        <Languages className="h-5 w-5 text-[#f9dc24]" />
+        <span className="text-white font-medium">Multilingual Editor</span>
+        <Badge variant="outline" className="border-[#f9dc24] text-[#f9dc24]">
+          Rainbow Template
+        </Badge>
       </div>
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-gray-400">Split-Screen</span>
+        <Switch
+          checked={isSplitScreenEnabled}
+          onCheckedChange={setIsSplitScreenEnabled}
+        />
+      </div>
+    </div>
+  );
 
-      <div className="space-y-4 border-t border-gray-600 pt-6">
-        <div>
-          <Label htmlFor="article-limit" className="text-white">Number of Articles to Display</Label>
-          <Select 
-            value={String(config.articleLimit)} 
-            onValueChange={(val) => setConfig(prev => ({ ...prev, articleLimit: parseInt(val) }))}
-          >
-            <SelectTrigger id="article-limit" className="border-2 border-gray-600">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3">3 Articles</SelectItem>
-              <SelectItem value="6">6 Articles</SelectItem>
-              <SelectItem value="9">9 Articles</SelectItem>
-              <SelectItem value="12">12 Articles</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+  // Render single panel (English or Target)
+  const renderPanel = (isTarget: boolean) => {
+    const currentConfig = isTarget ? targetConfig : config;
+    const setCurrentConfig = isTarget ? setTargetConfig : setConfig;
+    const saving = isTarget ? isSavingTarget : isSaving;
 
-        <div>
-          <Label className="text-white mb-3 block">Category Filter</Label>
-          <p className="text-sm text-gray-400 mb-3">
-            Select which categories to display. Uncheck categories you don't want to show.
-          </p>
-          
-          <div className="flex gap-2 mb-3">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleSelectAll}
-              className="text-xs"
-            >
-              Select All
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleDeselectAll}
-              className="text-xs"
-            >
-              Deselect All
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-3 bg-gray-700 p-4 rounded-lg border border-gray-600 max-h-[300px] overflow-y-auto">
-            {availableCategories.map((category) => (
-              <div key={category} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`category-${category}`}
-                  checked={config.categories.includes(category)}
-                  onCheckedChange={() => handleCategoryToggle(category)}
-                />
-                <label
-                  htmlFor={`category-${category}`}
-                  className="text-sm text-white cursor-pointer"
-                >
-                  {category}
-                </label>
-              </div>
-            ))}
-          </div>
-          
-          {config.categories.length > 0 ? (
-            <p className="text-sm text-[#f9dc24] mt-2">
-              {config.categories.length} categor{config.categories.length === 1 ? 'y' : 'ies'} selected: {config.categories.join(", ")}
-            </p>
+    return (
+      <div className="space-y-6">
+        {/* Panel Header */}
+        <div className="flex items-center justify-between">
+          {isTarget ? (
+            <>
+              <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+                <SelectTrigger className="w-[180px] border-gray-600">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-600">
+                  {LANGUAGES.map(lang => (
+                    <SelectItem key={lang.code} value={lang.code} className="text-white">
+                      {lang.flag} {lang.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {/* Translate Button */}
+              <Button
+                onClick={handleTranslate}
+                disabled={isTranslating}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                {isTranslating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Translating...
+                  </>
+                ) : (
+                  <>
+                    <GeminiIcon className="mr-2 h-4 w-4" />
+                    Auto-Translate
+                  </>
+                )}
+              </Button>
+            </>
           ) : (
-            <p className="text-sm text-red-400 mt-2">
-              No categories selected - no articles will be displayed!
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🇺🇸</span>
+              <span className="text-white font-semibold">English (Source)</span>
+            </div>
           )}
         </div>
-      </div>
 
-      <div className="pt-4 border-t border-gray-600">
+        {/* Translating Feedback Bar */}
+        {isTarget && isTranslating && (
+          <div className="h-1 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded animate-pulse" />
+        )}
+
+        {/* Content Fields */}
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor={`title-${isTarget ? 'target' : 'en'}`} className="text-white">
+              Section Title (H2)
+            </Label>
+            <Input
+              id={`title-${isTarget ? 'target' : 'en'}`}
+              value={currentConfig.title}
+              onChange={(e) => setCurrentConfig(prev => ({ ...prev, title: e.target.value }))}
+              placeholder={isTarget ? "Translated title..." : "Latest News"}
+              className="border-2 border-gray-600 bg-gray-800 text-white"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor={`desc-${isTarget ? 'target' : 'en'}`} className="text-white">
+              Section Description
+            </Label>
+            <Textarea
+              id={`desc-${isTarget ? 'target' : 'en'}`}
+              value={currentConfig.description}
+              onChange={(e) => setCurrentConfig(prev => ({ ...prev, description: e.target.value }))}
+              placeholder={isTarget ? "Translated description..." : "Stay updated with the latest developments..."}
+              rows={3}
+              className="border-2 border-gray-600 bg-gray-800 text-white"
+            />
+          </div>
+        </div>
+
+        {/* Settings (English Only) */}
+        {!isTarget && (
+          <div className="space-y-4 border-t border-gray-600 pt-6">
+            <div>
+              <Label htmlFor="article-limit" className="text-white">Number of Articles to Display</Label>
+              <Select 
+                value={String(config.articleLimit)} 
+                onValueChange={(val) => setConfig(prev => ({ ...prev, articleLimit: parseInt(val) }))}
+              >
+                <SelectTrigger id="article-limit" className="border-2 border-gray-600">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-600">
+                  <SelectItem value="3" className="text-white">3 Articles</SelectItem>
+                  <SelectItem value="6" className="text-white">6 Articles</SelectItem>
+                  <SelectItem value="9" className="text-white">9 Articles</SelectItem>
+                  <SelectItem value="12" className="text-white">12 Articles</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-white mb-3 block">Category Filter</Label>
+              <p className="text-sm text-gray-400 mb-3">
+                Select which categories to display. Uncheck categories you don't want to show.
+              </p>
+              
+              <div className="flex gap-2 mb-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSelectAll}
+                  className="text-xs"
+                >
+                  Select All
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeselectAll}
+                  className="text-xs"
+                >
+                  Deselect All
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 bg-gray-700 p-4 rounded-lg border border-gray-600 max-h-[300px] overflow-y-auto">
+                {availableCategories.map((category) => (
+                  <div key={category} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`category-${category}`}
+                      checked={config.categories.includes(category)}
+                      onCheckedChange={() => handleCategoryToggle(category)}
+                    />
+                    <label
+                      htmlFor={`category-${category}`}
+                      className="text-sm text-white cursor-pointer"
+                    >
+                      {category}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              
+              {config.categories.length > 0 ? (
+                <p className="text-sm text-[#f9dc24] mt-2">
+                  {config.categories.length} categor{config.categories.length === 1 ? 'y' : 'ies'} selected
+                </p>
+              ) : (
+                <p className="text-sm text-red-400 mt-2">
+                  No categories selected - no articles will be displayed!
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Save Button */}
         <Button
-          onClick={handleSave}
-          disabled={isSaving}
+          onClick={isTarget ? handleSaveTarget : handleSave}
+          disabled={saving}
           className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold py-3"
         >
-          {isSaving ? (
+          {saving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Saving...
             </>
           ) : (
-            "Save Changes"
+            `Save ${isTarget ? LANGUAGES.find(l => l.code === targetLanguage)?.name || 'Target' : 'English'}`
           )}
         </Button>
       </div>
+    );
+  };
+
+  return (
+    <CardContent className="space-y-4">
+      {renderHeader()}
+
+      {isSplitScreenEnabled ? (
+        <div className="grid grid-cols-2 gap-6">
+          {/* English Panel */}
+          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-600">
+            {renderPanel(false)}
+          </div>
+          
+          {/* Target Language Panel */}
+          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-600">
+            {renderPanel(true)}
+          </div>
+        </div>
+      ) : (
+        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-600">
+          {renderPanel(false)}
+        </div>
+      )}
     </CardContent>
   );
 };
