@@ -27,10 +27,10 @@ interface NewsTranslationEditorProps {
 }
 
 const LANGUAGES = [
-  { code: "de", name: "Deutsch", flag: "🇩🇪" },
-  { code: "ja", name: "日本語", flag: "🇯🇵" },
-  { code: "ko", name: "한국어", flag: "🇰🇷" },
-  { code: "zh", name: "中文", flag: "🇨🇳" },
+  { code: "de", name: "German", flag: "🇩🇪" },
+  { code: "ja", name: "Japanese", flag: "🇯🇵" },
+  { code: "ko", name: "Korean", flag: "🇰🇷" },
+  { code: "zh", name: "Chinese", flag: "🇨🇳" },
 ];
 
 interface TranslationStatus {
