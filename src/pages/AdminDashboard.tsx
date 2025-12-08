@@ -270,10 +270,29 @@ const AdminDashboard = () => {
   const [copySolutionsDialogOpen, setCopySolutionsDialogOpen] = useState(false);
   const [copyFooterDialogOpen, setCopyFooterDialogOpen] = useState(false);
   const [availablePages, setAvailablePages] = useState<Array<{ page_slug: string; page_title: string }>>([]);
-  const [activeTab, setActiveTab] = useState<string>("");
+  const [activeTab, setActiveTabState] = useState<string>("");
   const [tabOrder, setTabOrder] = useState<string[]>([]);
   const [nextSegmentId, setNextSegmentId] = useState<number>(5); // Start from 5 after static segments (1-4)
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Wrapper to persist activeTab to sessionStorage
+  const setActiveTab = (tab: string) => {
+    setActiveTabState(tab);
+    if (tab && resolvedPageSlug) {
+      sessionStorage.setItem(`admin-activeTab-${resolvedPageSlug}`, tab);
+    }
+  };
+  
+  // Restore activeTab from sessionStorage on page load
+  useEffect(() => {
+    const pageKey = resolvedPageSlug || selectedPage;
+    if (pageKey) {
+      const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
+      if (savedTab && tabOrder.includes(savedTab)) {
+        setActiveTabState(savedTab);
+      }
+    }
+  }, [resolvedPageSlug, selectedPage, tabOrder]);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
