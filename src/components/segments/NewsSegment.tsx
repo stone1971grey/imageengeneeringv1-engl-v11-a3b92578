@@ -41,14 +41,32 @@ const NewsSegment = ({
 }: NewsSegmentProps) => {
   const { language } = useLanguage();
   
-  // Load dedicated config for this news segment
+  // Normalize language code (e.g., 'de-DE' -> 'de')
+  const normalizedLang = language?.split('-')[0] || 'en';
+  
+  // Load dedicated config for this news segment - language-specific with English fallback
   const { data: config } = useQuery({
-    queryKey: ["news-segment-config", pageSlug, id],
+    queryKey: ["news-segment-config", pageSlug, id, normalizedLang],
     queryFn: async () => {
       if (!id) return null;
       
       const configSectionKey = `news-config-${id}`;
-      const { data, error } = await supabase
+      
+      // Try to load language-specific config first
+      const { data: langData, error: langError } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", configSectionKey)
+        .eq("language", normalizedLang)
+        .maybeSingle();
+
+      if (!langError && langData?.content_value) {
+        return JSON.parse(langData.content_value) as NewsConfig;
+      }
+      
+      // Fallback to English config
+      const { data: enData, error: enError } = await supabase
         .from("page_content")
         .select("content_value")
         .eq("page_slug", pageSlug)
@@ -56,9 +74,9 @@ const NewsSegment = ({
         .eq("language", "en")
         .maybeSingle();
 
-      if (error || !data?.content_value) return null;
+      if (enError || !enData?.content_value) return null;
       
-      return JSON.parse(data.content_value) as NewsConfig;
+      return JSON.parse(enData.content_value) as NewsConfig;
     },
     staleTime: 30000, // Cache for 30 seconds
   });
@@ -69,14 +87,16 @@ const NewsSegment = ({
   const articleLimit = config?.articleLimit || fallbackLimit;
   const filterCategories = config?.categories || fallbackCategories;
 
-  // Fetch news articles with category filter
+  // Fetch news articles with category filter - language-specific with English fallback
   const { data: newsItems, isLoading } = useQuery({
-    queryKey: ["news-articles-segment", articleLimit, filterCategories],
+    queryKey: ["news-articles-segment", articleLimit, filterCategories, normalizedLang],
     queryFn: async () => {
+      // First try to get articles in the current language
       let query = supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
+        .eq("language", normalizedLang)
         .order("date", { ascending: false })
         .limit(articleLimit);
 
@@ -85,7 +105,27 @@ const NewsSegment = ({
         query = query.in("category", filterCategories);
       }
 
-      const { data, error } = await query;
+      const { data: langData, error: langError } = await query;
+      
+      // If we found articles in the target language, return them
+      if (!langError && langData && langData.length > 0) {
+        return langData;
+      }
+      
+      // Fallback to English articles
+      let fallbackQuery = supabase
+        .from("news_articles")
+        .select("*")
+        .eq("published", true)
+        .eq("language", "en")
+        .order("date", { ascending: false })
+        .limit(articleLimit);
+
+      if (filterCategories && filterCategories.length > 0) {
+        fallbackQuery = fallbackQuery.in("category", filterCategories);
+      }
+
+      const { data, error } = await fallbackQuery;
       if (error) throw error;
       return data;
     },
