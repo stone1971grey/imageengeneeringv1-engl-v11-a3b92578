@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, Download, BarChart3, Zap, Shield, Eye, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor } from "lucide-react";
 import Navigation from "@/components/Navigation";
@@ -36,6 +36,7 @@ const iconMap: Record<string, any> = {
 
 const DynamicCMSPage = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [pageSegments, setPageSegments] = useState<any[]>([]);
   const [tabOrder, setTabOrder] = useState<string[]>([]);
@@ -119,19 +120,26 @@ const DynamicCMSPage = () => {
     const validLanguages = ['en', 'de', 'zh', 'ja', 'ko'];
     const urlLanguage = validLanguages.includes(pathParts[0]) ? pathParts[0] : 'en';
 
-    // Check if page exists in page_registry
+    // Check if page exists in page_registry and if it's a shortcut
     // IMPORTANT: CMS-Pages sollen niemals eine harte 404 werfen.
     // Wenn kein Eintrag gefunden wird, behandeln wir die Seite als "leer" und zeigen den
     // generischen "Page Created Successfully" Screen statt einer 404.
-    const { data: pageExists } = await supabase
+    const { data: pageData } = await supabase
       .from("page_registry")
-      .select("page_slug")
+      .select("page_slug, target_page_slug")
       .eq("page_slug", pageSlug)
       .maybeSingle();
 
-    if (!pageExists) {
+    if (!pageData) {
       console.warn(`[DynamicCMSPage] page_registry entry not found for slug: ${pageSlug} – rendering as empty CMS page`);
       setLoading(false);
+      return;
+    }
+
+    // If this page is a shortcut, redirect to the target page
+    if (pageData.target_page_slug) {
+      console.log(`[DynamicCMSPage] Page ${pageSlug} is a shortcut, redirecting to ${pageData.target_page_slug}`);
+      navigate(`/${urlLanguage}/${pageData.target_page_slug}`, { replace: true });
       return;
     }
 
