@@ -718,7 +718,7 @@ const Navigation = () => {
                           isActive('/products/charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Test Charts")}>
-                          {pageDesignIcons['products/test-charts'] && <CustomTargetIcon className="h-5 w-5" />}
+                          {pageDesignIcons['test-charts'] && <CustomTargetIcon className="h-5 w-5" />}
                           <span>{t.nav.testCharts}</span>
                        </Link>
                        
