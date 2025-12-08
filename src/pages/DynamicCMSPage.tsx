@@ -238,16 +238,17 @@ const DynamicCMSPage = () => {
           }
         });
 
-        // Segment-Daten in page_segments zusammenführen
+        // Segment-Daten aus section_keys nur als FALLBACK nutzen, wenn page_segments keine Daten hat
+        // page_segments ist autoritativ - section_key-Daten dienen nur als Legacy-Fallback
         segments = segments.map((seg: any) => {
           const key = String(seg.id || seg.segment_key);
-          if (segmentDataMap[key]) {
+          const hasExistingData = seg.data && Object.keys(seg.data).length > 0;
+          
+          // Nur section_key-Daten verwenden, wenn page_segments KEINE Daten hat
+          if (!hasExistingData && segmentDataMap[key]) {
             return {
               ...seg,
-              data: {
-                ...(seg.data || {}),
-                ...segmentDataMap[key],
-              },
+              data: segmentDataMap[key],
             };
           }
           return seg;
