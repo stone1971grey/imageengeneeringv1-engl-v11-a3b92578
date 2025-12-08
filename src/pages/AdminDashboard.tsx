@@ -1985,9 +1985,15 @@ const AdminDashboard = () => {
           
           setTabOrder(validOrder.length > 0 ? validOrder : []);
           
-          // Set activeTab to first available tab if not already set or if current tab is invalid
+          // Set activeTab: First check sessionStorage for saved tab, otherwise use first available
           if (validOrder.length > 0 && (!activeTab || !validOrder.includes(activeTab))) {
-            setActiveTab(validOrder[0]);
+            const pageKey = resolvedPageSlug || selectedPage;
+            const savedTab = pageKey ? sessionStorage.getItem(`admin-activeTab-${pageKey}`) : null;
+            if (savedTab && validOrder.includes(savedTab)) {
+              setActiveTabState(savedTab);
+            } else {
+              setActiveTab(validOrder[0]);
+            }
           }
         } catch {
           setTabOrder([]);
