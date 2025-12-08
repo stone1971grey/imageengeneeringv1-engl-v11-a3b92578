@@ -282,3 +282,33 @@ Dieses Dokument enthält Snapshots der 4 Original-Seiten für spätere Referenz 
 2. **CMS-Seiten** (LE7, Arcturus) können Segment für Segment kopiert werden
 3. Alle Bilder in `src/assets/` sind weiterhin verfügbar
 4. CMS-Bilder in Supabase Storage bleiben erhalten
+
+---
+
+## BACKLOG - Offene Bugs/Issues
+
+### 1. Admin Dashboard: Segment-Tab-Persistenz funktioniert nicht
+**Status:** Offen  
+**Priorität:** Mittel  
+**Erstellt:** 2025-12-08
+
+**Problem:**
+Wenn ein Benutzer im Admin Dashboard ein Segment-Tab auswählt, dann die Seite verlässt und zurückkehrt, wird ein anderes Segment angezeigt als das zuletzt ausgewählte.
+
+**Erwartetes Verhalten:**
+Das zuletzt ausgewählte Segment-Tab sollte beim Zurückkehren zur Seite wieder aktiv sein.
+
+**Technische Details:**
+- `sessionStorage` wird verwendet mit Key `admin-active-tab-{pageSlug}`
+- Problem liegt vermutlich im Timing zwischen `loadContent` und `useEffect` für Tab-Restoration
+- Mehrere Fix-Versuche waren nicht erfolgreich
+
+**Betroffene Datei:**
+- `src/pages/AdminDashboard.tsx`
+
+**Relevante Code-Bereiche:**
+- `setActiveTab` Wrapper-Funktion (Zeilen ~500-510)
+- `loadContent` Funktion (Zeilen ~1990-2001)
+- `useEffect` für Tab-Restoration (Zeilen ~1305-1330)
+
+---
