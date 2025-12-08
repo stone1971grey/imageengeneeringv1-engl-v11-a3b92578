@@ -1,17 +1,28 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface SimpleDropdownProps {
   trigger: string;
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  triggerLink?: string;
 }
 
-export const SimpleDropdown = ({ trigger, children, className = "", disabled = false }: SimpleDropdownProps) => {
+export const SimpleDropdown = ({ trigger, children, className = "", disabled = false, triggerLink }: SimpleDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const isRightAligned = className.includes('right-aligned');
+
+  const buttonContent = (
+    <Button 
+      variant="ghost"
+      className="px-3 py-2 rounded-md text-lg font-medium text-black hover:bg-[#f9dc24] hover:!text-black transition-colors duration-200 bg-transparent border-none h-auto"
+    >
+      {trigger}
+    </Button>
+  );
 
   return (
     <div 
@@ -19,12 +30,13 @@ export const SimpleDropdown = ({ trigger, children, className = "", disabled = f
       onMouseEnter={() => !disabled && setIsOpen(true)}
       onMouseLeave={() => !disabled && setIsOpen(false)}
     >
-      <Button 
-        variant="ghost"
-        className="px-3 py-2 rounded-md text-lg font-medium text-black hover:bg-[#f9dc24] hover:!text-black transition-colors duration-200 bg-transparent border-none h-auto"
-      >
-        {trigger}
-      </Button>
+      {triggerLink ? (
+        <Link to={triggerLink}>
+          {buttonContent}
+        </Link>
+      ) : (
+        buttonContent
+      )}
       
       {!disabled && isOpen && (
         <>

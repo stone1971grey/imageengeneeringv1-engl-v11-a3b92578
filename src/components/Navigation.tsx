@@ -525,7 +525,7 @@ const Navigation = () => {
             ) : (
               /* Regular Navigation */
               <>
-            <SimpleDropdown trigger={t.nav.yourSolution} disabled={isAdminDashboard}>
+            <SimpleDropdown trigger={t.nav.yourSolution} disabled={isAdminDashboard} triggerLink={`/${language}/your-solution`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredIndustry(null)}>
                   <div className="flex gap-4 p-4">
@@ -709,7 +709,7 @@ const Navigation = () => {
                 </div>
             </SimpleDropdown>
 
-            <SimpleDropdown trigger={t.nav.products} disabled={isAdminDashboard}>
+            <SimpleDropdown trigger={t.nav.products} disabled={isAdminDashboard} triggerLink={`/${language}/products`}>
                 <div className="flex flex-col gap-2 w-[700px] max-w-[90vw] bg-[#f3f3f3] rounded-lg z-50"
                      onMouseLeave={() => !isAdminDashboard && setHoveredProduct(null)}>
                   <div className="flex gap-4 p-4">
