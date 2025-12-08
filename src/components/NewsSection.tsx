@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,17 +7,36 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-const NEWS_CATEGORIES = [
-  { value: "all", label: "All" },
-  { value: "Company", label: "Company" },
-  { value: "Product Launch", label: "Product Launch" },
-  { value: "Innovation", label: "Innovation" },
-  { value: "Technical Report", label: "Technical Report" },
-  { value: "Industry News", label: "Industry News" },
-];
-
 const NewsSection = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // Fetch unique categories from database
+  const { data: categoriesData } = useQuery({
+    queryKey: ["news-categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("news_articles")
+        .select("category")
+        .eq("published", true)
+        .not("category", "is", null);
+
+      if (error) throw error;
+      // Extract unique categories
+      const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))];
+      return uniqueCategories.sort();
+    },
+  });
+
+  // Build categories array dynamically
+  const categories = useMemo(() => {
+    const cats = [{ value: "all", label: "All" }];
+    if (categoriesData) {
+      categoriesData.forEach(cat => {
+        if (cat) cats.push({ value: cat, label: cat });
+      });
+    }
+    return cats;
+  }, [categoriesData]);
 
   const { data: newsItems, isLoading } = useQuery({
     queryKey: ["news-articles-published"],
@@ -67,7 +86,7 @@ const NewsSection = () => {
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {NEWS_CATEGORIES.map((category) => (
+          {categories.map((category) => (
             <button
               key={category.value}
               onClick={() => setSelectedCategory(category.value)}

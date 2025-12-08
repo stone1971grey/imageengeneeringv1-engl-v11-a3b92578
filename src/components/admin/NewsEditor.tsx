@@ -466,20 +466,20 @@ const NewsEditor = () => {
                 )}
               </Tabs>
               
-              <div className="flex justify-end space-x-2 pt-4 border-t border-gray-700">
+              <div className="flex flex-col gap-3 pt-4 border-t border-gray-700">
+                <Button type="submit" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold py-3">
+                  {editingArticle ? "Save Changes" : "Create Article"}
+                </Button>
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-gray-600 text-gray-300 hover:bg-[#2a2a2a]"
+                  className="w-full border-gray-600 text-gray-300 hover:bg-[#2a2a2a]"
                   onClick={() => {
                     resetForm();
                     setIsDialogOpen(false);
                   }}
                 >
                   Cancel
-                </Button>
-                <Button type="submit" className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
-                  {editingArticle ? "Save" : "Create"}
                 </Button>
               </div>
             </form>
