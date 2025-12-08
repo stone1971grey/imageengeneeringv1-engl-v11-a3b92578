@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Globe, Languages, CheckCircle, AlertCircle, Sparkles } from "lucide-react";
+import { Globe, Languages, CheckCircle, AlertCircle, Sparkles, Eye } from "lucide-react";
 import { ContentBlock, htmlToBlocks, blocksToHtml } from "./NewsBlockEditor";
 import { GeminiIcon } from "@/components/GeminiIcon";
 
@@ -455,8 +455,20 @@ const NewsTranslationEditor = ({ articleSlug, englishData, onSave }: NewsTransla
         </div>
       </div>
 
-      {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-700">
+      {/* Action Buttons */}
+      <div className="flex justify-between pt-4 border-t border-gray-700">
+        {/* Preview Button */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => window.open(`/${selectedLanguage}/news/${articleSlug}`, '_blank')}
+          className="border-green-600 text-green-400 hover:bg-green-600/20"
+        >
+          <Languages className="w-4 h-4 mr-2" />
+          Preview {LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version
+        </Button>
+        
+        {/* Save Button */}
         <Button
           onClick={handleSave}
           disabled={isSaving || !targetTitle || !targetTeaser}
