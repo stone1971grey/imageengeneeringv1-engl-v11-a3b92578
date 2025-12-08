@@ -221,10 +221,13 @@ const AdminDashboard = () => {
     'your-solution/photography': 'Photo & Video',
   };
   
-  // Get selected page from URL parameter (normalize to last slug segment)
+  // Get selected page from URL parameter
+  // Keep full hierarchical slug if provided, otherwise use the raw value
   const searchParams = new URLSearchParams(location.search);
   const rawSelectedPage = searchParams.get('page') || '';
-  const selectedPage = rawSelectedPage.split('/').filter(Boolean).slice(-1)[0] || '';
+  // Use the full slug if it contains slashes, otherwise keep the raw value
+  // This allows both hierarchical (your-solution/automotive) and simple (automotive) slugs
+  const selectedPage = rawSelectedPage || '';
   const [resolvedPageSlug, setResolvedPageSlug] = useState<string>('');
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
@@ -890,19 +893,33 @@ const AdminDashboard = () => {
   const resolvePageSlug = async (slug: string): Promise<string> => {
     if (!slug) return slug;
     
-    // Try to find full hierarchical slug in page_registry
-    const { data: pageData } = await supabase
+    // First try exact match
+    const { data: exactMatch } = await supabase
       .from('page_registry')
       .select('page_slug')
-      .or(`page_slug.eq.${slug},page_slug.ilike.%/${slug}`)
+      .eq('page_slug', slug)
       .maybeSingle();
     
-    if (pageData) {
-      console.log(`🔍 Resolved slug "${slug}" to "${pageData.page_slug}"`);
-      setResolvedPageSlug(pageData.page_slug);
-      return pageData.page_slug;
+    if (exactMatch) {
+      console.log(`🔍 Exact match for slug "${slug}"`);
+      setResolvedPageSlug(exactMatch.page_slug);
+      return exactMatch.page_slug;
     }
     
+    // If no exact match, try to find hierarchical slug ending with this slug
+    const { data: hierarchicalMatch } = await supabase
+      .from('page_registry')
+      .select('page_slug')
+      .ilike('page_slug', `%/${slug}`)
+      .maybeSingle();
+    
+    if (hierarchicalMatch) {
+      console.log(`🔍 Resolved slug "${slug}" to "${hierarchicalMatch.page_slug}"`);
+      setResolvedPageSlug(hierarchicalMatch.page_slug);
+      return hierarchicalMatch.page_slug;
+    }
+    
+    console.log(`⚠️ No match found for slug "${slug}"`);
     setResolvedPageSlug(slug);
     return slug;
   };
