@@ -127,90 +127,65 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     // Capture current state values at the moment of save
     const currentTitle = sectionTitle;
     const currentDescription = sectionDescription;
-    const currentArticleLimit = articleLimit;
+    const currentArticleLimit = parseInt(articleLimit) || 12;
     const currentCategories = [...selectedCategories];
-    
-    console.log("[NewsSegmentEditor] SAVE - articleLimit:", currentArticleLimit, "categories:", currentCategories);
     
     try {
       // Load current page_segments
       const { data, error } = await supabase
         .from("page_content")
-        .select("content_value")
+        .select("id, content_value")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
         .eq("language", "en")
         .maybeSingle();
 
       if (error) throw error;
-
-      if (data?.content_value) {
-        const pageSegments = JSON.parse(data.content_value);
-        
-        // Find and update the news segment
-        let foundSegment = false;
-        const updatedSegments = pageSegments.map((seg: any) => {
-          if (String(seg.id) === String(segmentId)) {
-            foundSegment = true;
-            return {
-              ...seg,
-              data: {
-                ...seg.data,
-                title: currentTitle,
-                description: currentDescription,
-                articleLimit: parseInt(currentArticleLimit) || 12,
-                categories: currentCategories,
-              }
-            };
-          }
-          return seg;
-        });
-
-        if (!foundSegment) {
-          toast.error("Segment not found in page data");
-          setIsSaving(false);
-          return;
-        }
-
-        console.log("[NewsSegmentEditor] SAVE - Updating DB with:", JSON.stringify(updatedSegments.find((s: any) => String(s.id) === String(segmentId))?.data));
-
-        // Save back to database with count to verify update
-        const { error: updateError, count } = await supabase
-          .from("page_content")
-          .update({ content_value: JSON.stringify(updatedSegments) })
-          .eq("page_slug", pageSlug)
-          .eq("section_key", "page_segments")
-          .eq("language", "en")
-          .select();
-
-        if (updateError) throw updateError;
-        
-        // Verify the update actually happened by re-reading
-        const { data: verifyData } = await supabase
-          .from("page_content")
-          .select("content_value")
-          .eq("page_slug", pageSlug)
-          .eq("section_key", "page_segments")
-          .eq("language", "en")
-          .maybeSingle();
-          
-        if (verifyData?.content_value) {
-          const verifySegments = JSON.parse(verifyData.content_value);
-          const verifyNews = verifySegments.find((s: any) => String(s.id) === String(segmentId));
-          if (verifyNews?.data?.articleLimit !== parseInt(currentArticleLimit)) {
-            console.error("[NewsSegmentEditor] SAVE FAILED - DB still shows:", verifyNews?.data?.articleLimit, "expected:", currentArticleLimit);
-            toast.error("Save failed - permission denied. Are you logged in as admin?");
-            setIsSaving(false);
-            return;
-          }
-        }
-
-        console.log("[NewsSegmentEditor] SAVE - Verified success!");
-        toast.success("News segment saved successfully");
-        onUpdate?.();
-      } else {
+      if (!data) {
         toast.error("No page data found");
+        setIsSaving(false);
+        return;
       }
+
+      const pageSegments = JSON.parse(data.content_value);
+      
+      // Find and update the news segment
+      let foundSegment = false;
+      const updatedSegments = pageSegments.map((seg: any) => {
+        if (String(seg.id) === String(segmentId)) {
+          foundSegment = true;
+          return {
+            ...seg,
+            data: {
+              ...seg.data,
+              title: currentTitle,
+              description: currentDescription,
+              articleLimit: currentArticleLimit,
+              categories: currentCategories,
+            }
+          };
+        }
+        return seg;
+      });
+
+      if (!foundSegment) {
+        toast.error("Segment not found in page data");
+        setIsSaving(false);
+        return;
+      }
+
+      // Save back to database using the row ID for precise update
+      const { error: updateError } = await supabase
+        .from("page_content")
+        .update({ content_value: JSON.stringify(updatedSegments) })
+        .eq("id", data.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      toast.success("News segment saved successfully");
+      onUpdate?.();
     } catch (error: any) {
       console.error("Error saving content:", error);
       toast.error("Failed to save content: " + error.message);
