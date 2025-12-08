@@ -927,13 +927,31 @@ const AdminDashboard = () => {
   // Load page info (Page ID, Title, Slug) from page_registry
   const loadPageInfo = async () => {
     try {
-      const querySlug = await resolvePageSlug(selectedPage);
+      let querySlug = await resolvePageSlug(selectedPage);
+      console.log('[loadPageInfo] Querying for slug:', querySlug, 'original:', selectedPage);
       
-      const { data, error } = await supabase
+      // First try exact match
+      let { data, error } = await supabase
         .from("page_registry")
         .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon")
         .eq("page_slug", querySlug)
         .maybeSingle();
+      
+      // If no results and querySlug doesn't contain '/', try hierarchical search
+      if (!data && !querySlug.includes('/')) {
+        console.log('[loadPageInfo] No exact match, trying hierarchical search for:', querySlug);
+        const { data: hierarchicalData, error: hierarchicalError } = await supabase
+          .from("page_registry")
+          .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon")
+          .ilike("page_slug", `%/${querySlug}`)
+          .maybeSingle();
+        
+        if (!hierarchicalError && hierarchicalData) {
+          data = hierarchicalData;
+          console.log('[loadPageInfo] Found hierarchical match:', hierarchicalData.page_slug);
+          setResolvedPageSlug(hierarchicalData.page_slug);
+        }
+      }
       
       if (error) {
         console.error('[loadPageInfo] Error loading page info:', error);
@@ -1116,12 +1134,29 @@ const AdminDashboard = () => {
   const loadSegmentRegistry = async () => {
     try {
       const querySlug = await resolvePageSlug(selectedPage);
+      console.log('[loadSegmentRegistry] Querying for slug:', querySlug, 'original selectedPage:', selectedPage);
       
-      const { data, error } = await supabase
+      // First try exact match
+      let { data, error } = await supabase
         .from("segment_registry")
         .select("*")
         .eq("page_slug", querySlug)
-        .or("deleted.is.null,deleted.eq.false"); // Only load active segments
+        .or("deleted.is.null,deleted.eq.false");
+
+      // If no results and querySlug doesn't contain '/', try finding by hierarchical pattern
+      if ((!data || data.length === 0) && !querySlug.includes('/')) {
+        console.log('[loadSegmentRegistry] No exact match, trying hierarchical search for:', querySlug);
+        const { data: hierarchicalData, error: hierarchicalError } = await supabase
+          .from("segment_registry")
+          .select("*")
+          .ilike("page_slug", `%/${querySlug}`)
+          .or("deleted.is.null,deleted.eq.false");
+        
+        if (!hierarchicalError && hierarchicalData && hierarchicalData.length > 0) {
+          data = hierarchicalData;
+          console.log('[loadSegmentRegistry] Found hierarchical match:', hierarchicalData[0]?.page_slug);
+        }
+      }
 
       if (error) {
         console.error("Error loading segment registry:", error);
@@ -1145,7 +1180,7 @@ const AdminDashboard = () => {
       setSegmentRegistry(registry);
       // Store reverse registry in a separate state or use it directly below
       (window as any).__segmentKeyRegistry = reverseRegistry;
-      console.log("✅ Loaded segment registry for", querySlug, ":", registry);
+      console.log("✅ Loaded segment registry for", querySlug, ":", registry, "Reverse:", reverseRegistry);
     } catch (error) {
       console.error("Error loading segment registry:", error);
     }
@@ -1661,15 +1696,37 @@ const AdminDashboard = () => {
   };
 
   const loadContent = async () => {
-    const querySlug = await resolvePageSlug(selectedPage);
+    let querySlug = await resolvePageSlug(selectedPage);
     
-    console.log('[AdminDashboard] Loading content for page:', querySlug, 'language:', editorLanguage);
+    console.log('[AdminDashboard] Loading content for page:', querySlug, 'original:', selectedPage, 'language:', editorLanguage);
     
-    const { data, error } = await supabase
+    // First try with resolved slug
+    let { data, error } = await supabase
       .from("page_content")
       .select("*")
       .eq("page_slug", querySlug)
       .eq("language", editorLanguage);
+
+    // If no results and querySlug doesn't contain '/', try hierarchical search
+    if ((!data || data.length === 0) && !querySlug.includes('/')) {
+      console.log('[loadContent] No exact match, trying hierarchical search for:', querySlug);
+      const { data: hierarchicalData, error: hierarchicalError } = await supabase
+        .from("page_content")
+        .select("*")
+        .ilike("page_slug", `%/${querySlug}`)
+        .eq("language", editorLanguage);
+      
+      if (!hierarchicalError && hierarchicalData && hierarchicalData.length > 0) {
+        data = hierarchicalData;
+        // Update resolved slug for future operations
+        const foundSlug = hierarchicalData[0]?.page_slug;
+        if (foundSlug) {
+          console.log('[loadContent] Found hierarchical match:', foundSlug);
+          setResolvedPageSlug(foundSlug);
+          querySlug = foundSlug;
+        }
+      }
+    }
 
     if (error) {
       toast.error("Error loading content");
