@@ -782,9 +782,9 @@ const Navigation = () => {
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     <Link to="/inside-lab">
-                      <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800">
-                        <Microscope className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">{t.nav.insideTestingLab}</span>
+                      <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800 py-3">
+                        <Microscope className="h-5 w-5 mr-2" />
+                        <span className="text-base font-medium">{t.nav.insideTestingLab}</span>
                       </Button>
                     </Link>
                   </div>
