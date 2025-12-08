@@ -3533,7 +3533,10 @@ const AdminDashboard = () => {
     : undefined;
   const SelectedDesignIcon = selectedDesignIconOption?.Icon;
   const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab'];
+  const THIRD_LEVEL_PARENTS = ['test-lab']; // Parents whose children (level 3) should also have design buttons
   const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
+  const isThirdLevelUnderTestLab = !!(pageInfo && pageInfo.parentSlug && THIRD_LEVEL_PARENTS.some(p => pageInfo.parentSlug?.startsWith(p) && pageInfo.parentSlug !== p));
+  const hasDesignButtons = isSecondLevelPage || isThirdLevelUnderTestLab;
 
   return (
     <AdminDashboardErrorBoundary>
@@ -3657,14 +3660,14 @@ const AdminDashboard = () => {
                           </span>
                         </>
                       )}
-                      {selectedDesignIconOption && SelectedDesignIcon && isSecondLevelPage && (
+                      {selectedDesignIconOption && SelectedDesignIcon && hasDesignButtons && (
                         <>
                           <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
                           <button
                             type="button"
                             onClick={() => {
-                              if (!isSecondLevelPage) {
-                                toast.error('Flyout content is only available for second-level navigation pages.');
+                              if (!hasDesignButtons) {
+                                toast.error('Flyout content is only available for navigation pages with design buttons.');
                                 return;
                               }
                               setIsFlyoutDialogOpen(true);
@@ -3708,10 +3711,10 @@ const AdminDashboard = () => {
                     <Button
                       variant="decision"
                       className="flex items-center gap-2 bg-[hsl(var(--admin-control-2))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-2))]/90 shadow-soft hover:shadow-lg"
-                      disabled={!isSecondLevelPage}
-                      title={!isSecondLevelPage ? 'Design elements are only available for second-level navigation pages' : undefined}
+                      disabled={!hasDesignButtons}
+                      title={!hasDesignButtons ? 'Design elements are only available for second and third-level navigation pages' : undefined}
                       onClick={() => {
-                        if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                        if (!selectedPage || !pageInfo || !hasDesignButtons) return;
                         setIsDesignElementDialogOpen(true);
                       }}
                     >
@@ -3722,10 +3725,10 @@ const AdminDashboard = () => {
                     <Button
                       variant="decision"
                       className="flex items-center gap-2 bg-[hsl(var(--admin-control-3))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--admin-control-3))]/90 shadow-soft hover:shadow-lg"
-                      disabled={!isSecondLevelPage}
-                      title={!isSecondLevelPage ? 'Navigation CTAs are only available for second-level navigation pages' : undefined}
+                      disabled={!hasDesignButtons}
+                      title={!hasDesignButtons ? 'Navigation CTAs are only available for second and third-level navigation pages' : undefined}
                       onClick={() => {
-                        if (!selectedPage || !pageInfo || !isSecondLevelPage) return;
+                        if (!selectedPage || !pageInfo || !hasDesignButtons) return;
                         setIsCtaDialogOpen(true);
                       }}
                     >
@@ -4359,9 +4362,9 @@ const AdminDashboard = () => {
                     </DialogDescription>
                   </DialogHeader>
 
-                  {!isSecondLevelPage && (
+                  {!hasDesignButtons && (
                     <p className="text-xs text-red-600 mb-3">
-                      Flyout content is only available for second-level navigation pages (direct children of main sections).
+                      Flyout content is only available for navigation pages with design buttons enabled.
                     </p>
                   )}
 
@@ -4425,7 +4428,7 @@ const AdminDashboard = () => {
                           variant="outline"
                           className="flex-1 flex items-center justify-center gap-2"
                           onClick={() => setIsFlyoutMediaDialogOpen(true)}
-                          disabled={!isSecondLevelPage}
+                          disabled={!hasDesignButtons}
                         >
                           <FolderOpen className="h-4 w-4" />
                           <span>Select from Media Management</span>
@@ -4484,7 +4487,7 @@ const AdminDashboard = () => {
                           type="button"
                           size="sm"
                           onClick={handleSaveFlyoutInfo}
-                          disabled={isSavingFlyout || !isSecondLevelPage}
+                          disabled={isSavingFlyout || !hasDesignButtons}
                         >
                           {isSavingFlyout ? (
                             'Saving...'
