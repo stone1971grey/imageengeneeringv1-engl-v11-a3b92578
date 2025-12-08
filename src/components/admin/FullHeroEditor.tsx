@@ -15,6 +15,7 @@ import { X, Heading1 } from "lucide-react";
 import { ImageMetadata, extractImageMetadata, formatFileSize, formatUploadDate } from '@/types/imageMetadata';
 import { MediaSelector } from "@/components/admin/MediaSelector";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
+import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 
 interface FullHeroEditorProps {
   pageSlug: string;
@@ -131,7 +132,6 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
           setButton2Color(content.button2Color || 'black');
           setBackgroundType(content.backgroundType || 'image');
           setImageUrl(content.imageUrl || "");
-          setImageAlt(content.imageAlt || "");
           setImageMetadata(content.imageMetadata || null);
           setVideoUrl(content.videoUrl || "");
           setImagePosition(content.imagePosition || 'right');
@@ -139,6 +139,19 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
           setTopSpacing(content.topSpacing || 'medium');
           setKenBurnsEffect(content.kenBurnsEffect || 'standard');
           setOverlayOpacity(content.overlayOpacity || 15);
+          
+          // Load alt text from Media Management (file_segment_mappings) with language support
+          if (content.imageUrl) {
+            const altFromMapping = await loadAltTextFromMapping(content.imageUrl, 'page-images', language);
+            if (altFromMapping) {
+              setImageAlt(altFromMapping);
+            } else {
+              // Fallback to saved segment data
+              setImageAlt(content.imageAlt || "");
+            }
+          } else {
+            setImageAlt(content.imageAlt || "");
+          }
         }
       } catch (e) {
         console.error("Error parsing page_segments:", e);
