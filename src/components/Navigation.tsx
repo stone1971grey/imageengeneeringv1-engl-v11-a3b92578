@@ -362,6 +362,15 @@ const Navigation = () => {
     "Photo & Video": "your-solution/photography",
   };
 
+  // Product slug mapping (used to connect hover state with page-level design elements)
+  const productSlugMap: Record<string, string> = {
+    "Test Charts": "test-charts",
+    "Illumination Devices": "illumination-devices",
+    "Measurement Devices": "measurement-devices",
+    "Software & APIs": "software",
+    "Product Accessories": "accessories",
+  };
+
   // Industry data mapping with subgroups - now using translated data
   const industryData = {
     "Automotive": { ...(navData.industries?.["Automotive"] || { description: "", subgroups: [] }), image: industryAutomotive },
@@ -783,24 +792,32 @@ const Navigation = () => {
                     </Link>
                   </div>
                   
-                  {/* Image Rollover under Flyout */}
-                  {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
-                    <div className="bg-[#f3f3f3] p-3">
-                      <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
-                        <img 
-                          src={productData[hoveredProduct as keyof typeof productData].image} 
-                          alt={hoveredProduct} 
-                          className="w-[180px] h-[180px] object-cover rounded-lg" 
-                        />
-                        <div className="text-black">
-                          <h4 className="font-semibold text-base mb-1">{hoveredProduct}</h4>
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            {productData[hoveredProduct as keyof typeof productData].description}
-                          </p>
+                  {/* Image Rollover under Flyout - only show if flyout data exists in backend */}
+                  {hoveredProduct && (() => {
+                    const pageSlug = productSlugMap[hoveredProduct] || "";
+                    const flyout = pageSlug ? pageFlyoutData[pageSlug] : undefined;
+                    
+                    // Only render if flyout data is configured in backend
+                    if (!flyout?.imageUrl) return null;
+
+                    return (
+                      <div className="bg-[#f3f3f3] p-3">
+                        <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
+                          <img 
+                            src={flyout.imageUrl} 
+                            alt={hoveredProduct} 
+                            className="w-[180px] h-[180px] object-cover rounded-lg" 
+                          />
+                          <div className="text-black">
+                            <h4 className="font-semibold text-base mb-1">{hoveredProduct}</h4>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                              {flyout.description || ''}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               </SimpleDropdown>
 
