@@ -256,72 +256,77 @@ const NewsTranslationEditor = ({ articleSlug, englishData, onSave }: NewsTransla
 
   return (
     <div className="space-y-4">
-      {/* Language Selector with Status */}
-      <div className="flex items-center gap-4 pb-4 border-b border-gray-700">
-        <div className="flex items-center gap-2">
-          <Globe className="w-5 h-5 text-gray-400" />
-          <span className="text-gray-300 font-medium">Target Language:</span>
+      {/* Translation Feedback Bar */}
+      {isTranslating && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+          ⏳ Translating content...
         </div>
-        <div className="flex gap-2">
-          {LANGUAGES.map((lang) => {
-            const status = translationStatus[lang.code];
-            return (
-              <button
-                key={lang.code}
-                onClick={() => setSelectedLanguage(lang.code)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
-                  selectedLanguage === lang.code
-                    ? "bg-[#f9dc24] text-black border-[#f9dc24]"
-                    : "bg-[#2a2a2a] text-gray-300 border-gray-600 hover:border-[#f9dc24]"
-                }`}
-              >
-                <span className="text-lg">{lang.flag}</span>
-                <span className="font-medium">{lang.name}</span>
-                {status === "complete" && <CheckCircle className="w-4 h-4 text-green-500" />}
-                {status === "partial" && <AlertCircle className="w-4 h-4 text-yellow-500" />}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      )}
 
-      {/* Auto-Translate Button with Progress */}
-      <div className="relative">
-        <Button
-          type="button"
-          onClick={handleAutoTranslate}
-          disabled={isTranslating}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3"
-        >
-          {isTranslating ? (
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Translating with AI...</span>
+      {/* Rainbow Template Header Card */}
+      <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
+        <div className="p-4 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Languages className="h-5 w-5 text-blue-300" />
+              <div>
+                <h3 className="text-white text-lg font-semibold">Multi-Language Editor</h3>
+                <p className="text-blue-200 text-sm mt-1">
+                  Translate news article content to multiple languages
+                </p>
+              </div>
             </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <GeminiIcon className="w-5 h-5" />
-              <span>Auto-Translate to {LANGUAGES.find(l => l.code === selectedLanguage)?.name}</span>
-              <Sparkles className="w-4 h-4" />
-            </div>
-          )}
-        </Button>
-        
-        {/* Pulsing progress bar during translation */}
-        {isTranslating && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-700 rounded-b-lg overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-pulse" 
-                 style={{ animation: "pulse 1s ease-in-out infinite, shimmer 2s linear infinite" }} />
           </div>
-        )}
-      </div>
+          
+          {/* Language Selector Row */}
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
+            <label className="text-white font-medium text-sm">Target Language:</label>
+            <div className="flex gap-2">
+              {LANGUAGES.map((lang) => {
+                const status = translationStatus[lang.code];
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => setSelectedLanguage(lang.code)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-all ${
+                      selectedLanguage === lang.code
+                        ? "bg-[#f9dc24] text-black border-[#f9dc24]"
+                        : "bg-blue-950/70 text-gray-300 border-blue-600 hover:border-[#f9dc24]"
+                    }`}
+                  >
+                    <span className="text-lg">{lang.flag}</span>
+                    <span className="font-medium">{lang.name}</span>
+                    {status === "complete" && <CheckCircle className="w-4 h-4 text-green-500" />}
+                    {status === "partial" && <AlertCircle className="w-4 h-4 text-yellow-500" />}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Auto-Translate Button */}
+            <Button
+              type="button"
+              onClick={handleAutoTranslate}
+              disabled={isTranslating}
+              className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              <GeminiIcon className="w-4 h-4 mr-2" />
+              {isTranslating ? "Translating..." : "Translate Automatically"}
+            </Button>
+          </div>
+        </div>
+      </Card>
 
       {/* Split Screen Editor */}
       <div className="grid grid-cols-2 gap-6">
         {/* Left: English (Read-only) */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-gray-700">
-            <Badge className="bg-blue-600 text-white">🇺🇸 English (Original)</Badge>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+            <span className="text-2xl">🇺🇸</span>
+            <div>
+              <div className="text-white font-semibold">English (Reference)</div>
+              <div className="text-green-300 text-xs">Source Language</div>
+            </div>
           </div>
           
           <div>
@@ -371,11 +376,13 @@ const NewsTranslationEditor = ({ articleSlug, englishData, onSave }: NewsTransla
         </div>
 
         {/* Right: Target Language (Editable) */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-gray-700">
-            <Badge className="bg-[#f9dc24] text-black">
-              {LANGUAGES.find(l => l.code === selectedLanguage)?.flag} {LANGUAGES.find(l => l.code === selectedLanguage)?.name}
-            </Badge>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-2 border-blue-600/50 rounded-lg">
+            <span className="text-2xl">{LANGUAGES.find(l => l.code === selectedLanguage)?.flag}</span>
+            <div>
+              <div className="text-white font-semibold">{LANGUAGES.find(l => l.code === selectedLanguage)?.name}</div>
+              <div className="text-blue-300 text-xs">Target Language</div>
+            </div>
           </div>
           
           <div>
@@ -457,14 +464,13 @@ const NewsTranslationEditor = ({ articleSlug, englishData, onSave }: NewsTransla
 
       {/* Action Buttons */}
       <div className="flex justify-between pt-4 border-t border-gray-700">
-        {/* Preview Button */}
+        {/* Preview Button - solid green with white text */}
         <Button
           type="button"
-          variant="outline"
           onClick={() => window.open(`/${selectedLanguage}/news/${articleSlug}`, '_blank')}
-          className="border-green-600 text-green-400 hover:bg-green-600/20"
+          className="bg-green-600 hover:bg-green-700 text-white"
         >
-          <Languages className="w-4 h-4 mr-2" />
+          <Eye className="w-4 h-4 mr-2" />
           Preview {LANGUAGES.find(l => l.code === selectedLanguage)?.name} Version
         </Button>
         
