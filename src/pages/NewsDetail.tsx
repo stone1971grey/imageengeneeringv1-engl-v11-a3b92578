@@ -434,8 +434,15 @@ const NewsDetail = () => {
                         />
                       </div>
                       <div className="p-6 flex flex-col flex-1">
-                        <div className="text-sm text-muted-foreground mb-2 font-medium">
-                          {new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                        <div className="flex items-center gap-2 mb-2">
+                          {item.category && (
+                            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1">
+                              {item.category}
+                            </Badge>
+                          )}
+                          <span className="text-sm text-muted-foreground font-medium">
+                            {new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                          </span>
                         </div>
                         <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 leading-tight">
                           {item.title}
