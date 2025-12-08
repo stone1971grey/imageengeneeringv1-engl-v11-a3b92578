@@ -981,24 +981,41 @@ const Navigation = () => {
                       </Button>
                     </Link>
                   </div>
-                  {/* Image Rollover under Flyout */}
-                  {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
-                    <div className="bg-[#f3f3f3] p-3">
-                      <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
-                        <img 
-                          src={testServicesData[hoveredTestService as keyof typeof testServicesData].image} 
-                          alt={hoveredTestService} 
-                          className="w-[180px] h-[180px] object-cover rounded-lg" 
-                        />
-                        <div className="text-black">
-                          <h4 className="font-semibold text-base mb-1">{hoveredTestService}</h4>
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            {testServicesData[hoveredTestService as keyof typeof testServicesData].description}
-                          </p>
+                  {/* Image Rollover under Flyout - only show if flyout data exists in backend */}
+                  {hoveredTestService && (() => {
+                    // Map hover state to page slug
+                    const testLabSlugMap: Record<string, string> = {
+                      "Overview": "test-lab/overview",
+                      "Automotive": "test-lab/automotive",
+                      "VCX": "test-lab/vcx",
+                      "Image Quality": "test-lab/image-quality",
+                      "Standardized": "test-lab/standardized",
+                      "Specialized/Custom": "test-lab/specialized",
+                    };
+                    const pageSlug = testLabSlugMap[hoveredTestService] || "";
+                    const flyout = pageSlug ? pageFlyoutData[pageSlug] : undefined;
+                    
+                    // Only render if flyout data is configured in backend
+                    if (!flyout?.imageUrl) return null;
+
+                    return (
+                      <div className="bg-[#f3f3f3] p-3">
+                        <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
+                          <img
+                            src={flyout.imageUrl}
+                            alt={hoveredTestService}
+                            className="w-[180px] h-[180px] object-cover rounded-lg"
+                          />
+                          <div className="text-black">
+                            <h4 className="font-semibold text-lg mb-1">{hoveredTestService}</h4>
+                            <p className="text-base text-gray-700 leading-relaxed">
+                              {flyout.description || ''}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
                 </div>
               </SimpleDropdown>
 
