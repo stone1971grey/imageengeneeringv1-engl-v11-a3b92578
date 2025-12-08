@@ -729,7 +729,11 @@ const Navigation = () => {
                           isActive('/products/test-charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Test Charts")}>
-                          {pageDesignIcons['products/test-charts'] && <CustomTargetIcon className="h-5 w-5" />}
+                          {(() => {
+                            const key = pageDesignIcons['products/test-charts'];
+                            const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                            return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                          })()}
                           <span>{t.nav.testCharts}</span>
                        </Link>
                        
@@ -737,7 +741,11 @@ const Navigation = () => {
                           isActive('/products/illumination-devices') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Illumination Devices")}>
-                         {pageDesignIcons['products/illumination-devices'] && <CustomTargetIcon className="h-5 w-5" />}
+                         {(() => {
+                           const key = pageDesignIcons['products/illumination-devices'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.illuminationDevices}</span>
                        </Link>
                        
@@ -745,7 +753,11 @@ const Navigation = () => {
                           isActive('/products/measurement-devices') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Measurement Devices")}>
-                         {pageDesignIcons['products/measurement-devices'] && <CustomTargetIcon className="h-5 w-5" />}
+                         {(() => {
+                           const key = pageDesignIcons['products/measurement-devices'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.measurementDevices}</span>
                        </Link>
                        
@@ -753,7 +765,11 @@ const Navigation = () => {
                           isActive('/products/software') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Software & APIs")}>
-                         {pageDesignIcons['products/software'] && <CustomTargetIcon className="h-5 w-5" />}
+                         {(() => {
+                           const key = pageDesignIcons['products/software'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.softwareApis}</span>
                        </Link>
                        
@@ -761,7 +777,11 @@ const Navigation = () => {
                           isActive('/products/bundles-services') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Product Accessories")}>
-                         {pageDesignIcons['products/accessories'] && <CustomTargetIcon className="h-5 w-5" />}
+                         {(() => {
+                           const key = pageDesignIcons['products/bundles-services'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
                          <span>{t.nav.productAccessories}</span>
                        </Link>
                     </div>
