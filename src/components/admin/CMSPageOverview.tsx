@@ -329,9 +329,8 @@ export const CMSPageOverview = () => {
   };
   
   const getEditUrl = (slug: string) => {
-    // Extract last part of slug for admin-dashboard navigation
-    const lastPart = slug.split('/').filter(Boolean).slice(-1)[0] || slug;
-    return `/${language}/admin-dashboard?page=${lastPart}`;
+    // Use full hierarchical slug for admin-dashboard navigation (URL encoded)
+    return `/${language}/admin-dashboard?page=${encodeURIComponent(slug)}`;
   };
 
   // Drag & Drop setup with stable, hysteresis-based hover detection

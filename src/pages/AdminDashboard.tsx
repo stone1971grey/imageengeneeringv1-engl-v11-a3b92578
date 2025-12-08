@@ -944,12 +944,12 @@ const AdminDashboard = () => {
           .from("page_registry")
           .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon")
           .ilike("page_slug", `%/${querySlug}`)
-          .maybeSingle();
+          .limit(1);
         
-        if (!hierarchicalError && hierarchicalData) {
-          data = hierarchicalData;
-          console.log('[loadPageInfo] Found hierarchical match:', hierarchicalData.page_slug);
-          setResolvedPageSlug(hierarchicalData.page_slug);
+        if (!hierarchicalError && hierarchicalData && hierarchicalData.length > 0) {
+          data = hierarchicalData[0];
+          console.log('[loadPageInfo] Found hierarchical match:', hierarchicalData[0].page_slug);
+          setResolvedPageSlug(hierarchicalData[0].page_slug);
         }
       }
       
@@ -1482,12 +1482,9 @@ const AdminDashboard = () => {
       // Trigger refresh of page selector dropdown
       window.dispatchEvent(new Event('refreshPageSelector'));
       
-      // Extract last part of slug for navigation (HierarchicalPageSelect works with non-hierarchical slugs)
-      const slugParts = pageInfo.page_slug.split('/').filter(Boolean);
-      const lastSlugPart = slugParts[slugParts.length - 1];
-      
+      // Use full hierarchical slug for navigation (URL encoded)
       // Navigate using React Router (no full page reload)
-      navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(lastSlugPart)}`);
+      navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(pageInfo.page_slug)}`);
       
     } catch (error: any) {
       console.error("Error creating CMS page:", error);
@@ -5420,8 +5417,8 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
-                  navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
+                  // Use full hierarchical slug for navigation
+                  navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(targetPageSlug)}`);
                 }}
               />
             </CardContent>
@@ -5569,8 +5566,8 @@ const AdminDashboard = () => {
                 }}
                 availablePages={availablePages}
                 onCopySuccess={(targetPageSlug) => {
-                  const lastSlugPart = targetPageSlug.split('/').filter(Boolean).slice(-1)[0] || targetPageSlug;
-                  navigate(`/${language}/admin-dashboard?page=${lastSlugPart}`);
+                  // Use full hierarchical slug for navigation
+                  navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(targetPageSlug)}`);
                 }}
               />
             </CardContent>
