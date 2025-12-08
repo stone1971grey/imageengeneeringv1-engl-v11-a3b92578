@@ -271,22 +271,19 @@ const Navigation = () => {
     checkUserRole();
   }, [user]);
 
-  // URL to page_slug mapping for admin links
-  const urlToPageSlug: { [key: string]: string } = {
-    '/products/test-charts/le7': 'products/test-charts/le7',
-    '/your-solution/photography': 'photography',
-    '/your-solution/scanners-archiving': 'scanners-archiving',
-    '/your-solution/scanners-archiving/multispectral-illumination': 'multispectral-illumination',
-    '/your-solution/scanners-archiving/scanner-dynamic-range': 'scanner-dynamic-range',
-    '/your-solution/scanners-archiving/universal-test-target': 'universal-test-target',
-    '/your-solution/scanners-archiving/iso-21550': 'iso-21550',
-    '/your-solution/medical-endoscopy': 'medical-endoscopy',
-    '/your-solution/web-camera': 'web-camera',
-    '/your-solution/machine-vision': 'machine-vision',
-    '/your-solution/mobile-phone': 'mobile-phone',
-    '/your-solution/automotive': 'automotive',
-    '/your-solution/automotive/in-cabin-testing': 'in-cabin-testing',
-    '/your-solution': 'your-solution'
+  // URL to page_slug mapping for admin links - now uses full hierarchical slugs
+  // Convert URL path (e.g., "/your-solution/automotive") to database page_slug (e.g., "your-solution/automotive")
+  const getPageSlugFromPath = (path: string): string => {
+    // Remove leading slash and language prefix if present
+    let slug = path.replace(/^\//, '');
+    
+    // Remove language prefix if present (e.g., "en/your-solution/automotive" -> "your-solution/automotive")
+    const langMatch = slug.match(/^(en|de|ja|ko|zh)\//);
+    if (langMatch) {
+      slug = slug.replace(langMatch[0], '');
+    }
+    
+    return slug;
   };
 
   // Helper function to get link: in Admin-Dashboard-Modus gehen Links ins Backend,
@@ -303,8 +300,8 @@ const Navigation = () => {
     }
 
     // Ab hier: Admin-Dashboard + Admin/Editor → Links steuern CMS-Ansicht
-    // Versuche page_slug aus Mapping zu bestimmen
-    const pageSlug = urlToPageSlug[path] || pageSlugOrPath;
+    // Extract page_slug from path using full hierarchical slug
+    const pageSlug = getPageSlugFromPath(path);
 
     // Für Editor-Rollen Zugriff auf erlaubte Seiten prüfen
     if (allowedPages.length > 0 && !allowedPages.includes(pageSlug)) {

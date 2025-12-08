@@ -790,7 +790,7 @@ const AdminDashboard = () => {
       
       // Redirect to first allowed page if current page is not in allowed pages
       if (pages.length > 0 && !pages.includes(selectedPage)) {
-        navigate(`/${language}/admin-dashboard?page=${pages[0]}`);
+        navigate(`/${language}/admin-dashboard?page=${encodeURIComponent(pages[0])}`);
       }
       
       setLoading(false);
@@ -907,11 +907,14 @@ const AdminDashboard = () => {
     }
     
     // If no exact match, try to find hierarchical slug ending with this slug
-    const { data: hierarchicalMatch } = await supabase
+    // Use .limit(1) instead of .maybeSingle() to avoid errors when multiple pages match
+    const { data: hierarchicalMatches } = await supabase
       .from('page_registry')
       .select('page_slug')
       .ilike('page_slug', `%/${slug}`)
-      .maybeSingle();
+      .limit(1);
+    
+    const hierarchicalMatch = hierarchicalMatches?.[0] || null;
     
     if (hierarchicalMatch) {
       console.log(`🔍 Resolved slug "${slug}" to "${hierarchicalMatch.page_slug}"`);
