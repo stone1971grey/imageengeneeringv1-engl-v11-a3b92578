@@ -6756,10 +6756,10 @@ const AdminDashboard = () => {
 
                   {segment.type === 'news' && (
                     <NewsSegmentEditor
-                      pageSlug={selectedPage}
+                      pageSlug={resolvedPageSlug || selectedPage}
                       segmentId={segment.id}
                       onUpdate={() => handleSaveSegments()}
-                      currentPageSlug={selectedPage}
+                      currentPageSlug={resolvedPageSlug || selectedPage}
                     />
                   )}
 
