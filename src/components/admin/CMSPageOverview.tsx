@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical, Microscope } from "lucide-react";
+import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical, Microscope, Link2 } from "lucide-react";
+import { ShortcutEditor, ShortcutBadge } from "./ShortcutEditor";
 import {
   DndContext,
   closestCenter,
@@ -58,6 +59,7 @@ interface CMSPage {
   cta_group?: string | null;
   cta_label?: string | null;
   cta_icon?: string | null;
+  target_page_slug?: string | null;
 }
 
 export const CMSPageOverview = () => {
@@ -114,7 +116,7 @@ export const CMSPageOverview = () => {
       // Load all pages from page_registry, sorted by position
       const { data: pagesData, error: pagesError } = await supabase
         .from("page_registry")
-        .select("page_id, page_slug, page_title, parent_slug, parent_id, position, created_at, cta_group, cta_label, cta_icon")
+        .select("page_id, page_slug, page_title, parent_slug, parent_id, position, created_at, cta_group, cta_label, cta_icon, target_page_slug")
         .order("position", { ascending: true });
 
       if (pagesError) throw pagesError;
@@ -171,6 +173,7 @@ export const CMSPageOverview = () => {
         cta_group: page.cta_group,
         cta_label: page.cta_label,
         cta_icon: page.cta_icon,
+        target_page_slug: page.target_page_slug,
       }));
 
       setPages(enrichedPages);
@@ -718,6 +721,7 @@ export const CMSPageOverview = () => {
     getPageUrl: (pageId: number) => string;
     handleDeleteClick: (page: CMSPage) => void;
     setIsOpen: (open: boolean) => void;
+    loadPages: () => void;
   }
 
   const SortablePageRow = ({
@@ -729,6 +733,7 @@ export const CMSPageOverview = () => {
     getPageUrl,
     handleDeleteClick,
     setIsOpen,
+    loadPages,
   }: SortablePageRowProps) => {
     const {
       attributes,
@@ -787,8 +792,9 @@ export const CMSPageOverview = () => {
           {page.page_title}
         </TableCell>
         <TableCell className="font-mono text-sm text-gray-400">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span>{page.page_slug}</span>
+            <ShortcutBadge targetSlug={page.target_page_slug || null} />
             {getCtaBadge(page)}
             <EditSlugDialog
               pageId={page.page_id}
@@ -845,6 +851,13 @@ export const CMSPageOverview = () => {
                 <ExternalLink className="h-4 w-4" />
               </Button>
             </a>
+            <ShortcutEditor
+              pageId={page.page_id}
+              pageSlug={page.page_slug}
+              pageTitle={page.page_title}
+              currentTargetSlug={page.target_page_slug || null}
+              onShortcutUpdated={loadPages}
+            />
             <Button
               size="sm"
               variant="ghost"
@@ -986,6 +999,7 @@ export const CMSPageOverview = () => {
                       getPageUrl={getPageUrl}
                       handleDeleteClick={handleDeleteClick}
                       setIsOpen={setIsOpen}
+                      loadPages={loadPages}
                     />
                   ))}
                 </SortableContext>
