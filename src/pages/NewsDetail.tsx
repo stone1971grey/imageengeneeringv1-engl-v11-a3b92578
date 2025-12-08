@@ -229,28 +229,62 @@ const NewsDetail = () => {
   const { language } = useLanguage();
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
+  // Normalize language code (e.g., 'de-DE' -> 'de')
+  const normalizedLang = language?.split('-')[0] || 'en';
+
   const { data: article, isLoading } = useQuery({
-    queryKey: ["news-article", slug],
+    queryKey: ["news-article", slug, normalizedLang],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First try to get article in the current language
+      const { data: langArticle, error: langError } = await supabase
         .from("news_articles")
         .select("*")
         .eq("slug", slug)
+        .eq("language", normalizedLang)
         .eq("published", true)
         .maybeSingle();
 
-      if (error) throw error;
-      return data;
+      if (!langError && langArticle) {
+        return langArticle;
+      }
+
+      // Fallback to English version
+      const { data: enArticle, error: enError } = await supabase
+        .from("news_articles")
+        .select("*")
+        .eq("slug", slug)
+        .eq("language", "en")
+        .eq("published", true)
+        .maybeSingle();
+
+      if (enError) throw enError;
+      return enArticle;
     },
   });
 
   const { data: relatedNews } = useQuery({
-    queryKey: ["related-news", slug],
+    queryKey: ["related-news", slug, normalizedLang],
     queryFn: async () => {
+      // First try to get related articles in the current language
+      const { data: langData, error: langError } = await supabase
+        .from("news_articles")
+        .select("*")
+        .eq("published", true)
+        .eq("language", normalizedLang)
+        .neq("slug", slug)
+        .order("date", { ascending: false })
+        .limit(3);
+
+      if (!langError && langData && langData.length > 0) {
+        return langData;
+      }
+
+      // Fallback to English articles
       const { data, error } = await supabase
         .from("news_articles")
         .select("*")
         .eq("published", true)
+        .eq("language", "en")
         .neq("slug", slug)
         .order("date", { ascending: false })
         .limit(3);
