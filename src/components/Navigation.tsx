@@ -718,31 +718,31 @@ const Navigation = () => {
                           isActive('/products/charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Test Charts")}>
-                          <CustomTargetIcon className="h-5 w-5" />
+                          {pageDesignIcons['products/test-charts'] && <CustomTargetIcon className="h-5 w-5" />}
                           <span>{t.nav.testCharts}</span>
                        </Link>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Illumination Devices")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         {pageDesignIcons['products/illumination-devices'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.illuminationDevices}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Measurement Devices")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         {pageDesignIcons['products/measurement-devices'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.measurementDevices}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Software & APIs")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         {pageDesignIcons['products/software'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.softwareApis}</span>
                        </div>
                        
                        <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md"
                          onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Product Accessories")}>
-                         <CustomTargetIcon className="h-5 w-5" />
+                         {pageDesignIcons['products/accessories'] && <CustomTargetIcon className="h-5 w-5" />}
                          <span>{t.nav.productAccessories}</span>
                        </div>
                     </div>
