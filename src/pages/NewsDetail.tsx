@@ -129,9 +129,6 @@ const renderBlocks = (
         const imageWidth = block.imageWidth || "small";
         const imagePosition = block.imagePosition || "center";
         
-        // Debug log to verify backend settings are being used
-        console.log(`[NewsDetail] Block ${block.id}: imageWidth="${imageWidth}", imagePosition="${imagePosition}", raw block:`, { imageWidth: block.imageWidth, imagePosition: block.imagePosition });
-        
         // Width classes based on imageWidth setting from backend
         const widthClasses: Record<string, string> = {
           small: "w-1/3",
