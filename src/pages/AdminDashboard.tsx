@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -422,8 +422,8 @@ const AdminDashboard = () => {
   const DESIGN_ICON_OPTIONS = [
     { key: 'car', label: 'Automotive', Icon: Car },
     { key: 'shield', label: 'Security', Icon: Shield },
-    { key: 'smartphone', label: 'Mobile', Icon: Smartphone },
-    { key: 'camera', label: 'Camera', Icon: Camera },
+    { key: 'smartphone', label: 'Mobile / VCX', Icon: Smartphone },
+    { key: 'camera', label: 'Camera / Image Quality', Icon: Camera },
     { key: 'cog', label: 'Machine Vision', Icon: Cog },
     { key: 'stethoscope', label: 'Medical', Icon: Stethoscope },
     { key: 'scanline', label: 'Scanners', Icon: ScanLine },
@@ -431,6 +431,9 @@ const AdminDashboard = () => {
     { key: 'zap', label: 'Technology', Icon: Zap },
     { key: 'target', label: 'Products (Siemens star)', Icon: Target },
     { key: 'file', label: 'Generic Page', Icon: FileText },
+    { key: 'flask', label: 'Test Lab / Overview', Icon: FlaskConical },
+    { key: 'check-circle', label: 'Standardized', Icon: CheckCircle },
+    { key: 'settings', label: 'Specialized / Custom', Icon: Settings },
   ];
 
   const CTA_GROUP_OPTIONS = [
