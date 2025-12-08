@@ -3532,7 +3532,7 @@ const AdminDashboard = () => {
     ? DESIGN_ICON_OPTIONS.find((opt) => opt.key === pageInfo.designIcon)
     : undefined;
   const SelectedDesignIcon = selectedDesignIconOption?.Icon;
-  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact'];
+  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab'];
   const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
 
   return (
