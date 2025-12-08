@@ -292,17 +292,19 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
       categorySlug = slugMapping[categorySlug] || categorySlug;
       
       const categoryUrl = `/your-solution/${categorySlug}`;
+      // Use full hierarchical slug for page selection
+      const fullCategorySlug = `your-solution/${categorySlug}`;
       
       statuses.push({
-        slug: categorySlug,
+        slug: fullCategorySlug, // Use full hierarchical slug
         title: categoryName,
         url: categoryUrl,
-        isCMS: isPageInCMS(categorySlug, categoryUrl),
+        isCMS: isPageInCMS(fullCategorySlug, categoryUrl) || isPageInCMS(categorySlug, categoryUrl),
         isStatic: false,
         category: 'Your Solution',
         subcategory: categoryName,
         isMainCategory: true,
-        pageId: pageIdMap.get(categorySlug),
+        pageId: pageIdMap.get(fullCategorySlug) || pageIdMap.get(categorySlug),
       });
       
       // Add subpages
@@ -312,16 +314,27 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         // Include all pages, even those with '#' link (show as not created)
         const displaySlug = slug || `${categorySlug}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
         
+        // Build full hierarchical slug from URL
+        let fullSlug = displaySlug;
+        if (subgroup.link && subgroup.link !== '#') {
+          const urlParts = subgroup.link.split('/').filter(Boolean);
+          if (urlParts.length > 0) {
+            fullSlug = urlParts.join('/');
+          }
+        } else {
+          fullSlug = `your-solution/${categorySlug}/${displaySlug}`;
+        }
+        
         statuses.push({
-          slug: displaySlug,
+          slug: fullSlug, // Use full hierarchical slug
           title: subgroup.name,
           url: subgroup.link,
-          isCMS: slug ? isPageInCMS(slug, subgroup.link) : false,
+          isCMS: fullSlug ? isPageInCMS(fullSlug, subgroup.link) : false,
           isStatic: false,
           category: 'Your Solution',
           subcategory: categoryName,
           isMainCategory: false,
-          pageId: pageIdMap.get(displaySlug),
+          pageId: pageIdMap.get(fullSlug) || pageIdMap.get(displaySlug),
         });
       });
     });
@@ -335,17 +348,19 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         .replace(/\s+/g, '-')       // Replace spaces with "-"
         .replace(/-+/g, '-');       // Replace multiple "-" with single "-"
       const categoryUrl = `/products/${categorySlug}`;
+      // Use full hierarchical slug for page selection
+      const fullCategorySlug = `products/${categorySlug}`;
       
       statuses.push({
-        slug: categorySlug,
+        slug: fullCategorySlug, // Use full hierarchical slug
         title: categoryName,
         url: categoryUrl,
-        isCMS: isPageInCMS(categorySlug, categoryUrl),
+        isCMS: isPageInCMS(fullCategorySlug, categoryUrl) || isPageInCMS(categorySlug, categoryUrl),
         isStatic: false,
         category: 'Products',
         subcategory: categoryName,
         isMainCategory: true,
-        pageId: pageIdMap.get(categorySlug),
+        pageId: pageIdMap.get(fullCategorySlug) || pageIdMap.get(categorySlug),
       });
       
       // Add subpages
@@ -355,16 +370,27 @@ export const HierarchicalPageSelect = ({ value, onValueChange }: HierarchicalPag
         // Include all pages, even those with '#' link (show as not created)
         const displaySlug = slug || `${categorySlug}-${subgroup.name.toLowerCase().replace(/\s+/g, '-')}`;
         
+        // Build full hierarchical slug from URL
+        let fullSlug = displaySlug;
+        if (subgroup.link && subgroup.link !== '#') {
+          const urlParts = subgroup.link.split('/').filter(Boolean);
+          if (urlParts.length > 0) {
+            fullSlug = urlParts.join('/');
+          }
+        } else {
+          fullSlug = `products/${categorySlug}/${displaySlug}`;
+        }
+        
         statuses.push({
-          slug: displaySlug,
+          slug: fullSlug, // Use full hierarchical slug
           title: subgroup.name,
           url: subgroup.link,
-          isCMS: slug ? isPageInCMS(slug, subgroup.link) : false,
+          isCMS: fullSlug ? isPageInCMS(fullSlug, subgroup.link) : false,
           isStatic: false,
           category: 'Products',
           subcategory: categoryName,
           isMainCategory: false,
-          pageId: pageIdMap.get(displaySlug),
+          pageId: pageIdMap.get(fullSlug) || pageIdMap.get(displaySlug),
         });
       });
     });
