@@ -1114,18 +1114,18 @@ const Navigation = () => {
 
                     <div className="space-y-3 flex-1">
                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.publications}</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                      <Link to={`/${language}/conference_paper_download`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.conferencePapers}</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <span>{t.nav.conferencePapers}</span>
+                      </Link>
+                      <Link to={`/${language}/whitepaper`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <Link to="/whitepaper">{t.nav.whitePapersTheses}</Link>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <span>{t.nav.whitePapersTheses}</span>
+                      </Link>
+                      <Link to={`/${language}/video_download`} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
                         <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.videoArchive}</a>
-                      </div>
+                        <span>{t.nav.videoArchive}</span>
+                      </Link>
                     </div>
                   </div>
 
