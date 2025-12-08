@@ -199,58 +199,57 @@ export const navigationDataKo = {
       description: "테스트 연구소 기능 및 방법론에 대한 포괄적인 소개",
       services: [
         { name: "연구소 소개", link: "/inside-lab" },
-        { name: "테스트 컨설팅", link: "#" }
+        { name: "테스트 컨설팅", link: "/test-lab/overview" }
       ]
     },
     "Automotive": {
       description: "자동차 카메라 시스템 및 ADAS 애플리케이션용 전문 테스트 서비스",
       services: [
-        { name: "camPAS", link: "#" },
+        { name: "camPAS", link: "/test-lab/automotive/campas" },
         { name: "차량 내부 테스트", link: "/your-solution/automotive/in-cabin-testing", active: true },
-        { name: "HDR 테스트", link: "#" },
-        { name: "기하학적 캘리브레이션", link: "#" },
-        { name: "기준선 평가", link: "#" }
+        { name: "HDR 테스트", link: "/test-lab/automotive/hdr-testing" },
+        { name: "기하학적 캘리브레이션", link: "/test-lab/automotive/geometric-calibration" },
+        { name: "기준선 평가", link: "/test-lab/automotive/baseline-evaluations" }
       ]
     },
     "VCX": {
       description: "모바일 장치 및 웹캠 애플리케이션용 VCX 테스트 프로토콜",
       services: [
-        { name: "VCX - PhoneCam", link: "#" },
-        { name: "VCX - WebCam", link: "#" },
-        { name: "색상 특성화", link: "#" },
-        { name: "기준선 평가", link: "#" }
+        { name: "VCX - PhoneCam", link: "/test-lab/vcx/phonecam" },
+        { name: "VCX - WebCam", link: "/test-lab/vcx/webcam" },
+        { name: "색상 특성화", link: "/test-lab/vcx/color-characterizations" }
       ]
     },
     "Image Quality": {
       description: "포괄적인 이미지 품질 분석 및 측정 서비스",
       services: [
-        { name: "해상도 및 텍스처 손실", link: "#" },
-        { name: "다이내믹 레인지(OECF)", link: "#" },
-        { name: "렌즈 왜곡", link: "#" },
-        { name: "이미지 음영 및 플레어", link: "#" },
-        { name: "색 정확도", link: "#" }
+        { name: "해상도 및 텍스처 손실", link: "/test-lab/image-quality/resolution-texture" },
+        { name: "다이내믹 레인지(OECF)", link: "/test-lab/image-quality/dynamic-range" },
+        { name: "렌즈 왜곡", link: "/test-lab/image-quality/lens-distortion" },
+        { name: "이미지 음영 및 플레어", link: "/test-lab/image-quality/shading-flare" },
+        { name: "색 정확도", link: "/test-lab/image-quality/color-accuracy" }
       ]
     },
     "Standardized": {
       description: "국제 표준 및 프로토콜에 따른 테스트 서비스",
       services: [
-        { name: "IEEE-P2020 (ADAS)", link: "/products/standards/ieee-p2020" },
-        { name: "VCX (모바일/웹캠)", link: "#" },
-        { name: "IEC 62676-5 (보안)", link: "#" },
-        { name: "EMVA 1288 (머신 비전)", link: "#" },
-        { name: "ISO 12233 (SFR)", link: "#" }
+        { name: "IEEE-P2020 (ADAS)", link: "/test-lab/standardized/ieee-p2020" },
+        { name: "VCX (모바일/웹캠)", link: "/test-lab/standardized/vcx-mobile" },
+        { name: "IEC 62676-5 (보안)", link: "/test-lab/standardized/iec-62676-5" },
+        { name: "EMVA 1288 (머신 비전)", link: "/test-lab/standardized/emva-1288" },
+        { name: "ISO 12233 (SFR)", link: "/test-lab/standardized/iso-12233" }
       ]
     },
     "Specialized/Custom": {
       description: "맞춤형 테스트 솔루션 및 전문 측정 서비스",
       services: [
-        { name: "기준선 평가", link: "#" },
-        { name: "개념 증명", link: "#" },
-        { name: "휘도 캘리브레이션", link: "#" },
-        { name: "샘플 간 편차", link: "#" },
-        { name: "개발 검증 테스트", link: "#" },
-        { name: "온도 제어", link: "#" },
-        { name: "수중 테스트", link: "#" }
+        { name: "기준선 평가", link: "/test-lab/specialized/baseline-evaluations" },
+        { name: "개념 증명", link: "/test-lab/specialized/proof-of-concepts" },
+        { name: "휘도 캘리브레이션", link: "/test-lab/specialized/luminance-calibrations" },
+        { name: "샘플 간 편차", link: "/test-lab/specialized/sample-deviations" },
+        { name: "개발 검증 테스트", link: "/test-lab/specialized/development-validation" },
+        { name: "온도 제어", link: "/test-lab/specialized/temperature-controlled" },
+        { name: "수중 테스트", link: "/test-lab/specialized/underwater" }
       ]
     }
   }
