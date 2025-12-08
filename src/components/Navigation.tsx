@@ -944,10 +944,10 @@ const Navigation = () => {
                    </div>
 
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
-                    <Link to="/events" className="bg-green-100 p-1.5 rounded-md border-2 border-green-300">
-                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 hover:text-black">
-                        <GraduationCap className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">{t.nav.viewTrainingEvents}</span>
+                    <Link to="/events">
+                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
+                        <GraduationCap className="h-5 w-5 mr-2" />
+                        <span className="text-base font-medium">{t.nav.viewTrainingEvents}</span>
                       </Button>
                     </Link>
                   </div>
@@ -996,9 +996,9 @@ const Navigation = () => {
 
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
                     <Link to="/downloads" className="w-full">
-                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
-                        <Microscope className="h-4 w-4 mr-2" />
-                        <span className="text-sm font-medium">{t.nav.exploreInfoHub}</span>
+                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
+                        <Microscope className="h-5 w-5 mr-2" />
+                        <span className="text-base font-medium">{t.nav.exploreInfoHub}</span>
                       </Button>
                     </Link>
                   </div>
