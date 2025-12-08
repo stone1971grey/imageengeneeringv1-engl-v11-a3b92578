@@ -364,11 +364,11 @@ const Navigation = () => {
 
   // Product slug mapping (used to connect hover state with page-level design elements)
   const productSlugMap: Record<string, string> = {
-    "Test Charts": "test-charts",
-    "Illumination Devices": "illumination-devices",
-    "Measurement Devices": "measurement-devices",
-    "Software & APIs": "software",
-    "Product Accessories": "accessories",
+    "Test Charts": "products/test-charts",
+    "Illumination Devices": "products/illumination-devices",
+    "Measurement Devices": "products/measurement-devices",
+    "Software & APIs": "products/software",
+    "Product Accessories": "products/accessories",
   };
 
   // Industry data mapping with subgroups - now using translated data
