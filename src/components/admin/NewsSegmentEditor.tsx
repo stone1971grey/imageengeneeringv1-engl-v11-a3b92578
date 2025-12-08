@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,159 +23,139 @@ interface NewsSegmentEditorProps {
   currentPageSlug: string;
 }
 
-const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: NewsSegmentEditorProps) => {
-  // Default categories - all selected by default
-  const ALL_CATEGORIES = [
-    "Company",
-    "Product Launch",
-    "Technology",
-    "Standards",
-    "Innovation",
-    "Partnership",
-    "Event",
-    "Research",
-    "Technical Report",
-    "Industry News"
-  ];
+// All standard categories
+const ALL_CATEGORIES = [
+  "Company",
+  "Product Launch",
+  "Technology",
+  "Standards",
+  "Innovation",
+  "Partnership",
+  "Event",
+  "Research",
+  "Technical Report",
+  "Industry News"
+];
 
-  const [sectionTitle, setSectionTitle] = useState("Latest News");
-  const [sectionDescription, setSectionDescription] = useState(
-    "Stay updated with the latest developments in image quality testing and measurement technology"
-  );
-  const [articleLimit, setArticleLimit] = useState("12");
-  // Initialize with ALL categories selected by default
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([...ALL_CATEGORIES]);
+const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorProps) => {
+  // Use refs to track if we've loaded from DB
+  const hasLoadedRef = useRef(false);
+  const loadingRef = useRef(false);
+
+  const [sectionTitle, setSectionTitle] = useState("");
+  const [sectionDescription, setSectionDescription] = useState("");
+  const [articleLimit, setArticleLimit] = useState("");
+  // Start with empty array - will be populated from DB
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([...ALL_CATEGORIES]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load content on mount
+  // Load content ONLY ONCE on mount
   useEffect(() => {
-    console.log("[NewsSegmentEditor] Mount - loading content for pageSlug:", pageSlug, "segmentId:", segmentId);
-    loadContent();
-    loadAvailableCategories();
-  }, [pageSlug, segmentId]);
-
-  const loadAvailableCategories = async () => {
-    try {
-      // Fetch unique categories from database and merge with standard categories
-      const { data, error } = await supabase
-        .from("news_articles")
-        .select("category")
-        .not("category", "is", null);
-
-      if (error) throw error;
-
-      // Get unique categories from all articles (published and unpublished)
-      const dbCategories = [...new Set(data.map((item) => item.category).filter(Boolean))] as string[];
-      
-      // Merge with standard categories and deduplicate
-      const allCategories = [...new Set([...dbCategories, ...ALL_CATEGORIES])].sort();
-      setAvailableCategories(allCategories);
-    } catch (error: any) {
-      console.error("Error loading categories:", error);
-      // Fallback to standard categories on error
-      setAvailableCategories([...ALL_CATEGORIES]);
+    if (hasLoadedRef.current || loadingRef.current) {
+      return;
     }
-  };
-
-  const loadContent = async () => {
-    setIsLoading(true);
-    try {
-      // Load from page_segments JSON in page_content
-      const { data, error } = await supabase
-        .from("page_content")
-        .select("*")
-        .eq("page_slug", pageSlug)
-        .eq("section_key", "page_segments")
-        .eq("language", "en");
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        const pageSegments = JSON.parse(data[0].content_value || "[]");
-        console.log("[NewsSegmentEditor] loadContent - Looking for segmentId:", segmentId, "type:", typeof segmentId);
-        console.log("[NewsSegmentEditor] loadContent - Available segments:", pageSegments.map((s: any) => ({ id: s.id, type: typeof s.id })));
+    
+    loadingRef.current = true;
+    
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
         
-        // Use String comparison to ensure match works
-        const newsSegment = pageSegments.find((seg: any) => String(seg.id) === String(segmentId));
-        
-        console.log("[NewsSegmentEditor] loadContent - Found segment:", newsSegment);
-        
-        if (newsSegment?.data) {
-          setSectionTitle(newsSegment.data.title || "Latest News");
-          setSectionDescription(newsSegment.data.description || "Stay updated with the latest developments in image quality testing and measurement technology");
-          setArticleLimit(String(newsSegment.data.articleLimit || 12));
-          // Load categories from DB, fallback to all categories if none saved
-          const loadedCategories = newsSegment.data.categories;
-          if (loadedCategories && loadedCategories.length > 0) {
-            setSelectedCategories(loadedCategories);
+        // Load categories from news_articles
+        const { data: catData } = await supabase
+          .from("news_articles")
+          .select("category")
+          .not("category", "is", null);
+
+        if (catData) {
+          const dbCategories = [...new Set(catData.map((item) => item.category).filter(Boolean))] as string[];
+          const allCategories = [...new Set([...dbCategories, ...ALL_CATEGORIES])].sort();
+          setAvailableCategories(allCategories);
+        }
+
+        // Load segment data from page_content
+        const { data, error } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .eq("language", "en")
+          .single();
+
+        if (error) throw error;
+
+        if (data?.content_value) {
+          const pageSegments = JSON.parse(data.content_value);
+          const newsSegment = pageSegments.find((seg: any) => String(seg.id) === String(segmentId));
+          
+          if (newsSegment?.data) {
+            setSectionTitle(newsSegment.data.title || "Latest News");
+            setSectionDescription(newsSegment.data.description || "Stay updated with the latest developments");
+            setArticleLimit(String(newsSegment.data.articleLimit || 12));
+            
+            // Categories: Use what's in DB, or default to ALL if nothing saved
+            const savedCategories = newsSegment.data.categories;
+            if (Array.isArray(savedCategories) && savedCategories.length > 0) {
+              setSelectedCategories([...savedCategories]);
+            } else {
+              // First time - no categories saved, default to all
+              setSelectedCategories([...ALL_CATEGORIES]);
+            }
           } else {
-            // If no categories saved yet, default to all
+            // Segment not found, use defaults
+            setSectionTitle("Latest News");
+            setSectionDescription("Stay updated with the latest developments");
+            setArticleLimit("12");
             setSelectedCategories([...ALL_CATEGORIES]);
           }
-          console.log("[NewsSegmentEditor] loadContent - Loaded articleLimit:", newsSegment.data.articleLimit);
-          console.log("[NewsSegmentEditor] loadContent - Loaded categories:", newsSegment.data.categories);
-        } else {
-          console.log("[NewsSegmentEditor] loadContent - No data in segment, using defaults");
         }
+        
+        hasLoadedRef.current = true;
+      } catch (error) {
+        console.error("Error loading content:", error);
+        toast.error("Failed to load content");
+      } finally {
+        setIsLoading(false);
+        loadingRef.current = false;
       }
-    } catch (error: any) {
-      console.error("Error loading content:", error);
-      toast.error("Failed to load content");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
+
+    loadData();
+  }, [pageSlug, segmentId]);
 
   const handleSave = async () => {
     setIsSaving(true);
-    
-    // Debug: Log exactly what we're about to save
-    console.log("[NewsSegmentEditor] ========== SAVE START ==========");
-    console.log("[NewsSegmentEditor] pageSlug:", pageSlug);
-    console.log("[NewsSegmentEditor] segmentId:", segmentId);
-    console.log("[NewsSegmentEditor] sectionTitle:", sectionTitle);
-    console.log("[NewsSegmentEditor] articleLimit:", articleLimit);
-    console.log("[NewsSegmentEditor] selectedCategories:", JSON.stringify(selectedCategories));
-    console.log("[NewsSegmentEditor] selectedCategories length:", selectedCategories.length);
     
     try {
       // Load current page_segments
       const { data, error } = await supabase
         .from("page_content")
-        .select("*")
+        .select("content_value")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
-        .eq("language", "en");
+        .eq("language", "en")
+        .single();
 
-      if (error) {
-        console.error("[NewsSegmentEditor] Error loading page_segments:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log("[NewsSegmentEditor] Loaded page_content data:", data);
-
-      if (data && data.length > 0) {
-        const pageSegments = JSON.parse(data[0].content_value || "[]");
-        console.log("[NewsSegmentEditor] Current page_segments:", pageSegments);
-        console.log("[NewsSegmentEditor] Looking for segment with id:", segmentId);
+      if (data?.content_value) {
+        const pageSegments = JSON.parse(data.content_value);
         
         // Find and update the news segment
         let foundSegment = false;
         const updatedSegments = pageSegments.map((seg: any) => {
-          console.log("[NewsSegmentEditor] Checking segment:", seg.id, "type:", typeof seg.id, "vs segmentId:", segmentId, "type:", typeof segmentId);
           if (String(seg.id) === String(segmentId)) {
             foundSegment = true;
-            console.log("[NewsSegmentEditor] Found matching segment, updating data");
             return {
               ...seg,
               data: {
                 ...seg.data,
                 title: sectionTitle,
                 description: sectionDescription,
-                articleLimit: parseInt(articleLimit),
-                categories: selectedCategories,
+                articleLimit: parseInt(articleLimit) || 12,
+                categories: [...selectedCategories], // Explicit copy
               }
             };
           }
@@ -183,13 +163,10 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
         });
 
         if (!foundSegment) {
-          console.error("[NewsSegmentEditor] Segment not found in page_segments!");
           toast.error("Segment not found in page data");
           setIsSaving(false);
           return;
         }
-
-        console.log("[NewsSegmentEditor] Updated segments:", updatedSegments);
 
         // Save back to database
         const { error: updateError } = await supabase
@@ -199,20 +176,15 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
           .eq("section_key", "page_segments")
           .eq("language", "en");
 
-        if (updateError) {
-          console.error("[NewsSegmentEditor] Error updating page_content:", updateError);
-          throw updateError;
-        }
+        if (updateError) throw updateError;
 
-        console.log("[NewsSegmentEditor] Save successful!");
         toast.success("News segment saved successfully");
         onUpdate?.();
       } else {
-        console.error("[NewsSegmentEditor] No page_segments found for pageSlug:", pageSlug);
         toast.error("No page data found");
       }
     } catch (error: any) {
-      console.error("[NewsSegmentEditor] Error saving content:", error);
+      console.error("Error saving content:", error);
       toast.error("Failed to save content: " + error.message);
     } finally {
       setIsSaving(false);
@@ -220,16 +192,21 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   };
 
   const handleCategoryToggle = (category: string) => {
-    console.log("[NewsSegmentEditor] Toggle category:", category);
-    console.log("[NewsSegmentEditor] Current selectedCategories BEFORE:", JSON.stringify(selectedCategories));
-    
     setSelectedCategories((prev) => {
-      const newCategories = prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category];
-      console.log("[NewsSegmentEditor] New selectedCategories AFTER:", JSON.stringify(newCategories));
-      return newCategories;
+      if (prev.includes(category)) {
+        return prev.filter((c) => c !== category);
+      } else {
+        return [...prev, category];
+      }
     });
+  };
+
+  const handleSelectAll = () => {
+    setSelectedCategories([...availableCategories]);
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedCategories([]);
   };
 
   // Show loading state while fetching data
@@ -288,32 +265,56 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
         <div>
           <Label className="text-white mb-3 block">Category Filter</Label>
           <p className="text-sm text-gray-400 mb-3">
-            Select specific categories to filter displayed articles. Leave all unchecked to show all categories.
+            Select which categories to display. Uncheck categories you don't want to show.
           </p>
-          <div className="grid grid-cols-2 gap-3 bg-gray-700 p-4 rounded-lg border border-gray-600 max-h-[300px] overflow-y-auto">
-            {availableCategories.length === 0 ? (
-              <p className="text-gray-400 col-span-2">Loading categories...</p>
-            ) : (
-              availableCategories.map((category) => (
-                <div key={category} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`category-${category}`}
-                    checked={selectedCategories.includes(category)}
-                    onCheckedChange={() => handleCategoryToggle(category)}
-                  />
-                  <label
-                    htmlFor={`category-${category}`}
-                    className="text-sm text-white cursor-pointer"
-                  >
-                    {category}
-                  </label>
-                </div>
-              ))
-            )}
+          
+          {/* Select All / Deselect All Buttons */}
+          <div className="flex gap-2 mb-3">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleSelectAll}
+              className="text-xs"
+            >
+              Select All
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDeselectAll}
+              className="text-xs"
+            >
+              Deselect All
+            </Button>
           </div>
-          {selectedCategories.length > 0 && (
+          
+          <div className="grid grid-cols-2 gap-3 bg-gray-700 p-4 rounded-lg border border-gray-600 max-h-[300px] overflow-y-auto">
+            {availableCategories.map((category) => (
+              <div key={category} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`category-${category}`}
+                  checked={selectedCategories.includes(category)}
+                  onCheckedChange={() => handleCategoryToggle(category)}
+                />
+                <label
+                  htmlFor={`category-${category}`}
+                  className="text-sm text-white cursor-pointer"
+                >
+                  {category}
+                </label>
+              </div>
+            ))}
+          </div>
+          
+          {selectedCategories.length > 0 ? (
             <p className="text-sm text-[#f9dc24] mt-2">
               {selectedCategories.length} categor{selectedCategories.length === 1 ? 'y' : 'ies'} selected: {selectedCategories.join(", ")}
+            </p>
+          ) : (
+            <p className="text-sm text-red-400 mt-2">
+              No categories selected - no articles will be displayed!
             </p>
           )}
         </div>
@@ -339,5 +340,4 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   );
 };
 
-// Remove memo wrapper to ensure state updates properly
-export default NewsSegmentEditorComponent;
+export default NewsSegmentEditor;
