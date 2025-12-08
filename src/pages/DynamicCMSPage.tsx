@@ -308,34 +308,32 @@ const DynamicCMSPage = () => {
         }
       }
 
-      // Intro-/Industries-Segmente mit Overrides anreichern + Banner-Fallback anwenden
+      // Intro-/Industries-Segmente mit Overrides anreichern (nur als Fallback, wenn page_segments keine Daten hat)
+      // + Banner-Fallback anwenden
       const enhancedSegments = Array.isArray(loadedSegments)
         ? loadedSegments.map((seg: any) => {
             const type = String(seg.type || '').toLowerCase();
             const key = seg.id ?? seg.segment_key;
+            const hasExistingData = seg.data && Object.keys(seg.data).length > 0;
 
+            // Intro: Legacy-Daten nur als Fallback nutzen
             if (type === 'intro') {
               const legacy = key ? introLegacyMap[String(key)] : undefined;
-              if (legacy) {
+              if (legacy && !hasExistingData) {
                 return {
                   ...seg,
-                  data: {
-                    ...(seg.data || {}),
-                    ...legacy,
-                  },
+                  data: legacy,
                 };
               }
             }
 
+            // Industries: Override-Daten nur als Fallback nutzen
             if (type === 'industries') {
               const override = key ? industriesOverrideMap[String(key)] : undefined;
-              if (override) {
+              if (override && !hasExistingData) {
                 return {
                   ...seg,
-                  data: {
-                    ...(seg.data || {}),
-                    ...override,
-                  },
+                  data: override,
                 };
               }
             }
