@@ -18,6 +18,7 @@ interface ContentBlock {
   imageAlt?: string;
   imageCaption?: string;
   imageWidth?: "full" | "large" | "medium" | "small";
+  imagePosition?: "left" | "right" | "center";
   listItems?: string[];
 }
 
@@ -87,18 +88,12 @@ const Lightbox = ({ images, currentIndex, onClose, onNext, onPrev }: LightboxPro
   );
 };
 
-// Render blocks content
+// Render blocks content - RESPECTS backend imageWidth and imagePosition settings
 const renderBlocks = (
   blocks: ContentBlock[], 
   onImageClick: (index: number) => void,
   imageIndexMap: Map<string, number>
 ) => {
-  let floatSide: 'left' | 'right' = 'right';
-  
-  // Find all image blocks to identify the last one
-  const imageBlocks = blocks.filter(b => b.type === "image");
-  const lastImageId = imageBlocks.length > 0 ? imageBlocks[imageBlocks.length - 1].id : null;
-  
   return blocks.map((block) => {
     switch (block.type) {
       case "paragraph":
@@ -127,12 +122,14 @@ const renderBlocks = (
         );
       case "image":
         const imgSrc = block.imageUrl || block.content;
-        const imgAlt = block.imageAlt || (block as any).alt || "";
+        const imgAlt = block.imageAlt || "";
         const imageIndex = imageIndexMap.get(block.id) ?? 0;
-        const isLastImage = block.id === lastImageId;
-        const imageWidth = (block as any).imageWidth || "small";
         
-        // Width classes based on imageWidth setting
+        // Use BACKEND settings - imageWidth and imagePosition from block data
+        const imageWidth = block.imageWidth || "small";
+        const imagePosition = block.imagePosition || "center";
+        
+        // Width classes based on imageWidth setting from backend
         const widthClasses: Record<string, string> = {
           small: "w-1/3",
           medium: "w-1/2",
@@ -140,12 +137,12 @@ const renderBlocks = (
           full: "w-full max-w-2xl mx-auto"
         };
         
-        // Full width or explicitly set to full: centered, no float
-        if (isLastImage || imageWidth === "full") {
+        // Full width OR center position: no float, centered
+        if (imageWidth === "full" || imagePosition === "center") {
           return (
             <figure 
               key={block.id} 
-              className="max-w-2xl mx-auto my-8 cursor-pointer group clear-both"
+              className={`${imageWidth === "full" ? "max-w-2xl mx-auto" : widthClasses[imageWidth] + " mx-auto"} my-8 cursor-pointer group clear-both`}
               onClick={() => onImageClick(imageIndex)}
             >
               <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
@@ -167,18 +164,15 @@ const renderBlocks = (
           );
         }
         
-        // Images with width setting: float with configured width
-        const currentFloat = floatSide;
-        floatSide = floatSide === 'right' ? 'left' : 'right';
+        // Left or Right position: float with configured width
+        const floatClasses = imagePosition === "left" 
+          ? "float-left mr-6 mb-4" 
+          : "float-right ml-6 mb-4";
         
         return (
           <figure 
             key={block.id} 
-            className={`${widthClasses[imageWidth]} my-4 cursor-pointer group ${
-              currentFloat === 'right' 
-                ? 'float-right ml-6 mb-4' 
-                : 'float-left mr-6 mb-4'
-            }`}
+            className={`${widthClasses[imageWidth]} my-4 cursor-pointer group ${floatClasses}`}
             onClick={() => onImageClick(imageIndex)}
           >
             <div className="relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
