@@ -208,7 +208,7 @@ const NewsSegment = ({
                         </p>
                         <Link to={`/${language}/news/${item.slug}`} className="w-full block">
                           <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors duration-300 mt-auto">
-                            Read more
+                            {language === 'de' ? 'Mehr lesen' : language === 'ja' ? '続きを読む' : language === 'ko' ? '더 읽기' : language === 'zh' ? '阅读更多' : 'Read more'}
                           </Button>
                         </Link>
                       </div>
