@@ -671,38 +671,32 @@ const Navigation = () => {
                       );
                     })()}
                   </div>
-                  {/* Image Rollover under Flyout */}
-                  {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
-                    (() => {
-                      const industryKey = hoveredIndustry as keyof typeof industryData;
-                      const baseData = industryData[industryKey];
-                      if (!baseData) return null;
+                  {/* Image Rollover under Flyout - only show if flyout data exists in backend */}
+                  {hoveredIndustry && (() => {
+                    const pageSlug = industrySlugMap[hoveredIndustry] || "";
+                    const flyout = pageSlug ? pageFlyoutData[pageSlug] : undefined;
+                    
+                    // Only render if flyout data is configured in backend
+                    if (!flyout?.imageUrl) return null;
 
-                      const pageSlug = industrySlugMap[hoveredIndustry] || "";
-                      const flyout = pageSlug ? pageFlyoutData[pageSlug] : undefined;
-
-                      const imageSrc = flyout?.imageUrl || baseData.image;
-                      const description = flyout?.description || baseData.description;
-
-                      return (
-                        <div className="bg-[#f3f3f3] p-3">
-                          <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
-                            <img
-                              src={imageSrc}
-                              alt={hoveredIndustry}
-                              className="w-[180px] h-[180px] object-cover rounded-lg"
-                            />
-                            <div className="text-black">
-                              <h4 className="font-semibold text-lg mb-1">{hoveredIndustry}</h4>
-                              <p className="text-base text-gray-700 leading-relaxed">
-                                {description}
-                              </p>
-                            </div>
+                    return (
+                      <div className="bg-[#f3f3f3] p-3">
+                        <div className="flex items-center gap-4 p-3 bg-white rounded-lg shadow-sm">
+                          <img
+                            src={flyout.imageUrl}
+                            alt={hoveredIndustry}
+                            className="w-[180px] h-[180px] object-cover rounded-lg"
+                          />
+                          <div className="text-black">
+                            <h4 className="font-semibold text-lg mb-1">{hoveredIndustry}</h4>
+                            <p className="text-base text-gray-700 leading-relaxed">
+                              {flyout.description || ''}
+                            </p>
                           </div>
                         </div>
-                      );
-                    })()
-                  )}
+                      </div>
+                    );
+                  })()}
                 </div>
             </SimpleDropdown>
 
