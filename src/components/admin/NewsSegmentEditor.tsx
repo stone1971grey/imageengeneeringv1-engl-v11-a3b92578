@@ -47,17 +47,14 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   const [selectedCategories, setSelectedCategories] = useState<string[]>([...ALL_CATEGORIES]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([...ALL_CATEGORIES]);
   const [isSaving, setIsSaving] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Only load content ONCE on initial mount, not on every re-render
+  // Load content on mount
   useEffect(() => {
-    if (!isInitialized) {
-      console.log("[NewsSegmentEditor] Initial load for pageSlug:", pageSlug, "segmentId:", segmentId);
-      loadContent();
-      loadAvailableCategories();
-      setIsInitialized(true);
-    }
-  }, [pageSlug, segmentId, isInitialized]);
+    console.log("[NewsSegmentEditor] Mount - loading content for pageSlug:", pageSlug, "segmentId:", segmentId);
+    loadContent();
+    loadAvailableCategories();
+  }, [pageSlug, segmentId]);
 
   const loadAvailableCategories = async () => {
     try {
@@ -83,6 +80,7 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   };
 
   const loadContent = async () => {
+    setIsLoading(true);
     try {
       // Load from page_segments JSON in page_content
       const { data, error } = await supabase
@@ -108,7 +106,15 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
           setSectionTitle(newsSegment.data.title || "Latest News");
           setSectionDescription(newsSegment.data.description || "Stay updated with the latest developments in image quality testing and measurement technology");
           setArticleLimit(String(newsSegment.data.articleLimit || 12));
-          setSelectedCategories(newsSegment.data.categories || []);
+          // Load categories from DB, fallback to all categories if none saved
+          const loadedCategories = newsSegment.data.categories;
+          if (loadedCategories && loadedCategories.length > 0) {
+            setSelectedCategories(loadedCategories);
+          } else {
+            // If no categories saved yet, default to all
+            setSelectedCategories([...ALL_CATEGORIES]);
+          }
+          console.log("[NewsSegmentEditor] loadContent - Loaded articleLimit:", newsSegment.data.articleLimit);
           console.log("[NewsSegmentEditor] loadContent - Loaded categories:", newsSegment.data.categories);
         } else {
           console.log("[NewsSegmentEditor] loadContent - No data in segment, using defaults");
@@ -117,6 +123,8 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
     } catch (error: any) {
       console.error("Error loading content:", error);
       toast.error("Failed to load content");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -223,6 +231,16 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
       return newCategories;
     });
   };
+
+  // Show loading state while fetching data
+  if (isLoading) {
+    return (
+      <CardContent className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-[#f9dc24]" />
+        <span className="ml-3 text-white">Loading segment data...</span>
+      </CardContent>
+    );
+  }
 
   return (
     <CardContent className="space-y-6">
