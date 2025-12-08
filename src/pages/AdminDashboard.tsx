@@ -827,13 +827,14 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Safety net: allow for second-level pages AND third-level pages under test-lab/training-events
-    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
+    // Safety net: allow for second-level pages AND third-level pages under test-lab/training-events/info-hub
+    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub'];
     const isSecondLevelSave = pageInfo.parentSlug && SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug);
     const isThirdLevelUnderTestLabSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
     const isThirdLevelUnderTrainingEventsSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('training-events') && pageInfo.parentSlug !== 'training-events';
+    const isThirdLevelUnderInfoHubSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('info-hub') && pageInfo.parentSlug !== 'info-hub';
     
-    if (!isSecondLevelSave && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave) {
+    if (!isSecondLevelSave && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave && !isThirdLevelUnderInfoHubSave) {
       toast.error('Flyout content is only available for second and third-level navigation pages.');
       return;
     }
@@ -1019,16 +1020,18 @@ const AdminDashboard = () => {
       return;
     }
 
-    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
+    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub'];
     const isSecondLevel = SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug || '');
     const isThirdLevelUnderTestLabSave = pageInfo.parentSlug?.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
     const isThirdLevelUnderTrainingEventsSave = pageInfo.parentSlug?.startsWith('training-events') && pageInfo.parentSlug !== 'training-events';
+    const isThirdLevelUnderInfoHubSave = pageInfo.parentSlug?.startsWith('info-hub') && pageInfo.parentSlug !== 'info-hub';
     
     console.log('[handleSaveDesignElement] isSecondLevel:', isSecondLevel);
     console.log('[handleSaveDesignElement] isThirdLevelUnderTestLabSave:', isThirdLevelUnderTestLabSave);
     console.log('[handleSaveDesignElement] isThirdLevelUnderTrainingEventsSave:', isThirdLevelUnderTrainingEventsSave);
+    console.log('[handleSaveDesignElement] isThirdLevelUnderInfoHubSave:', isThirdLevelUnderInfoHubSave);
     
-    if (!pageInfo.parentSlug || (!isSecondLevel && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave)) {
+    if (!pageInfo.parentSlug || (!isSecondLevel && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave && !isThirdLevelUnderInfoHubSave)) {
       console.log('[handleSaveDesignElement] BLOCKED - parentSlug validation failed');
       toast.error("Design elements are only allowed for second and third-level navigation pages.");
       return;
@@ -3554,8 +3557,8 @@ const AdminDashboard = () => {
     ? DESIGN_ICON_OPTIONS.find((opt) => opt.key === pageInfo.designIcon)
     : undefined;
   const SelectedDesignIcon = selectedDesignIconOption?.Icon;
-  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
-  const THIRD_LEVEL_PARENTS = ['test-lab', 'training-events']; // Parents whose children (level 3) should also have design buttons
+  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events', 'info-hub'];
+  const THIRD_LEVEL_PARENTS = ['test-lab', 'training-events', 'info-hub']; // Parents whose children (level 3) should also have design buttons
   const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
   // Third-level: pages whose parent_slug itself starts with a third-level parent (e.g., parent_slug='test-lab/overview' for a 4th level page)
   // For pages like 'training-events/webinars', parent_slug='training-events' which is in SECOND_LEVEL_PARENTS, so they are second-level

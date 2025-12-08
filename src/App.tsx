@@ -185,7 +185,9 @@ const App = () => (
             <Route path="/:lang/training-events" element={<DynamicCMSPage />} />
             <Route path="/:lang/training-events/:slug" element={<DynamicCMSPage />} />
 
-            {/* Styleguide Routes - Order matters: most specific first */}
+            {/* Info Hub Routes */}
+            <Route path="/:lang/info-hub" element={<DynamicCMSPage />} />
+            <Route path="/:lang/info-hub/:slug" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide/:category/:subcategory/:subpage" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide/:category/:subcategory" element={<DynamicCMSPage />} />
