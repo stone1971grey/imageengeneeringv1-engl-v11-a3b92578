@@ -12,6 +12,7 @@ import {
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NewsSegmentProps {
   id?: string;
@@ -38,6 +39,7 @@ const NewsSegment = ({
   articleLimit: fallbackLimit = 12,
   categories: fallbackCategories = [],
 }: NewsSegmentProps) => {
+  const { language } = useLanguage();
   
   // Load dedicated config for this news segment
   const { data: config } = useQuery({
@@ -164,7 +166,7 @@ const NewsSegment = ({
                         <p className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed flex-1">
                           {item.teaser}
                         </p>
-                        <Link to={`/news/${item.slug}`} className="w-full block">
+                        <Link to={`/${language}/news/${item.slug}`} className="w-full block">
                           <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors duration-300 mt-auto">
                             Read more
                           </Button>
