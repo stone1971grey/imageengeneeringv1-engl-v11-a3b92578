@@ -276,27 +276,30 @@ const AdminDashboard = () => {
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Wrapper to persist activeTab to sessionStorage
+  // Use selectedPage (from URL) as key since it's available immediately
   const setActiveTab = (tab: string) => {
     setActiveTabState(tab);
-    const pageKey = resolvedPageSlug || selectedPage;
-    if (tab && pageKey) {
+    // Use selectedPage directly since it's from URL and always available
+    const pageKey = selectedPage || 'index';
+    if (tab) {
       sessionStorage.setItem(`admin-activeTab-${pageKey}`, tab);
-      console.log("[AdminDashboard] Saved activeTab to sessionStorage:", tab, "for page:", pageKey);
+      console.log("[AdminDashboard] Saved activeTab:", tab, "for page:", pageKey);
     }
   };
   
   // Restore activeTab from sessionStorage on page load
+  // This runs after tabOrder is loaded
   useEffect(() => {
-    const pageKey = resolvedPageSlug || selectedPage;
-    if (pageKey && tabOrder.length > 0) {
+    const pageKey = selectedPage || 'index';
+    if (tabOrder.length > 0) {
       const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
-      console.log("[AdminDashboard] Checking sessionStorage for page:", pageKey, "savedTab:", savedTab, "tabOrder:", tabOrder);
+      console.log("[AdminDashboard] Restore check - pageKey:", pageKey, "savedTab:", savedTab, "currentActiveTab:", activeTab);
       if (savedTab && tabOrder.includes(savedTab)) {
-        console.log("[AdminDashboard] Restoring activeTab from sessionStorage:", savedTab);
+        console.log("[AdminDashboard] Restoring tab from sessionStorage:", savedTab);
         setActiveTabState(savedTab);
       }
     }
-  }, [resolvedPageSlug, selectedPage, tabOrder]);
+  }, [selectedPage, tabOrder]);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -1991,16 +1994,18 @@ const AdminDashboard = () => {
           
           // Set activeTab: First check sessionStorage for saved tab, otherwise use first available
           if (validOrder.length > 0) {
-            const pageKey = resolvedPageSlug || selectedPage;
-            const savedTab = pageKey ? sessionStorage.getItem(`admin-activeTab-${pageKey}`) : null;
-            console.log("[AdminDashboard] loadContent - pageKey:", pageKey, "savedTab:", savedTab, "currentActiveTab:", activeTab, "validOrder:", validOrder);
+            const pageKey = selectedPage || 'index';
+            const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
+            console.log("[AdminDashboard] loadContent - pageKey:", pageKey, "savedTab:", savedTab, "validOrder:", validOrder);
             
             if (savedTab && validOrder.includes(savedTab)) {
-              console.log("[AdminDashboard] loadContent - Restoring saved tab:", savedTab);
+              console.log("[AdminDashboard] loadContent - Using saved tab:", savedTab);
               setActiveTabState(savedTab);
-            } else if (!activeTab || !validOrder.includes(activeTab)) {
-              console.log("[AdminDashboard] loadContent - No saved tab, using first:", validOrder[0]);
-              setActiveTab(validOrder[0]);
+            } else {
+              console.log("[AdminDashboard] loadContent - No valid saved tab, using first:", validOrder[0]);
+              setActiveTabState(validOrder[0]);
+              // Also save this as the default
+              sessionStorage.setItem(`admin-activeTab-${pageKey}`, validOrder[0]);
             }
           }
         } catch {
