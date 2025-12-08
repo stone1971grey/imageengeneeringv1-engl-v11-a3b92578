@@ -690,7 +690,7 @@ const Navigation = () => {
                             <img
                               src={imageSrc}
                               alt={hoveredIndustry}
-                              className="w-[120px] h-[120px] object-cover rounded-lg"
+                              className="w-[180px] h-[180px] object-cover rounded-lg"
                             />
                             <div className="text-black">
                               <h4 className="font-semibold text-lg mb-1">{hoveredIndustry}</h4>
@@ -796,7 +796,7 @@ const Navigation = () => {
                         <img 
                           src={productData[hoveredProduct as keyof typeof productData].image} 
                           alt={hoveredProduct} 
-                          className="w-[120px] h-[120px] object-cover rounded-lg" 
+                          className="w-[180px] h-[180px] object-cover rounded-lg" 
                         />
                         <div className="text-black">
                           <h4 className="font-semibold text-base mb-1">{hoveredProduct}</h4>
@@ -905,7 +905,7 @@ const Navigation = () => {
                         <img 
                           src={testServicesData[hoveredTestService as keyof typeof testServicesData].image} 
                           alt={hoveredTestService} 
-                          className="w-[120px] h-[120px] object-cover rounded-lg" 
+                          className="w-[180px] h-[180px] object-cover rounded-lg" 
                         />
                         <div className="text-black">
                           <h4 className="font-semibold text-base mb-1">{hoveredTestService}</h4>
