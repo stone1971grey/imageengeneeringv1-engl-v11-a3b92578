@@ -176,7 +176,7 @@ export const ShortcutEditor = ({
         <Button
           variant="outline"
           size="sm"
-          className="flex items-center gap-1.5 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
+          className="flex items-center gap-1.5 bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200 hover:border-blue-300"
           title={currentTargetSlug ? `Shortcut to: ${currentTargetSlug}` : "Configure shortcut"}
         >
           <Link2 className="h-3.5 w-3.5" />
