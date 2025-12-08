@@ -67,8 +67,8 @@ const NewsSegment = ({
         .order("date", { ascending: false })
         .limit(articleLimit);
 
-      // Apply category filter if specific categories are selected via props
-      if (filterCategories.length > 0) {
+      // Apply category filter if specific categories are selected via CMS props
+      if (filterCategories && filterCategories.length > 0) {
         query = query.in("category", filterCategories);
       }
 

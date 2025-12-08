@@ -14,8 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Loader2, Copy, Save } from "lucide-react";
-import { CopySegmentDialog } from "./CopySegmentDialog";
+import { Loader2 } from "lucide-react";
 
 interface NewsSegmentEditorProps {
   pageSlug: string;
@@ -29,11 +28,10 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   const [sectionDescription, setSectionDescription] = useState(
     "Stay updated with the latest developments in image quality testing and measurement technology"
   );
-  const [articleLimit, setArticleLimit] = useState("6");
+  const [articleLimit, setArticleLimit] = useState("12");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [copyDialogOpen, setCopyDialogOpen] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -42,17 +40,34 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
 
   const loadAvailableCategories = async () => {
     try {
+      // Fetch ALL unique categories from NewsEditor's NEWS_CATEGORIES plus database
       const { data, error } = await supabase
         .from("news_articles")
         .select("category")
-        .eq("published", true)
         .not("category", "is", null);
 
       if (error) throw error;
 
-      // Get unique categories
-      const categories = [...new Set(data.map((item) => item.category).filter(Boolean))];
-      setAvailableCategories(categories as string[]);
+      // Get unique categories from all articles (published and unpublished)
+      const dbCategories = [...new Set(data.map((item) => item.category).filter(Boolean))] as string[];
+      
+      // Also add standard categories that might not have articles yet
+      const standardCategories = [
+        "Company",
+        "Product Launch",
+        "Technology",
+        "Standards",
+        "Innovation",
+        "Partnership",
+        "Event",
+        "Research",
+        "Technical Report",
+        "Industry News"
+      ];
+      
+      // Merge and deduplicate
+      const allCategories = [...new Set([...dbCategories, ...standardCategories])].sort();
+      setAvailableCategories(allCategories);
     } catch (error: any) {
       console.error("Error loading categories:", error);
     }
@@ -60,26 +75,26 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
 
   const loadContent = async () => {
     try {
+      // Load from page_segments JSON in page_content
       const { data, error } = await supabase
         .from("page_content")
         .select("*")
         .eq("page_slug", pageSlug)
-        .eq("section_key", segmentId);
+        .eq("section_key", "page_segments")
+        .eq("language", "en");
 
       if (error) throw error;
 
       if (data && data.length > 0) {
-        data.forEach((item) => {
-          if (item.content_type === "news_section_title") {
-            setSectionTitle(item.content_value);
-          } else if (item.content_type === "news_section_description") {
-            setSectionDescription(item.content_value);
-          } else if (item.content_type === "news_article_limit") {
-            setArticleLimit(item.content_value);
-          } else if (item.content_type === "news_categories") {
-            setSelectedCategories(JSON.parse(item.content_value));
-          }
-        });
+        const pageSegments = JSON.parse(data[0].content_value || "[]");
+        const newsSegment = pageSegments.find((seg: any) => seg.id === segmentId);
+        
+        if (newsSegment?.data) {
+          setSectionTitle(newsSegment.data.title || "Latest News");
+          setSectionDescription(newsSegment.data.description || "Stay updated with the latest developments in image quality testing and measurement technology");
+          setArticleLimit(String(newsSegment.data.articleLimit || 12));
+          setSelectedCategories(newsSegment.data.categories || []);
+        }
       }
     } catch (error: any) {
       console.error("Error loading content:", error);
@@ -90,49 +105,49 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Delete existing content for this segment
-      await supabase
+      // Load current page_segments
+      const { data, error } = await supabase
         .from("page_content")
-        .delete()
+        .select("*")
         .eq("page_slug", pageSlug)
-        .eq("section_key", segmentId);
+        .eq("section_key", "page_segments")
+        .eq("language", "en");
 
-      // Insert new content
-      const contentItems = [
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_section_title",
-          content_value: sectionTitle,
-        },
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_section_description",
-          content_value: sectionDescription,
-        },
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_article_limit",
-          content_value: articleLimit,
-        },
-        {
-          page_slug: pageSlug,
-          section_key: segmentId,
-          content_type: "news_categories",
-          content_value: JSON.stringify(selectedCategories),
-        },
-      ];
+      if (error) throw error;
 
-      const { error: insertError } = await supabase
-        .from("page_content")
-        .insert(contentItems);
+      if (data && data.length > 0) {
+        const pageSegments = JSON.parse(data[0].content_value || "[]");
+        
+        // Find and update the news segment
+        const updatedSegments = pageSegments.map((seg: any) => {
+          if (seg.id === segmentId) {
+            return {
+              ...seg,
+              data: {
+                ...seg.data,
+                title: sectionTitle,
+                description: sectionDescription,
+                articleLimit: parseInt(articleLimit),
+                categories: selectedCategories,
+              }
+            };
+          }
+          return seg;
+        });
 
-      if (insertError) throw insertError;
+        // Save back to database
+        const { error: updateError } = await supabase
+          .from("page_content")
+          .update({ content_value: JSON.stringify(updatedSegments) })
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .eq("language", "en");
 
-      toast.success("News segment saved successfully. Please reload the frontend page to see changes.");
-      onUpdate?.();
+        if (updateError) throw updateError;
+
+        toast.success("News segment saved successfully");
+        onUpdate?.();
+      }
     } catch (error: any) {
       console.error("Error saving content:", error);
       toast.error("Failed to save content");
@@ -195,11 +210,11 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
         <div>
           <Label className="text-white mb-3 block">Category Filter</Label>
           <p className="text-sm text-gray-400 mb-3">
-            Select specific categories or leave all unchecked to show articles from all categories
+            Select specific categories to filter displayed articles. Leave all unchecked to show all categories.
           </p>
-          <div className="space-y-3 bg-gray-700 p-4 rounded-lg border border-gray-600">
+          <div className="grid grid-cols-2 gap-3 bg-gray-700 p-4 rounded-lg border border-gray-600 max-h-[300px] overflow-y-auto">
             {availableCategories.length === 0 ? (
-              <p className="text-gray-400">No categories available</p>
+              <p className="text-gray-400 col-span-2">Loading categories...</p>
             ) : (
               availableCategories.map((category) => (
                 <div key={category} className="flex items-center space-x-2">
@@ -218,14 +233,19 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
               ))
             )}
           </div>
+          {selectedCategories.length > 0 && (
+            <p className="text-sm text-[#f9dc24] mt-2">
+              {selectedCategories.length} categor{selectedCategories.length === 1 ? 'y' : 'ies'} selected: {selectedCategories.join(", ")}
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="flex gap-2 pt-4 border-t border-gray-600">
+      <div className="pt-4 border-t border-gray-600">
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex-1 bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold py-3"
         >
           {isSaving ? (
             <>
@@ -233,36 +253,10 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
               Saving...
             </>
           ) : (
-            <>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
-            </>
+            "Save Changes"
           )}
         </Button>
-        
-        <Button
-          variant="outline"
-          onClick={() => setCopyDialogOpen(true)}
-          className="flex items-center gap-2"
-        >
-          <Copy className="h-4 w-4" />
-          Copy to Page...
-        </Button>
       </div>
-
-      <CopySegmentDialog
-        open={copyDialogOpen}
-        onOpenChange={setCopyDialogOpen}
-        currentPageSlug={currentPageSlug}
-        segmentId={segmentId}
-        segmentType="news"
-        segmentData={{
-          sectionTitle,
-          sectionDescription,
-          articleLimit,
-          categories: selectedCategories,
-        }}
-      />
     </CardContent>
   );
 };
