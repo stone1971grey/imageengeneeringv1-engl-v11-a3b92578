@@ -3603,12 +3603,23 @@ const AdminDashboard = () => {
         <Navigation />
       
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex flex-wrap items-start gap-4 mb-8">
           {/* Linke Seite: Title + Buttons */}
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Admin Dashboard</h1>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-4xl font-bold text-gray-900">Admin Dashboard</h1>
+              <Button
+                onClick={handleLogout}
+                variant="destructive"
+                size="sm"
+                className="flex items-center gap-2 flex-shrink-0"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-wrap">
               {/* CMS Hub Button */}
               <CMSPageOverview />
               
@@ -3847,18 +3858,6 @@ const AdminDashboard = () => {
                 Translation Glossary
               </Button>
             </div>
-          </div>
-          
-          {/* Rechte Seite: Logout Button */}
-          <div className="flex-shrink-0">
-            <Button
-              onClick={handleLogout}
-              variant="destructive"
-              className="flex items-center gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
           </div>
         </div>
 
