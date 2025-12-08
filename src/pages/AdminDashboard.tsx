@@ -828,7 +828,7 @@ const AdminDashboard = () => {
     }
 
     // Safety net: allow for second-level pages AND third-level pages under test-lab
-    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab'];
+    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
     const isSecondLevelSave = pageInfo.parentSlug && SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug);
     const isThirdLevelUnderTestLabSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
     
@@ -3551,7 +3551,7 @@ const AdminDashboard = () => {
     ? DESIGN_ICON_OPTIONS.find((opt) => opt.key === pageInfo.designIcon)
     : undefined;
   const SelectedDesignIcon = selectedDesignIconOption?.Icon;
-  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab'];
+  const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
   const THIRD_LEVEL_PARENTS = ['test-lab']; // Parents whose children (level 3) should also have design buttons
   const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
   const isThirdLevelUnderTestLab = !!(pageInfo && pageInfo.parentSlug && THIRD_LEVEL_PARENTS.some(p => pageInfo.parentSlug?.startsWith(p) && pageInfo.parentSlug !== p));
