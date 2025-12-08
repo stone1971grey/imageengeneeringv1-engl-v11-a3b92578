@@ -9,6 +9,8 @@ interface MediaSelectorProps {
   acceptedFileTypes?: string;
   label?: string;
   currentImageUrl?: string;
+  /** Preview size: 'small' = 200x200px, 'large' = full width */
+  previewSize?: 'small' | 'large';
 }
 
 // Helper to detect if URL is a video
@@ -24,7 +26,8 @@ export const MediaSelector = ({
   onMediaSelect,
   acceptedFileTypes = "image/*",
   label = "Image",
-  currentImageUrl
+  currentImageUrl,
+  previewSize = 'large'
 }: MediaSelectorProps) => {
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const inputId = useId();
@@ -44,7 +47,9 @@ export const MediaSelector = ({
       <label className="text-sm font-medium">{label}</label>
       
       {currentImageUrl && (
-        <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border bg-black">
+        <div className={`relative rounded-lg overflow-hidden border border-border bg-black ${
+          previewSize === 'small' ? 'w-[200px] h-[200px]' : 'w-full h-48'
+        }`}>
           {isVideo ? (
             <>
               <video 
