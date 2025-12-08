@@ -314,8 +314,8 @@ const Navigation = () => {
       return path;
     }
 
-    // Im Admin-Dashboard immer über englische Admin-UI routen
-    return `/en/admin-dashboard?page=${pageSlug}`;
+    // Im Admin-Dashboard immer über englische Admin-UI routen (with URL encoding)
+    return `/en/admin-dashboard?page=${encodeURIComponent(pageSlug)}`;
   };
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
