@@ -28,10 +28,15 @@ const NewsSegment = ({
   articleLimit = 12,
   categories: filterCategories = [],
 }: NewsSegmentProps) => {
+  // Debug: log received props
+  console.log("[NewsSegment] Received props:", { id, sectionTitle, sectionDescription, articleLimit, categories: filterCategories });
+
   // Fetch news articles with category filter applied from backend configuration
   const { data: newsItems, isLoading } = useQuery({
     queryKey: ["news-articles-segment", articleLimit, filterCategories],
     queryFn: async () => {
+      console.log("[NewsSegment] Fetching with categories:", filterCategories);
+      
       let query = supabase
         .from("news_articles")
         .select("*")
@@ -41,11 +46,13 @@ const NewsSegment = ({
 
       // Apply category filter if specific categories are selected in CMS backend
       if (filterCategories && filterCategories.length > 0) {
+        console.log("[NewsSegment] Applying category filter:", filterCategories);
         query = query.in("category", filterCategories);
       }
 
       const { data, error } = await query;
       if (error) throw error;
+      console.log("[NewsSegment] Fetched articles:", data?.length);
       return data;
     },
   });
