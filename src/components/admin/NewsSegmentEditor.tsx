@@ -104,6 +104,15 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
 
   const handleSave = async () => {
     setIsSaving(true);
+    console.log("[NewsSegmentEditor] Starting save with:", {
+      pageSlug,
+      segmentId,
+      sectionTitle,
+      sectionDescription,
+      articleLimit,
+      selectedCategories
+    });
+    
     try {
       // Load current page_segments
       const { data, error } = await supabase
@@ -113,14 +122,25 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
         .eq("section_key", "page_segments")
         .eq("language", "en");
 
-      if (error) throw error;
+      if (error) {
+        console.error("[NewsSegmentEditor] Error loading page_segments:", error);
+        throw error;
+      }
+
+      console.log("[NewsSegmentEditor] Loaded page_content data:", data);
 
       if (data && data.length > 0) {
         const pageSegments = JSON.parse(data[0].content_value || "[]");
+        console.log("[NewsSegmentEditor] Current page_segments:", pageSegments);
+        console.log("[NewsSegmentEditor] Looking for segment with id:", segmentId);
         
         // Find and update the news segment
+        let foundSegment = false;
         const updatedSegments = pageSegments.map((seg: any) => {
-          if (seg.id === segmentId) {
+          console.log("[NewsSegmentEditor] Checking segment:", seg.id, "type:", typeof seg.id, "vs segmentId:", segmentId, "type:", typeof segmentId);
+          if (String(seg.id) === String(segmentId)) {
+            foundSegment = true;
+            console.log("[NewsSegmentEditor] Found matching segment, updating data");
             return {
               ...seg,
               data: {
@@ -135,6 +155,15 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
           return seg;
         });
 
+        if (!foundSegment) {
+          console.error("[NewsSegmentEditor] Segment not found in page_segments!");
+          toast.error("Segment not found in page data");
+          setIsSaving(false);
+          return;
+        }
+
+        console.log("[NewsSegmentEditor] Updated segments:", updatedSegments);
+
         // Save back to database
         const { error: updateError } = await supabase
           .from("page_content")
@@ -143,14 +172,21 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
           .eq("section_key", "page_segments")
           .eq("language", "en");
 
-        if (updateError) throw updateError;
+        if (updateError) {
+          console.error("[NewsSegmentEditor] Error updating page_content:", updateError);
+          throw updateError;
+        }
 
+        console.log("[NewsSegmentEditor] Save successful!");
         toast.success("News segment saved successfully");
         onUpdate?.();
+      } else {
+        console.error("[NewsSegmentEditor] No page_segments found for pageSlug:", pageSlug);
+        toast.error("No page data found");
       }
     } catch (error: any) {
-      console.error("Error saving content:", error);
-      toast.error("Failed to save content");
+      console.error("[NewsSegmentEditor] Error saving content:", error);
+      toast.error("Failed to save content: " + error.message);
     } finally {
       setIsSaving(false);
     }
