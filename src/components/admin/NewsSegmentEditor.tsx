@@ -113,14 +113,15 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
 
   const handleSave = async () => {
     setIsSaving(true);
-    console.log("[NewsSegmentEditor] Starting save with:", {
-      pageSlug,
-      segmentId,
-      sectionTitle,
-      sectionDescription,
-      articleLimit,
-      selectedCategories
-    });
+    
+    // Debug: Log exactly what we're about to save
+    console.log("[NewsSegmentEditor] ========== SAVE START ==========");
+    console.log("[NewsSegmentEditor] pageSlug:", pageSlug);
+    console.log("[NewsSegmentEditor] segmentId:", segmentId);
+    console.log("[NewsSegmentEditor] sectionTitle:", sectionTitle);
+    console.log("[NewsSegmentEditor] articleLimit:", articleLimit);
+    console.log("[NewsSegmentEditor] selectedCategories:", JSON.stringify(selectedCategories));
+    console.log("[NewsSegmentEditor] selectedCategories length:", selectedCategories.length);
     
     try {
       // Load current page_segments
@@ -202,11 +203,16 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
   };
 
   const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
+    console.log("[NewsSegmentEditor] Toggle category:", category);
+    console.log("[NewsSegmentEditor] Current selectedCategories BEFORE:", JSON.stringify(selectedCategories));
+    
+    setSelectedCategories((prev) => {
+      const newCategories = prev.includes(category)
         ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
+        : [...prev, category];
+      console.log("[NewsSegmentEditor] New selectedCategories AFTER:", JSON.stringify(newCategories));
+      return newCategories;
+    });
   };
 
   return (
