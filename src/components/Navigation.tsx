@@ -1114,30 +1114,18 @@ const Navigation = () => {
 
                     <div className="space-y-3 flex-1">
                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.publications}</h4>
-                      <Link to={getLink('info-hub/conference-papers', `/${language}/info-hub/conference-papers`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        {(() => {
-                          const key = pageDesignIcons['info-hub/conference-papers'];
-                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
-                        })()}
-                        <span>{t.nav.conferencePapers}</span>
-                      </Link>
-                      <Link to={getLink('info-hub/white-papers', `/${language}/info-hub/white-papers`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        {(() => {
-                          const key = pageDesignIcons['info-hub/white-papers'];
-                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
-                        })()}
-                        <span>{t.nav.whitePapersTheses}</span>
-                      </Link>
-                      <Link to={getLink('info-hub/video-archive', `/${language}/info-hub/video-archive`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        {(() => {
-                          const key = pageDesignIcons['info-hub/video-archive'];
-                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
-                        })()}
-                        <span>{t.nav.videoArchive}</span>
-                      </Link>
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
+                        <a href="#">{t.nav.conferencePapers}</a>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
+                        <Link to="/whitepaper">{t.nav.whitePapersTheses}</Link>
+                      </div>
+                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        <CustomTargetIcon className="h-5 w-5" />
+                        <a href="#">{t.nav.videoArchive}</a>
+                      </div>
                     </div>
                   </div>
 
