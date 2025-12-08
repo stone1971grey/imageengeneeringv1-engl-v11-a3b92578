@@ -1073,43 +1073,71 @@ const Navigation = () => {
                 </div>
               </SimpleDropdown>
 
-              <SimpleDropdown trigger={t.nav.about} className="right-aligned" disabled={isAdminDashboard}>
+              <SimpleDropdown trigger={t.nav.infoHub} className="right-aligned" disabled={isAdminDashboard}>
                 <div className="flex flex-col gap-2 w-[520px] max-w-[90vw] bg-[#f3f3f3] rounded-lg">
                   <div className="flex gap-4 p-4">
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
-                      <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.resources}</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.imageQualityFactors}</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.blog}</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.internationalStandards}</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.ieTechnology}</a>
-                      </div>
+                      <h4 className="font-semibold mb-2 text-lg text-black">Resources</h4>
+                      <Link to={getLink('info-hub/image-quality-factors', `/${language}/info-hub/image-quality-factors`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/image-quality-factors'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.imageQualityFactors}</span>
+                      </Link>
+                      <Link to={getLink('info-hub/blog', `/${language}/info-hub/blog`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/blog'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.blog}</span>
+                      </Link>
+                      <Link to={getLink('info-hub/international-standards', `/${language}/info-hub/international-standards`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/international-standards'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.internationalStandards}</span>
+                      </Link>
+                      <Link to={getLink('info-hub/ie-technology', `/${language}/info-hub/ie-technology`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/ie-technology'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.ieTechnology}</span>
+                      </Link>
                     </div>
 
                     <div className="space-y-3 flex-1">
                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.publications}</h4>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.conferencePapers}</a>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <Link to="/whitepaper">{t.nav.whitePapersTheses}</Link>
-                      </div>
-                      <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                        <CustomTargetIcon className="h-5 w-5" />
-                        <a href="#">{t.nav.videoArchive}</a>
-                      </div>
+                      <Link to={getLink('info-hub/conference-papers', `/${language}/info-hub/conference-papers`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/conference-papers'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.conferencePapers}</span>
+                      </Link>
+                      <Link to={getLink('info-hub/white-papers', `/${language}/info-hub/white-papers`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/white-papers'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.whitePapersTheses}</span>
+                      </Link>
+                      <Link to={getLink('info-hub/video-archive', `/${language}/info-hub/video-archive`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                        {(() => {
+                          const key = pageDesignIcons['info-hub/video-archive'];
+                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                          return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                        })()}
+                        <span>{t.nav.videoArchive}</span>
+                      </Link>
                     </div>
                   </div>
 
