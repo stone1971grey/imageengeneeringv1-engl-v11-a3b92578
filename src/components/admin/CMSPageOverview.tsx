@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical, Microscope, Link2 } from "lucide-react";
+import { Search, ExternalLink, FileText, Layers, Edit, Trash2, GripVertical, Microscope, Link2, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { ShortcutEditor, ShortcutBadge } from "./ShortcutEditor";
 import {
   DndContext,
@@ -73,6 +73,8 @@ export const CMSPageOverview = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<CMSPage | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [sortColumn, setSortColumn] = useState<'page_id' | 'category' | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [hasChildren, setHasChildren] = useState(false);
 
   // Load saved search query from localStorage on mount
@@ -290,42 +292,76 @@ export const CMSPageOverview = () => {
     }
   };
 
+  // Category order for navigation hierarchy sorting
+  const CATEGORY_ORDER = ['Home', 'Your Solution', 'Products', 'Test Lab', 'Training & Events', 'Info Hub', 'Company', 'Styleguide'];
+
+  const getCategoryName = (slug: string): string => {
+    if (slug === "index") return 'Home';
+    if (slug.startsWith("your-solution")) return 'Your Solution';
+    if (slug.startsWith("products")) return 'Products';
+    if (slug.startsWith("test-lab")) return 'Test Lab';
+    if (slug.startsWith("training") || slug.startsWith("events")) return 'Training & Events';
+    if (slug.startsWith("info-hub") || slug.startsWith("downloads") || slug.startsWith("news")) return 'Info Hub';
+    if (slug.startsWith("company") || slug.startsWith("contact") || slug.startsWith("about") || slug.startsWith("inside-lab")) return 'Company';
+    if (slug.startsWith("styleguide")) return 'Styleguide';
+    return slug.split('/')[0] || 'Other';
+  };
+
   const getCategoryBadge = (slug: string) => {
-    // Home for index page
-    if (slug === "index") {
-      return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Home</Badge>;
+    const category = getCategoryName(slug);
+    const badgeStyles: Record<string, string> = {
+      'Home': 'bg-gray-100 text-gray-800 border-gray-300',
+      'Your Solution': 'bg-blue-100 text-blue-800 border-blue-300',
+      'Products': 'bg-green-100 text-green-800 border-green-300',
+      'Test Lab': 'bg-orange-100 text-orange-800 border-orange-300',
+      'Training & Events': 'bg-pink-100 text-pink-800 border-pink-300',
+      'Info Hub': 'bg-cyan-100 text-cyan-800 border-cyan-300',
+      'Company': 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      'Styleguide': 'bg-purple-100 text-purple-800 border-purple-300',
+    };
+    return <Badge variant="outline" className={badgeStyles[category] || 'bg-gray-100 text-gray-800 border-gray-300'}>{category}</Badge>;
+  };
+
+  const handleSort = (column: 'page_id' | 'category') => {
+    if (sortColumn === column) {
+      // Toggle direction or reset
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else {
+        setSortColumn(null);
+        setSortDirection('asc');
+      }
+    } else {
+      setSortColumn(column);
+      setSortDirection('asc');
     }
-    // Your Solution
-    if (slug.startsWith("your-solution")) {
-      return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">Your Solution</Badge>;
-    }
-    // Products
-    if (slug.startsWith("products")) {
-      return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Products</Badge>;
-    }
-    // Test Lab
-    if (slug.startsWith("test-lab")) {
-      return <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">Test Lab</Badge>;
-    }
-    // Training & Events
-    if (slug.startsWith("training") || slug.startsWith("events")) {
-      return <Badge variant="outline" className="bg-pink-100 text-pink-800 border-pink-300">Training & Events</Badge>;
-    }
-    // Info Hub
-    if (slug.startsWith("info-hub") || slug.startsWith("downloads") || slug.startsWith("news")) {
-      return <Badge variant="outline" className="bg-cyan-100 text-cyan-800 border-cyan-300">Info Hub</Badge>;
-    }
-    // Company
-    if (slug.startsWith("company") || slug.startsWith("contact") || slug.startsWith("about") || slug.startsWith("inside-lab")) {
-      return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">Company</Badge>;
-    }
-    // Styleguide (internal)
-    if (slug.startsWith("styleguide")) {
-      return <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">Styleguide</Badge>;
-    }
-    // Fallback - derive from first slug segment
-    const firstSegment = slug.split('/')[0];
-    return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">{firstSegment || "Other"}</Badge>;
+  };
+
+  const getSortedPages = (pagesToSort: CMSPage[]): CMSPage[] => {
+    if (!sortColumn) return pagesToSort;
+
+    return [...pagesToSort].sort((a, b) => {
+      if (sortColumn === 'page_id') {
+        return sortDirection === 'asc' ? a.page_id - b.page_id : b.page_id - a.page_id;
+      }
+      if (sortColumn === 'category') {
+        const categoryA = getCategoryName(a.page_slug);
+        const categoryB = getCategoryName(b.page_slug);
+        const indexA = CATEGORY_ORDER.indexOf(categoryA);
+        const indexB = CATEGORY_ORDER.indexOf(categoryB);
+        const orderA = indexA >= 0 ? indexA : CATEGORY_ORDER.length;
+        const orderB = indexB >= 0 ? indexB : CATEGORY_ORDER.length;
+        return sortDirection === 'asc' ? orderA - orderB : orderB - orderA;
+      }
+      return 0;
+    });
+  };
+
+  const getSortIcon = (column: 'page_id' | 'category') => {
+    if (sortColumn !== column) return <ArrowUpDown className="h-3 w-3 ml-1 text-gray-500" />;
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="h-3 w-3 ml-1 text-[#f9dc24]" />
+      : <ArrowDown className="h-3 w-3 ml-1 text-[#f9dc24]" />;
   };
 
   const getCtaBadge = (page: CMSPage) => {
@@ -985,11 +1021,27 @@ export const CMSPageOverview = () => {
               <TableHeader className="sticky top-0 bg-gray-800 z-10">
                 <TableRow className="border-gray-700 hover:bg-gray-800">
                   <TableHead className="text-gray-300 font-bold w-12"></TableHead>
-                  <TableHead className="text-gray-300 font-bold">Page ID</TableHead>
+                  <TableHead 
+                    className="text-gray-300 font-bold cursor-pointer hover:text-[#f9dc24] transition-colors select-none"
+                    onClick={() => handleSort('page_id')}
+                  >
+                    <div className="flex items-center">
+                      Page ID
+                      {getSortIcon('page_id')}
+                    </div>
+                  </TableHead>
                   <TableHead className="text-gray-300 font-bold">Edit</TableHead>
                   <TableHead className="text-gray-300 font-bold">Title</TableHead>
                   <TableHead className="text-gray-300 font-bold">Slug</TableHead>
-                  <TableHead className="text-gray-300 font-bold">Category</TableHead>
+                  <TableHead 
+                    className="text-gray-300 font-bold cursor-pointer hover:text-[#f9dc24] transition-colors select-none"
+                    onClick={() => handleSort('category')}
+                  >
+                    <div className="flex items-center">
+                      Category
+                      {getSortIcon('category')}
+                    </div>
+                  </TableHead>
                   <TableHead className="text-gray-300 font-bold">Parent</TableHead>
                   <TableHead className="text-gray-300 font-bold text-center">Segments</TableHead>
                   <TableHead className="text-gray-300 font-bold text-center">Actions</TableHead>
@@ -1010,10 +1062,10 @@ export const CMSPageOverview = () => {
                 </TableRow>
               ) : (
                 <SortableContext
-                  items={filteredPages.map(p => p.page_id)}
+                  items={getSortedPages(filteredPages).map(p => p.page_id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  {filteredPages.map((page) => (
+                  {getSortedPages(filteredPages).map((page) => (
                     <SortablePageRow
                       key={page.page_id}
                       page={page}
