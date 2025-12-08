@@ -719,8 +719,8 @@ const Navigation = () => {
                     <div className="space-y-3 flex-1 pr-4 border-r border-border">
                       <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.products}</h4>
                        
-                       <Link to={`/${language}/products/charts`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
-                          isActive('/products/charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                       <Link to={`/${language}/products/test-charts`} className={`flex items-center gap-3 text-lg text-black transition-colors cursor-pointer py-1 px-2 rounded-md ${
+                          isActive('/products/test-charts') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                        }`}
                           onMouseEnter={() => !isAdminDashboard && setHoveredProduct("Test Charts")}>
                           {pageDesignIcons['test-charts'] && <CustomTargetIcon className="h-5 w-5" />}
