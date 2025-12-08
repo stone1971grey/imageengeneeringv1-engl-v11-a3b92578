@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -352,97 +352,32 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     setConfig(prev => ({ ...prev, categories: [] }));
   };
 
+  const handleSplitScreenToggle = (checked: boolean) => {
+    setIsSplitScreenEnabled(checked);
+    localStorage.setItem('cms-split-screen-mode', String(checked));
+  };
+
   if (isLoading) {
     return (
-      <CardContent className="flex items-center justify-center py-12">
+      <div className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-[#f9dc24]" />
         <span className="ml-3 text-muted-foreground">Loading configuration...</span>
-      </CardContent>
+      </div>
     );
   }
 
-  // Shared header with Split-Screen toggle and language selector
-  const renderHeader = () => (
-    <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
-      <div className="flex items-center gap-3">
-        <Languages className="h-5 w-5 text-[#f9dc24]" />
-        <span className="text-foreground font-medium">Multilingual Editor</span>
-      </div>
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground">Split-Screen</span>
-        <Switch
-          checked={isSplitScreenEnabled}
-          onCheckedChange={setIsSplitScreenEnabled}
-        />
-      </div>
-    </div>
-  );
-
   // Render single panel (English or Target)
-  const renderPanel = (isTarget: boolean) => {
+  const renderEditor = (isTarget: boolean) => {
     const currentConfig = isTarget ? targetConfig : config;
     const setCurrentConfig = isTarget ? setTargetConfig : setConfig;
     const saving = isTarget ? isSavingTarget : isSaving;
 
     return (
       <div className="space-y-6 p-4 bg-background border rounded-lg">
-        {/* Panel Header */}
-        <div className="flex items-center justify-between">
-          {isTarget ? (
-            <div className="flex items-center gap-3">
-              <Select value={targetLanguage} onValueChange={setTargetLanguage}>
-                <SelectTrigger className="w-[180px] border-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LANGUAGES.map(lang => (
-                    <SelectItem key={lang.code} value={lang.code}>
-                      {lang.flag} {lang.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🇺🇸</span>
-              <span className="text-foreground font-semibold">English (Source)</span>
-            </div>
-          )}
-        </div>
-
-        {/* Auto-Translate Button (Target only, directly under language selector) */}
-        {isTarget && (
-          <Button
-            onClick={handleTranslate}
-            disabled={isTranslating}
-            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-          >
-            {isTranslating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Translating...
-              </>
-            ) : (
-              <>
-                <GeminiIcon className="mr-2 h-4 w-4" />
-                Auto-Translate
-              </>
-            )}
-          </Button>
-        )}
-
-        {/* Translating Feedback Bar - Rainbow Style */}
-        {isTarget && isTranslating && (
-          <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
-            ⏳ Translating content...
-          </div>
-        )}
-
         {/* Content Fields */}
         <div className="space-y-4">
           <div>
-            <Label htmlFor={`title-${isTarget ? 'target' : 'en'}`} className="text-foreground">
+            <Label htmlFor={`title-${isTarget ? 'target' : 'en'}`} className="font-medium">
               Section Title (H2)
             </Label>
             <Input
@@ -450,12 +385,12 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
               value={currentConfig.title}
               onChange={(e) => setCurrentConfig(prev => ({ ...prev, title: e.target.value }))}
               placeholder={isTarget ? "Translated title..." : "Latest News"}
-              className="border-2 border-border"
+              className="mt-2"
             />
           </div>
 
           <div>
-            <Label htmlFor={`desc-${isTarget ? 'target' : 'en'}`} className="text-foreground">
+            <Label htmlFor={`desc-${isTarget ? 'target' : 'en'}`} className="font-medium">
               Section Description
             </Label>
             <Textarea
@@ -464,7 +399,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
               onChange={(e) => setCurrentConfig(prev => ({ ...prev, description: e.target.value }))}
               placeholder={isTarget ? "Translated description..." : "Stay updated with the latest developments..."}
               rows={3}
-              className="border-2 border-border"
+              className="mt-2"
             />
           </div>
         </div>
@@ -473,12 +408,12 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
         {!isTarget && (
           <div className="space-y-4 border-t border-border pt-6">
             <div>
-              <Label htmlFor="article-limit" className="text-foreground">Number of Articles to Display</Label>
+              <Label htmlFor="article-limit" className="font-medium">Number of Articles to Display</Label>
               <Select 
                 value={String(config.articleLimit)} 
                 onValueChange={(val) => setConfig(prev => ({ ...prev, articleLimit: parseInt(val) }))}
               >
-                <SelectTrigger id="article-limit" className="border-2 border-border">
+                <SelectTrigger id="article-limit" className="mt-2">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -493,7 +428,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-foreground">Categories to Display</Label>
+                <Label className="font-medium">Categories to Display</Label>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={handleSelectAll}>
                     Select All
@@ -514,7 +449,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
                       checked={config.categories.includes(category)}
                       onCheckedChange={() => handleCategoryToggle(category)}
                     />
-                    <span className="text-sm text-foreground">{category}</span>
+                    <span className="text-sm">{category}</span>
                   </label>
                 ))}
               </div>
@@ -549,22 +484,116 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
   };
 
   return (
-    <CardContent className="space-y-4">
-      {renderHeader()}
-      
-      {isSplitScreenEnabled ? (
-        <div className="grid grid-cols-2 gap-6">
-          {/* English Panel - Left */}
-          {renderPanel(false)}
-          
-          {/* Target Language Panel - Right */}
-          {renderPanel(true)}
+    <div className="space-y-4">
+      {/* Translation Feedback Bar */}
+      {isTranslating && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+          ⏳ Translating content...
         </div>
-      ) : (
-        /* Single panel mode - English only */
-        renderPanel(false)
       )}
-    </CardContent>
+
+      {/* Language Selector Card - Rainbow Template Style */}
+      <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Languages className="h-5 w-5 text-blue-300" />
+              <div>
+                <CardTitle className="text-white text-lg">Multi-Language Editor</CardTitle>
+                <CardDescription className="text-blue-200 text-sm mt-1">
+                  Compare and edit Latest News Segment in multiple languages side-by-side
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Switch 
+                  id="split-screen-toggle"
+                  checked={isSplitScreenEnabled}
+                  onCheckedChange={handleSplitScreenToggle}
+                  className="data-[state=checked]:bg-blue-600"
+                />
+                <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
+                  Split-Screen Mode
+                </Label>
+              </div>
+              {isSplitScreenEnabled && (
+                <Badge variant="outline" className="bg-blue-950/50 text-blue-200 border-blue-600">
+                  Active
+                </Badge>
+              )}
+            </div>
+          </div>
+          
+          {isSplitScreenEnabled && (
+            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
+              <label className="text-white font-medium text-sm">Target Language:</label>
+              <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+                <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-blue-700 z-50">
+                  {LANGUAGES.map(lang => (
+                    <SelectItem 
+                      key={lang.code} 
+                      value={lang.code}
+                      className="text-white hover:bg-blue-900/50 cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-lg">{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Button
+                onClick={handleTranslate}
+                disabled={isTranslating}
+                className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                <GeminiIcon className="h-4 w-4 mr-2" />
+                {isTranslating ? "Translating..." : "Translate Automatically"}
+              </Button>
+            </div>
+          )}
+        </CardHeader>
+      </Card>
+
+      {/* Split Screen or Single View */}
+      <div className={isSplitScreenEnabled ? "grid grid-cols-2 gap-6" : ""}>
+        {isSplitScreenEnabled ? (
+          <>
+            {/* Left Panel - English */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+                <span className="text-2xl">🇺🇸</span>
+                <div>
+                  <div className="text-white font-semibold">English (Reference)</div>
+                  <div className="text-green-300 text-xs">Source Language</div>
+                </div>
+              </div>
+              {renderEditor(false)}
+            </div>
+
+            {/* Right Panel - Target Language */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-2 border-blue-600/50 rounded-lg">
+                <span className="text-2xl">{LANGUAGES.find(l => l.code === targetLanguage)?.flag}</span>
+                <div>
+                  <div className="text-white font-semibold">{LANGUAGES.find(l => l.code === targetLanguage)?.name}</div>
+                  <div className="text-blue-300 text-xs">Target Language</div>
+                </div>
+              </div>
+              {renderEditor(true)}
+            </div>
+          </>
+        ) : (
+          renderEditor(false)
+        )}
+      </div>
+    </div>
   );
 };
 
