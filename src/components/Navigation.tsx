@@ -1027,27 +1027,43 @@ const Navigation = () => {
                    <div className="flex gap-4 p-4">
                      <div className="space-y-3 flex-1">
                        <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.resources}</h4>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">{t.nav.webinars}</a>
-                       </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">{t.nav.onSiteTraining}</a>
-                       </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <Link to="/inside-lab">{t.nav.visitTestLab}</Link>
-                       </div>
-                       <div className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
-                         <CustomTargetIcon className="h-5 w-5" />
-                         <a href="#">{t.nav.eventSchedule}</a>
-                       </div>
+                       <Link to={getLink('training-events/webinars', `/${language}/training-events/webinars`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         {(() => {
+                           const key = pageDesignIcons['training-events/webinars'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
+                         <span>{t.nav.webinars}</span>
+                       </Link>
+                       <Link to={getLink('training-events/onsite-training', `/${language}/training-events/onsite-training`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         {(() => {
+                           const key = pageDesignIcons['training-events/onsite-training'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
+                         <span>{t.nav.onSiteTraining}</span>
+                       </Link>
+                       <Link to={getLink('training-events/visit-our-lab', `/${language}/training-events/visit-our-lab`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         {(() => {
+                           const key = pageDesignIcons['training-events/visit-our-lab'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
+                         <span>{t.nav.visitTestLab}</span>
+                       </Link>
+                       <Link to={getLink('training-events/event-schedule', `/${language}/training-events/event-schedule`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors cursor-pointer py-1 px-2 rounded-md">
+                         {(() => {
+                           const key = pageDesignIcons['training-events/event-schedule'];
+                           const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                           return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                         })()}
+                         <span>{t.nav.eventSchedule}</span>
+                       </Link>
                      </div>
                    </div>
 
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
-                    <Link to="/events">
+                    <Link to={`/${language}/events`}>
                       <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
                         <GraduationCap className="h-5 w-5 mr-2" />
                         <span className="text-base font-medium">{t.nav.viewTrainingEvents}</span>
