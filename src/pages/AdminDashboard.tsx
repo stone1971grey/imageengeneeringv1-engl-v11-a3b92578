@@ -72,6 +72,7 @@ import { GlossaryManager } from '@/components/admin/GlossaryManager';
 import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { FooterEditor } from '@/components/admin/FooterEditor';
+import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -385,6 +386,7 @@ const AdminDashboard = () => {
     ctaGroup?: string | null;
     ctaLabel?: string | null;
     ctaIcon?: string | null;
+    targetPageSlug?: string | null;
   } | null>(null);
   const [isDesignElementDialogOpen, setIsDesignElementDialogOpen] = useState(false);
   const [pendingDesignIcon, setPendingDesignIcon] = useState<string | null>(null);
@@ -952,7 +954,7 @@ const AdminDashboard = () => {
       // First try exact match
       let { data, error } = await supabase
         .from("page_registry")
-        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon")
+        .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug")
         .eq("page_slug", querySlug)
         .maybeSingle();
       
@@ -961,7 +963,7 @@ const AdminDashboard = () => {
         console.log('[loadPageInfo] No exact match, trying hierarchical search for:', querySlug);
         const { data: hierarchicalData, error: hierarchicalError } = await supabase
           .from("page_registry")
-          .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon")
+          .select("page_id, page_title, page_slug, parent_slug, design_icon, flyout_image_url, flyout_description, cta_group, cta_label, cta_icon, target_page_slug")
           .ilike("page_slug", `%/${querySlug}`)
           .limit(1);
         
@@ -990,6 +992,7 @@ const AdminDashboard = () => {
           ctaGroup: (data as any).cta_group ?? null,
           ctaLabel: (data as any).cta_label ?? null,
           ctaIcon: (data as any).cta_icon ?? null,
+          targetPageSlug: (data as any).target_page_slug ?? null,
         });
       } else {
         setPageInfo(null);
@@ -3701,6 +3704,12 @@ const AdminDashboard = () => {
                       <span className="text-base text-gray-700 font-mono whitespace-nowrap">
                         {pageInfo.pageSlug}
                       </span>
+                      {pageInfo.targetPageSlug && (
+                        <>
+                          <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                          <ShortcutBadge targetSlug={pageInfo.targetPageSlug} />
+                        </>
+                      )}
                       {pageInfo.ctaGroup && pageInfo.ctaGroup !== 'none' && (
                         <>
                           <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
@@ -3791,6 +3800,14 @@ const AdminDashboard = () => {
                       <Zap className="h-4 w-4" />
                       Navigation CTA
                     </Button>
+
+                    <ShortcutEditor
+                      pageId={pageInfo.pageId}
+                      pageSlug={pageInfo.pageSlug}
+                      pageTitle={pageInfo.pageTitle}
+                      currentTargetSlug={pageInfo.targetPageSlug || null}
+                      onShortcutUpdated={loadPageInfo}
+                    />
                   </div>
                 )}
               </div>
