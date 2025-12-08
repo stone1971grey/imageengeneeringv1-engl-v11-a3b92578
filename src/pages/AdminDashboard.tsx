@@ -1998,7 +1998,10 @@ const AdminDashboard = () => {
             const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
             console.log("[AdminDashboard] loadContent - pageKey:", pageKey, "savedTab:", savedTab, "validOrder:", validOrder);
             
-            if (savedTab && validOrder.includes(savedTab)) {
+            // Check if savedTab is valid: either in validOrder OR is "footer" (special static tab)
+            const isValidSavedTab = savedTab && (validOrder.includes(savedTab) || savedTab === "footer");
+            
+            if (isValidSavedTab) {
               console.log("[AdminDashboard] loadContent - Using saved tab:", savedTab);
               setActiveTabState(savedTab);
             } else {
