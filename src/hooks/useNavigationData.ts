@@ -70,8 +70,10 @@ export const useNavigationData = () => {
 
       const item = {
         name: link.parent_label,
-        link: link.slug,
-        active: link.active
+        link: link.target_page_slug ? `/${link.target_page_slug}` : link.slug,
+        active: link.active,
+        isShortcut: !!link.target_page_slug,
+        targetPageSlug: link.target_page_slug || null
       };
 
       if (category === 'testServices') {
