@@ -97,19 +97,40 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
 
     if (map.footer_team_image_url) {
       setTeamImageUrl(map.footer_team_image_url);
-    } else {
-      setTeamImageUrl("");
-    }
-
-    // Load metadata including alt text
-    if (map.footer_team_image_metadata) {
-      try {
-        const parsed = JSON.parse(map.footer_team_image_metadata);
-        setTeamImageMetadata(parsed);
-      } catch (e) {
-        setTeamImageMetadata(null);
+      
+      // Load metadata including alt text, or create empty metadata if image exists
+      if (map.footer_team_image_metadata) {
+        try {
+          const parsed = JSON.parse(map.footer_team_image_metadata);
+          setTeamImageMetadata(parsed);
+        } catch (e) {
+          // Create default metadata for existing image
+          setTeamImageMetadata({
+            originalFileName: map.footer_team_image_url.split('/').pop() || 'image',
+            width: 0,
+            height: 0,
+            fileSizeKB: 0,
+            format: map.footer_team_image_url.split('.').pop() || 'unknown',
+            uploadDate: new Date().toISOString(),
+            url: map.footer_team_image_url,
+            altText: ""
+          });
+        }
+      } else {
+        // Create default metadata for existing image without metadata
+        setTeamImageMetadata({
+          originalFileName: map.footer_team_image_url.split('/').pop() || 'image',
+          width: 0,
+          height: 0,
+          fileSizeKB: 0,
+          format: map.footer_team_image_url.split('.').pop() || 'unknown',
+          uploadDate: new Date().toISOString(),
+          url: map.footer_team_image_url,
+          altText: ""
+        });
       }
     } else {
+      setTeamImageUrl("");
       setTeamImageMetadata(null);
     }
   };

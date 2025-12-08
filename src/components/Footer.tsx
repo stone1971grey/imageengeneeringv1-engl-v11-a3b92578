@@ -52,20 +52,17 @@ const Footer = () => {
   const loadFooterContent = async () => {
     try {
       const extractPageSlug = (pathname: string): string => {
-        const parts = pathname.replace(/^\/+/g, "").split("/");
+        const parts = pathname.replace(/^\/+/g, "").split("/").filter(Boolean);
         const langCodes = ['en', 'de', 'zh', 'ja', 'ko'];
         if (parts.length > 0 && langCodes.includes(parts[0])) {
-          return parts.slice(1).join("/");
+          const remaining = parts.slice(1).join("/");
+          return remaining || "index"; // Homepage = "index"
         }
-        return parts.join("/");
+        return parts.join("/") || "index"; // Homepage = "index"
       };
 
       const pageSlug = extractPageSlug(location.pathname);
-
-      if (!pageSlug) {
-        setLoading(false);
-        return;
-      }
+      console.log("[Footer] Loading content for pageSlug:", pageSlug, "language:", language);
 
       const sectionKeys = [
         "footer_cta_title",
@@ -128,9 +125,11 @@ const Footer = () => {
         rows.forEach((item: any) => {
           contentMap[item.section_key] = item.content_value;
         });
+        console.log("[Footer] Loaded CMS content:", Object.keys(contentMap), "hasCMSContent: true");
         setFooterContent(contentMap);
         setHasCMSContent(true);
       } else {
+        console.log("[Footer] No CMS content found for pageSlug, using fallback");
         setFooterContent({});
         setHasCMSContent(false);
       }
