@@ -230,6 +230,7 @@ export type Database = {
       file_segment_mappings: {
         Row: {
           alt_text: string | null
+          alt_text_translations: Json | null
           bucket_id: string
           created_at: string | null
           file_path: string
@@ -239,6 +240,7 @@ export type Database = {
         }
         Insert: {
           alt_text?: string | null
+          alt_text_translations?: Json | null
           bucket_id?: string
           created_at?: string | null
           file_path: string
@@ -248,6 +250,7 @@ export type Database = {
         }
         Update: {
           alt_text?: string | null
+          alt_text_translations?: Json | null
           bucket_id?: string
           created_at?: string | null
           file_path?: string
