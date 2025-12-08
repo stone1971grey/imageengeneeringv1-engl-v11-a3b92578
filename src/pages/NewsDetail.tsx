@@ -329,7 +329,7 @@ const NewsDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen bg-[#373737]">
       <Navigation />
 
       {/* Article Header Card */}
@@ -413,46 +413,38 @@ const NewsDetail = () => {
         </Card>
       </section>
 
-      {/* Related News */}
+      {/* Related News - Same style as homepage NewsSection */}
       {relatedNews && relatedNews.length > 0 && (
-        <section className="py-16 bg-gray-50">
+        <section className="py-16 bg-[#373737]">
           <div className="container mx-auto px-6">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">Related News</h2>
+              <h2 className="text-3xl font-bold text-foreground mb-8">Related News</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {relatedNews.map((item) => (
                   <Card 
                     key={item.id} 
-                    className="bg-white border border-gray-200 shadow-md hover:shadow-xl transition-all duration-500 hover:scale-[1.02] group overflow-hidden"
+                    className="h-full hover:shadow-elegant transition-all duration-300 hover:scale-[1.02] group flex flex-col"
                   >
-                    <CardContent className="p-0">
-                      <div className="aspect-video overflow-hidden relative">
+                    <CardContent className="p-0 flex flex-col h-full">
+                      <div className="aspect-video overflow-hidden rounded-t-lg relative">
                         <img
                           src={item.image_url}
                           alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
-                      <div className="p-6">
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-sm text-gray-500">{new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
-                          {item.category && (
-                            <>
-                              <span className="text-gray-300">•</span>
-                              <Badge variant="outline" className="text-xs border-[#0f407b] text-[#0f407b]">
-                                {item.category}
-                              </Badge>
-                            </>
-                          )}
+                      <div className="p-6 flex flex-col flex-1">
+                        <div className="text-sm text-muted-foreground mb-2 font-medium">
+                          {new Date(item.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                         </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#0f407b] transition-colors duration-300">
+                        <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 leading-tight">
                           {item.title}
                         </h3>
-                        <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
+                        <p className="text-muted-foreground mb-6 line-clamp-3 leading-relaxed flex-1">
                           {item.teaser}
                         </p>
-                        <Link to={`/${language}/news/${item.slug}`}>
-                          <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-all duration-300">
+                        <Link to={`/${language}/news/${item.slug}`} className="w-full block">
+                          <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors duration-300 mt-auto">
                             Read more
                           </Button>
                         </Link>
