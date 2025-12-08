@@ -1007,8 +1007,12 @@ const AdminDashboard = () => {
       return;
     }
 
-    if (!pageInfo.parentSlug || !['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact'].includes(pageInfo.parentSlug)) {
-      toast.error("Design elements are only allowed for second-level navigation pages.");
+    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab'];
+    const isSecondLevel = SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug || '');
+    const isThirdLevelUnderTestLabSave = pageInfo.parentSlug?.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
+    
+    if (!pageInfo.parentSlug || (!isSecondLevel && !isThirdLevelUnderTestLabSave)) {
+      toast.error("Design elements are only allowed for second and third-level navigation pages under Test Lab.");
       return;
     }
 
