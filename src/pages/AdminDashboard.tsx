@@ -228,7 +228,8 @@ const AdminDashboard = () => {
   const rawSelectedPage = searchParams.get('page') || '';
   // Use the full slug if it contains slashes, otherwise keep the raw value
   // This allows both hierarchical (your-solution/automotive) and simple (automotive) slugs
-  const selectedPage = rawSelectedPage || '';
+  // IMPORTANT: Empty string or no page param means "index" (homepage)
+  const selectedPage = rawSelectedPage || 'index';
   const [resolvedPageSlug, setResolvedPageSlug] = useState<string>('');
   const [applications, setApplications] = useState<any[]>([]);
   const [tilesColumns, setTilesColumns] = useState<string>("3");
