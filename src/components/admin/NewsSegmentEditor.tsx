@@ -65,7 +65,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Multilingual Rainbow Template states
+  // Multilingual Editor states
   const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
     const saved = localStorage.getItem('cms-split-screen-mode');
     return saved !== null ? saved === 'true' : true;
@@ -293,7 +293,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
       const langName = LANGUAGES.find(l => l.code === targetLanguage)?.name || targetLanguage;
       
       // Build texts object with keys for proper response mapping
-      const textsToTranslate: Record<string, string> = {
+      const textsToTranslate = {
         title: config.title || '',
         description: config.description || ''
       };
@@ -304,7 +304,6 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
         body: {
           texts: textsToTranslate,
           targetLanguage: targetLanguage.split('-')[0],
-          sourceLanguage: 'en'
         }
       });
 
@@ -315,31 +314,24 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
       console.log("[NewsSegmentEditor] Translation response:", data);
 
-      if (data?.translations) {
-        const translations = data.translations;
-        console.log("[NewsSegmentEditor] Parsed translations:", translations);
-        
-        // Handle response - check for title/description keys first, then numeric keys
-        const newTitle = translations.title ?? translations["title"] ?? translations["0"] ?? '';
-        const newDescription = translations.description ?? translations["description"] ?? translations["1"] ?? '';
-        
-        console.log("[NewsSegmentEditor] Setting newTitle:", newTitle, "newDescription:", newDescription);
-        
+      // Edge Function returns { translatedTexts: { title: '...', description: '...' } }
+      if (data?.translatedTexts) {
         setTargetConfig(prev => ({
           ...prev,
-          title: newTitle || prev.title,
-          description: newDescription || prev.description,
+          title: data.translatedTexts.title || prev.title,
+          description: data.translatedTexts.description || prev.description,
         }));
         toast.success(`Translated to ${langName}`);
       } else {
-        console.error("[NewsSegmentEditor] No translations in response:", data);
+        console.error("[NewsSegmentEditor] No translatedTexts in response:", data);
         toast.error("Translation response empty");
       }
     } catch (error: any) {
       console.error("[NewsSegmentEditor] Translation error:", error);
       toast.error("Translation failed: " + error.message);
     } finally {
-      setIsTranslating(false);
+      // Small delay so the visual translation feedback bar is clearly visible
+      setTimeout(() => setIsTranslating(false), 600);
     }
   };
 
@@ -364,23 +356,20 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     return (
       <CardContent className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-[#f9dc24]" />
-        <span className="ml-3 text-white">Loading configuration...</span>
+        <span className="ml-3 text-muted-foreground">Loading configuration...</span>
       </CardContent>
     );
   }
 
-  // Shared header with Split-Screen toggle
+  // Shared header with Split-Screen toggle and language selector
   const renderHeader = () => (
-    <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-600">
+    <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
       <div className="flex items-center gap-3">
         <Languages className="h-5 w-5 text-[#f9dc24]" />
-        <span className="text-white font-medium">Multilingual Editor</span>
-        <Badge variant="outline" className="border-[#f9dc24] text-[#f9dc24]">
-          Rainbow Template
-        </Badge>
+        <span className="text-foreground font-medium">Multilingual Editor</span>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-400">Split-Screen</span>
+        <span className="text-sm text-muted-foreground">Split-Screen</span>
         <Switch
           checked={isSplitScreenEnabled}
           onCheckedChange={setIsSplitScreenEnabled}
@@ -396,65 +385,64 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
     const saving = isTarget ? isSavingTarget : isSaving;
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 p-4 bg-background border rounded-lg">
         {/* Panel Header */}
         <div className="flex items-center justify-between">
           {isTarget ? (
-            <>
+            <div className="flex items-center gap-3">
               <Select value={targetLanguage} onValueChange={setTargetLanguage}>
-                <SelectTrigger className="w-[180px] border-gray-600">
+                <SelectTrigger className="w-[180px] border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-600">
+                <SelectContent>
                   {LANGUAGES.map(lang => (
-                    <SelectItem key={lang.code} value={lang.code} className="text-white">
+                    <SelectItem key={lang.code} value={lang.code}>
                       {lang.flag} {lang.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              
-              {/* Translate Button */}
-              <Button
-                onClick={handleTranslate}
-                disabled={isTranslating}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
-              >
-                {isTranslating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Translating...
-                  </>
-                ) : (
-                  <>
-                    <GeminiIcon className="mr-2 h-4 w-4" />
-                    Auto-Translate
-                  </>
-                )}
-              </Button>
-            </>
+            </div>
           ) : (
             <div className="flex items-center gap-2">
               <span className="text-2xl">🇺🇸</span>
-              <span className="text-white font-semibold">English (Source)</span>
+              <span className="text-foreground font-semibold">English (Source)</span>
             </div>
           )}
         </div>
 
-        {/* Translating Feedback Bar */}
+        {/* Auto-Translate Button (Target only, directly under language selector) */}
+        {isTarget && (
+          <Button
+            onClick={handleTranslate}
+            disabled={isTranslating}
+            className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          >
+            {isTranslating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Translating...
+              </>
+            ) : (
+              <>
+                <GeminiIcon className="mr-2 h-4 w-4" />
+                Auto-Translate
+              </>
+            )}
+          </Button>
+        )}
+
+        {/* Translating Feedback Bar - Rainbow Style */}
         {isTarget && isTranslating && (
-          <div className="py-3 px-4 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-lg animate-pulse shadow-lg shadow-purple-500/50 flex items-center justify-center gap-2">
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-            <span className="text-white font-medium ml-2">Translating...</span>
+          <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+            ⏳ Translating content...
           </div>
         )}
 
         {/* Content Fields */}
         <div className="space-y-4">
           <div>
-            <Label htmlFor={`title-${isTarget ? 'target' : 'en'}`} className="text-white">
+            <Label htmlFor={`title-${isTarget ? 'target' : 'en'}`} className="text-foreground">
               Section Title (H2)
             </Label>
             <Input
@@ -462,12 +450,12 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
               value={currentConfig.title}
               onChange={(e) => setCurrentConfig(prev => ({ ...prev, title: e.target.value }))}
               placeholder={isTarget ? "Translated title..." : "Latest News"}
-              className="border-2 border-gray-600 bg-gray-800 text-white"
+              className="border-2 border-border"
             />
           </div>
 
           <div>
-            <Label htmlFor={`desc-${isTarget ? 'target' : 'en'}`} className="text-white">
+            <Label htmlFor={`desc-${isTarget ? 'target' : 'en'}`} className="text-foreground">
               Section Description
             </Label>
             <Textarea
@@ -476,104 +464,85 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
               onChange={(e) => setCurrentConfig(prev => ({ ...prev, description: e.target.value }))}
               placeholder={isTarget ? "Translated description..." : "Stay updated with the latest developments..."}
               rows={3}
-              className="border-2 border-gray-600 bg-gray-800 text-white"
+              className="border-2 border-border"
             />
           </div>
         </div>
 
         {/* Settings (English Only) */}
         {!isTarget && (
-          <div className="space-y-4 border-t border-gray-600 pt-6">
+          <div className="space-y-4 border-t border-border pt-6">
             <div>
-              <Label htmlFor="article-limit" className="text-white">Number of Articles to Display</Label>
+              <Label htmlFor="article-limit" className="text-foreground">Number of Articles to Display</Label>
               <Select 
                 value={String(config.articleLimit)} 
                 onValueChange={(val) => setConfig(prev => ({ ...prev, articleLimit: parseInt(val) }))}
               >
-                <SelectTrigger id="article-limit" className="border-2 border-gray-600">
+                <SelectTrigger id="article-limit" className="border-2 border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-600">
-                  <SelectItem value="3" className="text-white">3 Articles</SelectItem>
-                  <SelectItem value="6" className="text-white">6 Articles</SelectItem>
-                  <SelectItem value="9" className="text-white">9 Articles</SelectItem>
-                  <SelectItem value="12" className="text-white">12 Articles</SelectItem>
+                <SelectContent>
+                  <SelectItem value="3">3 Articles</SelectItem>
+                  <SelectItem value="6">6 Articles</SelectItem>
+                  <SelectItem value="9">9 Articles</SelectItem>
+                  <SelectItem value="12">12 Articles</SelectItem>
+                  <SelectItem value="24">24 Articles</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div>
-              <Label className="text-white mb-3 block">Category Filter</Label>
-              <p className="text-sm text-gray-400 mb-3">
-                Select which categories to display. Uncheck categories you don't want to show.
-              </p>
-              
-              <div className="flex gap-2 mb-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSelectAll}
-                  className="text-xs"
-                >
-                  Select All
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDeselectAll}
-                  className="text-xs"
-                >
-                  Deselect All
-                </Button>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-foreground">Categories to Display</Label>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={handleSelectAll}>
+                    Select All
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleDeselectAll}>
+                    Deselect All
+                  </Button>
+                </div>
               </div>
-              
-              <div className="grid grid-cols-2 gap-3 bg-gray-700 p-4 rounded-lg border border-gray-600 max-h-[300px] overflow-y-auto">
+
+              <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto p-2 border rounded-lg">
                 {availableCategories.map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
+                  <label
+                    key={category}
+                    className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-accent"
+                  >
                     <Checkbox
-                      id={`category-${category}`}
                       checked={config.categories.includes(category)}
                       onCheckedChange={() => handleCategoryToggle(category)}
                     />
-                    <label
-                      htmlFor={`category-${category}`}
-                      className="text-sm text-white cursor-pointer"
-                    >
-                      {category}
-                    </label>
-                  </div>
+                    <span className="text-sm text-foreground">{category}</span>
+                  </label>
                 ))}
               </div>
-              
-              {config.categories.length > 0 ? (
-                <p className="text-sm text-[#f9dc24] mt-2">
-                  {config.categories.length} categor{config.categories.length === 1 ? 'y' : 'ies'} selected
-                </p>
-              ) : (
-                <p className="text-sm text-red-400 mt-2">
-                  No categories selected - no articles will be displayed!
+
+              {config.categories.length === 0 && (
+                <p className="text-sm text-destructive">
+                  Please select at least one category
                 </p>
               )}
+
+              <div className="flex flex-wrap gap-1 mt-2">
+                {config.categories.map((cat) => (
+                  <Badge key={cat} variant="secondary" className="text-xs">
+                    {cat}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* Save Button */}
-        <Button
+        <Button 
           onClick={isTarget ? handleSaveTarget : handleSave}
           disabled={saving}
-          className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 font-semibold py-3"
+          className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
         >
-          {saving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            `Save ${isTarget ? LANGUAGES.find(l => l.code === targetLanguage)?.name || 'Target' : 'English'}`
-          )}
+          {saving ? "Saving..." : `Save ${isTarget ? LANGUAGES.find(l => l.code === targetLanguage)?.name || 'Translation' : 'English'} Changes`}
         </Button>
       </div>
     );
@@ -582,23 +551,18 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
   return (
     <CardContent className="space-y-4">
       {renderHeader()}
-
+      
       {isSplitScreenEnabled ? (
         <div className="grid grid-cols-2 gap-6">
-          {/* English Panel */}
-          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-600">
-            {renderPanel(false)}
-          </div>
+          {/* English Panel - Left */}
+          {renderPanel(false)}
           
-          {/* Target Language Panel */}
-          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-600">
-            {renderPanel(true)}
-          </div>
+          {/* Target Language Panel - Right */}
+          {renderPanel(true)}
         </div>
       ) : (
-        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-600">
-          {renderPanel(false)}
-        </div>
+        /* Single panel mode - English only */
+        renderPanel(false)
       )}
     </CardContent>
   );
