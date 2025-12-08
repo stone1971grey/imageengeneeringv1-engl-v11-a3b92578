@@ -827,12 +827,13 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Safety net: allow for second-level pages AND third-level pages under test-lab
+    // Safety net: allow for second-level pages AND third-level pages under test-lab/training-events
     const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
     const isSecondLevelSave = pageInfo.parentSlug && SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug);
     const isThirdLevelUnderTestLabSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
+    const isThirdLevelUnderTrainingEventsSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('training-events') && pageInfo.parentSlug !== 'training-events';
     
-    if (!isSecondLevelSave && !isThirdLevelUnderTestLabSave) {
+    if (!isSecondLevelSave && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave) {
       toast.error('Flyout content is only available for second and third-level navigation pages.');
       return;
     }
@@ -1018,16 +1019,18 @@ const AdminDashboard = () => {
       return;
     }
 
-    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab'];
+    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
     const isSecondLevel = SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug || '');
     const isThirdLevelUnderTestLabSave = pageInfo.parentSlug?.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
+    const isThirdLevelUnderTrainingEventsSave = pageInfo.parentSlug?.startsWith('training-events') && pageInfo.parentSlug !== 'training-events';
     
     console.log('[handleSaveDesignElement] isSecondLevel:', isSecondLevel);
     console.log('[handleSaveDesignElement] isThirdLevelUnderTestLabSave:', isThirdLevelUnderTestLabSave);
+    console.log('[handleSaveDesignElement] isThirdLevelUnderTrainingEventsSave:', isThirdLevelUnderTrainingEventsSave);
     
-    if (!pageInfo.parentSlug || (!isSecondLevel && !isThirdLevelUnderTestLabSave)) {
+    if (!pageInfo.parentSlug || (!isSecondLevel && !isThirdLevelUnderTestLabSave && !isThirdLevelUnderTrainingEventsSave)) {
       console.log('[handleSaveDesignElement] BLOCKED - parentSlug validation failed');
-      toast.error("Design elements are only allowed for second and third-level navigation pages under Test Lab.");
+      toast.error("Design elements are only allowed for second and third-level navigation pages.");
       return;
     }
 
@@ -3552,7 +3555,7 @@ const AdminDashboard = () => {
     : undefined;
   const SelectedDesignIcon = selectedDesignIconOption?.Icon;
   const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
-  const THIRD_LEVEL_PARENTS = ['test-lab']; // Parents whose children (level 3) should also have design buttons
+  const THIRD_LEVEL_PARENTS = ['test-lab', 'training-events']; // Parents whose children (level 3) should also have design buttons
   const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
   const isThirdLevelUnderTestLab = !!(pageInfo && pageInfo.parentSlug && THIRD_LEVEL_PARENTS.some(p => pageInfo.parentSlug?.startsWith(p) && pageInfo.parentSlug !== p));
   const hasDesignButtons = isSecondLevelPage || isThirdLevelUnderTestLab;
