@@ -278,17 +278,21 @@ const AdminDashboard = () => {
   // Wrapper to persist activeTab to sessionStorage
   const setActiveTab = (tab: string) => {
     setActiveTabState(tab);
-    if (tab && resolvedPageSlug) {
-      sessionStorage.setItem(`admin-activeTab-${resolvedPageSlug}`, tab);
+    const pageKey = resolvedPageSlug || selectedPage;
+    if (tab && pageKey) {
+      sessionStorage.setItem(`admin-activeTab-${pageKey}`, tab);
+      console.log("[AdminDashboard] Saved activeTab to sessionStorage:", tab, "for page:", pageKey);
     }
   };
   
   // Restore activeTab from sessionStorage on page load
   useEffect(() => {
     const pageKey = resolvedPageSlug || selectedPage;
-    if (pageKey) {
+    if (pageKey && tabOrder.length > 0) {
       const savedTab = sessionStorage.getItem(`admin-activeTab-${pageKey}`);
+      console.log("[AdminDashboard] Checking sessionStorage for page:", pageKey, "savedTab:", savedTab, "tabOrder:", tabOrder);
       if (savedTab && tabOrder.includes(savedTab)) {
+        console.log("[AdminDashboard] Restoring activeTab from sessionStorage:", savedTab);
         setActiveTabState(savedTab);
       }
     }
@@ -1986,12 +1990,16 @@ const AdminDashboard = () => {
           setTabOrder(validOrder.length > 0 ? validOrder : []);
           
           // Set activeTab: First check sessionStorage for saved tab, otherwise use first available
-          if (validOrder.length > 0 && (!activeTab || !validOrder.includes(activeTab))) {
+          if (validOrder.length > 0) {
             const pageKey = resolvedPageSlug || selectedPage;
             const savedTab = pageKey ? sessionStorage.getItem(`admin-activeTab-${pageKey}`) : null;
+            console.log("[AdminDashboard] loadContent - pageKey:", pageKey, "savedTab:", savedTab, "currentActiveTab:", activeTab, "validOrder:", validOrder);
+            
             if (savedTab && validOrder.includes(savedTab)) {
+              console.log("[AdminDashboard] loadContent - Restoring saved tab:", savedTab);
               setActiveTabState(savedTab);
-            } else {
+            } else if (!activeTab || !validOrder.includes(activeTab)) {
+              console.log("[AdminDashboard] loadContent - No saved tab, using first:", validOrder[0]);
               setActiveTab(validOrder[0]);
             }
           }
