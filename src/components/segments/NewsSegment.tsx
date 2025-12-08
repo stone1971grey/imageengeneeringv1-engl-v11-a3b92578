@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,35 +28,7 @@ const NewsSegment = ({
   articleLimit = 12,
   categories: filterCategories = [],
 }: NewsSegmentProps) => {
-  const [selectedCategory, setSelectedCategory] = useState("all");
-
-  // Fetch unique categories from database
-  const { data: availableCategories } = useQuery({
-    queryKey: ["news-categories-segment"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("news_articles")
-        .select("category")
-        .eq("published", true)
-        .not("category", "is", null);
-
-      if (error) throw error;
-      const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))];
-      return uniqueCategories.sort() as string[];
-    },
-  });
-
-  // Build categories array dynamically
-  const categoryButtons = useMemo(() => {
-    const cats = [{ value: "all", label: "All" }];
-    if (availableCategories) {
-      availableCategories.forEach(cat => {
-        if (cat) cats.push({ value: cat, label: cat });
-      });
-    }
-    return cats;
-  }, [availableCategories]);
-
+  // Fetch news articles with category filter applied from backend configuration
   const { data: newsItems, isLoading } = useQuery({
     queryKey: ["news-articles-segment", articleLimit, filterCategories],
     queryFn: async () => {
@@ -67,7 +39,7 @@ const NewsSegment = ({
         .order("date", { ascending: false })
         .limit(articleLimit);
 
-      // Apply category filter if specific categories are selected via CMS props
+      // Apply category filter if specific categories are selected in CMS backend
       if (filterCategories && filterCategories.length > 0) {
         query = query.in("category", filterCategories);
       }
@@ -86,13 +58,6 @@ const NewsSegment = ({
       day: "numeric",
     });
   };
-
-  // Filter news by selected category (client-side filtering for UI buttons)
-  const filteredNews = useMemo(() => {
-    if (!newsItems) return [];
-    if (selectedCategory === "all") return newsItems;
-    return newsItems.filter(item => item.category === selectedCategory);
-  }, [newsItems, selectedCategory]);
 
   if (isLoading) {
     return (
@@ -113,28 +78,11 @@ const NewsSegment = ({
   return (
     <section id={id} className="pt-[150px] pb-24 bg-[#373737]">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
+        <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-white mb-4">{sectionTitle}</h2>
           <p className="text-xl text-white/80 max-w-3xl mx-auto">
             {sectionDescription}
           </p>
-        </div>
-
-        {/* Category Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {categoryButtons.map((category) => (
-            <button
-              key={category.value}
-              onClick={() => setSelectedCategory(category.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category.value
-                  ? "bg-[#f9dc24] text-black"
-                  : "bg-white/10 text-white hover:bg-white/20"
-              }`}
-            >
-              {category.label}
-            </button>
-          ))}
         </div>
 
         <div className="relative max-w-7xl mx-auto">
@@ -146,7 +94,7 @@ const NewsSegment = ({
             className="w-full"
           >
             <CarouselContent className="-ml-2 md:-ml-4">
-              {filteredNews.map((item) => (
+              {newsItems.map((item) => (
                 <CarouselItem
                   key={item.id}
                   className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3"
