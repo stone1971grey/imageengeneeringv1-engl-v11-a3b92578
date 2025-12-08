@@ -1151,82 +1151,82 @@ const Navigation = () => {
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.news}</span>
                          </Link>
-                         <Link to={getLink('company/about', `/${language}/company/about`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/about'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>{t.nav.aboutUs}</span>
-                         </Link>
-                         <Link to={getLink('company/team', `/${language}/company/team`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/team'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>{t.nav.team}</span>
-                         </Link>
-                         <Link to={getLink('company/nynomic-group', `/${language}/company/nynomic-group`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/nynomic-group'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>{t.nav.nynomicGroup}</span>
-                         </Link>
-                         <Link to={getLink('company/visit-us', `/${language}/company/visit-us`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/visit-us'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>{t.nav.visitUs}</span>
-                         </Link>
-                         <Link to={getLink('company/careers', `/${language}/company/careers`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/careers'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>{t.nav.careers}</span>
-                         </Link>
+                          <Link to={getLink('company/about', `/${language}/company/about`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/about'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>{t.nav.aboutUs}</span>
+                          </Link>
+                          <Link to={getLink('company/team', `/${language}/company/team`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/team'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>{t.nav.team}</span>
+                          </Link>
+                          <Link to={getLink('company/nynomic-group', `/${language}/company/nynomic-group`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/nynomic-group'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>{t.nav.nynomicGroup}</span>
+                          </Link>
+                          <Link to={getLink('company/visit-us', `/${language}/company/visit-us`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/visit-us'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>{t.nav.visitUs}</span>
+                          </Link>
+                          <Link to={getLink('company/careers', `/${language}/company/careers`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/careers'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>{t.nav.careers}</span>
+                          </Link>
                        </div>
                        
                        <div className="space-y-3 flex-1">
                          <h4 className="font-semibold mb-2 text-lg text-black">Business & Partnerships</h4>
-                         <Link to={getLink('company/resellers-subsidiaries', `/${language}/company/resellers-subsidiaries`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/resellers-subsidiaries'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>Resellers & Subsidiaries</span>
-                         </Link>
-                         <Link to={getLink('company/strategic-partnerships', `/${language}/company/strategic-partnerships`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/strategic-partnerships'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>Strategic Partnerships</span>
-                         </Link>
-                         <Link to={getLink('company/group-memberships', `/${language}/company/group-memberships`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/group-memberships'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>Group Memberships</span>
-                         </Link>
-                         <Link to={getLink('company/iso-9001', `/${language}/company/iso-9001`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
-                           {(() => {
-                             const key = pageDesignIcons['company/iso-9001'];
-                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
-                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
-                           })()}
-                           <span>ISO 9001</span>
-                         </Link>
+                          <Link to={getLink('company/resellers-subsidiaries', `/${language}/company/resellers-subsidiaries`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/resellers-subsidiaries'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>Resellers & Subsidiaries</span>
+                          </Link>
+                          <Link to={getLink('company/strategic-partnerships', `/${language}/company/strategic-partnerships`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/strategic-partnerships'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>Strategic Partnerships</span>
+                          </Link>
+                          <Link to={getLink('company/group-memberships', `/${language}/company/group-memberships`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/group-memberships'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>Group Memberships</span>
+                          </Link>
+                          <Link to={getLink('company/iso-9001', `/${language}/company/iso-9001`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                            {(() => {
+                              const key = pageDesignIcons['company/iso-9001'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>ISO 9001</span>
+                          </Link>
                         </div>
                      </div>
                    </div>
