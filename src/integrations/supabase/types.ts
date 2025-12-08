@@ -468,6 +468,7 @@ export type Database = {
           cta_label: string | null
           design_icon: string | null
           flyout_description: string | null
+          flyout_description_translations: Json | null
           flyout_image_url: string | null
           id: number
           page_id: number
@@ -484,6 +485,7 @@ export type Database = {
           cta_label?: string | null
           design_icon?: string | null
           flyout_description?: string | null
+          flyout_description_translations?: Json | null
           flyout_image_url?: string | null
           id?: number
           page_id: number
@@ -500,6 +502,7 @@ export type Database = {
           cta_label?: string | null
           design_icon?: string | null
           flyout_description?: string | null
+          flyout_description_translations?: Json | null
           flyout_image_url?: string | null
           id?: number
           page_id?: number

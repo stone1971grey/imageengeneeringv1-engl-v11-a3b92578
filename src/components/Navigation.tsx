@@ -67,7 +67,7 @@ const Navigation = () => {
   const [styleguidePages, setStyleguidePages] = useState<Array<{ slug: string; title: string; children?: Array<{ slug: string; title: string }> }>>([]);
   const [hoveredStyleguide, setHoveredStyleguide] = useState<string | null>(null);
   const [pageDesignIcons, setPageDesignIcons] = useState<Record<string, string>>({});
-  const [pageFlyoutData, setPageFlyoutData] = useState<Record<string, { imageUrl: string; description: string }>>({});
+  const [pageFlyoutData, setPageFlyoutData] = useState<Record<string, { imageUrl: string; descriptions: Record<string, string> }>>({});
   const [pageCtaConfig, setPageCtaConfig] = useState<Record<string, { slug: string; label: string; icon: string | null }>>({});
 
   const defaultStyleguidePage = styleguidePages[0] || null;
@@ -160,7 +160,7 @@ const Navigation = () => {
     const loadFlyoutData = async () => {
       const { data, error } = await supabase
         .from('page_registry')
-        .select('page_slug, flyout_image_url, flyout_description')
+        .select('page_slug, flyout_image_url, flyout_description, flyout_description_translations')
         .not('flyout_image_url', 'is', null);
 
       if (error) {
@@ -168,12 +168,20 @@ const Navigation = () => {
         return;
       }
 
-      const mapping: Record<string, { imageUrl: string; description: string }> = {};
+      const mapping: Record<string, { imageUrl: string; descriptions: Record<string, string> }> = {};
       (data || []).forEach((row: any) => {
         if (row.flyout_image_url) {
+          // Use translations if available, otherwise fall back to legacy description as English
+          let descriptions: Record<string, string> = {};
+          if (row.flyout_description_translations && typeof row.flyout_description_translations === 'object') {
+            descriptions = row.flyout_description_translations;
+          } else if (row.flyout_description) {
+            descriptions = { en: row.flyout_description };
+          }
+          
           mapping[row.page_slug] = {
             imageUrl: row.flyout_image_url,
-            description: row.flyout_description || '',
+            descriptions,
           };
         }
       });
@@ -710,7 +718,7 @@ const Navigation = () => {
                           <div className="text-black">
                             <h4 className="font-semibold text-lg mb-1">{hoveredIndustry}</h4>
                             <p className="text-base text-gray-700 leading-relaxed">
-                              {flyout.description || ''}
+                              {flyout.descriptions[language] || flyout.descriptions['en'] || ''}
                             </p>
                           </div>
                         </div>
@@ -856,7 +864,7 @@ const Navigation = () => {
                           <div className="text-black">
                             <h4 className="font-semibold text-base mb-1">{hoveredProduct}</h4>
                             <p className="text-sm text-gray-600 leading-relaxed">
-                              {flyout.description || ''}
+                              {flyout.descriptions[language] || flyout.descriptions['en'] || ''}
                             </p>
                           </div>
                         </div>
@@ -1012,7 +1020,7 @@ const Navigation = () => {
                           <div className="text-black">
                             <h4 className="font-semibold text-lg mb-1">{hoveredTestService}</h4>
                             <p className="text-base text-gray-700 leading-relaxed">
-                              {flyout.description || ''}
+                              {flyout.descriptions[language] || flyout.descriptions['en'] || ''}
                             </p>
                           </div>
                         </div>
