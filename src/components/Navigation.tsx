@@ -663,9 +663,9 @@ const Navigation = () => {
 
                       return (
                         <Link to={getLink(targetSlug, `/${targetSlug}`)}>
-                          <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800 py-3">
+                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
                             <CtaIcon className="h-5 w-5 mr-2" />
-                            <span className="text-sm font-medium">{label}</span>
+                            <span className="text-base font-medium">{label}</span>
                           </Button>
                         </Link>
                       );
