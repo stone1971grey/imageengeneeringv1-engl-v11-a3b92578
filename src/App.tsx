@@ -176,6 +176,11 @@ const App = () => (
             <Route path="/:lang/products/measurement-devices" element={<DynamicCMSPage />} />
             <Route path="/:lang/products/measurement-devices/:slug" element={<DynamicCMSPage />} />
             
+            {/* Test Lab Routes */}
+            <Route path="/:lang/test-lab" element={<DynamicCMSPage />} />
+            <Route path="/:lang/test-lab/:category" element={<DynamicCMSPage />} />
+            <Route path="/:lang/test-lab/:category/:service" element={<DynamicCMSPage />} />
+
             {/* Styleguide Routes - Order matters: most specific first */}
             <Route path="/:lang/styleguide" element={<DynamicCMSPage />} />
             <Route path="/:lang/styleguide/:category/:subcategory/:subpage" element={<DynamicCMSPage />} />
