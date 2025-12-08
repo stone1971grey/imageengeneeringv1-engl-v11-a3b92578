@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,187 +37,170 @@ const ALL_CATEGORIES = [
   "Industry News"
 ];
 
-const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorProps) => {
-  // Track which segment we loaded to detect changes
-  const loadedSegmentRef = useRef<string | null>(null);
+interface NewsConfig {
+  title: string;
+  description: string;
+  articleLimit: number;
+  categories: string[];
+}
 
-  const [sectionTitle, setSectionTitle] = useState("");
-  const [sectionDescription, setSectionDescription] = useState("");
-  const [articleLimit, setArticleLimit] = useState("12");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorProps) => {
+  const [config, setConfig] = useState<NewsConfig>({
+    title: "Latest News",
+    description: "Stay updated with the latest developments in image quality testing and measurement technology",
+    articleLimit: 12,
+    categories: [...ALL_CATEGORIES],
+  });
   const [availableCategories, setAvailableCategories] = useState<string[]>([...ALL_CATEGORIES]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load content when segment changes
+  // Unique section key for this news segment's config
+  const configSectionKey = `news-config-${segmentId}`;
+
+  // Load config on mount
   useEffect(() => {
-    const segmentKey = `${pageSlug}-${segmentId}`;
-    
-    // Only load if this is a different segment than what we already loaded
-    if (loadedSegmentRef.current === segmentKey) {
-      return;
-    }
-    
-    const loadData = async () => {
-      setIsLoading(true);
-      
-      try {
-        // Load categories from news_articles
-        const { data: catData } = await supabase
-          .from("news_articles")
-          .select("category")
-          .not("category", "is", null);
-
-        if (catData) {
-          const dbCategories = [...new Set(catData.map((item) => item.category).filter(Boolean))] as string[];
-          const allCategories = [...new Set([...dbCategories, ...ALL_CATEGORIES])].sort();
-          setAvailableCategories(allCategories);
-        }
-
-        // Load segment data from page_content
-        const { data, error } = await supabase
-          .from("page_content")
-          .select("content_value")
-          .eq("page_slug", pageSlug)
-          .eq("section_key", "page_segments")
-          .eq("language", "en")
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (data?.content_value) {
-          const pageSegments = JSON.parse(data.content_value);
-          const newsSegment = pageSegments.find((seg: any) => String(seg.id) === String(segmentId));
-          
-          if (newsSegment?.data) {
-            setSectionTitle(newsSegment.data.title || "Latest News");
-            setSectionDescription(newsSegment.data.description || "Stay updated with the latest developments");
-            setArticleLimit(String(newsSegment.data.articleLimit || 12));
-            
-            const savedCategories = newsSegment.data.categories;
-            if (Array.isArray(savedCategories) && savedCategories.length > 0) {
-              setSelectedCategories([...savedCategories]);
-            } else {
-              setSelectedCategories([...ALL_CATEGORIES]);
-            }
-          } else {
-            setSectionTitle("Latest News");
-            setSectionDescription("Stay updated with the latest developments");
-            setArticleLimit("12");
-            setSelectedCategories([...ALL_CATEGORIES]);
-          }
-        }
-        
-        // Mark this segment as loaded
-        loadedSegmentRef.current = segmentKey;
-      } catch (error) {
-        console.error("Error loading content:", error);
-        toast.error("Failed to load content");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
+    loadConfig();
+    loadAvailableCategories();
   }, [pageSlug, segmentId]);
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    
-    // Capture current state values at the moment of save
-    const currentTitle = sectionTitle;
-    const currentDescription = sectionDescription;
-    const currentArticleLimit = parseInt(articleLimit) || 12;
-    const currentCategories = [...selectedCategories];
-    
+  const loadAvailableCategories = async () => {
     try {
-      // Load current page_segments
+      const { data } = await supabase
+        .from("news_articles")
+        .select("category")
+        .not("category", "is", null);
+
+      if (data) {
+        const dbCategories = [...new Set(data.map((item) => item.category).filter(Boolean))] as string[];
+        const allCategories = [...new Set([...dbCategories, ...ALL_CATEGORIES])].sort();
+        setAvailableCategories(allCategories);
+      }
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+  };
+
+  const loadConfig = async () => {
+    setIsLoading(true);
+    try {
+      // Try to load dedicated config row
       const { data, error } = await supabase
         .from("page_content")
-        .select("id, content_value")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", configSectionKey)
+        .eq("language", "en")
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data?.content_value) {
+        // Parse dedicated config
+        const savedConfig = JSON.parse(data.content_value) as NewsConfig;
+        setConfig({
+          title: savedConfig.title || "Latest News",
+          description: savedConfig.description || "Stay updated with the latest developments",
+          articleLimit: savedConfig.articleLimit || 12,
+          categories: Array.isArray(savedConfig.categories) && savedConfig.categories.length > 0 
+            ? savedConfig.categories 
+            : [...ALL_CATEGORIES],
+        });
+      } else {
+        // No dedicated config exists yet - try to migrate from page_segments
+        await migrateFromPageSegments();
+      }
+    } catch (error) {
+      console.error("Error loading config:", error);
+      toast.error("Failed to load configuration");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const migrateFromPageSegments = async () => {
+    try {
+      const { data } = await supabase
+        .from("page_content")
+        .select("content_value")
         .eq("page_slug", pageSlug)
         .eq("section_key", "page_segments")
         .eq("language", "en")
         .maybeSingle();
 
-      if (error) throw error;
-      if (!data) {
-        toast.error("No page data found");
-        setIsSaving(false);
-        return;
-      }
-
-      const pageSegments = JSON.parse(data.content_value);
-      
-      // Find and update the news segment
-      let foundSegment = false;
-      const updatedSegments = pageSegments.map((seg: any) => {
-        if (String(seg.id) === String(segmentId)) {
-          foundSegment = true;
-          return {
-            ...seg,
-            data: {
-              ...seg.data,
-              title: currentTitle,
-              description: currentDescription,
-              articleLimit: currentArticleLimit,
-              categories: currentCategories,
-            }
-          };
+      if (data?.content_value) {
+        const pageSegments = JSON.parse(data.content_value);
+        const newsSegment = pageSegments.find((seg: any) => String(seg.id) === String(segmentId));
+        
+        if (newsSegment?.data) {
+          setConfig({
+            title: newsSegment.data.title || "Latest News",
+            description: newsSegment.data.description || "Stay updated with the latest developments",
+            articleLimit: newsSegment.data.articleLimit || 12,
+            categories: Array.isArray(newsSegment.data.categories) && newsSegment.data.categories.length > 0
+              ? newsSegment.data.categories
+              : [...ALL_CATEGORIES],
+          });
         }
-        return seg;
-      });
-
-      if (!foundSegment) {
-        toast.error("Segment not found in page data");
-        setIsSaving(false);
-        return;
       }
+    } catch (error) {
+      console.error("Error migrating from page_segments:", error);
+    }
+  };
 
-      // Save back to database using the row ID for precise update
-      const { error: updateError } = await supabase
+  const handleSave = async () => {
+    setIsSaving(true);
+    
+    try {
+      const configJson = JSON.stringify(config);
+      
+      // Upsert dedicated config row
+      const { error } = await supabase
         .from("page_content")
-        .update({ content_value: JSON.stringify(updatedSegments) })
-        .eq("id", data.id);
+        .upsert({
+          page_slug: pageSlug,
+          section_key: configSectionKey,
+          language: "en",
+          content_type: "json",
+          content_value: configJson,
+        }, {
+          onConflict: "page_slug,section_key,language"
+        });
 
-      if (updateError) {
-        throw updateError;
-      }
+      if (error) throw error;
 
       toast.success("News segment saved successfully");
       onUpdate?.();
     } catch (error: any) {
-      console.error("Error saving content:", error);
-      toast.error("Failed to save content: " + error.message);
+      console.error("Error saving config:", error);
+      toast.error("Failed to save: " + error.message);
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleCategoryToggle = (category: string) => {
-    setSelectedCategories((prev) => {
-      if (prev.includes(category)) {
-        return prev.filter((c) => c !== category);
-      } else {
-        return [...prev, category];
-      }
-    });
+    setConfig(prev => ({
+      ...prev,
+      categories: prev.categories.includes(category)
+        ? prev.categories.filter(c => c !== category)
+        : [...prev.categories, category]
+    }));
   };
 
   const handleSelectAll = () => {
-    setSelectedCategories([...availableCategories]);
+    setConfig(prev => ({ ...prev, categories: [...availableCategories] }));
   };
 
   const handleDeselectAll = () => {
-    setSelectedCategories([]);
+    setConfig(prev => ({ ...prev, categories: [] }));
   };
 
-  // Show loading state while fetching data
   if (isLoading) {
     return (
       <CardContent className="flex items-center justify-center py-12">
         <Loader2 className="h-8 w-8 animate-spin text-[#f9dc24]" />
-        <span className="ml-3 text-white">Loading segment data...</span>
+        <span className="ml-3 text-white">Loading configuration...</span>
       </CardContent>
     );
   }
@@ -229,8 +212,8 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
           <Label htmlFor="section-title" className="text-white">Section Title (H2)</Label>
           <Input
             id="section-title"
-            value={sectionTitle}
-            onChange={(e) => setSectionTitle(e.target.value)}
+            value={config.title}
+            onChange={(e) => setConfig(prev => ({ ...prev, title: e.target.value }))}
             placeholder="Latest News"
             className="border-2 border-gray-600"
           />
@@ -240,8 +223,8 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
           <Label htmlFor="section-description" className="text-white">Section Description</Label>
           <Textarea
             id="section-description"
-            value={sectionDescription}
-            onChange={(e) => setSectionDescription(e.target.value)}
+            value={config.description}
+            onChange={(e) => setConfig(prev => ({ ...prev, description: e.target.value }))}
             placeholder="Stay updated with the latest developments..."
             rows={3}
             className="border-2 border-gray-600"
@@ -252,7 +235,10 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
       <div className="space-y-4 border-t border-gray-600 pt-6">
         <div>
           <Label htmlFor="article-limit" className="text-white">Number of Articles to Display</Label>
-          <Select value={articleLimit} onValueChange={setArticleLimit}>
+          <Select 
+            value={String(config.articleLimit)} 
+            onValueChange={(val) => setConfig(prev => ({ ...prev, articleLimit: parseInt(val) }))}
+          >
             <SelectTrigger id="article-limit" className="border-2 border-gray-600">
               <SelectValue />
             </SelectTrigger>
@@ -271,7 +257,6 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
             Select which categories to display. Uncheck categories you don't want to show.
           </p>
           
-          {/* Select All / Deselect All Buttons */}
           <div className="flex gap-2 mb-3">
             <Button
               type="button"
@@ -298,7 +283,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
               <div key={category} className="flex items-center space-x-2">
                 <Checkbox
                   id={`category-${category}`}
-                  checked={selectedCategories.includes(category)}
+                  checked={config.categories.includes(category)}
                   onCheckedChange={() => handleCategoryToggle(category)}
                 />
                 <label
@@ -311,9 +296,9 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
             ))}
           </div>
           
-          {selectedCategories.length > 0 ? (
+          {config.categories.length > 0 ? (
             <p className="text-sm text-[#f9dc24] mt-2">
-              {selectedCategories.length} categor{selectedCategories.length === 1 ? 'y' : 'ies'} selected: {selectedCategories.join(", ")}
+              {config.categories.length} categor{config.categories.length === 1 ? 'y' : 'ies'} selected: {config.categories.join(", ")}
             </p>
           ) : (
             <p className="text-sm text-red-400 mt-2">
