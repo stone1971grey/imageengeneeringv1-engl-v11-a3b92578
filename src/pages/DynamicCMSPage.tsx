@@ -181,6 +181,7 @@ const DynamicCMSPage = () => {
         let tabs: string[] = [];
         const localIntroLegacyMap: Record<string, { title?: string; description?: string }> = {};
         const localIndustriesOverrideMap: Record<string, any> = {};
+        const segmentDataMap: Record<string, any> = {}; // Map segment_key -> data für alle Segmente
 
         (rows || []).forEach((item: any) => {
           if (item.section_key === "page_segments") {
@@ -212,11 +213,14 @@ const DynamicCMSPage = () => {
               console.error('[DynamicCMSPage] Error parsing full_hero override:', e);
             }
           } else {
-            // Numerische section_keys können für Intro (legacy) oder Industries-Overrides verwendet werden
+            // Numerische section_keys für Segment-Daten
             const isNumericKey = /^\d+$/.test(item.section_key);
             if (isNumericKey) {
               try {
                 const parsed = JSON.parse(item.content_value || '{}');
+                // Alle numerischen Keys als Segment-Daten speichern
+                segmentDataMap[item.section_key] = parsed;
+                
                 // Legacy Intro: headingLevel-Feld vorhanden
                 if (parsed && typeof parsed === 'object' && 'headingLevel' in parsed) {
                   localIntroLegacyMap[item.section_key] = {
@@ -232,6 +236,21 @@ const DynamicCMSPage = () => {
               }
             }
           }
+        });
+
+        // Segment-Daten in page_segments zusammenführen
+        segments = segments.map((seg: any) => {
+          const key = String(seg.id || seg.segment_key);
+          if (segmentDataMap[key]) {
+            return {
+              ...seg,
+              data: {
+                ...(seg.data || {}),
+                ...segmentDataMap[key],
+              },
+            };
+          }
+          return seg;
         });
 
         return { segments, tabs, localIntroLegacyMap, localIndustriesOverrideMap };
