@@ -10,14 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Link2, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Link2, ArrowRight, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
@@ -29,7 +23,7 @@ interface ShortcutEditorProps {
   onShortcutUpdated: () => void;
 }
 
-interface PageOption {
+interface TargetPageInfo {
   page_id: number;
   page_slug: string;
   page_title: string;
@@ -44,46 +38,102 @@ export const ShortcutEditor = ({
 }: ShortcutEditorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isShortcut, setIsShortcut] = useState(!!currentTargetSlug);
-  const [targetSlug, setTargetSlug] = useState(currentTargetSlug || "");
-  const [availablePages, setAvailablePages] = useState<PageOption[]>([]);
+  const [targetPageId, setTargetPageId] = useState<string>("");
+  const [targetPageInfo, setTargetPageInfo] = useState<TargetPageInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      loadAvailablePages();
+    if (isOpen && currentTargetSlug) {
+      loadCurrentTargetInfo();
     }
-  }, [isOpen]);
+  }, [isOpen, currentTargetSlug]);
 
   useEffect(() => {
     setIsShortcut(!!currentTargetSlug);
-    setTargetSlug(currentTargetSlug || "");
   }, [currentTargetSlug]);
 
-  const loadAvailablePages = async () => {
+  const loadCurrentTargetInfo = async () => {
+    if (!currentTargetSlug) return;
+    
     setLoading(true);
     try {
       const { data, error } = await supabase
         .from("page_registry")
         .select("page_id, page_slug, page_title")
-        .neq("page_id", pageId) // Exclude current page
-        .is("target_page_slug", null) // Only non-shortcut pages as targets
-        .order("page_slug", { ascending: true });
+        .eq("page_slug", currentTargetSlug)
+        .maybeSingle();
 
-      if (error) throw error;
-      setAvailablePages(data || []);
+      if (!error && data) {
+        setTargetPageId(data.page_id.toString());
+        setTargetPageInfo(data);
+      }
     } catch (error) {
-      console.error("Error loading pages:", error);
-      toast.error("Failed to load available pages");
+      console.error("Error loading target info:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  const validatePageId = async (inputPageId: string) => {
+    setValidationError(null);
+    setTargetPageInfo(null);
+
+    if (!inputPageId.trim()) {
+      return;
+    }
+
+    const numericId = parseInt(inputPageId, 10);
+    if (isNaN(numericId)) {
+      setValidationError("Please enter a valid number");
+      return;
+    }
+
+    if (numericId === pageId) {
+      setValidationError("Cannot redirect to itself");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("page_registry")
+        .select("page_id, page_slug, page_title, target_page_slug")
+        .eq("page_id", numericId)
+        .maybeSingle();
+
+      if (error || !data) {
+        setValidationError(`Page ID ${numericId} not found`);
+        return;
+      }
+
+      if (data.target_page_slug) {
+        setValidationError("Target page is itself a shortcut");
+        return;
+      }
+
+      setTargetPageInfo(data);
+    } catch (error) {
+      setValidationError("Error validating page");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePageIdChange = (value: string) => {
+    setTargetPageId(value);
+    // Debounce validation
+    const timeoutId = setTimeout(() => {
+      validatePageId(value);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      const newTargetSlug = isShortcut && targetSlug ? targetSlug : null;
+      const newTargetSlug = isShortcut && targetPageInfo ? targetPageInfo.page_slug : null;
 
       const { error } = await supabase
         .from("page_registry")
@@ -107,7 +157,7 @@ export const ShortcutEditor = ({
 
       toast.success(
         newTargetSlug
-          ? `Shortcut saved: redirects to ${newTargetSlug}`
+          ? `Shortcut saved: redirects to ID ${targetPageInfo?.page_id}`
           : "Shortcut removed"
       );
       setIsOpen(false);
@@ -120,31 +170,26 @@ export const ShortcutEditor = ({
     }
   };
 
-  const handleRemoveShortcut = async () => {
-    setIsShortcut(false);
-    setTargetSlug("");
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          size="sm"
-          variant="ghost"
-          className={
+          variant="decision"
+          className={`flex items-center gap-2 ${
             currentTargetSlug
-              ? "text-orange-400 hover:text-orange-300 hover:bg-orange-900/20"
-              : "text-gray-500 hover:text-gray-300 hover:bg-gray-700"
-          }
-          title={currentTargetSlug ? `Shortcut to: ${currentTargetSlug}` : "Set as shortcut"}
+              ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
+              : "bg-gray-600 text-white hover:bg-gray-500"
+          } shadow-soft hover:shadow-lg`}
+          title={currentTargetSlug ? `Shortcut to: ${currentTargetSlug}` : "Configure shortcut"}
         >
           <Link2 className="h-4 w-4" />
+          Shortcut
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-lg">
+      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center gap-2">
-            <Link2 className="h-5 w-5 text-orange-400" />
+            <Link2 className="h-5 w-5 text-[#f9dc24]" />
             Shortcut Configuration
           </DialogTitle>
         </DialogHeader>
@@ -152,8 +197,11 @@ export const ShortcutEditor = ({
         <div className="space-y-6 py-4">
           <div className="bg-gray-800 p-4 rounded-lg">
             <p className="text-sm text-gray-400 mb-1">Current Page</p>
-            <p className="font-medium">{pageTitle}</p>
-            <p className="text-sm text-gray-500 font-mono">{pageSlug}</p>
+            <div className="flex items-center gap-2">
+              <Badge className="bg-blue-600 text-white">ID {pageId}</Badge>
+              <span className="font-medium">{pageTitle}</span>
+            </div>
+            <p className="text-sm text-gray-500 font-mono mt-1">{pageSlug}</p>
           </div>
 
           <div className="flex items-center justify-between">
@@ -171,49 +219,63 @@ export const ShortcutEditor = ({
               onCheckedChange={(checked) => {
                 setIsShortcut(checked);
                 if (!checked) {
-                  setTargetSlug("");
+                  setTargetPageId("");
+                  setTargetPageInfo(null);
+                  setValidationError(null);
                 }
               }}
             />
           </div>
 
           {isShortcut && (
-            <div className="space-y-3">
-              <Label>Redirect to</Label>
-              {loading ? (
-                <div className="text-gray-400 text-sm">Loading pages...</div>
-              ) : (
-                <Select value={targetSlug} onValueChange={setTargetSlug}>
-                  <SelectTrigger className="bg-gray-800 border-gray-600">
-                    <SelectValue placeholder="Select target page..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-600 max-h-80">
-                    {availablePages.map((page) => (
-                      <SelectItem
-                        key={page.page_id}
-                        value={page.page_slug}
-                        className="text-white hover:bg-gray-700"
-                      >
-                        <div className="flex flex-col items-start">
-                          <span>{page.page_title}</span>
-                          <span className="text-xs text-gray-400 font-mono">
-                            {page.page_slug}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="target-page-id" className="text-sm font-medium">
+                  Target Page ID
+                </Label>
+                <Input
+                  id="target-page-id"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Enter Page ID (e.g., 123)"
+                  value={targetPageId}
+                  onChange={(e) => handlePageIdChange(e.target.value)}
+                  className="mt-2 bg-gray-800 border-gray-600 text-white placeholder:text-gray-500"
+                />
+              </div>
+
+              {loading && (
+                <div className="text-gray-400 text-sm flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                  Validating...
+                </div>
               )}
 
-              {targetSlug && (
-                <div className="bg-orange-900/20 border border-orange-600/30 p-3 rounded-lg">
-                  <p className="text-sm text-orange-200">
-                    <span className="font-medium">Preview:</span> When users visit{" "}
-                    <span className="font-mono text-orange-300">/{pageSlug}</span>,
-                    they will be redirected to{" "}
-                    <span className="font-mono text-orange-300">/{targetSlug}</span>
-                  </p>
+              {validationError && (
+                <div className="flex items-center gap-2 text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-600/30">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  {validationError}
+                </div>
+              )}
+
+              {targetPageInfo && !validationError && (
+                <div className="bg-green-900/20 border border-green-600/30 p-4 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-300 mb-2">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">Valid target</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Badge className="bg-blue-600 text-white">ID {targetPageInfo.page_id}</Badge>
+                    <span className="text-white">{targetPageInfo.page_title}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 font-mono mt-2">{targetPageInfo.page_slug}</p>
+                  
+                  <div className="mt-3 pt-3 border-t border-green-600/30 flex items-center gap-2 text-green-200 text-sm">
+                    <span className="font-mono text-xs">/{pageSlug}</span>
+                    <ArrowRight className="h-4 w-4" />
+                    <span className="font-mono text-xs">/{targetPageInfo.page_slug}</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -238,8 +300,8 @@ export const ShortcutEditor = ({
           </Button>
           <Button
             onClick={handleSave}
-            disabled={saving || (isShortcut && !targetSlug)}
-            className="bg-orange-600 hover:bg-orange-700 text-white"
+            disabled={saving || (isShortcut && (!targetPageInfo || !!validationError))}
+            className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold"
           >
             {saving ? "Saving..." : "Save"}
           </Button>
@@ -255,9 +317,8 @@ export const ShortcutBadge = ({ targetSlug }: { targetSlug: string | null }) => 
 
   return (
     <Badge
-      variant="outline"
-      className="bg-orange-900/30 border-orange-600 text-orange-200 text-xs"
-      title={`Shortcut to: ${targetSlug}`}
+      className="bg-[#f9dc24] text-black border-[#f9dc24] text-xs font-semibold"
+      title={`Shortcut → ${targetSlug}`}
     >
       <Link2 className="h-3 w-3 mr-1" />
       Shortcut
