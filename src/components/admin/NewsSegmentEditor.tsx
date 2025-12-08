@@ -38,31 +38,30 @@ const ALL_CATEGORIES = [
 ];
 
 const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorProps) => {
-  // Use refs to track if we've loaded from DB
-  const hasLoadedRef = useRef(false);
-  const loadingRef = useRef(false);
+  // Track which segment we loaded to detect changes
+  const loadedSegmentRef = useRef<string | null>(null);
 
   const [sectionTitle, setSectionTitle] = useState("");
   const [sectionDescription, setSectionDescription] = useState("");
-  const [articleLimit, setArticleLimit] = useState("");
-  // Start with empty array - will be populated from DB
+  const [articleLimit, setArticleLimit] = useState("12");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([...ALL_CATEGORIES]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load content ONLY ONCE on mount
+  // Load content when segment changes
   useEffect(() => {
-    if (hasLoadedRef.current || loadingRef.current) {
+    const segmentKey = `${pageSlug}-${segmentId}`;
+    
+    // Only load if this is a different segment than what we already loaded
+    if (loadedSegmentRef.current === segmentKey) {
       return;
     }
     
-    loadingRef.current = true;
-    
     const loadData = async () => {
+      setIsLoading(true);
+      
       try {
-        setIsLoading(true);
-        
         // Load categories from news_articles
         const { data: catData } = await supabase
           .from("news_articles")
@@ -95,16 +94,13 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
             setSectionDescription(newsSegment.data.description || "Stay updated with the latest developments");
             setArticleLimit(String(newsSegment.data.articleLimit || 12));
             
-            // Categories: Use what's in DB, or default to ALL if nothing saved
             const savedCategories = newsSegment.data.categories;
             if (Array.isArray(savedCategories) && savedCategories.length > 0) {
               setSelectedCategories([...savedCategories]);
             } else {
-              // First time - no categories saved, default to all
               setSelectedCategories([...ALL_CATEGORIES]);
             }
           } else {
-            // Segment not found, use defaults
             setSectionTitle("Latest News");
             setSectionDescription("Stay updated with the latest developments");
             setArticleLimit("12");
@@ -112,13 +108,13 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
           }
         }
         
-        hasLoadedRef.current = true;
+        // Mark this segment as loaded
+        loadedSegmentRef.current = segmentKey;
       } catch (error) {
         console.error("Error loading content:", error);
         toast.error("Failed to load content");
       } finally {
         setIsLoading(false);
-        loadingRef.current = false;
       }
     };
 
@@ -127,6 +123,14 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
   const handleSave = async () => {
     setIsSaving(true);
+    
+    // Capture current state values at the moment of save
+    const currentTitle = sectionTitle;
+    const currentDescription = sectionDescription;
+    const currentArticleLimit = articleLimit;
+    const currentCategories = [...selectedCategories];
+    
+    console.log("[NewsSegmentEditor] SAVE - articleLimit:", currentArticleLimit, "categories:", currentCategories);
     
     try {
       // Load current page_segments
@@ -152,10 +156,10 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
               ...seg,
               data: {
                 ...seg.data,
-                title: sectionTitle,
-                description: sectionDescription,
-                articleLimit: parseInt(articleLimit) || 12,
-                categories: [...selectedCategories], // Explicit copy
+                title: currentTitle,
+                description: currentDescription,
+                articleLimit: parseInt(currentArticleLimit) || 12,
+                categories: currentCategories,
               }
             };
           }
@@ -168,6 +172,8 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
           return;
         }
 
+        console.log("[NewsSegmentEditor] SAVE - Updating DB with:", JSON.stringify(updatedSegments.find((s: any) => String(s.id) === String(segmentId))?.data));
+
         // Save back to database
         const { error: updateError } = await supabase
           .from("page_content")
@@ -178,6 +184,7 @@ const NewsSegmentEditor = ({ pageSlug, segmentId, onUpdate }: NewsSegmentEditorP
 
         if (updateError) throw updateError;
 
+        console.log("[NewsSegmentEditor] SAVE - Success!");
         toast.success("News segment saved successfully");
         onUpdate?.();
       } else {
