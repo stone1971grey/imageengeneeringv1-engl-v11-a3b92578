@@ -1145,68 +1145,86 @@ const Navigation = () => {
                    <div className="flex gap-4 p-4">
                        <div className="space-y-3 flex-1 pr-4 border-r border-border">
                          <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.aboutIE}</h4>
-                         <Link to="/news" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
+                         <Link to={`/${language}/news`} className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
                            isActive('/news') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
                          }`}>
                            <CustomTargetIcon className="h-5 w-5" />
                            <span>{t.nav.news}</span>
                          </Link>
-                         <Link to="/about" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/about') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/about', `/${language}/company/about`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/about'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>{t.nav.aboutUs}</span>
                          </Link>
-                         <Link to="/team" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/team') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/team', `/${language}/company/team`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/team'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>{t.nav.team}</span>
                          </Link>
-                         <Link to="/nynomic-group" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/nynomic-group') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/nynomic-group', `/${language}/company/nynomic-group`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/nynomic-group'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>{t.nav.nynomicGroup}</span>
                          </Link>
-                         <Link to="/visit-us" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/visit-us') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/visit-us', `/${language}/company/visit-us`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/visit-us'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>{t.nav.visitUs}</span>
                          </Link>
-                         <Link to="/careers" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/careers') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/careers', `/${language}/company/careers`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/careers'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>{t.nav.careers}</span>
                          </Link>
                        </div>
                        
                        <div className="space-y-3 flex-1">
                          <h4 className="font-semibold mb-2 text-lg text-black">Business & Partnerships</h4>
-                         <Link to="/resellers-subsidiaries" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/resellers-subsidiaries') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/resellers-subsidiaries', `/${language}/company/resellers-subsidiaries`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/resellers-subsidiaries'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>Resellers & Subsidiaries</span>
                          </Link>
-                         <Link to="/strategic-partnerships" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/strategic-partnerships') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/strategic-partnerships', `/${language}/company/strategic-partnerships`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/strategic-partnerships'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>Strategic Partnerships</span>
                          </Link>
-                         <Link to="/group-memberships" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/group-memberships') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/group-memberships', `/${language}/company/group-memberships`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/group-memberships'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>Group Memberships</span>
                          </Link>
-                         <Link to="/iso-9001" className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/iso-9001') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
+                         <Link to={getLink('company/iso-9001', `/${language}/company/iso-9001`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
+                           {(() => {
+                             const key = pageDesignIcons['company/iso-9001'];
+                             const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                             return IconComp ? <IconComp className="h-5 w-5" /> : <CustomTargetIcon className="h-5 w-5" />;
+                           })()}
                            <span>ISO 9001</span>
                          </Link>
                         </div>
