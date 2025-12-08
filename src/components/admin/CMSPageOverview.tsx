@@ -291,16 +291,41 @@ export const CMSPageOverview = () => {
   };
 
   const getCategoryBadge = (slug: string) => {
-    if (slug.startsWith("styleguide")) {
-      return <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">Styleguide</Badge>;
+    // Home for index page
+    if (slug === "index") {
+      return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Home</Badge>;
     }
+    // Your Solution
     if (slug.startsWith("your-solution")) {
       return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">Your Solution</Badge>;
     }
+    // Products
     if (slug.startsWith("products")) {
       return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">Products</Badge>;
     }
-    return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">Other</Badge>;
+    // Test Lab
+    if (slug.startsWith("test-lab")) {
+      return <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">Test Lab</Badge>;
+    }
+    // Training & Events
+    if (slug.startsWith("training") || slug.startsWith("events")) {
+      return <Badge variant="outline" className="bg-pink-100 text-pink-800 border-pink-300">Training & Events</Badge>;
+    }
+    // Info Hub
+    if (slug.startsWith("info-hub") || slug.startsWith("downloads") || slug.startsWith("news")) {
+      return <Badge variant="outline" className="bg-cyan-100 text-cyan-800 border-cyan-300">Info Hub</Badge>;
+    }
+    // Company
+    if (slug.startsWith("company") || slug.startsWith("contact") || slug.startsWith("about") || slug.startsWith("inside-lab")) {
+      return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-300">Company</Badge>;
+    }
+    // Styleguide (internal)
+    if (slug.startsWith("styleguide")) {
+      return <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-300">Styleguide</Badge>;
+    }
+    // Fallback - derive from first slug segment
+    const firstSegment = slug.split('/')[0];
+    return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-300">{firstSegment || "Other"}</Badge>;
   };
 
   const getCtaBadge = (page: CMSPage) => {
