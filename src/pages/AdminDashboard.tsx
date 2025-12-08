@@ -1799,30 +1799,36 @@ const AdminDashboard = () => {
           const reverseRegistry = (window as any).__segmentKeyRegistry || {};
           const validSegmentIds = Object.keys(reverseRegistry);
           
-          // Filter out deleted segments - tabId is a segment_id string like "197"
-          const validOrder = (order || []).filter((tabId: string) => {
-            return validSegmentIds.includes(tabId);
-          });
+          // IMPORTANT: Only filter if registry is populated - otherwise keep all segments
+          // This prevents the bug where segments disappear when registry isn't loaded yet
+          let validOrder = order || [];
           
-          // If we filtered anything out, save the cleaned tab_order back to database
-          if (validOrder.length !== order.length && user) {
-            console.log("🧹 Cleaning tab_order: Removed deleted segments", {
-              original: order,
-              cleaned: validOrder,
-              validSegmentIds
+          if (validSegmentIds.length > 0) {
+            // Filter out deleted segments - tabId is a segment_id string like "197"
+            validOrder = (order || []).filter((tabId: string) => {
+              return validSegmentIds.includes(tabId);
             });
-            supabase
-              .from("page_content")
-              .upsert({
-                page_slug: resolvedPageSlug || selectedPage,
-                section_key: "tab_order",
-                content_type: "json",
-                content_value: JSON.stringify(validOrder),
-                updated_at: new Date().toISOString(),
-                updated_by: user.id
-              }, {
-                onConflict: 'page_slug,section_key,language'
+            
+            // If we filtered anything out, save the cleaned tab_order back to database
+            if (validOrder.length !== order.length && user) {
+              console.log("🧹 Cleaning tab_order: Removed deleted segments", {
+                original: order,
+                cleaned: validOrder,
+                validSegmentIds
               });
+              supabase
+                .from("page_content")
+                .upsert({
+                  page_slug: resolvedPageSlug || selectedPage,
+                  section_key: "tab_order",
+                  content_type: "json",
+                  content_value: JSON.stringify(validOrder),
+                  updated_at: new Date().toISOString(),
+                  updated_by: user.id
+                }, {
+                  onConflict: 'page_slug,section_key,language'
+                });
+            }
           }
           
           setTabOrder(validOrder.length > 0 ? validOrder : []);
