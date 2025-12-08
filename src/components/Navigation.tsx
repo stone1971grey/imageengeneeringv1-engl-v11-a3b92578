@@ -46,6 +46,9 @@ const PAGE_DESIGN_ICON_MAP: Record<string, any> = {
   zap: Zap,
   file: FileText,
   target: CustomTargetIcon,
+  flask: FlaskConical,
+  'check-circle': CheckCircle,
+  settings: Settings,
 };
 
 const Navigation = () => {
