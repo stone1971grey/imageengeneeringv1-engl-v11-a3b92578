@@ -24,13 +24,28 @@ interface NewsSegmentEditorProps {
 }
 
 const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPageSlug }: NewsSegmentEditorProps) => {
+  // Default categories - all selected by default
+  const ALL_CATEGORIES = [
+    "Company",
+    "Product Launch",
+    "Technology",
+    "Standards",
+    "Innovation",
+    "Partnership",
+    "Event",
+    "Research",
+    "Technical Report",
+    "Industry News"
+  ];
+
   const [sectionTitle, setSectionTitle] = useState("Latest News");
   const [sectionDescription, setSectionDescription] = useState(
     "Stay updated with the latest developments in image quality testing and measurement technology"
   );
   const [articleLimit, setArticleLimit] = useState("12");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  // Initialize with ALL categories selected by default
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([...ALL_CATEGORIES]);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([...ALL_CATEGORIES]);
   const [isSaving, setIsSaving] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -46,7 +61,7 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
 
   const loadAvailableCategories = async () => {
     try {
-      // Fetch ALL unique categories from NewsEditor's NEWS_CATEGORIES plus database
+      // Fetch unique categories from database and merge with standard categories
       const { data, error } = await supabase
         .from("news_articles")
         .select("category")
@@ -57,25 +72,13 @@ const NewsSegmentEditorComponent = ({ pageSlug, segmentId, onUpdate, currentPage
       // Get unique categories from all articles (published and unpublished)
       const dbCategories = [...new Set(data.map((item) => item.category).filter(Boolean))] as string[];
       
-      // Also add standard categories that might not have articles yet
-      const standardCategories = [
-        "Company",
-        "Product Launch",
-        "Technology",
-        "Standards",
-        "Innovation",
-        "Partnership",
-        "Event",
-        "Research",
-        "Technical Report",
-        "Industry News"
-      ];
-      
-      // Merge and deduplicate
-      const allCategories = [...new Set([...dbCategories, ...standardCategories])].sort();
+      // Merge with standard categories and deduplicate
+      const allCategories = [...new Set([...dbCategories, ...ALL_CATEGORIES])].sort();
       setAvailableCategories(allCategories);
     } catch (error: any) {
       console.error("Error loading categories:", error);
+      // Fallback to standard categories on error
+      setAvailableCategories([...ALL_CATEGORIES]);
     }
   };
 
