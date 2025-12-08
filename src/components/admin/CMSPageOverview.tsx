@@ -60,6 +60,7 @@ interface CMSPage {
   cta_label?: string | null;
   cta_icon?: string | null;
   target_page_slug?: string | null;
+  target_page_id?: number | null;
 }
 
 export const CMSPageOverview = () => {
@@ -155,6 +156,12 @@ export const CMSPageOverview = () => {
         return acc;
       }, {} as Record<string, Set<string>>);
 
+      // Build a lookup map from slug to page_id for resolving target_page_id
+      const slugToPageId: Record<string, number> = {};
+      (pagesData || []).forEach((p: any) => {
+        slugToPageId[p.page_slug] = p.page_id;
+      });
+
       // Merge data
       const enrichedPages: CMSPage[] = (pagesData || []).map((page: any) => ({
         page_id: page.page_id,
@@ -174,6 +181,7 @@ export const CMSPageOverview = () => {
         cta_label: page.cta_label,
         cta_icon: page.cta_icon,
         target_page_slug: page.target_page_slug,
+        target_page_id: page.target_page_slug ? slugToPageId[page.target_page_slug] || null : null,
       }));
 
       setPages(enrichedPages);
@@ -794,7 +802,7 @@ export const CMSPageOverview = () => {
         <TableCell className="font-mono text-sm text-gray-400">
           <div className="flex items-center gap-2 flex-wrap">
             <span>{page.page_slug}</span>
-            <ShortcutBadge targetSlug={page.target_page_slug || null} />
+            <ShortcutBadge targetSlug={page.target_page_slug || null} targetPageId={page.target_page_id} />
             {getCtaBadge(page)}
             <EditSlugDialog
               pageId={page.page_id}
@@ -851,13 +859,6 @@ export const CMSPageOverview = () => {
                 <ExternalLink className="h-4 w-4" />
               </Button>
             </a>
-            <ShortcutEditor
-              pageId={page.page_id}
-              pageSlug={page.page_slug}
-              pageTitle={page.page_title}
-              currentTargetSlug={page.target_page_slug || null}
-              onShortcutUpdated={loadPages}
-            />
             <Button
               size="sm"
               variant="ghost"
