@@ -639,16 +639,22 @@ const Navigation = () => {
                        {/* Conditional Rendering of Applications */}
                        {hoveredIndustry && industryData[hoveredIndustry as keyof typeof industryData] && (
                          <div className="space-y-3">
-                             {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => (
-                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1 px-2 rounded-md">
-                                <ChevronRight className="h-4 w-4" />
-                                 {application.link === "#" ? (
-                                   <span>{application.name}</span>
-                                 ) : (
-                                   <Link to={getLink(application.link)}>{application.name}</Link>
-                                 )}
-                               </div>
-                            ))}
+                             {industryData[hoveredIndustry as keyof typeof industryData].subgroups.map((application, index) => {
+                               const linkPath = application.link !== "#" ? application.link : null;
+                               const isLinkActive = linkPath ? isActive(linkPath) : false;
+                               return (
+                                 <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black py-1 px-2 rounded-md ${
+                                   isLinkActive ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                                 }`}>
+                                   <ChevronRight className="h-4 w-4" />
+                                   {application.link === "#" ? (
+                                     <span>{application.name}</span>
+                                   ) : (
+                                     <Link to={getLink(application.link)}>{application.name}</Link>
+                                   )}
+                                 </div>
+                               );
+                             })}
                          </div>
                        )}
                        
@@ -769,16 +775,22 @@ const Navigation = () => {
                        {/* Conditional Rendering of Subgroups */}
                         {hoveredProduct && productData[hoveredProduct as keyof typeof productData] && (
                           <div className="space-y-3">
-                            {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => (
-                              <div key={index} className="flex items-center gap-3 text-lg transition-colors cursor-pointer text-black hover:bg-[#f9dc24] py-1 px-2 rounded-md">
-                                <ChevronRight className="h-4 w-4" />
-                                {subgroup.link === "#" ? (
-                                  <span>{subgroup.name}</span>
-                                ) : (
-                                  <Link to={getLink(subgroup.link)}>{subgroup.name}</Link>
-                                )}
-                              </div>
-                            ))}
+                            {productData[hoveredProduct as keyof typeof productData].subgroups.map((subgroup, index) => {
+                              const linkPath = subgroup.link !== "#" ? subgroup.link : null;
+                              const isLinkActive = linkPath ? isActive(linkPath) : false;
+                              return (
+                                <div key={index} className={`flex items-center gap-3 text-lg transition-colors cursor-pointer text-black py-1 px-2 rounded-md ${
+                                  isLinkActive ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                                }`}>
+                                  <ChevronRight className="h-4 w-4" />
+                                  {subgroup.link === "#" ? (
+                                    <span>{subgroup.name}</span>
+                                  ) : (
+                                    <Link to={getLink(subgroup.link)}>{subgroup.name}</Link>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
                        
