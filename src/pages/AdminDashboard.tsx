@@ -3557,8 +3557,10 @@ const AdminDashboard = () => {
   const SECOND_LEVEL_PARENTS = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab', 'training-events'];
   const THIRD_LEVEL_PARENTS = ['test-lab', 'training-events']; // Parents whose children (level 3) should also have design buttons
   const isSecondLevelPage = !!(pageInfo && pageInfo.parentSlug && SECOND_LEVEL_PARENTS.includes(pageInfo.parentSlug));
-  const isThirdLevelUnderTestLab = !!(pageInfo && pageInfo.parentSlug && THIRD_LEVEL_PARENTS.some(p => pageInfo.parentSlug?.startsWith(p) && pageInfo.parentSlug !== p));
-  const hasDesignButtons = isSecondLevelPage || isThirdLevelUnderTestLab;
+  // Third-level: pages whose parent_slug itself starts with a third-level parent (e.g., parent_slug='test-lab/overview' for a 4th level page)
+  // For pages like 'training-events/webinars', parent_slug='training-events' which is in SECOND_LEVEL_PARENTS, so they are second-level
+  const isThirdLevelPage = !!(pageInfo && pageInfo.parentSlug && THIRD_LEVEL_PARENTS.some(p => pageInfo.parentSlug?.startsWith(p + '/') ));
+  const hasDesignButtons = isSecondLevelPage || isThirdLevelPage;
 
   return (
     <AdminDashboardErrorBoundary>
