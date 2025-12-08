@@ -667,7 +667,7 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
             />
 
             {teamImageMetadata && (
-              <div className="mt-4 p-4 bg-gray-900 rounded-lg border-2 border-gray-700 space-y-2">
+              <div className="mt-4 p-4 bg-gray-950 rounded-lg border-2 border-gray-600 space-y-2">
                 <h4 className="font-semibold text-white text-lg mb-3">Image Information</h4>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
