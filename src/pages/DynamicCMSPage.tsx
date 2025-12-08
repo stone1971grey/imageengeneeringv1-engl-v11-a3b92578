@@ -647,15 +647,11 @@ const DynamicCMSPage = () => {
         );
 
       case "news":
-        console.log("[DynamicCMSPage] Rendering news segment:", {
-          segmentId,
-          segmentData: segment.data,
-          categories: segment.data?.categories
-        });
         return (
           <NewsSegment
             key={segmentId}
             id={segmentDbId?.toString()}
+            pageSlug={pageSlug}
             sectionTitle={segment.data?.title || "Latest News"}
             sectionDescription={segment.data?.description}
             articleLimit={segment.data?.articleLimit}

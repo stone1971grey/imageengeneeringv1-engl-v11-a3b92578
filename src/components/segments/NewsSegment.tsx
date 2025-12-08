@@ -15,28 +15,62 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface NewsSegmentProps {
   id?: string;
+  pageSlug?: string;
+  // Fallback props if no dedicated config exists
   sectionTitle?: string;
   sectionDescription?: string;
   articleLimit?: number;
   categories?: string[];
 }
 
+interface NewsConfig {
+  title: string;
+  description: string;
+  articleLimit: number;
+  categories: string[];
+}
+
 const NewsSegment = ({
   id,
-  sectionTitle = "Latest News",
-  sectionDescription = "Stay updated with the latest developments in image quality testing and measurement technology",
-  articleLimit = 12,
-  categories: filterCategories = [],
+  pageSlug = "index",
+  sectionTitle: fallbackTitle = "Latest News",
+  sectionDescription: fallbackDescription = "Stay updated with the latest developments in image quality testing and measurement technology",
+  articleLimit: fallbackLimit = 12,
+  categories: fallbackCategories = [],
 }: NewsSegmentProps) => {
-  // Debug: log received props
-  console.log("[NewsSegment] Received props:", { id, sectionTitle, sectionDescription, articleLimit, categories: filterCategories });
+  
+  // Load dedicated config for this news segment
+  const { data: config } = useQuery({
+    queryKey: ["news-segment-config", pageSlug, id],
+    queryFn: async () => {
+      if (!id) return null;
+      
+      const configSectionKey = `news-config-${id}`;
+      const { data, error } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", pageSlug)
+        .eq("section_key", configSectionKey)
+        .eq("language", "en")
+        .maybeSingle();
 
-  // Fetch news articles with category filter applied from backend configuration
+      if (error || !data?.content_value) return null;
+      
+      return JSON.parse(data.content_value) as NewsConfig;
+    },
+    staleTime: 30000, // Cache for 30 seconds
+  });
+
+  // Use dedicated config if available, otherwise fall back to props
+  const sectionTitle = config?.title || fallbackTitle;
+  const sectionDescription = config?.description || fallbackDescription;
+  const articleLimit = config?.articleLimit || fallbackLimit;
+  const filterCategories = config?.categories || fallbackCategories;
+
+  // Fetch news articles with category filter
   const { data: newsItems, isLoading } = useQuery({
     queryKey: ["news-articles-segment", articleLimit, filterCategories],
     queryFn: async () => {
-      console.log("[NewsSegment] Fetching with categories:", filterCategories);
-      
       let query = supabase
         .from("news_articles")
         .select("*")
@@ -44,15 +78,13 @@ const NewsSegment = ({
         .order("date", { ascending: false })
         .limit(articleLimit);
 
-      // Apply category filter if specific categories are selected in CMS backend
+      // Apply category filter if categories are selected
       if (filterCategories && filterCategories.length > 0) {
-        console.log("[NewsSegment] Applying category filter:", filterCategories);
         query = query.in("category", filterCategories);
       }
 
       const { data, error } = await query;
       if (error) throw error;
-      console.log("[NewsSegment] Fetched articles:", data?.length);
       return data;
     },
   });
