@@ -174,15 +174,12 @@ export const ShortcutEditor = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="decision"
-          className={`flex items-center gap-2 ${
-            currentTargetSlug
-              ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-              : "bg-gray-600 text-white hover:bg-gray-500"
-          } shadow-soft hover:shadow-lg`}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-1.5 bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:border-blue-700"
           title={currentTargetSlug ? `Shortcut to: ${currentTargetSlug}` : "Configure shortcut"}
         >
-          <Link2 className="h-4 w-4" />
+          <Link2 className="h-3.5 w-3.5" />
           Shortcut
         </Button>
       </DialogTrigger>
