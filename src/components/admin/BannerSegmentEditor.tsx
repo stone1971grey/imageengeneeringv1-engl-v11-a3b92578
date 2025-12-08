@@ -717,32 +717,21 @@ const BannerSegmentEditorComponent = ({
               return (
               <div 
                 key={image.id} 
-                className="p-3 border rounded-lg bg-background space-y-2"
+                className="p-4 border-2 border-gray-600 rounded-lg bg-gray-900 space-y-4"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    {hasImage && (
-                      <div className="w-12 h-12 rounded border overflow-hidden flex-shrink-0">
-                        <img
-                          src={image.url}
-                          alt={image.alt || `Banner image ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-white">Image {index + 1}</span>
+                    {isUploading && (
+                      <span className="text-xs px-2 py-0.5 bg-blue-500 text-white rounded-full animate-pulse">
+                        Uploading...
+                      </span>
                     )}
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">Image {index + 1}</span>
-                      {isUploading && (
-                        <span className="text-xs px-2 py-0.5 bg-blue-500 text-white rounded-full animate-pulse">
-                          Uploading...
-                        </span>
-                      )}
-                      {hasImage && !isUploading && !isTarget && (
-                        <span className="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full">
-                          ✓
-                        </span>
-                      )}
-                    </div>
+                    {hasImage && !isUploading && !isTarget && (
+                      <span className="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full">
+                        ✓
+                      </span>
+                    )}
                   </div>
                   {!isTarget && (
                     <Button
@@ -750,12 +739,22 @@ const BannerSegmentEditorComponent = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => setDeleteId(image.id)}
-                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                      className="h-8 w-8 p-0 hover:bg-red-900 hover:text-red-400 text-gray-400"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
+
+                {hasImage && (
+                  <div className="w-[200px] h-[200px] rounded-lg border-2 border-gray-600 overflow-hidden bg-gray-800">
+                    <img
+                      src={image.url}
+                      alt={image.alt || `Banner image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
 
                 {!isTarget && (
                   <MediaSelector
@@ -776,12 +775,12 @@ const BannerSegmentEditorComponent = ({
                 )}
 
                 <div>
-                  <Label className="text-xs">Alt Text</Label>
+                  <Label className="text-xs text-gray-400">Alt Text (SEO)</Label>
                   <Input
                     value={image.alt || ''}
                     onChange={(e) => handleImageChange(image.id, 'alt', e.target.value, isTarget, index)}
                     placeholder="Descriptive alt text"
-                    className="mt-1"
+                    className="mt-1 bg-gray-800 border-2 border-gray-600 text-white placeholder:text-gray-500 focus:border-[#f9dc24]"
                   />
                 </div>
               </div>
