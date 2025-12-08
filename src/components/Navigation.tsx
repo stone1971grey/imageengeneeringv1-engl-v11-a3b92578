@@ -891,23 +891,12 @@ const Navigation = () => {
 
                   {/* CTA Button */}
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
-                    {(() => {
-                      const cta = pageCtaConfig['products'];
-                      const targetSlug = cta?.slug || 'inside-lab';
-                      const label = cta?.label || t.nav.visitTestingLab;
-
-                      const iconKey = cta?.icon || 'flask';
-                      const CtaIcon = iconKey === 'search' ? Search : iconKey === 'microscope' ? Microscope : iconKey === 'target' ? Target : FlaskConical;
-
-                      return (
-                        <Link to={getLink(targetSlug, '/inside-lab')}>
-                          <Button variant="default" className="w-full bg-black text-white hover:bg-gray-800 rounded-lg py-6 h-auto" style={{ fontSize: '1.25rem' }}>
-                            <CtaIcon style={{ width: '28px', height: '28px', minWidth: '28px', minHeight: '28px' }} className="mr-3" />
-                            <span className="font-medium" style={{ fontSize: '1.25rem' }}>{label}</span>
-                          </Button>
-                        </Link>
-                      );
-                    })()}
+                    <Link to={getLink('inside-lab', '/inside-lab')}>
+                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
+                        <FlaskConical className="h-5 w-5 mr-2" />
+                        <span className="text-base font-medium">Visit our Testing Lab</span>
+                      </Button>
+                    </Link>
                   </div>
                   {/* Image Rollover under Flyout */}
                   {hoveredTestService && testServicesData[hoveredTestService as keyof typeof testServicesData] && (
