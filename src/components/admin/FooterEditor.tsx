@@ -25,6 +25,7 @@ const FOOTER_SECTION_KEYS = [
   "footer_contact_subline",
   "footer_contact_description",
   "footer_team_image_url",
+  "footer_team_image_metadata",
   "footer_team_quote",
   "footer_team_name",
   "footer_team_title",
@@ -98,6 +99,18 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
       setTeamImageUrl(map.footer_team_image_url);
     } else {
       setTeamImageUrl("");
+    }
+
+    // Load metadata including alt text
+    if (map.footer_team_image_metadata) {
+      try {
+        const parsed = JSON.parse(map.footer_team_image_metadata);
+        setTeamImageMetadata(parsed);
+      } catch (e) {
+        setTeamImageMetadata(null);
+      }
+    } else {
+      setTeamImageMetadata(null);
     }
   };
 
@@ -602,9 +615,19 @@ const FooterEditorComponent = ({ pageSlug, language, onSave }: FooterEditorProps
                   setIsUploadingImage(false);
                 }
               }}
-              onMediaSelect={(url) => {
+              onMediaSelect={(url, metadata) => {
                 setTeamImageUrl(url);
-                setTeamImageMetadata(null);
+                // Create metadata object for alt text editing
+                setTeamImageMetadata({
+                  originalFileName: url.split('/').pop() || 'image',
+                  width: 0,
+                  height: 0,
+                  fileSizeKB: 0,
+                  format: url.split('.').pop() || 'unknown',
+                  uploadDate: new Date().toISOString(),
+                  url: url,
+                  altText: metadata?.altText || ""
+                });
                 toast.success("Image selected from Media");
               }}
             />

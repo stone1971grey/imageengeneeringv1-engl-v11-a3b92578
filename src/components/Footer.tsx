@@ -15,6 +15,7 @@ const Footer = () => {
   const location = useLocation();
   const { t, language } = useTranslation();
   const [footerContent, setFooterContent] = useState<Record<string, string>>({});
+  const [hasCMSContent, setHasCMSContent] = useState(false);
   const [loading, setLoading] = useState(true);
   
   const getNormalizedPath = (pathname: string) => {
@@ -73,6 +74,7 @@ const Footer = () => {
         "footer_contact_subline",
         "footer_contact_description",
         "footer_team_image_url",
+        "footer_team_image_metadata",
         "footer_team_quote",
         "footer_team_name",
         "footer_team_title",
@@ -127,8 +129,10 @@ const Footer = () => {
           contentMap[item.section_key] = item.content_value;
         });
         setFooterContent(contentMap);
+        setHasCMSContent(true);
       } else {
         setFooterContent({});
+        setHasCMSContent(false);
       }
     } catch (error) {
       console.error("[Footer] Error loading footer content:", error);
@@ -136,17 +140,41 @@ const Footer = () => {
       setLoading(false);
     }
   };
+
+  // Extract alt text from metadata if available
+  const getTeamImageAlt = (): string => {
+    if (footerContent.footer_team_image_metadata) {
+      try {
+        const metadata = JSON.parse(footerContent.footer_team_image_metadata);
+        if (metadata.altText) return metadata.altText;
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
+    // Fallback to team name if no alt text
+    if (hasCMSContent && footerContent.footer_team_name) {
+      return footerContent.footer_team_name;
+    }
+    // Default fallbacks
+    return isChartsPage ? "Markus Weber, Technical Chart Specialist" 
+      : isSolutionBundlePage ? "Dr. Stefan Mueller, Test Solutions Expert"
+      : isAutomotivePage ? "Dr. Anna Hoffmann, Automotive Vision Expert"
+      : isArcturusPage ? "Dr. Thomas Lichtner, LED Lighting Technology Specialist"
+      : isEventsPage ? "Training Specialist, Professional Instructor"
+      : "Laura Neumann, Head of Optical Systems";
+  };
+
   return (
     <footer id="footer" className="bg-[#4B4A4A] border-t border-[#4B4A4A]">
       {/* Vision CTA Section */}
       <div className="container mx-auto px-6 py-16 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          {footerContent.footer_cta_title 
+          {hasCMSContent && footerContent.footer_cta_title 
             ? footerContent.footer_cta_title 
             : t.footer.cta[pageType]}
         </h2>
         <p className="text-xl text-white max-w-4xl mx-auto leading-relaxed">
-          {footerContent.footer_cta_description 
+          {hasCMSContent && footerContent.footer_cta_description 
             ? footerContent.footer_cta_description 
             : t.footer.ctaDesc[pageType]}
         </p>
@@ -160,17 +188,17 @@ const Footer = () => {
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold">
-                {footerContent.footer_contact_headline 
+                {hasCMSContent && footerContent.footer_contact_headline 
                   ? footerContent.footer_contact_headline 
                   : t.footer.contactHeadline[pageType]}
               </h2>
               <p className="text-lg md:text-xl font-semibold mb-4 mt-2">
-                {footerContent.footer_contact_subline 
+                {hasCMSContent && footerContent.footer_contact_subline 
                   ? footerContent.footer_contact_subline 
                   : t.footer.contactSubline[pageType]}
               </p>
               <p className="text-white leading-relaxed">
-                {footerContent.footer_contact_description 
+                {hasCMSContent && footerContent.footer_contact_description 
                   ? footerContent.footer_contact_description 
                   : t.footer.contactDesc[pageType]}
               </p>
@@ -199,7 +227,7 @@ const Footer = () => {
             </div>
 
             <Button className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black px-8 py-3 shadow-lg hover:shadow-xl transition-all duration-300">
-              {footerContent.footer_button_text 
+              {hasCMSContent && footerContent.footer_button_text 
                 ? footerContent.footer_button_text 
                 : t.footer.button[pageType]}
             </Button>
@@ -211,7 +239,7 @@ const Footer = () => {
               <div className="flex-shrink-0 mx-auto md:mx-0">
                  <img 
                    src={
-                     footerContent.footer_team_image_url 
+                     hasCMSContent && footerContent.footer_team_image_url 
                        ? footerContent.footer_team_image_url
                        : isChartsPage ? teamMarkus 
                        : isSolutionBundlePage ? teamStefan 
@@ -220,38 +248,24 @@ const Footer = () => {
                        : isEventsPage ? trainingInstructor 
                        : teamLaura
                    }
-                    alt={
-                      footerContent.footer_team_name
-                        ? footerContent.footer_team_name
-                        : isChartsPage 
-                          ? "Markus Weber, Technical Chart Specialist" 
-                          : isSolutionBundlePage 
-                            ? "Dr. Stefan Mueller, Test Solutions Expert"
-                          : isAutomotivePage
-                            ? "Dr. Anna Hoffmann, Automotive Vision Expert"
-                          : isArcturusPage
-                            ? "Dr. Thomas Lichtner, LED Lighting Technology Specialist"
-                          : isEventsPage
-                            ? "Training Specialist, Professional Instructor"
-                            : "Laura Neumann, Head of Optical Systems"
-                    }
+                   alt={getTeamImageAlt()}
                    className="w-[150px] h-[150px] rounded-lg object-cover"
                  />
               </div>
               <div className="flex-1 text-center md:text-left">
                 <blockquote className="text-lg text-white leading-relaxed mb-4">
-                  "{footerContent.footer_team_quote 
+                  "{hasCMSContent && footerContent.footer_team_quote 
                     ? footerContent.footer_team_quote 
                     : t.footer.teamQuote[pageType]}"
                 </blockquote>
                 <cite className="text-white not-italic">
                   <div className="font-semibold text-white">
-                    {footerContent.footer_team_name 
+                    {hasCMSContent && footerContent.footer_team_name 
                       ? footerContent.footer_team_name 
                       : t.footer.teamName[pageType]}
                   </div>
                   <div className="text-sm">
-                    {footerContent.footer_team_title 
+                    {hasCMSContent && footerContent.footer_team_title 
                       ? footerContent.footer_team_title 
                       : t.footer.teamTitle[pageType]}
                   </div>
