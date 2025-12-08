@@ -827,9 +827,13 @@ const AdminDashboard = () => {
       return;
     }
 
-    // Safety net: only allow for second-level pages
-    if (!pageInfo.parentSlug || !['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact'].includes(pageInfo.parentSlug)) {
-      toast.error('Flyout content is only available for second-level navigation pages.');
+    // Safety net: allow for second-level pages AND third-level pages under test-lab
+    const SECOND_LEVEL_PARENTS_SAVE = ['your-solution', 'products', 'downloads', 'events', 'news', 'inside-lab', 'contact', 'test-lab'];
+    const isSecondLevelSave = pageInfo.parentSlug && SECOND_LEVEL_PARENTS_SAVE.includes(pageInfo.parentSlug);
+    const isThirdLevelUnderTestLabSave = pageInfo.parentSlug && pageInfo.parentSlug.startsWith('test-lab') && pageInfo.parentSlug !== 'test-lab';
+    
+    if (!isSecondLevelSave && !isThirdLevelUnderTestLabSave) {
+      toast.error('Flyout content is only available for second and third-level navigation pages.');
       return;
     }
 
