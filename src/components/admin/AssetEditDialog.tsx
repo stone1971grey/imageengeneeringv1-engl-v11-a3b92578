@@ -109,18 +109,17 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
     try {
       const { data, error } = await supabase.functions.invoke('translate-content', {
         body: {
-          content: englishText,
-          targetLanguage: selectedLanguage,
-          contentType: 'alt-text'
+          texts: { altText: englishText },
+          targetLanguage: selectedLanguage
         }
       });
 
       if (error) throw error;
 
-      if (data?.translatedContent) {
+      if (data?.translatedTexts?.altText) {
         setAltTextTranslations(prev => ({
           ...prev,
-          [selectedLanguage]: data.translatedContent
+          [selectedLanguage]: data.translatedTexts.altText
         }));
         toast.success(`Translated to ${SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage)?.label}`);
       }
@@ -147,14 +146,13 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
       const translationPromises = targetLanguages.map(async (lang) => {
         const { data, error } = await supabase.functions.invoke('translate-content', {
           body: {
-            content: englishText,
-            targetLanguage: lang,
-            contentType: 'alt-text'
+            texts: { altText: englishText },
+            targetLanguage: lang
           }
         });
         
         if (error) throw error;
-        return { lang, text: data?.translatedContent || '' };
+        return { lang, text: data?.translatedTexts?.altText || '' };
       });
 
       const results = await Promise.all(translationPromises);
