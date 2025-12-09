@@ -60,13 +60,33 @@ async function ensureFolderHierarchy(
     // Folder doesn't exist, create it
     console.log(`[ensureFolderHierarchy] Creating folder: ${folderName}`);
     
+    // Determine position based on navigation hierarchy for root folders
+    let position = 999; // Default for child folders
+    if (i === 0) {
+      // Root folder - assign position based on navigation order
+      const positionMap: Record<string, number> = {
+        'index': 1,
+        'your-solution': 2,
+        'products': 3,
+        'test-lab': 4,
+        'training-events': 5,
+        'info-hub': 6,
+        'company': 7,
+        'media': 8,
+        'News': 9,
+        'styleguide': 10
+      };
+      position = positionMap[folderName] ?? 999;
+    }
+    
     const insertResult: any = await supabase
       .from('media_folders')
       .insert({
         name: folderName,
         storage_path: currentPath,
         parent_id: currentParentId,
-        created_by: userId
+        created_by: userId,
+        position: position
       })
       .select()
       .single();
