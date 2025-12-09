@@ -5417,7 +5417,7 @@ const AdminDashboard = () => {
                         value={segment.id}
                         className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
                       >
-                        ID {segmentId}: Action Hero {displayNumber}
+                        ID {segmentId}: Action Hero - Q
                       </TabsTrigger>
                     );
                   })}
