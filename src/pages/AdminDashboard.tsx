@@ -4439,7 +4439,7 @@ const AdminDashboard = () => {
                             <Newspaper className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">News List - P</h3>
+                            <h3 className="text-lg font-bold text-gray-900">News-List - P</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Display all news with frontend category filtering
                             </p>
