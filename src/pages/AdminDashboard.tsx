@@ -6980,13 +6980,21 @@ const AdminDashboard = () => {
                   )}
 
                   {segment.type === 'news-list' && (
-                    <NewsListSegmentEditor
-                      pageSlug={resolvedPageSlug || selectedPage}
-                      segmentId={segment.id}
-                      data={segment.data}
-                      onSave={() => loadContent()}
-                      editorLanguage={editorLanguage}
-                    />
+                    <SplitScreenSegmentEditor
+                      segmentTitle="News List"
+                      segmentType="news-list"
+                    >
+                      {(language) => (
+                        <NewsListSegmentEditor
+                          key={`news-list-${segment.id}-${language}`}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          data={segment.data}
+                          onSave={() => loadContent()}
+                          language={language}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
                   )}
 
                   {segment.type === 'action-hero' && (

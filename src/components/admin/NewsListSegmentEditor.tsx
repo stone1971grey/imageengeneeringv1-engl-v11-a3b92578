@@ -15,7 +15,6 @@ interface NewsListSegmentEditorProps {
   };
   onSave?: () => void;
   language?: string;
-  editorLanguage?: string;
 }
 
 const NewsListSegmentEditorComponent = ({
@@ -24,7 +23,6 @@ const NewsListSegmentEditorComponent = ({
   data,
   onSave,
   language,
-  editorLanguage,
 }: NewsListSegmentEditorProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -32,12 +30,16 @@ const NewsListSegmentEditorComponent = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isTranslating, setIsTranslating] = useState(false);
 
-  const normalizedLang = (editorLanguage || language || 'en')?.split('-')[0] || 'en';
+  const normalizedLang = (language || 'en')?.split('-')[0] || 'en';
 
-  // Load content for the current language
+  // Load content for the current language - initialize empty, then load
   useEffect(() => {
     const loadContent = async () => {
       setIsLoading(true);
+      // Reset state before loading
+      setTitle("");
+      setDescription("");
+      
       try {
         const { data: contentData } = await supabase
           .from("page_content")
@@ -54,38 +56,13 @@ const NewsListSegmentEditorComponent = ({
             setDescription(parsed.description || "");
           } catch (e) {
             console.error("Error parsing content:", e);
-            setTitle("");
-            setDescription("");
           }
-        } else {
-          // Fallback to English if no content for this language
-          if (normalizedLang !== 'en') {
-            const { data: enData } = await supabase
-              .from("page_content")
-              .select("content_value")
-              .eq("page_slug", pageSlug)
-              .eq("section_key", segmentId)
-              .eq("language", "en")
-              .maybeSingle();
-
-            if (enData?.content_value) {
-              try {
-                const parsed = JSON.parse(enData.content_value);
-                setTitle(parsed.title || "All News");
-                setDescription(parsed.description || "Stay updated with the latest developments in image quality testing and measurement technology");
-              } catch (e) {
-                setTitle("All News");
-                setDescription("Stay updated with the latest developments in image quality testing and measurement technology");
-              }
-            } else {
-              setTitle("All News");
-              setDescription("Stay updated with the latest developments in image quality testing and measurement technology");
-            }
-          } else {
-            setTitle(data?.title || "All News");
-            setDescription(data?.description || "Stay updated with the latest developments in image quality testing and measurement technology");
-          }
+        } else if (normalizedLang === 'en') {
+          // Only set defaults for English
+          setTitle(data?.title || "All News");
+          setDescription(data?.description || "Stay updated with the latest developments in image quality testing and measurement technology");
         }
+        // For non-English, leave empty if no content exists (no English fallback)
       } catch (error) {
         console.error("Error loading content:", error);
       } finally {
@@ -94,70 +71,62 @@ const NewsListSegmentEditorComponent = ({
     };
 
     loadContent();
-  }, [pageSlug, segmentId, normalizedLang, data]);
+  }, [pageSlug, segmentId, normalizedLang]);
 
   // Listen for external translate events from Rainbow SplitScreen
   useEffect(() => {
     if (normalizedLang === 'en') return;
 
-    const handleExternalTranslate = () => {
-      handleTranslate();
+    const handleExternalTranslate = async () => {
+      setIsTranslating(true);
+      try {
+        // Load English version
+        const { data: enData, error: enError } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", segmentId)
+          .eq("language", "en")
+          .maybeSingle();
+
+        if (enError) throw enError;
+
+        if (!enData?.content_value) {
+          toast.error('No English version found to translate from');
+          setIsTranslating(false);
+          return;
+        }
+
+        const enContent = JSON.parse(enData.content_value);
+
+        const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
+          body: {
+            texts: {
+              title: enContent.title || '',
+              description: enContent.description || ''
+            },
+            targetLanguage: normalizedLang,
+          },
+        });
+
+        if (translateError) throw translateError;
+
+        if (translateData?.translatedTexts) {
+          setTitle(translateData.translatedTexts.title || enContent.title || '');
+          setDescription(translateData.translatedTexts.description || enContent.description || '');
+          toast.success(`Translated to ${normalizedLang.toUpperCase()}`);
+        }
+      } catch (error) {
+        console.error('Translation error:', error);
+        toast.error(error instanceof Error ? error.message : 'Failed to translate content');
+      } finally {
+        setTimeout(() => setIsTranslating(false), 600);
+      }
     };
 
     window.addEventListener('news-list-translate', handleExternalTranslate);
     return () => window.removeEventListener('news-list-translate', handleExternalTranslate);
   }, [normalizedLang, pageSlug, segmentId]);
-
-  const handleTranslate = async () => {
-    if (normalizedLang === 'en') {
-      toast.error('Translation not needed - English is the source language');
-      return;
-    }
-
-    setIsTranslating(true);
-    try {
-      // Load English version
-      const { data: enData, error: enError } = await supabase
-        .from("page_content")
-        .select("content_value")
-        .eq("page_slug", pageSlug)
-        .eq("section_key", segmentId)
-        .eq("language", "en")
-        .maybeSingle();
-
-      if (enError) throw enError;
-
-      if (!enData?.content_value) {
-        toast.error('No English version found to translate from');
-        return;
-      }
-
-      const enContent = JSON.parse(enData.content_value);
-
-      const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
-        body: {
-          texts: {
-            title: enContent.title || '',
-            description: enContent.description || ''
-          },
-          targetLanguage: normalizedLang,
-        },
-      });
-
-      if (translateError) throw translateError;
-
-      if (translateData?.translatedTexts) {
-        setTitle(translateData.translatedTexts.title || enContent.title || '');
-        setDescription(translateData.translatedTexts.description || enContent.description || '');
-        toast.success('Content translated successfully');
-      }
-    } catch (error) {
-      console.error('Translation error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to translate content');
-    } finally {
-      setTimeout(() => setIsTranslating(false), 600);
-    }
-  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -205,7 +174,12 @@ const NewsListSegmentEditorComponent = ({
         </div>
       )}
 
-      <h3 className="text-lg font-semibold">Edit News List Segment</h3>
+      <h3 className="text-lg font-semibold flex items-center gap-2">
+        Edit News List Segment
+        <span className="text-sm font-normal text-muted-foreground">
+          ({normalizedLang.toUpperCase()})
+        </span>
+      </h3>
 
       <div className="space-y-2">
         <Label htmlFor="title">Section Title</Label>
@@ -213,7 +187,7 @@ const NewsListSegmentEditorComponent = ({
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="All News"
+          placeholder={normalizedLang === 'en' ? "All News" : "Enter translated title..."}
         />
       </div>
 
@@ -223,7 +197,7 @@ const NewsListSegmentEditorComponent = ({
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Stay updated with the latest developments..."
+          placeholder={normalizedLang === 'en' ? "Stay updated with the latest developments..." : "Enter translated description..."}
           rows={4}
         />
       </div>
