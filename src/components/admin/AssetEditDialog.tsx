@@ -57,10 +57,14 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
 
       if (error) throw error;
 
-      if (data?.alt_text_translations && typeof data.alt_text_translations === 'object') {
-        setAltTextTranslations(data.alt_text_translations as Record<string, string>);
+      // Check if alt_text_translations has actual content
+      const translations = data?.alt_text_translations as Record<string, string> | null;
+      const hasTranslations = translations && Object.keys(translations).length > 0;
+
+      if (hasTranslations) {
+        setAltTextTranslations(translations);
       } else if (data?.alt_text) {
-        // Legacy: migrate single alt_text to translations object
+        // Fallback: use single alt_text as English version
         setAltTextTranslations({ en: data.alt_text });
       } else {
         setAltTextTranslations({});
