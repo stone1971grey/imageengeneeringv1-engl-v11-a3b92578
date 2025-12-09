@@ -1026,6 +1026,16 @@ const DynamicCMSPage = () => {
     seg.type !== 'footer' && seg.type !== 'meta-navigation'
   );
   const isEmpty = contentSegments.length === 0;
+  
+  // Debug logging for company/news
+  if (pageSlug === 'company/news') {
+    console.log('[DynamicCMSPage] company/news render check:', {
+      pageSegments,
+      contentSegments,
+      isEmpty,
+      tabOrder,
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
