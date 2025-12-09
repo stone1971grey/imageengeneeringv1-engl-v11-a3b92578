@@ -1153,12 +1153,16 @@ const Navigation = () => {
                    <div className="flex gap-4 p-4">
                        <div className="space-y-3 flex-1 pr-4 border-r border-border">
                          <h4 className="font-semibold mb-2 text-lg text-black">{t.nav.aboutIE}</h4>
-                         <Link to={`/${language}/news`} className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
-                           isActive('/news') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
-                         }`}>
-                           <CustomTargetIcon className="h-5 w-5" />
-                           <span>{t.nav.news}</span>
-                         </Link>
+                          <Link to={getLink('company/news', `/${language}/company/news`)} className={`flex items-center gap-3 text-lg text-black transition-colors py-1 px-2 rounded-md ${
+                            isActive('/company/news') || isActive('/news') ? 'bg-[#f9dc24]' : 'hover:bg-[#f9dc24]'
+                          }`}>
+                            {(() => {
+                              const key = pageDesignIcons['company/news'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-5 w-5" /> : null;
+                            })()}
+                            <span>{t.nav.news}</span>
+                          </Link>
                           <Link to={getLink('company/about', `/${language}/company/about`)} className="flex items-center gap-3 text-lg text-black hover:bg-[#f9dc24] transition-colors py-1 px-2 rounded-md">
                             {(() => {
                               const key = pageDesignIcons['company/about'];
