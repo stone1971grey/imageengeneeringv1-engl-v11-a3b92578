@@ -543,7 +543,7 @@ const NewsEditor = () => {
                   </div>
                 )}
                 {article.published && (
-                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded text-xs font-semibold bg-[#f9dc24]/20 text-[#f9dc24] border border-[#f9dc24]/40">
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded text-xs font-semibold bg-white/90 text-[#0f407b] border border-white shadow-sm">
                     Live
                   </div>
                 )}
