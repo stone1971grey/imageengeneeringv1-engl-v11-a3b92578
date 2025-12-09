@@ -36,6 +36,7 @@ interface MediaFolder {
   parent_id: string | null;
   storage_path: string;
   created_at: string;
+  position?: number;
   children?: MediaFolder[];
   files?: StorageFile[];
 }
@@ -110,7 +111,8 @@ export function DataHubDialog({
       const { data, error } = await supabase
         .from("media_folders")
         .select("*")
-        .order("name");
+        .order("position", { ascending: true })
+        .order("name", { ascending: true });
 
       if (error) throw error;
 

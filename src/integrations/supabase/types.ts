@@ -300,6 +300,7 @@ export type Database = {
           id: string
           name: string
           parent_id: string | null
+          position: number | null
           storage_path: string
           updated_at: string
         }
@@ -309,6 +310,7 @@ export type Database = {
           id?: string
           name: string
           parent_id?: string | null
+          position?: number | null
           storage_path: string
           updated_at?: string
         }
@@ -318,6 +320,7 @@ export type Database = {
           id?: string
           name?: string
           parent_id?: string | null
+          position?: number | null
           storage_path?: string
           updated_at?: string
         }
