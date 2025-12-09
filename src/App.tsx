@@ -239,8 +239,16 @@ const App = () => (
             <Route path="/:lang/full-hero-migration" element={<FullHeroMigration />} />
             <Route path="/:lang/segment-debug" element={<SegmentDebugView />} />
             
+            {/* Company sub-pages - must be before PageIdRouter */}
+            <Route path="/:lang/company/news" element={<DynamicCMSPage />} />
+            <Route path="/:lang/company/*" element={<DynamicCMSPage />} />
+            
             {/* Page ID Route - MUST be after all specific routes */}
             <Route path="/:lang/:pageId" element={<PageIdRouter />} />
+            
+            {/* Catch-all for hierarchical CMS pages */}
+            <Route path="/:lang/:category/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/:category/:subcategory/:slug" element={<DynamicCMSPage />} />
             
             {/* Catch-all 404 */}
             <Route path="*" element={<NotFound />} />
