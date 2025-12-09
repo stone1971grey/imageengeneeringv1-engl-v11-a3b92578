@@ -412,12 +412,28 @@ const DynamicCMSPage = () => {
   const hasMetaNavigation = pageSegments.some(seg => seg.type === "meta-navigation");
 
   const renderSegment = (segmentId: string) => {
-    const segment = pageSegments.find((s) =>
+    // Enhanced segment matching: try multiple strategies
+    let segment = pageSegments.find((s) =>
       String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
     );
     
+    // Fallback: if segmentId looks like "type-number", try to match by type and segmentId
+    if (!segment && segmentId.includes('-')) {
+      const [potentialType, potentialNum] = segmentId.split('-');
+      const numericId = parseInt(potentialNum, 10);
+      if (!isNaN(numericId)) {
+        segment = pageSegments.find((s) => 
+          s.type === potentialType && s.segmentId === numericId
+        );
+        // Also try matching just by segmentId number
+        if (!segment) {
+          segment = pageSegments.find((s) => s.segmentId === numericId);
+        }
+      }
+    }
+    
     if (!segment) {
-      console.warn(`[DynamicCMSPage] Segment not found for ID: ${segmentId}`);
+      console.warn(`[DynamicCMSPage] Segment not found for ID: ${segmentId}`, { pageSegments });
       return null;
     }
 
