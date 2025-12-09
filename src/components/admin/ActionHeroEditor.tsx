@@ -225,20 +225,29 @@ const ActionHeroEditorComponent = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('pageSlug', pageSlug);
-    formData.append('segmentId', segmentId);
-
     try {
-      const { data, error } = await supabase.functions.invoke('upload-image', {
-        body: formData
-      });
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Data = reader.result as string;
+        
+        const { data, error } = await supabase.functions.invoke('upload-image', {
+          body: {
+            fileName: file.name,
+            fileData: base64Data,
+            bucket: 'page-images',
+            pageSlug: pageSlug,
+            segmentId: parseInt(segmentId)
+          }
+        });
 
-      if (error) throw error;
-      setBackgroundImage(data.publicUrl);
-      toast.success("Image uploaded");
+        if (error) throw error;
+        setBackgroundImage(data.url);
+        toast.success("Image uploaded");
+      };
+      reader.readAsDataURL(file);
     } catch (error: any) {
+      console.error("Upload error:", error);
       toast.error("Upload failed: " + error.message);
     }
   };
