@@ -3203,9 +3203,23 @@ const AdminDashboard = () => {
     }
 
     // Generate a unique numeric ID for this segment (globally unique across all pages)
-    const segmentId = nextSegmentId;
-    console.log("Creating new segment with global ID:", segmentId);
-    setNextSegmentId(nextSegmentId + 1);
+    // CRITICAL: Always fetch the latest max ID from database to avoid race conditions
+    const { data: maxIdData, error: maxIdError } = await supabase
+      .from("segment_registry")
+      .select("segment_id")
+      .order("segment_id", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    if (maxIdError) {
+      console.error("Error fetching max segment ID:", maxIdError);
+      toast.error("Failed to generate segment ID. Please try again.");
+      return;
+    }
+    
+    const segmentId = (maxIdData?.segment_id || 0) + 1;
+    console.log("Creating new segment with global ID:", segmentId, "(fetched live from DB)");
+    setNextSegmentId(segmentId + 1); // Update state for UI consistency
     
     const defaultData = getDefaultSegmentData(templateType);
     const newSegment = {
