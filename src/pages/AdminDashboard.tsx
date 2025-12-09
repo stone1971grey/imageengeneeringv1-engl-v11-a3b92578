@@ -5503,7 +5503,7 @@ const AdminDashboard = () => {
                         if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
                         if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
                         if (segment.type === 'debug') label = `Debug ${displayNumber}`;
-                        if (segment.type === 'news-list') label = `News List - P ${displayNumber}`;
+                        if (segment.type === 'news-list') label = `News-List - P ${displayNumber}`;
                         if (segment.type === 'action-hero') label = `Action Hero ${displayNumber}`;
                       }
                       
@@ -6677,7 +6677,7 @@ const AdminDashboard = () => {
               if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
               if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
               if (segment.type === 'debug') label = `Debug ${displayNumber}`;
-              if (segment.type === 'news-list') label = `News List - P ${displayNumber}`;
+              if (segment.type === 'news-list') label = `News-List - P ${displayNumber}`;
               if (segment.type === 'action-hero') label = `Action Hero ${displayNumber}`;
               if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
               if (segment.type === 'table') label = `Table - L ${displayNumber}`;
@@ -6776,7 +6776,7 @@ const AdminDashboard = () => {
                       if (segType === 'intro') return `Intro - B ${displayNumber}`;
                       if (segType === 'industries') return `Industries - C ${displayNumber}`;
                       if (segType === 'debug') return `Debug ${displayNumber}`;
-                      if (segType === 'news-list') return `News List - P ${displayNumber}`;
+                      if (segType === 'news-list') return `News-List - P ${displayNumber}`;
                       if (segType === 'action-hero') return `Action Hero ${displayNumber}`;
                       return segType;
                     };
