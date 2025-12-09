@@ -389,7 +389,17 @@ const DynamicCMSPage = () => {
         tabOrderCount: loadedTabOrder.length,
         tabOrder: loadedTabOrder,
         segmentTypes: enhancedSegments.map(s => ({ id: s.id, key: s.segment_key, type: s.type })),
+        rawSegments: enhancedSegments,
       });
+      
+      // Extra debug for company/news
+      if (pageSlug === 'company/news') {
+        console.log('[DynamicCMSPage] COMPANY/NEWS DEBUG:', {
+          enhancedSegments,
+          loadedTabOrder,
+          hasNewsListSegment: enhancedSegments.some(s => s.type === 'news-list'),
+        });
+      }
 
       // REMOVED: Auto-sync tab_order logic that was adding unwanted empty segments
       // tab_order is now authoritative - only segments explicitly in tab_order will be rendered
