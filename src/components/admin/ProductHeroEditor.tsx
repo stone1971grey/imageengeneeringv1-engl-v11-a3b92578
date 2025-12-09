@@ -405,9 +405,9 @@ const ProductHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'e
 
       if (error) throw error;
 
-      // Update segment mapping if image is present
+      // Update segment mapping if image is present (with alt text)
       if (imageUrl) {
-        await updateSegmentMapping(imageUrl, segmentId);
+        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false, imageMetadata?.altText || undefined);
       }
 
       // Also update tab_order if needed
