@@ -3921,9 +3921,10 @@ const AdminDashboard = () => {
                 </DialogHeader>
                 
                 <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsList className="grid w-full grid-cols-3 mb-6">
                     <TabsTrigger value="overview">Start / Overview Templates</TabsTrigger>
                     <TabsTrigger value="content">Content Templates</TabsTrigger>
+                    <TabsTrigger value="special">Special Templates</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value="overview">
@@ -4024,25 +4025,6 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* News List */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('news-list')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <Newspaper className="h-7 w-7 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">News List - D2</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Display all news with frontend category filtering
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
                       {/* Debug Upload */}
@@ -4350,6 +4332,29 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="special">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+                      {/* News List */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('news-list')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Newspaper className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">News List</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Display all news with frontend category filtering
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
