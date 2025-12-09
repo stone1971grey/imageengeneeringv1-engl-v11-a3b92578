@@ -3515,7 +3515,17 @@ const AdminDashboard = () => {
       
       // SAFETY: If we're about to save significantly fewer segments than exist, warn and abort
       // This prevents accidental mass deletion
-      if (existingSegments.length > 1 && pageSegments.length < existingSegments.length - 1) {
+      const isLosingMultipleSegments = existingSegments.length > 1 && pageSegments.length < existingSegments.length - 1;
+      const isLosingAllSegments = existingSegments.length > 0 && pageSegments.length === 0;
+      
+      if (isLosingAllSegments) {
+        console.error('[SAVE GUARD] BLOCKED: Attempted to save empty segments array when segments exist in DB');
+        setSaving(false);
+        toast.error("Speichern blockiert - leere Segment-Liste kann bestehende Segmente nicht überschreiben");
+        return;
+      }
+      
+      if (isLosingMultipleSegments) {
         const confirmed = window.confirm(
           `WARNUNG: Sie sind dabei, ${existingSegments.length - pageSegments.length} Segmente zu löschen. ` +
           `Aktuell: ${existingSegments.length} Segmente, Neu: ${pageSegments.length} Segmente. ` +
