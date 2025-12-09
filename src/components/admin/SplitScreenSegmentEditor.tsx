@@ -104,7 +104,7 @@ const SplitScreenSegmentEditorComponent = ({
                   const eventName = `${segmentType}-translate`;
                   window.dispatchEvent(new CustomEvent(eventName));
                 }}
-                className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                className="ml-auto min-w-[200px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
               >
                 <GeminiIcon className="h-4 w-4 mr-2" />
                 Translate Automatically
