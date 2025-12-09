@@ -2075,45 +2075,85 @@ const Navigation = () => {
                       <AccordionContent className="px-0 pb-4">
                          <div className="space-y-4">
                            <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.aboutIE}</div>
-                            <Link to="/news" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                              <CustomTargetIcon className="h-4 w-4" />
+                            <Link to={`/${language}/company/news`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                              {(() => {
+                                const key = pageDesignIcons['company/news'];
+                                const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                              })()}
                               <span>{t.nav.news}</span>
                             </Link>
-                           <Link to="/about" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                             <CustomTargetIcon className="h-4 w-4" />
+                           <Link to={`/${language}/company/about`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             {(() => {
+                               const key = pageDesignIcons['company/about'];
+                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                             })()}
                              <span>{t.nav.aboutUs}</span>
                            </Link>
-                           <Link to="/team" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                             <CustomTargetIcon className="h-4 w-4" />
+                           <Link to={`/${language}/company/team`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             {(() => {
+                               const key = pageDesignIcons['company/team'];
+                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                             })()}
                              <span>{t.nav.team}</span>
                            </Link>
-                           <Link to="/nynomic-group" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                             <CustomTargetIcon className="h-4 w-4" />
+                           <Link to={`/${language}/company/nynomic-group`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             {(() => {
+                               const key = pageDesignIcons['company/nynomic-group'];
+                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                             })()}
                              <span>{t.nav.nynomicGroup}</span>
                            </Link>
-                           <Link to="/visit-us" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                             <CustomTargetIcon className="h-4 w-4" />
+                           <Link to={`/${language}/company/visit-us`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             {(() => {
+                               const key = pageDesignIcons['company/visit-us'];
+                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                             })()}
                              <span>Visit Us</span>
                            </Link>
-                           <Link to="/careers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                             <CustomTargetIcon className="h-4 w-4" />
+                           <Link to={`/${language}/company/careers`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                             {(() => {
+                               const key = pageDesignIcons['company/careers'];
+                               const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                               return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                             })()}
                              <span>{t.nav.careers}</span>
                            </Link>
                           <div className="font-medium text-gray-900 py-3 mb-2 mt-4">Business & Partnerships</div>
-                          <Link to="/resellers-subsidiaries" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                          <Link to={`/${language}/company/resellers-subsidiaries`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                            {(() => {
+                              const key = pageDesignIcons['company/resellers-subsidiaries'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>Resellers & Subsidiaries</span>
                           </Link>
-                          <Link to="/strategic-partnerships" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                          <Link to={`/${language}/company/strategic-partnerships`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                            {(() => {
+                              const key = pageDesignIcons['company/strategic-partnerships'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>Strategic Partnerships</span>
                           </Link>
-                          <Link to="/group-memberships" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                          <Link to={`/${language}/company/group-memberships`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                            {(() => {
+                              const key = pageDesignIcons['company/group-memberships'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>Group Memberships</span>
                           </Link>
-                          <Link to="/iso-9001" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                          <Link to={`/${language}/company/iso-9001`} className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
+                            {(() => {
+                              const key = pageDesignIcons['company/iso-9001'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>ISO 9001</span>
                           </Link>
                         </div>
