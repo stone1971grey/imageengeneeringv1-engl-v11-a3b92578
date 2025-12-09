@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ const NewsListSegment = ({
 }: NewsListSegmentProps) => {
   const { language } = useLanguage();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
   
   // Normalize language code (e.g., 'de-DE' -> 'de')
   const normalizedLang = language?.split('-')[0] || 'en';
@@ -38,21 +39,18 @@ const NewsListSegment = ({
         .not("category", "is", null);
 
       if (error) throw error;
-      const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))];
+      const uniqueCategories = [...new Set(data.map(item => item.category).filter(Boolean))] as string[];
       return uniqueCategories.sort();
     },
   });
 
-  // Build categories array dynamically
-  const categories = useMemo(() => {
-    const cats: string[] = [];
-    if (categoriesData) {
-      categoriesData.forEach(cat => {
-        if (cat) cats.push(cat);
-      });
+  // Initialize all categories as selected when data loads (only once)
+  useEffect(() => {
+    if (categoriesData && categoriesData.length > 0 && !isInitialized) {
+      setSelectedCategories([...categoriesData]);
+      setIsInitialized(true);
     }
-    return cats;
-  }, [categoriesData]);
+  }, [categoriesData, isInitialized]);
 
   // Fetch all news articles - language-specific with English fallback
   const { data: newsItems, isLoading } = useQuery({
@@ -158,19 +156,26 @@ const NewsListSegment = ({
 
         {/* Category Filter Buttons - Multi-Select */}
         <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => toggleCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategories.includes(category)
-                  ? "bg-[#f9dc24] text-black"
-                  : "bg-white/10 text-white hover:bg-white/20"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+          {(categoriesData || []).map((category) => {
+            // Show as selected (yellow) if: explicitly selected OR no categories have been deselected yet
+            const isSelected = selectedCategories.length === 0 
+              ? true  // All yellow by default when nothing selected
+              : selectedCategories.includes(category);
+            
+            return (
+              <button
+                key={category}
+                onClick={() => toggleCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                  isSelected
+                    ? "bg-[#f9dc24] text-black"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                }`}
+              >
+                {category}
+              </button>
+            );
+          })}
         </div>
 
         {/* News Grid (3 columns) */}
