@@ -776,9 +776,9 @@ const FullHeroEditorComponent = ({ pageSlug, segmentId, onSave, language = 'en' 
         return;
       }
 
-      // Update segment mapping if image is present
+      // Update segment mapping if image is present (with alt text)
       if (backgroundType === 'image' && imageUrl) {
-        await updateSegmentMapping(imageUrl, segmentId);
+        await updateSegmentMapping(imageUrl, segmentId, 'page-images', false, imageAlt || undefined);
       }
 
       // After successful EN save, sync to other languages

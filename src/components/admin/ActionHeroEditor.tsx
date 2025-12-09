@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Upload, FolderOpen } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { DataHubDialog } from "@/components/admin/DataHubDialog";
+import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
+import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
 
 interface ActionHeroEditorProps {
   segmentId: string;
@@ -63,7 +65,15 @@ const ActionHeroEditorComponent = ({
             setTitle(segment.data.title || "");
             setDescription(segment.data.description || "");
             setBackgroundImage(segment.data.backgroundImage || "");
-            setAltText(segment.data.altText || "");
+            
+            // Load alt text from Media Management if available, otherwise from segment data
+            if (segment.data.backgroundImage) {
+              const altFromMapping = await loadAltTextFromMapping(segment.data.backgroundImage, 'page-images', normalizedLang);
+              setAltText(altFromMapping || segment.data.altText || "");
+            } else {
+              setAltText(segment.data.altText || "");
+            }
+            
             setIsLoading(false);
             return;
           }
@@ -214,6 +224,11 @@ const ActionHeroEditorComponent = ({
         });
 
       if (error) throw error;
+
+      // Sync image to Media Management with alt text
+      if (backgroundImage) {
+        await updateSegmentMapping(backgroundImage, parseInt(segmentId), 'page-images', false, altText || undefined);
+      }
 
       toast.success(`Action Hero saved (${normalizedLang.toUpperCase()})`);
       onSave?.();
