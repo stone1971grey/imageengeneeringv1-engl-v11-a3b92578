@@ -289,17 +289,23 @@ const ActionHeroEditorComponent = ({
       <div className="space-y-2">
         <Label>Background Image</Label>
         <div className="flex gap-2">
-          <label className="cursor-pointer flex-1">
+          <div className="flex-1">
             <input
               type="file"
+              id={`action-hero-upload-${segmentId}`}
               accept="image/*"
               onChange={handleImageUpload}
               className="hidden"
             />
-            <Button type="button" variant="outline" className="w-full bg-[hsl(var(--orange))] hover:bg-[hsl(var(--orange))]/90 text-[hsl(var(--orange-foreground))]" asChild>
-              <span><Upload className="mr-2 h-4 w-4" />Upload from Computer</span>
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="w-full bg-[hsl(var(--orange))] hover:bg-[hsl(var(--orange))]/90 text-[hsl(var(--orange-foreground))]"
+              onClick={() => document.getElementById(`action-hero-upload-${segmentId}`)?.click()}
+            >
+              <Upload className="mr-2 h-4 w-4" />Upload from Computer
             </Button>
-          </label>
+          </div>
           <Button 
             type="button" 
             variant="outline" 
