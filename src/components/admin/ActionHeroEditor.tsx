@@ -296,7 +296,7 @@ const ActionHeroEditorComponent = ({
               onChange={handleImageUpload}
               className="hidden"
             />
-            <Button type="button" variant="outline" className="w-full bg-amber-400 hover:bg-amber-500 text-amber-900" asChild>
+            <Button type="button" variant="outline" className="w-full bg-[hsl(var(--orange))] hover:bg-[hsl(var(--orange))]/90 text-[hsl(var(--orange-foreground))]" asChild>
               <span><Upload className="mr-2 h-4 w-4" />Upload from Computer</span>
             </Button>
           </label>
