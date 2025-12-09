@@ -4449,7 +4449,7 @@ const AdminDashboard = () => {
                             <Newspaper className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">News-List - P</h3>
+                            <h3 className="text-lg font-bold text-gray-900">News List - P</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Display all news with frontend category filtering
                             </p>
@@ -5427,7 +5427,7 @@ const AdminDashboard = () => {
                         value={segment.id}
                         className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
                       >
-                        ID {segmentId}: Action Hero - Q
+                        ID {segmentId}: Action Hero - Q-{displayNumber}
                       </TabsTrigger>
                     );
                   })}
@@ -5510,8 +5510,8 @@ const AdminDashboard = () => {
                       if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
                       if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
                       if (segment.type === 'debug') label = `Debug ${displayNumber}`;
-                      if (segment.type === 'news-list') label = `News-List - P`;
-                      if (segment.type === 'action-hero') label = `Action Hero - Q`;
+                      if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
+                      if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
                       
                       return (
                         <SortableTab key={tabId} id={tabId} value={tabId}>
@@ -6683,8 +6683,8 @@ const AdminDashboard = () => {
               if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
               if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
               if (segment.type === 'debug') label = `Debug ${displayNumber}`;
-              if (segment.type === 'news-list') label = `News-List - P`;
-              if (segment.type === 'action-hero') label = `Action Hero - Q`;
+              if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
+              if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
               if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
               if (segment.type === 'table') label = `Table - L ${displayNumber}`;
               if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
@@ -6782,8 +6782,8 @@ const AdminDashboard = () => {
                       if (segType === 'intro') return `Intro - B ${displayNumber}`;
                       if (segType === 'industries') return `Industries - C ${displayNumber}`;
                       if (segType === 'debug') return `Debug ${displayNumber}`;
-                      if (segType === 'news-list') return `News-List - P`;
-                      if (segType === 'action-hero') return `Action Hero - Q`;
+                      if (segType === 'news-list') return `News List - P-${displayNumber}`;
+                      if (segType === 'action-hero') return `Action Hero - Q-${displayNumber}`;
                       return segType;
                     };
 
