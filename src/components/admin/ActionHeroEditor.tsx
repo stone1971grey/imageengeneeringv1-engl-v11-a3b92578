@@ -33,6 +33,7 @@ const ActionHeroEditorComponent = ({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [backgroundImage, setBackgroundImage] = useState("");
+  const [altText, setAltText] = useState("");
   
   const [isSaving, setIsSaving] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
@@ -62,6 +63,7 @@ const ActionHeroEditorComponent = ({
             setTitle(segment.data.title || "");
             setDescription(segment.data.description || "");
             setBackgroundImage(segment.data.backgroundImage || "");
+            setAltText(segment.data.altText || "");
             setIsLoading(false);
             return;
           }
@@ -186,7 +188,8 @@ const ActionHeroEditorComponent = ({
         data: {
           title,
           description,
-          backgroundImage
+          backgroundImage,
+          altText
         }
       };
 
@@ -343,12 +346,28 @@ const ActionHeroEditorComponent = ({
           <div className="mt-2 relative h-32 rounded-lg overflow-hidden">
             <img
               src={backgroundImage}
-              alt="Background preview"
+              alt={altText || "Background preview"}
               className="w-full h-full object-cover"
             />
           </div>
         )}
       </div>
+
+      {/* Alt-Text */}
+      {backgroundImage && (
+        <div className="space-y-2">
+          <Label htmlFor="altText">Alt-Text (for SEO & Accessibility)</Label>
+          <Input
+            id="altText"
+            value={altText}
+            onChange={(e) => setAltText(e.target.value)}
+            placeholder="Describe the image for screen readers..."
+          />
+          <p className="text-xs text-muted-foreground">
+            This text is used by screen readers and search engines to understand the image content.
+          </p>
+        </div>
+      )}
 
 
       {/* Auto-Translate Button (only for non-English) */}
