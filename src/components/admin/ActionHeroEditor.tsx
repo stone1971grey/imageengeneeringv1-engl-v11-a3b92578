@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, FolderOpen } from "lucide-react";
+import { Upload, FolderOpen, Trash2 } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { DataHubDialog } from "@/components/admin/DataHubDialog";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
@@ -375,17 +375,29 @@ const ActionHeroEditorComponent = ({
           />
         </div>
         {backgroundImage && (
-          <div className="mt-2 text-sm text-muted-foreground truncate">
-            {backgroundImage}
-          </div>
-        )}
-        {backgroundImage && (
-          <div className="mt-2 relative h-32 rounded-lg overflow-hidden">
-            <img
-              src={backgroundImage}
-              alt={altText || "Background preview"}
-              className="w-full h-full object-cover"
-            />
+          <div className="mt-2 relative">
+            <div className="relative h-32 rounded-lg overflow-hidden">
+              <img
+                src={backgroundImage}
+                alt={altText || "Background preview"}
+                className="w-full h-full object-cover"
+              />
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8"
+                onClick={() => {
+                  setBackgroundImage("");
+                  setAltText("");
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="mt-1 text-sm text-muted-foreground truncate">
+              {backgroundImage}
+            </div>
           </div>
         )}
       </div>
