@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, FolderOpen } from "lucide-react";
@@ -34,7 +33,7 @@ const ActionHeroEditorComponent = ({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [backgroundImage, setBackgroundImage] = useState("");
-  const [flipImage, setFlipImage] = useState(false);
+  
   const [isSaving, setIsSaving] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +62,6 @@ const ActionHeroEditorComponent = ({
             setTitle(segment.data.title || "");
             setDescription(segment.data.description || "");
             setBackgroundImage(segment.data.backgroundImage || "");
-            setFlipImage(segment.data.flipImage || false);
             setIsLoading(false);
             return;
           }
@@ -85,7 +83,7 @@ const ActionHeroEditorComponent = ({
             if (segment?.data) {
               // Only load image settings from English, keep text empty for translation
               setBackgroundImage(segment.data.backgroundImage || "");
-              setFlipImage(segment.data.flipImage || false);
+              
               setTitle("");
               setDescription("");
             }
@@ -188,8 +186,7 @@ const ActionHeroEditorComponent = ({
         data: {
           title,
           description,
-          backgroundImage,
-          flipImage
+          backgroundImage
         }
       };
 
@@ -299,14 +296,14 @@ const ActionHeroEditorComponent = ({
               onChange={handleImageUpload}
               className="hidden"
             />
-            <Button type="button" variant="outline" className="w-full bg-sky-100 hover:bg-sky-200 text-sky-700" asChild>
+            <Button type="button" variant="outline" className="w-full bg-amber-400 hover:bg-amber-500 text-amber-900" asChild>
               <span><Upload className="mr-2 h-4 w-4" />Upload from Computer</span>
             </Button>
           </label>
           <Button 
             type="button" 
             variant="outline" 
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+            className="flex-1 bg-blue-900 hover:bg-blue-800 text-white"
             onClick={() => setMediaDialogOpen(true)}
           >
             <FolderOpen className="mr-2 h-4 w-4" />
@@ -333,21 +330,11 @@ const ActionHeroEditorComponent = ({
               src={backgroundImage}
               alt="Background preview"
               className="w-full h-full object-cover"
-              style={{ transform: flipImage ? 'scaleX(-1)' : 'none' }}
             />
           </div>
         )}
       </div>
 
-      {/* Flip Image Toggle */}
-      <div className="flex items-center space-x-2">
-        <Switch
-          id="flipImage"
-          checked={flipImage}
-          onCheckedChange={setFlipImage}
-        />
-        <Label htmlFor="flipImage">Flip image horizontally</Label>
-      </div>
 
       {/* Auto-Translate Button (only for non-English) */}
       {normalizedLang !== 'en' && (
