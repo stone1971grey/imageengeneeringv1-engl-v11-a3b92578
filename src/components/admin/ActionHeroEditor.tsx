@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Save, Upload, FolderOpen } from "lucide-react";
+import { Upload, FolderOpen } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 import { DataHubDialog } from "@/components/admin/DataHubDialog";
 
@@ -292,30 +292,25 @@ const ActionHeroEditorComponent = ({
       <div className="space-y-2">
         <Label>Background Image</Label>
         <div className="flex gap-2">
-          <Input
-            value={backgroundImage}
-            onChange={(e) => setBackgroundImage(e.target.value)}
-            placeholder="Image URL..."
-            className="flex-1"
-          />
-          <label className="cursor-pointer">
+          <label className="cursor-pointer flex-1">
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
               className="hidden"
             />
-            <Button type="button" variant="outline" size="icon" asChild>
-              <span><Upload className="h-4 w-4" /></span>
+            <Button type="button" variant="outline" className="w-full bg-sky-100 hover:bg-sky-200 text-sky-700" asChild>
+              <span><Upload className="mr-2 h-4 w-4" />Upload from Computer</span>
             </Button>
           </label>
           <Button 
             type="button" 
             variant="outline" 
-            size="icon"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
             onClick={() => setMediaDialogOpen(true)}
           >
-            <FolderOpen className="h-4 w-4" />
+            <FolderOpen className="mr-2 h-4 w-4" />
+            Select from Media
           </Button>
           <DataHubDialog
             isOpen={mediaDialogOpen}
@@ -327,6 +322,11 @@ const ActionHeroEditorComponent = ({
             }}
           />
         </div>
+        {backgroundImage && (
+          <div className="mt-2 text-sm text-muted-foreground truncate">
+            {backgroundImage}
+          </div>
+        )}
         {backgroundImage && (
           <div className="mt-2 relative h-32 rounded-lg overflow-hidden">
             <img
@@ -369,7 +369,6 @@ const ActionHeroEditorComponent = ({
         disabled={isSaving}
         className="w-full"
       >
-        <Save className="mr-2 h-4 w-4" />
         {isSaving ? "Saving..." : "Save Changes"}
       </Button>
     </div>
