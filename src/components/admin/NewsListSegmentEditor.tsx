@@ -58,9 +58,23 @@ const NewsListSegmentEditorComponent = ({
             console.error("Error parsing content:", e);
           }
         } else if (normalizedLang === 'en') {
-          // Only set defaults for English
-          setTitle(data?.title || "All News");
-          setDescription(data?.description || "Stay updated with the latest developments in image quality testing and measurement technology");
+          // Set and auto-save defaults for English if not exists
+          const defaultTitle = data?.title || "All News";
+          const defaultDescription = data?.description || "Stay updated with the latest developments in image quality testing and measurement technology";
+          setTitle(defaultTitle);
+          setDescription(defaultDescription);
+          
+          // Auto-save English defaults to database
+          await supabase
+            .from("page_content")
+            .upsert({
+              page_slug: pageSlug,
+              section_key: segmentId,
+              content_type: "news-list",
+              content_value: JSON.stringify({ title: defaultTitle, description: defaultDescription }),
+              language: "en",
+              updated_at: new Date().toISOString(),
+            }, { onConflict: "page_slug,section_key,language" });
         }
         // For non-English, leave empty if no content exists (no English fallback)
       } catch (error) {
@@ -75,13 +89,44 @@ const NewsListSegmentEditorComponent = ({
 
   // Listen for external translate events from Rainbow SplitScreen
   useEffect(() => {
+    // Only target language editors should handle translate events
     if (normalizedLang === 'en') return;
 
     const handleExternalTranslate = async () => {
+      console.log(`[NewsListSegmentEditor] Translate event received for ${normalizedLang}`);
       setIsTranslating(true);
+      
       try {
-        // Load English version
+        // Load English version from page_segments
         const { data: enData, error: enError } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", "page_segments")
+          .eq("language", "en")
+          .maybeSingle();
+
+        if (enError) throw enError;
+
+        let enContent = { title: "All News", description: "Stay updated with the latest developments in image quality testing and measurement technology" };
+        
+        if (enData?.content_value) {
+          try {
+            const segments = JSON.parse(enData.content_value);
+            const newsListSegment = segments.find((s: any) => s.id === segmentId || s.id === String(segmentId));
+            if (newsListSegment?.data) {
+              enContent = {
+                title: newsListSegment.data.title || enContent.title,
+                description: newsListSegment.data.description || enContent.description
+              };
+            }
+          } catch (e) {
+            console.error("Error parsing English page_segments:", e);
+          }
+        }
+
+        // Also check dedicated section_key storage
+        const { data: dedicatedData } = await supabase
           .from("page_content")
           .select("content_value")
           .eq("page_slug", pageSlug)
@@ -89,21 +134,25 @@ const NewsListSegmentEditorComponent = ({
           .eq("language", "en")
           .maybeSingle();
 
-        if (enError) throw enError;
-
-        if (!enData?.content_value) {
-          toast.error('No English version found to translate from');
-          setIsTranslating(false);
-          return;
+        if (dedicatedData?.content_value) {
+          try {
+            const parsed = JSON.parse(dedicatedData.content_value);
+            enContent = {
+              title: parsed.title || enContent.title,
+              description: parsed.description || enContent.description
+            };
+          } catch (e) {
+            console.error("Error parsing dedicated content:", e);
+          }
         }
 
-        const enContent = JSON.parse(enData.content_value);
+        console.log(`[NewsListSegmentEditor] Translating from English:`, enContent);
 
         const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
           body: {
             texts: {
-              title: enContent.title || '',
-              description: enContent.description || ''
+              title: enContent.title,
+              description: enContent.description
             },
             targetLanguage: normalizedLang,
           },
@@ -112,8 +161,8 @@ const NewsListSegmentEditorComponent = ({
         if (translateError) throw translateError;
 
         if (translateData?.translatedTexts) {
-          setTitle(translateData.translatedTexts.title || enContent.title || '');
-          setDescription(translateData.translatedTexts.description || enContent.description || '');
+          setTitle(translateData.translatedTexts.title || enContent.title);
+          setDescription(translateData.translatedTexts.description || enContent.description);
           toast.success(`Translated to ${normalizedLang.toUpperCase()}`);
         }
       } catch (error) {
