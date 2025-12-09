@@ -21,7 +21,7 @@ const NewsListSegment = ({
   sectionDescription = "Stay updated with the latest developments in image quality testing and measurement technology",
 }: NewsListSegmentProps) => {
   const { language } = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   
   // Normalize language code (e.g., 'de-DE' -> 'de')
   const normalizedLang = language?.split('-')[0] || 'en';
@@ -45,10 +45,10 @@ const NewsListSegment = ({
 
   // Build categories array dynamically
   const categories = useMemo(() => {
-    const cats = [{ value: "all", label: "All" }];
+    const cats: string[] = [];
     if (categoriesData) {
       categoriesData.forEach(cat => {
-        if (cat) cats.push({ value: cat, label: cat });
+        if (cat) cats.push(cat);
       });
     }
     return cats;
@@ -84,12 +84,24 @@ const NewsListSegment = ({
     },
   });
 
-  // Filter news by selected category (frontend filtering)
+  // Toggle category selection (multi-select)
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(c => c !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  // Filter news by selected categories (frontend filtering)
   const filteredNews = useMemo(() => {
     if (!newsItems) return [];
-    if (selectedCategory === "all") return newsItems;
-    return newsItems.filter(item => item.category === selectedCategory);
-  }, [newsItems, selectedCategory]);
+    // If no categories selected, show all
+    if (selectedCategories.length === 0) return newsItems;
+    return newsItems.filter(item => item.category && selectedCategories.includes(item.category));
+  }, [newsItems, selectedCategories]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -112,7 +124,7 @@ const NewsListSegment = ({
 
   if (isLoading) {
     return (
-      <section id={id} className="py-24 bg-[#373737]">
+      <section id={id} className="pt-[120px] pb-24 bg-[#373737]">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <p className="text-white">Loading news...</p>
@@ -124,7 +136,7 @@ const NewsListSegment = ({
 
   if (!newsItems || newsItems.length === 0) {
     return (
-      <section id={id} className="py-24 bg-[#373737]">
+      <section id={id} className="pt-[120px] pb-24 bg-[#373737]">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <p className="text-white">No news articles available.</p>
@@ -135,7 +147,7 @@ const NewsListSegment = ({
   }
 
   return (
-    <section id={id} className="pt-[70px] pb-24 bg-[#373737]">
+    <section id={id} className="pt-[120px] pb-24 bg-[#373737]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-4xl font-bold text-white mb-4">{sectionTitle}</h2>
@@ -144,19 +156,19 @@ const NewsListSegment = ({
           </p>
         </div>
 
-        {/* Category Filter Buttons */}
+        {/* Category Filter Buttons - Multi-Select */}
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           {categories.map((category) => (
             <button
-              key={category.value}
-              onClick={() => setSelectedCategory(category.value)}
+              key={category}
+              onClick={() => toggleCategory(category)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category.value
+                selectedCategories.includes(category)
                   ? "bg-[#f9dc24] text-black"
                   : "bg-white/10 text-white hover:bg-white/20"
               }`}
             >
-              {category.label}
+              {category}
             </button>
           ))}
         </div>
