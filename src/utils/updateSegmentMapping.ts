@@ -79,16 +79,18 @@ export async function updateSegmentMapping(
     if (existing) {
       // Mapping exists - add segmentId if not already present
       const currentIds = existing.segment_ids || [];
+      const segmentAlreadyMapped = currentIds.includes(segmentIdStr);
       
-      if (!currentIds.includes(segmentIdStr)) {
-        const updatedIds = [...currentIds, segmentIdStr];
+      // Always update if alt_text is provided, or if segment needs to be added
+      if (!segmentAlreadyMapped || altText !== undefined) {
+        const updatedIds = segmentAlreadyMapped ? currentIds : [...currentIds, segmentIdStr];
         
         const updateData: any = { 
           segment_ids: updatedIds,
           updated_at: new Date().toISOString()
         };
         
-        // Only update alt_text if explicitly provided
+        // Update alt_text if explicitly provided
         if (altText !== undefined) {
           updateData.alt_text = altText;
         }
@@ -106,12 +108,12 @@ export async function updateSegmentMapping(
           return false;
         }
         
-        if (showToast) {
+        if (showToast && !segmentAlreadyMapped) {
           toast.success(`✅ Image linked to segment #${segmentId}`);
         }
         return true;
       } else {
-        // Already mapped
+        // Already mapped and no alt_text update needed
         return true;
       }
     } else {
