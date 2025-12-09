@@ -418,10 +418,16 @@ const DynamicCMSPage = () => {
     );
     
     // Fallback: if segmentId looks like "type-number", try to match by type and segmentId
+    // Handle segment types with hyphens (e.g., "news-list-494" -> type="news-list", id=494)
     if (!segment && segmentId.includes('-')) {
-      const [potentialType, potentialNum] = segmentId.split('-');
+      // Extract the last part as the numeric ID
+      const lastDashIndex = segmentId.lastIndexOf('-');
+      const potentialType = segmentId.substring(0, lastDashIndex);
+      const potentialNum = segmentId.substring(lastDashIndex + 1);
       const numericId = parseInt(potentialNum, 10);
+      
       if (!isNaN(numericId)) {
+        // Try matching by type and segmentId
         segment = pageSegments.find((s) => 
           s.type === potentialType && s.segmentId === numericId
         );
