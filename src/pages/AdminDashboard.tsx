@@ -3446,6 +3446,42 @@ const AdminDashboard = () => {
     setSaving(true);
 
     try {
+      // CRITICAL SAFETY CHECK: Fetch current segments from database before saving
+      // This prevents accidental data loss from stale state
+      const currentPageSlug = resolvedPageSlug || selectedPage;
+      
+      const { data: existingData } = await supabase
+        .from("page_content")
+        .select("content_value")
+        .eq("page_slug", currentPageSlug)
+        .eq("section_key", "page_segments")
+        .eq("language", editorLanguage)
+        .single();
+      
+      let existingSegments: any[] = [];
+      if (existingData?.content_value) {
+        try {
+          existingSegments = JSON.parse(existingData.content_value);
+        } catch (e) {
+          console.warn('[SAVE GUARD] Could not parse existing segments');
+        }
+      }
+      
+      // SAFETY: If we're about to save significantly fewer segments than exist, warn and abort
+      // This prevents accidental mass deletion
+      if (existingSegments.length > 1 && pageSegments.length < existingSegments.length - 1) {
+        const confirmed = window.confirm(
+          `WARNUNG: Sie sind dabei, ${existingSegments.length - pageSegments.length} Segmente zu löschen. ` +
+          `Aktuell: ${existingSegments.length} Segmente, Neu: ${pageSegments.length} Segmente. ` +
+          `Fortfahren?`
+        );
+        if (!confirmed) {
+          setSaving(false);
+          toast.info("Speichern abgebrochen - Segmente wurden nicht geändert");
+          return;
+        }
+      }
+      
       // CRITICAL: Ensure all segments have correct positions based on current order
       const segmentsWithPositions = pageSegments.map((seg, idx) => ({
         ...seg,
@@ -3453,11 +3489,12 @@ const AdminDashboard = () => {
       }));
       
       console.log('[POSITION DEBUG] Saving segments with positions:', JSON.stringify(segmentsWithPositions.map(s => ({ id: s.id, type: s.type, position: s.position }))));
+      console.log('[SAVE GUARD] Existing segments:', existingSegments.length, 'New segments:', segmentsWithPositions.length);
       
       const { error } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
+          page_slug: currentPageSlug,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(segmentsWithPositions),
