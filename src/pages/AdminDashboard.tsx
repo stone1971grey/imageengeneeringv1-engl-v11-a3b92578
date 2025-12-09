@@ -4116,7 +4116,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Intro</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Intro - B</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Introduction section with optional image, title and text content
                             </p>
@@ -4328,7 +4328,7 @@ const AdminDashboard = () => {
                             </svg>
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Latest News</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Latest News - D</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Display news articles in a carousel slider
                             </p>
@@ -4347,7 +4347,7 @@ const AdminDashboard = () => {
                             <Newspaper className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">News List</h3>
+                            <h3 className="text-lg font-bold text-gray-900">News List - P</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Display all news with frontend category filtering
                             </p>
@@ -5372,6 +5372,7 @@ const AdminDashboard = () => {
                         if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
                         if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
                         if (segment.type === 'debug') label = `Debug ${displayNumber}`;
+                        if (segment.type === 'news-list') label = `News List - P ${displayNumber}`;
                       }
                       
                       return (
@@ -6544,6 +6545,7 @@ const AdminDashboard = () => {
               if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
               if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
               if (segment.type === 'debug') label = `Debug ${displayNumber}`;
+              if (segment.type === 'news-list') label = `News List - P ${displayNumber}`;
               if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
               if (segment.type === 'table') label = `Table - L ${displayNumber}`;
               if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
@@ -6641,6 +6643,7 @@ const AdminDashboard = () => {
                       if (segType === 'intro') return `Intro - B ${displayNumber}`;
                       if (segType === 'industries') return `Industries - C ${displayNumber}`;
                       if (segType === 'debug') return `Debug ${displayNumber}`;
+                      if (segType === 'news-list') return `News List - P ${displayNumber}`;
                       return segType;
                     };
 
