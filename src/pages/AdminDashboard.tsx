@@ -6702,7 +6702,16 @@ const AdminDashboard = () => {
                         {label}
                       </CardTitle>
                       <CardDescription className="text-gray-300">
-                        Edit this {segment.type} segment
+                        Edit this {
+                          segment.type === 'action-hero' ? 'Action Hero' :
+                          segment.type === 'news-list' ? 'News List' :
+                          segment.type === 'full-hero' ? 'Full Hero' :
+                          segment.type === 'meta-navigation' ? 'Meta Navigation' :
+                          segment.type === 'product-hero-gallery' ? 'Product Hero Gallery' :
+                          segment.type === 'feature-overview' ? 'Feature Overview' :
+                          segment.type === 'image-text' ? 'Image Text' :
+                          segment.type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+                        } Segment
                       </CardDescription>
                       <div className="mt-3 px-3 py-1.5 bg-yellow-500/20 border border-yellow-500/40 rounded text-sm font-mono text-yellow-400 inline-block">
                         ID: {segmentRegistry[segment.id] || segment.id}
