@@ -6667,30 +6667,28 @@ const AdminDashboard = () => {
             const reverseRegistry = (window as any).__segmentKeyRegistry || {};
             const customKey = reverseRegistry[String(segmentId)];
 
+            // Always generate formatted label based on segment type
             let label = '';
-            if (customKey && customKey !== String(segmentId)) {
-              label = customKey;
-            } else {
-              if (segment.type === 'hero') label = `Produkt Hero - F ${displayNumber}`;
-              if (segment.type === 'meta-navigation') label = `Meta Navigation - E ${displayNumber}`;
-              if (segment.type === 'product-hero-gallery') label = `Product Gallery - G ${displayNumber}`;
-              if (segment.type === 'tiles') label = `Tiles - H ${displayNumber}`;
-              if (segment.type === 'banner') label = `Banner - J ${displayNumber}`;
-              if (segment.type === 'banner-p') label = `Banner-P ${displayNumber}`;
-              if (segment.type === 'image-text') label = `Image & Text - I ${displayNumber}`;
-              if (segment.type === 'full-hero') label = `Full Hero - A ${displayNumber}`;
-              if (segment.type === 'intro') label = `Intro - B ${displayNumber}`;
-              if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
-              if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
-              if (segment.type === 'debug') label = `Debug ${displayNumber}`;
-              if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
-              if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
-              if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
-              if (segment.type === 'table') label = `Table - L ${displayNumber}`;
-              if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
-              if (segment.type === 'video') label = `Video - M ${displayNumber}`;
-              if (segment.type === 'specification') label = `Specification - N ${displayNumber}`;
-            }
+            if (segment.type === 'hero') label = `Produkt Hero - F-${displayNumber}`;
+            else if (segment.type === 'meta-navigation') label = `Meta Navigation - E-${displayNumber}`;
+            else if (segment.type === 'product-hero-gallery') label = `Product Gallery - G-${displayNumber}`;
+            else if (segment.type === 'tiles') label = `Tiles - H-${displayNumber}`;
+            else if (segment.type === 'banner') label = `Banner - J-${displayNumber}`;
+            else if (segment.type === 'banner-p') label = `Banner P - ${displayNumber}`;
+            else if (segment.type === 'image-text') label = `Image & Text - I-${displayNumber}`;
+            else if (segment.type === 'full-hero') label = `Full Hero - A-${displayNumber}`;
+            else if (segment.type === 'intro') label = `Intro - B-${displayNumber}`;
+            else if (segment.type === 'industries') label = `Industries - C-${displayNumber}`;
+            else if (segment.type === 'news') label = `Latest News - D-${displayNumber}`;
+            else if (segment.type === 'debug') label = `Debug ${displayNumber}`;
+            else if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
+            else if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
+            else if (segment.type === 'feature-overview') label = `Features - K-${displayNumber}`;
+            else if (segment.type === 'table') label = `Table - L-${displayNumber}`;
+            else if (segment.type === 'faq') label = `FAQ - O-${displayNumber}`;
+            else if (segment.type === 'video') label = `Video - M-${displayNumber}`;
+            else if (segment.type === 'specification') label = `Specification - N-${displayNumber}`;
+            else label = `${segment.type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} - ${displayNumber}`;
             
             return (
             <TabsContent key={`segment-content-${segment.id}`} value={segment.id}>
