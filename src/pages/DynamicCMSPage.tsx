@@ -697,7 +697,7 @@ const DynamicCMSPage = () => {
         return (
           <NewsListSegment
             key={segmentId}
-            id={segmentDbId?.toString()}
+            id={segment.id}
             pageSlug={pageSlug}
             sectionTitle={segment.data?.title || "All News"}
             sectionDescription={segment.data?.description}
