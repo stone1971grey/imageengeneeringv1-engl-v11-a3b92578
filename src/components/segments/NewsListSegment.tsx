@@ -17,15 +17,54 @@ interface NewsListSegmentProps {
 const NewsListSegment = ({
   id,
   pageSlug = "index",
-  sectionTitle = "All News",
-  sectionDescription = "Stay updated with the latest developments in image quality testing and measurement technology",
+  sectionTitle: propTitle,
+  sectionDescription: propDescription,
 }: NewsListSegmentProps) => {
   const { language } = useLanguage();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [sectionTitle, setSectionTitle] = useState(propTitle || "All News");
+  const [sectionDescription, setSectionDescription] = useState(propDescription || "Stay updated with the latest developments in image quality testing and measurement technology");
   
   // Normalize language code (e.g., 'de-DE' -> 'de')
   const normalizedLang = language?.split('-')[0] || 'en';
+
+  // Load language-specific title/description from database
+  useEffect(() => {
+    const loadLocalizedContent = async () => {
+      try {
+        // Try to load from dedicated section_key storage first
+        const { data } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", pageSlug)
+          .eq("section_key", id || "")
+          .eq("language", normalizedLang)
+          .maybeSingle();
+
+        if (data?.content_value) {
+          try {
+            const parsed = JSON.parse(data.content_value);
+            if (parsed.title) setSectionTitle(parsed.title);
+            if (parsed.description) setSectionDescription(parsed.description);
+            return;
+          } catch (e) {
+            console.error("Error parsing news-list content:", e);
+          }
+        }
+
+        // Fallback to props if no database content
+        setSectionTitle(propTitle || "All News");
+        setSectionDescription(propDescription || "Stay updated with the latest developments in image quality testing and measurement technology");
+      } catch (error) {
+        console.error("Error loading news-list content:", error);
+      }
+    };
+
+    if (id && pageSlug) {
+      loadLocalizedContent();
+    }
+  }, [id, pageSlug, normalizedLang, propTitle, propDescription]);
 
   // Fetch unique categories from database
   const { data: categoriesData } = useQuery({
