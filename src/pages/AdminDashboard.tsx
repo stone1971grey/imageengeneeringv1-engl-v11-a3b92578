@@ -74,6 +74,7 @@ import { DataHubDialog } from '@/components/admin/DataHubDialog';
 import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { FooterEditor } from '@/components/admin/FooterEditor';
 import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor';
+import { ActionHeroEditor } from '@/components/admin/ActionHeroEditor';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -3018,6 +3019,13 @@ const AdminDashboard = () => {
           title: 'All News',
           description: 'Stay updated with the latest developments in image quality testing and measurement technology'
         };
+      case 'action-hero':
+        return {
+          title: 'Page Title',
+          description: 'Enter a brief description of the page content here.',
+          backgroundImage: '',
+          flipImage: false
+        };
       default:
         return {};
     }
@@ -3168,6 +3176,7 @@ const AdminDashboard = () => {
       case 'industries':
       case 'news':
       case 'debug':
+      case 'action-hero':
         // These segment types are mostly text-based, so return empty structure
         return {};
       
@@ -4354,6 +4363,25 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* Action Hero */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('action-hero')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Zap className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Action Hero - Q</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Slim hero with H1 title, description and background image
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
                     </div>
                   </TabsContent>
@@ -6846,6 +6874,16 @@ const AdminDashboard = () => {
                       data={segment.data}
                       onSave={() => loadContent()}
                       editorLanguage={editorLanguage}
+                    />
+                  )}
+
+                  {segment.type === 'action-hero' && (
+                    <ActionHeroEditor
+                      pageSlug={resolvedPageSlug || selectedPage}
+                      segmentId={segment.id}
+                      data={segment.data}
+                      onSave={() => loadContent()}
+                      targetLanguage={editorLanguage}
                     />
                   )}
 
