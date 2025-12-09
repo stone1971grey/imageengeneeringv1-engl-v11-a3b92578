@@ -156,6 +156,13 @@ const ActionHeroEditorComponent = ({
         const translatedTexts = translated.translatedTexts || translated;
         setTitle(translatedTexts.title || "");
         setDescription(translatedTexts.description || "");
+        
+        // Also copy image from English if target language doesn't have one
+        if (!backgroundImage && segment.data.backgroundImage) {
+          setBackgroundImage(segment.data.backgroundImage);
+          setAltText(segment.data.altText || "");
+        }
+        
         toast.success(`Translated to ${normalizedLang.toUpperCase()}`);
       } catch (error: any) {
         console.error("Translation error:", error);
@@ -305,9 +312,14 @@ const ActionHeroEditorComponent = ({
 
   return (
     <div className="space-y-6">
-      {/* Translation indicator */}
+      {/* Translation indicator - prominent feedback bar */}
       {isTranslating && (
-        <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-pulse rounded-full" />
+        <div className="p-4 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-lg animate-pulse">
+          <div className="flex items-center justify-center gap-3 text-white font-medium">
+            <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <span>Translating to {normalizedLang.toUpperCase()}...</span>
+          </div>
+        </div>
       )}
 
       {/* Title */}
