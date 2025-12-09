@@ -157,10 +157,17 @@ const ActionHeroEditorComponent = ({
         setTitle(translatedTexts.title || "");
         setDescription(translatedTexts.description || "");
         
-        // Also copy image from English if target language doesn't have one
+        // Copy image from English if target language doesn't have one
         if (!backgroundImage && segment.data.backgroundImage) {
           setBackgroundImage(segment.data.backgroundImage);
-          setAltText(segment.data.altText || "");
+          
+          // Load language-specific alt-text from Media Management
+          const altFromMapping = await loadAltTextFromMapping(
+            segment.data.backgroundImage, 
+            'page-images', 
+            normalizedLang
+          );
+          setAltText(altFromMapping || segment.data.altText || "");
         }
         
         toast.success(`Translated to ${normalizedLang.toUpperCase()}`);
