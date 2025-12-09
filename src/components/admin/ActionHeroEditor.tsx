@@ -143,19 +143,19 @@ const ActionHeroEditorComponent = ({
         // Translate text fields
         const { data: translated, error } = await supabase.functions.invoke('translate-content', {
           body: {
-            content: {
+            texts: {
               title: segment.data.title || "",
               description: segment.data.description || ""
             },
-            targetLanguage: normalizedLang,
-            sourceLanguage: 'en'
+            targetLanguage: normalizedLang
           }
         });
 
         if (error) throw error;
 
-        setTitle(translated.title || "");
-        setDescription(translated.description || "");
+        const translatedTexts = translated.translatedTexts || translated;
+        setTitle(translatedTexts.title || "");
+        setDescription(translatedTexts.description || "");
         toast.success(`Translated to ${normalizedLang.toUpperCase()}`);
       } catch (error: any) {
         console.error("Translation error:", error);
