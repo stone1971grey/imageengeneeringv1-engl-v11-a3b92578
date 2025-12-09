@@ -172,13 +172,13 @@ Deno.serve(async (req) => {
     let folderInfo: { folderId: string; storagePath: string } | null = null;
     
     if (pageSlug) {
-      // Prefix with 'media/' to ensure all uploads are under Media root folder
-      const mediaPageSlug = pageSlug.startsWith('media/') ? pageSlug : `media/${pageSlug}`;
-      console.log('[upload-image] Using pageSlug with media prefix:', mediaPageSlug);
+      // Use pageSlug directly - storage_path matches actual storage location
+      // Do NOT prefix with 'media/' as this breaks the folder structure
+      console.log('[upload-image] Using pageSlug:', pageSlug);
       
       // Create folder hierarchy in media_folders and get storage path
       try {
-        folderInfo = await ensureFolderHierarchy(supabase, mediaPageSlug, user.id);
+        folderInfo = await ensureFolderHierarchy(supabase, pageSlug, user.id);
         console.log('[upload-image] Folder hierarchy created:', folderInfo);
         
         // Use the folder structure for storage path
