@@ -122,7 +122,7 @@ const NewsListSegment = ({
 
   if (isLoading) {
     return (
-      <section id={id} className="pt-[120px] pb-24 bg-[#373737]">
+      <section id={id} className="pt-[70px] pb-24 bg-[#373737]">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <p className="text-white">Loading news...</p>
@@ -134,7 +134,7 @@ const NewsListSegment = ({
 
   if (!newsItems || newsItems.length === 0) {
     return (
-      <section id={id} className="pt-[120px] pb-24 bg-[#373737]">
+      <section id={id} className="pt-[70px] pb-24 bg-[#373737]">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <p className="text-white">No news articles available.</p>
@@ -145,7 +145,7 @@ const NewsListSegment = ({
   }
 
   return (
-    <section id={id} className="pt-[120px] pb-24 bg-[#373737]">
+    <section id={id} className="pt-[70px] pb-24 bg-[#373737]">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-4xl font-bold text-white mb-4">{sectionTitle}</h2>
