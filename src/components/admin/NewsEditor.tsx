@@ -538,12 +538,12 @@ const NewsEditor = () => {
                 
                 {/* Status Badge */}
                 {!article.published && (
-                  <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-yellow-500 text-white shadow-md">
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded text-xs font-semibold bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">
                     Draft
                   </div>
                 )}
                 {article.published && (
-                  <div className="absolute top-3 right-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-green-500 text-white shadow-md">
+                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded text-xs font-semibold bg-[#f9dc24]/20 text-[#f9dc24] border border-[#f9dc24]/40">
                     Live
                   </div>
                 )}
@@ -582,13 +582,12 @@ const NewsEditor = () => {
                 </div>
                 
                 {/* Translation Status */}
-                <div className="flex items-center flex-wrap gap-3 mb-4">
-                  <span className="text-2xl">🌐</span>
-                  <span className="text-xl px-4 py-2 rounded-lg bg-blue-900/50 text-blue-300 font-bold">🇺🇸 EN</span>
+                <div className="flex items-center flex-wrap gap-2 mb-4">
+                  <span className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 font-medium">🇺🇸 EN</span>
                   {getTranslations(article.slug).map(lang => {
                     const flags: Record<string, string> = { de: "🇩🇪 DE", ja: "🇯🇵 JA", ko: "🇰🇷 KO", zh: "🇨🇳 ZH" };
                     return (
-                      <span key={lang} className="text-xl px-4 py-2 rounded-lg bg-green-900/50 text-green-300 font-bold">
+                      <span key={lang} className="text-sm px-2 py-1 rounded bg-green-900/40 text-green-400 font-medium">
                         {flags[lang]}
                       </span>
                     );
