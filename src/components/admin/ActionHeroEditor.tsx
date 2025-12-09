@@ -245,7 +245,29 @@ const ActionHeroEditorComponent = ({
         });
 
         if (error) throw error;
-        setBackgroundImage(data.url);
+        
+        const imageUrl = data.url;
+        setBackgroundImage(imageUrl);
+        
+        // Create/update file_segment_mapping for segment badge
+        const filePath = data.path;
+        if (filePath) {
+          const { error: mappingError } = await supabase
+            .from('file_segment_mappings')
+            .upsert({
+              file_path: filePath,
+              bucket_id: 'page-images',
+              segment_ids: [segmentId],
+              alt_text: altText || null
+            }, {
+              onConflict: 'file_path,bucket_id'
+            });
+          
+          if (mappingError) {
+            console.error("Failed to create segment mapping:", mappingError);
+          }
+        }
+        
         toast.success("Image uploaded");
       };
       reader.readAsDataURL(file);
