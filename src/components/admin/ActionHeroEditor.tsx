@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, FolderOpen, Trash2 } from "lucide-react";
-import { GeminiIcon } from "@/components/GeminiIcon";
 import { DataHubDialog } from "@/components/admin/DataHubDialog";
 import { updateSegmentMapping } from "@/utils/updateSegmentMapping";
 import { loadAltTextFromMapping } from "@/utils/loadAltTextFromMapping";
@@ -21,7 +20,7 @@ interface ActionHeroEditorProps {
     flipImage?: boolean;
   };
   onSave?: () => void;
-  targetLanguage?: string;
+  language?: string; // For Rainbow split-screen mode
 }
 
 const ActionHeroEditorComponent = ({
@@ -29,7 +28,7 @@ const ActionHeroEditorComponent = ({
   pageSlug,
   data,
   onSave,
-  targetLanguage = 'en'
+  language = 'en'
 }: ActionHeroEditorProps) => {
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -42,7 +41,7 @@ const ActionHeroEditorComponent = ({
   const [isLoading, setIsLoading] = useState(true);
 
   // Normalize language code
-  const normalizedLang = targetLanguage?.split('-')[0] || 'en';
+  const normalizedLang = language?.split('-')[0] || 'en';
 
   // Load content from database
   useEffect(() => {
@@ -416,21 +415,6 @@ const ActionHeroEditorComponent = ({
             This text is used by screen readers and search engines to understand the image content.
           </p>
         </div>
-      )}
-
-
-      {/* Auto-Translate Button (only for non-English) */}
-      {normalizedLang !== 'en' && (
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => window.dispatchEvent(new CustomEvent('action-hero-translate'))}
-          disabled={isTranslating}
-          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white border-none hover:from-purple-600 hover:to-pink-600"
-        >
-          <GeminiIcon className="mr-2 h-4 w-4" />
-          {isTranslating ? "Translating..." : "Auto-Translate from English"}
-        </Button>
       )}
 
       {/* Save Button */}

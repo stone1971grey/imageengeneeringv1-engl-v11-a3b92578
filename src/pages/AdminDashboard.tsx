@@ -6990,13 +6990,21 @@ const AdminDashboard = () => {
                   )}
 
                   {segment.type === 'action-hero' && (
-                    <ActionHeroEditor
-                      pageSlug={resolvedPageSlug || selectedPage}
-                      segmentId={segment.id}
-                      data={segment.data}
-                      onSave={() => loadContent()}
-                      targetLanguage={editorLanguage}
-                    />
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Action Hero"
+                      segmentType="action-hero"
+                    >
+                      {(language) => (
+                        <ActionHeroEditor
+                          key={`action-hero-${segment.id}-${language}`}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          data={segment.data}
+                          onSave={() => loadContent()}
+                          language={language}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
                   )}
 
                   {segment.type === 'debug' && (() => {
