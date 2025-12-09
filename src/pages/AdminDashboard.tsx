@@ -3188,17 +3188,49 @@ const AdminDashboard = () => {
   const handleAddSegment = async (templateType: string) => {
     if (!user) return;
 
-    // Check for mutual exclusivity between Full Hero and Meta Navigation
+    // Check for mutual exclusivity between Full Hero, Action Hero, Meta Navigation, and Product Hero Gallery
     const hasFullHero = pageSegments.some(seg => seg.type === 'full-hero');
     const hasMetaNav = pageSegments.some(seg => seg.type === 'meta-navigation');
+    const hasActionHero = pageSegments.some(seg => seg.type === 'action-hero');
+    const hasProductHeroGallery = pageSegments.some(seg => seg.type === 'product-hero-gallery');
 
+    // Full Hero exclusions
     if (templateType === 'full-hero' && hasMetaNav) {
       toast.error("Full Hero cannot be added when Meta Navigation is present. Please remove Meta Navigation first.");
       return;
     }
+    if (templateType === 'full-hero' && hasActionHero) {
+      toast.error("Full Hero cannot be added when Action Hero is present. Please remove Action Hero first.");
+      return;
+    }
 
+    // Meta Navigation exclusions
     if (templateType === 'meta-navigation' && hasFullHero) {
       toast.error("Meta Navigation cannot be added when Full Hero is present. Please remove Full Hero first.");
+      return;
+    }
+    if (templateType === 'meta-navigation' && hasActionHero) {
+      toast.error("Meta Navigation cannot be added when Action Hero is present. Please remove Action Hero first.");
+      return;
+    }
+
+    // Action Hero exclusions (excludes: Full Hero, Meta Navigation, Product Hero Gallery)
+    if (templateType === 'action-hero' && hasFullHero) {
+      toast.error("Action Hero cannot be added when Full Hero is present. Please remove Full Hero first.");
+      return;
+    }
+    if (templateType === 'action-hero' && hasMetaNav) {
+      toast.error("Action Hero cannot be added when Meta Navigation is present. Please remove Meta Navigation first.");
+      return;
+    }
+    if (templateType === 'action-hero' && hasProductHeroGallery) {
+      toast.error("Action Hero cannot be added when Product Hero Gallery is present. Please remove Product Hero Gallery first.");
+      return;
+    }
+
+    // Product Hero Gallery exclusions
+    if (templateType === 'product-hero-gallery' && hasActionHero) {
+      toast.error("Product Hero Gallery cannot be added when Action Hero is present. Please remove Action Hero first.");
       return;
     }
 
@@ -3229,13 +3261,13 @@ const AdminDashboard = () => {
     };
 
     // Add new segment to tab order
-    // Meta-navigation is at start, full-hero after meta-nav, other segments at end
+    // Meta-navigation is at start, full-hero/action-hero after meta-nav, other segments at end
     let updatedTabOrder: string[];
     if (templateType === 'meta-navigation') {
       // Meta-navigation always goes at the very start
       updatedTabOrder = [String(segmentId), ...tabOrder];
-    } else if (templateType === 'full-hero') {
-      // Full-hero goes at start (after meta-nav if present)
+    } else if (templateType === 'full-hero' || templateType === 'action-hero') {
+      // Full-hero and action-hero go at start (after meta-nav if present)
       const metaNavIndex = tabOrder.findIndex(id => {
         const seg = pageSegments.find(s => String(s.id) === id);
         return seg?.type === 'meta-navigation';
@@ -5370,6 +5402,26 @@ const AdminDashboard = () => {
                     );
                   })}
 
+                {/* Action Hero - Fixed Position (After Meta Nav / Full Hero, before other segments) */}
+                {pageSegments
+                  .filter(segment => segment.type === 'action-hero')
+                  .map((segment) => {
+                    const segmentIndex = pageSegments.indexOf(segment);
+                    const sameTypeBefore = pageSegments.slice(0, segmentIndex).filter(s => s.type === 'action-hero').length;
+                    const displayNumber = sameTypeBefore + 1;
+                    const segmentId = segmentRegistry[segment.id] || segment.id;
+                    
+                    return (
+                      <TabsTrigger 
+                        key={segment.id}
+                        value={segment.id}
+                        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                      >
+                        ID {segmentId}: Action Hero {displayNumber}
+                      </TabsTrigger>
+                    );
+                  })}
+
                 {/* Hero Tab - Fixed Second Position (After Meta Nav) */}
                 {segmentRegistry['hero'] && (
                   <TabsTrigger 
@@ -5380,20 +5432,20 @@ const AdminDashboard = () => {
                   </TabsTrigger>
                 )}
 
-                {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Hero, and Footer */}
+                {/* Draggable Middle Tabs - ALL segments EXCEPT Meta Navigation, Full Hero, Action Hero, Hero, and Footer */}
                 <SortableContext
                   items={tabOrder.filter(tabId => {
                     const segment = pageSegments.find(s => s.id === tabId);
-                    // Exclude meta-navigation, full-hero, and footer from draggable section
-                    return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'footer');
+                    // Exclude meta-navigation, full-hero, action-hero, and footer from draggable section
+                    return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer');
                   })}
                   strategy={horizontalListSortingStrategy}
                 >
                   {tabOrder
                     .filter(tabId => {
                       const segment = pageSegments.find(s => s.id === tabId);
-                      // Exclude meta-navigation, full-hero, and footer from draggable section
-                      return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'footer');
+                      // Exclude meta-navigation, full-hero, action-hero, and footer from draggable section
+                      return !segment || (segment.type !== 'meta-navigation' && segment.type !== 'full-hero' && segment.type !== 'action-hero' && segment.type !== 'footer');
                     })
                     .map((tabId) => {
                     // Static tabs - only show if not deleted (in segmentRegistry)
@@ -5452,6 +5504,7 @@ const AdminDashboard = () => {
                         if (segment.type === 'industries') label = `Industries - C ${displayNumber}`;
                         if (segment.type === 'debug') label = `Debug ${displayNumber}`;
                         if (segment.type === 'news-list') label = `News List - P ${displayNumber}`;
+                        if (segment.type === 'action-hero') label = `Action Hero ${displayNumber}`;
                       }
                       
                       return (
@@ -6625,6 +6678,7 @@ const AdminDashboard = () => {
               if (segment.type === 'news') label = `Latest News - D ${displayNumber}`;
               if (segment.type === 'debug') label = `Debug ${displayNumber}`;
               if (segment.type === 'news-list') label = `News List - P ${displayNumber}`;
+              if (segment.type === 'action-hero') label = `Action Hero ${displayNumber}`;
               if (segment.type === 'feature-overview') label = `Features - K ${displayNumber}`;
               if (segment.type === 'table') label = `Table - L ${displayNumber}`;
               if (segment.type === 'faq') label = `FAQ - O ${displayNumber}`;
@@ -6723,6 +6777,7 @@ const AdminDashboard = () => {
                       if (segType === 'industries') return `Industries - C ${displayNumber}`;
                       if (segType === 'debug') return `Debug ${displayNumber}`;
                       if (segType === 'news-list') return `News List - P ${displayNumber}`;
+                      if (segType === 'action-hero') return `Action Hero ${displayNumber}`;
                       return segType;
                     };
 
