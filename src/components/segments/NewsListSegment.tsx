@@ -200,9 +200,9 @@ const NewsListSegment = ({
                         {item.teaser}
                       </p>
                       <Link to={`/${language}/news/${item.slug}`} className="w-full block">
-                        <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors duration-300 mt-auto">
+                        <button className="w-full py-2.5 px-4 bg-[#f9dc24] text-black font-medium rounded-md hover:bg-[#f9dc24]/90 transition-colors duration-300 mt-auto">
                           {getReadMoreLabel()}
-                        </Button>
+                        </button>
                       </Link>
                     </div>
                   </CardContent>

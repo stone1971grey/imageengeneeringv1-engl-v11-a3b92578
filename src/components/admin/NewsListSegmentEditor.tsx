@@ -208,7 +208,7 @@ const NewsListSegmentEditor = ({
         </div>
 
         <div className="mt-6 flex justify-end">
-          <Button onClick={handleSave} disabled={saving} className="bg-green-600 hover:bg-green-700">
+          <Button onClick={handleSave} disabled={saving} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
             <Save className="w-4 h-4 mr-2" />
             Save English Version
           </Button>
@@ -279,18 +279,12 @@ const NewsListSegmentEditor = ({
           <Button
             onClick={handleSaveTargetLanguage}
             disabled={saving}
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
           >
             <Save className="w-4 h-4 mr-2" />
             Save {LANGUAGES.find(l => l.code === targetLanguage)?.name} Version
           </Button>
         </div>
-      </div>
-
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-        <strong>Note:</strong> This segment displays all news articles with frontend category filtering.
-        Users can filter articles by category using the filter buttons. The categories are automatically
-        populated from existing news articles.
       </div>
     </div>
   );
