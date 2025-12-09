@@ -52,6 +52,7 @@ import { TilesSegmentEditor } from '@/components/admin/TilesSegmentEditor';
 import { SEOEditor } from '@/components/admin/SEOEditor';
 import SpecificationEditor from '@/components/admin/SpecificationEditor';
 import NewsSegmentEditor from '@/components/admin/NewsSegmentEditor';
+import NewsListSegmentEditor from '@/components/admin/NewsListSegmentEditor';
 import BannerEditor from '@/components/admin/BannerEditor';
 import { BannerSegmentEditor } from '@/components/admin/BannerSegmentEditor';
 import { BannerPEditor } from '@/components/admin/BannerPEditor';
@@ -3012,6 +3013,11 @@ const AdminDashboard = () => {
           title: 'Debug Segment',
           imageUrl: ''
         };
+      case 'news-list':
+        return {
+          title: 'All News',
+          description: 'Stay updated with the latest developments in image quality testing and measurement technology'
+        };
       default:
         return {};
     }
@@ -4018,6 +4024,25 @@ const AdminDashboard = () => {
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* News List */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('news-list')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Newspaper className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">News List - D2</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Display all news with frontend category filtering
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
                       {/* Debug Upload */}
@@ -6803,6 +6828,16 @@ const AdminDashboard = () => {
                       segmentId={segment.id}
                       onUpdate={() => handleSaveSegments()}
                       currentPageSlug={resolvedPageSlug || selectedPage}
+                    />
+                  )}
+
+                  {segment.type === 'news-list' && (
+                    <NewsListSegmentEditor
+                      pageSlug={resolvedPageSlug || selectedPage}
+                      segmentId={segment.id}
+                      data={segment.data}
+                      onSave={() => loadContent()}
+                      editorLanguage={editorLanguage}
                     />
                   )}
 
