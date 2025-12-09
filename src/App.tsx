@@ -225,7 +225,7 @@ const App = () => (
             <Route path="/:lang/event-already-registered" element={<EventAlreadyRegistered />} />
             <Route path="/:lang/event-registration-success" element={<EventRegistrationSuccess />} />
             <Route path="/:lang/contact" element={<Contact />} />
-            <Route path="/:lang/news" element={<News />} />
+            <Route path="/:lang/news" element={<Navigate to="/en/company/news" replace />} />
             <Route path="/:lang/news/:slug" element={<NewsDetail />} />
             <Route path="/:lang/real-news" element={<RealNews />} />
             <Route path="/:lang/icons-styleguide" element={<IconsStyleguide />} />
