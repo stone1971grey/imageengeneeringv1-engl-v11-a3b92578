@@ -541,12 +541,11 @@ const EventsEditor = () => {
                         Create a detailed description with headings, lists, and formatting. Use the toolbar to structure your content.
                       </p>
                     </div>
-                    <div className="bg-white rounded-lg">
-                      <RichTextEditor
-                        content={formData.description}
-                        onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
-                      />
-                    </div>
+                    <RichTextEditor
+                      content={formData.description}
+                      onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
+                      darkMode={true}
+                    />
                   </div>
                 </TabsContent>
 
