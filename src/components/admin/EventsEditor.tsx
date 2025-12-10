@@ -650,6 +650,14 @@ const EventsEditor = () => {
                   <Button
                     size="sm"
                     variant="outline"
+                    className="border-green-600 text-green-400 hover:bg-green-600/20"
+                    onClick={() => window.open(`/en/events#${event.slug}`, '_blank')}
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
                     className="flex-1 border-gray-600 text-white hover:bg-[#3a3a3a]"
                     onClick={() => handleEdit(event)}
                   >
