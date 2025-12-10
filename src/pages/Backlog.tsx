@@ -147,6 +147,117 @@ Automotive camera systems must be tested following IEEE-P2020 standard. Arcturus
 3. HDR Scene Creation
       `,
     },
+    {
+      id: "events",
+      title: "Events & Training",
+      originalUrl: "/en/events",
+      backlogUrl: "/en/events",
+      snapshot: `
+## Statische React-Seite (src/pages/Events.tsx)
+
+## Hero Section (ActionHero)
+- **Titel:** Events & Training
+- **Beschreibung:** Our current training courses, workshops and events worldwide.
+- **Hintergrundbild:** events-hero.jpg
+
+## Event-Übersicht
+- **Heading:** Upcoming Events & Training
+- **Beschreibung:** Join our expert-led workshops, training sessions, and industry events to expand your knowledge in camera testing, image quality measurement, and industry standards.
+
+## Event Grid (3-spaltig auf Desktop)
+Events werden nach Datum sortiert (aufsteigend) angezeigt.
+
+### Event-Karte Struktur:
+- Event-Bild (aspect-video)
+- Kategorie-Badge (gelb): Schulung | Workshop | Messe
+- Event-Titel
+- Datum (Calendar Icon)
+- Uhrzeit (Clock Icon)
+- Ort (MapPin Icon)
+- Kurzbeschreibung
+- Karten-Platzhalter für Standort
+- "Register Now" Button (öffnet Registrierungsformular)
+
+## Sample Events (9 Events):
+1. **Advanced Camera Testing Workshop** - 15.03.2026, Köln, DE (Workshop, DE)
+2. **ADAS Vision Testing Seminar** - 08.04.2026, Tokyo, JP (Schulung, EN)
+3. **Mobile Camera Quality Conference** - 20.05.2026, San Francisco, USA (Messe, EN)
+4. **HDR Testing Masterclass** - 12.06.2026, München, DE (Workshop, DE)
+5. **Automotive Vision Standards Workshop** - 15.07.2026, Shanghai, CN (Schulung, EN)
+6. **Image Quality Expo 2026** - 25.09.2026, London, UK (Messe, EN)
+7. **Medical Imaging Quality Seminar** - 15.12.2025, Berlin, DE (Schulung, DE)
+8. **Automotive Testing Conference 2026** - 18.02.2026, Detroit, USA (Messe, EN)
+9. **ADAS Innovations Live Stream** - 28.11.2025, Online Webinar (Schulung, EN)
+
+## Registrierungsformular (erscheint bei Klick auf "Register Now")
+Formular öffnet sich inline unter der angeklickten Event-Karte mit Animation.
+
+### Formularfelder:
+- First Name * (required, min 2 chars)
+- Last Name * (required, min 2 chars)
+- Company * (required, min 2 chars)
+- Position * (required, min 2 chars)
+- E-Mail * (required, valid email)
+- Consent Checkbox * (required): "I agree to receive information about image quality testing and related topics via email."
+- Submit Button: "Complete Registration"
+
+### Formular-Features:
+- Zod-Validierung mit react-hook-form
+- Graue Inputs (bg-[#606060]) mit weißem Text
+- Gelbe Checkbox und Alert-Icon
+- Close-Button (X) zum Schließen
+- Event-Details werden im Formular angezeigt (Titel, Datum, Zeit, Ort)
+- fullDescription HTML wird gerendert (falls vorhanden)
+
+## API Integration
+- Edge Function: register-event (Supabase)
+- Speichert in: event_registrations Tabelle
+- Mautic-Integration via storeMauticEmail()
+- Already-registered Check (HTTP 409)
+
+## Routing nach Registrierung:
+- Neuer Kontakt → /event-registration-success
+- Bestehender Kontakt → /event-detail-registration-confirmation  
+- Bereits registriert → /event-already-registered
+
+## Zugehörige Dateien:
+- src/pages/Events.tsx (Hauptseite)
+- src/pages/EventRegistrationSuccess.tsx
+- src/pages/EventDetailRegistrationConfirmation.tsx
+- src/pages/EventAlreadyRegistered.tsx
+- supabase/functions/register-event/index.ts (Edge Function)
+
+## Event Interface:
+\`\`\`typescript
+interface Event {
+  id: string;
+  slug: string;
+  title: string;
+  date: string;
+  time: string;
+  location: { city: string; country: string; coordinates: [number, number] };
+  category: "Schulung" | "Workshop" | "Messe";
+  language: "EN" | "DE";
+  description: string;
+  fullDescription?: string;
+  image: string;
+  imageUrl?: string;
+  isPast: boolean;
+  registrationUrl?: string;
+}
+\`\`\`
+
+## Assets:
+- src/assets/events-hero.jpg
+- src/assets/event-camera-workshop.jpg
+- src/assets/event-automotive-conference.jpg
+- src/assets/event-tech-expo.jpg
+- src/assets/event-hdr-masterclass.jpg
+- src/assets/event-medical-seminar.jpg
+- src/assets/event-automotive-standards.jpg
+- src/assets/event-adas-streaming.jpg
+      `,
+    },
   ];
 
   return (
