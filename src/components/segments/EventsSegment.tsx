@@ -132,7 +132,7 @@ const EventsSegment = ({
 
   if (loading) {
     return (
-      <section id={id} className="py-16 bg-background">
+      <section id={id} className="pt-32 pb-16 bg-background">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f9dc24]"></div>
@@ -143,7 +143,7 @@ const EventsSegment = ({
   }
 
   return (
-    <section id={id} className="py-16 bg-background">
+    <section id={id} className="pt-32 pb-16 bg-background">
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="mb-12">
