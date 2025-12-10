@@ -75,6 +75,7 @@ import { loadAltTextFromMapping } from '@/utils/loadAltTextFromMapping';
 import { FooterEditor } from '@/components/admin/FooterEditor';
 import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor';
 import { ActionHeroEditor } from '@/components/admin/ActionHeroEditor';
+import { EventsSegmentEditor } from '@/components/admin/EventsSegmentEditor';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -3026,6 +3027,17 @@ const AdminDashboard = () => {
           backgroundImage: '',
           flipImage: false
         };
+      case 'events':
+        return {
+          title: 'Upcoming Events & Training',
+          description: 'Join our expert-led workshops, training sessions, and industry events',
+          showFilters: true,
+          showPastEvents: false,
+          layout: 'grid',
+          maxEvents: null,
+          sortOrder: 'asc',
+          categories: []
+        };
       default:
         return {};
     }
@@ -4476,6 +4488,25 @@ const AdminDashboard = () => {
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
+
+                      {/* Events Segment */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('events')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Calendar className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Events List - R</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Display events with filtering, categories and registration
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-rose-500 to-rose-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
@@ -5512,6 +5543,7 @@ const AdminDashboard = () => {
                       if (segment.type === 'debug') label = `Debug ${displayNumber}`;
                       if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
                       if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
+                      if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
                       
                       return (
                         <SortableTab key={tabId} id={tabId} value={tabId}>
@@ -6683,6 +6715,7 @@ const AdminDashboard = () => {
             else if (segment.type === 'debug') label = `Debug ${displayNumber}`;
             else if (segment.type === 'news-list') label = `News List - P-${displayNumber}`;
             else if (segment.type === 'action-hero') label = `Action Hero - Q-${displayNumber}`;
+            else if (segment.type === 'events') label = `Events List - R-${displayNumber}`;
             else if (segment.type === 'feature-overview') label = `Features - K-${displayNumber}`;
             else if (segment.type === 'table') label = `Table - L-${displayNumber}`;
             else if (segment.type === 'faq') label = `FAQ - O-${displayNumber}`;
@@ -6791,6 +6824,7 @@ const AdminDashboard = () => {
                       if (segType === 'debug') return `Debug ${displayNumber}`;
                       if (segType === 'news-list') return `News List - P-${displayNumber}`;
                       if (segType === 'action-hero') return `Action Hero - Q-${displayNumber}`;
+                      if (segType === 'events') return `Events List - R-${displayNumber}`;
                       return segType;
                     };
 
@@ -7012,6 +7046,24 @@ const AdminDashboard = () => {
                       {(language) => (
                         <ActionHeroEditor
                           key={`action-hero-${segment.id}-${language}`}
+                          pageSlug={resolvedPageSlug || selectedPage}
+                          segmentId={segment.id}
+                          data={segment.data}
+                          onSave={() => loadContent()}
+                          language={language}
+                        />
+                      )}
+                    </SplitScreenSegmentEditor>
+                  )}
+
+                  {segment.type === 'events' && (
+                    <SplitScreenSegmentEditor
+                      segmentTitle="Events List"
+                      segmentType="events"
+                    >
+                      {(language) => (
+                        <EventsSegmentEditor
+                          key={`events-${segment.id}-${language}`}
                           pageSlug={resolvedPageSlug || selectedPage}
                           segmentId={segment.id}
                           data={segment.data}
