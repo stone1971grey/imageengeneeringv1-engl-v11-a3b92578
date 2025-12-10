@@ -21,6 +21,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MediaSelector } from "./MediaSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
+import RichTextEditor from "./RichTextEditor";
 
 interface Event {
   id: string;
@@ -533,15 +534,19 @@ const EventsEditor = () => {
                 </TabsContent>
 
                 <TabsContent value="description" className="space-y-6">
-                  <div className="space-y-2">
-                    <Label className="text-white">Full Description</Label>
-                    <Textarea
-                      value={formData.description}
-                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                      className="bg-[#2a2a2a] border-gray-600 text-white min-h-[400px]"
-                      placeholder="Detailed event description (supports HTML)"
-                    />
-                    <p className="text-gray-500 text-xs">You can use HTML tags for formatting (h3, p, ul, li, etc.)</p>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-2">Full Event Description</h3>
+                      <p className="text-gray-400 text-sm mb-4">
+                        Create a detailed description with headings, lists, and formatting. Use the toolbar to structure your content.
+                      </p>
+                    </div>
+                    <div className="bg-white rounded-lg">
+                      <RichTextEditor
+                        content={formData.description}
+                        onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
+                      />
+                    </div>
                   </div>
                 </TabsContent>
 
@@ -559,8 +564,7 @@ const EventsEditor = () => {
                   {editingEvent && (
                     <Button
                       type="button"
-                      variant="outline"
-                      className="border-gray-600 text-white hover:bg-[#3a3a3a]"
+                      className="bg-green-600 hover:bg-green-700 text-white"
                       onClick={() => window.open(`/${currentLanguage}/events/${editingEvent.slug}`, '_blank')}
                     >
                       <Eye className="w-4 h-4 mr-2" />
