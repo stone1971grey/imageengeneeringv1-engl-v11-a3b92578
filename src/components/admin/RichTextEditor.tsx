@@ -37,9 +37,10 @@ import { toast } from 'sonner';
 interface RichTextEditorProps {
   content: string;
   onChange: (content: string) => void;
+  darkMode?: boolean;
 }
 
-const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
+const RichTextEditor = ({ content, onChange, darkMode = false }: RichTextEditorProps) => {
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -74,7 +75,9 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-lg max-w-none focus:outline-none min-h-[400px] p-6 prose-headings:font-bold prose-headings:text-gray-900 prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-[#0f407b] prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-blockquote:border-l-[#0f407b] prose-blockquote:text-gray-600 prose-blockquote:italic',
+        class: darkMode 
+          ? 'prose prose-lg prose-invert max-w-none focus:outline-none min-h-[400px] p-6 prose-headings:font-bold prose-headings:text-white prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-600 prose-h2:pb-2 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-200 prose-p:leading-relaxed prose-a:text-[#60a5fa] prose-strong:text-white prose-ul:text-gray-200 prose-ol:text-gray-200 prose-blockquote:border-l-[#60a5fa] prose-blockquote:text-gray-300 prose-blockquote:italic'
+          : 'prose prose-lg max-w-none focus:outline-none min-h-[400px] p-6 prose-headings:font-bold prose-headings:text-gray-900 prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-[#0f407b] prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-blockquote:border-l-[#0f407b] prose-blockquote:text-gray-600 prose-blockquote:italic',
       },
     },
   });
@@ -212,7 +215,9 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       className={`p-2.5 rounded-lg transition-all duration-200 ${
         isActive 
           ? 'bg-[#0f407b] text-white shadow-md' 
-          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+          : darkMode 
+            ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
       }`}
     >
       {children}
@@ -220,18 +225,18 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
   );
 
   const ToolbarDivider = () => (
-    <div className="w-px h-8 bg-gray-200 mx-1" />
+    <div className={`w-px h-8 mx-1 ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
   );
 
   return (
     <div 
-      className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden"
+      className={`rounded-xl border shadow-sm overflow-hidden ${darkMode ? 'border-gray-600 bg-[#1a1a1a]' : 'border-gray-200 bg-white'}`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+      <div className={`flex flex-wrap items-center gap-1 p-3 border-b ${darkMode ? 'bg-[#2a2a2a] border-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200'}`}>
         {/* Undo/Redo */}
         <div className="flex items-center gap-1 mr-2">
           <ToolbarButton
@@ -355,7 +360,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       </div>
 
       {/* Editor Content */}
-      <div className={`relative ${isDragging ? 'bg-blue-50' : 'bg-white'}`}>
+      <div className={`relative ${isDragging ? 'bg-blue-50' : darkMode ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
         {isDragging && (
           <div className="absolute inset-0 flex items-center justify-center bg-blue-50/90 border-2 border-dashed border-[#0f407b] rounded-lg z-10 pointer-events-none">
             <div className="text-center">
@@ -368,7 +373,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
       </div>
 
       {/* Character Count */}
-      <div className="px-4 py-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-500 flex justify-between">
+      <div className={`px-4 py-2 border-t text-xs flex justify-between ${darkMode ? 'bg-[#2a2a2a] border-gray-600 text-gray-400' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
         <span>Tip: Drag & drop images directly into the editor</span>
         <span>{editor.storage.characterCount?.characters?.() || editor.getText().length} characters</span>
       </div>
