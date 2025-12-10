@@ -18,6 +18,7 @@ import NewsSegment from "@/components/segments/NewsSegment";
 import NewsListSegment from "@/components/segments/NewsListSegment";
 import Debug from "@/components/segments/Debug";
 import ActionHero from "@/components/segments/ActionHero";
+import EventsSegment from "@/components/segments/EventsSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -701,6 +702,23 @@ const DynamicCMSPage = () => {
             pageSlug={pageSlug}
             sectionTitle={segment.data?.title || "All News"}
             sectionDescription={segment.data?.description}
+          />
+        );
+
+      case "events":
+        return (
+          <EventsSegment
+            key={segmentId}
+            id={segmentDbId?.toString()}
+            pageSlug={pageSlug}
+            sectionTitle={segment.data?.title || "Upcoming Events & Training"}
+            sectionDescription={segment.data?.description}
+            showFilters={segment.data?.showFilters ?? true}
+            showPastEvents={segment.data?.showPastEvents ?? false}
+            layout={segment.data?.layout || 'grid'}
+            maxEvents={segment.data?.maxEvents}
+            sortOrder={segment.data?.sortOrder || 'asc'}
+            categories={segment.data?.categories || []}
           />
         );
 
