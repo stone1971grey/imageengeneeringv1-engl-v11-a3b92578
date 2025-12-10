@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -15,15 +15,7 @@ import { Calendar, MapPin, Clock, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { storeMauticEmail } from "@/lib/mauticTracking";
-
-// Import event images
-import eventCameraWorkshop from "@/assets/event-camera-workshop.jpg";
-import eventAutomotiveConference from "@/assets/event-automotive-conference.jpg";
-import eventTechExpo from "@/assets/event-tech-expo.jpg";
-import eventHdrMasterclass from "@/assets/event-hdr-masterclass.jpg";
-import eventMedicalSeminar from "@/assets/event-medical-seminar.jpg";
-import eventAutomotiveStandards from "@/assets/event-automotive-standards.jpg";
-import eventAdasStreaming from "@/assets/event-adas-streaming.jpg";
+import { supabase } from "@/integrations/supabase/client";
 import eventsHero from "@/assets/events-hero.jpg";
 
 // Form validation schema
@@ -50,240 +42,69 @@ interface Event {
   location: {
     city: string;
     country: string;
-    coordinates: [number, number];
   };
-  category: "Schulung" | "Workshop" | "Messe";
-  language: "EN" | "DE";
+  category: string;
+  language: string;
   description: string;
   fullDescription?: string;
   image: string;
-  imageUrl?: string; // Public URL for email/external use
+  imageUrl?: string;
   isPast: boolean;
-  registrationUrl?: string;
+  isOnline?: boolean;
 }
-
-// Sample event data
-const sampleEvents: Event[] = [
-  {
-    id: "1",
-    slug: "advanced-camera-testing-workshop",
-    title: "Advanced Camera Testing Workshop",
-    date: "2026-03-15",
-    time: "09:00 - 17:00",
-    location: {
-      city: "Köln",
-      country: "Deutschland",
-      coordinates: [6.9603, 50.9375]
-    },
-    category: "Workshop",
-    language: "DE",
-    description: "Comprehensive workshop covering advanced camera testing methodologies using Arcturus systems and industry-standard test charts.",
-    fullDescription: `
-      <h3>Advanced Camera Testing Workshop</h3>
-      
-      <p>Join our comprehensive workshop designed for test engineers, quality assurance professionals, and imaging specialists who want to master advanced camera testing methodologies.</p>
-      
-      <h3>What You'll Learn</h3>
-      <ul>
-        <li>Industry-standard testing protocols for automotive and mobile cameras</li>
-        <li>Hands-on experience with Arcturus LED systems and test equipment</li>
-        <li>Advanced measurement techniques for resolution, color accuracy, and HDR</li>
-        <li>IEEE P2020 and EMVA 1288 compliance testing</li>
-        <li>Practical analysis of test results and quality metrics</li>
-      </ul>
-      
-      <h3>Workshop Highlights</h3>
-      <p>This intensive full-day workshop combines theoretical knowledge with practical hands-on sessions. Participants will work directly with professional test equipment and learn to interpret complex measurement data.</p>
-      
-      <h3>Who Should Attend</h3>
-      <p>Test engineers, quality assurance professionals, camera developers, and anyone involved in image quality assessment and camera performance evaluation.</p>
-    `,
-    image: eventCameraWorkshop,
-    imageUrl: "/images/event-camera-workshop.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "2",
-    slug: "adas-vision-testing-seminar",
-    title: "ADAS Vision Testing Seminar",
-    date: "2026-04-08",
-    time: "10:00 - 16:00",
-    location: {
-      city: "Tokyo",
-      country: "Japan",
-      coordinates: [139.6917, 35.6895]
-    },
-    category: "Schulung",
-    language: "EN",
-    description: "Professional training on ADAS vision system testing protocols and IEEE P2020 compliance requirements.",
-    image: eventAutomotiveConference,
-    imageUrl: "/images/event-automotive-conference.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "3",
-    slug: "mobile-camera-quality-conference",
-    title: "Mobile Camera Quality Conference",
-    date: "2026-05-20",
-    time: "08:30 - 18:00",
-    location: {
-      city: "San Francisco",
-      country: "USA",
-      coordinates: [-122.4194, 37.7749]
-    },
-    category: "Messe",
-    language: "EN",
-    description: "Industry conference showcasing the latest developments in mobile camera quality testing and VCX standards.",
-    image: eventTechExpo,
-    imageUrl: "/images/event-tech-expo.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "4",
-    slug: "hdr-testing-masterclass",
-    title: "HDR Testing Masterclass",
-    date: "2026-06-12",
-    time: "09:30 - 17:30",
-    location: {
-      city: "München",
-      country: "Deutschland",
-      coordinates: [11.5820, 48.1351]
-    },
-    category: "Workshop",
-    language: "DE",
-    description: "In-depth masterclass on HDR testing techniques using Arcturus LED systems and advanced measurement tools.",
-    image: eventHdrMasterclass,
-    imageUrl: "/images/event-hdr-masterclass.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "5",
-    slug: "automotive-vision-standards-workshop",
-    title: "Automotive Vision Standards Workshop",
-    date: "2026-07-15",
-    time: "09:00 - 16:00",
-    location: {
-      city: "Shanghai",
-      country: "China",
-      coordinates: [121.4737, 31.2304]
-    },
-    category: "Schulung",
-    language: "EN",
-    description: "Comprehensive training on automotive vision testing standards and regulatory compliance.",
-    image: eventAutomotiveStandards,
-    imageUrl: "/images/event-automotive-standards.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "6",
-    slug: "image-quality-expo-2026",
-    title: "Image Quality Expo 2026",
-    date: "2026-09-25",
-    time: "08:00 - 19:00",
-    location: {
-      city: "London",
-      country: "United Kingdom",
-      coordinates: [-0.1276, 51.5074]
-    },
-    category: "Messe",
-    language: "EN",
-    description: "Annual expo featuring the latest innovations in image quality testing technology and industry best practices.",
-    image: eventTechExpo,
-    imageUrl: "/images/event-tech-expo.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "7",
-    slug: "medical-imaging-quality-seminar",
-    title: "Medical Imaging Quality Seminar",
-    date: "2025-12-15",
-    time: "10:00 - 16:00",
-    location: {
-      city: "Berlin",
-      country: "Deutschland",
-      coordinates: [13.4050, 52.5200]
-    },
-    category: "Schulung",
-    language: "DE",
-    description: "Specialized training on medical imaging quality assessment and endoscopy testing standards.",
-    image: eventMedicalSeminar,
-    imageUrl: "/images/event-medical-seminar.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "8",
-    slug: "automotive-testing-conference-2026",
-    title: "Automotive Testing Conference 2026",
-    date: "2026-02-18",
-    time: "09:00 - 18:00",
-    location: {
-      city: "Detroit",
-      country: "USA",
-      coordinates: [-83.0458, 42.3314]
-    },
-    category: "Messe",
-    language: "EN",
-    description: "Major automotive testing conference with focus on ADAS and autonomous vehicle vision systems.",
-    image: eventAutomotiveConference,
-    imageUrl: "/images/event-automotive-conference.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  },
-  {
-    id: "9",
-    slug: "adas-innovations-live-stream",
-    title: "ADAS Innovations Live Stream",
-    date: "2025-11-28",
-    time: "14:00 - 16:00",
-    location: {
-      city: "Online Webinar",
-      country: "Worldwide",
-      coordinates: [0, 0]
-    },
-    category: "Schulung",
-    language: "EN",
-    description: "Learn about the latest developments and innovations in ADAS testing. Experts present current test methods, standards, and best practices for advanced driver assistance systems.",
-    fullDescription: `
-      <h3>ADAS Innovations Live Stream</h3>
-      
-      <p>Join our interactive online webinar and gain insights into the latest trends and technologies in ADAS testing.</p>
-      
-      <h3>Webinar Topics</h3>
-      <ul>
-        <li>Current IEEE P2020 standards for ADAS camera systems</li>
-        <li>Innovative test methods for camera and sensor systems</li>
-        <li>HDR testing and low-light performance evaluation</li>
-        <li>Real-world examples from the automotive industry</li>
-        <li>Live demo: Arcturus LED systems in ADAS testing</li>
-        <li>Q&A session with our experts</li>
-      </ul>
-      
-      <h3>Who is this webinar for?</h3>
-      <p>Test engineers, quality managers, ADAS developers, and all professionals working with the evaluation of advanced driver assistance systems.</p>
-      
-      <h3>Webinar Details</h3>
-      <p>Participation is free. After registration, you will receive access credentials via email. The webinar will be recorded - registered participants will receive access to the recording afterwards.</p>
-    `,
-    image: eventAdasStreaming,
-    imageUrl: "/images/event-adas-streaming.jpg",
-    isPast: false,
-    registrationUrl: "#"
-  }
-];
 
 const Events = () => {
   const navigate = useNavigate();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load events from database
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .eq('published', true)
+          .order('date', { ascending: true });
+
+        if (error) throw error;
+
+        const mappedEvents: Event[] = (data || []).map(event => ({
+          id: event.id,
+          slug: event.slug,
+          title: event.title,
+          date: event.date,
+          time: event.time_end ? `${event.time_start} - ${event.time_end}` : event.time_start,
+          location: {
+            city: event.location_city,
+            country: event.location_country,
+          },
+          category: event.category,
+          language: event.language_code,
+          description: event.teaser,
+          fullDescription: event.description || undefined,
+          image: event.image_url,
+          imageUrl: event.image_url,
+          isPast: new Date(event.date) < new Date(),
+          isOnline: event.is_online || false,
+        }));
+
+        setEvents(mappedEvents);
+      } catch (error) {
+        console.error('Error loading events:', error);
+        toast.error('Failed to load events');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
 
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
@@ -396,10 +217,8 @@ const Events = () => {
     }, 500);
   };
 
-  // Sort events by date (ascending)
-  const sortedEvents = [...sampleEvents].sort((a, b) => {
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
-  });
+  // Events are already sorted from database
+  const sortedEvents = events;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('de-DE', {
@@ -485,6 +304,15 @@ const Events = () => {
           </div>
           
           {/* Events Grid */}
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f9dc24]"></div>
+            </div>
+          ) : sortedEvents.length === 0 ? (
+            <div className="text-center py-20 text-muted-foreground">
+              <p>No upcoming events at the moment. Check back soon!</p>
+            </div>
+          ) : (
           <div className="space-y-6">
             {sortedEvents.map((event, index) => (
               <div key={event.id}>
@@ -664,6 +492,7 @@ const Events = () => {
               </div>
             ))}
           </div>
+          )}
         </div>
       </section>
 
