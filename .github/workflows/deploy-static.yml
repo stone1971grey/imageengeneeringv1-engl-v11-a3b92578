@@ -1,0 +1,37 @@
+.github/workflows/deploy-static.yml
+name: Deploy to Mittwald Static Site
+
+on:
+  push:
+    branches:
+      - main   # wenn du später z.B. "production" nutzen willst, hier ändern
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project (Vite)
+        run: npm run build
+
+      # Deployment nach Mittwald per rsync über SSH
+      - name: Deploy dist/ to Mittwald
+        uses: easingthemes/ssh-deploy@v5.1.0
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.MW_STATIC_SSH_PRIVATE_KEY }}
+          ARGS: "-avzr --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.MW_STATIC_SSH_HOST }}
+          REMOTE_USER: ${{ secrets.MW_STATIC_SSH_USER }}
+          TARGET: ${{ secrets.MW_STATIC_SSH_PATH }}
