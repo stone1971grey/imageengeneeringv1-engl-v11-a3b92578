@@ -1,4 +1,3 @@
-.github/workflows/deploy-static.yml
 name: Deploy to Mittwald Static Site
 
 on:
