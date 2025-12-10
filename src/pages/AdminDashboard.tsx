@@ -3987,7 +3987,7 @@ const AdminDashboard = () => {
               <Button
                 variant="decision"
                 className="flex items-center gap-2 bg-[hsl(var(--events-button))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--events-button))]/90 shadow-soft hover:shadow-lg"
-                onClick={() => {/* TODO: implement events management navigation */}}
+                onClick={() => navigate(`/${language}/admin-dashboard/events`)}
               >
                 <Calendar className="h-4 w-4" />
                 Manage Events
