@@ -227,6 +227,81 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          category: string
+          created_at: string
+          date: string
+          description: string | null
+          external_url: string | null
+          id: string
+          image_url: string
+          is_online: boolean | null
+          language_code: string
+          location_city: string
+          location_coordinates: unknown
+          location_country: string
+          location_venue: string | null
+          max_participants: number | null
+          published: boolean | null
+          registration_deadline: string | null
+          slug: string
+          teaser: string
+          time_end: string | null
+          time_start: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          date: string
+          description?: string | null
+          external_url?: string | null
+          id?: string
+          image_url: string
+          is_online?: boolean | null
+          language_code?: string
+          location_city: string
+          location_coordinates?: unknown
+          location_country: string
+          location_venue?: string | null
+          max_participants?: number | null
+          published?: boolean | null
+          registration_deadline?: string | null
+          slug: string
+          teaser: string
+          time_end?: string | null
+          time_start: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          date?: string
+          description?: string | null
+          external_url?: string | null
+          id?: string
+          image_url?: string
+          is_online?: boolean | null
+          language_code?: string
+          location_city?: string
+          location_coordinates?: unknown
+          location_country?: string
+          location_venue?: string | null
+          max_participants?: number | null
+          published?: boolean | null
+          registration_deadline?: string | null
+          slug?: string
+          teaser?: string
+          time_end?: string | null
+          time_start?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       file_segment_mappings: {
         Row: {
           alt_text: string | null
