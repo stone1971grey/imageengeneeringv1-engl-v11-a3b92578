@@ -126,12 +126,14 @@ const EventsEditor = () => {
 
   const queryClient = useQueryClient();
 
+  // Only fetch English (master) events - translations are managed via TranslationEditor
   const { data: events, isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
         .select("*")
+        .eq("language_code", "EN")
         .order("date", { ascending: true });
 
       if (error) throw error;
