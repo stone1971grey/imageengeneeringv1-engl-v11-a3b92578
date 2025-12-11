@@ -62,8 +62,8 @@ const AdminNews = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl">Loading...</p>
+      <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
+        <p className="text-xl text-white">Loading...</p>
       </div>
     );
   }
@@ -73,19 +73,19 @@ const AdminNews = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0f0f0f]">
       <Navigation />
       
       <div className="container mx-auto px-6 py-32 max-w-[1600px]">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">News Management</h1>
-            <p className="text-gray-600 mt-2">Create and manage news articles</p>
+            <h1 className="text-4xl font-bold text-white">News Management</h1>
+            <p className="text-gray-400 mt-2">Create and manage news articles</p>
           </div>
           <Button
             onClick={handleBackToDashboard}
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 border-gray-600 text-white hover:bg-[#2a2a2a]"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard

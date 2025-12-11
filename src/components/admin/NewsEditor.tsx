@@ -217,19 +217,19 @@ const NewsEditor = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center bg-gradient-to-r from-[#0f407b] to-[#1a5ba8] rounded-xl p-6 text-white">
+      <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
             <Newspaper className="w-7 h-7" />
             News Management
           </h2>
-          <p className="text-blue-100 text-sm mt-1">
+          <p className="text-gray-400 text-sm mt-1">
             {articles?.length || 0} articles • {articles?.filter(a => a.published).length || 0} published
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm} className="bg-white text-[#0f407b] hover:bg-blue-50 font-semibold shadow-md">
+            <Button onClick={resetForm} className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold">
               <Plus className="w-4 h-4 mr-2" />
               Add Article
             </Button>
@@ -488,18 +488,18 @@ const NewsEditor = () => {
       </div>
 
       {/* Category Filter Pills */}
-      <div className="flex flex-wrap gap-3 pb-5 border-b">
+      <div className="flex flex-wrap gap-2 pb-4">
         {NEWS_CATEGORIES.map((cat) => {
           const IconComponent = cat.icon;
           const count = articles?.filter(a => a.category === cat.value).length || 0;
           return (
             <div
               key={cat.value}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white ${cat.color} opacity-85 hover:opacity-100 transition-opacity cursor-default shadow-sm`}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold text-white ${cat.color}`}
             >
-              <IconComponent className="w-4 h-4" />
+              <IconComponent className="w-3 h-3" />
               {cat.label}
-              <span className="ml-1 bg-white/25 px-2 py-0.5 rounded-full text-xs font-bold">{count}</span>
+              <span className="ml-1 bg-white/25 px-1.5 py-0.5 rounded-full text-xs font-bold">{count}</span>
             </div>
           );
         })}
