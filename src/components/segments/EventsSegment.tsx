@@ -165,18 +165,25 @@ const EventsSegment = ({
 
   const handleExpandEvent = (eventId: string) => {
     if (expandedEventId === eventId) {
+      // Closing - scroll back to the event card
+      const cardElement = document.getElementById(`event-card-${eventId}`);
       setExpandedEventId(null);
+      setTimeout(() => {
+        if (cardElement) {
+          cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     } else {
+      // Opening - scroll to detail view
       setExpandedEventId(eventId);
       form.reset();
       
-      // Smooth scroll to detail view after a short delay for rendering
       setTimeout(() => {
         const element = document.getElementById(`event-detail-${eventId}`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 100);
+      }, 150);
     }
   };
 
@@ -269,9 +276,12 @@ const EventsSegment = ({
   };
 
   const EventCard = ({ event }: { event: Event }) => (
-    <Card className={`h-full overflow-hidden transition-all duration-300 flex flex-col ${
-      expandedEventId === event.id ? 'ring-2 ring-[#f9dc24] shadow-lg' : 'hover:shadow-lg'
-    }`}>
+    <Card 
+      id={`event-card-${event.id}`}
+      className={`h-full overflow-hidden transition-all duration-300 flex flex-col ${
+        expandedEventId === event.id ? 'ring-2 ring-[#f9dc24] shadow-lg' : 'hover:shadow-lg'
+      }`}
+    >
       <div className="aspect-video w-full overflow-hidden">
         <img 
           src={event.image_url} 
@@ -401,7 +411,7 @@ const EventsSegment = ({
                           <Button 
                             variant="ghost" 
                             size="icon"
-                            onClick={() => setExpandedEventId(null)} 
+                            onClick={() => handleExpandEvent(selectedEvent.id)} 
                             className="hover:bg-[#f9dc24] hover:text-black transition-colors"
                           >
                             <X className="h-5 w-5" />
