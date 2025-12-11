@@ -126,6 +126,26 @@ const EventsEditor = () => {
 
   const queryClient = useQueryClient();
 
+  // Fetch all events to determine translation status
+  const { data: allEvents } = useQuery({
+    queryKey: ["events-all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select("slug, language_code");
+      if (error) throw error;
+      return data as { slug: string; language_code: string }[];
+    },
+  });
+
+  // Helper to get available translations for an event
+  const getTranslations = (slug: string): string[] => {
+    if (!allEvents) return [];
+    return allEvents
+      .filter(e => e.slug === slug && e.language_code !== "EN")
+      .map(e => e.language_code);
+  };
+
   // Only fetch English (master) events - translations are managed via TranslationEditor
   const { data: events, isLoading } = useQuery({
     queryKey: ["events"],
@@ -796,9 +816,6 @@ const EventsEditor = () => {
                     <CategoryIcon className="w-3 h-3 mr-1" />
                     {categoryInfo.label}
                   </Badge>
-                  <Badge className="bg-gray-800/90 text-white text-xs">
-                    {languageInfo.flag} {languageInfo.value}
-                  </Badge>
                 </div>
                 <div className="absolute top-2 right-2 flex flex-wrap gap-1">
                   {event.published ? (
@@ -843,12 +860,30 @@ const EventsEditor = () => {
 
                 <p className="text-gray-400 text-sm line-clamp-2">{event.teaser}</p>
 
+                {/* Slug */}
+                <div className="text-sm text-gray-400 font-mono truncate">
+                  /events/{event.slug}
+                </div>
+                
+                {/* Translation Status */}
+                <div className="flex items-center flex-wrap gap-2">
+                  <span className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 font-medium">🇬🇧 EN</span>
+                  {getTranslations(event.slug).map(lang => {
+                    const flags: Record<string, string> = { DE: "🇩🇪 DE", JA: "🇯🇵 JA", KO: "🇰🇷 KO", ZH: "🇨🇳 ZH" };
+                    return (
+                      <span key={lang} className="text-sm px-2 py-1 rounded bg-green-900/40 text-green-400 font-medium">
+                        {flags[lang] || lang}
+                      </span>
+                    );
+                  })}
+                </div>
+
                 <div className="flex gap-2 pt-2">
                   <Button
                     size="sm"
                     variant="outline"
                     className="border-green-600 text-green-400 hover:bg-green-600/20"
-                    onClick={() => window.open(`/en/training-events/events`, '_blank')}
+                    onClick={() => window.open(`/en/training-events/events/${event.slug}`, '_blank')}
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
