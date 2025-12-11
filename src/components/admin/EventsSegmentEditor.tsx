@@ -192,8 +192,8 @@ const EventsSegmentEditorComponent = ({
       }
     };
 
-    document.addEventListener('events-translate', handleExternalTranslate);
-    return () => document.removeEventListener('events-translate', handleExternalTranslate);
+    window.addEventListener('events-translate', handleExternalTranslate);
+    return () => window.removeEventListener('events-translate', handleExternalTranslate);
   }, [normalizedLang, pageSlug, segmentId]);
 
   const handleSave = async () => {
