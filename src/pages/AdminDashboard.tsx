@@ -4994,89 +4994,46 @@ const AdminDashboard = () => {
                         </h1>
                         <span className="text-3xl font-bold text-[#f9dc24]">CMS</span>
                         <span className="ml-3 px-3 py-1 text-sm font-bold bg-[#f9dc24] text-black rounded-full">
-                          v0.7
+                          v0.8
                         </span>
                       </div>
                       <p className="text-xl text-gray-400 mt-1">Content Management System</p>
                     </div>
                   </div>
 
-                  {/* Welcome Text */}
-                  <p className="text-lg text-gray-300 max-w-2xl leading-relaxed">
-                    Welcome to your central hub for managing all CMS pages. 
-                    Open the CMS Hub to navigate between pages and start editing.
-                  </p>
-
-                  {/* Features Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-                    {/* Feature 1 */}
-                    <div className="flex items-start gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-[#f9dc24] flex items-center justify-center flex-shrink-0">
-                        <Layers className="h-5 w-5 text-black" />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-bold mb-1">Modular Segments</h3>
-                        <p className="text-gray-400 text-sm">Build pages with drag-and-drop content blocks</p>
-                      </div>
+                  {/* Features Grid - Compact */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Layers className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Modular Segments</span>
                     </div>
-
-                    {/* Feature 2 */}
-                    <div className="flex items-start gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-[#f9dc24] flex items-center justify-center flex-shrink-0">
-                        <svg className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-white font-bold mb-1">Multilingual Content</h3>
-                        <p className="text-gray-400 text-sm">Manage content in 5 languages with AI translation</p>
-                      </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Languages className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">5 Languages + AI</span>
                     </div>
-
-                    {/* Feature 3 */}
-                    <div className="flex items-start gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-[#f9dc24] flex items-center justify-center flex-shrink-0">
-                        <Eye className="h-5 w-5 text-black" />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-bold mb-1">Live Preview</h3>
-                        <p className="text-gray-400 text-sm">See changes instantly before publishing</p>
-                      </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Eye className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Live Preview</span>
                     </div>
-
-                    {/* Feature 4 */}
-                    <div className="flex items-start gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-[#f9dc24] flex items-center justify-center flex-shrink-0">
-                        <svg className="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="text-white font-bold mb-1">SEO Optimized</h3>
-                        <p className="text-gray-400 text-sm">Built-in SEO tools for maximum visibility</p>
-                      </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Upload className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Media Management</span>
                     </div>
-
-                    {/* Feature 5 */}
-                    <div className="flex items-start gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-[#f9dc24] flex items-center justify-center flex-shrink-0">
-                        <GripVertical className="h-5 w-5 text-black" />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-bold mb-1">Hierarchical Pages</h3>
-                        <p className="text-gray-400 text-sm">Organize content with parent-child relationships</p>
-                      </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Newspaper className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">News Management</span>
                     </div>
-
-                    {/* Feature 6 */}
-                    <div className="flex items-start gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-[#f9dc24] flex items-center justify-center flex-shrink-0">
-                        <Upload className="h-5 w-5 text-black" />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-bold mb-1">Media Management</h3>
-                        <p className="text-gray-400 text-sm">Upload and manage images with metadata tracking</p>
-                      </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Calendar className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Event Management</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Smartphone className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Mobile Nav Icons</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <GripVertical className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Hierarchical Pages</span>
                     </div>
                   </div>
                 </div>
