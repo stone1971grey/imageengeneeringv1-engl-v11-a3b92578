@@ -48,11 +48,9 @@ interface Event {
 }
 
 const EVENT_CATEGORIES = [
+  { value: "Training", label: "Training", color: "bg-blue-500", icon: GraduationCap },
+  { value: "Trade Fair", label: "Trade Fair", color: "bg-purple-500", icon: Building2 },
   { value: "Workshop", label: "Workshop", color: "bg-emerald-500", icon: Users },
-  { value: "Schulung", label: "Training", color: "bg-blue-500", icon: GraduationCap },
-  { value: "Messe", label: "Trade Fair", color: "bg-purple-500", icon: Building2 },
-  { value: "Webinar", label: "Webinar", color: "bg-cyan-500", icon: Video },
-  { value: "Conference", label: "Conference", color: "bg-amber-500", icon: Presentation },
 ] as const;
 
 const EVENT_LANGUAGES = [
