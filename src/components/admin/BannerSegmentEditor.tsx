@@ -747,7 +747,21 @@ const BannerSegmentEditorComponent = ({
                   )}
                 </div>
 
-                {!isTarget && (
+                {isTarget ? (
+                  /* Target language: show read-only image preview (images come from English) */
+                  image.url && (
+                    <div className="relative">
+                      <img 
+                        src={image.url} 
+                        alt={image.alt || 'Preview'} 
+                        className="w-full h-24 object-contain rounded border border-gray-600 bg-gray-800"
+                      />
+                      <span className="absolute top-1 right-1 text-xs px-2 py-0.5 bg-blue-600 text-white rounded">
+                        From English
+                      </span>
+                    </div>
+                  )
+                ) : (
                   <MediaSelector
                     onFileSelect={(file) => {
                       const fakeEvent = {
