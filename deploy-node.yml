@@ -1,0 +1,46 @@
+name: Deploy Node App to Mittwald
+
+on:
+  push:
+    branches:
+      - main  # später kannst du hier z. B. "staging" oder "live" trennen
+
+jobs:
+  deploy-node:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Code auf den Node-Server synchronisieren
+      - name: Sync project to Mittwald Node app
+        uses: easingthemes/ssh-deploy@v5.1.0
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.MW_STATIC_SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.MW_NODE_SSH_HOST }}
+          REMOTE_USER: ${{ secrets.MW_NODE_SSH_USER }}
+          TARGET: ${{ secrets.MW_NODE_SSH_PATH }}
+          SOURCE: "./"
+          ARGS: "-avzr --delete --exclude=node_modules --exclude=.git --exclude=.github"
+
+      # Dependencies installieren + Build auf dem Server
+      - name: Install dependencies and build on Mittwald
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.MW_NODE_SSH_HOST }}
+          username: ${{ secrets.MW_NODE_SSH_USER }}
+          key: ${{ secrets.MW_STATIC_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ${{ secrets.MW_NODE_SSH_PATH }}
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+            if npm run | grep -q "build"; then
+              npm run build
+            else
+              echo "Kein build-Script definiert, überspringe Build."
+            fi
