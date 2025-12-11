@@ -475,6 +475,9 @@ const AdminDashboard = () => {
     { key: 'none', label: 'No CTA (disabled)' },
     { key: 'your-solution', label: 'Your Solution flyout' },
     { key: 'products', label: 'Products & Test Services flyout' },
+    { key: 'test-lab', label: 'Test Lab flyout' },
+    { key: 'training-events', label: 'Training & Events flyout' },
+    { key: 'info-hub', label: 'Info Hub flyout' },
   ];
 
   // Autosave for Hero section - only saves to localStorage
@@ -4700,7 +4703,16 @@ const AdminDashboard = () => {
                               <span className="inline-flex items-center">🔍</span>
                             )}
                             <span>
-                              {pageInfo.ctaGroup === 'your-solution' ? 'Navigation CTA: Your Solution' : 'Navigation CTA: Products'}
+                              {(() => {
+                                const labelMap: Record<string, string> = {
+                                  'your-solution': 'Navigation CTA: Your Solution',
+                                  'products': 'Navigation CTA: Products',
+                                  'test-lab': 'Navigation CTA: Test Lab',
+                                  'training-events': 'Navigation CTA: Training & Events',
+                                  'info-hub': 'Navigation CTA: Info Hub',
+                                };
+                                return labelMap[pageInfo.ctaGroup] || `Navigation CTA: ${pageInfo.ctaGroup}`;
+                              })()}
                             </span>
                           </span>
                         )}
