@@ -169,6 +169,14 @@ const EventsSegment = ({
     } else {
       setExpandedEventId(eventId);
       form.reset();
+      
+      // Smooth scroll to detail view after a short delay for rendering
+      setTimeout(() => {
+        const element = document.getElementById(`event-detail-${eventId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
   };
 
@@ -381,8 +389,8 @@ const EventsSegment = ({
                 {/* Detail View - appears under the row containing the selected event */}
                 {selectedEvent && getSelectedEventRowIndex() === rowIndex && (
                   <div 
-                    id="registration-form" 
-                    className="mb-6 max-w-4xl mx-auto animate-fade-in"
+                    id={`event-detail-${selectedEvent.id}`}
+                    className="mb-6 max-w-4xl mx-auto animate-fade-in scroll-mt-24"
                   >
                     <Card className="animate-scale-in border-2 border-[#f9dc24]/30">
                       <CardHeader className="pb-4">
