@@ -5012,16 +5012,12 @@ const AdminDashboard = () => {
                       <span className="text-white text-sm font-medium">Multi-Language</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
-                      <Sparkles className="h-5 w-5 text-[#f9dc24]" />
-                      <span className="text-white text-sm font-medium">Auto Translation</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Book className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">Translation Glossary</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
-                      <Eye className="h-5 w-5 text-[#f9dc24]" />
-                      <span className="text-white text-sm font-medium">Live Preview</span>
+                      <Sparkles className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Auto Translation</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <FolderOpen className="h-5 w-5 text-[#f9dc24]" />
@@ -5044,8 +5040,8 @@ const AdminDashboard = () => {
                       <span className="text-white text-sm font-medium">Hierarchical Pages</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
-                      <Zap className="h-5 w-5 text-[#f9dc24]" />
-                      <span className="text-white text-sm font-medium">Trio Suite</span>
+                      <Target className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">SEO Suite</span>
                     </div>
                   </div>
                 </div>
