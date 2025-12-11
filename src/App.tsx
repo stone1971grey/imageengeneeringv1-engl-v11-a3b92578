@@ -22,6 +22,7 @@ import Charts from "./pages/Charts";
 import ChartDetail from "./pages/ChartDetail";
 import Cart from "./pages/Cart";
 import Events from "./pages/Events";
+import EventDetail from "./pages/EventDetail";
 import WhitePaper from "./pages/WhitePaper";
 import WhitePaperDownload from "./pages/WhitePaperDownload";
 import WhitePaperDetail from "./pages/WhitePaperDetail";
@@ -184,6 +185,7 @@ const App = () => (
 
             {/* Training & Events Routes */}
             <Route path="/:lang/training-events" element={<DynamicCMSPage />} />
+            <Route path="/:lang/training-events/events/:eventSlug" element={<EventDetail />} />
             <Route path="/:lang/training-events/:slug" element={<DynamicCMSPage />} />
 
             {/* Info Hub Routes */}
