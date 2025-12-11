@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, Calendar, MapPin, Clock, Upload, Globe, Users, GraduationCap, Presentation, Video, Building2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, Calendar, MapPin, Clock, Upload, Globe, Users, GraduationCap, Presentation, Video, Building2, List } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MediaSelector } from "./MediaSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
-import ReactMarkdown from 'react-markdown';
+
 
 interface Event {
   id: string;
@@ -73,10 +73,37 @@ const getLanguageInfo = (code: string) => {
   return lang || { value: "EN", label: "English", flag: "🇬🇧" };
 };
 
+interface DescriptionSection {
+  id: string;
+  heading: string;
+  content: string;
+  isBulletList: boolean;
+}
+
+const parseDescriptionToSections = (description: string): DescriptionSection[] => {
+  if (!description) return [{ id: '1', heading: '', content: '', isBulletList: false }];
+  try {
+    const parsed = JSON.parse(description);
+    if (Array.isArray(parsed)) return parsed;
+  } catch {
+    // Legacy format - convert to new format
+    return [{ id: '1', heading: '', content: description, isBulletList: false }];
+  }
+  return [{ id: '1', heading: '', content: '', isBulletList: false }];
+};
+
+const sectionsToJson = (sections: DescriptionSection[]): string => {
+  const filledSections = sections.filter(s => s.heading.trim() || s.content.trim());
+  return filledSections.length > 0 ? JSON.stringify(filledSections) : '';
+};
+
 const EventsEditor = () => {
   const { language: currentLanguage } = useLanguage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [descriptionSections, setDescriptionSections] = useState<DescriptionSection[]>([
+    { id: '1', heading: '', content: '', isBulletList: false }
+  ]);
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -197,11 +224,14 @@ const EventsEditor = () => {
       external_url: "",
       published: true,
     });
+    setDescriptionSections([{ id: '1', heading: '', content: '', isBulletList: false }]);
     setEditingEvent(null);
   };
 
   const handleEdit = (event: Event) => {
     setEditingEvent(event);
+    const sections = parseDescriptionToSections(event.description || '');
+    setDescriptionSections(sections);
     setFormData({
       title: event.title,
       slug: event.slug,
@@ -223,6 +253,28 @@ const EventsEditor = () => {
       published: event.published,
     });
     setIsDialogOpen(true);
+  };
+
+  const updateSection = (id: string, field: keyof DescriptionSection, value: string | boolean) => {
+    setDescriptionSections(prev => {
+      const updated = prev.map(s => s.id === id ? { ...s, [field]: value } : s);
+      setFormData(f => ({ ...f, description: sectionsToJson(updated) }));
+      return updated;
+    });
+  };
+
+  const addSection = () => {
+    const newId = String(Date.now());
+    setDescriptionSections(prev => [...prev, { id: newId, heading: '', content: '', isBulletList: false }]);
+  };
+
+  const removeSection = (id: string) => {
+    setDescriptionSections(prev => {
+      const updated = prev.filter(s => s.id !== id);
+      const result = updated.length > 0 ? updated : [{ id: '1', heading: '', content: '', isBulletList: false }];
+      setFormData(f => ({ ...f, description: sectionsToJson(result) }));
+      return result;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -535,48 +587,84 @@ const EventsEditor = () => {
 
                 <TabsContent value="description" className="space-y-6">
                   <div className="grid grid-cols-2 gap-6">
-                    {/* Markdown Editor */}
+                    {/* Structured Section Editor */}
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-lg font-semibold text-white mb-2">Edit Description (Markdown)</h3>
+                        <h3 className="text-lg font-semibold text-white mb-2">Content Sections</h3>
                         <p className="text-gray-400 text-sm mb-4">
-                          Use Markdown syntax for formatting. See the cheat sheet below.
+                          Add sections with headings and content. Toggle bullet list mode for list items.
                         </p>
                       </div>
-                      <Textarea
-                        value={formData.description}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                        className="bg-[#2a2a2a] border-gray-600 text-white font-mono text-sm min-h-[400px]"
-                        placeholder={`## Main Heading
-
-This is a paragraph with **bold** and *italic* text.
-
-### Sub Heading
-
-- Bullet point 1
-- Bullet point 2
-- Bullet point 3
-
-1. Numbered item
-2. Another item
-
-> This is a quote`}
-                      />
                       
-                      {/* Markdown Cheat Sheet */}
-                      <div className="bg-[#2a2a2a] rounded-lg p-4 text-xs text-gray-400 space-y-2">
-                        <p className="font-semibold text-gray-300 mb-2">Markdown Cheat Sheet:</p>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div><code className="text-[#f9dc24]">## Text</code> → Heading 2</div>
-                          <div><code className="text-[#f9dc24]">### Text</code> → Heading 3</div>
-                          <div><code className="text-[#f9dc24]">**text**</code> → <strong>Bold</strong></div>
-                          <div><code className="text-[#f9dc24]">*text*</code> → <em>Italic</em></div>
-                          <div><code className="text-[#f9dc24]">- item</code> → Bullet list</div>
-                          <div><code className="text-[#f9dc24]">1. item</code> → Numbered list</div>
-                          <div><code className="text-[#f9dc24]">&gt; text</code> → Quote</div>
-                          <div><code className="text-[#f9dc24]">[text](url)</code> → Link</div>
-                        </div>
+                      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                        {descriptionSections.map((section, index) => (
+                          <div key={section.id} className="bg-[#2a2a2a] rounded-lg p-4 space-y-3 border border-gray-600">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-gray-400 font-medium">Section {index + 1}</span>
+                              {descriptionSections.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeSection(section.id)}
+                                  className="h-6 w-6 p-0 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <Label className="text-white text-sm">Heading (H3)</Label>
+                              <Input
+                                value={section.heading}
+                                onChange={(e) => updateSection(section.id, 'heading', e.target.value)}
+                                className="bg-[#1a1a1a] border-gray-600 text-white"
+                                placeholder="Enter section heading..."
+                              />
+                            </div>
+                            
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-white text-sm">Content</Label>
+                                <button
+                                  type="button"
+                                  onClick={() => updateSection(section.id, 'isBulletList', !section.isBulletList)}
+                                  className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
+                                    section.isBulletList 
+                                      ? 'bg-[#f9dc24] text-black' 
+                                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                  }`}
+                                >
+                                  <List className="h-3 w-3" />
+                                  Bullet List
+                                </button>
+                              </div>
+                              <Textarea
+                                value={section.content}
+                                onChange={(e) => updateSection(section.id, 'content', e.target.value)}
+                                className="bg-[#1a1a1a] border-gray-600 text-white min-h-[100px]"
+                                placeholder={section.isBulletList 
+                                  ? "Enter each item on a new line...\nItem 1\nItem 2\nItem 3" 
+                                  : "Enter paragraph text..."}
+                              />
+                              {section.isBulletList && (
+                                <p className="text-xs text-gray-500">Each line becomes a bullet point</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
+                      
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addSection}
+                        className="w-full border-dashed border-gray-600 text-gray-400 hover:text-white hover:border-gray-400"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Section
+                      </Button>
                     </div>
                     
                     {/* Live Preview */}
@@ -585,23 +673,33 @@ This is a paragraph with **bold** and *italic* text.
                         <Eye className="w-4 h-4 text-[#f9dc24]" />
                         <h3 className="text-lg font-semibold text-white">Live Preview</h3>
                       </div>
-                      <div className="bg-white rounded-lg p-6 border border-gray-600 min-h-[400px]">
-                        {formData.description ? (
-                          <div className="prose prose-sm max-w-none text-gray-900
-                            prose-h2:text-xl prose-h2:font-bold prose-h2:mt-6 prose-h2:mb-3 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2
-                            prose-h3:text-lg prose-h3:font-bold prose-h3:mt-4 prose-h3:mb-2 
-                            prose-p:mb-3 prose-p:leading-relaxed prose-p:text-gray-700
-                            prose-ul:my-3 prose-ul:ml-6 prose-ul:list-disc prose-ul:space-y-1 
-                            prose-ol:my-3 prose-ol:ml-6 prose-ol:list-decimal prose-ol:space-y-1 
-                            prose-li:pl-1 prose-li:text-gray-700
-                            prose-strong:font-bold prose-strong:text-gray-900
-                            prose-a:text-[#0f407b] prose-a:underline
-                            prose-blockquote:border-l-4 prose-blockquote:border-[#f9dc24] prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600"
-                          >
-                            <ReactMarkdown>{formData.description}</ReactMarkdown>
+                      <div className="bg-white rounded-lg p-6 border border-gray-600 min-h-[500px]">
+                        {descriptionSections.some(s => s.heading || s.content) ? (
+                          <div className="space-y-4">
+                            {descriptionSections.map((section) => {
+                              if (!section.heading && !section.content) return null;
+                              return (
+                                <div key={section.id}>
+                                  {section.heading && (
+                                    <h3 className="text-lg font-bold text-gray-900 mt-4 mb-2">{section.heading}</h3>
+                                  )}
+                                  {section.content && (
+                                    section.isBulletList ? (
+                                      <ul className="my-3 ml-6 list-disc space-y-1">
+                                        {section.content.split('\n').filter(line => line.trim()).map((line, i) => (
+                                          <li key={i} className="pl-1 text-gray-700">{line.trim()}</li>
+                                        ))}
+                                      </ul>
+                                    ) : (
+                                      <p className="mb-3 leading-relaxed text-gray-700">{section.content}</p>
+                                    )
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         ) : (
-                          <p className="text-gray-400 italic">Start typing to see the preview...</p>
+                          <p className="text-gray-400 italic">Add content to see the preview...</p>
                         )}
                       </div>
                       <p className="text-gray-500 text-xs">This is exactly how the description will appear on the events page.</p>
