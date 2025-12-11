@@ -21,6 +21,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MediaSelector } from "./MediaSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
+import EventsTranslationEditor from "./EventsTranslationEditor";
 
 
 interface Event {
@@ -343,13 +344,18 @@ const EventsEditor = () => {
             </DialogHeader>
             
             <Tabs defaultValue="details" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-[#2a2a2a]">
-                <TabsTrigger value="details" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">
+              <TabsList className={`grid w-full bg-[#2a2a2a] p-1 h-auto ${editingEvent ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                <TabsTrigger value="details" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
                   Event Details
                 </TabsTrigger>
-                <TabsTrigger value="description" className="data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black">
+                <TabsTrigger value="description" className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black data-[state=inactive]:bg-[#3a3a3a] text-gray-300">
                   Description
                 </TabsTrigger>
+                {editingEvent && (
+                  <TabsTrigger value="translations" className="text-base font-semibold py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=inactive]:bg-[#3a3a3a] text-gray-300 flex items-center gap-2">
+                    <span>🌐</span> Translations
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               <form onSubmit={handleSubmit} className="space-y-6 mt-6">
@@ -704,6 +710,36 @@ const EventsEditor = () => {
                     </div>
                   </div>
                 </TabsContent>
+
+                {/* Translations Tab */}
+                {editingEvent && (
+                  <TabsContent value="translations" className="mt-6">
+                    <EventsTranslationEditor
+                      eventSlug={editingEvent.slug}
+                      englishData={{
+                        title: formData.title,
+                        teaser: formData.teaser,
+                        description: formData.description,
+                        image_url: formData.image_url,
+                        date: formData.date,
+                        time_start: formData.time_start,
+                        time_end: formData.time_end || null,
+                        location_city: formData.location_city,
+                        location_country: formData.location_country,
+                        location_venue: formData.location_venue || null,
+                        category: formData.category,
+                        is_online: formData.is_online,
+                        max_participants: formData.max_participants,
+                        registration_deadline: formData.registration_deadline || null,
+                        external_url: formData.external_url || null,
+                        published: formData.published,
+                      }}
+                      onSave={() => {
+                        queryClient.invalidateQueries({ queryKey: ["events"] });
+                      }}
+                    />
+                  </TabsContent>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-4 pt-4 border-t border-gray-700">
