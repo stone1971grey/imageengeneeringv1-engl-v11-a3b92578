@@ -1682,14 +1682,18 @@ const Navigation = () => {
                        <AccordionContent className="px-0 pb-4">
                          <div className="space-y-2">
                            <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.products}</div>
-                          
+                           
                            {/* Test Charts with subgroups */}
                            <Accordion type="single" collapsible className="ml-2">
                              <AccordionItem value="test-charts" className="border-none">
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                      <Link to="/charts" className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                        <CustomTargetIcon className="h-4 w-4" />
+                                        {(() => {
+                                          const key = pageDesignIcons['products/test-charts'];
+                                          const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                          return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                        })()}
                                         <span>{t.nav.testCharts}</span>
                                       </Link>
                                    </div>
@@ -1716,7 +1720,11 @@ const Navigation = () => {
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                      <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                       <CustomTargetIcon className="h-4 w-4" />
+                                       {(() => {
+                                         const key = pageDesignIcons['products/illumination-devices'];
+                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                       })()}
                                        <span>{t.nav.illuminationDevices}</span>
                                      </div>
                                    </div>
@@ -1743,7 +1751,11 @@ const Navigation = () => {
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                      <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                       <CustomTargetIcon className="h-4 w-4" />
+                                       {(() => {
+                                         const key = pageDesignIcons['products/measurement-devices'];
+                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                       })()}
                                        <span>{t.nav.measurementDevices}</span>
                                      </div>
                                    </div>
@@ -1770,7 +1782,11 @@ const Navigation = () => {
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                      <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                       <CustomTargetIcon className="h-4 w-4" />
+                                       {(() => {
+                                         const key = pageDesignIcons['products/software'];
+                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                       })()}
                                        <span>{t.nav.softwareApis}</span>
                                      </div>
                                    </div>
@@ -1797,7 +1813,11 @@ const Navigation = () => {
                                 <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                    <div className="flex items-center justify-between w-full">
                                      <div className="flex items-center gap-3 flex-1 cursor-pointer">
-                                       <CustomTargetIcon className="h-4 w-4" />
+                                       {(() => {
+                                         const key = pageDesignIcons['products/bundles-services'];
+                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                       })()}
                                        <span>{t.nav.productAccessories}</span>
                                      </div>
                                    </div>
@@ -1854,7 +1874,11 @@ const Navigation = () => {
                             <AccordionItem value="overview" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <CustomTargetIcon className="h-4 w-4" />
+                                  {(() => {
+                                    const key = pageDesignIcons['test-lab/overview'];
+                                    const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                    return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                  })()}
                                   <span>Overview</span>
                                 </div>
                               </AccordionTrigger>
@@ -1875,7 +1899,11 @@ const Navigation = () => {
                                <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                  <div className="flex items-center justify-between w-full">
                                    <Link to={`/${language}/your-solution/automotive`} className="flex items-center gap-3 flex-1" onClick={() => setIsOpen(false)}>
-                                       <CustomTargetIcon className="h-4 w-4" />
+                                       {(() => {
+                                         const key = pageDesignIcons['test-lab/automotive'];
+                                         const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                         return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                       })()}
                                       <span>{t.nav.automotive}</span>
                                     </Link>
                                  </div>
@@ -1899,7 +1927,11 @@ const Navigation = () => {
                             <AccordionItem value="vcx-test" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <CustomTargetIcon className="h-4 w-4" />
+                                  {(() => {
+                                    const key = pageDesignIcons['test-lab/vcx'];
+                                    const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                    return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                  })()}
                                   <span>VCX</span>
                                 </div>
                               </AccordionTrigger>
@@ -1919,7 +1951,11 @@ const Navigation = () => {
                             <AccordionItem value="iq-test" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <CustomTargetIcon className="h-4 w-4" />
+                                  {(() => {
+                                    const key = pageDesignIcons['test-lab/image-quality'];
+                                    const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                    return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                  })()}
                                   <span>Image Quality</span>
                                 </div>
                               </AccordionTrigger>
@@ -1940,7 +1976,11 @@ const Navigation = () => {
                             <AccordionItem value="standardized" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <CustomTargetIcon className="h-4 w-4" />
+                                  {(() => {
+                                    const key = pageDesignIcons['test-lab/standardized'];
+                                    const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                    return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                  })()}
                                   <span>Standardized</span>
                                 </div>
                               </AccordionTrigger>
@@ -1961,7 +2001,11 @@ const Navigation = () => {
                             <AccordionItem value="custom" className="border-none">
                               <AccordionTrigger className="px-2 py-2 text-gray-700 hover:text-gray-900 hover:no-underline bg-[#f3f3f5] rounded-lg mx-2 mb-2">
                                 <div className="flex items-center gap-3">
-                                  <CustomTargetIcon className="h-4 w-4" />
+                                  {(() => {
+                                    const key = pageDesignIcons['test-lab/specialized-custom'];
+                                    const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                                    return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                                  })()}
                                   <span>Specialized/Custom</span>
                                 </div>
                               </AccordionTrigger>
@@ -1999,19 +2043,35 @@ const Navigation = () => {
                         <div className="space-y-4">
                           <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.resources}</div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['training-events/webinars'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.webinars}</span>
                           </div>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['training-events/on-site-training'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.onSiteTraining}</span>
                           </div>
                           <Link to="/inside-lab" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['training-events/visit-test-lab'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.visitTestLab}</span>
                           </Link>
                           <div className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2">
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['training-events/event-schedule'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.eventSchedule}</span>
                           </div>
                         </div>
@@ -2035,32 +2095,60 @@ const Navigation = () => {
                         <div className="space-y-4">
                           <div className="font-medium text-gray-900 py-3 mb-2">{t.nav.resources}</div>
                           <Link to="/image-quality-factors" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['info-hub/image-quality-factors'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.imageQualityFactors}</span>
                           </Link>
                           <Link to="/blog" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['info-hub/blog'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.blog}</span>
                           </Link>
                           <Link to="/international-standards" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['info-hub/international-standards'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.internationalStandards}</span>
                           </Link>
                           <Link to="/ie-technology" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['info-hub/ie-technology'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.ieTechnology}</span>
                           </Link>
                           <div className="font-medium text-gray-900 py-3 mb-2 mt-4">{t.nav.publications}</div>
                           <Link to="/conference-papers" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['info-hub/conference-papers'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.conferencePapers}</span>
                           </Link>
                           <Link to="/whitepaper" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['info-hub/whitepaper'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.whitePapersTheses}</span>
                           </Link>
                           <Link to="/video-archive" className="flex items-center gap-3 py-2 text-gray-700 hover:text-gray-900 px-2 bg-gray-200 rounded-lg mx-2 mb-2" onClick={() => setIsOpen(false)}>
-                            <CustomTargetIcon className="h-4 w-4" />
+                            {(() => {
+                              const key = pageDesignIcons['info-hub/video-archive'];
+                              const IconComp = key ? PAGE_DESIGN_ICON_MAP[key] : null;
+                              return IconComp ? <IconComp className="h-4 w-4" /> : null;
+                            })()}
                             <span>{t.nav.videoArchive}</span>
                           </Link>
                         </div>
