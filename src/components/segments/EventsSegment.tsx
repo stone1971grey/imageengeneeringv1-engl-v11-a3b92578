@@ -619,8 +619,8 @@ const EventsSegment = ({
                                   disabled={isSubmitting || !form.formState.isValid}
                                   className={`flex-1 transition-colors ${
                                     form.formState.isValid 
-                                      ? 'bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black' 
-                                      : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                      ? 'bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold' 
+                                      : 'bg-[#f9dc24]/30 text-black/40 cursor-not-allowed hover:bg-[#f9dc24]/30'
                                   }`}
                                 >
                                   {isSubmitting ? "Registering..." : "Complete Registration"}
