@@ -977,7 +977,7 @@ export function DataHubDialog({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-[#e6cc1f] flex items-center justify-center">
-                  <Database className="h-5 w-5 text-gray-900" />
+                  <FolderOpen className="h-5 w-5 text-gray-900" />
                 </div>
                 <div>
                   <DialogTitle className="text-3xl font-bold text-white">
