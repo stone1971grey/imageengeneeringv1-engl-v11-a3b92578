@@ -459,10 +459,15 @@ const EventsSegment = ({
                         {selectedEvent.description && (
                           <div 
                             className="prose prose-sm max-w-none text-foreground 
+                              [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:border-b [&_h2]:border-border [&_h2]:pb-2
                               [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 
                               [&_p]:mb-3 [&_p]:leading-relaxed
                               [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 
-                              [&_li]:pl-1"
+                              [&_ol]:my-3 [&_ol]:ml-6 [&_ol]:list-decimal [&_ol]:space-y-1 
+                              [&_li]:pl-1
+                              [&_strong]:font-bold
+                              [&_a]:text-primary [&_a]:underline
+                              [&_blockquote]:border-l-4 [&_blockquote]:border-[#f9dc24] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground"
                             dangerouslySetInnerHTML={{ __html: selectedEvent.description }}
                           />
                         )}
