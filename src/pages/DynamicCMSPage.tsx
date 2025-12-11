@@ -1259,13 +1259,14 @@ const DynamicCMSPage = () => {
         />
       )}
       
-      {/* Render all andere Segmente in Tab-Reihenfolge (ohne Meta Navigation) */}
+      {/* Render all andere Segmente in Tab-Reihenfolge (ohne Meta Navigation und Footer) */}
       {tabOrder
         .filter(segmentId => {
           const segment = pageSegments.find(
             s => String(s.id) === String(segmentId) || String(s.segment_key) === String(segmentId)
           );
-          return segment?.type !== 'meta-navigation';
+          // Skip meta-navigation (rendered separately above) and footer (rendered separately below)
+          return segment?.type !== 'meta-navigation' && segment?.type !== 'footer';
         })
         .map((segmentId) => {
           const content = renderSegment(segmentId);
