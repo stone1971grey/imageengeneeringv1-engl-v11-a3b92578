@@ -166,14 +166,15 @@ const EventsSegment = ({
 
   const handleExpandEvent = (eventId: string) => {
     if (expandedEventId === eventId) {
-      // Closing - scroll back to the event card
+      // Closing - scroll back to the event card first, then close
       const cardElement = document.getElementById(`event-card-${eventId}`);
-      setExpandedEventId(null);
+      if (cardElement) {
+        cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      // Delay state change to allow scroll to complete
       setTimeout(() => {
-        if (cardElement) {
-          cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 100);
+        setExpandedEventId(null);
+      }, 400);
     } else {
       // Opening - scroll to detail view
       setExpandedEventId(eventId);
