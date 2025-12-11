@@ -336,7 +336,7 @@ const EventsEditor = () => {
               New Event
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#1a1a1a] border-gray-700">
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-[#1a1a1a] border-gray-700">
             <DialogHeader>
               <DialogTitle className="text-white text-xl">
                 {editingEvent ? "Edit Event" : "Create New Event"}
