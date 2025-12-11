@@ -383,6 +383,7 @@ const EventsSegmentEditorComponent = ({
         <Button
           onClick={handleSave}
           disabled={isSaving}
+          className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
         >
           {isSaving ? 'Saving...' : `Save Events Segment (${normalizedLang.toUpperCase()})`}
         </Button>
