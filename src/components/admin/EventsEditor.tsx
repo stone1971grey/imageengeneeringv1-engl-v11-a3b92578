@@ -756,7 +756,7 @@ const EventsEditor = () => {
                     <Button
                       type="button"
                       className="bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => window.open(`/${currentLanguage}/events/${editingEvent.slug}`, '_blank')}
+                      onClick={() => window.open(`/${currentLanguage}/training-events/events/${editingEvent.slug}`, '_blank')}
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       Preview
