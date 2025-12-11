@@ -514,15 +514,15 @@ const NewsEditor = () => {
           return (
             <Card 
               key={article.id} 
-              className="group overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-700 bg-gray-800"
+              className="bg-[#1a1a1a] border-gray-700 overflow-hidden"
             >
               {/* Image Section */}
-              <div className="relative aspect-video overflow-hidden bg-gray-900">
+              <div className="aspect-video relative overflow-hidden">
                 {article.image_url ? (
                   <img
                     src={article.image_url}
                     alt={article.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-800">
@@ -530,60 +530,58 @@ const NewsEditor = () => {
                   </div>
                 )}
                 
-                {/* Category Badge Overlay */}
-                <div className={`absolute top-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold text-white ${categoryInfo.color} shadow-md`}>
-                  <CategoryIcon className="w-4 h-4" />
-                  {categoryInfo.label}
+                {/* Category Badge - Left */}
+                <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                  <Badge className={`${categoryInfo.color} text-white text-xs`}>
+                    <CategoryIcon className="w-3 h-3 mr-1" />
+                    {categoryInfo.label}
+                  </Badge>
                 </div>
                 
-                {/* Status Badge */}
-                {!article.published && (
-                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded text-xs font-semibold bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">
-                    Draft
-                  </div>
-                )}
-                {article.published && (
-                  <div className="absolute top-3 right-3 px-2.5 py-1 rounded text-xs font-semibold bg-white/90 text-[#0f407b] border border-white shadow-sm">
-                    Live
-                  </div>
-                )}
-              </div>
-              
-              <CardContent className="p-6">
-                {/* Date */}
-                <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(article.date).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
-                  })}
-                  {article.author && (
-                    <>
-                      <span className="text-gray-500">•</span>
-                      <span>{article.author}</span>
-                    </>
+                {/* Status Badge - Right */}
+                <div className="absolute top-2 right-2 flex flex-wrap gap-1">
+                  {article.published ? (
+                    <Badge className="bg-white/90 text-[#0f407b] text-xs font-medium">
+                      Live
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-gray-600 text-white text-xs">
+                      Draft
+                    </Badge>
                   )}
                 </div>
+              </div>
+              
+              <CardContent className="p-4 space-y-3">
+                <h3 className="font-semibold text-white line-clamp-2">{article.title}</h3>
                 
-                {/* Title */}
-                <h3 className="font-bold text-lg text-white line-clamp-2 mb-3 group-hover:text-[#f9dc24] transition-colors">
-                  {article.title}
-                </h3>
-                
-                {/* Teaser */}
-                <p className="text-base text-gray-300 line-clamp-2 mb-4">
-                  {article.teaser}
-                </p>
-                
+                <div className="space-y-1 text-sm text-gray-400">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>{new Date(article.date).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}</span>
+                    {article.author && (
+                      <>
+                        <span className="text-gray-500">•</span>
+                        <span>{article.author}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <p className="text-gray-400 text-sm line-clamp-2">{article.teaser}</p>
+
                 {/* Slug */}
-                <div className="text-sm text-gray-400 font-mono mb-2 truncate">
+                <div className="text-sm text-gray-400 font-mono truncate">
                   /news/{article.slug}
                 </div>
                 
                 {/* Translation Status */}
-                <div className="flex items-center flex-wrap gap-2 mb-4">
-                  <span className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 font-medium">🇺🇸 EN</span>
+                <div className="flex items-center flex-wrap gap-2">
+                  <span className="text-sm px-2 py-1 rounded bg-gray-700 text-gray-300 font-medium">🇬🇧 EN</span>
                   {getTranslations(article.slug).map(lang => {
                     const flags: Record<string, string> = { de: "🇩🇪 DE", ja: "🇯🇵 JA", ko: "🇰🇷 KO", zh: "🇨🇳 ZH" };
                     return (
@@ -593,29 +591,29 @@ const NewsEditor = () => {
                     );
                   })}
                 </div>
-                
-                {/* Action Buttons */}
-                <div className="flex gap-2 pt-4 border-t border-gray-700">
+
+                <div className="flex gap-2 pt-2">
                   <Button
-                    size="default"
-                    className="flex-1 text-sm font-medium bg-green-600 hover:bg-green-700 text-white border-green-600"
+                    size="sm"
+                    variant="outline"
+                    className="border-green-600 text-green-400 hover:bg-green-600/20"
                     onClick={() => window.open(`/en/news/${article.slug}`, '_blank')}
                   >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Preview
+                    <Eye className="w-4 h-4" />
                   </Button>
                   <Button
-                    size="default"
-                    className="flex-1 text-sm font-medium bg-[#f9dc24] text-black border-[#f9dc24] hover:bg-[#f9dc24]/90"
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 border-gray-600 text-white hover:bg-[#3a3a3a]"
                     onClick={() => handleEdit(article)}
                   >
-                    <Pencil className="w-4 h-4 mr-2" />
+                    <Pencil className="w-4 h-4 mr-1" />
                     Edit
                   </Button>
                   <Button
-                    variant="destructive"
-                    size="default"
-                    className="text-sm font-medium"
+                    size="sm"
+                    variant="outline"
+                    className="border-red-600 text-red-400 hover:bg-red-600/20"
                     onClick={() => {
                       if (confirm("Are you sure you want to delete this article?")) {
                         deleteMutation.mutate(article.id);
@@ -633,11 +631,14 @@ const NewsEditor = () => {
       
       {/* Empty State */}
       {articles?.length === 0 && (
-        <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
-          <Newspaper className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">No articles yet</h3>
-          <p className="text-sm text-gray-400 mb-4">Create your first news article to get started</p>
-          <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}>
+        <div className="text-center py-12">
+          <Newspaper className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+          <h3 className="text-xl font-semibold text-white mb-2">No articles yet</h3>
+          <p className="text-gray-400 mb-4">Create your first news article to get started</p>
+          <Button
+            className="bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+            onClick={() => { resetForm(); setIsDialogOpen(true); }}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Create Article
           </Button>
