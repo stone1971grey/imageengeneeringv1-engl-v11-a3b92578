@@ -1071,12 +1071,21 @@ const Navigation = () => {
                    </div>
 
                   <div className="bg-[#f3f3f3] px-4 pt-3 pb-3">
-                    <Link to={`/${language}/events`}>
-                      <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
-                        <GraduationCap className="h-5 w-5 mr-2" />
-                        <span className="text-base font-medium">{t.nav.viewTrainingEvents}</span>
-                      </Button>
-                    </Link>
+                    {(() => {
+                      const cta = pageCtaConfig['training-events'];
+                      const targetSlug = cta?.slug || 'training-events/events';
+                      const label = cta?.label || t.nav.viewTrainingEvents;
+                      const iconKey = cta?.icon || 'calendar';
+                      const IconComp = iconKey === 'calendar' ? Calendar : GraduationCap;
+                      return (
+                        <Link to={`/${language}/${targetSlug}`}>
+                          <Button variant="default" className="w-full bg-[#f9dc24] text-black hover:bg-[#e5c820] py-3">
+                            <IconComp className="h-5 w-5 mr-2" />
+                            <span className="text-base font-medium">{label}</span>
+                          </Button>
+                        </Link>
+                      );
+                    })()}
                   </div>
                 </div>
               </SimpleDropdown>
