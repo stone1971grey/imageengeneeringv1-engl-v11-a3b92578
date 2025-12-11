@@ -1258,6 +1258,9 @@ const AdminDashboard = () => {
       const registry: Record<string, number> = {};
       // Create a reverse map of segment_id to segment_key for dynamic labels
       const reverseRegistry: Record<string, string> = {};
+      
+      console.log('[loadSegmentRegistry] Raw data from DB:', data);
+      
       data?.forEach((item: any) => {
         registry[item.segment_key] = item.segment_id;
         reverseRegistry[String(item.segment_id)] = item.segment_key;
@@ -1265,6 +1268,7 @@ const AdminDashboard = () => {
         // Register footer segments under 'footer' key for the Footer tab display
         // Support multiple patterns: segment_type === 'footer', segment_key starts with 'footer-', or segment_key equals 'footer'
         if (item.segment_type === 'footer') {
+          console.log('[loadSegmentRegistry] Found footer segment:', item.segment_id, item.segment_key, item.segment_type);
           registry['footer'] = item.segment_id;
         }
       });
@@ -1272,7 +1276,7 @@ const AdminDashboard = () => {
       setSegmentRegistry(registry);
       // Store reverse registry in a separate state or use it directly below
       (window as any).__segmentKeyRegistry = reverseRegistry;
-      console.log("✅ Loaded segment registry for", querySlug, ":", registry, "Reverse:", reverseRegistry);
+      console.log("✅ Loaded segment registry for", querySlug, ":", registry, "Footer ID:", registry['footer']);
     } catch (error) {
       console.error("Error loading segment registry:", error);
     }
