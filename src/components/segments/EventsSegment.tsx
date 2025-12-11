@@ -91,6 +91,7 @@ const EventsSegment = ({
 
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
+    mode: 'onChange',
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -572,8 +573,12 @@ const EventsSegment = ({
                               <div className="flex gap-3 pt-2">
                                 <Button
                                   type="submit"
-                                  disabled={isSubmitting}
-                                  className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                                  disabled={isSubmitting || !form.formState.isValid}
+                                  className={`flex-1 transition-colors ${
+                                    form.formState.isValid 
+                                      ? 'bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black' 
+                                      : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                  }`}
                                 >
                                   {isSubmitting ? "Registering..." : "Complete Registration"}
                                 </Button>
