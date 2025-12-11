@@ -5560,15 +5560,23 @@ const AdminDashboard = () => {
                   })}
                 </SortableContext>
 
-                {/* Footer Tab - Fixed Right (only if not deleted) */}
-                {segmentRegistry['footer'] && (
-                  <TabsTrigger 
-                    value="footer"
-                    className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
-                  >
-                    ID {segmentRegistry['footer']}: Footer
-                  </TabsTrigger>
-                )}
+                {/* Footer Tab - Fixed Right (show if footer exists in pageSegments OR segmentRegistry) */}
+                {(() => {
+                  const footerSegment = pageSegments.find(s => s.type === 'footer');
+                  const footerId = segmentRegistry['footer'] || (footerSegment ? segmentRegistry[footerSegment.id] : null) || footerSegment?.id;
+                  
+                  if (footerId) {
+                    return (
+                      <TabsTrigger 
+                        value="footer"
+                        className="text-base font-semibold py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black"
+                      >
+                        ID {footerId}: Footer
+                      </TabsTrigger>
+                    );
+                  }
+                  return null;
+                })()}
               </TabsList>
             </DndContext>
 
