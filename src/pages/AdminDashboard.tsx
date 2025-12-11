@@ -5009,7 +5009,7 @@ const AdminDashboard = () => {
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Languages className="h-5 w-5 text-[#f9dc24]" />
-                      <span className="text-white text-sm font-medium">5 Languages + AI</span>
+                      <span className="text-white text-sm font-medium">Multi-Language + Auto Translation</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Eye className="h-5 w-5 text-[#f9dc24]" />
@@ -5028,8 +5028,8 @@ const AdminDashboard = () => {
                       <span className="text-white text-sm font-medium">Event Management</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
-                      <Smartphone className="h-5 w-5 text-[#f9dc24]" />
-                      <span className="text-white text-sm font-medium">Mobile Nav Icons</span>
+                      <Settings className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">CMS-Managed Navigation</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <GripVertical className="h-5 w-5 text-[#f9dc24]" />
