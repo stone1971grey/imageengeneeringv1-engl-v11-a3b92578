@@ -275,6 +275,21 @@ const DynamicCMSPage = () => {
 
       // Wenn für die gewünschte Sprache keine gültigen Segmente gefunden wurden,
       // auf Englisch zurückfallen (wichtig für Fälle mit kaputtem JSON in der Zielsprache)
+      // ABER: Sprachspezifische Inhalte aus section_keys der Zielsprache beibehalten
+      let targetLanguageSegmentData: Record<string, any> = {};
+      
+      // Extrahiere sprachspezifische Segment-Daten aus den geladenen Rows
+      (data || []).forEach((item: any) => {
+        const isNumericKey = /^\d+$/.test(item.section_key);
+        if (isNumericKey) {
+          try {
+            targetLanguageSegmentData[item.section_key] = JSON.parse(item.content_value || '{}');
+          } catch (e) {
+            console.error('[DynamicCMSPage] Error parsing segment data:', e);
+          }
+        }
+      });
+      
       if ((!segments || segments.length === 0) && urlLanguage !== 'en') {
         console.warn(`[DynamicCMSPage] No valid segments for ${pageSlug} in ${urlLanguage}, falling back to English segments`);
         const { data: fallbackRows, error: fallbackErr } = await supabase
@@ -289,6 +304,21 @@ const DynamicCMSPage = () => {
           tabs = fallbackParsed.tabs;
           localIntroLegacyMap = fallbackParsed.localIntroLegacyMap;
           localIndustriesOverrideMap = fallbackParsed.localIndustriesOverrideMap;
+          
+          // WICHTIG: Sprachspezifische Inhalte auf englische Segment-Struktur anwenden
+          segments = segments.map((seg: any) => {
+            const key = String(seg.id || seg.segment_key);
+            if (targetLanguageSegmentData[key]) {
+              return {
+                ...seg,
+                data: {
+                  ...(seg.data || {}),
+                  ...targetLanguageSegmentData[key],
+                },
+              };
+            }
+            return seg;
+          });
         }
       }
 
