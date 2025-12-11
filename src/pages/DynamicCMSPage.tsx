@@ -249,17 +249,19 @@ const DynamicCMSPage = () => {
           }
         });
 
-        // Segment-Daten aus section_keys nur als FALLBACK nutzen, wenn page_segments keine Daten hat
-        // page_segments ist autoritativ - section_key-Daten dienen nur als Legacy-Fallback
+        // Segment-Daten aus section_keys haben VORRANG für sprachspezifische Inhalte
+        // Numerische Keys enthalten die übersetzten/sprachspezifischen Daten
         segments = segments.map((seg: any) => {
           const key = String(seg.id || seg.segment_key);
-          const hasExistingData = seg.data && Object.keys(seg.data).length > 0;
           
-          // Nur section_key-Daten verwenden, wenn page_segments KEINE Daten hat
-          if (!hasExistingData && segmentDataMap[key]) {
+          // Sprachspezifische Daten aus section_key haben immer Vorrang
+          if (segmentDataMap[key]) {
             return {
               ...seg,
-              data: segmentDataMap[key],
+              data: {
+                ...(seg.data || {}), // Basis-Daten aus page_segments
+                ...segmentDataMap[key], // Überschreiben mit sprachspezifischen Daten
+              },
             };
           }
           return seg;
