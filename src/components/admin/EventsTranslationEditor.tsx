@@ -269,9 +269,10 @@ const EventsTranslationEditor = ({ eventSlug, englishData, onSave }: EventsTrans
       toast.success(`${LANGUAGES.find(l => l.code === selectedLanguage)?.name} version saved!`);
       onSave();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Save error:", error);
-      toast.error("Failed to save translation.");
+      const errorMessage = error?.message || error?.code || "Unknown error";
+      toast.error(`Failed to save translation: ${errorMessage}`);
     } finally {
       setIsSaving(false);
     }
