@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import ReactMarkdown from "react-markdown";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -69,6 +68,55 @@ const EVENT_CATEGORIES = [
   { value: "Webinar", label: "Webinar" },
   { value: "Conference", label: "Conference" },
 ];
+
+interface DescriptionSection {
+  id: string;
+  heading: string;
+  content: string;
+  isBulletList: boolean;
+}
+
+const EventDescription = ({ description }: { description: string }) => {
+  // Try to parse as JSON (new structured format)
+  let sections: DescriptionSection[] = [];
+  try {
+    const parsed = JSON.parse(description);
+    if (Array.isArray(parsed)) {
+      sections = parsed;
+    }
+  } catch {
+    // Legacy plain text - display as paragraph
+    return <p className="mb-3 leading-relaxed text-foreground">{description}</p>;
+  }
+
+  if (sections.length === 0) return null;
+
+  return (
+    <div className="space-y-4">
+      {sections.map((section) => {
+        if (!section.heading && !section.content) return null;
+        return (
+          <div key={section.id}>
+            {section.heading && (
+              <h3 className="text-lg font-bold text-foreground mt-4 mb-2">{section.heading}</h3>
+            )}
+            {section.content && (
+              section.isBulletList ? (
+                <ul className="my-3 ml-6 list-disc space-y-1">
+                  {section.content.split('\n').filter(line => line.trim()).map((line, i) => (
+                    <li key={i} className="pl-1 text-foreground">{line.trim()}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mb-3 leading-relaxed text-foreground">{section.content}</p>
+              )
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 const EventsSegment = ({
   id,
@@ -458,20 +506,7 @@ const EventsSegment = ({
                       <CardContent className="space-y-6">
                         {/* Description */}
                         {selectedEvent.description && (
-                          <div 
-                            className="prose prose-sm max-w-none text-foreground 
-                              prose-h2:text-xl prose-h2:font-bold prose-h2:mt-6 prose-h2:mb-3 prose-h2:border-b prose-h2:border-border prose-h2:pb-2
-                              prose-h3:text-lg prose-h3:font-bold prose-h3:mt-4 prose-h3:mb-2 
-                              prose-p:mb-3 prose-p:leading-relaxed
-                              prose-ul:my-3 prose-ul:ml-6 prose-ul:list-disc prose-ul:space-y-1 
-                              prose-ol:my-3 prose-ol:ml-6 prose-ol:list-decimal prose-ol:space-y-1 
-                              prose-li:pl-1
-                              prose-strong:font-bold
-                              prose-a:text-primary prose-a:underline
-                              prose-blockquote:border-l-4 prose-blockquote:border-[#f9dc24] prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground"
-                          >
-                            <ReactMarkdown>{selectedEvent.description}</ReactMarkdown>
-                          </div>
+                          <EventDescription description={selectedEvent.description} />
                         )}
                         
                         {/* Registration Form */}
