@@ -5002,21 +5002,29 @@ const AdminDashboard = () => {
                   </div>
 
                   {/* Features Grid - Compact */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Layers className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">Modular Segments</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Languages className="h-5 w-5 text-[#f9dc24]" />
-                      <span className="text-white text-sm font-medium">Multi-Language + Auto Translation</span>
+                      <span className="text-white text-sm font-medium">Multi-Language</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Sparkles className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Auto Translation</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Book className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Translation Glossary</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <Eye className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">Live Preview</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
-                      <Upload className="h-5 w-5 text-[#f9dc24]" />
+                      <FolderOpen className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">Media Management</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
@@ -5034,6 +5042,10 @@ const AdminDashboard = () => {
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
                       <GripVertical className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">Hierarchical Pages</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
+                      <Zap className="h-5 w-5 text-[#f9dc24]" />
+                      <span className="text-white text-sm font-medium">Trio Suite</span>
                     </div>
                   </div>
                 </div>
