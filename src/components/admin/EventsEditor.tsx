@@ -546,6 +546,32 @@ const EventsEditor = () => {
                       onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
                       darkMode={true}
                     />
+                    
+                    {/* Live Preview */}
+                    {formData.description && (
+                      <div className="mt-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Eye className="w-4 h-4 text-[#f9dc24]" />
+                          <h4 className="text-sm font-medium text-white">Frontend Preview</h4>
+                        </div>
+                        <div className="bg-white rounded-lg p-6 border border-gray-600">
+                          <div 
+                            className="prose prose-sm max-w-none text-gray-900
+                              [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:border-b [&_h2]:border-gray-200 [&_h2]:pb-2
+                              [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 
+                              [&_p]:mb-3 [&_p]:leading-relaxed [&_p]:text-gray-700
+                              [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 
+                              [&_ol]:my-3 [&_ol]:ml-6 [&_ol]:list-decimal [&_ol]:space-y-1 
+                              [&_li]:pl-1 [&_li]:text-gray-700
+                              [&_strong]:font-bold [&_strong]:text-gray-900
+                              [&_a]:text-[#0f407b] [&_a]:underline
+                              [&_blockquote]:border-l-4 [&_blockquote]:border-[#f9dc24] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600"
+                            dangerouslySetInnerHTML={{ __html: formData.description }}
+                          />
+                        </div>
+                        <p className="text-gray-500 text-xs mt-2">This is exactly how the description will appear on the events page.</p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
 
