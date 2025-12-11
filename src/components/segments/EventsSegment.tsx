@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calendar, MapPin, Clock, Globe, ChevronDown, ChevronUp, X } from "lucide-react";
+import { Calendar, MapPin, Clock, Globe, ChevronDown, ChevronUp, X, ExternalLink } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -131,6 +132,7 @@ const EventsSegment = ({
   categories = [],
 }: EventsSegmentProps) => {
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -374,7 +376,7 @@ const EventsSegment = ({
           {event.teaser}
         </CardDescription>
         
-        <div className="mt-auto pt-4">
+        <div className="mt-auto pt-4 space-y-2">
           <Button 
             onClick={() => handleExpandEvent(event.id)}
             className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
@@ -391,6 +393,18 @@ const EventsSegment = ({
               </>
             )}
           </Button>
+          <Link 
+            to={`/${language}/training-events/events/${event.slug}`}
+            className="block"
+          >
+            <Button 
+              variant="outline"
+              className="w-full"
+            >
+              View Details
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
