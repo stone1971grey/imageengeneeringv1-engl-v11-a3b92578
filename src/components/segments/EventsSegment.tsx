@@ -242,6 +242,91 @@ const EventsSegment = ({
     );
   }
 
+  // Group events in rows of 3
+  const getEventRows = () => {
+    const rows: Event[][] = [];
+    for (let i = 0; i < filteredEvents.length; i += 3) {
+      rows.push(filteredEvents.slice(i, i + 3));
+    }
+    return rows;
+  };
+
+  const selectedEvent = filteredEvents.find(e => e.id === expandedEventId);
+
+  // Find which row contains the selected event
+  const getSelectedEventRowIndex = () => {
+    if (!expandedEventId) return -1;
+    const index = filteredEvents.findIndex(e => e.id === expandedEventId);
+    return Math.floor(index / 3);
+  };
+
+  const EventCard = ({ event }: { event: Event }) => (
+    <Card className={`h-full overflow-hidden transition-all duration-300 flex flex-col ${
+      expandedEventId === event.id ? 'ring-2 ring-[#f9dc24] shadow-lg' : 'hover:shadow-lg'
+    }`}>
+      <div className="aspect-video w-full overflow-hidden">
+        <img 
+          src={event.image_url} 
+          alt={event.title}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <CardHeader className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1 font-normal">
+            {getCategoryLabel(event.category)}
+          </Badge>
+          {event.is_online && (
+            <Badge variant="outline" className="text-sm">
+              <Globe className="w-3 h-3 mr-1" />
+              Online
+            </Badge>
+          )}
+        </div>
+        <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            <span>{formatDate(event.date)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            <span>{event.time_start}{event.time_end ? ` - ${event.time_end}` : ''}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            <span>{event.location_city}, {event.location_country}</span>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 flex-1 flex flex-col">
+        <CardDescription className="text-sm leading-relaxed flex-1">
+          {event.teaser}
+        </CardDescription>
+        
+        <div className="mt-auto pt-4">
+          <Button 
+            onClick={() => handleExpandEvent(event.id)}
+            className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+          >
+            {expandedEventId === event.id ? (
+              <>
+                Close Details
+                <ChevronUp className="ml-2 h-4 w-4" />
+              </>
+            ) : (
+              <>
+                Register Now
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </>
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <section id={id} className="pt-32 pb-16 bg-background">
       <div className="container mx-auto px-6">
@@ -276,234 +361,221 @@ const EventsSegment = ({
           </div>
         )}
 
-        {/* Events Grid/List */}
+        {/* Events */}
         {filteredEvents.length === 0 ? (
           <div className="text-center py-20 text-muted-foreground">
             <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
             <p>No upcoming events at the moment. Check back soon!</p>
           </div>
         ) : (
-          <div className={layout === 'grid' 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            : "space-y-6"
-          }>
-            {filteredEvents.map((event) => {
-              const isExpanded = expandedEventId === event.id;
-              
-              return (
-                <Card 
-                  key={event.id} 
-                  className={`overflow-hidden transition-all duration-300 flex flex-col ${
-                    isExpanded ? 'col-span-1 md:col-span-2 lg:col-span-3 shadow-xl' : 'hover:shadow-lg'
-                  }`}
-                >
-                  <div className={`flex ${isExpanded ? 'flex-col lg:flex-row' : 'flex-col'}`}>
-                    {/* Image */}
-                    <div className={`overflow-hidden ${isExpanded ? 'lg:w-1/2' : 'aspect-video w-full'}`}>
-                      <img 
-                        src={event.image_url} 
-                        alt={event.title}
-                        className={`w-full object-cover ${isExpanded ? 'h-64 lg:h-full' : 'h-full'}`}
-                        loading="lazy"
-                      />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className={`flex-1 flex flex-col ${isExpanded ? 'lg:w-1/2' : ''}`}>
-                      <CardHeader className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1 font-normal">
-                              {getCategoryLabel(event.category)}
-                            </Badge>
-                            {event.is_online && (
-                              <Badge variant="outline" className="text-sm">
-                                <Globe className="w-3 h-3 mr-1" />
-                                Online
-                              </Badge>
-                            )}
-                          </div>
-                          {isExpanded && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setExpandedEventId(null)}
-                              className="h-8 w-8"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          )}
+          <div className="space-y-6">
+            {getEventRows().map((row, rowIndex) => (
+              <div key={rowIndex}>
+                {/* Event Cards Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                  {row.map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+                
+                {/* Detail View - appears under the row containing the selected event */}
+                {selectedEvent && getSelectedEventRowIndex() === rowIndex && (
+                  <div 
+                    id="registration-form" 
+                    className="mb-6 max-w-4xl mx-auto animate-fade-in"
+                  >
+                    <Card className="animate-scale-in border-2 border-[#f9dc24]/30">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-base px-3 py-1.5 font-normal">
+                            {getCategoryLabel(selectedEvent.category)}
+                          </Badge>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => setExpandedEventId(null)} 
+                            className="hover:bg-[#f9dc24] hover:text-black transition-colors"
+                          >
+                            <X className="h-5 w-5" />
+                          </Button>
                         </div>
-                        <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
-                        <div className="space-y-2 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
-                            <span>{formatDate(event.date)}</span>
+                        
+                        <div className="flex flex-col lg:flex-row gap-6">
+                          {/* Small Image */}
+                          <div className="lg:w-1/3 overflow-hidden rounded-lg">
+                            <img 
+                              src={selectedEvent.image_url} 
+                              alt={selectedEvent.title}
+                              className="w-full h-48 object-cover"
+                            />
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4" />
-                            <span>{event.time_start}{event.time_end ? ` - ${event.time_end}` : ''}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
-                            <span>
-                              {event.location_venue && `${event.location_venue}, `}
-                              {event.location_city}, {event.location_country}
-                            </span>
+                          
+                          {/* Event Info */}
+                          <div className="lg:w-2/3">
+                            <CardTitle className="text-2xl mb-4">{selectedEvent.title}</CardTitle>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                              <div className="flex items-center gap-2 text-foreground">
+                                <Calendar className="h-5 w-5 text-[#f9dc24]" />
+                                <span>{formatDate(selectedEvent.date)}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-foreground">
+                                <Clock className="h-5 w-5 text-[#f9dc24]" />
+                                <span>{selectedEvent.time_start}{selectedEvent.time_end ? ` - ${selectedEvent.time_end}` : ''}</span>
+                              </div>
+                              <div className="flex items-center gap-2 text-foreground">
+                                <MapPin className="h-5 w-5 text-[#f9dc24]" />
+                                <span>
+                                  {selectedEvent.location_venue && `${selectedEvent.location_venue}, `}
+                                  {selectedEvent.location_city}, {selectedEvent.location_country}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </CardHeader>
                       
-                      <CardContent className="space-y-4 flex-1 flex flex-col">
-                        <CardDescription className="text-sm leading-relaxed">
-                          {event.teaser}
-                        </CardDescription>
-                        
-                        {/* Expanded Description */}
-                        {isExpanded && event.description && (
+                      <CardContent className="space-y-6">
+                        {/* Description */}
+                        {selectedEvent.description && (
                           <div 
-                            className="prose prose-sm max-w-none text-muted-foreground"
-                            dangerouslySetInnerHTML={{ __html: event.description }}
+                            className="prose prose-sm max-w-none text-foreground 
+                              [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 
+                              [&_p]:mb-3 [&_p]:leading-relaxed
+                              [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 
+                              [&_li]:pl-1"
+                            dangerouslySetInnerHTML={{ __html: selectedEvent.description }}
                           />
                         )}
                         
-                        {/* Register Button or Form */}
-                        <div className="mt-auto pt-4">
-                          {!isExpanded ? (
-                            <Button 
-                              onClick={() => handleExpandEvent(event.id)}
-                              className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
-                            >
-                              Register Now
-                              <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                          ) : (
-                            <div className="space-y-6">
-                              <div className="border-t pt-6">
-                                <h4 className="text-lg font-semibold mb-4">Register for this Event</h4>
-                                <Form {...form}>
-                                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <FormField
-                                        control={form.control}
-                                        name="firstName"
-                                        render={({ field }) => (
-                                          <FormItem>
-                                            <FormLabel>First Name *</FormLabel>
-                                            <FormControl>
-                                              <Input placeholder="John" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                      <FormField
-                                        control={form.control}
-                                        name="lastName"
-                                        render={({ field }) => (
-                                          <FormItem>
-                                            <FormLabel>Last Name *</FormLabel>
-                                            <FormControl>
-                                              <Input placeholder="Doe" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                    </div>
-                                    
-                                    <FormField
-                                      control={form.control}
-                                      name="email"
-                                      render={({ field }) => (
-                                        <FormItem>
-                                          <FormLabel>Email *</FormLabel>
-                                          <FormControl>
-                                            <Input type="email" placeholder="john.doe@company.com" {...field} />
-                                          </FormControl>
-                                          <FormMessage />
-                                        </FormItem>
-                                      )}
-                                    />
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      <FormField
-                                        control={form.control}
-                                        name="company"
-                                        render={({ field }) => (
-                                          <FormItem>
-                                            <FormLabel>Company *</FormLabel>
-                                            <FormControl>
-                                              <Input placeholder="Company Inc." {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                      <FormField
-                                        control={form.control}
-                                        name="position"
-                                        render={({ field }) => (
-                                          <FormItem>
-                                            <FormLabel>Position *</FormLabel>
-                                            <FormControl>
-                                              <Input placeholder="Engineer" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                          </FormItem>
-                                        )}
-                                      />
-                                    </div>
-                                    
-                                    <FormField
-                                      control={form.control}
-                                      name="consent"
-                                      render={({ field }) => (
-                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                                          <FormControl>
-                                            <Checkbox
-                                              checked={field.value}
-                                              onCheckedChange={field.onChange}
-                                            />
-                                          </FormControl>
-                                          <div className="space-y-1 leading-none">
-                                            <FormLabel className="text-sm font-normal">
-                                              I agree to receive event updates and information about related products and services. *
-                                            </FormLabel>
-                                            <FormMessage />
-                                          </div>
-                                        </FormItem>
-                                      )}
-                                    />
-                                    
-                                    <div className="flex gap-3 pt-2">
-                                      <Button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
-                                      >
-                                        {isSubmitting ? "Registering..." : "Complete Registration"}
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => setExpandedEventId(null)}
-                                      >
-                                        Cancel
-                                      </Button>
-                                    </div>
-                                  </form>
-                                </Form>
+                        {/* Registration Form */}
+                        <div className="pt-6 border-t border-border">
+                          <div className="space-y-2 mb-6">
+                            <h4 className="text-lg font-semibold">Register for this Event</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Please fill out the registration form below. We will send you a confirmation email with all event details.
+                            </p>
+                          </div>
+                          
+                          <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                  control={form.control}
+                                  name="firstName"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>First Name *</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="John" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="lastName"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Last Name *</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="Doe" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
                               </div>
-                            </div>
-                          )}
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField
+                                  control={form.control}
+                                  name="company"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Company *</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="Company Inc." {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="position"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Position *</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="Engineer" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                              
+                              <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Email *</FormLabel>
+                                    <FormControl>
+                                      <Input type="email" placeholder="john.doe@company.com" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <FormField
+                                control={form.control}
+                                name="consent"
+                                render={({ field }) => (
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel className="text-sm font-normal">
+                                        I agree to receive event updates and information about related products and services. *
+                                      </FormLabel>
+                                      <FormMessage />
+                                    </div>
+                                  </FormItem>
+                                )}
+                              />
+                              
+                              <div className="flex gap-3 pt-2">
+                                <Button
+                                  type="submit"
+                                  disabled={isSubmitting}
+                                  className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                                >
+                                  {isSubmitting ? "Registering..." : "Complete Registration"}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => setExpandedEventId(null)}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </form>
+                          </Form>
                         </div>
                       </CardContent>
-                    </div>
+                    </Card>
                   </div>
-                </Card>
-              );
-            })}
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>
