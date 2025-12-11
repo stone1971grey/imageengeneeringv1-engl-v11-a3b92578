@@ -791,6 +791,32 @@ const EventsEditor = () => {
         </Dialog>
       </div>
 
+      {/* Category Filter Pills */}
+      <div className="flex flex-wrap gap-2 pb-4">
+        {EVENT_CATEGORIES.map((cat) => {
+          const IconComponent = cat.icon;
+          const count = events?.filter(e => e.category === cat.value).length || 0;
+          return (
+            <div
+              key={cat.value}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold text-white ${cat.color}`}
+            >
+              <IconComponent className="w-3 h-3" />
+              {cat.label}
+              <span className="ml-1 bg-white/25 px-1.5 py-0.5 rounded-full text-xs font-bold">{count}</span>
+            </div>
+          );
+        })}
+        {/* Online special category */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-cyan-600">
+          <Globe className="w-3 h-3" />
+          Online
+          <span className="ml-1 bg-white/25 px-1.5 py-0.5 rounded-full text-xs font-bold">
+            {events?.filter(e => e.is_online).length || 0}
+          </span>
+        </div>
+      </div>
+
       {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {events?.map((event) => {
