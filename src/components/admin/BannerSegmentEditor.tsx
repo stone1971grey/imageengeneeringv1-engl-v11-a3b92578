@@ -135,6 +135,9 @@ const BannerSegmentEditorComponent = ({
 
   // Load target language data from backend
   const loadTargetLanguageData = async (lang: string) => {
+    // Always use the current English images as the authoritative source
+    const currentEnglishImages = ensureImageIds(images.length > 0 ? images : (data.images || []) as BannerImage[]);
+    
     const { data: targetContent, error } = await supabase
       .from('page_content')
       .select('content_value')
@@ -153,7 +156,6 @@ const BannerSegmentEditorComponent = ({
       );
       
       if (targetSegment?.data) {
-        const englishImagesCurrent = ensureImageIds(images || []);
         const targetImages = ensureImageIds(targetSegment.data.images || []);
         
         // Load alt text from file_segment_mappings for target language images
@@ -172,7 +174,7 @@ const BannerSegmentEditorComponent = ({
         
         // Merge: English defines which images exist (url/metadata),
         // target keeps its alt texts where possible
-        const mergedImages: BannerImage[] = englishImagesCurrent.map((enImg, idx) => {
+        const mergedImages: BannerImage[] = currentEnglishImages.map((enImg, idx) => {
           const targetImg = targetImagesWithAltText[idx];
           return {
             ...enImg,
@@ -189,13 +191,12 @@ const BannerSegmentEditorComponent = ({
     }
  
     // If no target language version exists, copy structure from English but with empty text fields
-    const englishImagesCurrent = ensureImageIds(images || []);
     setTargetData({
       ...data,
       title: '',
       subtext: '',
       buttonText: '',
-      images: englishImagesCurrent.map(img => ({ 
+      images: currentEnglishImages.map(img => ({ 
         ...img, 
         alt: '' 
       }))
