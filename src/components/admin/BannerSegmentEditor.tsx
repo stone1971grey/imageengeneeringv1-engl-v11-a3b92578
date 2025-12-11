@@ -761,6 +761,7 @@ const BannerSegmentEditorComponent = ({
                     acceptedFileTypes="image/*"
                     label="Image File"
                     currentImageUrl={image.url}
+                    previewSize="small"
                   />
                 )}
 
