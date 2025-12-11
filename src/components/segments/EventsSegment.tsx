@@ -1,10 +1,35 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Clock, Globe } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar, MapPin, Clock, Globe, ChevronDown, ChevronUp, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+const registrationFormSchema = z.object({
+  firstName: z.string().min(2, "First name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  company: z.string().min(2, "Company name must be at least 2 characters"),
+  position: z.string().min(2, "Position must be at least 2 characters"),
+  consent: z.boolean().refine(val => val === true, "You must agree to the terms"),
+});
+
+type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
 
 interface EventsSegmentProps {
   id?: string;
@@ -24,11 +49,13 @@ interface Event {
   slug: string;
   title: string;
   teaser: string;
+  description: string | null;
   date: string;
   time_start: string;
   time_end: string | null;
   location_city: string;
   location_country: string;
+  location_venue: string | null;
   category: string;
   image_url: string;
   is_online: boolean;
@@ -54,10 +81,25 @@ const EventsSegment = ({
   sortOrder = 'asc',
   categories = [],
 }: EventsSegmentProps) => {
+  const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<RegistrationFormValues>({
+    resolver: zodResolver(registrationFormSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      company: "",
+      position: "",
+      consent: false,
+    },
+  });
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -119,6 +161,64 @@ const EventsSegment = ({
         ? prev.filter(c => c !== category)
         : [...prev, category]
     );
+  };
+
+  const handleExpandEvent = (eventId: string) => {
+    if (expandedEventId === eventId) {
+      setExpandedEventId(null);
+    } else {
+      setExpandedEventId(eventId);
+      form.reset();
+    }
+  };
+
+  const onSubmit = async (data: RegistrationFormValues) => {
+    const event = events.find(e => e.id === expandedEventId);
+    if (!event) return;
+
+    setIsSubmitting(true);
+    try {
+      const { data: result, error } = await supabase.functions.invoke('register-event', {
+        body: {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          company: data.company,
+          position: data.position,
+          eventTitle: event.title,
+          eventDate: event.date,
+          eventLocation: `${event.location_city}, ${event.location_country}`,
+          eventSlug: event.slug,
+          evtImageUrl: event.image_url,
+        },
+      });
+
+      if (error) throw error;
+
+      if (result?.alreadyRegistered) {
+        navigate('/en/event-already-registered', {
+          state: {
+            eventTitle: event.title,
+            eventDate: formatDate(event.date),
+            eventLocation: `${event.location_city}, ${event.location_country}`,
+          }
+        });
+      } else {
+        navigate('/en/event-registration-success', {
+          state: {
+            eventTitle: event.title,
+            eventDate: formatDate(event.date),
+            eventLocation: `${event.location_city}, ${event.location_country}`,
+            firstName: data.firstName,
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error("Registration failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Filter events by selected categories (frontend filtering)
@@ -187,62 +287,223 @@ const EventsSegment = ({
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             : "space-y-6"
           }>
-            {filteredEvents.map((event) => (
-              <Card 
-                key={event.id} 
-                className="h-full overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
-              >
-                <div className="aspect-video w-full overflow-hidden">
-                  <img 
-                    src={event.image_url} 
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <CardHeader className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1 font-normal">
-                      {getCategoryLabel(event.category)}
-                    </Badge>
-                    {event.is_online && (
-                      <Badge variant="outline" className="text-sm">
-                        <Globe className="w-3 h-3 mr-1" />
-                        Online
-                      </Badge>
-                    )}
-                  </div>
-                  <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
-                  <div className="space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>{formatDate(event.date)}</span>
+            {filteredEvents.map((event) => {
+              const isExpanded = expandedEventId === event.id;
+              
+              return (
+                <Card 
+                  key={event.id} 
+                  className={`overflow-hidden transition-all duration-300 flex flex-col ${
+                    isExpanded ? 'col-span-1 md:col-span-2 lg:col-span-3 shadow-xl' : 'hover:shadow-lg'
+                  }`}
+                >
+                  <div className={`flex ${isExpanded ? 'flex-col lg:flex-row' : 'flex-col'}`}>
+                    {/* Image */}
+                    <div className={`overflow-hidden ${isExpanded ? 'lg:w-1/2' : 'aspect-video w-full'}`}>
+                      <img 
+                        src={event.image_url} 
+                        alt={event.title}
+                        className={`w-full object-cover ${isExpanded ? 'h-64 lg:h-full' : 'h-full'}`}
+                        loading="lazy"
+                      />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span>{event.time_start}{event.time_end ? ` - ${event.time_end}` : ''}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{event.location_city}, {event.location_country}</span>
+                    
+                    {/* Content */}
+                    <div className={`flex-1 flex flex-col ${isExpanded ? 'lg:w-1/2' : ''}`}>
+                      <CardHeader className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Badge className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 text-sm px-3 py-1 font-normal">
+                              {getCategoryLabel(event.category)}
+                            </Badge>
+                            {event.is_online && (
+                              <Badge variant="outline" className="text-sm">
+                                <Globe className="w-3 h-3 mr-1" />
+                                Online
+                              </Badge>
+                            )}
+                          </div>
+                          {isExpanded && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setExpandedEventId(null)}
+                              className="h-8 w-8"
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                        <CardTitle className="text-xl leading-tight">{event.title}</CardTitle>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            <span>{formatDate(event.date)}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            <span>{event.time_start}{event.time_end ? ` - ${event.time_end}` : ''}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4" />
+                            <span>
+                              {event.location_venue && `${event.location_venue}, `}
+                              {event.location_city}, {event.location_country}
+                            </span>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      
+                      <CardContent className="space-y-4 flex-1 flex flex-col">
+                        <CardDescription className="text-sm leading-relaxed">
+                          {event.teaser}
+                        </CardDescription>
+                        
+                        {/* Expanded Description */}
+                        {isExpanded && event.description && (
+                          <div 
+                            className="prose prose-sm max-w-none text-muted-foreground"
+                            dangerouslySetInnerHTML={{ __html: event.description }}
+                          />
+                        )}
+                        
+                        {/* Register Button or Form */}
+                        <div className="mt-auto pt-4">
+                          {!isExpanded ? (
+                            <Button 
+                              onClick={() => handleExpandEvent(event.id)}
+                              className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                            >
+                              Register Now
+                              <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <div className="space-y-6">
+                              <div className="border-t pt-6">
+                                <h4 className="text-lg font-semibold mb-4">Register for this Event</h4>
+                                <Form {...form}>
+                                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <FormField
+                                        control={form.control}
+                                        name="firstName"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>First Name *</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="John" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="lastName"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Last Name *</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="Doe" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                    </div>
+                                    
+                                    <FormField
+                                      control={form.control}
+                                      name="email"
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormLabel>Email *</FormLabel>
+                                          <FormControl>
+                                            <Input type="email" placeholder="john.doe@company.com" {...field} />
+                                          </FormControl>
+                                          <FormMessage />
+                                        </FormItem>
+                                      )}
+                                    />
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <FormField
+                                        control={form.control}
+                                        name="company"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Company *</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="Company Inc." {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                      <FormField
+                                        control={form.control}
+                                        name="position"
+                                        render={({ field }) => (
+                                          <FormItem>
+                                            <FormLabel>Position *</FormLabel>
+                                            <FormControl>
+                                              <Input placeholder="Engineer" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                          </FormItem>
+                                        )}
+                                      />
+                                    </div>
+                                    
+                                    <FormField
+                                      control={form.control}
+                                      name="consent"
+                                      render={({ field }) => (
+                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                          <FormControl>
+                                            <Checkbox
+                                              checked={field.value}
+                                              onCheckedChange={field.onChange}
+                                            />
+                                          </FormControl>
+                                          <div className="space-y-1 leading-none">
+                                            <FormLabel className="text-sm font-normal">
+                                              I agree to receive event updates and information about related products and services. *
+                                            </FormLabel>
+                                            <FormMessage />
+                                          </div>
+                                        </FormItem>
+                                      )}
+                                    />
+                                    
+                                    <div className="flex gap-3 pt-2">
+                                      <Button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+                                      >
+                                        {isSubmitting ? "Registering..." : "Complete Registration"}
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setExpandedEventId(null)}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </form>
+                                </Form>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-4 flex-1 flex flex-col">
-                  <CardDescription className="text-sm leading-relaxed flex-1">
-                    {event.teaser}
-                  </CardDescription>
-                  
-                  <div className="mt-auto pt-4">
-                    <Link to={`/en/events#${event.slug}`}>
-                      <Button className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black">
-                        Register Now
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
