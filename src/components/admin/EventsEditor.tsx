@@ -654,7 +654,7 @@ const EventsEditor = () => {
                     size="sm"
                     variant="outline"
                     className="border-green-600 text-green-400 hover:bg-green-600/20"
-                    onClick={() => window.open(`/en/events#${event.slug}`, '_blank')}
+                    onClick={() => window.open(`/en/training-events/events`, '_blank')}
                   >
                     <Eye className="w-4 h-4" />
                   </Button>

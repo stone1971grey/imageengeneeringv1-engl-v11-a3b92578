@@ -2016,7 +2016,7 @@ const Navigation = () => {
                           </div>
                         </div>
                         <div className="mt-4 pt-4 border-t border-gray-200 mx-2">
-                          <Link to="/events" onClick={() => setIsOpen(false)}>
+                          <Link to={`/${language}/training-events/events`} onClick={() => setIsOpen(false)}>
                             <Button className="w-full bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 rounded-lg font-medium">
                               <GraduationCap className="h-4 w-4 mr-2" />
                               {t.nav.viewTrainingEvents}
