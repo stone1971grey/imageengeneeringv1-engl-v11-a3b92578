@@ -160,20 +160,19 @@ const EventsSegmentEditorComponent = ({
         const { data: translationResult, error: translateError } = await supabase.functions
           .invoke('translate-content', {
             body: {
-              content: {
+              texts: {
                 title: englishParsed.title || '',
                 description: englishParsed.description || '',
               },
-              targetLanguage: normalizedLang,
-              sourceLanguage: 'en'
+              targetLanguage: normalizedLang
             }
           });
 
         if (translateError) throw translateError;
 
         // Update state with translated content
-        setTitle(translationResult.translated?.title || englishParsed.title || "");
-        setDescription(translationResult.translated?.description || englishParsed.description || "");
+        setTitle(translationResult.translatedTexts?.title || englishParsed.title || "");
+        setDescription(translationResult.translatedTexts?.description || englishParsed.description || "");
         
         // Copy settings from English
         setShowFilters(englishParsed.showFilters ?? true);
