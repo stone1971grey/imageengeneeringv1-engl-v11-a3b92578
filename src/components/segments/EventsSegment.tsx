@@ -415,7 +415,7 @@ const EventsSegment = ({
       <div className="container mx-auto px-6">
         {/* Header */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">{sectionTitle}</h2>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{sectionTitle}</h1>
           {sectionDescription && (
             <p className="text-muted-foreground max-w-2xl">
               {sectionDescription}
