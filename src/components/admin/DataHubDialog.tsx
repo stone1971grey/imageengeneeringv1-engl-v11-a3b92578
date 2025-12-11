@@ -967,7 +967,7 @@ export function DataHubDialog({
               variant="outline"
               className="bg-[#f9dc24] hover:bg-[#e6cc1f] text-black border-[#f9dc24] flex items-center gap-2 font-semibold"
             >
-              <Database className="h-4 w-4" />
+              <FolderOpen className="h-4 w-4" />
               Media Management
             </Button>
           </DialogTrigger>
