@@ -156,10 +156,21 @@ const EventsSegment = ({
   useEffect(() => {
     const loadEvents = async () => {
       try {
+        // Map frontend language code to database language_code format
+        const languageCodeMap: Record<string, string> = {
+          'en': 'EN',
+          'de': 'DE',
+          'ja': 'JA',
+          'ko': 'KO',
+          'zh': 'ZH',
+        };
+        const dbLanguageCode = languageCodeMap[language] || 'EN';
+
         let query = supabase
           .from('events')
           .select('*')
-          .eq('published', true);
+          .eq('published', true)
+          .eq('language_code', dbLanguageCode);
 
         // Filter past events if not showing them
         if (!showPastEvents) {
@@ -197,7 +208,7 @@ const EventsSegment = ({
     };
 
     loadEvents();
-  }, [showPastEvents, categories, sortOrder, maxEvents]);
+  }, [language, showPastEvents, categories, sortOrder, maxEvents]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
