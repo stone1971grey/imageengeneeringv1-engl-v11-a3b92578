@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import ReactMarkdown from "react-markdown";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -459,17 +460,18 @@ const EventsSegment = ({
                         {selectedEvent.description && (
                           <div 
                             className="prose prose-sm max-w-none text-foreground 
-                              [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:border-b [&_h2]:border-border [&_h2]:pb-2
-                              [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 
-                              [&_p]:mb-3 [&_p]:leading-relaxed
-                              [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 
-                              [&_ol]:my-3 [&_ol]:ml-6 [&_ol]:list-decimal [&_ol]:space-y-1 
-                              [&_li]:pl-1
-                              [&_strong]:font-bold
-                              [&_a]:text-primary [&_a]:underline
-                              [&_blockquote]:border-l-4 [&_blockquote]:border-[#f9dc24] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground"
-                            dangerouslySetInnerHTML={{ __html: selectedEvent.description }}
-                          />
+                              prose-h2:text-xl prose-h2:font-bold prose-h2:mt-6 prose-h2:mb-3 prose-h2:border-b prose-h2:border-border prose-h2:pb-2
+                              prose-h3:text-lg prose-h3:font-bold prose-h3:mt-4 prose-h3:mb-2 
+                              prose-p:mb-3 prose-p:leading-relaxed
+                              prose-ul:my-3 prose-ul:ml-6 prose-ul:list-disc prose-ul:space-y-1 
+                              prose-ol:my-3 prose-ol:ml-6 prose-ol:list-decimal prose-ol:space-y-1 
+                              prose-li:pl-1
+                              prose-strong:font-bold
+                              prose-a:text-primary prose-a:underline
+                              prose-blockquote:border-l-4 prose-blockquote:border-[#f9dc24] prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground"
+                          >
+                            <ReactMarkdown>{selectedEvent.description}</ReactMarkdown>
+                          </div>
                         )}
                         
                         {/* Registration Form */}
