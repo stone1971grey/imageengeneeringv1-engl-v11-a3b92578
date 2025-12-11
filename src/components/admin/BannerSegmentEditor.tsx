@@ -746,16 +746,6 @@ const BannerSegmentEditorComponent = ({
                   )}
                 </div>
 
-                {hasImage && (
-                  <div className="w-[200px] h-[200px] rounded-lg border-2 border-gray-600 overflow-hidden bg-gray-800">
-                    <img
-                      src={image.url}
-                      alt={image.alt || `Banner image ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-
                 {!isTarget && (
                   <MediaSelector
                     onFileSelect={(file) => {
