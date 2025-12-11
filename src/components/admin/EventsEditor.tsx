@@ -21,7 +21,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MediaSelector } from "./MediaSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
-import RichTextEditor from "./RichTextEditor";
+import ReactMarkdown from 'react-markdown';
 
 interface Event {
   id: string;
@@ -534,44 +534,78 @@ const EventsEditor = () => {
                 </TabsContent>
 
                 <TabsContent value="description" className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-2">Full Event Description</h3>
-                      <p className="text-gray-400 text-sm mb-4">
-                        Create a detailed description with headings, lists, and formatting. Use the toolbar to structure your content.
-                      </p>
+                  <div className="grid grid-cols-2 gap-6">
+                    {/* Markdown Editor */}
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-white mb-2">Edit Description (Markdown)</h3>
+                        <p className="text-gray-400 text-sm mb-4">
+                          Use Markdown syntax for formatting. See the cheat sheet below.
+                        </p>
+                      </div>
+                      <Textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        className="bg-[#2a2a2a] border-gray-600 text-white font-mono text-sm min-h-[400px]"
+                        placeholder={`## Main Heading
+
+This is a paragraph with **bold** and *italic* text.
+
+### Sub Heading
+
+- Bullet point 1
+- Bullet point 2
+- Bullet point 3
+
+1. Numbered item
+2. Another item
+
+> This is a quote`}
+                      />
+                      
+                      {/* Markdown Cheat Sheet */}
+                      <div className="bg-[#2a2a2a] rounded-lg p-4 text-xs text-gray-400 space-y-2">
+                        <p className="font-semibold text-gray-300 mb-2">Markdown Cheat Sheet:</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><code className="text-[#f9dc24]">## Text</code> → Heading 2</div>
+                          <div><code className="text-[#f9dc24]">### Text</code> → Heading 3</div>
+                          <div><code className="text-[#f9dc24]">**text**</code> → <strong>Bold</strong></div>
+                          <div><code className="text-[#f9dc24]">*text*</code> → <em>Italic</em></div>
+                          <div><code className="text-[#f9dc24]">- item</code> → Bullet list</div>
+                          <div><code className="text-[#f9dc24]">1. item</code> → Numbered list</div>
+                          <div><code className="text-[#f9dc24]">&gt; text</code> → Quote</div>
+                          <div><code className="text-[#f9dc24]">[text](url)</code> → Link</div>
+                        </div>
+                      </div>
                     </div>
-                    <RichTextEditor
-                      content={formData.description}
-                      onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
-                      darkMode={true}
-                    />
                     
                     {/* Live Preview */}
-                    {formData.description && (
-                      <div className="mt-6">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Eye className="w-4 h-4 text-[#f9dc24]" />
-                          <h4 className="text-sm font-medium text-white">Frontend Preview</h4>
-                        </div>
-                        <div className="bg-white rounded-lg p-6 border border-gray-600">
-                          <div 
-                            className="prose prose-sm max-w-none text-gray-900
-                              [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:border-b [&_h2]:border-gray-200 [&_h2]:pb-2
-                              [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 
-                              [&_p]:mb-3 [&_p]:leading-relaxed [&_p]:text-gray-700
-                              [&_ul]:my-3 [&_ul]:ml-6 [&_ul]:list-disc [&_ul]:space-y-1 
-                              [&_ol]:my-3 [&_ol]:ml-6 [&_ol]:list-decimal [&_ol]:space-y-1 
-                              [&_li]:pl-1 [&_li]:text-gray-700
-                              [&_strong]:font-bold [&_strong]:text-gray-900
-                              [&_a]:text-[#0f407b] [&_a]:underline
-                              [&_blockquote]:border-l-4 [&_blockquote]:border-[#f9dc24] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-gray-600"
-                            dangerouslySetInnerHTML={{ __html: formData.description }}
-                          />
-                        </div>
-                        <p className="text-gray-500 text-xs mt-2">This is exactly how the description will appear on the events page.</p>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Eye className="w-4 h-4 text-[#f9dc24]" />
+                        <h3 className="text-lg font-semibold text-white">Live Preview</h3>
                       </div>
-                    )}
+                      <div className="bg-white rounded-lg p-6 border border-gray-600 min-h-[400px]">
+                        {formData.description ? (
+                          <div className="prose prose-sm max-w-none text-gray-900
+                            prose-h2:text-xl prose-h2:font-bold prose-h2:mt-6 prose-h2:mb-3 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2
+                            prose-h3:text-lg prose-h3:font-bold prose-h3:mt-4 prose-h3:mb-2 
+                            prose-p:mb-3 prose-p:leading-relaxed prose-p:text-gray-700
+                            prose-ul:my-3 prose-ul:ml-6 prose-ul:list-disc prose-ul:space-y-1 
+                            prose-ol:my-3 prose-ol:ml-6 prose-ol:list-decimal prose-ol:space-y-1 
+                            prose-li:pl-1 prose-li:text-gray-700
+                            prose-strong:font-bold prose-strong:text-gray-900
+                            prose-a:text-[#0f407b] prose-a:underline
+                            prose-blockquote:border-l-4 prose-blockquote:border-[#f9dc24] prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600"
+                          >
+                            <ReactMarkdown>{formData.description}</ReactMarkdown>
+                          </div>
+                        ) : (
+                          <p className="text-gray-400 italic">Start typing to see the preview...</p>
+                        )}
+                      </div>
+                      <p className="text-gray-500 text-xs">This is exactly how the description will appear on the events page.</p>
+                    </div>
                   </div>
                 </TabsContent>
 
