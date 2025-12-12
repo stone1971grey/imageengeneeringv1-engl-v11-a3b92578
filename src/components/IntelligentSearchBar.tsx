@@ -130,8 +130,12 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
       setResults([]);
       setSuggestions([]);
       setIsAIPowered(false);
+      setIsOpen(false);
       return;
     }
+
+    // Ensure dropdown is open when there is a query
+    setIsOpen(true);
 
     // Immediate local search for responsiveness
     const localResults = performLocalSearch(query);
