@@ -5092,9 +5092,9 @@ const AdminDashboard = () => {
               <CardContent className="p-6">
                 <Tabs defaultValue="page-heroes" className="w-full">
                   <TabsList className="grid w-full grid-cols-3 mb-6">
-                    <TabsTrigger value="page-heroes" className="text-sm font-semibold">Page Heroes</TabsTrigger>
+                    <TabsTrigger value="page-heroes" className="text-sm font-semibold">Page Hero Segments</TabsTrigger>
                     <TabsTrigger value="content-segments" className="text-sm font-semibold">Content Segments</TabsTrigger>
-                    <TabsTrigger value="special-templates" className="text-sm font-semibold">Special Templates</TabsTrigger>
+                    <TabsTrigger value="special-templates" className="text-sm font-semibold">Special Segments</TabsTrigger>
                   </TabsList>
 
                   {/* Tab 1: Page Heroes */}
@@ -5273,6 +5273,18 @@ const AdminDashboard = () => {
                         </div>
                       </div>
 
+                      {/* N - Industries */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-slate-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-slate-600 text-white text-xs font-black rounded">N</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center shadow">
+                            <Building2 className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Industries</h4>
+                          <p className="text-xs text-gray-500">Industry showcase</p>
+                        </div>
+                      </div>
+
                       {/* Z - Footer */}
                       <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-gray-500 transition-all duration-300 bg-white hover:shadow-xl">
                         <div className="absolute top-2 right-2 px-2 py-0.5 bg-gray-700 text-white text-xs font-black rounded">Z</div>
@@ -5287,7 +5299,7 @@ const AdminDashboard = () => {
                     </div>
                   </TabsContent>
 
-                  {/* Tab 3: Special Templates */}
+                  {/* Tab 3: Special Segments */}
                   <TabsContent value="special-templates" className="mt-0">
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                       {/* D - Latest News */}
@@ -5299,18 +5311,6 @@ const AdminDashboard = () => {
                           </div>
                           <h4 className="text-sm font-bold text-gray-900">Latest News</h4>
                           <p className="text-xs text-gray-500">News feed block</p>
-                        </div>
-                      </div>
-
-                      {/* N - Industries */}
-                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-slate-400 transition-all duration-300 bg-white hover:shadow-xl">
-                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-slate-600 text-white text-xs font-black rounded">N</div>
-                        <div className="p-4 space-y-2">
-                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center shadow">
-                            <Building2 className="h-5 w-5 text-white" />
-                          </div>
-                          <h4 className="text-sm font-bold text-gray-900">Industries</h4>
-                          <p className="text-xs text-gray-500">Industry showcase</p>
                         </div>
                       </div>
 
