@@ -76,6 +76,7 @@ import { FooterEditor } from '@/components/admin/FooterEditor';
 import { ShortcutEditor, ShortcutBadge } from '@/components/admin/ShortcutEditor';
 import { ActionHeroEditor } from '@/components/admin/ActionHeroEditor';
 import { EventsSegmentEditor } from '@/components/admin/EventsSegmentEditor';
+import { createContentBackup, createMultipleBackups } from '@/utils/createContentBackup';
 
 // Type definitions for CMS content structures
 interface TileItem {
@@ -2327,6 +2328,10 @@ const AdminDashboard = () => {
     // Set new timer for 1 second debounce
     autoSaveTimerRef.current = setTimeout(async () => {
       try {
+        // 🔐 BACKUP before auto-save
+        const currentSlug = resolvedPageSlug || selectedPage;
+        await createContentBackup(currentSlug, 'page_segments', 'en');
+        
         const segmentsWithPositions = updatedSegments.map((seg, idx) => ({
           ...seg,
           position: idx
@@ -2335,7 +2340,7 @@ const AdminDashboard = () => {
         const { error } = await supabase
           .from("page_content")
           .upsert({
-            page_slug: resolvedPageSlug || selectedPage,
+            page_slug: currentSlug,
             section_key: "page_segments",
             content_type: "json",
             content_value: JSON.stringify(segmentsWithPositions),
@@ -2685,10 +2690,14 @@ const AdminDashboard = () => {
     if (!user) return;
     
     try {
+      // 🔐 BACKUP before auto-save
+      const currentSlug = resolvedPageSlug || selectedPage;
+      await createContentBackup(currentSlug, 'page_segments', 'en');
+      
       const { error } = await supabase
         .from("page_content")
         .upsert({
-          page_slug: resolvedPageSlug || selectedPage,
+          page_slug: currentSlug,
           section_key: "page_segments",
           content_type: "json",
           content_value: JSON.stringify(updatedSegments),
@@ -3557,6 +3566,10 @@ const AdminDashboard = () => {
           return;
         }
       }
+      
+      // 🔐 BACKUP: Create backup before saving (automatic versioning)
+      await createMultipleBackups(currentPageSlug, ['page_segments', 'tab_order'], editorLanguage);
+      console.log('[BACKUP] Created backup before saving segments');
       
       // CRITICAL: Ensure all segments have correct positions based on current order
       const segmentsWithPositions = pageSegments.map((seg, idx) => ({
