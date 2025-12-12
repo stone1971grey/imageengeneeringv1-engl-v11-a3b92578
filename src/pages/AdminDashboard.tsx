@@ -5076,7 +5076,7 @@ const AdminDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Available Content Segments - Comprehensive Overview */}
+            {/* Available Content Segments - Tabbed Overview */}
             <Card className="border-gray-200 shadow-lg">
               <CardHeader className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
                 <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-3">
@@ -5086,308 +5086,260 @@ const AdminDashboard = () => {
                   Available Content Segments
                 </CardTitle>
                 <CardDescription className="text-base text-gray-600 mt-2">
-                  Build your pages using these powerful content segments. Letter codes indicate segment types.
+                  Build your pages using these powerful content segments
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-8 space-y-8">
-                {/* Row 1: Page Templates */}
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <div className="h-6 w-6 rounded bg-gray-900 flex items-center justify-center">
-                      <span className="text-xs font-bold text-white">1</span>
-                    </div>
-                    Page Templates
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* A - Product Hero */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-[#f9dc24] text-gray-900 text-xs font-black rounded">A</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-[#f9dc24] to-yellow-300 flex items-center justify-center shadow-lg">
-                          <Eye className="h-6 w-6 text-gray-900" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Product Hero</h4>
-                          <p className="text-xs text-gray-600 mt-1">Hero with image, title, CTA</p>
-                        </div>
-                      </div>
-                    </div>
+              <CardContent className="p-6">
+                <Tabs defaultValue="page-heroes" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 mb-6">
+                    <TabsTrigger value="page-heroes" className="text-sm font-semibold">Page Heroes</TabsTrigger>
+                    <TabsTrigger value="content-segments" className="text-sm font-semibold">Content Segments</TabsTrigger>
+                    <TabsTrigger value="special-templates" className="text-sm font-semibold">Special Templates</TabsTrigger>
+                  </TabsList>
 
-                    {/* E - Meta Navigation */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-orange-400 text-white text-xs font-black rounded">E</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg">
-                          <Navigation2 className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Meta Navigation</h4>
-                          <p className="text-xs text-gray-600 mt-1">Anchor links to sections</p>
+                  {/* Tab 1: Page Heroes */}
+                  <TabsContent value="page-heroes" className="mt-0">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {/* A - Product Hero */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-[#f9dc24] text-gray-900 text-xs font-black rounded">A</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#f9dc24] to-yellow-300 flex items-center justify-center shadow">
+                            <Eye className="h-5 w-5 text-gray-900" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Product Hero</h4>
+                          <p className="text-xs text-gray-500">Hero with image & CTA</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* O - Full Hero */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-rose-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-rose-500 text-white text-xs font-black rounded">O</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center shadow-lg">
-                          <Monitor className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Full Hero</h4>
-                          <p className="text-xs text-gray-600 mt-1">Full-screen with Ken Burns</p>
+                      {/* E - Meta Navigation */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-orange-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-orange-500 text-white text-xs font-black rounded">E</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow">
+                            <Navigation2 className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Meta Navigation</h4>
+                          <p className="text-xs text-gray-500">Anchor links</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Q - Action Hero */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-violet-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-violet-500 text-white text-xs font-black rounded">Q</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-500 to-violet-400 flex items-center justify-center shadow-lg">
-                          <Zap className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Action Hero</h4>
-                          <p className="text-xs text-gray-600 mt-1">Hero with action focus</p>
+                      {/* M - Product Hero Gallery */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-pink-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-pink-500 text-white text-xs font-black rounded">M</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center shadow">
+                            <Images className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Product Gallery</h4>
+                          <p className="text-xs text-gray-500">Image carousel</p>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Row 2: Content Segments */}
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <div className="h-6 w-6 rounded bg-gray-900 flex items-center justify-center">
-                      <span className="text-xs font-bold text-white">2</span>
-                    </div>
-                    Content Segments
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                    {/* B - Intro */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-teal-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-teal-500 text-white text-xs font-black rounded">B</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg">
-                          <Type className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Intro</h4>
-                          <p className="text-xs text-gray-600 mt-1">Title & description</p>
+                      {/* O - Full Hero */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-rose-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-rose-500 text-white text-xs font-black rounded">O</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center shadow">
+                            <Monitor className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Full Hero</h4>
+                          <p className="text-xs text-gray-500">Fullscreen Ken Burns</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* C - Tiles */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-blue-500 text-white text-xs font-black rounded">C</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center shadow-lg">
-                          <LayoutGrid className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Tiles</h4>
-                          <p className="text-xs text-gray-600 mt-1">Feature cards grid</p>
+                      {/* Q - Action Hero */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-violet-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-violet-500 text-white text-xs font-black rounded">Q</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-500 to-violet-400 flex items-center justify-center shadow">
+                            <Zap className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Action Hero</h4>
+                          <p className="text-xs text-gray-500">Hero with action focus</p>
                         </div>
                       </div>
                     </div>
+                  </TabsContent>
 
-                    {/* F - Banner */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-purple-500 text-white text-xs font-black rounded">F</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow-lg">
-                          <ImageIcon className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Banner</h4>
-                          <p className="text-xs text-gray-600 mt-1">Promo with images</p>
+                  {/* Tab 2: Content Segments */}
+                  <TabsContent value="content-segments" className="mt-0">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {/* B - Intro */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-teal-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-teal-500 text-white text-xs font-black rounded">B</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow">
+                            <Type className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Intro</h4>
+                          <p className="text-xs text-gray-500">Title & description</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* G - Image & Text */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-lime-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-lime-500 text-white text-xs font-black rounded">G</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-lime-500 to-lime-400 flex items-center justify-center shadow-lg">
-                          <SplitSquareVertical className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Image & Text</h4>
-                          <p className="text-xs text-gray-600 mt-1">Split layout</p>
+                      {/* C - Tiles */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-blue-500 text-white text-xs font-black rounded">C</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center shadow">
+                            <LayoutGrid className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Tiles</h4>
+                          <p className="text-xs text-gray-500">Feature cards grid</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* H - Video */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-cyan-500 text-white text-xs font-black rounded">H</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow-lg">
-                          <PlayCircle className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Video</h4>
-                          <p className="text-xs text-gray-600 mt-1">Embedded player</p>
+                      {/* F - Banner */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-purple-500 text-white text-xs font-black rounded">F</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow">
+                            <ImageIcon className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Banner</h4>
+                          <p className="text-xs text-gray-500">Promo with images</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* I - Feature Overview */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-indigo-500 text-white text-xs font-black rounded">I</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow-lg">
-                          <ListChecks className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Feature Overview</h4>
-                          <p className="text-xs text-gray-600 mt-1">Icon features list</p>
+                      {/* G - Image & Text */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-lime-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-lime-500 text-white text-xs font-black rounded">G</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-lime-500 to-lime-400 flex items-center justify-center shadow">
+                            <SplitSquareVertical className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Image & Text</h4>
+                          <p className="text-xs text-gray-500">Split layout</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* J - Table */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-500 text-white text-xs font-black rounded">J</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center shadow-lg">
-                          <Table2 className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Table</h4>
-                          <p className="text-xs text-gray-600 mt-1">Data tables</p>
+                      {/* H - Video */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-cyan-500 text-white text-xs font-black rounded">H</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow">
+                            <PlayCircle className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Video</h4>
+                          <p className="text-xs text-gray-500">Embedded player</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* K - FAQ */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-red-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-red-500 text-white text-xs font-black rounded">K</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-red-500 to-red-400 flex items-center justify-center shadow-lg">
-                          <HelpCircle className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">FAQ</h4>
-                          <p className="text-xs text-gray-600 mt-1">Q&A accordion</p>
+                      {/* I - Feature Overview */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-indigo-500 text-white text-xs font-black rounded">I</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow">
+                            <ListChecks className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Feature Overview</h4>
+                          <p className="text-xs text-gray-500">Icon features list</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* L - Specification */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-amber-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-amber-500 text-white text-xs font-black rounded">L</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center shadow-lg">
-                          <FileText className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Specification</h4>
-                          <p className="text-xs text-gray-600 mt-1">Tech specs</p>
+                      {/* J - Table */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-emerald-500 text-white text-xs font-black rounded">J</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center shadow">
+                            <Table2 className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Table</h4>
+                          <p className="text-xs text-gray-500">Data tables</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* M - Product Hero Gallery */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-pink-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-pink-500 text-white text-xs font-black rounded">M</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center shadow-lg">
-                          <Images className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Product Gallery</h4>
-                          <p className="text-xs text-gray-600 mt-1">Image carousel</p>
+                      {/* K - FAQ */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-red-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-red-500 text-white text-xs font-black rounded">K</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-red-500 to-red-400 flex items-center justify-center shadow">
+                            <HelpCircle className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">FAQ</h4>
+                          <p className="text-xs text-gray-500">Q&A accordion</p>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Row 3: Special Templates */}
-                <div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <div className="h-6 w-6 rounded bg-gray-900 flex items-center justify-center">
-                      <span className="text-xs font-bold text-white">3</span>
-                    </div>
-                    Special Templates
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                    {/* D - Latest News */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-sky-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-sky-500 text-white text-xs font-black rounded">D</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center shadow-lg">
-                          <Newspaper className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Latest News</h4>
-                          <p className="text-xs text-gray-600 mt-1">News feed block</p>
+                      {/* L - Specification */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-amber-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-amber-500 text-white text-xs font-black rounded">L</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center shadow">
+                            <FileText className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Specification</h4>
+                          <p className="text-xs text-gray-500">Tech specs</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* N - Industries */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-slate-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-slate-600 text-white text-xs font-black rounded">N</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center shadow-lg">
-                          <Building2 className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Industries</h4>
-                          <p className="text-xs text-gray-600 mt-1">Industry showcase</p>
+                      {/* Z - Footer */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-gray-500 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-gray-700 text-white text-xs font-black rounded">Z</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center shadow">
+                            <PanelBottom className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Footer</h4>
+                          <p className="text-xs text-gray-500">Page footer</p>
                         </div>
                       </div>
                     </div>
+                  </TabsContent>
 
-                    {/* P - News List */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-fuchsia-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-fuchsia-500 text-white text-xs font-black rounded">P</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-fuchsia-500 to-fuchsia-400 flex items-center justify-center shadow-lg">
-                          <List className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">News List</h4>
-                          <p className="text-xs text-gray-600 mt-1">Filterable news</p>
+                  {/* Tab 3: Special Templates */}
+                  <TabsContent value="special-templates" className="mt-0">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {/* D - Latest News */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-sky-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-sky-500 text-white text-xs font-black rounded">D</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center shadow">
+                            <Newspaper className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Latest News</h4>
+                          <p className="text-xs text-gray-500">News feed block</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* R - Events */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-green-500 text-white text-xs font-black rounded">R</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow-lg">
-                          <Calendar className="h-6 w-6 text-white" />
-                        </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Events</h4>
-                          <p className="text-xs text-gray-600 mt-1">Event listings</p>
+                      {/* N - Industries */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-slate-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-slate-600 text-white text-xs font-black rounded">N</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center shadow">
+                            <Building2 className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Industries</h4>
+                          <p className="text-xs text-gray-500">Industry showcase</p>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Z - Footer */}
-                    <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-gray-500 transition-all duration-300 bg-white hover:shadow-xl">
-                      <div className="absolute top-3 right-3 px-2 py-0.5 bg-gray-700 text-white text-xs font-black rounded">Z</div>
-                      <div className="p-5 space-y-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center shadow-lg">
-                          <PanelBottom className="h-6 w-6 text-white" />
+                      {/* P - News List */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-fuchsia-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-fuchsia-500 text-white text-xs font-black rounded">P</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-fuchsia-500 to-fuchsia-400 flex items-center justify-center shadow">
+                            <List className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">News List</h4>
+                          <p className="text-xs text-gray-500">Filterable news</p>
                         </div>
-                        <div>
-                          <h4 className="text-base font-bold text-gray-900">Footer</h4>
-                          <p className="text-xs text-gray-600 mt-1">Page footer</p>
+                      </div>
+
+                      {/* R - Events */}
+                      <div className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-all duration-300 bg-white hover:shadow-xl">
+                        <div className="absolute top-2 right-2 px-2 py-0.5 bg-green-500 text-white text-xs font-black rounded">R</div>
+                        <div className="p-4 space-y-2">
+                          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow">
+                            <Calendar className="h-5 w-5 text-white" />
+                          </div>
+                          <h4 className="text-sm font-bold text-gray-900">Events</h4>
+                          <p className="text-xs text-gray-500">Event listings</p>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
