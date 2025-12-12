@@ -5056,7 +5056,7 @@ const AdminDashboard = () => {
                       <span className="text-white text-sm font-medium">Hierarchical Pages</span>
                     </div>
                     <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-800/50">
-                      <Target className="h-5 w-5 text-[#f9dc24]" />
+                      <Eye className="h-5 w-5 text-[#f9dc24]" />
                       <span className="text-white text-sm font-medium">SEO Suite</span>
                     </div>
                   </div>
