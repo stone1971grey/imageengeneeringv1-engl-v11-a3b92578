@@ -5018,8 +5018,8 @@ const AdminDashboard = () => {
                           Lovable
                         </h1>
                         <span className="text-3xl font-bold text-[#f9dc24]">CMS</span>
-                        <span className="ml-3 px-3 py-1 text-sm font-bold bg-[#f9dc24] text-black rounded-full">
-                          v0.8
+                        <span className="ml-4 px-4 py-1.5 text-xs font-black uppercase tracking-wider bg-gradient-to-r from-[#f9dc24] via-yellow-300 to-[#f9dc24] text-gray-900 rounded-lg shadow-lg shadow-yellow-400/30 border border-yellow-400/50">
+                          Version 0.8
                         </span>
                       </div>
                       <p className="text-xl text-gray-400 mt-1">Content Management System</p>
