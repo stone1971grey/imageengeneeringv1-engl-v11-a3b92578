@@ -541,6 +541,42 @@ export type Database = {
         }
         Relationships: []
       }
+      page_content_backups: {
+        Row: {
+          backup_created_at: string
+          content_type: string
+          content_value: string
+          id: string
+          language: string
+          original_updated_at: string | null
+          original_updated_by: string | null
+          page_slug: string
+          section_key: string
+        }
+        Insert: {
+          backup_created_at?: string
+          content_type: string
+          content_value: string
+          id?: string
+          language?: string
+          original_updated_at?: string | null
+          original_updated_by?: string | null
+          page_slug: string
+          section_key: string
+        }
+        Update: {
+          backup_created_at?: string
+          content_type?: string
+          content_value?: string
+          id?: string
+          language?: string
+          original_updated_at?: string | null
+          original_updated_by?: string | null
+          page_slug?: string
+          section_key?: string
+        }
+        Relationships: []
+      }
       page_registry: {
         Row: {
           created_at: string | null
