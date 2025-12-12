@@ -265,42 +265,73 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
     );
   };
 
+  const handleSubmit = () => {
+    if (results.length > 0 && results[selectedIndex]) {
+      handleResultClick(results[selectedIndex]);
+    } else if (query.trim()) {
+      // Navigate to search results page with query
+      navigate(`/${language}/search?q=${encodeURIComponent(query)}`);
+      setIsOpen(false);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit();
+  };
+
   return (
     <div ref={searchRef} className={`relative ${variant === 'mobile' ? 'w-full' : variant === 'utility' ? 'w-full' : ''}`}>
-      <div className="relative">
-        {isLoading ? (
-          <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary animate-spin" />
-        ) : isAIPowered ? (
-          <Sparkles className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
-        ) : (
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black" />
-        )}
-        <Input
-          ref={inputRef}
-          type="text"
-          placeholder={isAIPowered ? "AI Search..." : "Search..."}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setIsOpen(true)}
-          className={
-            variant === 'utility'
-              ? "pl-10 pr-10 w-full h-10 bg-transparent border-none text-black placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              : variant === 'mobile' 
-                ? "pl-10 pr-10 w-full bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
-                : "pl-10 pr-10 w-44 bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
-          }
-        />
-        {query && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClear}
-            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-white/20"
-          >
-            <X className="h-3 w-3" />
-          </Button>
-        )}
-      </div>
+      <form onSubmit={handleFormSubmit} className="relative flex items-center gap-2">
+        <div className="relative flex-1">
+          {isLoading ? (
+            <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary animate-spin" />
+          ) : isAIPowered ? (
+            <Sparkles className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
+          ) : (
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black" />
+          )}
+          <Input
+            ref={inputRef}
+            type="text"
+            placeholder={isAIPowered ? "AI Search..." : "Search..."}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsOpen(true)}
+            className={
+              variant === 'utility'
+                ? "pl-10 pr-10 w-full h-10 bg-transparent border-none text-black placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                : variant === 'mobile' 
+                  ? "pl-10 pr-10 w-full bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
+                  : "pl-10 pr-8 w-44 bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
+            }
+          />
+          {query && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleClear}
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-white/20"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+        <Button
+          type="submit"
+          size="sm"
+          disabled={!query.trim()}
+          className="h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg shadow-sm transition-all duration-200 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Search className="h-4 w-4" />
+          )}
+          <span className="hidden sm:inline">Search</span>
+        </Button>
+      </form>
 
       {/* Search Results Dropdown */}
       {isOpen && query && (
