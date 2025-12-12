@@ -146,8 +146,8 @@ const App = () => (
             <Route path="/products/test-charts" element={<Navigate to="/en/products/test-charts" replace />} />
             
             {/* Language-prefixed routes - all actual pages */}
-            {/* CRITICAL: Homepage must use static Index component - DO NOT change to DynamicCMSPage! */}
-            <Route path="/:lang" element={<Index />} />
+            {/* Homepage uses DynamicCMSPage - segments managed in database */}
+            <Route path="/:lang" element={<DynamicCMSPage />} />
             {/* Redirect /en/index to /en (homepage) */}
             <Route path="/:lang/index" element={<Navigate to="../" replace />} />
             <Route path="/:lang/inside-lab" element={<InsideLab />} />
