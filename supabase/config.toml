@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.upload-news-images]
 verify_jwt = false
+
+[functions.semantic-search]
+verify_jwt = false
