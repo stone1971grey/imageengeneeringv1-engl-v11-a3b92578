@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { User, Session } from "@supabase/supabase-js";
-import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, Columns, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical } from "lucide-react";
+import { LogOut, Save, Plus, Trash2, X, GripVertical, Eye, Copy, MousePointer, Layers, Pencil, PlayCircle, Upload, FileText, Download, BarChart3, Zap, Shield, Car, Smartphone, Heart, CheckCircle, Lightbulb, Monitor, Camera, Cog, Stethoscope, ScanLine, Target, FolderOpen, Book, Calendar, Newspaper, FlaskConical, Settings, Sparkles, Languages, Navigation2, Type, LayoutGrid, Image as ImageIcon, Columns, ListChecks, Table2, HelpCircle, Images, Building2, List, PanelBottom, SplitSquareVertical, Palette } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import lovableIcon from "@/assets/lovable-icon.png";
@@ -3976,7 +3976,7 @@ const AdminDashboard = () => {
                         setIsTemplateDialogOpen(true);
                       }}
                     >
-                      <Plus className="h-4 w-4" />
+                      <Layers className="h-4 w-4" />
                       Add New Segment
                     </Button>
 
@@ -3990,7 +3990,7 @@ const AdminDashboard = () => {
                         setIsDesignElementDialogOpen(true);
                       }}
                     >
-                      <Layers className="h-4 w-4" />
+                      <Palette className="h-4 w-4" />
                       Navigation Design
                     </Button>
 
@@ -4067,121 +4067,40 @@ const AdminDashboard = () => {
                   </DialogDescription>
                 </DialogHeader>
                 
-                <Tabs defaultValue="overview" className="w-full">
+                <Tabs defaultValue="page-heroes" className="w-full">
                   <TabsList className="grid w-full grid-cols-3 mb-6">
-                    <TabsTrigger value="overview">Start / Overview Templates</TabsTrigger>
-                    <TabsTrigger value="content">Content Templates</TabsTrigger>
-                    <TabsTrigger value="special">Special Templates</TabsTrigger>
+                    <TabsTrigger value="page-heroes">Page Hero Segments</TabsTrigger>
+                    <TabsTrigger value="content">Content Segments</TabsTrigger>
+                    <TabsTrigger value="special">Special Segments</TabsTrigger>
                   </TabsList>
                   
-                  <TabsContent value="overview">
+                  <TabsContent value="page-heroes">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
-                      {/* Full Hero */}
-                      <div 
-                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 bg-white hover:shadow-xl ${
-                          pageSegments.some(seg => seg.type === 'meta-navigation')
-                            ? 'border-red-300 opacity-60 cursor-not-allowed'
-                            : 'border-gray-200 hover:border-[#f9dc24] cursor-pointer'
-                        }`}
-                        onClick={() => handleAddSegment('full-hero')}
-                      >
-                        {pageSegments.some(seg => seg.type === 'meta-navigation') && (
-                          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
-                            Blocked by Meta Nav
-                          </div>
-                        )}
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Full Hero - A</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Full-width hero with background image, title, subtitle and description
-                            </p>
-                            {pageSegments.some(seg => seg.type === 'meta-navigation') && (
-                              <p className="text-xs text-red-600 mt-2 font-semibold">
-                                ⚠️ Cannot be used with Meta Navigation
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* Intro */}
+                      {/* Product Hero - A */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('intro')}
+                        onClick={() => handleAddSegment('hero')}
                       >
                         <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[#f9dc24] to-yellow-300 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Eye className="h-7 w-7 text-gray-900" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Intro - B</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Product Hero - A</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Introduction section with optional image, title and text content
+                              Main page hero with image, title, description and CTA button
                             </p>
                           </div>
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#f9dc24] to-yellow-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Industries */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('industries')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Industries - C</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Icon grid with industry categories, descriptions and optional links
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* Debug Upload */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('debug')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <Upload className="h-7 w-7 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Debug Upload</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Simple image upload test segment
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="content">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
-                      {/* Meta Navigation */}
+                      {/* Meta Navigation - E */}
                       <div 
                         className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 bg-white hover:shadow-xl ${
                           pageSegments.some(seg => seg.type === 'full-hero')
                             ? 'border-red-300 opacity-60 cursor-not-allowed'
-                            : 'border-gray-200 hover:border-[#f9dc24] cursor-pointer'
+                            : 'border-gray-200 hover:border-orange-400 cursor-pointer'
                         }`}
                         onClick={() => handleAddSegment('meta-navigation')}
                       >
@@ -4192,14 +4111,12 @@ const AdminDashboard = () => {
                         )}
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
+                            <Navigation2 className="h-7 w-7 text-white" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Meta Navigation - E</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Navigation links to related pages or sections
+                              Anchor links for page sections
                             </p>
                             {pageSegments.some(seg => seg.type === 'full-hero') && (
                               <p className="text-xs text-red-600 mt-2 font-semibold">
@@ -4211,334 +4128,349 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Hero Section */}
+                      {/* Product Gallery - M */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('hero')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[#f9dc24] to-yellow-300 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <Eye className="h-7 w-7 text-gray-900" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Produkt Hero - F</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Main page hero with image, title, description and CTA button
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#f9dc24] to-yellow-300 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* Product Gallery */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-pink-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('product-hero-gallery')}
                       >
                         <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500 to-pink-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Images className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Product Gallery - G</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Product Gallery - M</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Product hero with image gallery and description
+                              Product hero with image carousel
                             </p>
                           </div>
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Intro */}
+                      {/* Full Hero - O */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 bg-white hover:shadow-xl ${
+                          pageSegments.some(seg => seg.type === 'meta-navigation')
+                            ? 'border-red-300 opacity-60 cursor-not-allowed'
+                            : 'border-gray-200 hover:border-rose-400 cursor-pointer'
+                        }`}
+                        onClick={() => handleAddSegment('full-hero')}
+                      >
+                        {pageSegments.some(seg => seg.type === 'meta-navigation') && (
+                          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md z-10">
+                            Blocked by Meta Nav
+                          </div>
+                        )}
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Monitor className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Full Hero - O</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Fullscreen Ken Burns background
+                            </p>
+                            {pageSegments.some(seg => seg.type === 'meta-navigation') && (
+                              <p className="text-xs text-red-600 mt-2 font-semibold">
+                                ⚠️ Cannot be used with Meta Navigation
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-rose-500 to-rose-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* Action Hero - Q */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-violet-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('action-hero')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-violet-500 to-violet-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Zap className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Action Hero - Q</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Slim hero with action focus
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-violet-500 to-violet-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="content">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
+                      {/* Intro - B */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-teal-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('intro')}
                       >
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                            <Type className="h-7 w-7 text-white" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Intro - B</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Introduction section with optional image, title and text content
+                              Title & description section
                             </p>
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Tiles */}
+                      {/* Tiles - C */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('tiles')}
                       >
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <GripVertical className="h-7 w-7 text-white" />
+                            <LayoutGrid className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Tiles - H</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Tiles - C</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Feature cards with icons, titles, descriptions and CTA links
+                              Feature cards grid
                             </p>
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Image & Text */}
+                      {/* Banner - F */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('image-text')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Image & Text - I</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Side-by-side image and text content with flexible layout
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-green-500 to-green-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* Banner */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('banner')}
                       >
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
+                            <ImageIcon className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Banner - J</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Banner - F</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Full-width promotional banner with title, subtitle and CTA
+                              Promo with images
                             </p>
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Banner-P (Prototype) */}
+                      {/* Image & Text - G */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-pink-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('banner-p')}
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-lime-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('image-text')}
                       >
                         <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <span className="text-3xl font-bold text-white">P</span>
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-lime-500 to-lime-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <SplitSquareVertical className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Banner-P (Prototype)</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Image & Text - G</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              NEW: Rebuilt banner with stable multi-image upload
+                              Split layout
                             </p>
                           </div>
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-lime-500 to-lime-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Feature Overview */}
+                      {/* Video - H */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('feature-overview')}
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('video')}
                       >
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-cyan-500 to-cyan-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                            </svg>
+                            <PlayCircle className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Feature - K</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Video - H</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Feature list with checkmarks, descriptions and optional image
+                              Embedded player
                             </p>
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Table */}
+                      {/* Feature Overview - I */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('table')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Table - L</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Data table with customizable columns and rows
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-500 to-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* Video */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('video')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-red-500 to-red-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Video - M</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Embedded video player with title and description
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-red-500 to-red-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* Specification */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('specification')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-slate-500 to-slate-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Specification - N</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Technical specifications with key-value pairs
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-slate-500 to-slate-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* FAQ */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('faq')}
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('feature-overview')}
                       >
                         <div className="p-6 space-y-4">
                           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                            <ListChecks className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">FAQ - O</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Feature Overview - I</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Frequently Asked Questions with expandable answers
+                              Icon features list
                             </p>
                           </div>
                         </div>
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
+                      {/* Table - J */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('table')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Table2 className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Table - J</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Data tables
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* FAQ - K */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-red-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('faq')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-red-500 to-red-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <HelpCircle className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">FAQ - K</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Q&A accordion
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-red-500 to-red-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* Specification - L */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-amber-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('specification')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-amber-500 to-amber-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <FileText className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Specification - L</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Tech specs
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-500 to-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* Industries - N */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-slate-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('industries')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-slate-600 to-slate-500 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Building2 className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Industries - N</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Industry showcase
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-slate-600 to-slate-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
+
+                      {/* Footer - Z */}
+                      <div 
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-gray-500 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        onClick={() => handleAddSegment('footer')}
+                      >
+                        <div className="p-6 space-y-4">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <PanelBottom className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900">Footer - Z</h3>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Page footer
+                            </p>
+                          </div>
+                        </div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-gray-700 to-gray-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                      </div>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="special">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
-                      {/* Latest News */}
+                      {/* Latest News - D */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-sky-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('news')}
                       >
                         <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <svg className="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                            </svg>
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-sky-500 to-sky-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Newspaper className="h-7 w-7 text-white" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">Latest News - D</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Display news articles in a carousel slider
+                              News feed block
                             </p>
                           </div>
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-sky-500 to-sky-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* News List */}
+                      {/* News List - P */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-fuchsia-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('news-list')}
                       >
                         <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <Newspaper className="h-7 w-7 text-white" />
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-fuchsia-500 to-fuchsia-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <List className="h-7 w-7 text-white" />
                           </div>
                           <div>
                             <h3 className="text-lg font-bold text-gray-900">News List - P</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Display all news with frontend category filtering
+                              Filterable news
                             </p>
                           </div>
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-fuchsia-500 to-fuchsia-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Action Hero */}
+                      {/* Events - R */}
                       <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
-                        onClick={() => handleAddSegment('action-hero')}
-                      >
-                        <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                            <Zap className="h-7 w-7 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900">Action Hero - Q</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              Slim hero with H1 title, description and background image
-                            </p>
-                          </div>
-                        </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                      </div>
-
-                      {/* Events Segment */}
-                      <div 
-                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
+                        className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('events')}
                       >
                         <div className="p-6 space-y-4">
-                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-rose-500 to-rose-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-green-500 to-green-400 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <Calendar className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Events List - R</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Events - R</h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              Display events with filtering, categories and registration
+                              Event listings
                             </p>
                           </div>
                         </div>
-                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-rose-500 to-rose-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-green-500 to-green-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
                     </div>
                   </TabsContent>
