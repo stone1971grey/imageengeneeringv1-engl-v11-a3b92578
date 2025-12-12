@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square, RefreshCw } from "lucide-react";
+import { DropZone } from "./DropZone";
 import {
   Collapsible,
   CollapsibleContent,
@@ -348,21 +349,50 @@ export function DataHubDialog({
     const file = event.target.files?.[0];
     if (!file) return;
 
+    await uploadFilesToFolder([file], folder);
+  };
+
+  // Unified upload function for both input and drag & drop
+  const uploadFilesToFolder = async (files: File[], folder: MediaFolder) => {
+    if (files.length === 0) return;
+
     setUploading(true);
     setSelectedFolder(folder.id);
 
+    let successCount = 0;
+    let failCount = 0;
+
     try {
-      const timestamp = Date.now();
-      const fileName = `${timestamp}-${file.name}`;
-      const filePath = `${folder.storage_path}/${fileName}`;
+      for (const file of files) {
+        try {
+          const timestamp = Date.now();
+          const fileName = `${timestamp}-${file.name}`;
+          const filePath = `${folder.storage_path}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("page-images")
-        .upload(filePath, file);
+          const { error: uploadError } = await supabase.storage
+            .from("page-images")
+            .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+          if (uploadError) {
+            console.error(`Upload error for ${file.name}:`, uploadError);
+            failCount++;
+          } else {
+            successCount++;
+          }
+        } catch (err) {
+          console.error(`Upload error for ${file.name}:`, err);
+          failCount++;
+        }
+      }
 
-      toast.success(`File uploaded to ${folder.name}`);
+      if (successCount > 0 && failCount === 0) {
+        toast.success(`${successCount} file(s) uploaded to ${folder.name}`);
+      } else if (successCount > 0 && failCount > 0) {
+        toast.warning(`${successCount} file(s) uploaded, ${failCount} failed`);
+      } else {
+        toast.error(`Upload failed for all ${failCount} file(s)`);
+      }
+
       await loadFolders();
     } catch (error: any) {
       console.error("Upload error:", error);
@@ -370,7 +400,6 @@ export function DataHubDialog({
     } finally {
       setUploading(false);
       setSelectedFolder(null);
-      event.target.value = "";
     }
   };
 
@@ -714,6 +743,17 @@ export function DataHubDialog({
                 </div>
               )}
 
+              {/* Drag & Drop Zone (only in non-selection mode) */}
+              {!selectionMode && (
+                <div className="mb-4">
+                  <DropZone
+                    onFilesDropped={(files) => uploadFilesToFolder(files, folder)}
+                    disabled={uploading && selectedFolder === folder.id}
+                    className="min-h-[120px]"
+                  />
+                </div>
+              )}
+
               {/* Render subfolders */}
               {folder.children && folder.children.length > 0 && (
                 <div className="mb-4">
@@ -723,11 +763,8 @@ export function DataHubDialog({
 
               {/* Render files */}
               {folderFiles.length === 0 ? (
-                <div className="text-center py-12">
-                  <File className="h-16 w-16 text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">
-                    No files in this folder yet
-                  </p>
+                <div className="text-center py-8 text-gray-500">
+                  <p className="text-sm">No files yet - drag & drop or use Upload button above</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
