@@ -3885,31 +3885,34 @@ const AdminDashboard = () => {
               
               {/* Page Info Content – alles in einer Zeile */}
               <div className="flex items-center justify-between gap-4 min-w-0 flex-1">
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-center gap-3 min-w-0 flex-wrap">
                   {selectedPage && pageInfo ? (
                     <>
                       <span className="font-bold text-base text-gray-900 whitespace-nowrap">
                         {pageInfo.pageTitle}
                       </span>
                       <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap flex-shrink-0">
                         ID {pageInfo.pageId}
                       </span>
                       <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
-                      <span className="text-base text-gray-700 font-mono whitespace-nowrap">
+                      <span 
+                        className="text-base text-gray-700 font-mono truncate max-w-[200px] min-w-0"
+                        title={pageInfo.pageSlug}
+                      >
                         {pageInfo.pageSlug}
                       </span>
                       {pageInfo.targetPageSlug && (
                         <>
-                          <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                          <span className="text-gray-400 text-lg whitespace-nowrap flex-shrink-0">|</span>
                           <ShortcutBadge targetSlug={pageInfo.targetPageSlug} />
                         </>
                       )}
                       {pageInfo.ctaGroup && pageInfo.ctaGroup !== 'none' && (
                         <>
-                          <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                          <span className="text-gray-400 text-lg whitespace-nowrap flex-shrink-0">|</span>
                           <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-semibold ${
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-semibold flex-shrink-0 ${
                               pageInfo.ctaGroup === 'your-solution'
                                 ? 'bg-[#f9dc24] text-black border-[#f9dc24]'
                                 : 'bg-black text-white border-gray-600'
@@ -3922,7 +3925,7 @@ const AdminDashboard = () => {
                       )}
                       {selectedDesignIconOption && SelectedDesignIcon && hasDesignButtons && (
                         <>
-                          <span className="text-gray-400 text-lg whitespace-nowrap">|</span>
+                          <span className="text-gray-400 text-lg whitespace-nowrap flex-shrink-0">|</span>
                           <button
                             type="button"
                             onClick={() => {
@@ -3932,7 +3935,7 @@ const AdminDashboard = () => {
                               }
                               setIsFlyoutDialogOpen(true);
                             }}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold whitespace-nowrap hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 flex-shrink-0"
                             title="Click to edit flyout image and description for this navigation item"
                           >
                             <SelectedDesignIcon className="h-4 w-4" />
