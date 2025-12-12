@@ -3872,6 +3872,15 @@ const AdminDashboard = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                 </svg>
               </Button>
+              
+              {/* Create Page Button - auffällig */}
+              <Button
+                onClick={() => setIsCreateCMSDialogOpen(true)}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Create Page
+              </Button>
             </div>
 
             {/* Page Info Display – einzeilig, große Schrift, unter Media Management */}
@@ -5068,8 +5077,7 @@ const AdminDashboard = () => {
             <Card className="border-none shadow-2xl bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 overflow-hidden relative">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50"></div>
               <CardContent className="p-10 relative z-10">
-                <div className="flex items-center justify-between gap-8">
-                  <div className="flex items-start gap-6 flex-1">
+                <div className="flex items-start gap-6 flex-1">
                     <div className="h-16 w-16 rounded-2xl bg-white flex items-center justify-center shadow-2xl flex-shrink-0">
                       <Plus className="h-9 w-9 text-gray-900" />
                     </div>
@@ -5079,19 +5087,10 @@ const AdminDashboard = () => {
                       </h3>
                       <p className="text-lg text-gray-300 max-w-2xl leading-relaxed font-medium">
                         Automatically set up a complete CMS-enabled page with database entries, 
-                        segment registry, and initial content. Select any page from the dropdown to convert it.
+                        segment registry, and initial content. Use the button above to create a new page.
                       </p>
                     </div>
                   </div>
-                  <Button
-                    onClick={() => setIsCreateCMSDialogOpen(true)}
-                    size="lg"
-                    className="bg-white hover:bg-gray-100 text-gray-900 font-bold shadow-2xl hover:shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all duration-300 px-8 py-6 text-base flex-shrink-0 hover:scale-105"
-                  >
-                    <Plus className="mr-3 h-6 w-6" />
-                    Create Page
-                  </Button>
-                </div>
               </CardContent>
             </Card>
 
