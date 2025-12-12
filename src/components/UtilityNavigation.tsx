@@ -16,13 +16,12 @@ const UtilityNavigation = () => {
   ];
 
   return (
-    <div className="flex items-center gap-4 relative">
+    <div className="flex items-center gap-3 relative">
       {/* Search Bar using intelligent AI search */}
-      <div className="hidden md:block w-[260px]">
+      <div className="hidden md:block">
         <IntelligentSearchBar variant="utility" />
       </div>
 
-      
       {/* Language Selector */}
       <Select value={language} onValueChange={(value) => setLanguage(value as any)}>
         <SelectTrigger className="w-[70px] h-10 bg-white border-none text-black hover:bg-gray-100 transition-all duration-300 [&>svg]:hidden text-3xl justify-center px-0 focus:ring-0 focus:ring-offset-0 rounded-md">

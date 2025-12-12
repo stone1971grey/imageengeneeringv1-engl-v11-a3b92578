@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, X, ChevronRight, Sparkles, Loader2, Calendar, Newspaper, FileText, Box } from "lucide-react";
+import { Search, X, ArrowRight, Sparkles, Loader2, Calendar, Newspaper, FileText, Box } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { charts } from "@/data/charts";
@@ -85,13 +82,13 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
   const performLocalSearch = useCallback((searchQuery: string): SearchResult[] => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase();
-    const results: SearchResult[] = [];
+    const localResults: SearchResult[] = [];
 
     // Search in charts
     charts.forEach(chart => {
       const score = calculateChartMatchScore(chart, q);
       if (score > 0) {
-        results.push({
+        localResults.push({
           id: chart.id,
           title: chart.title,
           description: chart.excerpt || chart.description,
@@ -106,21 +103,21 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
     // Search in static pages
     staticSearchData.forEach(item => {
       if (item.title.toLowerCase().includes(q) || item.description.toLowerCase().includes(q)) {
-        results.push({ ...item, relevanceScore: item.title.toLowerCase().includes(q) ? 80 : 50 });
+        localResults.push({ ...item, relevanceScore: item.title.toLowerCase().includes(q) ? 80 : 50 });
       }
     });
 
-    return results.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0)).slice(0, 5);
+    return localResults.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0)).slice(0, 6);
   }, [language]);
 
-  const calculateChartMatchScore = (chart: any, query: string): number => {
+  const calculateChartMatchScore = (chart: any, searchQuery: string): number => {
     let score = 0;
-    if (chart.title.toLowerCase().includes(query)) score += 50;
-    if (chart.sku?.toLowerCase().includes(query)) score += 40;
-    if (chart.excerpt?.toLowerCase().includes(query)) score += 30;
-    if (chart.applications?.some((app: string) => app.toLowerCase().includes(query))) score += 25;
-    if (chart.categories?.some((cat: string) => cat.toLowerCase().includes(query))) score += 20;
-    if (chart.standards?.some((std: string) => std.toLowerCase().includes(query))) score += 15;
+    if (chart.title.toLowerCase().includes(searchQuery)) score += 50;
+    if (chart.sku?.toLowerCase().includes(searchQuery)) score += 40;
+    if (chart.excerpt?.toLowerCase().includes(searchQuery)) score += 30;
+    if (chart.applications?.some((app: string) => app.toLowerCase().includes(searchQuery))) score += 25;
+    if (chart.categories?.some((cat: string) => cat.toLowerCase().includes(searchQuery))) score += 20;
+    if (chart.standards?.some((std: string) => std.toLowerCase().includes(searchQuery))) score += 15;
     return score;
   };
 
@@ -160,7 +157,7 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
               mergedResults.push(local);
             }
           });
-          setResults(mergedResults.slice(0, 10));
+          setResults(mergedResults.slice(0, 8));
           setIsAIPowered(aiResponse.aiPowered || false);
         }
         
@@ -234,196 +231,224 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
     setQuery("");
     setResults([]);
     setSuggestions([]);
+    setIsOpen(false);
     inputRef.current?.focus();
   };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'chart': return <Box className="h-4 w-4 text-primary" />;
-      case 'news': return <Newspaper className="h-4 w-4 text-blue-500" />;
-      case 'event': return <Calendar className="h-4 w-4 text-green-500" />;
-      case 'page': return <FileText className="h-4 w-4 text-gray-500" />;
-      case 'product': return <Box className="h-4 w-4 text-orange-500" />;
-      default: return <Search className="h-4 w-4 text-gray-400" />;
+      case 'chart': return <Box className="h-4 w-4 text-amber-600" />;
+      case 'news': return <Newspaper className="h-4 w-4 text-blue-600" />;
+      case 'event': return <Calendar className="h-4 w-4 text-emerald-600" />;
+      case 'page': return <FileText className="h-4 w-4 text-slate-500" />;
+      case 'product': return <Box className="h-4 w-4 text-orange-600" />;
+      default: return <Search className="h-4 w-4 text-slate-400" />;
     }
   };
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
-      case 'chart': return 'Test Chart';
+      case 'chart': return 'Chart';
       case 'news': return 'News';
       case 'event': return 'Event';
       case 'page': return 'Page';
       case 'product': return 'Product';
-      default: return 'Result';
+      default: return '';
     }
   };
 
-  const highlightMatch = (text: string, query: string): React.ReactNode => {
-    if (!query.trim()) return text;
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
-    return parts.map((part, i) => 
-      part.toLowerCase() === query.toLowerCase() 
-        ? <mark key={i} className="bg-primary/20 text-foreground rounded px-0.5">{part}</mark>
-        : part
-    );
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'chart': return 'bg-amber-100 text-amber-700 border-amber-200';
+      case 'news': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'event': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+      case 'page': return 'bg-slate-100 text-slate-600 border-slate-200';
+      case 'product': return 'bg-orange-100 text-orange-700 border-orange-200';
+      default: return 'bg-gray-100 text-gray-600 border-gray-200';
+    }
   };
 
-  const handleSubmit = () => {
-    if (results.length > 0 && results[selectedIndex]) {
-      handleResultClick(results[selectedIndex]);
-    } else if (query.trim()) {
-      // Navigate to search results page with query
-      navigate(`/${language}/search?q=${encodeURIComponent(query)}`);
-      setIsOpen(false);
+  const highlightMatch = (text: string, searchQuery: string): React.ReactNode => {
+    if (!searchQuery.trim()) return text;
+    try {
+      const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'));
+      return parts.map((part, i) => 
+        part.toLowerCase() === searchQuery.toLowerCase() 
+          ? <span key={i} className="bg-yellow-200 text-yellow-900 font-semibold px-0.5 rounded">{part}</span>
+          : part
+      );
+    } catch {
+      return text;
     }
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSubmit();
+    if (results.length > 0 && results[selectedIndex]) {
+      handleResultClick(results[selectedIndex]);
+    }
+  };
+
+  // Determine container width based on variant
+  const getContainerClass = () => {
+    if (variant === 'mobile') return 'w-full';
+    if (variant === 'utility') return 'w-full max-w-md';
+    return 'w-64';
   };
 
   return (
-    <div ref={searchRef} className={`relative ${variant === 'mobile' ? 'w-full' : variant === 'utility' ? 'w-full' : ''}`}>
-      <form onSubmit={handleFormSubmit} className="relative flex items-center gap-2">
-        <div className="relative flex-1">
-          {isLoading ? (
-            <Loader2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary animate-spin" />
-          ) : isAIPowered ? (
-            <Sparkles className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-primary" />
-          ) : (
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black" />
-          )}
-          <Input
+    <div ref={searchRef} className={`relative ${getContainerClass()}`}>
+      <form onSubmit={handleFormSubmit} className="relative">
+        <div className="relative flex items-center">
+          {/* Search Icon or Loading Spinner */}
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 text-amber-500 animate-spin" />
+            ) : isAIPowered ? (
+              <Sparkles className="h-4 w-4 text-amber-500" />
+            ) : (
+              <Search className="h-4 w-4 text-slate-400" />
+            )}
+          </div>
+
+          {/* Input Field */}
+          <input
             ref={inputRef}
             type="text"
-            placeholder={isAIPowered ? "AI Search..." : "Search..."}
+            placeholder="Search products, news, events..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => setIsOpen(true)}
-            className={
-              variant === 'utility'
-                ? "pl-10 pr-10 w-full h-10 bg-transparent border-none text-black placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                : variant === 'mobile' 
-                  ? "pl-10 pr-10 w-full bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
-                  : "pl-10 pr-8 w-44 bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
-            }
+            onFocus={() => query && setIsOpen(true)}
+            className="w-full h-10 pl-10 pr-20 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400 transition-all duration-200 shadow-sm"
           />
-          {query && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleClear}
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-white/20"
+
+          {/* Right side buttons */}
+          <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            {query && (
+              <button
+                type="button"
+                onClick={handleClear}
+                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
+                aria-label="Clear search"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+            <button
+              type="submit"
+              disabled={!query.trim()}
+              className="p-1.5 bg-amber-400 hover:bg-amber-500 disabled:bg-slate-200 disabled:cursor-not-allowed text-white disabled:text-slate-400 rounded transition-all duration-200"
+              aria-label="Search"
             >
-              <X className="h-3 w-3" />
-            </Button>
-          )}
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
-        <Button
-          type="submit"
-          size="sm"
-          disabled={!query.trim()}
-          className="h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg shadow-sm transition-all duration-200 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Search className="h-4 w-4" />
-          )}
-          <span className="hidden sm:inline">Search</span>
-        </Button>
       </form>
 
       {/* Search Results Dropdown */}
       {isOpen && query && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-border rounded-lg shadow-xl z-50 max-h-[28rem] overflow-y-auto min-w-[320px]">
-          {/* AI Badge */}
-          {isAIPowered && (
-            <div className="px-4 py-2 border-b border-border bg-gradient-to-r from-primary/5 to-purple-500/5">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Sparkles className="h-3 w-3 text-primary" />
-                <span>AI-powered semantic search</span>
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-[480px] overflow-hidden">
+          {/* AI Status Bar */}
+          {(isLoading || isAIPowered) && (
+            <div className="px-4 py-2.5 border-b border-slate-100 bg-gradient-to-r from-amber-50 to-orange-50">
+              <div className="flex items-center gap-2">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 text-amber-500 animate-spin" />
+                    <span className="text-xs font-medium text-amber-700">Searching with AI...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                    <span className="text-xs font-medium text-amber-700">AI-powered results</span>
+                  </>
+                )}
               </div>
             </div>
           )}
 
-          {results.length > 0 ? (
-            <div className="py-2">
-              {results.map((result, index) => (
-                <div
-                  key={result.id}
-                  className={`px-4 py-3 cursor-pointer transition-colors ${
-                    index === selectedIndex ? 'bg-muted' : 'hover:bg-muted/50'
-                  }`}
-                  onClick={() => handleResultClick(result)}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 mt-1">
-                      {getCategoryIcon(result.category)}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-medium text-foreground truncate">
-                          {highlightMatch(result.title, query)}
-                        </h4>
-                        <Badge variant="secondary" className="text-xs shrink-0">
-                          {getCategoryLabel(result.category)}
-                        </Badge>
-                        {result.relevanceScore && result.relevanceScore > 80 && (
-                          <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/30 shrink-0">
-                            Best Match
-                          </Badge>
-                        )}
+          {/* Results List */}
+          <div className="overflow-y-auto max-h-[380px]">
+            {results.length > 0 ? (
+              <div className="py-2">
+                {results.map((result, index) => (
+                  <div
+                    key={`${result.id}-${index}`}
+                    className={`mx-2 px-3 py-3 cursor-pointer rounded-lg transition-all duration-150 ${
+                      index === selectedIndex 
+                        ? 'bg-amber-50 border border-amber-200' 
+                        : 'hover:bg-slate-50 border border-transparent'
+                    }`}
+                    onClick={() => handleResultClick(result)}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                  >
+                    <div className="flex items-start gap-3">
+                      {/* Category Icon */}
+                      <div className="flex-shrink-0 mt-0.5 p-1.5 bg-slate-100 rounded-lg">
+                        {getCategoryIcon(result.category)}
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {result.snippet || result.description}
-                      </p>
-                      {result.badges && result.badges.length > 0 && (
-                        <div className="flex gap-1 mt-2 flex-wrap">
-                          {result.badges.slice(0, 3).map((badge, i) => (
-                            <Badge key={i} variant="outline" className="text-xs">
-                              {badge}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-                      {result.metadata?.date && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(result.metadata.date).toLocaleDateString()}
-                          {result.metadata.location && ` • ${result.metadata.location}`}
-                        </p>
-                      )}
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="px-4 py-8 text-center text-muted-foreground">
-              <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>No results found for "{query}"</p>
-              <p className="text-sm mt-1">Try different search terms</p>
-            </div>
-          )}
 
-          {/* Suggestions */}
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold text-slate-900 text-sm truncate">
+                            {highlightMatch(result.title, query)}
+                          </h4>
+                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${getCategoryColor(result.category)}`}>
+                            {getCategoryLabel(result.category)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-1">
+                          {result.snippet || result.description}
+                        </p>
+                      </div>
+
+                      {/* Arrow */}
+                      <ArrowRight className={`h-4 w-4 flex-shrink-0 mt-1 transition-colors ${
+                        index === selectedIndex ? 'text-amber-500' : 'text-slate-300'
+                      }`} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="px-6 py-10 text-center">
+                <div className="w-12 h-12 mx-auto mb-3 bg-slate-100 rounded-full flex items-center justify-center">
+                  <Search className="h-5 w-5 text-slate-400" />
+                </div>
+                <p className="text-sm font-medium text-slate-700">No results found</p>
+                <p className="text-xs text-slate-400 mt-1">Try different keywords</p>
+              </div>
+            )}
+          </div>
+
+          {/* Suggestions Footer */}
           {suggestions.length > 0 && (
-            <div className="px-4 py-3 border-t border-border bg-muted/30">
-              <p className="text-xs text-muted-foreground mb-2">Try searching for:</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestions.map((suggestion, i) => (
+            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
+              <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-2">Suggestions</p>
+              <div className="flex flex-wrap gap-1.5">
+                {suggestions.slice(0, 4).map((suggestion, i) => (
                   <button
                     key={i}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="px-2 py-1 text-xs bg-white border border-border rounded-md hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors"
+                    className="px-2.5 py-1 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-full hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300 transition-all duration-150"
                   >
                     {suggestion}
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Keyboard Hint */}
+          {results.length > 0 && (
+            <div className="px-4 py-2 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+              <div className="flex items-center gap-3 text-[10px] text-slate-400">
+                <span><kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-500 font-mono">↑↓</kbd> Navigate</span>
+                <span><kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-500 font-mono">Enter</kbd> Select</span>
+                <span><kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-500 font-mono">Esc</kbd> Close</span>
               </div>
             </div>
           )}
