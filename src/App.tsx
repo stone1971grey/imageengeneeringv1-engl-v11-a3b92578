@@ -55,6 +55,7 @@ import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminNews from "./pages/AdminNews";
 import AdminEvents from "./pages/AdminEvents";
+import AdminProducts from "./pages/AdminProducts";
 import FullHeroMigration from "./pages/FullHeroMigration";
 import SegmentDebugView from "./pages/SegmentDebugView";
 import NotFound from "./pages/NotFound";
@@ -245,6 +246,7 @@ const App = () => (
             <Route path="/:lang/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/:lang/admin-dashboard/news" element={<AdminNews />} />
             <Route path="/:lang/admin-dashboard/events" element={<AdminEvents />} />
+            <Route path="/:lang/admin-dashboard/products" element={<AdminProducts />} />
             <Route path="/:lang/full-hero-migration" element={<FullHeroMigration />} />
             <Route path="/:lang/segment-debug" element={<SegmentDebugView />} />
             
