@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Eye, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, X, FileText } from "lucide-react";
 import { MediaSelector } from "./MediaSelector";
 
 interface Product {
@@ -17,6 +17,8 @@ interface Product {
   teaser: string;
   description: string | null;
   image_url: string;
+  gallery_images: string[];
+  documents: { url: string; title: string; type: string }[];
   category: string;
   subcategory: string | null;
   sku: string | null;
@@ -50,6 +52,36 @@ const SUBCATEGORIES: Record<string, string[]> = {
 };
 
 const ProductsEditor = () => {
+  // Helper function to ensure product folder exists
+  const ensureProductFolder = async (categorySlug: string, productSlug: string, productTitle: string) => {
+    const productFolderPath = `products/${categorySlug}/${productSlug}`;
+    
+    // Check if product folder exists
+    const { data: existingProductFolder } = await supabase
+      .from('media_folders')
+      .select('id')
+      .eq('storage_path', productFolderPath)
+      .maybeSingle();
+    
+    if (!existingProductFolder) {
+      // Get category folder
+      const { data: categoryFolder } = await supabase
+        .from('media_folders')
+        .select('id')
+        .eq('storage_path', `products/${categorySlug}`)
+        .maybeSingle();
+      
+      if (categoryFolder) {
+        await supabase.from('media_folders').insert({
+          name: productTitle,
+          parent_id: categoryFolder.id,
+          storage_path: productFolderPath,
+          position: 999
+        });
+      }
+    }
+  };
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -61,6 +93,8 @@ const ProductsEditor = () => {
     teaser: "",
     description: "",
     image_url: "",
+    gallery_images: [] as string[],
+    documents: [] as { url: string; title: string; type: string }[],
     category: "Test Charts",
     subcategory: "",
     sku: "",
@@ -96,12 +130,14 @@ const ProductsEditor = () => {
       // Transform JSONB fields
       const transformedProducts = (data || []).map(p => ({
         ...p,
-        specifications: typeof p.specifications === 'object' ? p.specifications : {},
+        specifications: typeof p.specifications === 'object' && p.specifications !== null ? p.specifications : {},
         features: Array.isArray(p.features) ? p.features : [],
-        applications: Array.isArray(p.applications) ? p.applications : []
+        applications: Array.isArray(p.applications) ? p.applications : [],
+        gallery_images: Array.isArray(p.gallery_images) ? p.gallery_images : [],
+        documents: Array.isArray(p.documents) ? p.documents : []
       }));
       
-      setProducts(transformedProducts as Product[]);
+      setProducts(transformedProducts as unknown as Product[]);
     } catch (error) {
       console.error("Error loading products:", error);
       toast.error("Failed to load products");
@@ -117,6 +153,8 @@ const ProductsEditor = () => {
       teaser: "",
       description: "",
       image_url: "",
+      gallery_images: [],
+      documents: [],
       category: "Test Charts",
       subcategory: "",
       sku: "",
@@ -149,6 +187,8 @@ const ProductsEditor = () => {
       teaser: product.teaser,
       description: product.description || "",
       image_url: product.image_url,
+      gallery_images: product.gallery_images || [],
+      documents: product.documents || [],
       category: product.category,
       subcategory: product.subcategory || "",
       sku: product.sku || "",
@@ -189,12 +229,43 @@ const ProductsEditor = () => {
     try {
       const slug = formData.slug || generateSlug(formData.title);
       
+      // Create product folder in media_folders if it doesn't exist
+      const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const productFolderPath = `products/${categorySlug}/${slug}`;
+      
+      // Check if product folder exists
+      const { data: existingProductFolder } = await supabase
+        .from('media_folders')
+        .select('id')
+        .eq('storage_path', productFolderPath)
+        .maybeSingle();
+      
+      if (!existingProductFolder) {
+        // Get category folder
+        const { data: categoryFolder } = await supabase
+          .from('media_folders')
+          .select('id')
+          .eq('storage_path', `products/${categorySlug}`)
+          .maybeSingle();
+        
+        if (categoryFolder) {
+          await supabase.from('media_folders').insert({
+            name: formData.title,
+            parent_id: categoryFolder.id,
+            storage_path: productFolderPath,
+            position: 999
+          });
+        }
+      }
+      
       const productData = {
         slug,
         title: formData.title,
         teaser: formData.teaser,
         description: formData.description || null,
         image_url: formData.image_url,
+        gallery_images: formData.gallery_images,
+        documents: formData.documents,
         category: formData.category,
         subcategory: formData.subcategory || null,
         sku: formData.sku || null,
@@ -377,49 +448,19 @@ const ProductsEditor = () => {
           {/* Image */}
           <div className="space-y-2">
             <MediaSelector
-              label="Product Image *"
+              label="Main Product Image *"
               currentImageUrl={formData.image_url}
               onFileSelect={async (file) => {
-                // Upload to Supabase Storage with proper folder structure
                 try {
-                  // Create folder path based on category
                   const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-                  const subcategorySlug = formData.subcategory 
-                    ? formData.subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-                    : null;
+                  const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
+                  const folderPath = `products/${categorySlug}/${productSlug}`;
                   
-                  const folderPath = subcategorySlug 
-                    ? `products/${categorySlug}/${subcategorySlug}`
-                    : `products/${categorySlug}`;
-                  
-                  // Ensure folder exists in media_folders
-                  const categoryFolderId = `products-${categorySlug}`;
-                  const { data: existingFolder } = await supabase
-                    .from('media_folders')
-                    .select('id')
-                    .eq('storage_path', `products/${categorySlug}`)
-                    .maybeSingle();
-                  
-                  if (!existingFolder) {
-                    // Get products parent folder
-                    const { data: productsFolder } = await supabase
-                      .from('media_folders')
-                      .select('id')
-                      .eq('storage_path', 'products')
-                      .maybeSingle();
-                    
-                    if (productsFolder) {
-                      await supabase.from('media_folders').insert({
-                        name: formData.category,
-                        parent_id: productsFolder.id,
-                        storage_path: `products/${categorySlug}`,
-                        position: 999
-                      });
-                    }
-                  }
+                  // Ensure product folder exists
+                  await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
                   
                   const fileExt = file.name.split('.').pop();
-                  const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                  const fileName = `main-${Date.now()}.${fileExt}`;
                   const filePath = `${folderPath}/${fileName}`;
                   
                   const { error: uploadError } = await supabase.storage
@@ -432,7 +473,6 @@ const ProductsEditor = () => {
                     .from('page-images')
                     .getPublicUrl(filePath);
                   
-                  // Create file_segment_mapping entry
                   await supabase.from('file_segment_mappings').insert({
                     file_path: filePath,
                     bucket_id: 'page-images',
@@ -452,6 +492,147 @@ const ProductsEditor = () => {
               }}
               previewSize="small"
             />
+          </div>
+
+          {/* Gallery Images */}
+          <div className="space-y-2">
+            <Label className="text-white">Gallery Images</Label>
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              {formData.gallery_images.map((img, index) => (
+                <div key={index} className="relative">
+                  <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-20 object-cover rounded" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      gallery_images: prev.gallery_images.filter((_, i) => i !== index)
+                    }))}
+                    className="absolute top-0 right-0 text-red-400 hover:text-red-300 p-1 h-auto"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <MediaSelector
+              label="Add Gallery Image"
+              currentImageUrl=""
+              onFileSelect={async (file) => {
+                try {
+                  const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                  const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
+                  const folderPath = `products/${categorySlug}/${productSlug}`;
+                  
+                  await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
+                  
+                  const fileExt = file.name.split('.').pop();
+                  const fileName = `gallery-${Date.now()}.${fileExt}`;
+                  const filePath = `${folderPath}/${fileName}`;
+                  
+                  const { error: uploadError } = await supabase.storage
+                    .from('page-images')
+                    .upload(filePath, file);
+                    
+                  if (uploadError) throw uploadError;
+                  
+                  const { data: { publicUrl } } = supabase.storage
+                    .from('page-images')
+                    .getPublicUrl(filePath);
+                  
+                  await supabase.from('file_segment_mappings').insert({
+                    file_path: filePath,
+                    bucket_id: 'page-images',
+                    segment_ids: [],
+                    alt_text: `${formData.title} - Gallery`
+                  });
+                    
+                  setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, publicUrl] }));
+                  toast.success("Gallery image added");
+                } catch (error: any) {
+                  console.error("Upload error:", error);
+                  toast.error(error.message || "Failed to upload image");
+                }
+              }}
+              onMediaSelect={(url) => {
+                setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, url] }));
+              }}
+              previewSize="small"
+            />
+          </div>
+
+          {/* Documents/PDFs */}
+          <div className="space-y-2">
+            <Label className="text-white">Documents (PDFs, Datasheets)</Label>
+            <div className="space-y-2 mb-2">
+              {formData.documents.map((doc, index) => (
+                <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-2 rounded">
+                  <FileText className="h-4 w-4 text-gray-400" />
+                  <span className="text-white flex-1">{doc.title}</span>
+                  <span className="text-xs text-gray-500">{doc.type}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setFormData(prev => ({
+                      ...prev,
+                      documents: prev.documents.filter((_, i) => i !== index)
+                    }))}
+                    className="text-red-400 hover:text-red-300"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                type="file"
+                accept=".pdf,.doc,.docx"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  
+                  try {
+                    const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                    const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
+                    const folderPath = `products/${categorySlug}/${productSlug}`;
+                    
+                    await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
+                    
+                    const fileExt = file.name.split('.').pop() || 'pdf';
+                    const fileName = `doc-${Date.now()}.${fileExt}`;
+                    const filePath = `${folderPath}/${fileName}`;
+                    
+                    const { error: uploadError } = await supabase.storage
+                      .from('page-images')
+                      .upload(filePath, file);
+                      
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: { publicUrl } } = supabase.storage
+                      .from('page-images')
+                      .getPublicUrl(filePath);
+                    
+                    setFormData(prev => ({
+                      ...prev,
+                      documents: [...prev.documents, {
+                        url: publicUrl,
+                        title: file.name.replace(/\.[^/.]+$/, ''),
+                        type: fileExt.toUpperCase()
+                      }]
+                    }));
+                    toast.success("Document uploaded");
+                    e.target.value = '';
+                  } catch (error: any) {
+                    console.error("Upload error:", error);
+                    toast.error(error.message || "Failed to upload document");
+                  }
+                }}
+                className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
+              />
+            </div>
           </div>
 
           {/* Category & Subcategory */}
