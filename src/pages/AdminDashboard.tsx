@@ -4039,6 +4039,14 @@ const AdminDashboard = () => {
               </Button>
               <Button
                 variant="decision"
+                className="flex items-center gap-2 bg-[hsl(var(--accent-blue))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--accent-blue))]/90 shadow-soft hover:shadow-lg"
+                onClick={() => navigate(`/${language}/admin-dashboard/products`)}
+              >
+                <Target className="h-4 w-4" />
+                Manage Products
+              </Button>
+              <Button
+                variant="decision"
                 className="flex items-center gap-2 bg-[hsl(var(--seo-button))] text-[hsl(var(--orange-foreground))] hover:bg-[hsl(var(--seo-button))]/90 shadow-soft hover:shadow-lg"
                 onClick={() => setIsSEOEditorOpen(!isSEOEditorOpen)}
               >

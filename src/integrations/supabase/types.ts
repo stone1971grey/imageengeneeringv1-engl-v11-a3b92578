@@ -643,6 +643,78 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          applications: Json | null
+          availability: string | null
+          category: string
+          created_at: string
+          description: string | null
+          features: Json | null
+          id: string
+          image_url: string
+          language_code: string
+          position: number | null
+          price_info: string | null
+          published: boolean | null
+          related_products: Json | null
+          sku: string | null
+          slug: string
+          specifications: Json | null
+          subcategory: string | null
+          teaser: string
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          applications?: Json | null
+          availability?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          image_url: string
+          language_code?: string
+          position?: number | null
+          price_info?: string | null
+          published?: boolean | null
+          related_products?: Json | null
+          sku?: string | null
+          slug: string
+          specifications?: Json | null
+          subcategory?: string | null
+          teaser: string
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          applications?: Json | null
+          availability?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          image_url?: string
+          language_code?: string
+          position?: number | null
+          price_info?: string | null
+          published?: boolean | null
+          related_products?: Json | null
+          sku?: string | null
+          slug?: string
+          specifications?: Json | null
+          subcategory?: string | null
+          teaser?: string
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
