@@ -125,6 +125,9 @@ video::-ms-media-controls {
     /* Events management button - lighter blue than primary */
     --events-button: 211 77% 42%;
     
+    /* Products management button - teal blue */
+    --accent-blue: 195 85% 45%;
+    
     /* Admin dashboard control buttons - yellow cascade */
     --admin-control-1: 48 96% 46%;
     --admin-control-2: 48 96% 54%;

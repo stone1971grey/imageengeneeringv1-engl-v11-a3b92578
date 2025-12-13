@@ -19,6 +19,7 @@ import NewsListSegment from "@/components/segments/NewsListSegment";
 import Debug from "@/components/segments/Debug";
 import ActionHero from "@/components/segments/ActionHero";
 import EventsSegment from "@/components/segments/EventsSegment";
+import ProductListSegment from "@/components/segments/ProductListSegment";
 import { SEOHead } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -751,6 +752,24 @@ const DynamicCMSPage = () => {
             maxEvents={segment.data?.maxEvents}
             sortOrder={segment.data?.sortOrder || 'asc'}
             categories={segment.data?.categories || []}
+          />
+        );
+
+      case "product-list":
+        return (
+          <ProductListSegment
+            key={segmentId}
+            segmentId={segmentDbId}
+            config={{
+              title: segment.data?.title,
+              description: segment.data?.description,
+              category: segment.data?.category,
+              showFilters: segment.data?.showFilters,
+              showSearch: segment.data?.showSearch,
+              maxProducts: segment.data?.maxProducts,
+              layout: segment.data?.layout
+            }}
+            language={currentUrlLanguage}
           />
         );
 
