@@ -204,7 +204,7 @@ export const ProductListSegmentEditor = ({
       <Button
         onClick={handleSave}
         disabled={saving}
-        className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+        className="w-full bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
       >
         {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
         Save
