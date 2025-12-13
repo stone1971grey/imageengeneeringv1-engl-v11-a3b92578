@@ -547,6 +547,61 @@ export function DataHubDialog({
     }
   };
 
+  // Batch visibility update
+  const handleBatchVisibility = async (newVisibility: 'public' | 'private') => {
+    if (selectedFiles.size === 0) {
+      toast.error("No files selected");
+      return;
+    }
+
+    setBatchDeleting(true); // Reuse loading state
+    try {
+      const filePaths = Array.from(selectedFiles);
+      let successCount = 0;
+
+      for (const filePath of filePaths) {
+        // Check if mapping exists
+        const { data: existing } = await supabase
+          .from("file_segment_mappings")
+          .select("id, segment_ids")
+          .eq("file_path", filePath)
+          .eq("bucket_id", "page-images")
+          .maybeSingle();
+
+        if (existing) {
+          // Update existing
+          const { error } = await supabase
+            .from("file_segment_mappings")
+            .update({ visibility: newVisibility, updated_at: new Date().toISOString() })
+            .eq("id", existing.id);
+          
+          if (!error) successCount++;
+        } else {
+          // Create new mapping
+          const { error } = await supabase
+            .from("file_segment_mappings")
+            .insert({
+              file_path: filePath,
+              bucket_id: "page-images",
+              segment_ids: [],
+              visibility: newVisibility
+            });
+          
+          if (!error) successCount++;
+        }
+      }
+
+      toast.success(`${successCount} file(s) set to ${newVisibility}`);
+      setSelectedFiles(new Set());
+      await loadFolders();
+    } catch (error: any) {
+      console.error("Batch visibility error:", error);
+      toast.error(`Batch visibility update failed: ${error.message}`);
+    } finally {
+      setBatchDeleting(false);
+    }
+  };
+
   const getFileUrl = useCallback((folder: MediaFolder, fileName: string) => {
     // fileName kann jetzt segment-xxx/actual-file.png enthalten
     const { data } = supabase.storage
@@ -738,16 +793,38 @@ export function DataHubDialog({
                     )}
                   </div>
                   {selectedFiles.size > 0 && (
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={handleBatchDelete}
-                      disabled={batchDeleting}
-                      className="bg-red-900/50 hover:bg-red-900 border-red-800"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      {batchDeleting ? 'Deleting...' : `Delete ${selectedFiles.size} Selected`}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {/* Batch Visibility Buttons */}
+                      <Button
+                        size="sm"
+                        onClick={() => handleBatchVisibility('public')}
+                        disabled={batchDeleting}
+                        className="bg-green-900/50 hover:bg-green-900 border-green-800 text-green-300"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Public
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleBatchVisibility('private')}
+                        disabled={batchDeleting}
+                        className="bg-orange-900/50 hover:bg-orange-900 border-orange-800 text-orange-300"
+                      >
+                        <EyeOff className="h-4 w-4 mr-1" />
+                        Private
+                      </Button>
+                      {/* Delete Button */}
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleBatchDelete}
+                        disabled={batchDeleting}
+                        className="bg-red-900/50 hover:bg-red-900 border-red-800"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        {batchDeleting ? 'Processing...' : `Delete ${selectedFiles.size}`}
+                      </Button>
+                    </div>
                   )}
                 </div>
               )}
