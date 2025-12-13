@@ -380,11 +380,47 @@ const ProductsEditor = () => {
               label="Product Image *"
               currentImageUrl={formData.image_url}
               onFileSelect={async (file) => {
-                // Upload to Supabase Storage
+                // Upload to Supabase Storage with proper folder structure
                 try {
+                  // Create folder path based on category
+                  const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                  const subcategorySlug = formData.subcategory 
+                    ? formData.subcategory.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+                    : null;
+                  
+                  const folderPath = subcategorySlug 
+                    ? `products/${categorySlug}/${subcategorySlug}`
+                    : `products/${categorySlug}`;
+                  
+                  // Ensure folder exists in media_folders
+                  const categoryFolderId = `products-${categorySlug}`;
+                  const { data: existingFolder } = await supabase
+                    .from('media_folders')
+                    .select('id')
+                    .eq('storage_path', `products/${categorySlug}`)
+                    .maybeSingle();
+                  
+                  if (!existingFolder) {
+                    // Get products parent folder
+                    const { data: productsFolder } = await supabase
+                      .from('media_folders')
+                      .select('id')
+                      .eq('storage_path', 'products')
+                      .maybeSingle();
+                    
+                    if (productsFolder) {
+                      await supabase.from('media_folders').insert({
+                        name: formData.category,
+                        parent_id: productsFolder.id,
+                        storage_path: `products/${categorySlug}`,
+                        position: 999
+                      });
+                    }
+                  }
+                  
                   const fileExt = file.name.split('.').pop();
                   const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-                  const filePath = `products/${fileName}`;
+                  const filePath = `${folderPath}/${fileName}`;
                   
                   const { error: uploadError } = await supabase.storage
                     .from('page-images')
@@ -395,6 +431,14 @@ const ProductsEditor = () => {
                   const { data: { publicUrl } } = supabase.storage
                     .from('page-images')
                     .getPublicUrl(filePath);
+                  
+                  // Create file_segment_mapping entry
+                  await supabase.from('file_segment_mappings').insert({
+                    file_path: filePath,
+                    bucket_id: 'page-images',
+                    segment_ids: [],
+                    alt_text: formData.title || file.name
+                  });
                     
                   setFormData(prev => ({ ...prev, image_url: publicUrl }));
                   toast.success("Image uploaded successfully");
