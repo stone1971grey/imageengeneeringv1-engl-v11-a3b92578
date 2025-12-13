@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, Rocket, Cpu, FileCheck, Lightbulb, Handshake, Calendar, FlaskConical, Newspaper, Upload, ImageIcon, Link2, Building2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, EyeOff, Rocket, Cpu, FileCheck, Lightbulb, Handshake, Calendar, FlaskConical, Newspaper, Upload, ImageIcon, Link2, Building2, CheckSquare, Square } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,7 @@ interface NewsArticle {
   author: string | null;
   category: string | null;
   published: boolean;
+  visibility: 'public' | 'private';
   language: string;
   created_at: string;
   updated_at: string;
@@ -58,6 +59,8 @@ const getCategoryInfo = (category: string | null) => {
 const NewsEditor = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<NewsArticle | null>(null);
+  const [selectedArticles, setSelectedArticles] = useState<Set<string>>(new Set());
+  const [batchProcessing, setBatchProcessing] = useState(false);
   const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([
     { id: "initial", type: "paragraph", content: "" }
   ]);
@@ -71,6 +74,7 @@ const NewsEditor = () => {
     author: "",
     category: "",
     published: true,
+    visibility: "public" as 'public' | 'private',
   });
 
   // Sync blocks to formData.content as JSON
@@ -178,9 +182,61 @@ const NewsEditor = () => {
       author: "",
       category: "",
       published: true,
+      visibility: "public",
     });
     setContentBlocks([{ id: "initial", type: "paragraph", content: "" }]);
     setEditingArticle(null);
+  };
+
+  // Toggle article selection
+  const toggleArticleSelection = (articleId: string) => {
+    setSelectedArticles(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(articleId)) {
+        newSet.delete(articleId);
+      } else {
+        newSet.add(articleId);
+      }
+      return newSet;
+    });
+  };
+
+  // Select/Deselect all articles
+  const toggleSelectAll = () => {
+    if (selectedArticles.size === articles?.length) {
+      setSelectedArticles(new Set());
+    } else {
+      setSelectedArticles(new Set(articles?.map(a => a.id) || []));
+    }
+  };
+
+  // Batch visibility update
+  const handleBatchVisibility = async (newVisibility: 'public' | 'private') => {
+    if (selectedArticles.size === 0) {
+      toast.error("No articles selected");
+      return;
+    }
+
+    setBatchProcessing(true);
+    try {
+      const articleIds = Array.from(selectedArticles);
+      
+      const { error } = await supabase
+        .from("news_articles")
+        .update({ visibility: newVisibility })
+        .in("id", articleIds);
+
+      if (error) throw error;
+
+      toast.success(`${articleIds.length} article(s) set to ${newVisibility}`);
+      setSelectedArticles(new Set());
+      queryClient.invalidateQueries({ queryKey: ["news-articles"] });
+    } catch (error: any) {
+      console.error("Batch visibility error:", error);
+      toast.error(`Batch visibility update failed: ${error.message}`);
+    } finally {
+      setBatchProcessing(false);
+    }
   };
 
   const handleEdit = (article: NewsArticle) => {
@@ -195,6 +251,7 @@ const NewsEditor = () => {
       author: article.author || "",
       category: article.category || "",
       published: article.published,
+      visibility: article.visibility || "public",
     });
     // Parse content blocks from JSON or convert from HTML
     setContentBlocks(htmlToBlocks(article.content));
@@ -425,6 +482,56 @@ const NewsEditor = () => {
                 />
                 <Label htmlFor="published" className="text-gray-300">Published</Label>
               </div>
+              
+              {/* Visibility Setting */}
+              <div className="p-4 bg-[#2a2a2a] rounded-lg border border-gray-600">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {formData.visibility === 'private' ? (
+                      <EyeOff className="h-4 w-4 text-red-400" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-green-400" />
+                    )}
+                    <div>
+                      <div className="text-sm font-medium text-white">Visibility</div>
+                      <div className="text-xs text-gray-400">
+                        {formData.visibility === 'private' 
+                          ? 'Private - Not searchable' 
+                          : 'Public - Can be found via search'
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={formData.visibility === 'public' ? 'default' : 'outline'}
+                      onClick={() => setFormData({ ...formData, visibility: 'public' })}
+                      className={formData.visibility === 'public' 
+                        ? 'bg-green-600 hover:bg-green-700 text-white' 
+                        : 'bg-gray-700 border-gray-600 text-gray-400 hover:text-white'
+                      }
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      Public
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant={formData.visibility === 'private' ? 'default' : 'outline'}
+                      onClick={() => setFormData({ ...formData, visibility: 'private' })}
+                      className={formData.visibility === 'private' 
+                        ? 'bg-red-600 hover:bg-red-700 text-white' 
+                        : 'bg-gray-700 border-gray-600 text-gray-400 hover:text-white'
+                      }
+                    >
+                      <EyeOff className="h-4 w-4 mr-1" />
+                      Private
+                    </Button>
+                  </div>
+                </div>
+              </div>
                 </TabsContent>
                 
                 <TabsContent value="content" className="space-y-4 mt-4">
@@ -505,19 +612,83 @@ const NewsEditor = () => {
         })}
       </div>
 
+      {/* Batch Operations Toolbar */}
+      {articles && articles.length > 0 && (
+        <div className="p-3 bg-gray-800/50 border border-gray-700 rounded-lg flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={toggleSelectAll}
+              className="bg-blue-900/30 border-blue-700 text-blue-300 hover:bg-blue-900/50"
+            >
+              {selectedArticles.size === articles.length ? (
+                <CheckSquare className="h-4 w-4 mr-2" />
+              ) : (
+                <Square className="h-4 w-4 mr-2" />
+              )}
+              {selectedArticles.size === articles.length ? 'Deselect All' : 'Select All'}
+            </Button>
+            {selectedArticles.size > 0 && (
+              <span className="text-sm text-gray-400">
+                {selectedArticles.size} article(s) selected
+              </span>
+            )}
+          </div>
+          {selectedArticles.size > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                onClick={() => handleBatchVisibility('public')}
+                disabled={batchProcessing}
+                className="bg-green-900/50 hover:bg-green-900 border-green-800 text-green-300"
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                Public
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => handleBatchVisibility('private')}
+                disabled={batchProcessing}
+                className="bg-orange-900/50 hover:bg-orange-900 border-orange-800 text-orange-300"
+              >
+                <EyeOff className="h-4 w-4 mr-1" />
+                Private
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Articles Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {articles?.map((article) => {
           const categoryInfo = getCategoryInfo(article.category);
           const CategoryIcon = categoryInfo.icon;
+          const isSelected = selectedArticles.has(article.id);
           
           return (
             <Card 
               key={article.id} 
-              className="bg-[#1a1a1a] border-gray-700 overflow-hidden"
+              className={`bg-[#1a1a1a] border-gray-700 overflow-hidden ${isSelected ? 'ring-2 ring-[#f9dc24]' : ''}`}
             >
               {/* Image Section */}
               <div className="aspect-video relative overflow-hidden">
+                {/* Selection Checkbox */}
+                <div 
+                  className="absolute top-2 left-2 z-20 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleArticleSelection(article.id);
+                  }}
+                >
+                  {isSelected ? (
+                    <CheckSquare className="h-6 w-6 text-[#f9dc24] bg-gray-900/90 backdrop-blur-sm rounded border border-[#f9dc24]/30 p-0.5" />
+                  ) : (
+                    <Square className="h-6 w-6 text-gray-400 bg-gray-900/70 backdrop-blur-sm rounded border border-gray-600/30 p-0.5 hover:text-[#f9dc24] hover:border-[#f9dc24]/30" />
+                  )}
+                </div>
+
                 {article.image_url ? (
                   <img
                     src={article.image_url}
@@ -530,15 +701,15 @@ const NewsEditor = () => {
                   </div>
                 )}
                 
-                {/* Category Badge - Left */}
-                <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                {/* Category Badge - Left (shifted right to make room for checkbox) */}
+                <div className="absolute top-2 left-10 flex flex-wrap gap-1">
                   <Badge className={`${categoryInfo.color} text-white text-xs`}>
                     <CategoryIcon className="w-3 h-3 mr-1" />
                     {categoryInfo.label}
                   </Badge>
                 </div>
                 
-                {/* Status Badge - Right */}
+                {/* Status & Visibility Badges - Right */}
                 <div className="absolute top-2 right-2 flex flex-wrap gap-1">
                   {article.published ? (
                     <Badge className="bg-white/90 text-[#0f407b] text-xs font-medium">
@@ -549,6 +720,25 @@ const NewsEditor = () => {
                       Draft
                     </Badge>
                   )}
+                </div>
+                
+                {/* Visibility Badge - Bottom Left */}
+                <div 
+                  className={`absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-md border shadow-lg backdrop-blur-sm ${
+                    article.visibility === 'private' 
+                      ? 'bg-red-900/90 border-red-500/50' 
+                      : 'bg-green-900/90 border-green-500/50'
+                  }`}
+                  title={article.visibility === 'private' ? 'Private - Not searchable' : 'Public - Searchable'}
+                >
+                  {article.visibility === 'private' ? (
+                    <EyeOff className="h-3 w-3 text-red-400" />
+                  ) : (
+                    <Eye className="h-3 w-3 text-green-400" />
+                  )}
+                  <span className={`text-[10px] font-semibold ${article.visibility === 'private' ? 'text-red-400' : 'text-green-400'}`}>
+                    {article.visibility === 'private' ? 'Private' : 'Public'}
+                  </span>
                 </div>
               </div>
               
