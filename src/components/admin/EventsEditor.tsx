@@ -10,7 +10,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Eye, Calendar, MapPin, Clock, Upload, Globe, Users, GraduationCap, Presentation, Video, Building2, List } from "lucide-react";
+import { Pencil, Trash2, Plus, Eye, Calendar, MapPin, Clock, Upload, Globe, Users, GraduationCap, Presentation, Video, Building2, List, Lock, Unlock, CheckSquare, Square } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +45,7 @@ interface Event {
   registration_deadline: string | null;
   external_url: string | null;
   published: boolean;
+  visibility: 'public' | 'private';
   created_at: string;
   updated_at: string;
 }
@@ -103,6 +105,7 @@ const EventsEditor = () => {
   const [descriptionSections, setDescriptionSections] = useState<DescriptionSection[]>([
     { id: '1', heading: '', content: '', isBulletList: false }
   ]);
+  const [selectedEvents, setSelectedEvents] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
@@ -122,9 +125,51 @@ const EventsEditor = () => {
     registration_deadline: "",
     external_url: "",
     published: true,
+    visibility: "public" as 'public' | 'private',
   });
 
   const queryClient = useQueryClient();
+  
+  // Batch selection handlers
+  const toggleEventSelection = (eventId: string) => {
+    setSelectedEvents(prev => {
+      const next = new Set(prev);
+      if (next.has(eventId)) {
+        next.delete(eventId);
+      } else {
+        next.add(eventId);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (!events) return;
+    if (selectedEvents.size === events.length) {
+      setSelectedEvents(new Set());
+    } else {
+      setSelectedEvents(new Set(events.map(e => e.id)));
+    }
+  };
+
+  const handleBatchVisibility = async (visibility: 'public' | 'private') => {
+    if (selectedEvents.size === 0) return;
+    
+    try {
+      const { error } = await supabase
+        .from("events")
+        .update({ visibility })
+        .in("id", Array.from(selectedEvents));
+      
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      toast.success(`${selectedEvents.size} event(s) set to ${visibility}`);
+      setSelectedEvents(new Set());
+    } catch (error: any) {
+      toast.error("Failed to update visibility: " + error.message);
+    }
+  };
 
   // Fetch all events to determine translation status
   const { data: allEvents } = useQuery({
@@ -244,6 +289,7 @@ const EventsEditor = () => {
       registration_deadline: "",
       external_url: "",
       published: true,
+      visibility: "public",
     });
     setDescriptionSections([{ id: '1', heading: '', content: '', isBulletList: false }]);
     setEditingEvent(null);
@@ -272,6 +318,7 @@ const EventsEditor = () => {
       registration_deadline: event.registration_deadline || "",
       external_url: event.external_url || "",
       published: event.published,
+      visibility: event.visibility || "public",
     });
     setIsDialogOpen(true);
   };
@@ -791,8 +838,56 @@ const EventsEditor = () => {
         </Dialog>
       </div>
 
+      {/* Batch Operations Toolbar */}
+      {selectedEvents.size > 0 && (
+        <div className="flex items-center gap-4 p-4 bg-[#2a2a2a] rounded-lg border border-gray-600">
+          <span className="text-white font-medium">{selectedEvents.size} selected</span>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={() => handleBatchVisibility('public')}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Unlock className="w-4 h-4 mr-1" />
+              Public
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => handleBatchVisibility('private')}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              <Lock className="w-4 h-4 mr-1" />
+              Private
+            </Button>
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setSelectedEvents(new Set())}
+            className="text-gray-400 hover:text-white"
+          >
+            Clear selection
+          </Button>
+        </div>
+      )}
+
       {/* Category Filter Pills */}
       <div className="flex flex-wrap gap-2 pb-4">
+        <button
+          onClick={toggleSelectAll}
+          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+            events && selectedEvents.size === events.length
+              ? 'bg-[#f9dc24] text-black'
+              : 'bg-gray-700 text-white hover:bg-gray-600'
+          }`}
+        >
+          {events && selectedEvents.size === events.length ? (
+            <CheckSquare className="w-3 h-3" />
+          ) : (
+            <Square className="w-3 h-3" />
+          )}
+          Select All
+        </button>
         {EVENT_CATEGORIES.map((cat) => {
           const IconComponent = cat.icon;
           const count = events?.filter(e => e.category === cat.value).length || 0;
@@ -828,22 +923,35 @@ const EventsEditor = () => {
           return (
             <Card
               key={event.id}
-              className={`bg-[#1a1a1a] border-gray-700 overflow-hidden ${isPast ? 'opacity-60' : ''}`}
+              className={`bg-[#1a1a1a] border-gray-700 overflow-hidden ${isPast ? 'opacity-60' : ''} ${selectedEvents.has(event.id) ? 'ring-2 ring-[#f9dc24]' : ''}`}
             >
               <div className="aspect-video relative overflow-hidden">
+                {/* Selection Checkbox */}
+                <div className="absolute top-2 left-2 z-10">
+                  <Checkbox
+                    checked={selectedEvents.has(event.id)}
+                    onCheckedChange={() => toggleEventSelection(event.id)}
+                    className="h-5 w-5 border-2 border-white bg-black/50 data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
+                  />
+                </div>
                 <img
                   src={event.image_url}
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
                 {/* Status Badges */}
-                <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+                <div className="absolute top-2 left-10 flex flex-wrap gap-1">
                   <Badge className={`${categoryInfo.color} text-white text-xs`}>
                     <CategoryIcon className="w-3 h-3 mr-1" />
                     {categoryInfo.label}
                   </Badge>
                 </div>
                 <div className="absolute top-2 right-2 flex flex-wrap gap-1">
+                  {/* Visibility Badge */}
+                  <Badge className={`text-xs ${event.visibility === 'public' ? 'bg-green-600 text-white' : 'bg-orange-600 text-white'}`}>
+                    {event.visibility === 'public' ? <Unlock className="w-3 h-3 mr-1" /> : <Lock className="w-3 h-3 mr-1" />}
+                    {event.visibility === 'public' ? 'Public' : 'Private'}
+                  </Badge>
                   {event.published ? (
                     <Badge className="bg-white/90 text-[#0f407b] text-xs font-medium">
                       Live

@@ -251,6 +251,7 @@ export type Database = {
           time_start: string
           title: string
           updated_at: string
+          visibility: string
         }
         Insert: {
           category?: string
@@ -275,6 +276,7 @@ export type Database = {
           time_start: string
           title: string
           updated_at?: string
+          visibility?: string
         }
         Update: {
           category?: string
@@ -299,6 +301,7 @@ export type Database = {
           time_start?: string
           title?: string
           updated_at?: string
+          visibility?: string
         }
         Relationships: []
       }
