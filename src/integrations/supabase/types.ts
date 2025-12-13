@@ -478,6 +478,7 @@ export type Database = {
           teaser: string
           title: string
           updated_at: string | null
+          visibility: string
         }
         Insert: {
           author?: string | null
@@ -493,6 +494,7 @@ export type Database = {
           teaser: string
           title: string
           updated_at?: string | null
+          visibility?: string
         }
         Update: {
           author?: string | null
@@ -508,6 +510,7 @@ export type Database = {
           teaser?: string
           title?: string
           updated_at?: string | null
+          visibility?: string
         }
         Relationships: []
       }
