@@ -149,6 +149,8 @@ video::-ms-media-controls {
     --orange-foreground: 0 0% 0%;
     --orange-accent: 52 95% 56%;
     --orange-accent-foreground: 0 0% 0%;
+    --yellow: 52 95% 56%;
+    --yellow-foreground: 0 0% 0%;
 
     --radius: 0.5rem;
 
