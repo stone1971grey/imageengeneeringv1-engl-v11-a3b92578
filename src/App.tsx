@@ -20,6 +20,8 @@ import HiddenSegments from "./pages/HiddenSegments";
 import Backlog from "./pages/Backlog";
 import Charts from "./pages/Charts";
 import ChartDetail from "./pages/ChartDetail";
+import TestChartsListing from "./pages/TestChartsListing";
+import TestChartDetail from "./pages/TestChartDetail";
 import Cart from "./pages/Cart";
 import Events from "./pages/Events";
 import EventDetail from "./pages/EventDetail";
@@ -168,8 +170,8 @@ const App = () => (
             <Route path="/:lang/your-solution/security-surveillance/:slug" element={<DynamicCMSPage />} />
             
             {/* Universal catch-all routes for Products */}
-            <Route path="/:lang/products/test-charts" element={<DynamicCMSPage />} />
-            <Route path="/:lang/products/test-charts/:slug" element={<DynamicCMSPage />} />
+            <Route path="/:lang/products/test-charts" element={<TestChartsListing />} />
+            <Route path="/:lang/products/test-charts/:slug" element={<TestChartDetail />} />
             <Route path="/:lang/products/test-charts/:slug/:subslug" element={<DynamicCMSPage />} />
             <Route path="/:lang/products/illumination-devices" element={<DynamicCMSPage />} />
             <Route path="/:lang/products/illumination-devices/:slug" element={<DynamicCMSPage />} />
