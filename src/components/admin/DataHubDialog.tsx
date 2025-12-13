@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square, RefreshCw } from "lucide-react";
+import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { DropZone } from "./DropZone";
 import {
   Collapsible,
@@ -143,14 +143,17 @@ export function DataHubDialog({
         }
       });
 
-      // Load segment mappings from database
+      // Load segment mappings from database (including visibility)
       const { data: segmentMappings } = await supabase
         .from('file_segment_mappings')
-        .select('file_path, segment_ids');
+        .select('file_path, segment_ids, visibility');
       
-      const mappingsMap = new Map<string, string[]>();
+      const mappingsMap = new Map<string, { segment_ids: string[]; visibility: string }>();
       segmentMappings?.forEach(mapping => {
-        mappingsMap.set(mapping.file_path, mapping.segment_ids);
+        mappingsMap.set(mapping.file_path, { 
+          segment_ids: mapping.segment_ids, 
+          visibility: mapping.visibility || 'public' 
+        });
       });
 
       // Load files for each folder
@@ -172,14 +175,17 @@ export function DataHubDialog({
             }
             return true;
           }).map(file => {
-            // Enrich file with segment IDs from database
+            // Enrich file with segment IDs and visibility from database
             const filePath = `${folder.storage_path}/${file.name}`;
-            const segmentIds = mappingsMap.get(filePath) || [];
+            const mapping = mappingsMap.get(filePath);
+            const segmentIds = mapping?.segment_ids || [];
+            const visibility = mapping?.visibility || 'public';
             return {
               ...file,
               metadata: {
                 ...file.metadata,
-                segmentIds
+                segmentIds,
+                visibility
               }
             };
           });
@@ -204,14 +210,17 @@ export function DataHubDialog({
               segmentFiles.forEach(file => {
                 if (file.name.includes('.')) { // Only actual files
                   const fullPath = `${folder.storage_path}/${segmentDir.name}/${file.name}`;
-                  const dbSegmentIds = mappingsMap.get(fullPath) || [segmentId];
+                  const mapping = mappingsMap.get(fullPath);
+                  const dbSegmentIds = mapping?.segment_ids || [segmentId];
+                  const visibility = mapping?.visibility || 'public';
                   
                   actualFiles.push({
                     ...file,
                     name: `${segmentDir.name}/${file.name}`, // Preserve path
                     metadata: {
                       ...file.metadata,
-                      segmentIds: dbSegmentIds
+                      segmentIds: dbSegmentIds,
+                      visibility
                     }
                   });
                 }
@@ -781,6 +790,7 @@ export function DataHubDialog({
 
                     const segmentId = file.metadata?.segmentId || file.metadata?.segment_id || segmentFromPath;
                     const segmentIds = file.metadata?.segmentIds || (segmentId ? [segmentId] : []);
+                    const visibility = file.metadata?.visibility || 'public';
                     
                     return (
                       <div
@@ -823,6 +833,24 @@ export function DataHubDialog({
                                 }
                               }}
                              />
+                             {/* Visibility Badge - bottom-left */}
+                             <div 
+                               className={`absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-md border shadow-lg backdrop-blur-sm ${
+                                 visibility === 'private' 
+                                   ? 'bg-red-900/90 border-red-500/50' 
+                                   : 'bg-green-900/90 border-green-500/50'
+                               }`}
+                               title={visibility === 'private' ? 'Private - Not searchable' : 'Public - Searchable'}
+                             >
+                               {visibility === 'private' ? (
+                                 <EyeOff className="h-3 w-3 text-red-400" />
+                               ) : (
+                                 <Eye className="h-3 w-3 text-green-400" />
+                               )}
+                               <span className={`text-[10px] font-semibold ${visibility === 'private' ? 'text-red-400' : 'text-green-400'}`}>
+                                 {visibility === 'private' ? 'Private' : 'Public'}
+                               </span>
+                             </div>
                              {/* Segment Badges - support multiple segments on top-right */}
                              {segmentIds.length > 0 && (
                                <div className="absolute top-2 right-2 flex items-center gap-1">
@@ -876,6 +904,24 @@ export function DataHubDialog({
                             {/* Video badge */}
                             <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded font-medium">
                               VIDEO
+                            </div>
+                            {/* Visibility Badge for videos - bottom-left */}
+                            <div 
+                              className={`absolute bottom-2 left-2 flex items-center gap-1 px-2 py-1 rounded-md border shadow-lg backdrop-blur-sm ${
+                                visibility === 'private' 
+                                  ? 'bg-red-900/90 border-red-500/50' 
+                                  : 'bg-green-900/90 border-green-500/50'
+                              }`}
+                              title={visibility === 'private' ? 'Private - Not searchable' : 'Public - Searchable'}
+                            >
+                              {visibility === 'private' ? (
+                                <EyeOff className="h-3 w-3 text-red-400" />
+                              ) : (
+                                <Eye className="h-3 w-3 text-green-400" />
+                              )}
+                              <span className={`text-[10px] font-semibold ${visibility === 'private' ? 'text-red-400' : 'text-green-400'}`}>
+                                {visibility === 'private' ? 'Private' : 'Public'}
+                              </span>
                             </div>
                             {/* Segment Badges for videos */}
                             {segmentIds.length > 0 && (
