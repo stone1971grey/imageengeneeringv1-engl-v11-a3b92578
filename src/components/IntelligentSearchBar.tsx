@@ -1,179 +1,175 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, X, ArrowRight, Sparkles, Loader2, Calendar, Newspaper, FileText, Box } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useState, useEffect, useRef } from "react";
+import { Search, X, ChevronRight } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { charts } from "@/data/charts";
 
 interface SearchResult {
   id: string;
   title: string;
   description: string;
-  category: 'page' | 'news' | 'event' | 'product' | 'chart';
+  category: 'chart' | 'industry' | 'product' | 'solution' | 'page';
   url: string;
-  relevanceScore?: number;
-  snippet?: string;
   badges?: string[];
-  metadata?: Record<string, any>;
+  excerpt?: string;
 }
 
 interface SearchBarProps {
   variant?: 'desktop' | 'mobile' | 'utility';
 }
 
-interface AISearchResponse {
-  results: SearchResult[];
-  suggestions: string[];
-  intent?: string;
-  aiPowered?: boolean;
-  error?: string;
-}
-
 const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAIPowered, setIsAIPowered] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const navigate = useNavigate();
-  const { language } = useLanguage();
 
-  // Static search data for quick local results
+  // Static search data for navigation items and pages
   const staticSearchData: SearchResult[] = [
-    { id: 'home', title: 'Home', description: 'Image Engineering main page', category: 'page', url: `/${language}` },
-    { id: 'charts', title: 'Test Charts', description: 'All available test charts and calibration solutions', category: 'page', url: `/${language}/products/test-charts` },
-    { id: 'downloads', title: 'Downloads', description: 'Data sheets, software and documentation', category: 'page', url: `/${language}/info-hub/downloads` },
-    { id: 'automotive', title: 'Automotive', description: 'ADAS Testing and Automotive Vision solutions', category: 'page', url: `/${language}/your-solution/automotive` },
-    { id: 'products', title: 'Products', description: 'Overview of all products and solutions', category: 'page', url: `/${language}/products` },
-    { id: 'events', title: 'Events & Training', description: 'Upcoming events and training sessions', category: 'page', url: `/${language}/training-events/events` },
-    { id: 'news', title: 'News', description: 'Latest news and announcements', category: 'page', url: `/${language}/company/news` },
-    { id: 'contact', title: 'Contact', description: 'Get in touch with us', category: 'page', url: `/${language}/contact` },
+    // Pages
+    { id: 'home', title: 'Home', description: 'Image Engineering main page', category: 'page', url: '/' },
+    { id: 'charts', title: 'Test Charts', description: 'All available test charts and calibration solutions', category: 'page', url: '/charts' },
+    { id: 'downloads', title: 'Downloads', description: 'Data sheets, software and documentation', category: 'page', url: '/downloads' },
+    { id: 'automotive', title: 'Automotive', description: 'ADAS Testing and Automotive Vision solutions', category: 'page', url: '/automotive' },
+    { id: 'products', title: 'Products', description: 'Overview of all products and solutions', category: 'page', url: '/products' },
+    { id: 'industries', title: 'Industries', description: 'Solutions for various industry sectors', category: 'page', url: '/industries' },
+    { id: 'events', title: 'Events', description: 'Upcoming events and training sessions', category: 'page', url: '/events' },
+    
+    // Industries
+    { id: 'industry-photography', title: 'Photography', description: 'Digital cameras for professional and amateur applications', category: 'industry', url: '/industries#photography' },
+    { id: 'industry-mobile', title: 'Mobile Phones', description: 'Image quality testing according to VCX standards', category: 'industry', url: '/industries#mobile' },
+    { id: 'industry-automotive', title: 'Automotive & ADAS', description: 'Camera systems in vehicles, driver assistance and autonomous driving', category: 'industry', url: '/automotive' },
+    { id: 'industry-broadcast', title: 'Broadcast & HDTV', description: 'Video transmission, TV cameras, color-accurate reproduction', category: 'industry', url: '/industries#broadcast' },
+    { id: 'industry-security', title: 'Security / Surveillance', description: 'CCTV systems, video surveillance', category: 'industry', url: '/industries#security' },
+    { id: 'industry-machine-vision', title: 'Machine Vision', description: 'Camera systems for inspection, robotics, quality control', category: 'industry', url: '/industries#machine-vision' },
+    { id: 'industry-medical', title: 'Medical / Endoscopy', description: 'Image quality in medical imaging and diagnostic systems', category: 'industry', url: '/industries#medical' },
+    { id: 'industry-scanning', title: 'Scanning & Archiving', description: 'Quality assurance in digitization of documents, books, photos', category: 'industry', url: '/industries#scanning' },
+    { id: 'industry-lab', title: 'iQ‑Lab Testing', description: 'Independent laboratory services for numerous industries', category: 'industry', url: '/inside-lab' },
+
+    // Products
+    { id: 'product-charts', title: 'Charts', description: 'High-precision test patterns and color charts', category: 'product', url: '/charts' },
+    { id: 'product-equipment', title: 'Equipment', description: 'Professional testing equipment including LED lighting systems', category: 'product', url: '/products#equipment' },
+    { id: 'product-software', title: 'Software', description: 'Advanced software solutions for image analysis', category: 'product', url: '/products#software' },
+    { id: 'product-bundles', title: 'Product Bundles', description: 'Complete testing solutions with hardware, software and accessories', category: 'product', url: '/products#bundles' },
+    { id: 'product-solutions', title: 'Solutions', description: 'Complete lighting and illumination solutions', category: 'product', url: '/products#solutions' },
+    { id: 'product-accessories', title: 'Accessories', description: 'Professional accessories including chart cases, mounts', category: 'product', url: '/products#accessories' },
+    { id: 'product-training', title: 'Training', description: 'Professional training on image quality testing', category: 'product', url: '/products#training' },
+
+    // Solutions
+    { id: 'solution-camera-validation', title: 'Camera Quality Validation', description: 'For camera manufacturers who need precise lighting systems', category: 'solution', url: '/products#camera-validation' },
+    { id: 'solution-adas', title: 'In-Cabin Performance Testing', description: 'For developers of driver assistance systems', category: 'solution', url: '/automotive' },
+    { id: 'solution-smartphones', title: 'Test Environments for Smartphones & Displays', description: 'For OEMs and research in color reproduction', category: 'solution', url: '/products#smartphones' },
+    { id: 'solution-medical', title: 'Microscopy & Medical Imaging', description: 'For medical technology & life sciences', category: 'solution', url: '/products#medical' },
+    { id: 'solution-iso', title: 'ISO and IEEE Compliant Test Setups', description: 'For companies that need standards-compliant environments', category: 'solution', url: '/products#iso' },
   ];
 
-  // Perform AI-powered semantic search
-  const performAISearch = useCallback(async (searchQuery: string): Promise<AISearchResponse> => {
-    try {
-      const { data, error } = await supabase.functions.invoke('semantic-search', {
-        body: { 
-          query: searchQuery, 
-          language,
-          limit: 8
-        }
-      });
-
-      if (error) {
-        console.error('AI search error:', error);
-        return { results: [], suggestions: [], aiPowered: false };
-      }
-
-      return data as AISearchResponse;
-    } catch (err) {
-      console.error('Search failed:', err);
-      return { results: [], suggestions: [], aiPowered: false };
-    }
-  }, [language]);
-
-  // Local chart search for instant results
-  const performLocalSearch = useCallback((searchQuery: string): SearchResult[] => {
+  // Search function
+  const performSearch = (searchQuery: string): SearchResult[] => {
     if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase();
-    const localResults: SearchResult[] = [];
+
+    const query = searchQuery.toLowerCase();
+    const results: SearchResult[] = [];
 
     // Search in charts
     charts.forEach(chart => {
-      const score = calculateChartMatchScore(chart, q);
-      if (score > 0) {
-        localResults.push({
+      const matchScore = calculateMatchScore(chart, query);
+      if (matchScore > 0) {
+        results.push({
           id: chart.id,
           title: chart.title,
           description: chart.excerpt || chart.description,
           category: 'chart',
-          url: `/${language}/products/test-charts/${chart.slug}`,
+          url: `/charts/${chart.slug}`,
           badges: chart.badges,
-          relevanceScore: score
+          excerpt: chart.excerpt
         });
       }
     });
 
-    // Search in static pages
+    // Search in static data
     staticSearchData.forEach(item => {
-      if (item.title.toLowerCase().includes(q) || item.description.toLowerCase().includes(q)) {
-        localResults.push({ ...item, relevanceScore: item.title.toLowerCase().includes(q) ? 80 : 50 });
+      const matchScore = calculateStaticMatchScore(item, query);
+      if (matchScore > 0) {
+        results.push(item);
       }
     });
 
-    return localResults.sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0)).slice(0, 6);
-  }, [language]);
+    // Sort by relevance and return top 8 results
+    return results.slice(0, 8);
+  };
 
-  const calculateChartMatchScore = (chart: any, searchQuery: string): number => {
+  const calculateMatchScore = (chart: any, query: string): number => {
     let score = 0;
-    if (chart.title.toLowerCase().includes(searchQuery)) score += 50;
-    if (chart.sku?.toLowerCase().includes(searchQuery)) score += 40;
-    if (chart.excerpt?.toLowerCase().includes(searchQuery)) score += 30;
-    if (chart.applications?.some((app: string) => app.toLowerCase().includes(searchQuery))) score += 25;
-    if (chart.categories?.some((cat: string) => cat.toLowerCase().includes(searchQuery))) score += 20;
-    if (chart.standards?.some((std: string) => std.toLowerCase().includes(searchQuery))) score += 15;
+    
+    // Title match (highest priority)
+    if (chart.title.toLowerCase().includes(query)) score += 10;
+    
+    // SKU match
+    if (chart.sku.toLowerCase().includes(query)) score += 8;
+    
+    // Description/excerpt match
+    if (chart.excerpt?.toLowerCase().includes(query)) score += 6;
+    if (chart.description?.toLowerCase().includes(query)) score += 4;
+    
+    // Applications match
+    if (chart.applications?.some((app: string) => app.toLowerCase().includes(query))) score += 5;
+    
+    // Categories match
+    if (chart.categories?.some((cat: string) => cat.toLowerCase().includes(query))) score += 4;
+    
+    // Standards match
+    if (chart.standards?.some((std: string) => std.toLowerCase().includes(query))) score += 3;
+    
+    // Badges match
+    if (chart.badges?.some((badge: string) => badge.toLowerCase().includes(query))) score += 3;
+
     return score;
   };
 
-  // Combined search with debounce
+  const calculateStaticMatchScore = (item: SearchResult, query: string): number => {
+    let score = 0;
+    
+    if (item.title.toLowerCase().includes(query)) score += 10;
+    if (item.description.toLowerCase().includes(query)) score += 6;
+    
+    return score;
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'chart': return '📊';
+      case 'industry': return '🏭';
+      case 'product': return '📦';
+      case 'solution': return '💡';
+      case 'page': return '📄';
+      default: return '🔍';
+    }
+  };
+
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'chart': return 'Test Chart';
+      case 'industry': return 'Industry';
+      case 'product': return 'Product';
+      case 'solution': return 'Solution';
+      case 'page': return 'Page';
+      default: return 'Result';
+    }
+  };
+
+  // Handle search input changes
   useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      setSuggestions([]);
-      setIsAIPowered(false);
-      setIsOpen(false);
-      return;
-    }
+    const searchResults = performSearch(query);
+    setResults(searchResults);
+    setSelectedIndex(0);
+  }, [query]);
 
-    // Ensure dropdown is open when there is a query
-    setIsOpen(true);
-
-    // Immediate local search for responsiveness
-    const localResults = performLocalSearch(query);
-    setResults(localResults);
-    setIsAIPowered(false);
-
-    // Debounced AI search for semantic matching
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
-    debounceRef.current = setTimeout(async () => {
-      if (query.trim().length >= 2) {
-        setIsLoading(true);
-        const aiResponse = await performAISearch(query);
-        
-        if (aiResponse.results.length > 0) {
-          // Merge AI results with local results, prioritizing AI
-          const mergedResults = [...aiResponse.results];
-          localResults.forEach(local => {
-            if (!mergedResults.some(ai => ai.id === local.id)) {
-              mergedResults.push(local);
-            }
-          });
-          setResults(mergedResults.slice(0, 8));
-          setIsAIPowered(aiResponse.aiPowered || false);
-        }
-        
-        setSuggestions(aiResponse.suggestions || []);
-        setIsLoading(false);
-      }
-    }, 300);
-
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [query, performLocalSearch, performAISearch]);
-
-  // Keyboard navigation
+  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
@@ -204,7 +200,7 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, results, selectedIndex]);
 
-  // Click outside to close
+  // Handle clicking outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -222,234 +218,92 @@ const IntelligentSearchBar = ({ variant = 'desktop' }: SearchBarProps) => {
     navigate(result.url);
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setQuery(suggestion);
-    inputRef.current?.focus();
-  };
-
   const handleClear = () => {
     setQuery("");
     setResults([]);
-    setSuggestions([]);
-    setIsOpen(false);
     inputRef.current?.focus();
   };
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'chart': return <Box className="h-4 w-4 text-amber-600" />;
-      case 'news': return <Newspaper className="h-4 w-4 text-blue-600" />;
-      case 'event': return <Calendar className="h-4 w-4 text-emerald-600" />;
-      case 'page': return <FileText className="h-4 w-4 text-slate-500" />;
-      case 'product': return <Box className="h-4 w-4 text-orange-600" />;
-      default: return <Search className="h-4 w-4 text-slate-400" />;
-    }
-  };
-
-  const getCategoryLabel = (category: string) => {
-    switch (category) {
-      case 'chart': return 'Chart';
-      case 'news': return 'News';
-      case 'event': return 'Event';
-      case 'page': return 'Page';
-      case 'product': return 'Product';
-      default: return '';
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'chart': return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'news': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'event': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'page': return 'bg-slate-100 text-slate-600 border-slate-200';
-      case 'product': return 'bg-orange-100 text-orange-700 border-orange-200';
-      default: return 'bg-gray-100 text-gray-600 border-gray-200';
-    }
-  };
-
-  const highlightMatch = (text: string, searchQuery: string): React.ReactNode => {
-    if (!searchQuery.trim()) return text;
-    try {
-      const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const parts = text.split(new RegExp(`(${escapedQuery})`, 'gi'));
-      return parts.map((part, i) => 
-        part.toLowerCase() === searchQuery.toLowerCase() 
-          ? <span key={i} className="bg-yellow-200 text-yellow-900 font-semibold px-0.5 rounded">{part}</span>
-          : part
-      );
-    } catch {
-      return text;
-    }
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (results.length > 0 && results[selectedIndex]) {
-      handleResultClick(results[selectedIndex]);
-    }
-  };
-
-  // Determine container width based on variant
-  const getContainerClass = () => {
-    if (variant === 'mobile') return 'w-full';
-    if (variant === 'utility') return 'w-full max-w-md';
-    return 'w-64';
-  };
-
   return (
-    <div ref={searchRef} className={`relative ${getContainerClass()}`}>
-      <form onSubmit={handleFormSubmit} className="relative">
-        <div className="relative flex items-center">
-          {/* Search Icon or Loading Spinner */}
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 text-amber-500 animate-spin" />
-            ) : isAIPowered ? (
-              <Sparkles className="h-4 w-4 text-amber-500" />
-            ) : (
-              <Search className="h-4 w-4 text-slate-400" />
-            )}
-          </div>
-
-          {/* Input Field */}
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Search products, news, events..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => query && setIsOpen(true)}
-            className="w-full h-10 pl-10 pr-20 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-amber-400 transition-all duration-200 shadow-sm"
-          />
-
-          {/* Right side buttons */}
-          <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-1">
-            {query && (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
-                aria-label="Clear search"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-            <button
-              type="submit"
-              disabled={!query.trim()}
-              className="p-1.5 bg-amber-400 hover:bg-amber-500 disabled:bg-slate-200 disabled:cursor-not-allowed text-white disabled:text-slate-400 rounded transition-all duration-200"
-              aria-label="Search"
-            >
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </form>
+    <div ref={searchRef} className={`relative ${variant === 'mobile' ? 'w-full' : variant === 'utility' ? 'w-full' : ''}`}>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-black" />
+        <Input
+          ref={inputRef}
+          type="text"
+          placeholder="Search..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setIsOpen(true)}
+          className={
+            variant === 'utility'
+              ? "pl-10 pr-10 w-full h-10 bg-transparent border-none text-black placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              : variant === 'mobile' 
+                ? "pl-10 pr-10 w-full bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
+                : "pl-10 pr-10 w-36 bg-white border border-gray-300 text-black placeholder:text-black/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-0"
+          }
+        />
+        {query && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClear}
+            className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-white/20"
+          >
+            <X className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
 
       {/* Search Results Dropdown */}
       {isOpen && query && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-2xl z-[100] max-h-[480px] overflow-hidden">
-          {/* AI Status Bar */}
-          {(isLoading || isAIPowered) && (
-            <div className="px-4 py-2.5 border-b border-slate-100 bg-gradient-to-r from-amber-50 to-orange-50">
-              <div className="flex items-center gap-2">
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 text-amber-500 animate-spin" />
-                    <span className="text-xs font-medium text-amber-700">Searching with AI...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                    <span className="text-xs font-medium text-amber-700">AI-powered results</span>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Results List */}
-          <div className="overflow-y-auto max-h-[380px]">
-            {results.length > 0 ? (
-              <div className="py-2">
-                {results.map((result, index) => (
-                  <div
-                    key={`${result.id}-${index}`}
-                    className={`mx-2 px-3 py-3 cursor-pointer rounded-lg transition-all duration-150 ${
-                      index === selectedIndex 
-                        ? 'bg-amber-50 border border-amber-200' 
-                        : 'hover:bg-slate-50 border border-transparent'
-                    }`}
-                    onClick={() => handleResultClick(result)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                  >
-                    <div className="flex items-start gap-3">
-                      {/* Category Icon */}
-                      <div className="flex-shrink-0 mt-0.5 p-1.5 bg-slate-100 rounded-lg">
-                        {getCategoryIcon(result.category)}
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
+          {results.length > 0 ? (
+            <div className="py-2">
+              {results.map((result, index) => (
+                <div
+                  key={result.id}
+                  className={`px-4 py-3 cursor-pointer transition-colors ${
+                    index === selectedIndex ? 'bg-muted' : 'hover:bg-muted/50'
+                  }`}
+                  onClick={() => handleResultClick(result)}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl flex-shrink-0 mt-0.5">
+                      {getCategoryIcon(result.category)}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h4 className="font-medium text-foreground truncate">
+                          {result.title}
+                        </h4>
+                        <Badge variant="secondary" className="text-xs">
+                          {getCategoryLabel(result.category)}
+                        </Badge>
                       </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-slate-900 text-sm truncate">
-                            {highlightMatch(result.title, query)}
-                          </h4>
-                          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded border ${getCategoryColor(result.category)}`}>
-                            {getCategoryLabel(result.category)}
-                          </span>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {result.description}
+                      </p>
+                      {result.badges && result.badges.length > 0 && (
+                        <div className="flex gap-1 mt-2">
+                          {result.badges.slice(0, 3).map((badge, i) => (
+                            <Badge key={i} variant="outline" className="text-xs">
+                              {badge}
+                            </Badge>
+                          ))}
                         </div>
-                        <p className="text-xs text-slate-500 line-clamp-1">
-                          {result.snippet || result.description}
-                        </p>
-                      </div>
-
-                      {/* Arrow */}
-                      <ArrowRight className={`h-4 w-4 flex-shrink-0 mt-1 transition-colors ${
-                        index === selectedIndex ? 'text-amber-500' : 'text-slate-300'
-                      }`} />
+                      )}
                     </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="px-6 py-10 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 bg-slate-100 rounded-full flex items-center justify-center">
-                  <Search className="h-5 w-5 text-slate-400" />
                 </div>
-                <p className="text-sm font-medium text-slate-700">No results found</p>
-                <p className="text-xs text-slate-400 mt-1">Try different keywords</p>
-              </div>
-            )}
-          </div>
-
-          {/* Suggestions Footer */}
-          {suggestions.length > 0 && (
-            <div className="px-4 py-3 border-t border-slate-100 bg-slate-50">
-              <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-2">Suggestions</p>
-              <div className="flex flex-wrap gap-1.5">
-                {suggestions.slice(0, 4).map((suggestion, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className="px-2.5 py-1 text-xs font-medium text-slate-600 bg-white border border-slate-200 rounded-full hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300 transition-all duration-150"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
+              ))}
             </div>
-          )}
-
-          {/* Keyboard Hint */}
-          {results.length > 0 && (
-            <div className="px-4 py-2 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-              <div className="flex items-center gap-3 text-[10px] text-slate-400">
-                <span><kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-500 font-mono">↑↓</kbd> Navigate</span>
-                <span><kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-500 font-mono">Enter</kbd> Select</span>
-                <span><kbd className="px-1.5 py-0.5 bg-slate-200 rounded text-slate-500 font-mono">Esc</kbd> Close</span>
-              </div>
+          ) : (
+            <div className="px-4 py-8 text-center text-muted-foreground">
+              <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p>No results found for "{query}"</p>
+              <p className="text-sm mt-1">Try different search terms</p>
             </div>
           )}
         </div>
