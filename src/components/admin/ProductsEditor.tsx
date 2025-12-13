@@ -380,9 +380,28 @@ const ProductsEditor = () => {
               label="Product Image *"
               currentImageUrl={formData.image_url}
               onFileSelect={async (file) => {
-                // Create temporary URL for preview
-                const objectUrl = URL.createObjectURL(file);
-                setFormData(prev => ({ ...prev, image_url: objectUrl }));
+                // Upload to Supabase Storage
+                try {
+                  const fileExt = file.name.split('.').pop();
+                  const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                  const filePath = `products/${fileName}`;
+                  
+                  const { error: uploadError } = await supabase.storage
+                    .from('page-images')
+                    .upload(filePath, file);
+                    
+                  if (uploadError) throw uploadError;
+                  
+                  const { data: { publicUrl } } = supabase.storage
+                    .from('page-images')
+                    .getPublicUrl(filePath);
+                    
+                  setFormData(prev => ({ ...prev, image_url: publicUrl }));
+                  toast.success("Image uploaded successfully");
+                } catch (error: any) {
+                  console.error("Upload error:", error);
+                  toast.error(error.message || "Failed to upload image");
+                }
               }}
               onMediaSelect={(url) => {
                 setFormData(prev => ({ ...prev, image_url: url }));
