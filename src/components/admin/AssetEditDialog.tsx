@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { X, Save, FileText, Calendar, Weight, Image as ImageIcon, Database, Languages, Sparkles } from "lucide-react";
+import { X, Save, FileText, Calendar, Weight, Image as ImageIcon, Database, Languages, Sparkles, Eye, EyeOff } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
 
 interface AssetEditDialogProps {
@@ -37,12 +37,13 @@ const SUPPORTED_LANGUAGES = [
 export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDialogProps) {
   const [altTextTranslations, setAltTextTranslations] = useState<Record<string, string>>({});
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
 
-  // Load alt text translations when dialog opens
-  const loadAltTextTranslations = async () => {
+  // Load alt text translations and visibility when dialog opens
+  const loadAssetData = async () => {
     if (!asset?.filePath) return;
 
     const bucketId = asset.bucket_id || "page-images";
@@ -50,12 +51,15 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
     try {
       const { data, error } = await supabase
         .from('file_segment_mappings')
-        .select('alt_text, alt_text_translations')
+        .select('alt_text, alt_text_translations, visibility')
         .eq('file_path', asset.filePath)
         .eq('bucket_id', bucketId)
         .maybeSingle();
 
       if (error) throw error;
+
+      // Load visibility
+      setVisibility((data?.visibility as 'public' | 'private') || 'public');
 
       // Check if alt_text_translations has actual content
       const translations = data?.alt_text_translations as Record<string, string> | null;
@@ -70,17 +74,18 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         setAltTextTranslations({});
       }
     } catch (error: any) {
-      console.error('Error loading alt text translations:', error);
+      console.error('Error loading asset data:', error);
       setAltTextTranslations({});
+      setVisibility('public');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Load alt text when asset changes
+  // Load asset data when asset changes
   useEffect(() => {
     if (isOpen && asset) {
-      loadAltTextTranslations();
+      loadAssetData();
       setSelectedLanguage('en');
     }
   }, [isOpen, asset]);
@@ -206,7 +211,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         ? existing.segment_ids
         : (asset.segmentIds || []);
 
-      // 2) Upsert row with translations
+      // 2) Upsert row with translations and visibility
       const { error: upsertError } = await supabase
         .from('file_segment_mappings')
         .upsert(
@@ -217,6 +222,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
             segment_ids: segmentIds,
             alt_text: altTextTranslations['en'] || '', // Keep legacy field updated
             alt_text_translations: altTextTranslations,
+            visibility: visibility,
             updated_at: new Date().toISOString(),
           },
           { onConflict: 'file_path,bucket_id' }
@@ -227,7 +233,7 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         throw upsertError;
       }
       
-      toast.success('✅ Alt text translations saved successfully');
+      toast.success('✅ Asset settings saved successfully');
 
       try {
         onSave();
@@ -350,6 +356,54 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
               </div>
             </div>
           )}
+
+          {/* Visibility Setting */}
+          <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {visibility === 'private' ? (
+                  <EyeOff className="h-4 w-4 text-red-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-green-400" />
+                )}
+                <div>
+                  <div className="text-sm font-medium text-white">Visibility</div>
+                  <div className="text-xs text-gray-400">
+                    {visibility === 'private' 
+                      ? 'Private - Not searchable by site visitors' 
+                      : 'Public - Can be found via search'
+                    }
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant={visibility === 'public' ? 'default' : 'outline'}
+                  onClick={() => setVisibility('public')}
+                  className={visibility === 'public' 
+                    ? 'bg-green-600 hover:bg-green-700 text-white' 
+                    : 'bg-gray-700 border-gray-600 text-gray-400 hover:text-white'
+                  }
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  Public
+                </Button>
+                <Button
+                  size="sm"
+                  variant={visibility === 'private' ? 'default' : 'outline'}
+                  onClick={() => setVisibility('private')}
+                  className={visibility === 'private' 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-gray-700 border-gray-600 text-gray-400 hover:text-white'
+                  }
+                >
+                  <EyeOff className="h-4 w-4 mr-1" />
+                  Private
+                </Button>
+              </div>
+            </div>
+          </div>
 
           {/* Translation Status */}
           <div className="flex items-center gap-2 flex-wrap">

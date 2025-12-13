@@ -312,6 +312,7 @@ export type Database = {
           id: string
           segment_ids: string[]
           updated_at: string | null
+          visibility: string
         }
         Insert: {
           alt_text?: string | null
@@ -322,6 +323,7 @@ export type Database = {
           id?: string
           segment_ids: string[]
           updated_at?: string | null
+          visibility?: string
         }
         Update: {
           alt_text?: string | null
@@ -332,6 +334,7 @@ export type Database = {
           id?: string
           segment_ids?: string[]
           updated_at?: string | null
+          visibility?: string
         }
         Relationships: []
       }
