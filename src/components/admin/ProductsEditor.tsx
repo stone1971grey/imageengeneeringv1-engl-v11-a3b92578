@@ -320,7 +320,7 @@ const ProductsEditor = () => {
           {isEditing ? (editingProduct ? "Edit Product" : "Create Product") : "Products"}
         </h2>
         {!isEditing && (
-          <Button onClick={handleCreate} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button onClick={handleCreate} className="bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90">
             <Plus className="h-4 w-4 mr-2" />
             Add Product
           </Button>
@@ -597,7 +597,7 @@ const ProductsEditor = () => {
           <div className="flex gap-3 pt-4">
             <Button
               onClick={handleSave}
-              className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+              className="flex-1 bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
             >
               Save
             </Button>
@@ -667,7 +667,7 @@ const ProductsEditor = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleEdit(product)}
-                    className="text-blue-400 hover:text-blue-300"
+                    className="text-[hsl(var(--yellow))] hover:text-[hsl(var(--yellow))]/80"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
