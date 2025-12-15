@@ -238,7 +238,7 @@ const TestChartDetail = () => {
 
       <main>
         {/* Product Hero - 3 Column Layout */}
-        <section className="pt-28 pb-8">
+        <section className="pt-36 pb-8">
           <div className="container mx-auto px-6">
             {/* Breadcrumb - Backend style */}
             <div className="mb-8">
@@ -308,26 +308,7 @@ const TestChartDetail = () => {
                 </div>
               </article>
 
-              {/* CENTER: Chart Attributes */}
-              <div className="lg:col-span-4">
-                {specifications.length > 0 && (
-                  <div className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-gray-700 h-fit">
-                    <div className="bg-[#222] px-5 py-3 border-b border-gray-700">
-                      <h2 className="text-base font-semibold text-white">Chart Attributes</h2>
-                    </div>
-                    <div className="divide-y divide-gray-800">
-                      {specifications.map((row) => (
-                        <div key={row.label} className="flex px-5 py-3">
-                          <div className="w-32 text-gray-400 font-medium text-sm">{row.label}</div>
-                          <div className="flex-1 text-white text-sm whitespace-pre-line">{row.value}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* RIGHT: Image Gallery */}
+              {/* CENTER: Image Gallery */}
               <div className="lg:col-span-4 space-y-3">
                 <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
                   <DialogTrigger asChild>
@@ -372,6 +353,25 @@ const TestChartDetail = () => {
                         <img src={img} alt="" className="w-full h-full object-contain p-1 bg-gray-900" loading="lazy" />
                       </button>
                     ))}
+                  </div>
+                )}
+              </div>
+
+              {/* RIGHT: Chart Attributes */}
+              <div className="lg:col-span-4">
+                {specifications.length > 0 && (
+                  <div className="bg-[#1a1a1a] rounded-xl overflow-hidden border border-gray-700 h-fit">
+                    <div className="bg-[#222] px-5 py-3 border-b border-gray-700">
+                      <h2 className="text-base font-semibold text-white">Chart Attributes</h2>
+                    </div>
+                    <div className="divide-y divide-gray-800">
+                      {specifications.map((row) => (
+                        <div key={row.label} className="flex px-5 py-3">
+                          <div className="w-32 text-gray-400 font-medium text-sm">{row.label}</div>
+                          <div className="flex-1 text-white text-sm whitespace-pre-line">{row.value}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
