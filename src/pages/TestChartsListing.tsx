@@ -255,7 +255,7 @@ const TestChartsListing = () => {
             </div>
             <Button
               onClick={() => setShowFilters(!showFilters)}
-              className={`${showFilters ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'} hover:bg-primary hover:text-primary-foreground transition-colors`}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
               {showFilters ? 'Hide Filter' : 'Show Filter'}
