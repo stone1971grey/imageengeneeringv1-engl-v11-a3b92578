@@ -351,15 +351,24 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
 
                 <p className="text-sm text-gray-400 line-clamp-2">{product.teaser}</p>
 
-                {product.features.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.features.slice(0, 3).map((feature, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs border-gray-600 text-gray-300 bg-gray-800/50">
-                        {feature}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                {/* Visible Filter Badges - from measurement_focus, format_fov, applications */}
+                {(() => {
+                  const visibleBadges = [
+                    ...product.measurement_focus.slice(0, 2),
+                    ...product.format_fov.filter(f => f !== 'Standard').slice(0, 1),
+                    ...product.applications.slice(0, 1)
+                  ].slice(0, 4);
+                  
+                  return visibleBadges.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {visibleBadges.map((badge, idx) => (
+                        <Badge key={idx} className="text-xs bg-[#f9dc24]/20 text-[#f9dc24] border-[#f9dc24]/30 hover:bg-[#f9dc24]/30">
+                          {badge}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : null;
+                })()}
 
                 <div className="pt-2 border-t border-gray-800">
                   <span className={`text-sm font-medium ${
