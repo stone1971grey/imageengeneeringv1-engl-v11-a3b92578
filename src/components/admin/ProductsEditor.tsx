@@ -586,9 +586,9 @@ const ProductsEditor = () => {
                 </div>
               ))}
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
               {/* Yellow Button - Upload from Computer */}
-              <label className="cursor-pointer w-full">
+              <label className="cursor-pointer flex-1">
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
@@ -655,29 +655,31 @@ const ProductsEditor = () => {
               </label>
               
               {/* Blue Button - Select from Media */}
-              <MediaSelector
-                label=""
-                currentImageUrl=""
-                onFileSelect={async () => {}}
-                onMediaSelect={(url) => {
-                  const fileName = url.split('/').pop() || 'document';
-                  const fileExt = fileName.split('.').pop()?.toUpperCase() || 'PDF';
-                  setFormData(prev => ({
-                    ...prev,
-                    documents: [...prev.documents, {
-                      url: url,
-                      title: fileName.replace(/\.[^/.]+$/, ''),
-                      type: fileExt
-                    }]
-                  }));
-                  toast.success("Document selected");
-                }}
-                previewSize="small"
-                buttonOnly
-                buttonLabel="Select from Media"
-                buttonVariant="blue"
-                fullWidth
-              />
+              <div className="flex-1">
+                <MediaSelector
+                  label=""
+                  currentImageUrl=""
+                  onFileSelect={async () => {}}
+                  onMediaSelect={(url) => {
+                    const fileName = url.split('/').pop() || 'document';
+                    const fileExt = fileName.split('.').pop()?.toUpperCase() || 'PDF';
+                    setFormData(prev => ({
+                      ...prev,
+                      documents: [...prev.documents, {
+                        url: url,
+                        title: fileName.replace(/\.[^/.]+$/, ''),
+                        type: fileExt
+                      }]
+                    }));
+                    toast.success("Document selected");
+                  }}
+                  previewSize="small"
+                  buttonOnly
+                  buttonLabel="Select from Media"
+                  buttonVariant="blue"
+                  fullWidth
+                />
+              </div>
             </div>
           </div>
 
