@@ -55,6 +55,11 @@ interface UiLabels {
   detailsButton: string;
   requestQuoteButton: string;
   noProductsFound: string;
+  noProductsAvailable: string;
+  noProductsMatchCriteria: string;
+  clearAllFiltersButton: string;
+  resultsCount: string;
+  resultsCountSingular: string;
 }
 
 const DEFAULT_UI_LABELS: UiLabels = {
@@ -73,7 +78,12 @@ const DEFAULT_UI_LABELS: UiLabels = {
   discontinuedLabel: "Discontinued",
   detailsButton: "Details",
   requestQuoteButton: "Request Quote",
-  noProductsFound: "No products found"
+  noProductsFound: "No products found",
+  noProductsAvailable: "No test charts available yet. Add products in the Admin Dashboard.",
+  noProductsMatchCriteria: "No test charts match your criteria",
+  clearAllFiltersButton: "Clear All Filters",
+  resultsCount: "test charts found",
+  resultsCountSingular: "test chart found"
 };
 
 interface PageConfig {
@@ -593,7 +603,7 @@ const TestChartsListing = () => {
       <section className="py-12">
         <div className="container mx-auto px-6">
           <div className="mb-6 text-white/70">
-            {filteredProducts.length} test chart{filteredProducts.length !== 1 ? 's' : ''} found
+            {filteredProducts.length} {filteredProducts.length !== 1 ? pageConfig.uiLabels.resultsCount : pageConfig.uiLabels.resultsCountSingular}
           </div>
           
           <div className={`grid gap-6 ${pageConfig.layout === 'list' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
@@ -606,8 +616,8 @@ const TestChartsListing = () => {
             <div className="text-center py-16">
               <p className="text-muted-foreground text-lg mb-4">
                 {products.length === 0 
-                  ? "No test charts available yet. Add products in the Admin Dashboard."
-                  : "No test charts match your criteria"
+                  ? pageConfig.uiLabels.noProductsAvailable
+                  : pageConfig.uiLabels.noProductsMatchCriteria
                 }
               </p>
               {hasActiveFilters && (
@@ -615,7 +625,7 @@ const TestChartsListing = () => {
                 onClick={clearAllFilters}
                 className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-colors"
               >
-                Clear All Filters
+                {pageConfig.uiLabels.clearAllFiltersButton}
               </Button>
               )}
             </div>
