@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { Database, Upload, ChevronDown, ChevronRight, FolderPlus, Trash2, FolderOpen, Folder, Edit2, File, Tag, CheckSquare, Square, RefreshCw, Eye, EyeOff, FileText, Loader2 } from "lucide-react";
 import { DropZone } from "./DropZone";
 import {
   Collapsible,
@@ -73,6 +73,7 @@ export function DataHubDialog({
   });
   const [folders, setFolders] = useState<MediaFolder[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ current: number; total: number; fileName: string }>({ current: 0, total: 0, fileName: '' });
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [newFolderName, setNewFolderName] = useState("");
   const [creatingFolderFor, setCreatingFolderFor] = useState<string | null>(null);
@@ -367,12 +368,16 @@ export function DataHubDialog({
 
     setUploading(true);
     setSelectedFolder(folder.id);
+    setUploadProgress({ current: 0, total: files.length, fileName: '' });
 
     let successCount = 0;
     let failCount = 0;
 
     try {
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        setUploadProgress({ current: i + 1, total: files.length, fileName: file.name });
+        
         try {
           const timestamp = Date.now();
           const fileName = `${timestamp}-${file.name}`;
@@ -409,6 +414,7 @@ export function DataHubDialog({
     } finally {
       setUploading(false);
       setSelectedFolder(null);
+      setUploadProgress({ current: 0, total: 0, fileName: '' });
     }
   };
 
@@ -616,6 +622,10 @@ export function DataHubDialog({
 
   const isVideo = useCallback((fileName: string) => {
     return /\.(mp4|webm)$/i.test(fileName);
+  }, []);
+
+  const isPdf = useCallback((fileName: string) => {
+    return /\.pdf$/i.test(fileName);
   }, []);
 
   // Memoize file filtering to avoid recalculating on every render
@@ -829,6 +839,25 @@ export function DataHubDialog({
                 </div>
               )}
 
+              {/* Upload Progress Indicator */}
+              {uploading && selectedFolder === folder.id && uploadProgress.total > 0 && (
+                <div className="mb-4 p-4 bg-[#f9dc24]/10 border border-[#f9dc24]/30 rounded-lg">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Loader2 className="h-5 w-5 text-[#f9dc24] animate-spin" />
+                    <span className="text-[#f9dc24] font-medium">
+                      Uploading {uploadProgress.current} of {uploadProgress.total}...
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-400 truncate">{uploadProgress.fileName}</p>
+                  <div className="mt-2 h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-[#f9dc24] transition-all duration-300"
+                      style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Drag & Drop Zone (only in non-selection mode) */}
               {!selectionMode && (
                 <div className="mb-4">
@@ -858,6 +887,7 @@ export function DataHubDialog({
                     const fileUrl = getFileUrl(folder, file.name);
                     const isImg = isImage(file.name);
                     const isVid = isVideo(file.name);
+                    const isPdfFile = isPdf(file.name);
 
                     // Derive segment IDs from metadata or path (segment-XXX/filename)
                     const pathParts = file.name.split('/');
@@ -1017,7 +1047,25 @@ export function DataHubDialog({
                             )}
                           </div>
                         )}
-                        {!isImg && !isVid && (
+                        {isPdfFile && (
+                          <div 
+                            className={`aspect-video bg-gradient-to-br from-red-900/30 to-red-800/20 flex flex-col items-center justify-center gap-2 ${selectionMode ? 'cursor-pointer' : ''}`}
+                            onClick={() => {
+                              if (selectionMode && onSelect) {
+                                onSelect(fileUrl, {
+                                  name: file.name,
+                                  folder: folder.storage_path,
+                                  created_at: file.created_at,
+                                  isPdf: true
+                                });
+                              }
+                            }}
+                          >
+                            <FileText className="h-12 w-12 text-red-400" />
+                            <span className="text-[10px] font-bold text-red-400 bg-red-900/50 px-2 py-0.5 rounded">PDF</span>
+                          </div>
+                        )}
+                        {!isImg && !isVid && !isPdfFile && (
                           <div className="aspect-video bg-gray-900 flex items-center justify-center">
                             <File className="h-10 w-10 text-gray-600" />
                           </div>
