@@ -35,6 +35,38 @@ const FORMAT_FOV = ["Ultra-Wide", "Standard", "Multi-Format"];
 const APPLICATION_OPTIONS = ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"];
 const INTEGRATION_FEATURES = ["Integrated Illumination", "Timing Hardware", "ISO Compliant"];
 
+// Default UI labels
+const DEFAULT_UI_LABELS: Record<string, string> = {
+  searchPlaceholder: "Search products...",
+  clearFiltersButton: "Clear Filters",
+  noProductsFound: "No products found",
+  viewDetailsButton: "View Details",
+  filterByLabel: "Filter by",
+  sortByLabel: "Sort by",
+  showingLabel: "Showing",
+  ofLabel: "of",
+  productsLabel: "products",
+  previousButton: "Previous",
+  nextButton: "Next",
+  hideFilterButton: "Hide Filter",
+  showFilterButton: "Show Filter",
+  clearAllButton: "Clear All",
+  detailsButton: "Details",
+  requestQuoteButton: "Request Quote",
+  inStockLabel: "In Stock",
+  preOrderLabel: "Pre-Order",
+  outOfStockLabel: "Out of Stock",
+  discontinuedLabel: "Discontinued",
+  noProductsYetMessage: "No products available yet.",
+  noMatchMessage: "No products match your criteria",
+  pageLabel: "Page",
+  filterProductTypes: "Product Type",
+  filterMeasurementFocus: "Measurement Focus",
+  filterFormatFov: "Format / FOV",
+  filterApplications: "Application",
+  filterIntegrationFeatures: "Integration Features"
+};
+
 interface ProductListSegmentProps {
   segmentId?: number;
   pageSlug?: string;
@@ -47,6 +79,7 @@ interface ProductListSegmentProps {
     maxProducts?: number;
     layout?: 'grid' | 'list';
     visibleFilters?: Record<string, boolean>;
+    uiLabels?: Record<string, string>;
   };
   language?: string;
 }
@@ -68,6 +101,12 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
   // Derive layout and productsPerPage from config (reactive)
   const layout = config?.layout || 'grid';
   const productsPerPage = config?.maxProducts || 0; // 0 = no limit
+  
+  // UI Labels helper - merges default labels with CMS-configured labels
+  const uiLabels = useMemo(() => ({
+    ...DEFAULT_UI_LABELS,
+    ...(config?.uiLabels || {})
+  }), [config?.uiLabels]);
   
   // 5 Filter states
   const [selectedProductTypes, setSelectedProductTypes] = useState<Set<string>>(new Set());
@@ -273,7 +312,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search products..."
+                placeholder={uiLabels.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-500 focus:border-primary"
@@ -285,12 +324,12 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
                 className={`${showFilters ? 'bg-primary text-primary-foreground' : 'bg-gray-800 text-white'} hover:bg-primary hover:text-primary-foreground`}
               >
                 {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
-                {showFilters ? 'Hide Filter' : 'Show Filter'}
+                {showFilters ? uiLabels.hideFilterButton : uiLabels.showFilterButton}
               </Button>
             )}
             {hasActiveFilters && (
               <Button onClick={clearAllFilters} variant="ghost" className="text-gray-400 hover:text-white">
-                Clear All
+                {uiLabels.clearAllButton}
               </Button>
             )}
           </div>
@@ -303,7 +342,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
               {/* 1. Product Type */}
               {(config?.visibleFilters?.productTypes !== false) && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-white text-sm">Product Type</h3>
+                  <h3 className="font-semibold text-white text-sm">{uiLabels.filterProductTypes}</h3>
                   <div className="space-y-2">
                     {PRODUCT_TYPES.map(type => (
                       <label key={type} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
@@ -322,7 +361,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
               {/* 2. Measurement Focus */}
               {(config?.visibleFilters?.measurementFocus !== false) && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-white text-sm">Measurement Focus</h3>
+                  <h3 className="font-semibold text-white text-sm">{uiLabels.filterMeasurementFocus}</h3>
                   <div className="space-y-2">
                     {MEASUREMENT_FOCUS.map(focus => (
                       <label key={focus} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
@@ -341,7 +380,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
               {/* 3. Format / FOV */}
               {(config?.visibleFilters?.formatFov !== false) && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-white text-sm">Format / FOV</h3>
+                  <h3 className="font-semibold text-white text-sm">{uiLabels.filterFormatFov}</h3>
                   <div className="space-y-2">
                     {FORMAT_FOV.map(format => (
                       <label key={format} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
@@ -360,7 +399,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
               {/* 4. Application */}
               {(config?.visibleFilters?.applications !== false) && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-white text-sm">Application</h3>
+                  <h3 className="font-semibold text-white text-sm">{uiLabels.filterApplications}</h3>
                   <div className="space-y-2">
                     {APPLICATION_OPTIONS.map(app => (
                       <label key={app} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
@@ -379,7 +418,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
               {/* 5. Integration Features */}
               {(config?.visibleFilters?.integrationFeatures !== false) && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-white text-sm">Integration Features</h3>
+                  <h3 className="font-semibold text-white text-sm">{uiLabels.filterIntegrationFeatures}</h3>
                   <div className="space-y-2">
                     {INTEGRATION_FEATURES.map(feature => (
                       <label key={feature} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
@@ -458,9 +497,9 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
                           product.availability === 'available' ? 'text-green-400' : 
                           product.availability === 'pre-order' ? 'text-primary' : 'text-gray-400'
                         }`}>
-                          {product.availability === 'available' ? 'In Stock' : 
-                           product.availability === 'pre-order' ? 'Pre-Order' :
-                           product.availability === 'out-of-stock' ? 'Out of Stock' : 'Discontinued'}
+                          {product.availability === 'available' ? uiLabels.inStockLabel : 
+                           product.availability === 'pre-order' ? uiLabels.preOrderLabel :
+                           product.availability === 'out-of-stock' ? uiLabels.outOfStockLabel : uiLabels.discontinuedLabel}
                         </span>
                       </div>
 
@@ -470,12 +509,12 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
                           className="flex-1 bg-black hover:bg-black/80 text-white font-medium"
                         >
                           <FileText className="w-4 h-4 mr-2" />
-                          Details
+                          {uiLabels.detailsButton}
                         </Button>
                         <Button 
                           className="flex-1 bg-[hsl(var(--yellow))] hover:bg-[hsl(var(--yellow))]/90 text-black font-medium"
                         >
-                          Request Quote
+                          {uiLabels.requestQuoteButton}
                         </Button>
                       </div>
                     </CardContent>
@@ -494,7 +533,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
                     className="border-gray-600 text-white hover:bg-gray-800 disabled:opacity-50"
                   >
                     <ChevronLeft className="w-4 h-4 mr-1" />
-                    Previous
+                    {uiLabels.previousButton}
                   </Button>
                   
                   <div className="flex items-center gap-1">
@@ -521,7 +560,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
                     disabled={currentPage === totalPages}
                     className="border-gray-600 text-white hover:bg-gray-800 disabled:opacity-50"
                   >
-                    Next
+                    {uiLabels.nextButton}
                     <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </div>
@@ -534,13 +573,13 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
           <div className="text-center py-16">
             <p className="text-gray-400 text-lg mb-4">
               {products.length === 0 
-                ? "No products available yet."
-                : "No products match your criteria"
+                ? uiLabels.noProductsYetMessage
+                : uiLabels.noMatchMessage
               }
             </p>
             {hasActiveFilters && (
               <Button onClick={clearAllFilters} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                Clear All Filters
+                {uiLabels.clearFiltersButton}
               </Button>
             )}
           </div>
