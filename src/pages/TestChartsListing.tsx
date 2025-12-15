@@ -122,8 +122,8 @@ const TestChartsListing = () => {
 
   const ProductCard = ({ product }: { product: Product }) => {
     return (
-      <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
-        <div className="aspect-[4/3] relative overflow-hidden bg-muted">
+      <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-black text-white border-0">
+        <div className="aspect-[4/3] relative overflow-hidden bg-zinc-900">
           <img
             src={product.image_url}
             alt={product.title}
@@ -133,14 +133,14 @@ const TestChartsListing = () => {
         <CardContent className="p-4 space-y-3">
           {/* Title and SKU */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-bold text-foreground text-lg">{product.title}</h3>
+            <h3 className="font-bold text-white text-lg">{product.title}</h3>
             {product.sku && (
-              <span className="text-xs text-muted-foreground font-mono">{product.sku}</span>
+              <span className="text-xs text-zinc-400 font-mono">{product.sku}</span>
             )}
           </div>
 
           {/* Teaser */}
-          <p className="text-sm text-muted-foreground line-clamp-2">{product.teaser}</p>
+          <p className="text-sm text-zinc-400 line-clamp-2">{product.teaser}</p>
 
           {/* Features as Badges */}
           {product.features.length > 0 && (
@@ -149,7 +149,7 @@ const TestChartsListing = () => {
                 <Badge 
                   key={idx} 
                   variant="outline" 
-                  className="text-xs"
+                  className="text-xs border-zinc-600 text-zinc-300"
                 >
                   {feature}
                 </Badge>
@@ -158,13 +158,13 @@ const TestChartsListing = () => {
           )}
 
           {/* Availability */}
-          <div className="pt-2 border-t border-border">
+          <div className="pt-2 border-t border-zinc-700">
             <span className={`text-sm font-medium ${
               product.availability === 'available' 
-                ? 'text-green-600' 
+                ? 'text-green-400' 
                 : product.availability === 'pre-order'
                   ? 'text-primary'
-                  : 'text-muted-foreground'
+                  : 'text-zinc-500'
             }`}>
               {product.availability === 'available' ? 'In Stock' : 
                product.availability === 'pre-order' ? 'Pre-Order' :
@@ -226,7 +226,7 @@ const TestChartsListing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <Navigation />
 
       {/* Header Section */}
