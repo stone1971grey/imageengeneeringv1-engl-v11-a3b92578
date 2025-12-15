@@ -458,6 +458,12 @@ const ProductsEditor = () => {
         )}
       </div>
 
+      {!isEditing && (
+        <p className="text-sm text-gray-400">
+          Chart Sizes are edited inside a product: click the pencil icon to open the editor tabs.
+        </p>
+      )}
+
       {isEditing ? (
         /* Editor Form with Tabs */
         <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-6">
