@@ -108,7 +108,7 @@ const UtilityNavigation = () => {
             {languages.find(lang => lang.code === language)?.flag}
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
+        <SelectContent className="bg-white border border-gray-200 shadow-lg min-w-[70px] w-[70px]">
           {languages.map((lang) => (
             <SelectItem 
               key={lang.code} 
