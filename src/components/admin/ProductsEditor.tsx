@@ -1649,7 +1649,7 @@ const ProductsEditor = () => {
                     )}
                   </div>
                   <p className="text-sm text-gray-400 truncate">{product.teaser}</p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className="text-xs bg-[#f9dc24]/20 text-[#f9dc24] px-2 py-0.5 rounded">
                       {product.category}
                     </span>
@@ -1662,6 +1662,19 @@ const ProductsEditor = () => {
                       <span className="text-xs text-gray-500">SKU: {product.sku}</span>
                     )}
                   </div>
+                  {/* Display Badges - same as frontend detail view */}
+                  {product.display_badges && product.display_badges.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {product.display_badges.map((badge, idx) => (
+                        <span
+                          key={idx}
+                          className="text-xs px-2 py-0.5 bg-[#f9dc24]/15 text-[#f9dc24] border border-[#f9dc24]/30 rounded"
+                        >
+                          {badge}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
