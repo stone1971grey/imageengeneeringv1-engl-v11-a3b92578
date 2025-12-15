@@ -234,14 +234,14 @@ const TestChartDetail = () => {
 
       <main>
         {/* Breadcrumb */}
-        <section className="pt-28 pb-4 border-b border-gray-800">
+        <section className="pt-24 pb-2 border-b border-gray-800">
           <div className="container mx-auto px-6">
             <nav aria-label="Breadcrumb">
               <button
                 onClick={() => navigate(`/${language}/products/test-charts`)}
-                className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors"
+                className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors text-sm"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-3.5 h-3.5" />
                 Back to Test Charts
               </button>
             </nav>
@@ -249,16 +249,16 @@ const TestChartDetail = () => {
         </section>
 
         {/* Product Hero */}
-        <section className="py-12">
+        <section className="py-6">
           <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Image Gallery */}
-              <div className="space-y-4">
-                <div className="aspect-[4/3] bg-black rounded-lg overflow-hidden w-full max-w-[580px] mx-auto lg:mx-0">
+              <div className="space-y-3">
+                <div className="aspect-[4/3] bg-black rounded-lg overflow-hidden w-full max-w-[480px] mx-auto lg:mx-0">
                   <img
                     src={allImages[selectedImage] || product.image_url}
                     alt={`${product.title} main product image`}
-                    className="w-full h-full object-contain p-4"
+                    className="w-full h-full object-contain p-3"
                     loading="eager"
                   />
                 </div>
@@ -269,7 +269,7 @@ const TestChartDetail = () => {
                       <button
                         key={img}
                         onClick={() => setSelectedImage(idx)}
-                        className={`w-16 h-16 rounded-md overflow-hidden border-2 transition-colors ${
+                        className={`w-14 h-14 rounded-md overflow-hidden border-2 transition-colors ${
                           selectedImage === idx ? "border-[#f9dc24]" : "border-gray-700 hover:border-gray-500"
                         }`}
                         aria-label={`View product image ${idx + 1}`}
@@ -282,36 +282,36 @@ const TestChartDetail = () => {
               </div>
 
               {/* Product Info */}
-              <article className="space-y-6">
+              <article className="space-y-4">
                 <header>
-                  <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-3xl lg:text-4xl font-bold text-white">{product.title}</h1>
-                    {product.sku && <span className="text-gray-400 font-mono">{product.sku}</span>}
+                  <div className="flex items-center justify-between mb-1">
+                    <h1 className="text-2xl lg:text-3xl font-bold text-white">{product.title}</h1>
+                    {product.sku && <span className="text-gray-400 font-mono text-sm">{product.sku}</span>}
                   </div>
-                  <p className="text-lg text-gray-300">{product.teaser}</p>
+                  <p className="text-base text-gray-300">{product.teaser}</p>
                 </header>
 
                 {/* Category/Subcategory */}
                 <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-gray-800 text-gray-200 border border-gray-700">{product.category}</Badge>
+                  <Badge className="bg-gray-800 text-gray-200 border border-gray-700 text-xs">{product.category}</Badge>
                   {product.subcategory && (
-                    <Badge variant="outline" className="border-gray-600 text-gray-300">
+                    <Badge variant="outline" className="border-gray-600 text-gray-300 text-xs">
                       {product.subcategory}
                     </Badge>
                   )}
                 </div>
 
                 {/* Action Section */}
-                <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-4">
-                  <Button size="lg" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold">
-                    <FileText className="w-5 h-5 mr-2" />
+                <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-3">
+                  <Button size="default" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold">
+                    <FileText className="w-4 h-4 mr-2" />
                     Request Quote
                   </Button>
 
                   {downloads.length > 0 && (
                     <a
                       href={downloads[0].url}
-                      className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors"
+                      className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors text-sm"
                     >
                       <Download className="w-4 h-4" />
                       Download Datasheet
@@ -322,13 +322,13 @@ const TestChartDetail = () => {
                 {/* Chart Attributes Section */}
                 {specifications.length > 0 && (
                   <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-gray-800">
-                    <div className="bg-[#222] px-6 py-4 border-b border-gray-800">
-                      <h2 className="text-lg font-semibold text-white">Chart attributes</h2>
+                    <div className="bg-[#222] px-4 py-2.5 border-b border-gray-800">
+                      <h2 className="text-base font-semibold text-white">Chart attributes</h2>
                     </div>
                     <div className="divide-y divide-gray-800">
                       {specifications.map((row) => (
-                        <div key={row.label} className="flex px-6 py-4">
-                          <div className="w-40 text-gray-400 font-medium">{row.label}</div>
+                        <div key={row.label} className="flex px-4 py-2.5 text-sm">
+                          <div className="w-36 text-gray-400 font-medium">{row.label}</div>
                           <div className="flex-1 text-white whitespace-pre-line">{row.value}</div>
                         </div>
                       ))}
@@ -341,38 +341,38 @@ const TestChartDetail = () => {
         </section>
 
         {/* Product Tabs */}
-        <section className="py-12 bg-[#141414]">
+        <section className="py-6 bg-[#141414]">
           <div className="container mx-auto px-6">
             <Tabs defaultValue="description" className="w-full">
               <TabsList className="w-full max-w-3xl mx-auto grid grid-cols-4 bg-[#1a1a1a] p-1 h-auto">
                 <TabsTrigger
                   value="description"
-                  className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                  className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
                   Description
                 </TabsTrigger>
                 <TabsTrigger
                   value="chartsizes"
-                  className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                  className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
                   Chart Sizes
                 </TabsTrigger>
                 <TabsTrigger
                   value="technical"
-                  className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                  className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
                   Technical Data
                 </TabsTrigger>
                 <TabsTrigger
                   value="downloads"
-                  className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                  className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
                   Downloads
                 </TabsTrigger>
               </TabsList>
 
-              <div className="mt-8 max-w-4xl mx-auto">
-                <TabsContent value="description" className="space-y-6">
+              <div className="mt-6 max-w-4xl mx-auto">
+                <TabsContent value="description" className="space-y-4">
                   <h2 className="text-2xl font-bold text-white">Product Description</h2>
                   <div className="prose prose-invert max-w-none">
                     <p className="text-gray-300 leading-relaxed whitespace-pre-line">
