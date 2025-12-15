@@ -36,10 +36,18 @@ interface ChartSizesData {
 
 // Filter options constants
 const PRODUCT_TYPES = ["Custom", "Multi-Format"];
-const MEASUREMENT_FOCUS = ["Low-Light", "Timing", "Multipurpose"];
-const FORMAT_FOV = ["Ultra-Wide", "Standard", "Multi-Format"];
+const MEASUREMENT_FOCUS = ["Resolution", "Color", "Geometry", "Low-Light", "Dynamic Range", "Noise", "Timing"];
+const FORMAT_FOV = ["Ultra-Wide", "Wide", "Standard", "Multi-Format"];
 const APPLICATION_OPTIONS = ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"];
 const INTEGRATION_FEATURES = ["Integrated Illumination", "Timing Hardware", "ISO Compliant"];
+
+// Display badge options (predefined only)
+const BADGE_OPTIONS = {
+  "Measurement Focus": ["Resolution", "Color", "Geometry", "Low-Light", "Dynamic Range", "Noise", "Timing"],
+  "Format / Field of View": ["Ultra-Wide", "Wide", "Standard", "Multi-Format"],
+  "Application / Industry": ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"],
+  "Special": ["Custom", "Standard-Compliant"]
+};
 
 interface Product {
   id: string;
@@ -167,7 +175,6 @@ const ProductsEditor = () => {
   const [newSpecValue, setNewSpecValue] = useState("");
   const [newFeature, setNewFeature] = useState("");
   const [newApplication, setNewApplication] = useState("");
-  const [newBadge, setNewBadge] = useState("");
 
   // Event listener for opening document media selector
   useEffect(() => {
@@ -1467,17 +1474,17 @@ const ProductsEditor = () => {
                   </div>
                 </div>
 
-                {/* RIGHT: Editable Display Badges */}
+                {/* RIGHT: Display Badges (Predefined Categories) */}
                 <div className="space-y-6">
                   <div className="bg-[#1a1a1a] rounded-lg p-6 border border-gray-700">
-                    <h3 className="text-white text-lg font-semibold mb-6">Display Badges</h3>
+                    <h3 className="text-white text-lg font-semibold mb-4">Display Badges</h3>
                     <p className="text-sm text-gray-400 mb-6">
-                      Short, prominent labels shown on product cards. Add custom badges or use suggestions below.
+                      Select badges to display on product cards. Click to toggle.
                     </p>
                     
-                    {/* Current Badges */}
-                    <div className="space-y-4">
-                      <Label className="text-white text-base font-medium">Current Badges</Label>
+                    {/* Current Badges Preview */}
+                    <div className="mb-6">
+                      <Label className="text-white text-base font-medium mb-3 block">Current Badges</Label>
                       <div className="flex flex-wrap gap-2 min-h-[48px] bg-[#0f0f0f] rounded-lg p-4">
                         {formData.display_badges.length > 0 ? formData.display_badges.map((badge, idx) => (
                           <span
@@ -1497,76 +1504,44 @@ const ProductsEditor = () => {
                             </button>
                           </span>
                         )) : (
-                          <span className="text-sm text-gray-500 italic">No badges added yet</span>
-                        )}
-                      </div>
-                      
-                      {/* Add Badge Input */}
-                      <div className="flex gap-2">
-                        <Input
-                          value={newBadge}
-                          onChange={(e) => setNewBadge(e.target.value)}
-                          placeholder="Add custom badge..."
-                          className="bg-[#2a2a2a] border-gray-600 text-white"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && newBadge.trim()) {
-                              e.preventDefault();
-                              if (!formData.display_badges.includes(newBadge.trim())) {
-                                setFormData(prev => ({
-                                  ...prev,
-                                  display_badges: [...prev.display_badges, newBadge.trim()]
-                                }));
-                              }
-                              setNewBadge("");
-                            }
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            if (newBadge.trim() && !formData.display_badges.includes(newBadge.trim())) {
-                              setFormData(prev => ({
-                                ...prev,
-                                display_badges: [...prev.display_badges, newBadge.trim()]
-                              }));
-                              setNewBadge("");
-                            }
-                          }}
-                          className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Quick Add Suggestions */}
-                    <div className="mt-6 pt-6 border-t border-gray-700">
-                      <Label className="text-gray-400 text-sm block mb-3">Quick Add from Filters</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {[...formData.measurement_focus, ...formData.format_fov.filter(f => f !== "Standard"), ...formData.applications]
-                          .filter(item => !formData.display_badges.includes(item))
-                          .map((suggestion, idx) => (
-                            <Button
-                              key={idx}
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setFormData(prev => ({
-                                ...prev,
-                                display_badges: [...prev.display_badges, suggestion]
-                              }))}
-                              className="text-sm border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-[#f9dc24]"
-                            >
-                              <Plus className="h-3 w-3 mr-1" />
-                              {suggestion}
-                            </Button>
-                          ))}
-                        {[...formData.measurement_focus, ...formData.format_fov.filter(f => f !== "Standard"), ...formData.applications]
-                          .filter(item => !formData.display_badges.includes(item)).length === 0 && (
-                          <span className="text-sm text-gray-500 italic">All filter options already added</span>
+                          <span className="text-sm text-gray-500 italic">No badges selected yet</span>
                         )}
                       </div>
                     </div>
+
+                    {/* Badge Categories */}
+                    {Object.entries(BADGE_OPTIONS).map(([category, badges]) => (
+                      <div key={category} className="mb-6 last:mb-0">
+                        <Label className="text-white text-base font-medium mb-3 block">{category}</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {badges.map((badge) => {
+                            const isSelected = formData.display_badges.includes(badge);
+                            return (
+                              <Button
+                                key={badge}
+                                type="button"
+                                variant={isSelected ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    display_badges: isSelected
+                                      ? prev.display_badges.filter(b => b !== badge)
+                                      : [...prev.display_badges, badge]
+                                  }));
+                                }}
+                                className={`text-sm ${isSelected 
+                                  ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                                  : "border-gray-600 text-gray-300 hover:bg-gray-700"
+                                }`}
+                              >
+                                {badge}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
