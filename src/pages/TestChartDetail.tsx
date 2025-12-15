@@ -594,16 +594,44 @@ const TestChartDetail = () => {
                     <div className="bg-[#1a1a1a] rounded-lg overflow-hidden p-4">
                       <div className="relative bg-black rounded-lg overflow-hidden max-w-4xl mx-auto" style={{ aspectRatio: '16/9' }}>
                         <video
+                          id="product-video"
                           src={product.video_url}
                           controls
                           controlsList="nodownload"
                           playsInline
-                          preload="auto"
+                          preload="metadata"
                           className="w-full h-full object-contain"
                           style={{ minHeight: '300px' }}
+                          onPlay={(e) => {
+                            const overlay = document.getElementById('video-play-overlay');
+                            if (overlay) overlay.style.display = 'none';
+                          }}
+                          onPause={(e) => {
+                            const overlay = document.getElementById('video-play-overlay');
+                            if (overlay) overlay.style.display = 'flex';
+                          }}
                         >
                           Your browser does not support the video tag.
                         </video>
+                        {/* Central Play Button Overlay */}
+                        <button
+                          id="video-play-overlay"
+                          className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/30 transition-colors group cursor-pointer"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const video = document.getElementById('product-video') as HTMLVideoElement;
+                            if (video) {
+                              video.play();
+                            }
+                          }}
+                          aria-label="Play video"
+                        >
+                          <div className="w-20 h-20 bg-[hsl(var(--yellow))] rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                            <svg className="w-10 h-10 text-black ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                        </button>
                       </div>
                     </div>
                   ) : (
