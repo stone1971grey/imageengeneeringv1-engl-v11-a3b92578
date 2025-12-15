@@ -591,12 +591,15 @@ const TestChartDetail = () => {
                 <TabsContent value="video" className="space-y-6">
                   <h2 className="text-2xl font-bold text-white">Product Video</h2>
                   {product.video_url ? (
-                    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
+                    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden p-4">
                       <video
                         src={product.video_url}
                         controls
-                        className="w-full max-w-4xl mx-auto"
-                        poster={product.image_url}
+                        controlsList="nodownload"
+                        playsInline
+                        preload="metadata"
+                        className="w-full max-w-4xl mx-auto rounded-lg"
+                        style={{ aspectRatio: '16/9', backgroundColor: '#000' }}
                       >
                         Your browser does not support the video tag.
                       </video>
