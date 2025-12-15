@@ -22,9 +22,20 @@ interface Product {
   sku: string | null;
   features: string[];
   applications: string[];
+  product_types: string[];
+  measurement_focus: string[];
+  format_fov: string[];
+  integration_features: string[];
   availability: string;
   published: boolean;
 }
+
+// Filter options (5 filters)
+const PRODUCT_TYPES = ["Custom", "Multi-Format"];
+const MEASUREMENT_FOCUS = ["Low-Light", "Timing", "Multipurpose"];
+const FORMAT_FOV = ["Ultra-Wide", "Standard", "Multi-Format"];
+const APPLICATION_OPTIONS = ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"];
+const INTEGRATION_FEATURES = ["Integrated Illumination", "Timing Hardware", "ISO Compliant"];
 
 const TestChartsListing = () => {
   const navigate = useNavigate();
@@ -33,8 +44,13 @@ const TestChartsListing = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedSubcategories, setSelectedSubcategories] = useState<Set<string>>(new Set());
+
+  // 5 Filter states
+  const [selectedProductTypes, setSelectedProductTypes] = useState<Set<string>>(new Set());
+  const [selectedMeasurementFocus, setSelectedMeasurementFocus] = useState<Set<string>>(new Set());
+  const [selectedFormatFov, setSelectedFormatFov] = useState<Set<string>>(new Set());
   const [selectedApplications, setSelectedApplications] = useState<Set<string>>(new Set());
+  const [selectedIntegrationFeatures, setSelectedIntegrationFeatures] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadProducts();
@@ -50,13 +66,17 @@ const TestChartsListing = () => {
         .order("position", { ascending: true });
 
       if (error) throw error;
-      
-      const transformedProducts = (data || []).map(p => ({
+
+      const transformedProducts = (data || []).map((p) => ({
         ...p,
         features: Array.isArray(p.features) ? p.features : [],
-        applications: Array.isArray(p.applications) ? p.applications : []
+        applications: Array.isArray(p.applications) ? p.applications : [],
+        product_types: Array.isArray((p as any).product_types) ? (p as any).product_types : [],
+        measurement_focus: Array.isArray((p as any).measurement_focus) ? (p as any).measurement_focus : [],
+        format_fov: Array.isArray((p as any).format_fov) ? (p as any).format_fov : [],
+        integration_features: Array.isArray((p as any).integration_features) ? (p as any).integration_features : [],
       }));
-      
+
       setProducts(transformedProducts as Product[]);
     } catch (error) {
       console.error("Error loading products:", error);
@@ -64,11 +84,6 @@ const TestChartsListing = () => {
       setLoading(false);
     }
   };
-
-  // Predefined filter options
-  const subcategories = ["Custom", "Low-Light", "Multipurpose", "Ultra-Wide", "Multi-Format"];
-  
-  const applications = ["Low-Light", "Timing", "Ultra-Weitwinkel", "Automotive"];
 
   const toggleFilter = (set: Set<string>, value: string, setter: React.Dispatch<React.SetStateAction<Set<string>>>) => {
     const newSet = new Set(set);
@@ -81,40 +96,67 @@ const TestChartsListing = () => {
   };
 
   const clearAllFilters = () => {
-    setSelectedSubcategories(new Set());
+    setSelectedProductTypes(new Set());
+    setSelectedMeasurementFocus(new Set());
+    setSelectedFormatFov(new Set());
     setSelectedApplications(new Set());
+    setSelectedIntegrationFeatures(new Set());
     setSearchQuery("");
   };
 
   const filteredProducts = useMemo(() => {
-    return products.filter(product => {
-      // Search query filter
+    return products.filter((product) => {
+      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           product.title.toLowerCase().includes(query) ||
           (product.sku?.toLowerCase().includes(query) || false) ||
-          product.teaser.toLowerCase().includes(query) ||
-          product.features.some(f => f.toLowerCase().includes(query));
+          product.teaser.toLowerCase().includes(query);
         if (!matchesSearch) return false;
       }
 
-      // Subcategory filter
-      if (selectedSubcategories.size > 0) {
-        if (!product.subcategory || !selectedSubcategories.has(product.subcategory)) {
-          return false;
-        }
+      // 1. Product Type
+      if (selectedProductTypes.size > 0) {
+        const hasType = product.product_types.some((t) => selectedProductTypes.has(t));
+        if (!hasType) return false;
       }
 
-      // Application filter
+      // 2. Measurement Focus
+      if (selectedMeasurementFocus.size > 0) {
+        const hasFocus = product.measurement_focus.some((f) => selectedMeasurementFocus.has(f));
+        if (!hasFocus) return false;
+      }
+
+      // 3. Format / FOV
+      if (selectedFormatFov.size > 0) {
+        const hasFormat = product.format_fov.some((f) => selectedFormatFov.has(f));
+        if (!hasFormat) return false;
+      }
+
+      // 4. Application
       if (selectedApplications.size > 0) {
-        const hasApplication = product.applications.some(app => selectedApplications.has(app));
-        if (!hasApplication) return false;
+        const hasApp = product.applications.some((a) => selectedApplications.has(a));
+        if (!hasApp) return false;
+      }
+
+      // 5. Integration / Special Features
+      if (selectedIntegrationFeatures.size > 0) {
+        const hasFeature = product.integration_features.some((f) => selectedIntegrationFeatures.has(f));
+        if (!hasFeature) return false;
       }
 
       return true;
     });
-  }, [searchQuery, selectedSubcategories, selectedApplications, products]);
+  }, [
+    searchQuery,
+    selectedProductTypes,
+    selectedMeasurementFocus,
+    selectedFormatFov,
+    selectedApplications,
+    selectedIntegrationFeatures,
+    products,
+  ]);
 
   const handleViewDetails = (product: Product) => {
     navigate(`/${language}/products/test-charts/${product.slug}`);
@@ -142,20 +184,27 @@ const TestChartsListing = () => {
           {/* Teaser */}
           <p className="text-sm text-zinc-400 line-clamp-2">{product.teaser}</p>
 
-          {/* Features as Badges */}
-          {product.features.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {product.features.slice(0, 3).map((feature, idx) => (
-                <Badge 
-                  key={idx} 
-                  variant="outline" 
-                  className="text-xs border-zinc-600 text-zinc-300"
-                >
-                  {feature}
-                </Badge>
-              ))}
-            </div>
-          )}
+          {/* Visible Filter Badges - from measurement_focus, format_fov, applications */}
+          {(() => {
+            const visibleBadges = [
+              ...product.measurement_focus.slice(0, 2),
+              ...product.format_fov.filter((f) => f !== "Standard").slice(0, 1),
+              ...product.applications.slice(0, 1),
+            ].slice(0, 4);
+
+            return visibleBadges.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {visibleBadges.map((badge, idx) => (
+                  <Badge
+                    key={idx}
+                    className="text-xs bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
+                  >
+                    {badge}
+                  </Badge>
+                ))}
+              </div>
+            ) : null;
+          })()}
 
           {/* Availability */}
           <div className="pt-2 border-t border-zinc-700">
@@ -210,7 +259,13 @@ const TestChartsListing = () => {
     </label>
   );
 
-  const hasActiveFilters = selectedSubcategories.size > 0 || selectedApplications.size > 0 || searchQuery !== "";
+  const hasActiveFilters =
+    selectedProductTypes.size > 0 ||
+    selectedMeasurementFocus.size > 0 ||
+    selectedFormatFov.size > 0 ||
+    selectedApplications.size > 0 ||
+    selectedIntegrationFeatures.size > 0 ||
+    searchQuery !== "";
 
   if (loading) {
     return (
@@ -271,44 +326,80 @@ const TestChartsListing = () => {
         </div>
       </section>
 
-      {/* Filters Panel */}
-      {showFilters && (subcategories.length > 0 || applications.length > 0) && (
+      {/* Filters Panel - 5 Filter Categories */}
+      {showFilters && (
         <section className="py-6 border-b border-gray-600 bg-[#1f1f1f]">
           <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Subcategory Filter */}
-              {subcategories.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-white">Type</h3>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {subcategories.map(sub => (
-                      <FilterCheckbox
-                        key={sub}
-                        label={sub}
-                        checked={selectedSubcategories.has(sub)}
-                        onChange={() => toggleFilter(selectedSubcategories, sub, setSelectedSubcategories)}
-                      />
-                    ))}
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white">Product Type</h3>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {PRODUCT_TYPES.map((type) => (
+                    <FilterCheckbox
+                      key={type}
+                      label={type}
+                      checked={selectedProductTypes.has(type)}
+                      onChange={() => toggleFilter(selectedProductTypes, type, setSelectedProductTypes)}
+                    />
+                  ))}
                 </div>
-              )}
+              </div>
 
-              {/* Application Filter */}
-              {applications.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-white">Application</h3>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {applications.map(app => (
-                      <FilterCheckbox
-                        key={app}
-                        label={app}
-                        checked={selectedApplications.has(app)}
-                        onChange={() => toggleFilter(selectedApplications, app, setSelectedApplications)}
-                      />
-                    ))}
-                  </div>
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white">Measurement Focus</h3>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {MEASUREMENT_FOCUS.map((focus) => (
+                    <FilterCheckbox
+                      key={focus}
+                      label={focus}
+                      checked={selectedMeasurementFocus.has(focus)}
+                      onChange={() => toggleFilter(selectedMeasurementFocus, focus, setSelectedMeasurementFocus)}
+                    />
+                  ))}
                 </div>
-              )}
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white">Format / Field of View</h3>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {FORMAT_FOV.map((format) => (
+                    <FilterCheckbox
+                      key={format}
+                      label={format}
+                      checked={selectedFormatFov.has(format)}
+                      onChange={() => toggleFilter(selectedFormatFov, format, setSelectedFormatFov)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white">Application</h3>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {APPLICATION_OPTIONS.map((app) => (
+                    <FilterCheckbox
+                      key={app}
+                      label={app}
+                      checked={selectedApplications.has(app)}
+                      onChange={() => toggleFilter(selectedApplications, app, setSelectedApplications)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white">Integration / Special Features</h3>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {INTEGRATION_FEATURES.map((feature) => (
+                    <FilterCheckbox
+                      key={feature}
+                      label={feature}
+                      checked={selectedIntegrationFeatures.has(feature)}
+                      onChange={() => toggleFilter(selectedIntegrationFeatures, feature, setSelectedIntegrationFeatures)}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
