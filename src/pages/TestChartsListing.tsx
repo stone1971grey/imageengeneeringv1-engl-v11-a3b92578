@@ -43,7 +43,7 @@ const TestChartsListing = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   // 5 Filter states
   const [selectedProductTypes, setSelectedProductTypes] = useState<Set<string>>(new Set());
