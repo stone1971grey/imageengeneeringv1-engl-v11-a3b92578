@@ -188,14 +188,13 @@ const TestChartsListing = () => {
           <div className="flex gap-2 pt-2">
             <Button 
               onClick={() => handleViewDetails(product)}
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+              className="flex-1 bg-black hover:bg-black/80 text-white font-medium"
             >
               <FileText className="w-4 h-4 mr-2" />
               Details
             </Button>
             <Button 
-              variant="outline"
-              className="flex-1 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              className="flex-1 bg-[hsl(var(--yellow))] hover:bg-[hsl(var(--yellow))]/90 text-black font-medium"
             >
               Request Quote
             </Button>
