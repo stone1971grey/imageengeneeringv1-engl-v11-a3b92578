@@ -366,17 +366,34 @@ const ProductsEditor = () => {
 
         if (error) throw error;
         toast.success("Product updated successfully");
+        
+        // Update editingProduct with new data, stay in detail view
+        setEditingProduct({ ...editingProduct, ...productData });
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from("products")
-          .insert([productData]);
+          .insert([productData])
+          .select()
+          .single();
 
         if (error) throw error;
         toast.success("Product created successfully");
+        
+        // After creating, reload and find the new product to stay in detail view
+        await loadProducts();
+        const { data: newProduct } = await supabase
+          .from("products")
+          .select("*")
+          .eq("slug", slug)
+          .maybeSingle();
+        
+        if (newProduct) {
+          handleEdit(newProduct as unknown as Product);
+        }
+        return;
       }
 
       await loadProducts();
-      handleCancel();
     } catch (error: any) {
       console.error("Error saving product:", error);
       toast.error(error.message || "Failed to save product");
