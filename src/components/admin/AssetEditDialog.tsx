@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { X, Save, FileText, Calendar, Weight, Image as ImageIcon, Database, Languages, Sparkles, Eye, EyeOff } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
+import { PdfPreview } from "./PdfPreview";
 
 interface AssetEditDialogProps {
   isOpen: boolean;
@@ -275,6 +276,9 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
   // Check which languages have translations
   const translatedLanguages = SUPPORTED_LANGUAGES.filter(l => altTextTranslations[l.code]?.trim());
 
+  // Check if asset is a PDF
+  const isPdf = fileName.toLowerCase().endsWith('.pdf');
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) {
@@ -295,11 +299,15 @@ export function AssetEditDialog({ isOpen, onClose, asset, onSave }: AssetEditDia
         <div className="space-y-6">
           {/* Asset Preview */}
           <div className="relative w-full h-48 bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-            <img 
-              src={asset.url} 
-              alt={currentAltText || fileName}
-              className="w-full h-full object-contain"
-            />
+            {isPdf ? (
+              <PdfPreview url={asset.url} className="w-full h-full" />
+            ) : (
+              <img 
+                src={asset.url} 
+                alt={currentAltText || fileName}
+                className="w-full h-full object-contain"
+              />
+            )}
           </div>
 
           {/* Meta Information */}
