@@ -227,7 +227,87 @@ const TestChartsListing = () => {
     navigate(`/${language}/products/test-charts/${product.slug}`);
   };
 
-  const ProductCard = ({ product }: { product: Product }) => {
+  const ProductCard = ({ product, isListView = false }: { product: Product; isListView?: boolean }) => {
+    if (isListView) {
+      // List layout: horizontal card with max-height 300px image
+      return (
+        <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-black text-white border-0">
+          <div className="flex flex-col md:flex-row">
+            {/* Image - max height 300px */}
+            <div className="md:w-80 flex-shrink-0 bg-black flex items-center justify-center overflow-hidden" style={{ maxHeight: '300px' }}>
+              <img
+                src={product.image_url}
+                alt={product.title}
+                className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                style={{ maxHeight: '300px' }}
+              />
+            </div>
+            {/* Content */}
+            <CardContent className="flex-1 p-6 flex flex-col justify-between">
+              <div className="space-y-3">
+                {/* Title and SKU */}
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-bold text-white text-xl">{product.title}</h3>
+                  {product.sku && (
+                    <span className="text-xs text-zinc-400 font-mono">{product.sku}</span>
+                  )}
+                </div>
+
+                {/* Teaser */}
+                <p className="text-sm text-zinc-400 line-clamp-3">{product.teaser}</p>
+
+                {/* Display Badges */}
+                {product.display_badges && product.display_badges.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {product.display_badges.slice(0, 6).map((badge, idx) => (
+                      <Badge
+                        key={idx}
+                        className="text-xs px-2 py-0.5 bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
+                      >
+                        {badge}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                {/* Availability */}
+                <div>
+                  <span className={`text-sm font-medium ${
+                    product.availability === 'available' 
+                      ? 'text-green-400' 
+                      : product.availability === 'pre-order'
+                        ? 'text-primary'
+                        : 'text-zinc-500'
+                  }`}>
+                    {product.availability === 'available' ? 'In Stock' : 
+                     product.availability === 'pre-order' ? 'Pre-Order' :
+                     product.availability === 'out-of-stock' ? 'Out of Stock' : 'Discontinued'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  onClick={() => handleViewDetails(product)}
+                  className="bg-black hover:bg-black/80 text-white font-medium"
+                >
+                  <FileText className="w-4 h-4 mr-2" />
+                  Details
+                </Button>
+                <Button 
+                  className="bg-[hsl(var(--yellow))] hover:bg-[hsl(var(--yellow))]/90 text-black font-medium"
+                >
+                  Request Quote
+                </Button>
+              </div>
+            </CardContent>
+          </div>
+        </Card>
+      );
+    }
+
+    // Grid layout: vertical card (original)
     return (
       <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden bg-black text-white border-0">
         <div className="aspect-[4/3] relative overflow-hidden bg-black">
@@ -477,7 +557,7 @@ const TestChartsListing = () => {
           
           <div className={`grid gap-6 ${pageConfig.layout === 'list' ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
             {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} isListView={pageConfig.layout === 'list'} />
             ))}
           </div>
 
