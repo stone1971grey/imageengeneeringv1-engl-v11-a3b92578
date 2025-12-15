@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, FileText, Download, ArrowLeft, Star } from "lucide-react";
+import { FileText, Download, ArrowLeft, Star } from "lucide-react";
 import { charts } from "@/data/charts";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -36,12 +36,6 @@ const TestChartDetail = () => {
       </div>
     );
   }
-
-  const priceDisplay = chart.price_mode === 'rfq' 
-    ? 'Price on Request' 
-    : chart.price_mode === 'from' 
-      ? `from ${chart.price_from?.toLocaleString()}€`
-      : `${chart.price_from?.toLocaleString()}€`;
 
   const allImages = chart.gallery.length > 0 ? chart.gallery : [chart.heroImage];
 
@@ -144,35 +138,15 @@ const TestChartDetail = () => {
                 </div>
               )}
 
-              {/* Price Section */}
+              {/* Action Section */}
               <div className="bg-[#1a1a1a] rounded-lg p-6 space-y-4">
-                <div>
-                  <span className={`text-2xl font-bold ${chart.price_mode === 'rfq' ? 'text-white' : 'text-[#f9dc24]'}`}>
-                    {priceDisplay}
-                  </span>
-                  {chart.price_mode === 'rfq' && (
-                    <p className="text-sm text-gray-400 mt-1">Contact us for an individual quote</p>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  <Button 
-                    size="lg"
-                    className="flex-1 bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold"
-                  >
-                    <ShoppingCart className="w-5 h-5 mr-2" />
-                    {chart.price_mode === 'rfq' ? 'Request Quote' : 'Add to Cart'}
-                  </Button>
-                  <Button 
-                    size="lg"
-                    variant="outline"
-                    className="border-[#f9dc24] text-[#f9dc24] hover:bg-[#f9dc24] hover:text-black"
-                  >
-                    <FileText className="w-5 h-5 mr-2" />
-                    Request Quote
-                  </Button>
-                </div>
+                <Button 
+                  size="lg"
+                  className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold"
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Request Quote
+                </Button>
 
                 {/* Downloads Link */}
                 {chart.downloads.length > 0 && (
