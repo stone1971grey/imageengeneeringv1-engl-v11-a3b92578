@@ -359,7 +359,7 @@ export const ProductListSegmentEditor = ({
     );
   }
 
-  const renderEditor = (isTarget: boolean = false) => {
+  const renderEditor = (isTarget: boolean = false, showSaveButton: boolean = true) => {
     const title = isTarget ? targetTitle : enTitle;
     const description = isTarget ? targetDescription : enDescription;
     const setTitle = isTarget ? setTargetTitle : setEnTitle;
@@ -387,14 +387,16 @@ export const ProductListSegmentEditor = ({
           />
         </div>
 
-        <Button
-          onClick={handleSave}
-          disabled={saving}
-          className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
-        >
-          {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-          Save
-        </Button>
+        {showSaveButton && (
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            Save
+          </Button>
+        )}
       </div>
     );
   };
@@ -481,7 +483,7 @@ export const ProductListSegmentEditor = ({
       <div className={isSplitScreenEnabled ? "grid grid-cols-2 gap-6" : ""}>
         {isSplitScreenEnabled ? (
           <>
-            {/* Left Panel - English */}
+            {/* Left Panel - English (no save button here - it's at bottom) */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
                 <span className="text-2xl">🇺🇸</span>
@@ -490,10 +492,10 @@ export const ProductListSegmentEditor = ({
                   <div className="text-green-300 text-xs">Source Language</div>
                 </div>
               </div>
-              {renderEditor(false)}
+              {renderEditor(false, false)}
             </div>
 
-            {/* Right Panel - Target Language */}
+            {/* Right Panel - Target Language (with save button) */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-2 border-blue-600/50 rounded-lg">
                 <span className="text-2xl">{LANGUAGES.find(l => l.code === targetLanguage)?.flag}</span>
@@ -502,11 +504,11 @@ export const ProductListSegmentEditor = ({
                   <div className="text-blue-300 text-xs">Target Language</div>
                 </div>
               </div>
-              {renderEditor(true)}
+              {renderEditor(true, true)}
             </div>
           </>
         ) : (
-          renderEditor(false)
+          renderEditor(false, true)
         )}
       </div>
 
@@ -522,9 +524,9 @@ export const ProductListSegmentEditor = ({
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-white z-50">
+            <SelectContent className="bg-gray-900 border-gray-700 z-50">
               {CATEGORIES.map(cat => (
-                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                <SelectItem key={cat} value={cat} className="text-white hover:bg-gray-800">{cat}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -594,6 +596,18 @@ export const ProductListSegmentEditor = ({
               ))}
             </div>
           </div>
+        )}
+
+        {/* English Save Button at bottom (only in split screen mode) */}
+        {isSplitScreenEnabled && (
+          <Button
+            onClick={handleSaveEnglish}
+            disabled={saving}
+            className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            Save English + Settings
+          </Button>
         )}
       </div>
     </div>
