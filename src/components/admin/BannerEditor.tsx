@@ -50,7 +50,9 @@ const BannerEditor = ({ data, onChange, onSave, pageSlug, segmentId }: BannerEdi
     setUploadingIndex(index);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${pageSlug}_banner_${segmentId}_${index}_${Date.now()}.${fileExt}`;
+      const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const shortId = Math.random().toString(36).slice(2, 6);
+      const fileName = `${baseName}-${shortId}.${fileExt}`;
       const filePath = `${fileName}`;
 
       const { error: uploadError } = await supabase.storage

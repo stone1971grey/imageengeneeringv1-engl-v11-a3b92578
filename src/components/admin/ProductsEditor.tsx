@@ -469,7 +469,8 @@ const ProductsEditor = () => {
                   await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
                   
                   const fileExt = file.name.split('.').pop();
-                  const fileName = `main-${Date.now()}.${fileExt}`;
+                  const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                  const fileName = `${baseName}.${fileExt}`;
                   const filePath = `${folderPath}/${fileName}`;
                   
                   const { error: uploadError } = await supabase.storage
@@ -537,7 +538,9 @@ const ProductsEditor = () => {
                   await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
                   
                   const fileExt = file.name.split('.').pop();
-                  const fileName = `gallery-${Date.now()}.${fileExt}`;
+                  const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                  const shortId = Math.random().toString(36).slice(2, 6);
+                  const fileName = `${baseName}-${shortId}.${fileExt}`;
                   const filePath = `${folderPath}/${fileName}`;
                   
                   const { error: uploadError } = await supabase.storage
@@ -615,7 +618,8 @@ const ProductsEditor = () => {
                       await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
                       
                       const fileExt = file.name.split('.').pop() || 'pdf';
-                      const fileName = `doc-${Date.now()}.${fileExt}`;
+                      const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                      const fileName = `${baseName}.${fileExt}`;
                       const filePath = `${folderPath}/${fileName}`;
                       
                       const { error: uploadError } = await supabase.storage

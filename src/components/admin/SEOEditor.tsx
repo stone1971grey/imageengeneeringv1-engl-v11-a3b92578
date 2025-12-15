@@ -714,7 +714,10 @@ export const SEOEditor = ({ pageSlug, data, onChange, onSave, pageSegments = [] 
                       if (!file) return;
                       
                       try {
-                        const fileName = `og-${pageSlug}-${Date.now()}.${file.name.split('.').pop()}`;
+                        const fileExt = file.name.split('.').pop();
+                        const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                        const shortId = Math.random().toString(36).slice(2, 6);
+                        const fileName = `${baseName}-${shortId}.${fileExt}`;
                         const { data: uploadData, error: uploadError } = await supabase.storage
                           .from('og-images')
                           .upload(fileName, file);
