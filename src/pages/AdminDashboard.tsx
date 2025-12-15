@@ -4095,7 +4095,7 @@ const AdminDashboard = () => {
                   
                   <TabsContent value="page-heroes">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-6">
-                      {/* Product Hero - A */}
+                      {/* Product Hero - F */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-[#f9dc24] transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('hero')}
@@ -4105,7 +4105,7 @@ const AdminDashboard = () => {
                             <Eye className="h-7 w-7 text-gray-900" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Product Hero - A</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Product Hero - F</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Main page hero with image, title, description and CTA button
                             </p>
@@ -4147,7 +4147,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-orange-500 to-orange-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Product Gallery - M */}
+                      {/* Product Gallery - G */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-pink-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('product-hero-gallery')}
@@ -4157,7 +4157,7 @@ const AdminDashboard = () => {
                             <Images className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Product Gallery - M</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Product Gallery - G</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Product hero with image carousel
                             </p>
@@ -4166,7 +4166,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-pink-500 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Full Hero - O */}
+                      {/* Full Hero - A */}
                       <div 
                         className={`group relative overflow-hidden rounded-xl border-2 transition-all duration-300 bg-white hover:shadow-xl ${
                           pageSegments.some(seg => seg.type === 'meta-navigation')
@@ -4185,7 +4185,7 @@ const AdminDashboard = () => {
                             <Monitor className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Full Hero - O</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Full Hero - A</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Fullscreen Ken Burns background
                             </p>
@@ -4241,7 +4241,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Tiles - C */}
+                      {/* Tiles - H */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-blue-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('tiles')}
@@ -4251,7 +4251,7 @@ const AdminDashboard = () => {
                             <LayoutGrid className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Tiles - C</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Tiles - H</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Feature cards grid
                             </p>
@@ -4260,7 +4260,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Banner - F */}
+                      {/* Banner - J */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-purple-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('banner')}
@@ -4270,7 +4270,7 @@ const AdminDashboard = () => {
                             <ImageIcon className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Banner - F</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Banner - J</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Promo with images
                             </p>
@@ -4279,7 +4279,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Image & Text - G */}
+                      {/* Image & Text - I */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-lime-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('image-text')}
@@ -4289,7 +4289,7 @@ const AdminDashboard = () => {
                             <SplitSquareVertical className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Image & Text - G</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Image & Text - I</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Split layout
                             </p>
@@ -4298,7 +4298,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-lime-500 to-lime-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Video - H */}
+                      {/* Video - M */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-cyan-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('video')}
@@ -4308,7 +4308,7 @@ const AdminDashboard = () => {
                             <PlayCircle className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Video - H</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Video - M</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Embedded player
                             </p>
@@ -4317,7 +4317,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Feature Overview - I */}
+                      {/* Feature Overview - K */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-indigo-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('feature-overview')}
@@ -4327,7 +4327,7 @@ const AdminDashboard = () => {
                             <ListChecks className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Feature Overview - I</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Feature Overview - K</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Icon features list
                             </p>
@@ -4336,7 +4336,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Table - J */}
+                      {/* Table - L */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-emerald-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('table')}
@@ -4346,7 +4346,7 @@ const AdminDashboard = () => {
                             <Table2 className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Table - J</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Table - L</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Data tables
                             </p>
@@ -4355,7 +4355,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* FAQ - K */}
+                      {/* FAQ - O */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-red-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('faq')}
@@ -4365,7 +4365,7 @@ const AdminDashboard = () => {
                             <HelpCircle className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">FAQ - K</h3>
+                            <h3 className="text-lg font-bold text-gray-900">FAQ - O</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Q&A accordion
                             </p>
@@ -4374,7 +4374,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-red-500 to-red-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Specification - L */}
+                      {/* Specification - N */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-amber-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('specification')}
@@ -4384,7 +4384,7 @@ const AdminDashboard = () => {
                             <FileText className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Specification - L</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Specification - N</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Tech specs
                             </p>
@@ -4393,7 +4393,7 @@ const AdminDashboard = () => {
                         <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-amber-500 to-amber-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                       </div>
 
-                      {/* Industries - N */}
+                      {/* Industries - C */}
                       <div 
                         className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-slate-400 transition-all duration-300 bg-white hover:shadow-xl cursor-pointer"
                         onClick={() => handleAddSegment('industries')}
@@ -4403,7 +4403,7 @@ const AdminDashboard = () => {
                             <Building2 className="h-7 w-7 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">Industries - N</h3>
+                            <h3 className="text-lg font-bold text-gray-900">Industries - C</h3>
                             <p className="text-sm text-gray-600 mt-1">
                               Industry showcase
                             </p>
