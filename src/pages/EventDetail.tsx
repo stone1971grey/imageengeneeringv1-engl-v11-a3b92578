@@ -282,9 +282,9 @@ const EventDetail = () => {
       <main className="container mx-auto px-4 pt-32 pb-16 max-w-6xl">
         {/* Back Button */}
         <Button 
-          variant="ghost" 
+          variant="outline" 
           onClick={() => navigate(`/${lang}/training-events/events`)}
-          className="mb-6"
+          className="mb-6 border-white/30 text-white hover:bg-white/10 hover:text-white"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to All Events
