@@ -92,6 +92,11 @@ const TestChartDetail = () => {
     return merged;
   }, [product]);
 
+  // Helper to strip Lovable timestamp prefixes (e.g., "1765793426348-filename.pdf" -> "filename.pdf")
+  const stripTimestampPrefix = (name: string): string => {
+    return name.replace(/^\d{10,}-/, '');
+  };
+
   const downloads = useMemo<ProductDownload[]>(() => {
     if (!product) return [];
 
@@ -101,7 +106,9 @@ const TestChartDetail = () => {
       .map((d) => {
         if (!d || typeof d !== "object") return null;
         const obj = d as Record<string, unknown>;
-        const name = typeof obj.name === "string" ? obj.name : typeof obj.title === "string" ? obj.title : "Download";
+        const rawName = typeof obj.name === "string" ? obj.name : typeof obj.title === "string" ? obj.title : "Download";
+        // Strip timestamp prefix for display
+        const name = stripTimestampPrefix(rawName);
         const url = typeof obj.url === "string" ? obj.url : typeof obj.path === "string" ? obj.path : "";
         const type = typeof obj.type === "string" ? obj.type : "file";
         if (!url) return null;
