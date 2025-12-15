@@ -760,6 +760,7 @@ const DynamicCMSPage = () => {
           <ProductListSegment
             key={segmentId}
             segmentId={segmentDbId}
+            pageSlug={pageSlug}
             config={{
               title: segment.data?.title,
               description: segment.data?.description,
