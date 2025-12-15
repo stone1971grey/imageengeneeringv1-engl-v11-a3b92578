@@ -1309,7 +1309,7 @@ const Navigation = () => {
                           ].find(lang => lang.code === language)?.flag}
                         </SelectValue>
                       </SelectTrigger>
-                      <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg z-[9999] min-w-[70px] w-[70px]">
                         {[
                           { code: "en", label: "EN", flag: "🇺🇸" },
                           { code: "de", label: "DE", flag: "🇩🇪" },
@@ -2274,7 +2274,7 @@ const Navigation = () => {
                             {language === "en" ? "🇺🇸" : language === "de" ? "🇩🇪" : language === "zh" ? "🇨🇳" : language === "ja" ? "🇯🇵" : "🇰🇷"}
                           </SelectValue>
                         </SelectTrigger>
-                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 min-w-[70px] w-[70px]">
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg z-[9999] min-w-[70px] w-[70px]">
                           {[
                             { code: "en", flag: "🇺🇸" },
                             { code: "de", flag: "🇩🇪" },
