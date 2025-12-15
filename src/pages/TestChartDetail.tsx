@@ -592,17 +592,19 @@ const TestChartDetail = () => {
                   <h2 className="text-2xl font-bold text-white">Product Video</h2>
                   {product.video_url ? (
                     <div className="bg-[#1a1a1a] rounded-lg overflow-hidden p-4">
-                      <video
-                        src={product.video_url}
-                        controls
-                        controlsList="nodownload"
-                        playsInline
-                        preload="metadata"
-                        className="w-full max-w-4xl mx-auto rounded-lg"
-                        style={{ aspectRatio: '16/9', backgroundColor: '#000' }}
-                      >
-                        Your browser does not support the video tag.
-                      </video>
+                      <div className="relative bg-black rounded-lg overflow-hidden max-w-4xl mx-auto" style={{ aspectRatio: '16/9' }}>
+                        <video
+                          src={product.video_url}
+                          controls
+                          controlsList="nodownload"
+                          playsInline
+                          preload="auto"
+                          className="w-full h-full object-contain"
+                          style={{ minHeight: '300px' }}
+                        >
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
                     </div>
                   ) : (
                     <div className="bg-[#1a1a1a] rounded-lg p-12 text-center">
