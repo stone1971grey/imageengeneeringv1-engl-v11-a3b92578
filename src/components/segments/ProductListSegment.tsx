@@ -84,26 +84,37 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
         }
         return;
       }
-      
+
       try {
         const sectionKey = `product-list-${segmentId}`;
-        
-        const { data } = await supabase
-          .from("page_content")
-          .select("content_value")
-          .eq("page_slug", pageSlug)
-          .eq("section_key", sectionKey)
-          .eq("language", language)
-          .maybeSingle();
 
-        if (data?.content_value) {
-          const loadedConfig = JSON.parse(data.content_value);
+        const fetchForLanguage = async (lang: string) => {
+          const { data } = await supabase
+            .from("page_content")
+            .select("content_value")
+            .eq("page_slug", pageSlug)
+            .eq("section_key", sectionKey)
+            .eq("language", lang)
+            .maybeSingle();
+          return data?.content_value ? JSON.parse(data.content_value) : null;
+        };
+
+        // 1) Try current language
+        let loadedConfig = await fetchForLanguage(language);
+
+        // 2) Fallback to English if no config exists for this language
+        if (!loadedConfig && language !== "en") {
+          loadedConfig = await fetchForLanguage("en");
+        }
+
+        // 3) Fallback to prop config (from page_segments)
+        if (!loadedConfig && propConfig) {
+          loadedConfig = propConfig;
+        }
+
+        if (loadedConfig) {
           setConfig(loadedConfig);
           setShowFilters(loadedConfig.showFilters !== false);
-        } else if (propConfig) {
-          // Fallback to prop config (from page_segments)
-          setConfig(propConfig);
-          setShowFilters(propConfig.showFilters !== false);
         }
       } catch (error) {
         console.error("Error loading product list config:", error);
@@ -113,8 +124,8 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
         }
       }
     };
-    
-    loadConfig();
+
+    void loadConfig();
   }, [segmentId, pageSlug, language, propConfig]);
 
   useEffect(() => {
