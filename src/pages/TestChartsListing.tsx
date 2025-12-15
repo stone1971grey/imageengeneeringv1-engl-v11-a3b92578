@@ -38,6 +38,17 @@ const FORMAT_FOV = ["Ultra-Wide", "Standard", "Multi-Format"];
 const APPLICATION_OPTIONS = ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"];
 const INTEGRATION_FEATURES = ["Integrated Illumination", "Timing Hardware", "ISO Compliant"];
 
+interface PageConfig {
+  title: string;
+  description: string;
+  showFilters: boolean;
+  showSearch: boolean;
+  layout: "grid" | "list";
+}
+
+const SEGMENT_ID = 503;
+const PAGE_SLUG = "products/test-charts";
+
 const TestChartsListing = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
@@ -45,6 +56,13 @@ const TestChartsListing = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [pageConfig, setPageConfig] = useState<PageConfig>({
+    title: "Test Charts",
+    description: "Use our filters and search function to find the perfect test chart for your application.",
+    showFilters: true,
+    showSearch: true,
+    layout: "grid"
+  });
 
   // 5 Filter states
   const [selectedProductTypes, setSelectedProductTypes] = useState<Set<string>>(new Set());
@@ -52,6 +70,51 @@ const TestChartsListing = () => {
   const [selectedFormatFov, setSelectedFormatFov] = useState<Set<string>>(new Set());
   const [selectedApplications, setSelectedApplications] = useState<Set<string>>(new Set());
   const [selectedIntegrationFeatures, setSelectedIntegrationFeatures] = useState<Set<string>>(new Set());
+
+  // Load page configuration from database
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const sectionKey = `product-list-${SEGMENT_ID}`;
+        
+        // Try current language first
+        let { data } = await supabase
+          .from("page_content")
+          .select("content_value")
+          .eq("page_slug", PAGE_SLUG)
+          .eq("section_key", sectionKey)
+          .eq("language", language)
+          .maybeSingle();
+
+        // Fallback to English
+        if (!data?.content_value && language !== "en") {
+          const fallback = await supabase
+            .from("page_content")
+            .select("content_value")
+            .eq("page_slug", PAGE_SLUG)
+            .eq("section_key", sectionKey)
+            .eq("language", "en")
+            .maybeSingle();
+          data = fallback.data;
+        }
+
+        if (data?.content_value) {
+          const config = JSON.parse(data.content_value);
+          setPageConfig({
+            title: config.title || "Test Charts",
+            description: config.description || "",
+            showFilters: config.showFilters !== false,
+            showSearch: config.showSearch !== false,
+            layout: config.layout || "grid"
+          });
+        }
+      } catch (error) {
+        console.error("Error loading page config:", error);
+      }
+    };
+
+    loadConfig();
+  }, [language]);
 
   useEffect(() => {
     loadProducts();
@@ -280,9 +343,9 @@ const TestChartsListing = () => {
       {/* Header Section */}
       <section className="pt-32 pb-12">
         <div className="container mx-auto px-6">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Test Charts</h1>
-          <p className="text-white/70 max-w-2xl">
-            Use our filters and search function to find the perfect test chart for your application.
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">{pageConfig.title}</h1>
+          <p className="text-white/70 max-w-2xl whitespace-pre-line">
+            {pageConfig.description}
           </p>
         </div>
       </section>
