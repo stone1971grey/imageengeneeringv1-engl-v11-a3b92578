@@ -361,19 +361,6 @@ const TestChartsListing = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-[#141414]">
-        <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Test Chart Consultation?</h2>
-          <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-            Need help selecting the right test chart for your application? Our experts are here to help.
-          </p>
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-            Contact Our Experts
-          </Button>
-        </div>
-      </section>
-
       <Footer />
     </div>
   );
