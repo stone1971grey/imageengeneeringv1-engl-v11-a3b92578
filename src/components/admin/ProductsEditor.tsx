@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen, Video } from "lucide-react";
 import { MediaSelector } from "./MediaSelector";
 import { DataHubDialog } from "./DataHubDialog";
 
@@ -48,6 +48,7 @@ interface Product {
   teaser: string;
   description: string | null;
   image_url: string;
+  video_url: string | null;
   gallery_images: string[];
   documents: { url: string; title: string; type: string }[];
   category: string;
@@ -130,6 +131,7 @@ const ProductsEditor = () => {
     teaser: "",
     description: "",
     image_url: "",
+    video_url: "",
     gallery_images: [] as string[],
     documents: [] as { url: string; title: string; type: string }[],
     category: "Test Charts",
@@ -215,6 +217,7 @@ const ProductsEditor = () => {
       teaser: "",
       description: "",
       image_url: "",
+      video_url: "",
       gallery_images: [],
       documents: [],
       category: "Test Charts",
@@ -255,6 +258,7 @@ const ProductsEditor = () => {
       teaser: product.teaser,
       description: product.description || "",
       image_url: product.image_url,
+      video_url: product.video_url || "",
       gallery_images: product.gallery_images || [],
       documents: product.documents || [],
       category: product.category,
@@ -337,6 +341,7 @@ const ProductsEditor = () => {
         teaser: formData.teaser,
         description: formData.description || null,
         image_url: formData.image_url,
+        video_url: formData.video_url || null,
         gallery_images: formData.gallery_images,
         documents: formData.documents,
         category: formData.category,
@@ -866,6 +871,79 @@ const ProductsEditor = () => {
                   }}
                   previewSize="small"
                 />
+              </div>
+
+              {/* Product Video */}
+              <div className="space-y-2">
+                <Label className="text-white flex items-center gap-2">
+                  <Video className="h-4 w-4" />
+                  Product Video
+                </Label>
+                {formData.video_url ? (
+                  <div className="space-y-2">
+                    <video
+                      src={formData.video_url}
+                      controls
+                      className="w-full max-w-md rounded-lg"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFormData(prev => ({ ...prev, video_url: "" }))}
+                      className="text-red-400 hover:text-red-300 border-gray-600"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Remove Video
+                    </Button>
+                  </div>
+                ) : (
+                  <MediaSelector
+                    label="Select or Upload Video"
+                    currentImageUrl=""
+                    onFileSelect={async (file) => {
+                      try {
+                        const categorySlug = formData.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                        const productSlug = formData.slug || generateSlug(formData.title || 'new-product');
+                        const folderPath = `products/${categorySlug}/${productSlug}`;
+                        
+                        await ensureProductFolder(categorySlug, productSlug, formData.title || 'New Product');
+                        
+                        const fileExt = file.name.split('.').pop();
+                        const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                        const fileName = `${baseName}.${fileExt}`;
+                        const filePath = `${folderPath}/${fileName}`;
+                        
+                        const { error: uploadError } = await supabase.storage
+                          .from('page-images')
+                          .upload(filePath, file);
+                          
+                        if (uploadError) throw uploadError;
+                        
+                        const { data: { publicUrl } } = supabase.storage
+                          .from('page-images')
+                          .getPublicUrl(filePath);
+                        
+                        await supabase.from('file_segment_mappings').insert({
+                          file_path: filePath,
+                          bucket_id: 'page-images',
+                          segment_ids: [],
+                          alt_text: `${formData.title} - Video`
+                        });
+                          
+                        setFormData(prev => ({ ...prev, video_url: publicUrl }));
+                        toast.success("Video uploaded successfully");
+                      } catch (error: any) {
+                        console.error("Upload error:", error);
+                        toast.error(error.message || "Failed to upload video");
+                      }
+                    }}
+                    onMediaSelect={(url) => {
+                      setFormData(prev => ({ ...prev, video_url: url }));
+                    }}
+                    previewSize="small"
+                  />
+                )}
               </div>
 
               {/* Documents/PDFs */}

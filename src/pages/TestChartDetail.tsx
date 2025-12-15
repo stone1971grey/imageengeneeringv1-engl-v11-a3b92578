@@ -18,6 +18,7 @@ interface ProductRow {
   teaser: string;
   description: string | null;
   image_url: string;
+  video_url: string | null;
   gallery_images: unknown;
   documents: unknown;
   specifications: unknown;
@@ -397,10 +398,10 @@ const TestChartDetail = () => {
                   Chart Sizes
                 </TabsTrigger>
                 <TabsTrigger
-                  value="technical"
+                  value="video"
                   className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
                 >
-                  Technical Data
+                  Product Video
                 </TabsTrigger>
                 <TabsTrigger
                   value="downloads"
@@ -600,33 +601,24 @@ const TestChartDetail = () => {
                   </div>
                 </TabsContent>
 
-                <TabsContent value="technical" className="space-y-6">
-                  <h2 className="text-2xl font-bold text-white">Technical Specifications</h2>
-                  <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <tbody>
-                        {product.sku && (
-                          <tr className="border-b border-gray-800">
-                            <td className="px-4 py-3 text-gray-400 font-medium">SKU</td>
-                            <td className="px-4 py-3 text-white">{product.sku}</td>
-                          </tr>
-                        )}
-                        {specifications.length > 0 ? (
-                          specifications.map((row) => (
-                            <tr key={row.label} className="border-b border-gray-800 last:border-b-0">
-                              <td className="px-4 py-3 text-gray-400 font-medium">{row.label}</td>
-                              <td className="px-4 py-3 text-white">{row.value}</td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td className="px-4 py-3 text-gray-400">No technical data available yet.</td>
-                            <td className="px-4 py-3 text-white">&nbsp;</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                <TabsContent value="video" className="space-y-6">
+                  <h2 className="text-2xl font-bold text-white">Product Video</h2>
+                  {product.video_url ? (
+                    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
+                      <video
+                        src={product.video_url}
+                        controls
+                        className="w-full max-w-4xl mx-auto"
+                        poster={product.image_url}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  ) : (
+                    <div className="bg-[#1a1a1a] rounded-lg p-12 text-center">
+                      <p className="text-gray-400">No product video available yet.</p>
+                    </div>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="downloads" className="space-y-6">
