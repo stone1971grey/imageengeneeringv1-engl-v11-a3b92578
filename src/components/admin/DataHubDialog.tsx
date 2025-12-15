@@ -379,9 +379,23 @@ export function DataHubDialog({
         setUploadProgress({ current: i + 1, total: files.length, fileName: file.name });
         
         try {
-          const timestamp = Date.now();
-          const fileName = `${timestamp}-${file.name}`;
-          const filePath = `${folder.storage_path}/${fileName}`;
+          // Use original filename - add short suffix only if duplicate exists
+          const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          let fileName = sanitizedName;
+          let filePath = `${folder.storage_path}/${fileName}`;
+          
+          // Check if file already exists, add short suffix if needed
+          const { data: existingFiles } = await supabase.storage
+            .from("page-images")
+            .list(folder.storage_path, { search: sanitizedName });
+          
+          if (existingFiles && existingFiles.some(f => f.name === sanitizedName)) {
+            const ext = sanitizedName.split('.').pop();
+            const baseName = sanitizedName.replace(`.${ext}`, '');
+            const shortId = Math.random().toString(36).slice(2, 6);
+            fileName = `${baseName}-${shortId}.${ext}`;
+            filePath = `${folder.storage_path}/${fileName}`;
+          }
 
           const { error: uploadError } = await supabase.storage
             .from("page-images")

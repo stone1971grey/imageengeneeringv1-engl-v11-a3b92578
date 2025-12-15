@@ -400,7 +400,9 @@ const NewsEditor = () => {
                           onFileSelect={async (file) => {
                             try {
                               const fileExt = file.name.split(".").pop();
-                              const fileName = `featured-${Date.now()}.${fileExt}`;
+                              const baseName = file.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+                              const shortId = Math.random().toString(36).slice(2, 6);
+                              const fileName = `${baseName}-${shortId}.${fileExt}`;
                               const filePath = `news/${fileName}`;
                               
                               const { error: uploadError } = await supabase.storage

@@ -122,7 +122,9 @@ const RichTextEditor = ({ content, onChange, darkMode = false }: RichTextEditorP
     setUploadingImage(true);
     try {
       const fileExt = imageFile.name.split('.').pop();
-      const fileName = `news-${Date.now()}.${fileExt}`;
+      const baseName = imageFile.name.replace(`.${fileExt}`, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+      const shortId = Math.random().toString(36).slice(2, 6);
+      const fileName = `${baseName}-${shortId}.${fileExt}`;
       const filePath = `news-images/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
