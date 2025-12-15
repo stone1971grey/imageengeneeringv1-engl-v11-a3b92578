@@ -225,7 +225,7 @@ const TestChartsListing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
+    <div className="min-h-screen bg-[#242424] text-white">
       <Navigation />
 
       {/* Header Section */}
@@ -239,7 +239,7 @@ const TestChartsListing = () => {
       </section>
 
       {/* Search and Filter Bar */}
-      <section className="py-6 border-b border-gray-700 sticky top-20 bg-[#1a1a1a]/95 backdrop-blur-sm z-40">
+      <section className="py-6 border-b border-gray-600 sticky top-20 bg-[#242424]/95 backdrop-blur-sm z-40">
         <div className="container mx-auto px-6">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
@@ -273,7 +273,7 @@ const TestChartsListing = () => {
 
       {/* Filters Panel */}
       {showFilters && (subcategories.length > 0 || applications.length > 0) && (
-        <section className="py-6 border-b border-gray-700 bg-[#252525]">
+        <section className="py-6 border-b border-gray-600 bg-[#1a1a1a]">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Subcategory Filter */}
