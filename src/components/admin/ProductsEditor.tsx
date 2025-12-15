@@ -871,12 +871,20 @@ const ProductsEditor = () => {
                   Product Video
                 </Label>
                 {formData.video_url ? (
-                  <div className="space-y-2">
-                    <video
-                      src={formData.video_url}
-                      controls
-                      className="w-full max-w-md rounded-lg"
-                    />
+                  <div className="space-y-3">
+                    <div className="relative bg-black rounded-lg overflow-hidden" style={{ maxWidth: '500px', aspectRatio: '16/9' }}>
+                      <video
+                        src={formData.video_url}
+                        controls
+                        controlsList="nodownload"
+                        playsInline
+                        preload="auto"
+                        className="w-full h-full object-contain"
+                        style={{ minHeight: '200px' }}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
                     <Button
                       type="button"
                       variant="outline"
