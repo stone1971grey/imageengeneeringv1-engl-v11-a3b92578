@@ -653,12 +653,16 @@ export type Database = {
           description: string | null
           documents: Json | null
           features: Json | null
+          format_fov: Json | null
           gallery_images: Json | null
           id: string
           image_url: string
+          integration_features: Json | null
           language_code: string
+          measurement_focus: Json | null
           position: number | null
           price_info: string | null
+          product_types: Json | null
           published: boolean | null
           related_products: Json | null
           sku: string | null
@@ -679,12 +683,16 @@ export type Database = {
           description?: string | null
           documents?: Json | null
           features?: Json | null
+          format_fov?: Json | null
           gallery_images?: Json | null
           id?: string
           image_url: string
+          integration_features?: Json | null
           language_code?: string
+          measurement_focus?: Json | null
           position?: number | null
           price_info?: string | null
+          product_types?: Json | null
           published?: boolean | null
           related_products?: Json | null
           sku?: string | null
@@ -705,12 +713,16 @@ export type Database = {
           description?: string | null
           documents?: Json | null
           features?: Json | null
+          format_fov?: Json | null
           gallery_images?: Json | null
           id?: string
           image_url?: string
+          integration_features?: Json | null
           language_code?: string
+          measurement_focus?: Json | null
           position?: number | null
           price_info?: string | null
+          product_types?: Json | null
           published?: boolean | null
           related_products?: Json | null
           sku?: string | null

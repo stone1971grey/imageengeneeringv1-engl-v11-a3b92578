@@ -34,6 +34,13 @@ interface ChartSizesData {
   sections: ChartSizeSection[];
 }
 
+// Filter options constants
+const PRODUCT_TYPES = ["Custom", "Multi-Format"];
+const MEASUREMENT_FOCUS = ["Low-Light", "Timing", "Multipurpose"];
+const FORMAT_FOV = ["Ultra-Wide", "Standard", "Multi-Format"];
+const APPLICATION_OPTIONS = ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"];
+const INTEGRATION_FEATURES = ["Integrated Illumination", "Timing Hardware", "ISO Compliant"];
+
 interface Product {
   id: string;
   slug: string;
@@ -49,6 +56,10 @@ interface Product {
   specifications: Record<string, string>;
   features: string[];
   applications: string[];
+  product_types: string[];
+  measurement_focus: string[];
+  format_fov: string[];
+  integration_features: string[];
   chart_sizes: ChartSizesData | null;
   price_info: string | null;
   availability: string;
@@ -127,6 +138,10 @@ const ProductsEditor = () => {
     specifications: {} as Record<string, string>,
     features: [] as string[],
     applications: [] as string[],
+    product_types: [] as string[],
+    measurement_focus: [] as string[],
+    format_fov: [] as string[],
+    integration_features: [] as string[],
     chart_sizes: null as ChartSizesData | null,
     price_info: "",
     availability: "available",
@@ -175,9 +190,13 @@ const ProductsEditor = () => {
         specifications: typeof p.specifications === 'object' && p.specifications !== null ? p.specifications : {},
         features: Array.isArray(p.features) ? p.features : [],
         applications: Array.isArray(p.applications) ? p.applications : [],
+        product_types: Array.isArray((p as any).product_types) ? (p as any).product_types : [],
+        measurement_focus: Array.isArray((p as any).measurement_focus) ? (p as any).measurement_focus : [],
+        format_fov: Array.isArray((p as any).format_fov) ? (p as any).format_fov : [],
+        integration_features: Array.isArray((p as any).integration_features) ? (p as any).integration_features : [],
         gallery_images: Array.isArray(p.gallery_images) ? p.gallery_images : [],
         documents: Array.isArray(p.documents) ? p.documents : [],
-        chart_sizes: Array.isArray((p as any).chart_sizes) ? (p as any).chart_sizes : []
+        chart_sizes: (p as any).chart_sizes || null
       }));
       
       setProducts(transformedProducts as unknown as Product[]);
@@ -204,6 +223,10 @@ const ProductsEditor = () => {
       specifications: {},
       features: [],
       applications: [],
+      product_types: [],
+      measurement_focus: [],
+      format_fov: [],
+      integration_features: [],
       chart_sizes: null,
       price_info: "",
       availability: "available",
@@ -240,6 +263,10 @@ const ProductsEditor = () => {
       specifications: product.specifications || {},
       features: product.features || [],
       applications: product.applications || [],
+      product_types: product.product_types || [],
+      measurement_focus: product.measurement_focus || [],
+      format_fov: product.format_fov || [],
+      integration_features: product.integration_features || [],
       chart_sizes: product.chart_sizes || null,
       price_info: product.price_info || "",
       availability: product.availability,
@@ -318,6 +345,10 @@ const ProductsEditor = () => {
         specifications: formData.specifications,
         features: formData.features,
         applications: formData.applications,
+        product_types: formData.product_types,
+        measurement_focus: formData.measurement_focus,
+        format_fov: formData.format_fov,
+        integration_features: formData.integration_features,
         chart_sizes: JSON.parse(JSON.stringify(formData.chart_sizes)),
         price_info: formData.price_info || null,
         availability: formData.availability,
@@ -1182,12 +1213,162 @@ const ProductsEditor = () => {
               </div>
             </TabsContent>
 
-            {/* Features Tab */}
+            {/* Features & Filters Tab */}
             <TabsContent value="features" className="space-y-6">
-              {/* Features */}
+              {/* 1. Product Type */}
               <div className="space-y-2">
-                <Label className="text-white">Features</Label>
-                <p className="text-sm text-gray-400 mb-4">List the key features of this product.</p>
+                <Label className="text-white">1. Product Type</Label>
+                <p className="text-sm text-gray-400">What is it fundamentally?</p>
+                <div className="flex flex-wrap gap-2">
+                  {PRODUCT_TYPES.map((type) => (
+                    <Button
+                      key={type}
+                      type="button"
+                      variant={formData.product_types.includes(type) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          product_types: prev.product_types.includes(type)
+                            ? prev.product_types.filter(t => t !== type)
+                            : [...prev.product_types, type]
+                        }));
+                      }}
+                      className={formData.product_types.includes(type) 
+                        ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                        : "border-gray-600 text-gray-300 hover:bg-gray-700"
+                      }
+                    >
+                      {type}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 2. Measurement Focus */}
+              <div className="space-y-2">
+                <Label className="text-white">2. Measurement Focus</Label>
+                <p className="text-sm text-gray-400">What is primarily measured? (Most important filter)</p>
+                <div className="flex flex-wrap gap-2">
+                  {MEASUREMENT_FOCUS.map((focus) => (
+                    <Button
+                      key={focus}
+                      type="button"
+                      variant={formData.measurement_focus.includes(focus) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          measurement_focus: prev.measurement_focus.includes(focus)
+                            ? prev.measurement_focus.filter(f => f !== focus)
+                            : [...prev.measurement_focus, focus]
+                        }));
+                      }}
+                      className={formData.measurement_focus.includes(focus) 
+                        ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                        : "border-gray-600 text-gray-300 hover:bg-gray-700"
+                      }
+                    >
+                      {focus}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. Format / Field of View */}
+              <div className="space-y-2">
+                <Label className="text-white">3. Format / Field of View</Label>
+                <p className="text-sm text-gray-400">Image format and field of view coverage</p>
+                <div className="flex flex-wrap gap-2">
+                  {FORMAT_FOV.map((format) => (
+                    <Button
+                      key={format}
+                      type="button"
+                      variant={formData.format_fov.includes(format) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          format_fov: prev.format_fov.includes(format)
+                            ? prev.format_fov.filter(f => f !== format)
+                            : [...prev.format_fov, format]
+                        }));
+                      }}
+                      className={formData.format_fov.includes(format) 
+                        ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                        : "border-gray-600 text-gray-300 hover:bg-gray-700"
+                      }
+                    >
+                      {format}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Application */}
+              <div className="space-y-2">
+                <Label className="text-white">4. Application</Label>
+                <p className="text-sm text-gray-400">Where is the product typically used?</p>
+                <div className="flex flex-wrap gap-2">
+                  {APPLICATION_OPTIONS.map((app) => (
+                    <Button
+                      key={app}
+                      type="button"
+                      variant={formData.applications.includes(app) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          applications: prev.applications.includes(app)
+                            ? prev.applications.filter(a => a !== app)
+                            : [...prev.applications, app]
+                        }));
+                      }}
+                      className={formData.applications.includes(app) 
+                        ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                        : "border-gray-600 text-gray-300 hover:bg-gray-700"
+                      }
+                    >
+                      {app}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 5. Integration / Special Features */}
+              <div className="space-y-2">
+                <Label className="text-white">5. Integration / Special Features</Label>
+                <p className="text-sm text-gray-400">Special product features (optional, valuable for power users)</p>
+                <div className="flex flex-wrap gap-2">
+                  {INTEGRATION_FEATURES.map((feature) => (
+                    <Button
+                      key={feature}
+                      type="button"
+                      variant={formData.integration_features.includes(feature) ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          integration_features: prev.integration_features.includes(feature)
+                            ? prev.integration_features.filter(f => f !== feature)
+                            : [...prev.integration_features, feature]
+                        }));
+                      }}
+                      className={formData.integration_features.includes(feature) 
+                        ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90" 
+                        : "border-gray-600 text-gray-300 hover:bg-gray-700"
+                      }
+                    >
+                      {feature}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Legacy Features (free-text) */}
+              <div className="space-y-2 pt-4 border-t border-gray-700">
+                <Label className="text-white">Additional Features (Free Text)</Label>
+                <p className="text-sm text-gray-400 mb-4">Custom features not covered by the filters above.</p>
                 <div className="space-y-2">
                   {formData.features.map((feature, index) => (
                     <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-3 rounded">
@@ -1207,45 +1388,11 @@ const ProductsEditor = () => {
                     <Input
                       value={newFeature}
                       onChange={(e) => setNewFeature(e.target.value)}
-                      placeholder="Add a feature"
+                      placeholder="Add a custom feature"
                       className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
                     />
                     <Button type="button" onClick={addFeature} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Applications */}
-              <div className="space-y-2">
-                <Label className="text-white">Applications</Label>
-                <p className="text-sm text-gray-400 mb-4">List the application areas for this product.</p>
-                <div className="space-y-2">
-                  {formData.applications.map((app, index) => (
-                    <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-3 rounded">
-                      <span className="text-white flex-1">{app}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeApplication(index)}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="flex gap-2 mt-4">
-                    <Input
-                      value={newApplication}
-                      onChange={(e) => setNewApplication(e.target.value)}
-                      placeholder="Add an application"
-                      className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addApplication())}
-                    />
-                    <Button type="button" onClick={addApplication} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </div>

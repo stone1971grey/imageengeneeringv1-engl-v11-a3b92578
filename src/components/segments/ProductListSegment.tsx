@@ -20,8 +20,19 @@ interface Product {
   sku: string | null;
   features: string[];
   applications: string[];
+  product_types: string[];
+  measurement_focus: string[];
+  format_fov: string[];
+  integration_features: string[];
   availability: string;
 }
+
+// Filter options
+const PRODUCT_TYPES = ["Custom", "Multi-Format"];
+const MEASUREMENT_FOCUS = ["Low-Light", "Timing", "Multipurpose"];
+const FORMAT_FOV = ["Ultra-Wide", "Standard", "Multi-Format"];
+const APPLICATION_OPTIONS = ["Automotive", "Mobile Devices", "Industrial Imaging", "Video / Broadcast"];
+const INTEGRATION_FEATURES = ["Integrated Illumination", "Timing Hardware", "ISO Compliant"];
 
 interface ProductListSegmentProps {
   segmentId?: number;
@@ -46,8 +57,13 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(config?.showFilters !== false);
-  const [selectedSubcategories, setSelectedSubcategories] = useState<Set<string>>(new Set());
+  
+  // 5 Filter states
+  const [selectedProductTypes, setSelectedProductTypes] = useState<Set<string>>(new Set());
+  const [selectedMeasurementFocus, setSelectedMeasurementFocus] = useState<Set<string>>(new Set());
+  const [selectedFormatFov, setSelectedFormatFov] = useState<Set<string>>(new Set());
   const [selectedApplications, setSelectedApplications] = useState<Set<string>>(new Set());
+  const [selectedIntegrationFeatures, setSelectedIntegrationFeatures] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadProducts();
@@ -76,7 +92,11 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
       const transformedProducts = (data || []).map(p => ({
         ...p,
         features: Array.isArray(p.features) ? p.features : [],
-        applications: Array.isArray(p.applications) ? p.applications : []
+        applications: Array.isArray(p.applications) ? p.applications : [],
+        product_types: Array.isArray((p as any).product_types) ? (p as any).product_types : [],
+        measurement_focus: Array.isArray((p as any).measurement_focus) ? (p as any).measurement_focus : [],
+        format_fov: Array.isArray((p as any).format_fov) ? (p as any).format_fov : [],
+        integration_features: Array.isArray((p as any).integration_features) ? (p as any).integration_features : []
       }));
       
       setProducts(transformedProducts as Product[]);
@@ -86,23 +106,6 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
       setLoading(false);
     }
   };
-
-  // Extract unique filter values
-  const subcategories = useMemo(() => {
-    const values = new Set<string>();
-    products.forEach(p => {
-      if (p.subcategory) values.add(p.subcategory);
-    });
-    return Array.from(values).sort();
-  }, [products]);
-
-  const applications = useMemo(() => {
-    const values = new Set<string>();
-    products.forEach(p => {
-      p.applications.forEach(a => values.add(a));
-    });
-    return Array.from(values).sort();
-  }, [products]);
 
   const toggleFilter = (set: Set<string>, value: string, setter: React.Dispatch<React.SetStateAction<Set<string>>>) => {
     const newSet = new Set(set);
@@ -115,13 +118,17 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
   };
 
   const clearAllFilters = () => {
-    setSelectedSubcategories(new Set());
+    setSelectedProductTypes(new Set());
+    setSelectedMeasurementFocus(new Set());
+    setSelectedFormatFov(new Set());
     setSelectedApplications(new Set());
+    setSelectedIntegrationFeatures(new Set());
     setSearchQuery("");
   };
 
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
+      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesSearch = 
@@ -131,20 +138,39 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
         if (!matchesSearch) return false;
       }
 
-      if (selectedSubcategories.size > 0) {
-        if (!product.subcategory || !selectedSubcategories.has(product.subcategory)) {
-          return false;
-        }
+      // 1. Product Type filter
+      if (selectedProductTypes.size > 0) {
+        const hasType = product.product_types.some(t => selectedProductTypes.has(t));
+        if (!hasType) return false;
       }
 
+      // 2. Measurement Focus filter
+      if (selectedMeasurementFocus.size > 0) {
+        const hasFocus = product.measurement_focus.some(f => selectedMeasurementFocus.has(f));
+        if (!hasFocus) return false;
+      }
+
+      // 3. Format / FOV filter
+      if (selectedFormatFov.size > 0) {
+        const hasFormat = product.format_fov.some(f => selectedFormatFov.has(f));
+        if (!hasFormat) return false;
+      }
+
+      // 4. Application filter
       if (selectedApplications.size > 0) {
-        const hasApplication = product.applications.some(app => selectedApplications.has(app));
-        if (!hasApplication) return false;
+        const hasApp = product.applications.some(a => selectedApplications.has(a));
+        if (!hasApp) return false;
+      }
+
+      // 5. Integration Features filter
+      if (selectedIntegrationFeatures.size > 0) {
+        const hasFeature = product.integration_features.some(f => selectedIntegrationFeatures.has(f));
+        if (!hasFeature) return false;
       }
 
       return true;
     });
-  }, [searchQuery, selectedSubcategories, selectedApplications, products]);
+  }, [searchQuery, selectedProductTypes, selectedMeasurementFocus, selectedFormatFov, selectedApplications, selectedIntegrationFeatures, products]);
 
   const handleViewDetails = (product: Product) => {
     // Determine the product category path
@@ -152,7 +178,7 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
     navigate(`/${language}/products/${categoryPath}/${product.slug}`);
   };
 
-  const hasActiveFilters = selectedSubcategories.size > 0 || selectedApplications.size > 0 || searchQuery !== "";
+  const hasActiveFilters = selectedProductTypes.size > 0 || selectedMeasurementFocus.size > 0 || selectedFormatFov.size > 0 || selectedApplications.size > 0 || selectedIntegrationFeatures.size > 0 || searchQuery !== "";
 
   if (loading) {
     return (
@@ -190,7 +216,7 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
                 className="pl-10 bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-500 focus:border-primary"
               />
             </div>
-            {config?.showFilters !== false && (subcategories.length > 0 || applications.length > 0) && (
+            {config?.showFilters !== false && (
               <Button
                 onClick={() => setShowFilters(!showFilters)}
                 className={`${showFilters ? 'bg-primary text-primary-foreground' : 'bg-gray-800 text-white'} hover:bg-primary hover:text-primary-foreground`}
@@ -207,45 +233,94 @@ const ProductListSegment = ({ segmentId, config, language: propLanguage }: Produ
           </div>
         )}
 
-        {/* Filters Panel */}
-        {showFilters && config?.showFilters !== false && (subcategories.length > 0 || applications.length > 0) && (
+        {/* Filters Panel - 5 Filter Categories */}
+        {showFilters && config?.showFilters !== false && (
           <div className="mb-8 p-6 bg-[#141414] rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {subcategories.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-white">Type</h3>
-                  <div className="space-y-2">
-                    {subcategories.map(sub => (
-                      <label key={sub} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
-                        <Checkbox
-                          checked={selectedSubcategories.has(sub)}
-                          onCheckedChange={() => toggleFilter(selectedSubcategories, sub, setSelectedSubcategories)}
-                          className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        />
-                        {sub}
-                      </label>
-                    ))}
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+              {/* 1. Product Type */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white text-sm">Product Type</h3>
+                <div className="space-y-2">
+                  {PRODUCT_TYPES.map(type => (
+                    <label key={type} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
+                      <Checkbox
+                        checked={selectedProductTypes.has(type)}
+                        onCheckedChange={() => toggleFilter(selectedProductTypes, type, setSelectedProductTypes)}
+                        className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      {type}
+                    </label>
+                  ))}
                 </div>
-              )}
+              </div>
 
-              {applications.length > 0 && (
-                <div className="space-y-3">
-                  <h3 className="font-semibold text-white">Application</h3>
-                  <div className="space-y-2">
-                    {applications.slice(0, 8).map(app => (
-                      <label key={app} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
-                        <Checkbox
-                          checked={selectedApplications.has(app)}
-                          onCheckedChange={() => toggleFilter(selectedApplications, app, setSelectedApplications)}
-                          className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        />
-                        {app}
-                      </label>
-                    ))}
-                  </div>
+              {/* 2. Measurement Focus */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white text-sm">Measurement Focus</h3>
+                <div className="space-y-2">
+                  {MEASUREMENT_FOCUS.map(focus => (
+                    <label key={focus} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
+                      <Checkbox
+                        checked={selectedMeasurementFocus.has(focus)}
+                        onCheckedChange={() => toggleFilter(selectedMeasurementFocus, focus, setSelectedMeasurementFocus)}
+                        className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      {focus}
+                    </label>
+                  ))}
                 </div>
-              )}
+              </div>
+
+              {/* 3. Format / FOV */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white text-sm">Format / FOV</h3>
+                <div className="space-y-2">
+                  {FORMAT_FOV.map(format => (
+                    <label key={format} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
+                      <Checkbox
+                        checked={selectedFormatFov.has(format)}
+                        onCheckedChange={() => toggleFilter(selectedFormatFov, format, setSelectedFormatFov)}
+                        className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      {format}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4. Application */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white text-sm">Application</h3>
+                <div className="space-y-2">
+                  {APPLICATION_OPTIONS.map(app => (
+                    <label key={app} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
+                      <Checkbox
+                        checked={selectedApplications.has(app)}
+                        onCheckedChange={() => toggleFilter(selectedApplications, app, setSelectedApplications)}
+                        className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      {app}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* 5. Integration Features */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-white text-sm">Integration Features</h3>
+                <div className="space-y-2">
+                  {INTEGRATION_FEATURES.map(feature => (
+                    <label key={feature} className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white">
+                      <Checkbox
+                        checked={selectedIntegrationFeatures.has(feature)}
+                        onCheckedChange={() => toggleFilter(selectedIntegrationFeatures, feature, setSelectedIntegrationFeatures)}
+                        className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      {feature}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
