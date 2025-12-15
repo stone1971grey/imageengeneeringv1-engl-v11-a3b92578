@@ -129,23 +129,27 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
 
       try {
         const sectionKey = `product-list-${segmentId}`;
+        console.log('[ProductListSegment] Loading config for:', { pageSlug, sectionKey, language });
 
         const fetchForLanguage = async (lang: string) => {
-          const { data } = await supabase
+          const { data, error } = await supabase
             .from("page_content")
             .select("content_value")
             .eq("page_slug", pageSlug)
             .eq("section_key", sectionKey)
             .eq("language", lang)
             .maybeSingle();
+          console.log('[ProductListSegment] Fetched for language', lang, ':', data, error);
           return data?.content_value ? JSON.parse(data.content_value) : null;
         };
 
         // 1) Try current language
         let loadedConfig = await fetchForLanguage(language);
+        console.log('[ProductListSegment] Config for', language, ':', loadedConfig);
 
         // 2) Fallback to English if no config exists for this language
         if (!loadedConfig && language !== "en") {
+          console.log('[ProductListSegment] Falling back to English');
           loadedConfig = await fetchForLanguage("en");
         }
 
@@ -155,6 +159,7 @@ const ProductListSegment = ({ segmentId, pageSlug, config: propConfig, language:
         }
 
         if (loadedConfig) {
+          console.log('[ProductListSegment] Final config with uiLabels:', loadedConfig.uiLabels);
           setConfig(loadedConfig);
           setShowFilters(loadedConfig.showFilters !== false);
         }
