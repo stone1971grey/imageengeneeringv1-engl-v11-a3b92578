@@ -379,17 +379,25 @@ export function DataHubDialog({
         setUploadProgress({ current: i + 1, total: files.length, fileName: file.name });
         
         try {
+          // Enforce practical upload size limit (keeps previews fast + avoids backend limits)
+          const MAX_UPLOAD_BYTES = 50 * 1024 * 1024; // 50MB
+          if (file.size > MAX_UPLOAD_BYTES) {
+            toast.error(`File too large: ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB). Please compress it (recommended < 50 MB).`);
+            failCount++;
+            continue;
+          }
+
           // Use original filename - add short suffix only if duplicate exists
           const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
           let fileName = sanitizedName;
           let filePath = `${folder.storage_path}/${fileName}`;
-          
+
           // Check if file already exists, add short suffix if needed
           const { data: existingFiles } = await supabase.storage
             .from("page-images")
             .list(folder.storage_path, { search: sanitizedName });
-          
-          if (existingFiles && existingFiles.some(f => f.name === sanitizedName)) {
+
+          if (existingFiles && existingFiles.some((f) => f.name === sanitizedName)) {
             const ext = sanitizedName.split('.').pop();
             const baseName = sanitizedName.replace(`.${ext}`, '');
             const shortId = Math.random().toString(36).slice(2, 6);
@@ -399,7 +407,10 @@ export function DataHubDialog({
 
           const { error: uploadError } = await supabase.storage
             .from("page-images")
-            .upload(filePath, file);
+            .upload(filePath, file, {
+              contentType: file.type || undefined,
+              upsert: false,
+            });
 
           if (uploadError) {
             console.error(`Upload error for ${file.name}:`, uploadError);
