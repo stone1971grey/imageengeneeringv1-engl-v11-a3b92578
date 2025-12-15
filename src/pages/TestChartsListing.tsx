@@ -232,7 +232,7 @@ const TestChartsListing = () => {
       <section className="pt-32 pb-12">
         <div className="container mx-auto px-6">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Test Charts</h1>
-          <p className="text-gray-400 max-w-2xl">
+          <p className="text-white/70 max-w-2xl">
             Use our filters and search function to find the perfect test chart for your application.
           </p>
         </div>
@@ -315,7 +315,7 @@ const TestChartsListing = () => {
       {/* Results Section */}
       <section className="py-12">
         <div className="container mx-auto px-6">
-          <div className="mb-6 text-gray-400">
+          <div className="mb-6 text-white/70">
             {filteredProducts.length} test chart{filteredProducts.length !== 1 ? 's' : ''} found
           </div>
           
