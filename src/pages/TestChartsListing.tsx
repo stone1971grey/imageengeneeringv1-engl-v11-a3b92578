@@ -65,22 +65,10 @@ const TestChartsListing = () => {
     }
   };
 
-  // Extract unique filter values from products
-  const subcategories = useMemo(() => {
-    const values = new Set<string>();
-    products.forEach(p => {
-      if (p.subcategory) values.add(p.subcategory);
-    });
-    return Array.from(values).sort();
-  }, [products]);
-
-  const applications = useMemo(() => {
-    const values = new Set<string>();
-    products.forEach(p => {
-      p.applications.forEach(a => values.add(a));
-    });
-    return Array.from(values).sort();
-  }, [products]);
+  // Predefined filter options
+  const subcategories = ["Custom", "Low-Light", "Multipurpose", "Ultra-Wide", "Multi-Format"];
+  
+  const applications = ["Low-Light", "Timing", "Ultra-Weitwinkel", "Automotive"];
 
   const toggleFilter = (set: Set<string>, value: string, setter: React.Dispatch<React.SetStateAction<Set<string>>>) => {
     const newSet = new Set(set);
