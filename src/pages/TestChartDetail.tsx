@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ArrowLeft, Download, FileText, Loader2, Star } from "lucide-react";
+import { ArrowLeft, Download, FileText, Loader2, Star, ZoomIn, X } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 interface ProductRow {
   id: string;
@@ -48,6 +49,7 @@ const TestChartDetail = () => {
   const [product, setProduct] = useState<ProductRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -236,22 +238,23 @@ const TestChartDetail = () => {
 
       <main>
         {/* Product Hero - 3 Column Layout */}
-        <section className="pt-32 pb-8">
+        <section className="pt-28 pb-8">
           <div className="container mx-auto px-6">
-            {/* Breadcrumb */}
-            <nav aria-label="Breadcrumb" className="mb-6">
-              <button
+            {/* Breadcrumb - Backend style */}
+            <div className="mb-8">
+              <Button
                 onClick={() => navigate(`/${language}/products/test-charts`)}
-                className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors text-sm"
+                variant="outline"
+                className="flex items-center gap-2 border-gray-600 text-white hover:bg-[#2a2a2a]"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="h-4 w-4" />
                 Back to Test Charts
-              </button>
-            </nav>
+              </Button>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               {/* LEFT: Title, Description, Badges, Buttons */}
-              <article className="lg:col-span-4 space-y-5">
+              <article className="lg:col-span-4 space-y-5 pt-2">
                 <header>
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <h1 className="text-2xl lg:text-3xl font-bold text-white leading-tight">{product.title}</h1>
@@ -326,14 +329,34 @@ const TestChartDetail = () => {
 
               {/* RIGHT: Image Gallery */}
               <div className="lg:col-span-4 space-y-3">
-                <div className="aspect-square bg-gradient-to-br from-gray-900 to-black rounded-xl overflow-hidden border border-gray-800">
-                  <img
-                    src={allImages[selectedImage] || product.image_url}
-                    alt={`${product.title} main product image`}
-                    className="w-full h-full object-contain p-6"
-                    loading="eager"
-                  />
-                </div>
+                <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
+                  <DialogTrigger asChild>
+                    <button className="relative group cursor-zoom-in w-full">
+                      <img
+                        src={allImages[selectedImage] || product.image_url}
+                        alt={`${product.title} main product image`}
+                        className="w-full h-auto object-contain"
+                        loading="eager"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                        <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 bg-black border-gray-700">
+                    <button
+                      onClick={() => setIsZoomOpen(false)}
+                      className="absolute top-4 right-4 z-10 p-2 bg-black/60 hover:bg-black/80 rounded-full transition-colors"
+                    >
+                      <X className="w-6 h-6 text-white" />
+                    </button>
+                    <img
+                      src={allImages[selectedImage] || product.image_url}
+                      alt={`${product.title} full size`}
+                      className="w-full h-full object-contain max-h-[85vh]"
+                    />
+                  </DialogContent>
+                </Dialog>
 
                 {allImages.length > 1 && (
                   <div className="flex gap-2 justify-center">
