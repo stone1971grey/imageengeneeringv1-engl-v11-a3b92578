@@ -1382,39 +1382,6 @@ const ProductsEditor = () => {
                 </div>
               </div>
 
-              {/* Legacy Features (free-text) */}
-              <div className="space-y-2 pt-4 border-t border-gray-700">
-                <Label className="text-white">Additional Features (Free Text)</Label>
-                <p className="text-sm text-gray-400 mb-4">Custom features not covered by the filters above.</p>
-                <div className="space-y-2">
-                  {formData.features.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-2 bg-[#2a2a2a] p-3 rounded">
-                      <span className="text-white flex-1">{feature}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFeature(index)}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <div className="flex gap-2 mt-4">
-                    <Input
-                      value={newFeature}
-                      onChange={(e) => setNewFeature(e.target.value)}
-                      placeholder="Add a custom feature"
-                      className="bg-[#2a2a2a] border-gray-600 text-white flex-1"
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
-                    />
-                    <Button type="button" onClick={addFeature} className="bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90">
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
             </TabsContent>
 
             {/* Settings Tab */}
