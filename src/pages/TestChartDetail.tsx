@@ -371,7 +371,7 @@ const TestChartDetail = () => {
         <section className="py-6 bg-[#141414]">
           <div className="container mx-auto px-6">
             <Tabs defaultValue="description" className="w-full">
-              <TabsList className="w-full max-w-3xl mx-auto grid grid-cols-4 bg-[#1a1a1a] p-1 h-auto">
+              <TabsList className={`w-full max-w-3xl mx-auto grid bg-[#1a1a1a] p-1 h-auto ${product.video_url ? 'grid-cols-4' : 'grid-cols-3'}`}>
                 <TabsTrigger
                   value="description"
                   className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
@@ -384,12 +384,14 @@ const TestChartDetail = () => {
                 >
                   Chart Sizes
                 </TabsTrigger>
-                <TabsTrigger
-                  value="video"
-                  className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
-                >
-                  Product Video
-                </TabsTrigger>
+                {product.video_url && (
+                  <TabsTrigger
+                    value="video"
+                    className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                  >
+                    Product Video
+                  </TabsTrigger>
+                )}
                 <TabsTrigger
                   value="downloads"
                   className="py-2.5 text-sm data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
