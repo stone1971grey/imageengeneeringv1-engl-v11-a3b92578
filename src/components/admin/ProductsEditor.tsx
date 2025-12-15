@@ -8,9 +8,10 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen, Video } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, X, FileText, FolderOpen, Video, Languages } from "lucide-react";
 import { MediaSelector } from "./MediaSelector";
 import { DataHubDialog } from "./DataHubDialog";
+import ProductTranslationEditor from "./ProductTranslationEditor";
 
 interface ChartSizeRow {
   id: string;
@@ -673,6 +674,15 @@ const ProductsEditor = () => {
               >
                 Settings
               </TabsTrigger>
+              {editingProduct && (
+                <TabsTrigger
+                  value="translations"
+                  className="py-3 data-[state=active]:bg-[#f9dc24] data-[state=active]:text-black text-gray-300"
+                >
+                  <Languages className="h-4 w-4 mr-2" />
+                  Translations
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* Basic Info Tab */}
@@ -1600,6 +1610,44 @@ const ProductsEditor = () => {
                 </div>
               </div>
             </TabsContent>
+
+            {/* Translations Tab - Only for existing products */}
+            {editingProduct && (
+              <TabsContent value="translations" className="space-y-6">
+                <ProductTranslationEditor
+                  productSlug={editingProduct.slug}
+                  englishData={{
+                    title: formData.title,
+                    teaser: formData.teaser,
+                    description: formData.description,
+                    image_url: formData.image_url,
+                    video_url: formData.video_url || null,
+                    gallery_images: formData.gallery_images,
+                    documents: formData.documents,
+                    category: formData.category,
+                    subcategory: formData.subcategory || null,
+                    sku: formData.sku || null,
+                    specifications: formData.specifications,
+                    features: formData.features,
+                    applications: formData.applications,
+                    product_types: formData.product_types,
+                    measurement_focus: formData.measurement_focus,
+                    format_fov: formData.format_fov,
+                    integration_features: formData.integration_features,
+                    display_badges: formData.display_badges,
+                    chart_sizes: formData.chart_sizes,
+                    price_info: formData.price_info || null,
+                    availability: formData.availability,
+                    published: formData.published,
+                    visibility: formData.visibility,
+                    position: formData.position,
+                  }}
+                  onSave={() => {
+                    loadProducts();
+                  }}
+                />
+              </TabsContent>
+            )}
           </Tabs>
 
           {/* Actions - Always visible */}
