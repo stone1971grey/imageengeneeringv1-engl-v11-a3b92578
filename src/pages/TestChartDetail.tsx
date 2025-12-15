@@ -22,6 +22,7 @@ interface ProductRow {
   specifications: unknown;
   features: unknown;
   applications: unknown;
+  chart_sizes: unknown;
   sku: string | null;
   category: string;
   subcategory: string | null;
@@ -91,6 +92,47 @@ const TestChartDetail = () => {
     const merged = [...base, ...gallery].filter((v, idx, arr) => arr.indexOf(v) === idx);
     return merged;
   }, [product]);
+
+  type ChartSizesSection = {
+    id?: string;
+    title?: string;
+    description?: string;
+    imageUrl?: string;
+  };
+
+  type ChartSizesContent = {
+    introImageUrl?: string;
+    introText?: string;
+    sections?: ChartSizesSection[];
+  };
+
+  const chartSizes = useMemo<ChartSizesContent | null>(() => {
+    if (!product?.chart_sizes || typeof product.chart_sizes !== "object" || Array.isArray(product.chart_sizes)) return null;
+
+    const cs = product.chart_sizes as Record<string, unknown>;
+    const sections = Array.isArray(cs.sections)
+      ? (cs.sections as unknown[]).filter((s): s is Record<string, unknown> => Boolean(s) && typeof s === "object")
+      : [];
+
+    return {
+      introImageUrl: typeof cs.introImageUrl === "string" ? cs.introImageUrl : undefined,
+      introText: typeof cs.introText === "string" ? cs.introText : undefined,
+      sections: sections.map((s) => ({
+        id: typeof s.id === "string" ? s.id : undefined,
+        title: typeof s.title === "string" ? s.title : undefined,
+        description: typeof s.description === "string" ? s.description : undefined,
+        imageUrl: typeof s.imageUrl === "string" ? s.imageUrl : undefined,
+      })),
+    };
+  }, [product]);
+
+  const reflectiveChartSizesImageUrl = useMemo(() => {
+    return chartSizes?.sections?.find((s) => s.id === "reflective")?.imageUrl;
+  }, [chartSizes]);
+
+  const transparentChartSizesImageUrl = useMemo(() => {
+    return chartSizes?.sections?.find((s) => s.id === "transparent")?.imageUrl;
+  }, [chartSizes]);
 
   // Helper to strip Lovable timestamp prefixes (e.g., "1765793426348-filename.pdf" -> "filename.pdf")
   const stripTimestampPrefix = (name: string): string => {
@@ -356,15 +398,15 @@ const TestChartDetail = () => {
                 <TabsContent value="chartsizes" className="space-y-8">
                   <div className="prose prose-invert max-w-none">
                     <h2 className="text-2xl font-bold text-white mb-4">Chart Sizes</h2>
-                    <p className="text-gray-300 leading-relaxed">
-                      The test charts are available in the sizes listed below. Please note that some charts cannot be manufactured in all sizes due to technical reasons. Please do not hesitate to ask for additional information.
-                    </p>
-                    <p className="text-gray-300 leading-relaxed">
-                      During production, specific regions of test charts are measured to qualify the production process or to create individual reference data accompanying a test chart additionally. Measured regions can be color or gray tones.
-                    </p>
-                    <p className="text-gray-300 leading-relaxed">
-                      The measurement devices are calibrated regularly and proven before use. You can find further information in our reference data accuracy sheet.
-                    </p>
+                    {(chartSizes?.introText ? chartSizes.introText.split(/\n\n+/) : [
+                      "The test charts are available in the sizes listed below. Please note that some charts cannot be manufactured in all sizes due to technical reasons. Please do not hesitate to ask for additional information.",
+                      "During production, specific regions of test charts are measured to qualify the production process or to create individual reference data accompanying a test chart additionally. Measured regions can be color or gray tones.",
+                      "The measurement devices are calibrated regularly and proven before use. You can find further information in our reference data accuracy sheet.",
+                    ]).map((paragraph, idx) => (
+                      <p key={idx} className="text-gray-300 leading-relaxed">
+                        {paragraph}
+                      </p>
+                    ))}
                     <a href="#" className="text-[#f9dc24] hover:underline font-medium">
                       Reference data accuracy of our test charts →
                     </a>
@@ -372,10 +414,11 @@ const TestChartDetail = () => {
 
                   {/* Chart Size Diagram */}
                   <div className="bg-[#1a1a1a] rounded-lg p-6">
-                    <img 
-                      src="/images/chart-sizes-diagram.png" 
-                      alt="Chart size vs picture size diagram" 
+                    <img
+                      src={chartSizes?.introImageUrl || "/images/chart-sizes-diagram.png"}
+                      alt="Test chart size overview diagram"
                       className="w-full max-w-md mx-auto"
+                      loading="lazy"
                     />
                   </div>
 
@@ -423,10 +466,11 @@ const TestChartDetail = () => {
                       <li className="text-gray-500">*Sizes are for all variations of the TE42 chart series, including TE42 V2, TE42-LL, TE42-LL Timing</li>
                     </ul>
                     <div className="mt-4">
-                      <img 
-                        src="/images/chart-sizes-reflective.png" 
-                        alt="Reflective chart sizes overview" 
+                      <img
+                        src={reflectiveChartSizesImageUrl || "/images/chart-sizes-reflective.png"}
+                        alt={`${product.title} reflective chart sizes overview`}
                         className="w-full max-w-2xl mx-auto rounded-lg"
+                        loading="lazy"
                       />
                     </div>
                   </div>
@@ -466,10 +510,11 @@ const TestChartDetail = () => {
                       <li className="text-gray-500">There are exceptions regarding mounting and size for special charts.</li>
                     </ul>
                     <div className="mt-4">
-                      <img 
-                        src="/images/chart-sizes-transparent.png" 
-                        alt="Transparent chart sizes overview" 
+                      <img
+                        src={transparentChartSizesImageUrl || "/images/chart-sizes-transparent.png"}
+                        alt={`${product.title} transparent chart sizes overview`}
                         className="w-full max-w-2xl mx-auto rounded-lg"
+                        loading="lazy"
                       />
                     </div>
                   </div>
