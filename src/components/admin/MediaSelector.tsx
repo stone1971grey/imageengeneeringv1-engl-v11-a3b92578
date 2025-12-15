@@ -17,6 +17,8 @@ interface MediaSelectorProps {
   buttonLabel?: string;
   /** Button color variant: 'yellow' or 'blue' */
   buttonVariant?: 'yellow' | 'blue';
+  /** Make button full width */
+  fullWidth?: boolean;
 }
 
 // Helper to detect if URL is a video
@@ -36,7 +38,8 @@ export const MediaSelector = ({
   previewSize = 'large',
   buttonOnly = false,
   buttonLabel,
-  buttonVariant = 'blue'
+  buttonVariant = 'blue',
+  fullWidth = false
 }: MediaSelectorProps) => {
   const [mediaDialogOpen, setMediaDialogOpen] = useState(false);
   const inputId = useId();
@@ -58,10 +61,10 @@ export const MediaSelector = ({
         <Button
           type="button"
           style={buttonVariant === 'blue' ? { backgroundColor: '#1e3a8a', color: 'white' } : undefined}
-          className={buttonVariant === 'yellow' 
+          className={`${fullWidth ? 'w-full' : ''} ${buttonVariant === 'yellow' 
             ? "bg-[#f9dc24] text-black hover:bg-[#f9dc24]/90 transition-opacity"
             : "hover:opacity-90 transition-opacity"
-          }
+          }`}
           onClick={() => setMediaDialogOpen(true)}
         >
           <FolderOpen className="h-4 w-4 mr-2" />

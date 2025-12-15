@@ -586,9 +586,9 @@ const ProductsEditor = () => {
                 </div>
               ))}
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2">
               {/* Yellow Button - Upload from Computer */}
-              <label className="cursor-pointer">
+              <label className="cursor-pointer w-full">
                 <input
                   type="file"
                   accept=".pdf,.doc,.docx"
@@ -643,7 +643,7 @@ const ProductsEditor = () => {
                 />
                 <Button
                   type="button"
-                  className="bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
+                  className="w-full bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
                   onClick={(e) => {
                     e.preventDefault();
                     (e.currentTarget.previousElementSibling as HTMLInputElement)?.click();
@@ -676,6 +676,7 @@ const ProductsEditor = () => {
                 buttonOnly
                 buttonLabel="Select from Media"
                 buttonVariant="blue"
+                fullWidth
               />
             </div>
           </div>
