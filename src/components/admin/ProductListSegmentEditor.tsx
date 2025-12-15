@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Languages } from "lucide-react";
 import { GeminiIcon } from "@/components/GeminiIcon";
@@ -36,12 +38,12 @@ const FILTER_CATEGORIES = [
   { key: "integrationFeatures", label: "Integration Features" }
 ];
 
-const SUPPORTED_LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'de', label: 'Deutsch' },
-  { code: 'ja', label: '日本語' },
-  { code: 'ko', label: '한국어' },
-  { code: 'zh', label: '中文' },
+const LANGUAGES = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'de', name: 'German', flag: '🇩🇪' },
+  { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+  { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+  { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
 ];
 
 export const ProductListSegmentEditor = ({
@@ -54,6 +56,10 @@ export const ProductListSegmentEditor = ({
   const [saving, setSaving] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState(initialLanguage === 'en' ? 'de' : initialLanguage);
+  const [isSplitScreenEnabled, setIsSplitScreenEnabled] = useState(() => {
+    const saved = localStorage.getItem('cms-split-screen-mode');
+    return saved !== null ? saved === 'true' : true;
+  });
   
   // English content (left panel - read-only display)
   const [enTitle, setEnTitle] = useState("Our Products");
@@ -98,6 +104,15 @@ export const ProductListSegmentEditor = ({
     window.addEventListener('product-list-translate', handleExternalTranslate);
     return () => window.removeEventListener('product-list-translate', handleExternalTranslate);
   }, [targetLanguage, pageSlug, segmentId, enTitle, enDescription]);
+
+  const handleSplitScreenToggle = (checked: boolean) => {
+    setIsSplitScreenEnabled(checked);
+    localStorage.setItem('cms-split-screen-mode', String(checked));
+  };
+
+  const handleTargetLanguageChange = (lang: string) => {
+    setTargetLanguage(lang);
+  };
 
   const loadAllContent = async () => {
     setLoading(true);
@@ -197,7 +212,7 @@ export const ProductListSegmentEditor = ({
       if (translateData?.translatedTexts) {
         setTargetTitle(translateData.translatedTexts.title || enTitle || '');
         setTargetDescription(translateData.translatedTexts.description || enDescription || '');
-        toast.success(`Content translated to ${SUPPORTED_LANGUAGES.find(l => l.code === targetLanguage)?.label}`);
+        toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name}`);
       }
     } catch (error) {
       console.error('Translation error:', error);
@@ -275,7 +290,7 @@ export const ProductListSegmentEditor = ({
         });
 
       if (error) throw error;
-      toast.success(`${SUPPORTED_LANGUAGES.find(l => l.code === targetLanguage)?.label} configuration saved`);
+      toast.success(`${LANGUAGES.find(l => l.code === targetLanguage)?.name} configuration saved`);
       onSave?.();
     } catch (error: any) {
       console.error("Error saving target config:", error);
@@ -300,147 +315,170 @@ export const ProductListSegmentEditor = ({
     );
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Translation Progress Bar */}
-      {isTranslating && (
-        <div className="h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 animate-pulse rounded-full" />
-      )}
+  const renderEditor = (isTarget: boolean = false) => {
+    const title = isTarget ? targetTitle : enTitle;
+    const description = isTarget ? targetDescription : enDescription;
+    const setTitle = isTarget ? setTargetTitle : setEnTitle;
+    const setDescription = isTarget ? setTargetDescription : setEnDescription;
+    const handleSave = isTarget ? handleSaveTarget : handleSaveEnglish;
 
-      {/* Split Screen Header with Language Selector and Translate Button */}
-      <div className="flex items-center justify-between p-4 bg-[#1a1a1a] rounded-lg">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Languages className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-400 text-sm">Target Language:</span>
-          </div>
-          <Select value={targetLanguage} onValueChange={setTargetLanguage}>
-            <SelectTrigger className="w-32 bg-[#2a2a2a] border-gray-600 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {SUPPORTED_LANGUAGES.filter(l => l.code !== 'en').map(lang => (
-                <SelectItem key={lang.code} value={lang.code}>{lang.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    return (
+      <div className="space-y-4 p-4 bg-background border rounded-lg">
+        <div className="space-y-2">
+          <Label>Section Title</Label>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Our Products"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Section Description</Label>
+          <Textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Browse our complete product catalog"
+            rows={2}
+          />
         </div>
 
         <Button
-          onClick={handleTranslate}
-          disabled={isTranslating || targetLanguage === 'en'}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          onClick={handleSave}
+          disabled={saving}
+          className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black"
         >
-          {isTranslating ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Translating...
-            </>
-          ) : (
-            <>
-              <GeminiIcon className="w-4 h-4 mr-2" />
-              Auto-Translate
-            </>
-          )}
+          {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+          Save
         </Button>
       </div>
+    );
+  };
 
-      {/* Split Screen Panels */}
-      <div className="grid grid-cols-2 gap-6">
-        {/* Left Panel - English (Source) */}
-        <div className="p-4 bg-[#1a1a1a] rounded-lg space-y-4">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="px-2 py-1 bg-blue-600 text-white text-xs font-semibold rounded">EN</span>
-            <span className="text-white font-medium">English (Source)</span>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-white">Section Title</Label>
-            <Input
-              value={enTitle}
-              onChange={(e) => setEnTitle(e.target.value)}
-              placeholder="Our Products"
-              className="bg-[#2a2a2a] border-gray-600 text-white"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-white">Section Description</Label>
-            <Textarea
-              value={enDescription}
-              onChange={(e) => setEnDescription(e.target.value)}
-              placeholder="Browse our complete product catalog"
-              className="bg-[#2a2a2a] border-gray-600 text-white"
-              rows={2}
-            />
-          </div>
-
-          <Button
-            onClick={handleSaveEnglish}
-            disabled={saving}
-            className="w-full bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-            Save
-          </Button>
+  return (
+    <div className="space-y-4">
+      {/* Translation Progress Feedback - Rainbow Style */}
+      {isTranslating && (
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 border-2 border-purple-400 rounded-lg p-4 text-center text-white font-semibold animate-pulse shadow-lg shadow-purple-500/50">
+          ⏳ Translating content...
         </div>
+      )}
 
-        {/* Right Panel - Target Language */}
-        <div className="p-4 bg-[#1a1a1a] rounded-lg space-y-4">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="px-2 py-1 bg-green-600 text-white text-xs font-semibold rounded uppercase">
-              {targetLanguage}
-            </span>
-            <span className="text-white font-medium">
-              {SUPPORTED_LANGUAGES.find(l => l.code === targetLanguage)?.label}
-            </span>
+      {/* Language Selector Card - Rainbow Template Style */}
+      <Card className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-blue-700">
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Languages className="h-5 w-5 text-blue-300" />
+              <div>
+                <CardTitle className="text-white text-lg">Multi-Language Editor</CardTitle>
+                <CardDescription className="text-blue-200 text-sm mt-1">
+                  Compare and edit Product List in multiple languages side-by-side
+                </CardDescription>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Switch 
+                  id="split-screen-toggle"
+                  checked={isSplitScreenEnabled}
+                  onCheckedChange={handleSplitScreenToggle}
+                  className="data-[state=checked]:bg-blue-600"
+                />
+                <Label htmlFor="split-screen-toggle" className="text-white text-sm cursor-pointer">
+                  Split-Screen Mode
+                </Label>
+              </div>
+              {isSplitScreenEnabled && (
+                <Badge variant="outline" className="bg-blue-950/50 text-blue-200 border-blue-600">
+                  Active
+                </Badge>
+              )}
+            </div>
           </div>
+          
+          {isSplitScreenEnabled && (
+            <div className="flex items-center gap-4 mt-4 pt-4 border-t border-blue-700/50">
+              <label className="text-white font-medium text-sm">Target Language:</label>
+              <Select value={targetLanguage} onValueChange={handleTargetLanguageChange}>
+                <SelectTrigger className="w-[220px] bg-blue-950/70 border-blue-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-blue-700 z-50">
+                  {LANGUAGES.filter(lang => lang.code !== 'en').map(lang => (
+                    <SelectItem 
+                      key={lang.code} 
+                      value={lang.code}
+                      className="text-white hover:bg-blue-900/50 cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-lg">{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <Button
+                onClick={handleTranslate}
+                disabled={isTranslating}
+                className="ml-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              >
+                <GeminiIcon className="h-4 w-4 mr-2" />
+                {isTranslating ? "Translating..." : "Translate Automatically"}
+              </Button>
+            </div>
+          )}
+        </CardHeader>
+      </Card>
 
-          <div className="space-y-2">
-            <Label className="text-white">Section Title</Label>
-            <Input
-              value={targetTitle}
-              onChange={(e) => setTargetTitle(e.target.value)}
-              placeholder={enTitle || "Translation..."}
-              className="bg-[#2a2a2a] border-gray-600 text-white"
-            />
-          </div>
+      {/* Split Screen or Single View */}
+      <div className={isSplitScreenEnabled ? "grid grid-cols-2 gap-6" : ""}>
+        {isSplitScreenEnabled ? (
+          <>
+            {/* Left Panel - English */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-green-900/30 to-green-800/30 border-2 border-green-600/50 rounded-lg">
+                <span className="text-2xl">🇺🇸</span>
+                <div>
+                  <div className="text-white font-semibold">English (Reference)</div>
+                  <div className="text-green-300 text-xs">Source Language</div>
+                </div>
+              </div>
+              {renderEditor(false)}
+            </div>
 
-          <div className="space-y-2">
-            <Label className="text-white">Section Description</Label>
-            <Textarea
-              value={targetDescription}
-              onChange={(e) => setTargetDescription(e.target.value)}
-              placeholder={enDescription || "Translation..."}
-              className="bg-[#2a2a2a] border-gray-600 text-white"
-              rows={2}
-            />
-          </div>
-
-          <Button
-            onClick={handleSaveTarget}
-            disabled={saving}
-            className="w-full bg-[hsl(var(--yellow))] text-black hover:bg-[hsl(var(--yellow))]/90"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-            Save
-          </Button>
-        </div>
+            {/* Right Panel - Target Language */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-900/30 to-blue-800/30 border-2 border-blue-600/50 rounded-lg">
+                <span className="text-2xl">{LANGUAGES.find(l => l.code === targetLanguage)?.flag}</span>
+                <div>
+                  <div className="text-white font-semibold">{LANGUAGES.find(l => l.code === targetLanguage)?.name}</div>
+                  <div className="text-blue-300 text-xs">Target Language</div>
+                </div>
+              </div>
+              {renderEditor(true)}
+            </div>
+          </>
+        ) : (
+          renderEditor(false)
+        )}
       </div>
 
       {/* Shared Configuration (below split screen) */}
-      <div className="p-4 bg-[#1a1a1a] rounded-lg space-y-4">
-        <h3 className="text-white font-semibold border-b border-gray-700 pb-2 mb-4">
+      <div className="p-4 bg-background border rounded-lg space-y-4">
+        <h3 className="font-semibold border-b pb-2 mb-4">
           Display Configuration (applies to all languages)
         </h3>
 
         <div className="space-y-2">
-          <Label className="text-white">Filter by Category</Label>
+          <Label>Filter by Category</Label>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+            <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white z-50">
               {CATEGORIES.map(cat => (
                 <SelectItem key={cat} value={cat}>{cat}</SelectItem>
               ))}
@@ -450,12 +488,12 @@ export const ProductListSegmentEditor = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-white">Layout</Label>
+            <Label>Layout</Label>
             <Select value={layout} onValueChange={(v) => setLayout(v as 'grid' | 'list')}>
-              <SelectTrigger className="bg-[#2a2a2a] border-gray-600 text-white">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white z-50">
                 <SelectItem value="grid">Grid (3 columns)</SelectItem>
                 <SelectItem value="list">List (1 column)</SelectItem>
               </SelectContent>
@@ -463,15 +501,14 @@ export const ProductListSegmentEditor = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-white">Products per Page</Label>
+            <Label>Products per Page</Label>
             <Input
               type="number"
               value={maxProducts || ""}
               onChange={(e) => setMaxProducts(e.target.value ? parseInt(e.target.value) : undefined)}
               placeholder="No limit (show all)"
-              className="bg-[#2a2a2a] border-gray-600 text-white"
             />
-            <p className="text-xs text-gray-500">Leave empty to show all products.</p>
+            <p className="text-xs text-muted-foreground">Leave empty to show all products.</p>
           </div>
         </div>
 
@@ -481,32 +518,32 @@ export const ProductListSegmentEditor = ({
               checked={showSearch}
               onCheckedChange={setShowSearch}
             />
-            <Label className="text-white">Show Search</Label>
+            <Label>Show Search</Label>
           </div>
           <div className="flex items-center gap-3">
             <Switch
               checked={showFilters}
               onCheckedChange={setShowFilters}
             />
-            <Label className="text-white">Show Filters</Label>
+            <Label>Show Filters</Label>
           </div>
         </div>
 
         {/* Individual Filter Visibility */}
         {showFilters && (
-          <div className="space-y-3 p-4 bg-[#222] rounded-lg">
-            <Label className="text-white font-semibold">Visible Filter Categories</Label>
-            <p className="text-xs text-gray-400 mb-3">Select which filter categories to display</p>
+          <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
+            <Label className="font-semibold">Visible Filter Categories</Label>
+            <p className="text-xs text-muted-foreground mb-3">Select which filter categories to display</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {FILTER_CATEGORIES.map(filter => (
                 <label 
                   key={filter.key} 
-                  className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white"
+                  className="flex items-center gap-2 cursor-pointer text-sm hover:text-foreground"
                 >
                   <Checkbox
                     checked={visibleFilters[filter.key] !== false}
                     onCheckedChange={() => toggleFilterVisibility(filter.key)}
-                    className="border-gray-600 data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
+                    className="data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
                   />
                   {filter.label}
                 </label>
