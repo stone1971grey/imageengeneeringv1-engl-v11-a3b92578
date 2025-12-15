@@ -21,7 +21,7 @@ interface ProductRow {
   documents: unknown;
   specifications: unknown;
   features: unknown;
-  applications: unknown;
+  applications: string[];
   chart_sizes: unknown;
   sku: string | null;
   category: string;
@@ -30,6 +30,8 @@ interface ProductRow {
   published: boolean | null;
   visibility: string;
   language_code: string;
+  measurement_focus: string[];
+  format_fov: string[];
 }
 
 type ProductDownload = {
@@ -233,109 +235,123 @@ const TestChartDetail = () => {
       <Navigation />
 
       <main>
-        {/* Breadcrumb */}
-        <section className="pt-24 pb-2 border-b border-gray-800">
+        {/* Product Hero - 3 Column Layout */}
+        <section className="pt-24 pb-6">
           <div className="container mx-auto px-6">
-            <nav aria-label="Breadcrumb">
+            {/* Breadcrumb - dezent oben */}
+            <nav aria-label="Breadcrumb" className="mb-4">
               <button
                 onClick={() => navigate(`/${language}/products/test-charts`)}
-                className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors text-sm"
+                className="flex items-center gap-1.5 text-gray-500 hover:text-[#f9dc24] transition-colors text-xs"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                Back to Test Charts
+                <ArrowLeft className="w-3 h-3" />
+                Test Charts
               </button>
             </nav>
-          </div>
-        </section>
 
-        {/* Product Hero */}
-        <section className="py-6">
-          <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Image Gallery */}
-              <div className="space-y-3">
-                <div className="aspect-[4/3] bg-black rounded-lg overflow-hidden w-full max-w-[480px] mx-auto lg:mx-0">
-                  <img
-                    src={allImages[selectedImage] || product.image_url}
-                    alt={`${product.title} main product image`}
-                    className="w-full h-full object-contain p-3"
-                    loading="eager"
-                  />
-                </div>
-
-                {allImages.length > 1 && (
-                  <div className="flex gap-2 justify-center lg:justify-start">
-                    {allImages.map((img, idx) => (
-                      <button
-                        key={img}
-                        onClick={() => setSelectedImage(idx)}
-                        className={`w-14 h-14 rounded-md overflow-hidden border-2 transition-colors ${
-                          selectedImage === idx ? "border-[#f9dc24]" : "border-gray-700 hover:border-gray-500"
-                        }`}
-                        aria-label={`View product image ${idx + 1}`}
-                      >
-                        <img src={img} alt="" className="w-full h-full object-contain p-1 bg-black" loading="lazy" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Product Info */}
-              <article className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* LEFT: Title, Description, Badges, Buttons */}
+              <article className="lg:col-span-4 space-y-4">
                 <header>
-                  <div className="flex items-center justify-between mb-1">
-                    <h1 className="text-2xl lg:text-3xl font-bold text-white">{product.title}</h1>
-                    {product.sku && <span className="text-gray-400 font-mono text-sm">{product.sku}</span>}
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h1 className="text-xl lg:text-2xl font-bold text-white leading-tight">{product.title}</h1>
+                    {product.sku && <span className="text-gray-500 font-mono text-xs whitespace-nowrap">{product.sku}</span>}
                   </div>
-                  <p className="text-base text-gray-300">{product.teaser}</p>
+                  <p className="text-sm text-gray-400 leading-relaxed">{product.teaser}</p>
                 </header>
 
-                {/* Category/Subcategory */}
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-gray-800 text-gray-200 border border-gray-700 text-xs">{product.category}</Badge>
-                  {product.subcategory && (
-                    <Badge variant="outline" className="border-gray-600 text-gray-300 text-xs">
-                      {product.subcategory}
-                    </Badge>
-                  )}
-                </div>
+                {/* Badges - same as listing */}
+                {(() => {
+                  const visibleBadges = [
+                    ...(product.measurement_focus || []).slice(0, 2),
+                    ...(product.format_fov || []).filter((f: string) => f !== "Standard").slice(0, 1),
+                    ...(product.applications || []).slice(0, 1),
+                  ].slice(0, 4);
 
-                {/* Action Section */}
-                <div className="bg-[#1a1a1a] rounded-lg p-4 space-y-3">
+                  return visibleBadges.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {visibleBadges.map((badge: string, idx: number) => (
+                        <Badge
+                          key={idx}
+                          className="text-xs bg-[hsl(var(--yellow))]/15 text-[hsl(var(--yellow))] border border-[hsl(var(--yellow))]/30"
+                        >
+                          {badge}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : null;
+                })()}
+
+                {/* Action Buttons */}
+                <div className="space-y-2 pt-2">
                   <Button size="default" className="w-full bg-[#f9dc24] hover:bg-[#f9dc24]/90 text-black font-semibold">
                     <FileText className="w-4 h-4 mr-2" />
                     Request Quote
                   </Button>
 
                   {downloads.length > 0 && (
-                    <a
-                      href={downloads[0].url}
-                      className="flex items-center gap-2 text-gray-400 hover:text-[#f9dc24] transition-colors text-sm"
+                    <Button
+                      variant="outline"
+                      size="default"
+                      className="w-full border-gray-600 text-white hover:bg-gray-800 hover:border-gray-500"
+                      asChild
                     >
-                      <Download className="w-4 h-4" />
-                      Download Datasheet
-                    </a>
+                      <a href={downloads[0].url}>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download Datasheet
+                      </a>
+                    </Button>
                   )}
                 </div>
+              </article>
 
-                {/* Chart Attributes Section */}
+              {/* CENTER: Chart Attributes */}
+              <div className="lg:col-span-4">
                 {specifications.length > 0 && (
-                  <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-gray-800">
-                    <div className="bg-[#222] px-4 py-2.5 border-b border-gray-800">
-                      <h2 className="text-base font-semibold text-white">Chart attributes</h2>
+                  <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-gray-800 h-fit">
+                    <div className="bg-[#222] px-3 py-2 border-b border-gray-800">
+                      <h2 className="text-sm font-semibold text-white">Chart Attributes</h2>
                     </div>
                     <div className="divide-y divide-gray-800">
                       {specifications.map((row) => (
-                        <div key={row.label} className="flex px-4 py-2.5 text-sm">
-                          <div className="w-36 text-gray-400 font-medium">{row.label}</div>
+                        <div key={row.label} className="flex px-3 py-2 text-xs">
+                          <div className="w-28 text-gray-500 font-medium">{row.label}</div>
                           <div className="flex-1 text-white whitespace-pre-line">{row.value}</div>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-              </article>
+              </div>
+
+              {/* RIGHT: Image Gallery */}
+              <div className="lg:col-span-4 space-y-2">
+                <div className="aspect-square bg-black rounded-lg overflow-hidden">
+                  <img
+                    src={allImages[selectedImage] || product.image_url}
+                    alt={`${product.title} main product image`}
+                    className="w-full h-full object-contain p-4"
+                    loading="eager"
+                  />
+                </div>
+
+                {allImages.length > 1 && (
+                  <div className="flex gap-1.5 justify-center">
+                    {allImages.map((img, idx) => (
+                      <button
+                        key={img}
+                        onClick={() => setSelectedImage(idx)}
+                        className={`w-12 h-12 rounded overflow-hidden border-2 transition-colors ${
+                          selectedImage === idx ? "border-[#f9dc24]" : "border-gray-700 hover:border-gray-500"
+                        }`}
+                        aria-label={`View product image ${idx + 1}`}
+                      >
+                        <img src={img} alt="" className="w-full h-full object-contain p-0.5 bg-black" loading="lazy" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>
