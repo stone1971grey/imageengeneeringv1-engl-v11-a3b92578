@@ -651,6 +651,7 @@ export type Database = {
           chart_sizes: Json | null
           created_at: string
           description: string | null
+          display_badges: Json | null
           documents: Json | null
           features: Json | null
           format_fov: Json | null
@@ -682,6 +683,7 @@ export type Database = {
           chart_sizes?: Json | null
           created_at?: string
           description?: string | null
+          display_badges?: Json | null
           documents?: Json | null
           features?: Json | null
           format_fov?: Json | null
@@ -713,6 +715,7 @@ export type Database = {
           chart_sizes?: Json | null
           created_at?: string
           description?: string | null
+          display_badges?: Json | null
           documents?: Json | null
           features?: Json | null
           format_fov?: Json | null
