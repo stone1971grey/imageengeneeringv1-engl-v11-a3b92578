@@ -276,6 +276,23 @@ const TestChartDetail = () => {
                     </a>
                   )}
                 </div>
+
+                {/* Chart Attributes Section */}
+                {specifications.length > 0 && (
+                  <div className="bg-[#1a1a1a] rounded-lg overflow-hidden border border-gray-800">
+                    <div className="bg-[#222] px-6 py-4 border-b border-gray-800">
+                      <h2 className="text-lg font-semibold text-white">Chart attributes</h2>
+                    </div>
+                    <div className="divide-y divide-gray-800">
+                      {specifications.map((row) => (
+                        <div key={row.label} className="flex px-6 py-4">
+                          <div className="w-40 text-gray-400 font-medium">{row.label}</div>
+                          <div className="flex-1 text-white whitespace-pre-line">{row.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </article>
             </div>
           </div>
