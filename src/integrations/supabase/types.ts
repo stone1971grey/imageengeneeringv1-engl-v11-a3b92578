@@ -672,6 +672,7 @@ export type Database = {
           teaser: string
           title: string
           updated_at: string
+          video_url: string | null
           visibility: string
         }
         Insert: {
@@ -702,6 +703,7 @@ export type Database = {
           teaser: string
           title: string
           updated_at?: string
+          video_url?: string | null
           visibility?: string
         }
         Update: {
@@ -732,6 +734,7 @@ export type Database = {
           teaser?: string
           title?: string
           updated_at?: string
+          video_url?: string | null
           visibility?: string
         }
         Relationships: []
