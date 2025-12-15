@@ -29,7 +29,7 @@ const CATEGORIES = [
   "Bundles & Services"
 ];
 
-// Available filter categories
+// Available filter categories with default English labels
 const FILTER_CATEGORIES = [
   { key: "productTypes", label: "Product Type" },
   { key: "measurementFocus", label: "Measurement Focus" },
@@ -37,6 +37,27 @@ const FILTER_CATEGORIES = [
   { key: "applications", label: "Application" },
   { key: "integrationFeatures", label: "Integration Features" }
 ];
+
+// Default UI labels (English)
+const DEFAULT_UI_LABELS = {
+  searchPlaceholder: "Search products...",
+  clearFiltersButton: "Clear Filters",
+  noProductsFound: "No products found",
+  viewDetailsButton: "View Details",
+  filterByLabel: "Filter by",
+  sortByLabel: "Sort by",
+  showingLabel: "Showing",
+  ofLabel: "of",
+  productsLabel: "products",
+  previousButton: "Previous",
+  nextButton: "Next",
+  // Filter category labels
+  filterProductTypes: "Product Type",
+  filterMeasurementFocus: "Measurement Focus",
+  filterFormatFov: "Format / FOV",
+  filterApplications: "Application",
+  filterIntegrationFeatures: "Integration Features"
+};
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -64,10 +85,12 @@ export const ProductListSegmentEditor = ({
   // English content (left panel - read-only display)
   const [enTitle, setEnTitle] = useState("Our Products");
   const [enDescription, setEnDescription] = useState("Browse our complete product catalog");
+  const [enUiLabels, setEnUiLabels] = useState<Record<string, string>>(DEFAULT_UI_LABELS);
   
   // Target language content (right panel - editable)
   const [targetTitle, setTargetTitle] = useState("");
   const [targetDescription, setTargetDescription] = useState("");
+  const [targetUiLabels, setTargetUiLabels] = useState<Record<string, string>>({});
   
   // Shared configuration (not translatable)
   const [category, setCategory] = useState("All");
@@ -132,6 +155,7 @@ export const ProductListSegmentEditor = ({
         const config = JSON.parse(enData.content_value);
         setEnTitle(config.title || "Our Products");
         setEnDescription(config.description || "");
+        setEnUiLabels({ ...DEFAULT_UI_LABELS, ...(config.uiLabels || {}) });
         setCategory(config.category || "All");
         setShowFilters(config.showFilters !== false);
         setShowSearch(config.showSearch !== false);
@@ -144,6 +168,9 @@ export const ProductListSegmentEditor = ({
             ...config.visibleFilters
           }));
         }
+      } else {
+        // No English content yet, use defaults
+        setEnUiLabels(DEFAULT_UI_LABELS);
       }
 
       // Load target language content
@@ -171,10 +198,12 @@ export const ProductListSegmentEditor = ({
         const config = JSON.parse(data.content_value);
         setTargetTitle(config.title || "");
         setTargetDescription(config.description || "");
+        setTargetUiLabels(config.uiLabels || {});
       } else {
         // No translation yet, show empty
         setTargetTitle("");
         setTargetDescription("");
+        setTargetUiLabels({});
       }
     } catch (error) {
       console.error("Error loading target language content:", error);
@@ -195,9 +224,11 @@ export const ProductListSegmentEditor = ({
     setIsTranslating(true);
 
     try {
-      const textsToTranslate = {
+      // Include all translatable content: title, description, AND UI labels
+      const textsToTranslate: Record<string, string> = {
         title: enTitle || '',
-        description: enDescription || ''
+        description: enDescription || '',
+        ...enUiLabels
       };
 
       const { data: translateData, error: translateError } = await supabase.functions.invoke('translate-content', {
@@ -210,9 +241,20 @@ export const ProductListSegmentEditor = ({
       if (translateError) throw translateError;
 
       if (translateData?.translatedTexts) {
+        // Extract title and description
         setTargetTitle(translateData.translatedTexts.title || enTitle || '');
         setTargetDescription(translateData.translatedTexts.description || enDescription || '');
-        toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name}`);
+        
+        // Extract UI labels (all keys except title and description)
+        const translatedUiLabels: Record<string, string> = {};
+        Object.keys(enUiLabels).forEach(key => {
+          if (translateData.translatedTexts[key]) {
+            translatedUiLabels[key] = translateData.translatedTexts[key];
+          }
+        });
+        setTargetUiLabels(translatedUiLabels);
+        
+        toast.success(`Translated to ${LANGUAGES.find(l => l.code === targetLanguage)?.name} (including UI labels)`);
       }
     } catch (error) {
       console.error('Translation error:', error);
@@ -229,6 +271,7 @@ export const ProductListSegmentEditor = ({
       const config = {
         title: enTitle,
         description: enDescription,
+        uiLabels: enUiLabels,
         category: category === "All" ? undefined : category,
         showFilters,
         showSearch,
@@ -268,6 +311,7 @@ export const ProductListSegmentEditor = ({
       const config = {
         title: targetTitle,
         description: targetDescription,
+        uiLabels: targetUiLabels,
         category: category === "All" ? undefined : category,
         showFilters,
         showSearch,
