@@ -122,8 +122,8 @@ const TestChartsListing = () => {
 
   const ProductCard = ({ product }: { product: Product }) => {
     return (
-      <Card className="group bg-[#1a1a1a] border-gray-800 hover:border-primary/50 transition-all duration-300 overflow-hidden">
-        <div className="aspect-[4/3] relative overflow-hidden bg-gray-900">
+      <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden">
+        <div className="aspect-[4/3] relative overflow-hidden bg-muted">
           <img
             src={product.image_url}
             alt={product.title}
@@ -133,14 +133,14 @@ const TestChartsListing = () => {
         <CardContent className="p-4 space-y-3">
           {/* Title and SKU */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-bold text-white text-lg">{product.title}</h3>
+            <h3 className="font-bold text-foreground text-lg">{product.title}</h3>
             {product.sku && (
-              <span className="text-xs text-gray-400 font-mono">{product.sku}</span>
+              <span className="text-xs text-muted-foreground font-mono">{product.sku}</span>
             )}
           </div>
 
           {/* Teaser */}
-          <p className="text-sm text-gray-400 line-clamp-2">{product.teaser}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2">{product.teaser}</p>
 
           {/* Features as Badges */}
           {product.features.length > 0 && (
@@ -149,7 +149,7 @@ const TestChartsListing = () => {
                 <Badge 
                   key={idx} 
                   variant="outline" 
-                  className="text-xs border-gray-600 text-gray-300 bg-gray-800/50"
+                  className="text-xs"
                 >
                   {feature}
                 </Badge>
@@ -158,13 +158,13 @@ const TestChartsListing = () => {
           )}
 
           {/* Availability */}
-          <div className="pt-2 border-t border-gray-800">
+          <div className="pt-2 border-t border-border">
             <span className={`text-sm font-medium ${
               product.availability === 'available' 
-                ? 'text-green-400' 
+                ? 'text-green-600' 
                 : product.availability === 'pre-order'
                   ? 'text-primary'
-                  : 'text-gray-400'
+                  : 'text-muted-foreground'
             }`}>
               {product.availability === 'available' ? 'In Stock' : 
                product.availability === 'pre-order' ? 'Pre-Order' :
@@ -201,11 +201,11 @@ const TestChartsListing = () => {
     checked: boolean; 
     onChange: () => void;
   }) => (
-    <label className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors text-gray-300 text-sm">
+    <label className="flex items-center gap-2 cursor-pointer hover:text-foreground transition-colors text-muted-foreground text-sm">
       <Checkbox 
         checked={checked} 
         onCheckedChange={onChange}
-        className="border-gray-600 data-[state=checked]:bg-primary data-[state=checked]:border-primary data-[state=checked]:text-primary-foreground"
+        className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
       />
       {label}
     </label>
@@ -215,7 +215,7 @@ const TestChartsListing = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f0f0f]">
+      <div className="min-h-screen bg-background">
         <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -226,38 +226,36 @@ const TestChartsListing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f]">
+    <div className="min-h-screen bg-background">
       <Navigation />
 
       {/* Header Section */}
-      <section className="pt-32 pb-8 border-b border-gray-800">
+      <section className="pt-32 pb-12">
         <div className="container mx-auto px-6">
-          <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
-            Find and Sort Your Perfect Test Charts
-          </h1>
-          <p className="text-gray-400">
-            Use our filters and search function for precise search results
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Test Charts</h1>
+          <p className="text-muted-foreground max-w-2xl">
+            Use our filters and search function to find the perfect test chart for your application.
           </p>
         </div>
       </section>
 
       {/* Search and Filter Bar */}
-      <section className="py-6 border-b border-gray-800 sticky top-20 bg-[#0f0f0f]/95 backdrop-blur-sm z-40">
+      <section className="py-6 border-b border-border sticky top-20 bg-background/95 backdrop-blur-sm z-40">
         <div className="container mx-auto px-6">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search by title, SKU or features..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-[#1a1a1a] border-gray-700 text-white placeholder:text-gray-500 focus:border-primary"
+                className="pl-10"
               />
             </div>
             <Button
               onClick={() => setShowFilters(!showFilters)}
-              className={`${showFilters ? 'bg-primary text-primary-foreground' : 'bg-gray-800 text-white'} hover:bg-primary hover:text-primary-foreground transition-colors`}
+              className={`${showFilters ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'} hover:bg-primary hover:text-primary-foreground transition-colors`}
             >
               {showFilters ? <FilterX className="w-4 h-4 mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
               {showFilters ? 'Hide Filter' : 'Show Filter'}
@@ -266,7 +264,6 @@ const TestChartsListing = () => {
               <Button
                 onClick={clearAllFilters}
                 variant="ghost"
-                className="text-gray-400 hover:text-white"
               >
                 Clear All
               </Button>
@@ -277,13 +274,13 @@ const TestChartsListing = () => {
 
       {/* Filters Panel */}
       {showFilters && (subcategories.length > 0 || applications.length > 0) && (
-        <section className="py-6 border-b border-gray-800 bg-[#141414]">
+        <section className="py-6 border-b border-border bg-muted/50">
           <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Subcategory Filter */}
               {subcategories.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-white">Type</h3>
+                  <h3 className="font-semibold text-foreground">Type</h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {subcategories.map(sub => (
                       <FilterCheckbox
@@ -300,7 +297,7 @@ const TestChartsListing = () => {
               {/* Application Filter */}
               {applications.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-white">Application</h3>
+                  <h3 className="font-semibold text-foreground">Application</h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {applications.map(app => (
                       <FilterCheckbox
@@ -321,7 +318,7 @@ const TestChartsListing = () => {
       {/* Results Section */}
       <section className="py-12">
         <div className="container mx-auto px-6">
-          <div className="mb-6 text-gray-400">
+          <div className="mb-6 text-muted-foreground">
             {filteredProducts.length} test chart{filteredProducts.length !== 1 ? 's' : ''} found
           </div>
           
@@ -333,7 +330,7 @@ const TestChartsListing = () => {
 
           {filteredProducts.length === 0 && !loading && (
             <div className="text-center py-16">
-              <p className="text-gray-400 text-lg mb-4">
+              <p className="text-muted-foreground text-lg mb-4">
                 {products.length === 0 
                   ? "No test charts available yet. Add products in the Admin Dashboard."
                   : "No test charts match your criteria"
