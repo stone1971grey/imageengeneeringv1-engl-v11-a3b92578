@@ -537,9 +537,9 @@ export const ProductListSegmentEditor = ({
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white z-50">
-                <SelectItem value="grid">Grid (3 columns)</SelectItem>
-                <SelectItem value="list">List (1 column)</SelectItem>
+              <SelectContent className="bg-gray-900 border-gray-700 z-50">
+                <SelectItem value="grid" className="text-white hover:bg-gray-800">Grid (3 columns)</SelectItem>
+                <SelectItem value="list" className="text-white hover:bg-gray-800">List (1 column)</SelectItem>
               </SelectContent>
             </Select>
           </div>
