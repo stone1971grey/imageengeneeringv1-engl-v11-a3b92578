@@ -43,7 +43,7 @@ const TestChartsListing = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
 
   // 5 Filter states
   const [selectedProductTypes, setSelectedProductTypes] = useState<Set<string>>(new Set());
@@ -186,10 +186,14 @@ const TestChartsListing = () => {
 
           {/* Visible Filter Badges - from measurement_focus, format_fov, applications */}
           {(() => {
+            const preferredApplication = product.applications.includes("Automotive")
+              ? "Automotive"
+              : product.applications[0];
+
             const visibleBadges = [
               ...product.measurement_focus.slice(0, 2),
               ...product.format_fov.filter((f) => f !== "Standard").slice(0, 1),
-              ...product.applications.slice(0, 1),
+              ...(preferredApplication ? [preferredApplication] : []),
             ].slice(0, 4);
 
             return visibleBadges.length > 0 ? (
@@ -301,10 +305,10 @@ const TestChartsListing = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/80" />
               <Input
                 type="text"
-                placeholder="Search by title, SKU or features..."
+                placeholder="Search by title or SKU..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-black/40 text-white placeholder:text-white/60 border-gray-700 focus-visible:ring-[#f9dc24] focus-visible:border-[#f9dc24]"
+                className="pl-10 bg-black/40 text-white placeholder:text-white/60 border-gray-700 focus-visible:ring-[hsl(var(--yellow))] focus-visible:border-[hsl(var(--yellow))]"
               />
             </div>
             <Button
