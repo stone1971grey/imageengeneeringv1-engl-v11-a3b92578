@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -24,6 +26,15 @@ const CATEGORIES = [
   "Bundles & Services"
 ];
 
+// Available filter categories
+const FILTER_CATEGORIES = [
+  { key: "productTypes", label: "Product Type" },
+  { key: "measurementFocus", label: "Measurement Focus" },
+  { key: "formatFov", label: "Format / FOV" },
+  { key: "applications", label: "Application" },
+  { key: "integrationFeatures", label: "Integration Features" }
+];
+
 export const ProductListSegmentEditor = ({
   segmentId,
   pageSlug,
@@ -40,6 +51,15 @@ export const ProductListSegmentEditor = ({
   const [showSearch, setShowSearch] = useState(true);
   const [maxProducts, setMaxProducts] = useState<number | undefined>(undefined);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
+  
+  // Individual filter visibility
+  const [visibleFilters, setVisibleFilters] = useState<Record<string, boolean>>({
+    productTypes: true,
+    measurementFocus: true,
+    formatFov: true,
+    applications: true,
+    integrationFeatures: true
+  });
 
   useEffect(() => {
     loadConfig();
@@ -66,6 +86,14 @@ export const ProductListSegmentEditor = ({
         setShowSearch(config.showSearch !== false);
         setMaxProducts(config.maxProducts);
         setLayout(config.layout || 'grid');
+        
+        // Load individual filter visibility
+        if (config.visibleFilters) {
+          setVisibleFilters(prev => ({
+            ...prev,
+            ...config.visibleFilters
+          }));
+        }
       }
     } catch (error) {
       console.error("Error loading product list config:", error);
@@ -85,7 +113,8 @@ export const ProductListSegmentEditor = ({
         showFilters,
         showSearch,
         maxProducts,
-        layout
+        layout,
+        visibleFilters
       };
 
       const { error } = await supabase
@@ -112,6 +141,13 @@ export const ProductListSegmentEditor = ({
     }
   };
 
+  const toggleFilterVisibility = (key: string) => {
+    setVisibleFilters(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -135,11 +171,12 @@ export const ProductListSegmentEditor = ({
 
         <div className="space-y-2">
           <Label className="text-white">Section Description</Label>
-          <Input
+          <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Browse our complete product catalog"
             className="bg-[#2a2a2a] border-gray-600 text-white"
+            rows={2}
           />
         </div>
 
@@ -165,21 +202,22 @@ export const ProductListSegmentEditor = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="grid">Grid</SelectItem>
-                <SelectItem value="list">List</SelectItem>
+                <SelectItem value="grid">Grid (3 columns)</SelectItem>
+                <SelectItem value="list">List (1 column)</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-white">Max Products</Label>
+            <Label className="text-white">Products per Page</Label>
             <Input
               type="number"
               value={maxProducts || ""}
               onChange={(e) => setMaxProducts(e.target.value ? parseInt(e.target.value) : undefined)}
-              placeholder="No limit"
+              placeholder="No limit (show all)"
               className="bg-[#2a2a2a] border-gray-600 text-white"
             />
+            <p className="text-xs text-gray-500">Leave empty to show all products. Set a number to enable pagination.</p>
           </div>
         </div>
 
@@ -199,6 +237,29 @@ export const ProductListSegmentEditor = ({
             <Label className="text-white">Show Filters</Label>
           </div>
         </div>
+
+        {/* Individual Filter Visibility */}
+        {showFilters && (
+          <div className="space-y-3 p-4 bg-[#222] rounded-lg">
+            <Label className="text-white font-semibold">Visible Filter Categories</Label>
+            <p className="text-xs text-gray-400 mb-3">Select which filter categories to display</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {FILTER_CATEGORIES.map(filter => (
+                <label 
+                  key={filter.key} 
+                  className="flex items-center gap-2 cursor-pointer text-gray-300 text-sm hover:text-white"
+                >
+                  <Checkbox
+                    checked={visibleFilters[filter.key] !== false}
+                    onCheckedChange={() => toggleFilterVisibility(filter.key)}
+                    className="border-gray-600 data-[state=checked]:bg-[#f9dc24] data-[state=checked]:border-[#f9dc24]"
+                  />
+                  {filter.label}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <Button
